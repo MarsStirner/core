@@ -3,13 +3,14 @@ package ru.korus.tmis.communication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
+import ru.korus.tmis.communication.thriftgen.Address;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.entity.model.communication.QueueTicket;
+import ru.korus.tmis.schedule.*;
+import ru.korus.tmis.schedule.Ticket;
 
-import java.util.Date;
 
 /**
  * User: EUpatov<br>
@@ -150,7 +151,7 @@ public final class ParserToThriftStruct {
         return coupon;
     }
 
-    public static TTicket parseTTicket(final PersonSchedule schedule, final Ticket ticket) {
+    public static TTicket parseTTicket(final PersonScheduleBean.PersonSchedule schedule, final Ticket ticket) {
         final TTicket result = new TTicket();
         result.setDate(DateConvertions.convertDateToUTCMilliseconds(schedule.getAmbulatoryDate()));
         result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(ticket.getBegTime()));
@@ -170,13 +171,14 @@ public final class ParserToThriftStruct {
         return result;
     }
 
-    public static Schedule parsePersonSchedule(final PersonSchedule schedule) {
+    public static Schedule parsePersonSchedule(final PersonScheduleBean.PersonSchedule schedule) {
         final Schedule result = new Schedule();
         result.setAvailable(schedule.isAvailable());
         result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getBegTime()));
         result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getEndTime()));
         result.setOffice(schedule.getOffice());
         result.setPlan(schedule.getPlan());
+        result.setDate(DateConvertions.convertDateToUTCMilliseconds(schedule.getAmbulatoryDate()));
         for (Ticket currentTicket : schedule.getTickets()) {
             result.addToTickets(parseTTicket(schedule, currentTicket));
         }
@@ -184,7 +186,7 @@ public final class ParserToThriftStruct {
     }
 
     @Deprecated
-    public static Amb parsePersonScheduleToAmb(final PersonSchedule schedule) {
+    public static Amb parsePersonScheduleToAmb(final PersonScheduleBean.PersonSchedule schedule) {
         final Amb result = new Amb();
         result.setAvailable(schedule.isAvailable() ? 1 : 0);
         result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getBegTime()));
@@ -212,5 +214,24 @@ public final class ParserToThriftStruct {
             result.setPatientId(0);
         }
         return result;
+    }
+
+    public static EnqueuePatientStatus parseEnqueuePatientResult(final EnqueuePatientResult item) {
+        final EnqueuePatientStatus result = new EnqueuePatientStatus();
+        result.setIndex(item.getIndex()).setMessage(item.getMessage()).setQueueId(item.getQueueId()).setSuccess(item.isSuccess());
+        return result;
+    }
+
+    public static Address parseAddress(final OrgStructure orgStructure, final OrgStructureAddress orgStructureAddress) {
+        final AddressHouse adrHouse = orgStructureAddress.getAddressHouseList();
+        if (adrHouse == null) {
+            return null;
+        }
+        return new Address().setOrgStructureId(orgStructure.getId())
+                .setPointKLADR(adrHouse.getKLADRCode())
+                .setStreetKLADR(adrHouse.getKLADRStreetCode())
+                .setCorpus(adrHouse.getCorpus()).setNumber(adrHouse.getNumber())
+                .setFirstFlat(orgStructureAddress.getFirstFlat())
+                .setLastFlat(orgStructureAddress.getLastFlat());
     }
 }

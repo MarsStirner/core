@@ -8,10 +8,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
-import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
-import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
-import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionsTo1C;
+import ru.korus.tmis.core.entity.model.pharmacy.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.pharmacy.*;
 import ru.korus.tmis.pharmacy.exception.MessageProcessException;
@@ -81,7 +78,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private DbRbMethodOfAdministrationLocal dbRbMethodOfAdministrationLocal = null;
 
     @EJB
-    private DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBean = null;
+    private DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal = null;
+
+    @EJB
+    private DbDrugChartBeanLocal dbDrugChartBeanLocal = null;
 
     private DateTime lastDateUpdate = null;
 
@@ -91,25 +91,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private static final int PS_NEW = 0;
 
     /**
-     * исполнен
-     */
-    private static final int PS_FINISHED = 1;
-
-    /**
-     * Отменён
-     */
-    private static final int PS_CANCELED = 2;
-
-    /**
-     * Пауза
-     */
-    private static final int PS_PAUSE = 3;
-
-    /**
      * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
      */
     @Override
-    @Schedule(minute = "*/1", hour = "*", persistent = false)
+    // Шедулер отключен, т.к. работает таймер PharmacyTimer
+    // @Schedule(minute = "*/1", hour = "*", persistent = false)
     public void pooling() {
         if (ConfigManager.Drugstore().isActive()) {
             try {
@@ -324,6 +310,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     }
                 }
             }
+        } catch (Exception ex) {
+            logger.error("Error in PharmacyBean.firstPolling: {}", ex);
         } finally {
             logger.info(toLog.releaseString());
         }
@@ -372,7 +360,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private OrgStructure getOrgStructureOutWithDel(final Action action) throws SkipMessageProcessException {
         try {
-            if (action.getParentActionId() != 0) {
+            if (action.getParentActionId() != null && action.getParentActionId() != 0) {
                 final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
                 if (parentAction != null) {
                     final Set<String> codes = new HashSet<String>();
@@ -423,7 +411,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private OrgStructure getOrgStructureInWithDel(final Action action) throws SkipMessageProcessException {
         try {
-            if (action.getParentActionId() != 0) {
+            if (action.getParentActionId() != null && action.getParentActionId() != 0) {
                 final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
                 if (parentAction != null) {
                     final Set<String> codes = new HashSet<String>();
@@ -503,6 +491,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
         boolean res = false;
         try {
             final Action action = prescription.getDrugChart().getAction();
+            final Event event = action.getEvent();
             // Пациент
             final Patient client = action.getEvent().getPatient();
             // Организация, которой принадлежит документ
@@ -522,70 +511,61 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
             Request request = null;
-            String financeType = getFinaceType(prescription.getDrugChart().getAction());
+            final String financeType = getFinaceType(action);
+            final Iterable<DrugChart> intervalsByEvent = this.dbDrugChartBeanLocal.getIntervalsByEvent(event);
+            final Map<DrugChart, List<DrugComponent>> intervalsWithDrugComp = new HashMap<DrugChart, List<DrugComponent>>();
+            for (DrugChart interval : intervalsByEvent) {
+                intervalsWithDrugComp.put(interval, dbPharmacy.getDrugComponent(interval.getAction()));
+            }
+            PrescriptionInfo prescriptionInfo = new PrescriptionInfo(event,
+                    action,
+                    intervalsWithDrugComp,
+                    routeOfAdministration,
+                    financeType,
+                    dbPrescriptionSendingResBeanLocal);
 
             for (DrugComponent comp : drugComponents) {
                 ToLog toLog = new ToLog("PRESCRIPTION");
-                RlsNomen rlsNomen = comp.getNomen();
-                final PrescriptionSendingRes prescriptionSendingResBean = dbPrescriptionSendingResBean.getPrescriptionSendingRes(prescription.getDrugChart(), comp);
-                String prescrUUID = UUID.randomUUID().toString();
-                if (prescription.getDrugChart().getMaster() != null) {
-                    PrescriptionSendingRes master = dbPrescriptionSendingResBean.getPrescriptionSendingRes(prescription.getDrugChart().getMaster(), comp);
-                    if (master != null) {
-                        prescrUUID = master.getUuid();
+                try {
+                    final PrescriptionSendingRes prescriptionSendingRes = dbPrescriptionSendingResBeanLocal.getPrescriptionSendingRes(prescription.getDrugChart(), comp);
+                    prescriptionInfo.setPrescrUUID(this.dbPrescriptionSendingResBeanLocal.getIntervalUUID(prescription.getDrugChart(), comp));
+                    if (prescription.isPrescription()) { // передача нового / отмена назначения
+                        prescriptionInfo.setAssignmentType(AssignmentType.ASSIGNMENT)
+                                .setNegationInd(prescription.getNewStatus().equals(PrescriptionStatus.PS_CANCELED));
+                    } else if (prescription.getOldStatus().equals(PrescriptionStatus.PS_NEW)
+                            && prescription.getNewStatus().equals(PrescriptionStatus.PS_FINISHED)) {// если статус изменился с "Назначен" на "Исполнен", то передаем исполнение
+                        prescriptionInfo.setAssignmentType(AssignmentType.EXECUTION).setNegationInd(false);
+                    } else if (prescription.getOldStatus().equals(PrescriptionStatus.PS_FINISHED)
+                            && prescription.getNewStatus().equals(PrescriptionStatus.PS_NEW)) { // если статус изменился с "Исполнен" на "Назначен" , то передаем отмену исполнения
+                        prescriptionInfo.setAssignmentType(AssignmentType.EXECUTION).setNegationInd(true);
+                    } else {
+                        prescriptionInfo.setAssignmentType(null);
                     }
-                }
-                if (prescription.isPrescription()) { // передача нового / отмена назначения
-                    request = HL7PacketBuilder.processPrescription(
-                            prescription.getDrugChart(),
-                            comp,
-                            routeOfAdministration,
-                            organisation,
-                            AssignmentType.ASSIGNMENT,
-                            prescription.getNewStatus() == PS_CANCELED,
-                            prescriptionSendingResBean,
-                            toLog,
-                            prescrUUID,
-                            financeType);
-                } else if (prescription.getOldStatus() == PS_NEW && prescription.getNewStatus() == PS_FINISHED) {// если статус изменился с "Назначен" на "Исполнен", то передаем исполнение
-                    request = HL7PacketBuilder.processPrescription(
-                            prescription.getDrugChart(),
-                            comp,
-                            routeOfAdministration,
-                            organisation,
-                            AssignmentType.EXECUTION,
-                            false,
-                            prescriptionSendingResBean,
-                            toLog,
-                            prescrUUID,
-                            financeType);
-                } else if (prescription.getOldStatus() == PS_FINISHED && prescription.getNewStatus() == PS_NEW) { // если статус изменился с "Исполнен" на "Назначен" , то передаем отмену исполнения
-                    request = HL7PacketBuilder.processPrescription(
-                            prescription.getDrugChart(),
-                            comp,
-                            routeOfAdministration,
-                            organisation,
-                            AssignmentType.EXECUTION,
-                            true,
-                            prescriptionSendingResBean,
-                            toLog,
-                            prescrUUID,
-                            financeType);
-                }
-                if (request != null) {
-                    prescription.setErrCount(prescription.getErrCount() + 1);
-                    toLog.add("prepare message... \n\n # \n", HL7PacketBuilder.marshallMessage(request, "misexchange"));
-                    final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
-                    toLog.add("Connection successful. Result: # \n\n # \n",
-                            result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
 
-                    if (isOk(result)) {
-                        prescriptionSendingResBean.setUuid(prescrUUID);
-                        prescriptionSendingResBean.setVersion(prescriptionSendingResBean.getVersion() == null ? 1 : (prescriptionSendingResBean.getVersion() + 1));
-                        res = true;
+                    if (prescriptionInfo.getAssignmentType() != null) {
+                        request = HL7PacketBuilder.processPrescription(
+                                action,
+                                prescriptionInfo,
+                                organisation,
+                                prescriptionSendingRes,
+                                toLog);
                     }
+                    if (request != null) {
+                        prescription.setErrCount(prescription.getErrCount() + 1);
+                        toLog.add("prepare message... \n\n # \n", HL7PacketBuilder.marshallMessage(request, "misexchange"));
+                        final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+                        toLog.add("Connection successful. Result: # \n\n # \n",
+                                result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
+
+                        if (isOk(result)) {
+                            prescriptionSendingRes.setUuid(prescriptionInfo.getPrescrUUID());
+                            prescriptionSendingRes.setVersion(prescriptionSendingRes.getVersion() == null ? 1 : (prescriptionSendingRes.getVersion() + 1));
+                            res = true;
+                        }
+                    }
+                } finally {
+                    logger.info(toLog.releaseString());
                 }
-                logger.info(toLog.releaseString());
             }
         } catch (Exception e) {
             final String errorString = e.toString();

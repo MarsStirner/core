@@ -1,6 +1,5 @@
-package ru.korus.tmis.communication;
+package ru.korus.tmis.schedule;
 
-import org.joda.time.LocalDate;
 import ru.korus.tmis.core.entity.model.*;
 
 import javax.ejb.Local;

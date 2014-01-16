@@ -17,10 +17,8 @@ import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.bak.BakResultService;
 import ru.korus.tmis.laboratory.bak.ws.server.model.*;
 import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.*;
-import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
 
-import javax.annotation.Nullable;
 import javax.ejb.EJB;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
@@ -165,6 +163,7 @@ public class BakResult implements BakResultService {
 
                 if (subj.getObservationBattery() != null) {
                     final String orderMisId = subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
+                    final boolean finalFlag = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getStatusCode().getCode().equals("true");
                     final List<CE> ceList = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getConfidentialityCode();
                     if (ceList != null && !ceList.isEmpty()) {
                         final String text = ceList.get(0).getDisplayName();
@@ -175,13 +174,14 @@ public class BakResult implements BakResultService {
                             ifa.setText(text);
                             ifa.setValue(value);
                             ifa.setActionId(actionId);
+                            ifa.setComplete(finalFlag);
                         }
                     }
-                } else if (subj.getObservationReport() != null) {
+               /* } else if (subj.getObservationReport() != null) {
                     final POLBMT004000UV01ObservationReport value = subj.getObservationReport().getValue();
                     final int actionId = Integer.parseInt(value.getId().get(0).getRoot());
                     final IFA statusIfa = getIfa(ifaMap, actionId);
-                    statusIfa.setComplete(value.getStatusCode().getCode().equals("true"));
+                    statusIfa.setComplete(value.getStatusCode().getCode().equals("true")); */
                 }
             }
         } catch (Exception e) {
@@ -245,7 +245,6 @@ public class BakResult implements BakResultService {
                     final int actionId = Integer.parseInt(value.getId().get(0).getRoot());
                     final BakPosev bakPosev = getBakPosevByActionId(bakMap, actionId);
 
-                    bakPosev.setComplete(value.getStatusCode().getCode().equals("true"));
                     bakPosev.setBarCode(value.getSpecimen().get(0).getSpecimen().getValue().getId().getRoot());
 
                     final COCTMT090000UV01AssignedEntity assignedEntity = value.getAuthor().get(0).getAssignedEntity();
@@ -267,6 +266,7 @@ public class BakResult implements BakResultService {
 
                     for (POLBMT004000UV01Component2 p : subj.getObservationBattery().getValue().getComponent1()) {
                         bakPosev.setGeneralComment(p.getObservationEvent().getValue().getCode().getCodeSystemName());
+                        bakPosev.setComplete(p.getObservationEvent().getValue().getStatusCode().getCode().equals("true"));
                         for (POLBMT004000UV01Component2 comp : p.getObservationEvent().getValue().getComponent1()) {
                             final String microorgCode = comp.getObservationEvent().getValue().getCode().getCode();
                             final String microorgName = comp.getObservationEvent().getValue().getCode().getDisplayName();

@@ -4,6 +4,7 @@ import com.google.common.collect.ImmutableList;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.prescription.thservice.*;
 import ru.korus.tmis.prescription.thservice.DrugComponent;
@@ -146,7 +147,7 @@ public class Helper {
         return result;
     }
 
-    public static DrugComponent createThriftDrugComponentFromEntityDrugComponent(ru.korus.tmis.core.entity.model.DrugComponent tableDrugComponent) {
+    public static DrugComponent createThriftDrugComponentFromEntityDrugComponent(ru.korus.tmis.core.entity.model.pharmacy.DrugComponent tableDrugComponent) {
         DrugComponent result = new DrugComponent()
                 .setAction_id(tableDrugComponent.getAction().getId())
                 .setId(tableDrugComponent.getId())
@@ -184,10 +185,10 @@ public class Helper {
         return result;
     }
 
-    public static ru.korus.tmis.core.entity.model.DrugComponent createEntityDrugComponentFromThriftDrugComponent(DrugComponent drugComponent, Action action)
+    public static ru.korus.tmis.core.entity.model.pharmacy.DrugComponent createEntityDrugComponentFromThriftDrugComponent(DrugComponent drugComponent, Action action)
             throws CoreException {
         Date now = new Date();
-        ru.korus.tmis.core.entity.model.DrugComponent result = new ru.korus.tmis.core.entity.model.DrugComponent();
+        ru.korus.tmis.core.entity.model.pharmacy.DrugComponent result = new ru.korus.tmis.core.entity.model.pharmacy.DrugComponent();
         result.setAction(action);
         result.setCancelDateTime(DateConvertions.convertUTCMillisecondsToLocalDate(drugComponent.getCancelDateTime()));
         result.setCreateDateTime(now);

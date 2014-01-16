@@ -1,4 +1,4 @@
-package ru.korus.tmis.communication;
+package ru.korus.tmis.schedule;
 
 /**
  * User: EUpatov<br>
@@ -49,7 +49,7 @@ public enum CommunicationErrors {
     /**
      * в очереди нет приёма на это время
      */
-    msgTicketNotFound(306, "в очереди нет приёма на это время"),
+    msgTicketNotFound(306, "запись на выбранное время невозможна (выбрано некорректное время или талончик занят другим пациентом)"),
 
     /**
      * пациент уже записан
@@ -119,8 +119,11 @@ public enum CommunicationErrors {
 
     msgInvalidPersonalInfo(1, "Некорректные личные данные"),
 
-    msgPatientAlreadyQueuedToTime(311, "За выбранный промежуток времени у пациента есть запись к другому врачу");
+    msgPatientAlreadyQueuedToTime(311, "За выбранный промежуток времени у пациента есть запись к другому врачу"),
 
+    msgMaxCito(1000, "Исчерпана квота срочной записи"),
+
+    msgMaxOverQueue(1001, "Исчерпана квота по записи сверх очереди");
 
     private final int id;
     private final String message;

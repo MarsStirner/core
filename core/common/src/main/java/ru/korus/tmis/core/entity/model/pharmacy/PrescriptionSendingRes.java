@@ -1,9 +1,5 @@
 package ru.korus.tmis.core.entity.model.pharmacy;
 
-import ru.korus.tmis.core.entity.model.DrugChart;
-import ru.korus.tmis.core.entity.model.DrugComponent;
-import ru.korus.tmis.core.entity.model.RlsNomen;
-
 import javax.persistence.*;
 
 /**

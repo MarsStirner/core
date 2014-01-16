@@ -25,8 +25,8 @@ import ru.korus.tmis.laboratory.altey.business.AlteyBusinessBeanLocal
   endpointInterface = "ru.korus.tmis.laboratory.altey.AlteyResultsService",
   targetNamespace = "http://korus.ru/tmis/tmis-laboratory-integration",
   serviceName = "tmis-laboratory-integration",
-  portName = "tmis-laboratory-integration",
-  name = "tmis-laboratory-integration")
+  portName = "tmis",
+  name = "tmis")
 @HandlerChain(file = "tmis-ws-lab-logging-handlers.xml")
 class AlteyOldResults extends AlteyResultsService with Logging with I18nable {
 
@@ -35,13 +35,13 @@ class AlteyOldResults extends AlteyResultsService with Logging with I18nable {
 
   def setAnalysisResults(orderMisId: String,
                          referralIsFinished: Boolean,
-                         results: JList[AnalysisResult],
+                         results: JList[ru.korus.tmis.laboratory.altey.accept2.AnalysisResult],
                          biomaterialDefects: JString) = {
     val intOrder: Int = catchy {
       orderMisId.toInt
     }.getOrElse {
       throw new CoreException("Получено некорректное значение orderMisId [" + orderMisId + "]")
     }
-    labBean.setLisAnalysisResults(intOrder, referralIsFinished, results ?: new JLinked[AnalysisResult](), biomaterialDefects ?: "")
+    labBean.setLisAnalysisResults(intOrder, referralIsFinished, results ?: new JLinked[ru.korus.tmis.laboratory.altey.accept2.AnalysisResult](), biomaterialDefects ?: "")
   }
 }

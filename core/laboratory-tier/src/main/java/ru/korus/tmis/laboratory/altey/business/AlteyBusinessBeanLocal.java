@@ -1,7 +1,7 @@
 package ru.korus.tmis.laboratory.altey.business;
 
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.laboratory.altey.accept.AnalysisResult;
+import ru.korus.tmis.laboratory.altey.accept2.AnalysisResult;
 
 import javax.ejb.Local;
 import java.util.List;

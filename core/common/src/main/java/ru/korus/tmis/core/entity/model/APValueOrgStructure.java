@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "ActionProperty_OrgStructure", catalog = "", schema = "")
+@Table(name = "ActionProperty_OrgStructure")
 @NamedQueries(
         {
                 @NamedQuery(name = "APValueOrgStructure.findAll", query = "SELECT a FROM APValueOrgStructure a")
@@ -43,9 +43,9 @@ public class APValueOrgStructure extends AbstractAPValue implements Serializable
         return value;
     }
 
-    public void setValue(OrgStructure value) {
+   /* public void setValue(OrgStructure value) {
         this.value = value;
-    }
+    }*/
 
     @Override
     public String getValueAsString() {

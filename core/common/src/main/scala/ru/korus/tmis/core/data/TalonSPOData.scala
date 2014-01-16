@@ -167,15 +167,17 @@ class TalonSPODataListFilter {
     this.code = code
   }
 
-  def toQueryStructure() = {
+  def toQueryStructure = {
     var qs = new QueryDataStructure()
 
     if(this.patientId>0){
       qs.query += ("AND e.patient.id =  :patientId\n")
       qs.add("patientId", this.patientId:java.lang.Integer)
     }
-    qs.query += ("AND e.eventType.code =  :code\n")
-    qs.add("code", this.code)
+    if(this.code != null) {
+      qs.query += ("AND e.eventType.code =  :code\n")
+      qs.add("code", this.code)
+    }
     qs
   }
   def toSortingString (sortingField: String) = {

@@ -17,6 +17,7 @@ import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal
 import java.util
 import ru.korus.tmis.core.filter.ListDataFilter
 import java.text.SimpleDateFormat
+import ru.korus.tmis.schedule.QueueActionParam
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -56,7 +57,7 @@ class DbActionBean
     em.createQuery(curentRequest.toString(), classOf[Long])
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionById(id: Int) = {
     info("Requested action id[" + id + "]")
     val result = em.createQuery(ActionFindQuery,
@@ -78,7 +79,7 @@ class DbActionBean
     }
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionByIdWithIgnoreDeleted(id: Int) = {
     info("Requested action id[" + id + "]")
     val result = em.createQuery( """
@@ -323,7 +324,7 @@ class DbActionBean
     }
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEvent29AndAction19ForAction(action: Action) = {
     var typed = em.createQuery(GetEvent29AndAction19ForAction, classOf[Action])
       //.setParameter("externalId", action.getEvent.getExternalId)
@@ -339,7 +340,7 @@ class DbActionBean
     }
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionForDateAndPacientInQueueType(beginDate: Long, pacientInQueueType: Int) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val strDate = formatter.format(new Date(beginDate))
@@ -350,7 +351,7 @@ class DbActionBean
     typed.getSingleResult
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionForEventAndPacientInQueueType(eventId: Int, date: Long, pacientInQueueType: Int) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val strDate = formatter.format(new Date(date))
@@ -563,39 +564,49 @@ class DbActionBean
     et
   }
 
-  def createAction(actionType: ActionType, event: Event, person: Staff, date: Date, hospitalUidFrom: String, note: String): Action = {
+
+  def createAction(queueActionType: ActionType, queueEvent: Event, doctor: Staff, paramsDateTime: Date, hospitalUidFrom: String, note: String): Action = {
+    val queueActionParam = (new QueueActionParam).setHospitalUidFrom(hospitalUidFrom).setNote(note)
+    createAction(queueActionType, queueEvent, doctor, paramsDateTime, queueActionParam)
+  }
+
+  def createAction(actionType: ActionType, event: Event, person: Staff, date: Date, queueActionParam: QueueActionParam): Action = {
     val now = new Date
     var newAction = new Action()
     //Инициализируем структуру Event
     try {
-      newAction.setCreateDatetime(now);
-      newAction.setCreatePerson(null);
-      newAction.setModifyPerson(null);
-      newAction.setActionType(actionType);
-      newAction.setModifyDatetime(now);
-      newAction.setEvent(event);
-      newAction.setNote(note);
-      newAction.setBegDate(date);
-      newAction.setEndDate(now);
+      newAction.setCreateDatetime(now)
+      newAction.setCreatePerson(null)
+      newAction.setModifyPerson(null)
+      newAction.setActionType(actionType)
+      newAction.setModifyDatetime(now)
+      newAction.setEvent(event)
+      newAction.setNote(queueActionParam.getNote)
+      newAction.setBegDate(date)
+      newAction.setEndDate(now)
       newAction.setDirectionDate(date)
-      newAction.setDeleted(false);
-      newAction.setPayStatus(0);
+      newAction.setDeleted(false)
+      newAction.setPayStatus(0)
       newAction.setExecutor(person)
-      newAction.setAssigner(person)
-      newAction.setUuid(dbUUIDBeanLocal.createUUID());
-      if (!hospitalUidFrom.isEmpty) {
-        newAction.setHospitalUidFrom(hospitalUidFrom);
-      }
+      newAction.setPacientInQueueType(queueActionParam.getPacientInQueueType().getValue)
+      newAction.setAppointmentType(queueActionParam.getAppointmentType)
+
+      //не менять на person, иначе нельзя будет отличить запись на прием к врачу с портала и других ЛПУ
+      newAction.setAssigner(null)
+
+      newAction.setUuid(dbUUIDBeanLocal.createUUID)
+      newAction.setHospitalUidFrom(queueActionParam.getHospitalUidFrom)
       //1. Инсертим
-      em.persist(newAction);
+      em.persist(newAction)
     }
     catch {
       case ex: Exception => throw new CoreException("error while creating action ");
     }
+    em.flush()
     newAction
   }
 
-  def updateAction(action : Action): Action = {
+  def updateAction(action: Action): Action = {
     //em.persist(action)
     em.merge(action)
     getActionById(action.getId)
@@ -625,4 +636,5 @@ class DbActionBean
       .setParameter("FLATCODE", actionTypeFlatCode)
       .getResultList
   }
+
 }

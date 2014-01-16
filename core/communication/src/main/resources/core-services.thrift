@@ -37,6 +37,49 @@ enum CouponStatus{
 }
 
 /////////////////////////////////////////////////////////////////////
+//Exceptions
+/////////////////////////////////////////////////////////////////////
+
+exception NotFoundException {
+ 1: string error_msg;
+}
+exception SQLException {
+  1: i32 error_code;
+  2: string error_msg;
+}
+
+exception InvalidPersonalInfoException{
+	1:string message;
+	2:i32 code;
+}
+
+exception InvalidDocumentException{
+	1:string message;
+	2:i32 code;
+}
+
+exception AnotherPolicyException{
+	1:string message;
+	2:i32 code;
+	3:i32 patientId;
+}
+
+exception NotUniqueException{
+	1:string message;
+	2:i32 code;
+}
+
+exception PolicyTypeNotFoundException{
+    1:string message;
+    2:i32 code;
+}
+
+exception ReasonOfAbsenceException{
+    1:string name;
+    2:string code;
+}
+
+/////////////////////////////////////////////////////////////////////
 //Type definitions for return structures
 /////////////////////////////////////////////////////////////////////
 
@@ -107,6 +150,7 @@ struct Person{
 12:optional string sexFilter;
 }
 
+//@deprecated
 struct Ticket{
 1:optional timestamp time;
 2:optional i32 free;
@@ -127,6 +171,7 @@ struct ExtendedTicketsAvailability{
 3:required TicketsAvailability ticketsInfo;
 }
 
+//@deprecated
 struct Amb{
 1:optional timestamp begTime;
 2:optional timestamp endTime;
@@ -344,6 +389,18 @@ struct Schedule{
  7:required bool available;
 }
 
+/**
+ * PersonSchedule
+ * Структура с данными о расписаниях врача за интервал
+ * @param schedules             1) Расписания врача: map<timestamp, Schedule> - карта вида <[Дата приема], [Расписание на эту дату]>,
+ *                                      в случае отсутствия расписания на указанную дату набор ключ-значение опускается
+ * @param personAbsences        2) Список причин отсутствия врача
+ */
+struct PersonSchedule{
+    1:required map<timestamp, Schedule> schedules;
+    2:optional map<timestamp, ReasonOfAbsenceException> personAbsences;
+}
+
 /////////////////////////////////////////////////////////////////////
 //Type definitions for input params
 /////////////////////////////////////////////////////////////////////
@@ -508,49 +565,6 @@ struct ScheduleParameters{
 }
 
 /////////////////////////////////////////////////////////////////////
-//Exceptions
-/////////////////////////////////////////////////////////////////////
-
-exception NotFoundException {
- 1: string error_msg;
-}
-exception SQLException {
-  1: i32 error_code;
-  2: string error_msg;
-}
-
-exception InvalidPersonalInfoException{
-	1:string message;
-	2:i32 code;
-}
-
-exception InvalidDocumentException{
-	1:string message;
-	2:i32 code;
-}
-
-exception AnotherPolicyException{
-	1:string message;
-	2:i32 code;
-	3:i32 patientId;
-}
-
-exception NotUniqueException{
-	1:string message;
-	2:i32 code;
-}
-
-exception PolicyTypeNotFoundException{
-    1:string message;
-    2:i32 code;
-}
-
-exception DoctorAbsenceException{
-    1:string reason;
-    2:i32 code;
-}
-
-/////////////////////////////////////////////////////////////////////
 //Service 
 /////////////////////////////////////////////////////////////////////
 
@@ -636,7 +650,7 @@ list<ExtendedTicketsAvailability> getTicketsAvailability(1:GetTicketsAvailabilit
  * @throws SQLException                  когда произошла внутренняя ошибка при запросах к БД ЛПУ
  */
 Amb getWorkTimeAndStatus(1:GetTimeWorkAndStatusParameters params)
-    throws (1:NotFoundException exc, 2:SQLException excsql, 3:DoctorAbsenceException absenceExc);
+    throws (1:NotFoundException exc, 2:SQLException excsql, 3:ReasonOfAbsenceException raExc);
 
 /**
  * добавление нового пациента в БД ЛПУ
@@ -715,11 +729,11 @@ TTicket getFirstFreeTicket(1:ScheduleParameters params)
 /**
  * Метод для получения расписания врача пачкой за указанный интервал
  * @param params                        1) Параметры для получения расписания
- * @return                              map<timestamp, Schedule> - карта вида <[Дата приема], [Расписание на эту дату]>,
- *                                      в случае отсутствия расписания на указанную дату набор ключ-значение опускается
+ * @return                              структура данных с информацией о примемах врача
  * @throws NotFoundException            когда нету такого идентификатора врача
  */
-map<timestamp, Schedule> getPersonSchedule(1:ScheduleParameters params)
+
+PersonSchedule getPersonSchedule(1:ScheduleParameters params)
     throws (1:NotFoundException nfExc);
 
 /**
@@ -757,7 +771,7 @@ list<OrgStructuresProperties> getPatientOrgStructures(1:i32 parentId)
  * @throws SQLException                 когда произошла внутренняя ошибка при запросах к БД ЛПУ
  */
 EnqueuePatientStatus enqueuePatient(1:EnqueuePatientParameters params)
-    throws (1:NotFoundException exc, 2:SQLException excsql);
+    throws (1:NotFoundException exc, 2:SQLException excsql, 3:ReasonOfAbsenceException raExc);
 
 /**
  * Получение списка записей на приемы к врачам заданного пациента
@@ -784,9 +798,9 @@ DequeuePatientStatus dequeuePatient(1:i32 patientId, 2:i32 queueId)
  * Получение списка  с информацией о специализациях и доступных талончиках
  * @param hospitalUidFrom               1) Инфис-код ЛПУ
  * @return                              Список структур с данными о специализациях врачей
- * @throws SQLException                 когда произошла внутренняя ошибка при запросах к БД ЛПУ
+ * @throws NotFoundException            когда ничего не найдено
  */
 list<Speciality> getSpecialities(1:string hospitalUidFrom)
-    throws (1:SQLException exc);
+    throws (1:NotFoundException nfExc);
 
 }

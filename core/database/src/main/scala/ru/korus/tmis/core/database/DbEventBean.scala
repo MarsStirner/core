@@ -71,9 +71,11 @@ class DbEventBean
     em.flush()
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEventById(id: Int) = {
-    em.find(classOf[Event], id)
+    val e = em.find(classOf[Event], id)
+    if(e != null) em.detach(e)
+    e
   }
 
   def getActionTypeFilter(eventId: Int) = {
@@ -192,6 +194,7 @@ class DbEventBean
     catch {
       case ex: Exception => throw new CoreException("error while creating event ");
     }
+    em.flush()
     newEvent
   }
 

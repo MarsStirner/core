@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.pharmacy;
 
+import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionsTo1C;
 
 import javax.ejb.Stateless;

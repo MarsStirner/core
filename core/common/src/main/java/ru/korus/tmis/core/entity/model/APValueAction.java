@@ -20,7 +20,7 @@ public class APValueAction extends AbstractAPValue implements Serializable, APVa
 
     private static final long serialVersionUID = 1L;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "value")
     private Action value;
 

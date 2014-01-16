@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.data
 
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.util.{Date, LinkedList}
 import javax.xml.bind.annotation.{XmlAttribute, XmlRootElement, XmlType}
 import ru.korus.tmis.util.ConfigManager
@@ -133,7 +133,7 @@ class AppealSimplifiedRequestDataFilter {
     this.code = code
   }
 
-  def toQueryStructure() = {
+  def toQueryStructure = {
     var qs = new QueryDataStructure()
     if(this.patientId>0){
       qs.query += "AND e.patient.id = :patientId\n"
@@ -163,8 +163,10 @@ class AppealSimplifiedRequestDataFilter {
       qs.query += "AND upper(e.externalId) LIKE upper(:number)\n"
       qs.add("number","%"+this.number+"%")
     }
-    qs.query += "AND e.eventType.code IN :code\n"
-    qs.add("code",this.code)
+    if (!this.code.isEmpty) {
+      qs.query += "AND e.eventType.code IN :code\n"
+      qs.add("code",this.code)
+    }
     qs
   }
   def toSortingString (sortingField: String) = {

@@ -137,7 +137,8 @@ class AppealBean extends AppealBeanLocal
                     iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADsyst").toInt,        //Правая рука: АД сист.
                     iCapIds("db.rbCAP.hosp.primary.id.note").toInt,                              //Примечание
                     iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt,                     //Отделение поступления
-                    iCapIds("db.rbCap.host.primary.id.orgStructDirectedFrom").toInt)             //Направлен из
+                    iCapIds("db.rbCap.host.primary.id.orgStructDirectedFrom").toInt,             //Направлен из
+                    iCapIds("db.rbCap.host.primary.id.reopening").toInt)                         //Переоткрытие ИБ
 
   //Insert or modify appeal
   def insertAppealForPatient(appealData : AppealData, patientId: Int, authData: AuthData) = {
@@ -186,7 +187,7 @@ class AppealBean extends AppealBeanLocal
                                           actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(),
                                           authData)
         action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
-        em.persist(action)
+        dbManager.persist(action)
         list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
       }
       else {
@@ -241,7 +242,7 @@ class AppealBean extends AppealBeanLocal
           values.size match {
             case 0 => {
               if (flgCreate) {
-                //В случае, если на приходит значение для ActionProperty, то записываем значение по умолчанию.
+                //В случае, если не приходит значение для ActionProperty, то записываем значение по умолчанию.
                 val defValue = ap.getType.getDefaultValue
                 if (defValue!=null && !defValue.trim.isEmpty) {
                   val apv = actionPropertyBean.setActionPropertyValue(ap, defValue, 0)
@@ -712,6 +713,7 @@ class AppealBean extends AppealBeanLocal
       case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note")                                                //Примечание
       case listNdx(34) => this.AnyToSetOfString(appealData.data.orgStructStay.toString, "orgStructStay")                                    //Отделение поступления
       case listNdx(35) => this.AnyToSetOfString(appealData.data.orgStructDirectedFrom.toString, "orgStructDirectedFrom")                    //Напрвлен из
+      case listNdx(36) => this.AnyToSetOfString(appealData.data.reopening, "reopening")                                                     //Переоткрытие ИБ
       case _ => this.AnyToSetOfString(null, "")
     }
   }

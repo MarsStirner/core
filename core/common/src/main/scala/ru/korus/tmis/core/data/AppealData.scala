@@ -308,6 +308,8 @@ class AppealEntry extends I18nable {
   var orgStructStay: Int = _                        //Отделение поступления
   @BeanProperty
   var orgStructDirectedFrom: Int = _                //Направлен из
+  @BeanProperty
+  var reopening: String = _                   //Повторное обращение
 
   /**
    * Конструктор класса AppealEntry
@@ -373,6 +375,19 @@ class AppealEntry extends I18nable {
     }
     this.orgStructStay = getOrgStructPropByCode("db.apt.moving.codes.hospOrgStruct")
     this.orgStructDirectedFrom = getOrgStructPropByCode("db.apt.received.codes.orgStructDirectedFrom")
+    this.reopening = {
+      val vals = values.entrySet.filter(e => {
+        val ap = e.getKey._2
+        if(ap != null && ap.getType != null && ap.getType.getCode != null && ap.getType.getCode.equals(i18n("db.apt.received.codes.reopening"))) {
+          true
+        } else
+          false
+      })
+      if(vals.size == 1 && vals.head.getValue.size == 1  && vals.head.getValue.head.isInstanceOf[String])
+        vals.head.getValue.head.toString
+      else
+        "null"
+    }
 
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt :java.lang.Integer), values).get("0")
@@ -590,9 +605,9 @@ class AppealEntry extends I18nable {
         if (labProp != null) {
           this.laboratory = new LaboratoryPropertiesContainer(labProp._2.get(0).getValueAsString)
         }
-        val ogrStructStay = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0}).getOrElse(null)
+        val orgStructStay = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0}).getOrElse(null)
         if(orgStructStay != null) {
-          this.orgStructStay = ogrStructStay._2.get(0).getValueAsId.toInt
+          this.orgStructStay = orgStructStay._2.get(0).getValueAsId.toInt
         }
         val orgStructDirectedFrom = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirectedFrom"))==0}).getOrElse(null)
         if(orgStructDirectedFrom != null) {

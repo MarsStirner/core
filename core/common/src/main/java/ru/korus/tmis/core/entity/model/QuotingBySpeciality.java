@@ -14,7 +14,17 @@ import java.io.Serializable;
 @Table(name = "QuotingBySpeciality", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "QuotingBySpeciality.findAll", query = "SELECT o FROM QuotingBySpeciality o")
+                @NamedQuery(name = "QuotingBySpeciality.findAll", query = "SELECT o FROM QuotingBySpeciality o"),
+//              @NamedQuery(name = "QuotingBySpeciality.incrementCouponsRemaining",
+//                      query = "UPDATE QuotingBySpeciality o SET o.couponsRemaining = o.couponsRemaining + 1 WHERE o.id = :id"),
+//              @NamedQuery(name = "QuotingBySpeciality.decrementCouponsRemaining",
+//                      query = "UPDATE QuotingBySpeciality o SET o.couponsRemaining = o.couponsRemaining - 1 WHERE o.id = :id"),
+                @NamedQuery(name = "QuotingBySpeciality.findByOrganizationInfis",
+                        query = "SELECT o FROM QuotingBySpeciality o WHERE o.organisation.infisCode = :infisCode"),
+                @NamedQuery(name = "QuotingBySpeciality.findBySpeciality",
+                        query = "SELECT o FROM QuotingBySpeciality o WHERE o.speciality = :speciality"),
+                @NamedQuery(name = "QuotingBySpeciality.findByOrganizationInfisAndSpeciality",
+                        query = "SELECT o FROM QuotingBySpeciality o where o.organisation.infisCode = :infisCode AND o.speciality = :speciality")
         })
 @XmlType(name = "QuotingBySpeciality")
 @XmlRootElement(name = "QuotingBySpeciality")
@@ -33,7 +43,7 @@ public class QuotingBySpeciality implements Serializable {
     private Speciality speciality;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)      //TODO DB v69+ needed
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "organisation_id")
     private Organisation organisation;
 

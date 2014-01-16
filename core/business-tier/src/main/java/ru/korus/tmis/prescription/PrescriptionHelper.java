@@ -3,6 +3,7 @@ package ru.korus.tmis.prescription;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.prescription.thservice.*;
 import ru.korus.tmis.prescription.thservice.DrugComponent;
 
@@ -42,9 +43,9 @@ public class PrescriptionHelper {
             prescr.addToDrugIntervals(drugInterval);
         }
         //Добавление компонентов в назначение
-        List<ru.korus.tmis.core.entity.model.DrugComponent> drugComponentList = PrescriptionServer.getDrugComponentBean()
+        List<ru.korus.tmis.core.entity.model.pharmacy.DrugComponent> drugComponentList = PrescriptionServer.getDrugComponentBean()
                 .getComponentsByPrescriptionAction(prescriptionAction.getId());
-        for(ru.korus.tmis.core.entity.model.DrugComponent currentDrugComponent : drugComponentList){
+        for(ru.korus.tmis.core.entity.model.pharmacy.DrugComponent currentDrugComponent : drugComponentList){
             logger.debug("For Action[{}] found DrugComponent[{}]", prescriptionAction.getId(), currentDrugComponent.getId());
             DrugComponent drugComponentToAdd = Helper.createThriftDrugComponentFromEntityDrugComponent(currentDrugComponent);
             prescr.addToDrugComponents(drugComponentToAdd);

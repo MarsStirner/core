@@ -1,10 +1,11 @@
-package ru.korus.tmis.communication;
+package ru.korus.tmis.schedule;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -22,6 +23,9 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
 
     @PersistenceContext(unitName = "s11r64")
     EntityManager em = null;
+
+    @EJB
+    private PersonScheduleBeanLocal personScheduleBean;
 
     //Logger
     private static final Logger logger = LoggerFactory.getLogger(PatientQueueBean.class);
@@ -53,7 +57,7 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
             logger.debug("Patient has queueAction[{}] for this day, beginnig in {}",
                     currentAction.getId(), currentAction.getDirectionDate());
             final Ticket queueTicket = getQueueActionTicket(currentAction);
-            if (begTime.before(queueTicket.getEndTime()) && endTime.after(queueTicket.getBegTime())) {
+            if (queueTicket != null && begTime.before(queueTicket.getEndTime()) && endTime.after(queueTicket.getBegTime())) {
                 return true;
             }
         }
@@ -62,31 +66,38 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
 
     private Ticket getQueueActionTicket(final Action queueAction) {
         final Action ambulatoryAction = getAmbulatoryActionByQueueAction(queueAction);
+        if (ambulatoryAction == null) {
+            return null;
+        }
         logger.debug("Get endTime for AmbulatoryAction[{}]", ambulatoryAction.getId());
-        final PersonSchedule schedule = new PersonSchedule(ambulatoryAction.getEvent().getExecutor(), ambulatoryAction);
+        PersonScheduleBean.PersonSchedule personSchedule = personScheduleBean.newInstanceOfPersonSchedule(ambulatoryAction);
         try {
-            schedule.formTickets();
+            personScheduleBean.formTickets(personSchedule);
         } catch (CoreException e) {
             return null;
         }
         int queueIndex = -1;
-        for (APValueAction currentAP_A : schedule.getQueue()) {
+        for (APValueAction currentAP_A : personSchedule.getQueue()) {
             if (queueAction.equals(currentAP_A.getValue())) {
                 queueIndex = currentAP_A.getId().getIndex();
                 break;
             }
         }
-        return schedule.getTicketByQueueIndex(queueIndex);
+        return personScheduleBean.getTicketByQueueIndex(personSchedule, queueIndex);
     }
 
     private Action getAmbulatoryActionByQueueAction(final Action queueAction) {
-        return em.createQuery("SELECT ap.action FROM APValueAction ap_a, ActionProperty ap " +
+        final List<Action> queueActionList = em.createQuery("SELECT ap.action FROM APValueAction ap_a, ActionProperty ap " +
                 "WHERE ap_a.value = :queueAction " +
                 "AND ap.id = ap_a.id.id " +
                 "AND ap.actionPropertyType.name = 'queue'", Action.class)
                 .setParameter("queueAction", queueAction)
                         //.setParameter("queueActionPropertyType", queueActionPropertyType)
-                .getSingleResult();
+                .getResultList();
+        if (queueActionList.isEmpty()) {
+            return null;
+        }
+        return queueActionList.get(0);
     }
 
     @Override
@@ -107,8 +118,10 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
                 break;
             }
             default: {
-                for (EventType currentEventType : queueEventTypeList) {
-                    logger.warn("EventType[code='queue'] is not unique: id={}", currentEventType.getId());
+                if (logger.isWarnEnabled()) {
+                    for (EventType currentEventType : queueEventTypeList) {
+                        logger.warn("EventType[code='queue'] is not unique: id={}", currentEventType.getId());
+                    }
                 }
                 queueEventType = queueEventTypeList.get(0);
                 break;
@@ -135,8 +148,10 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
                 break;
             }
             default: {
-                for (ActionType currentActionType : queueActionTypeList) {
-                    logger.warn("ActionType[code='queue'] is not unique: id={}", currentActionType.getId());
+                if (logger.isWarnEnabled()) {
+                    for (ActionType currentActionType : queueActionTypeList) {
+                        logger.warn("ActionType[code='queue'] is not unique: id={}", currentActionType.getId());
+                    }
                 }
                 queueActionType = queueActionTypeList.get(0);
                 break;
@@ -150,8 +165,8 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
         if (queueActionPropertyType != null) {
             return queueActionPropertyType;
         }
-        final List<ActionPropertyType> actionPropertyTypes = em.createQuery("SELECT aptype FROM ActionPropertyType aptype INNER JOIN aptype.actionType atype" +
-                " WHERE aptype.name = 'queue' AND atype.code = 'amb'", ActionPropertyType.class)
+        final List<ActionPropertyType> actionPropertyTypes = em.createQuery("SELECT aptype FROM ActionPropertyType aptype" +
+                " WHERE aptype.name = 'queue' AND aptype.actionType.code = 'amb' AND aptype.actionType.deleted = 0 AND aptype.deleted = 0", ActionPropertyType.class)
                 .getResultList();
         switch (actionPropertyTypes.size()) {
             case 0: {
@@ -164,8 +179,10 @@ public class PatientQueueBean implements PatientQueueBeanLocal {
                 break;
             }
             default: {
-                for (ActionPropertyType currentActionPropertyType : actionPropertyTypes) {
-                    logger.warn("ActionType[code='queue'] is not unique: id={}", currentActionPropertyType.getId());
+                if (logger.isWarnEnabled()) {
+                    for (ActionPropertyType currentActionPropertyType : actionPropertyTypes) {
+                        logger.warn("ActionType[code='queue'] is not unique: id={}", currentActionPropertyType.getId());
+                    }
                 }
                 queueActionPropertyType = actionPropertyTypes.get(0);
                 break;

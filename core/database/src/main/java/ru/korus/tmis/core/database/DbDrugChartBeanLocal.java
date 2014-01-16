@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database;
 
-import ru.korus.tmis.core.entity.model.DrugChart;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
+import ru.korus.tmis.core.entity.model.Event;
 
 import javax.ejb.Local;
 import java.util.List;
@@ -17,4 +18,6 @@ public interface DbDrugChartBeanLocal {
     List<DrugChart> getPrescriptionIntervals(int prescriptionActionId);
 
     List<DrugChart> getExecIntervals(int prescriptionActionId, int masterId);
+
+    Iterable<DrugChart> getIntervalsByEvent(Event event);
 }

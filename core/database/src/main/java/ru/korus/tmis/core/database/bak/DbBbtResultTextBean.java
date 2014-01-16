@@ -26,13 +26,7 @@ public class DbBbtResultTextBean implements DbBbtResultTextBeanLocal {
 
     @Override
     public void add(BbtResultText bbtResultText) {
-//        final BbtResultText response = get(rbAntibiotic.getCode());
-//        if (response == null) {
             em.persist(bbtResultText);
-//            logger.info("create RbAntibiotic {}", rbAntibiotic);
-//        } else {
-//            logger.info("find RbAntibiotic {}", response);
-//        }
     }
 
     @Override

@@ -2,8 +2,7 @@ package ru.korus.tmis.core.pharmacy;
 
 import org.joda.time.DateTime;
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.DrugComponent;
-import ru.korus.tmis.core.entity.model.RlsNomen;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.exception.CoreException;
 
