@@ -37,6 +37,13 @@ public class DbBbtResultTextBean implements DbBbtResultTextBeanLocal {
     }
 
     @Override
+    public Iterable<BbtResultText> getByActionId(Integer actionId) {
+        List<BbtResultText> antibioticList =
+                em.createQuery("SELECT a FROM BbtResultText a WHERE a.actionId = :actionId", BbtResultText.class).setParameter("actionId", actionId).getResultList();
+        return antibioticList;
+    }
+
+    @Override
     public void removeByActionId(int actionId) {
         em.createQuery(
                 "DELETE FROM BbtResultText a WHERE a.actionId = :actionId")

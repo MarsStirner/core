@@ -379,7 +379,7 @@ public class BakResult implements BakResultService {
                     final BbtOrganismSensValues bbtOrganismSens = new BbtOrganismSensValues();
                     bbtOrganismSens.setActivity(antibiotic.getSensitivity());
                     bbtOrganismSens.setAntibioticId(rbAntibiotic.getId());
-                    bbtOrganismSens.setBbtResultOrganismId(bbtResultOrganism.getId());
+                    bbtOrganismSens.setBbtResultOrganism(bbtResultOrganism);
                     bbtOrganismSens.setMic(antibiotic.getConcentration());
                     dbBbtOrganismSensValuesBean.add(bbtOrganismSens);
 

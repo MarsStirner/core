@@ -361,4 +361,14 @@ public interface WebMisREST extends Serializable {
     Boolean setExecPersonForAppeal(int eventId, int personId, AuthData authData) throws CoreException;
 
     LayoutAttributeListData getLayoutAttributes() throws CoreException;
+
+    /**
+     * Получение результатов исследования БАК-лаборатории
+     * @param actionId Идентификатор действия, представляющего лабораторное исследование
+     * @param authData Данные авторизации
+     * @return Данных о результатах лабораторного исследования
+     * @throws CoreException
+     */
+    BakLabResultDataContainer getBakResult(int actionId, AuthData authData) throws CoreException;
+
 }

@@ -19,6 +19,7 @@ import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
 import scala.Predef._
 
+import ru.korus.tmis.core.database.bak._
 import ru.korus.tmis.util.StringId
 
 /**
@@ -174,6 +175,15 @@ class WebMisRESTImpl  extends WebMisREST
 
   @EJB
   var dbTempInvalidBean: DbTempInvalidBeanLocal = _
+
+  @EJB
+  var dbBbtResultTextBean: DbBbtResultTextBeanLocal = _
+
+  @EJB
+  var dbBbtResponseBean: DbBbtResponseBeanLocal = _
+
+  @EJB
+  var dbBbtResultOrganismBean: DbBbtResultOrganismBeanLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -1287,6 +1297,15 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def getLayoutAttributes() = new LayoutAttributeListData(dbLayoutAttributeBean.getAllLayoutAttributes)
+
+  def getBakResult(actionId: Int, authData: AuthData): BakLabResultDataContainer = {
+    val r = new BakLabResultDataContainer(
+      dbBbtResponseBean.get(actionId),
+      dbBbtResultTextBean.getByActionId(actionId),
+      dbBbtResultOrganismBean.getByActionId(actionId)
+    )
+    r
+  }
 
 
   //__________________________________________________________________________________________________
