@@ -531,15 +531,4 @@ public class DiagnosticsRegistryExRESTImpl {
         return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId, this.auth), this.callback);
     }
 
-    /**
-     * Получение результатов исследований БАК-лаборатории
-     * @param actionId Идентификатор лабораторного исследования
-     * @return
-     */
-    @GET
-    @Path("/laboratory/bak/{actionId}")
-    @Produces("application/x-javascript")
-    public Object getVacantHospitalBeds(@PathParam("actionId") int actionId) {
-        return new JSONWithPadding(wsImpl.getBakResult(actionId, auth), this.callback);
-    }
 }

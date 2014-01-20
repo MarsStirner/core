@@ -367,7 +367,8 @@ public interface WebMisREST extends Serializable {
      * @param actionId Идентификатор действия, представляющего лабораторное исследование
      * @param authData Данные авторизации
      * @return Данных о результатах лабораторного исследования
-     * @throws CoreException
+     * @throws CoreException В случае, если в БД отсутствуют результаты исследования БАК лаборатории для
+     * исследования с id = actionId
      */
     BakLabResultDataContainer getBakResult(int actionId, AuthData authData) throws CoreException;
 

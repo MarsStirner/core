@@ -1299,8 +1299,12 @@ class WebMisRESTImpl  extends WebMisREST
   def getLayoutAttributes() = new LayoutAttributeListData(dbLayoutAttributeBean.getAllLayoutAttributes)
 
   def getBakResult(actionId: Int, authData: AuthData): BakLabResultDataContainer = {
+    val response = dbBbtResponseBean.get(actionId)
+    if (response == null)
+      throw new CoreException("В базе данных отсутствуют результаты исследований БАК лаборатории для исследования с id=" + actionId)
+
     val r = new BakLabResultDataContainer(
-      dbBbtResponseBean.get(actionId),
+      response,
       dbBbtResultTextBean.getByActionId(actionId),
       dbBbtResultOrganismBean.getByActionId(actionId)
     )

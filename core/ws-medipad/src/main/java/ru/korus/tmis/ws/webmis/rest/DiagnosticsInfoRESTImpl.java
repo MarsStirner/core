@@ -26,4 +26,16 @@ public class DiagnosticsInfoRESTImpl {
         this.wsImpl = wsImpl;
         this.callback = callback;
     }
+
+    /**
+     * Получение результатов исследований БАК-лаборатории
+     * @param actionId Идентификатор лабораторного исследования
+     * @return
+     */
+    @GET
+    @Path("/laboratory/bak/{actionId}")
+    @Produces("application/x-javascript")
+    public Object getVacantHospitalBeds(@PathParam("actionId") int actionId) {
+        return new JSONWithPadding(wsImpl.getBakResult(actionId, auth), this.callback);
+    }
 }
