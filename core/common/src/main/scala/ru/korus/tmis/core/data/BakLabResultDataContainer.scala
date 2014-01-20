@@ -3,7 +3,7 @@ package ru.korus.tmis.core.data
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import scala.beans.BeanProperty
 import java.util
-import ru.korus.tmis.core.entity.model.bak.{BbtOrganismSensValues, BbtResultOrganism, BbtResultText, BbtResponse}
+import ru.korus.tmis.core.entity.model.bak._
 
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
@@ -33,7 +33,6 @@ class BakLabResultDataContainer {
   }
 
 }
-
 
 @XmlType(name = "bakLabResultText")
 @XmlRootElement(name = "bakLabResultText")
@@ -91,7 +90,7 @@ class OrganismSensValue {
   var id: Int = _
 
   @BeanProperty
-  var antibioticId: Int = _
+  var antibiotic: AntibioticDataContainer = _
 
   @BeanProperty
   var mic: String = _
@@ -102,9 +101,31 @@ class OrganismSensValue {
   def this(sensValue: BbtOrganismSensValues) = {
     this
     id = sensValue.getId
-    antibioticId = sensValue.getAntibioticId
+    antibiotic = new AntibioticDataContainer(sensValue.getAntibioticId)
     mic = sensValue.getMic
     activity = sensValue.getActivity
+  }
+
+}
+
+@XmlType(name = "antibioticDataContainer")
+@XmlRootElement(name = "antibioticDataContainer")
+class AntibioticDataContainer {
+
+  @BeanProperty
+  var id: Int = _
+
+  @BeanProperty
+  var code: String = _
+
+  @BeanProperty
+  var name: String = _
+
+  def this(e: RbAntibiotic) {
+    this
+    id = e.getId
+    code = e.getCode
+    name = e.getName
   }
 
 }

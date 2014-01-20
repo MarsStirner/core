@@ -19,13 +19,13 @@ public class BbtOrganismSensValues implements Serializable {
     @Column(name = "id")
     private Integer id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "bbtResult_Organism_id")
     private BbtResultOrganism bbtResultOrganism;
 
-    @Basic(optional = false)
-    @Column(name = "antibiotic_id")
-    private Integer antibioticId;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "antibiotic_id", unique = true, nullable = false)
+    private RbAntibiotic antibioticId;
 
     @Basic(optional = false)
     @Column(name = "MIC")
@@ -50,7 +50,7 @@ public class BbtOrganismSensValues implements Serializable {
         return bbtResultOrganism;
     }
 
-    public void setAntibioticId(Integer antibioticId) {
+    public void setAntibioticId(RbAntibiotic antibioticId) {
         this.antibioticId = antibioticId;
     }
 
@@ -66,7 +66,7 @@ public class BbtOrganismSensValues implements Serializable {
         return id;
     }
 
-    public Integer getAntibioticId() {
+    public RbAntibiotic getAntibioticId() {
         return antibioticId;
     }
 

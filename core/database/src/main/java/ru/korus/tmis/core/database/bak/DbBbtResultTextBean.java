@@ -3,7 +3,6 @@ package ru.korus.tmis.core.database.bak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.bak.BbtResultText;
-import ru.korus.tmis.core.entity.model.bak.RbAntibiotic;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
