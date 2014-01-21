@@ -104,7 +104,8 @@ with I18nable {
       APWI.ValueId,
       APWI.Unit,
       APWI.Norm)
-    if (direction.getActionType.getMnemonic.toUpperCase.compareTo("LAB") == 0)
+    if (direction.getActionType.getMnemonic.toUpperCase.equals("LAB") ||
+      direction.getActionType.getMnemonic.toUpperCase.equals("BAK_LAB"))
       attributes = attributes ::: List(APWI.IsAssignable, APWI.IsAssigned)
 
     val propertiesMap = actionPropertyBean.getActionPropertiesByActionId(direction.getId.intValue)
@@ -293,7 +294,7 @@ with I18nable {
     var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
 
     //Для лабораторных исследований отработаем с JobTicket
-    if (mnem.toUpperCase.compareTo("LAB") == 0) {
+    if (mnem.toUpperCase.equals("LAB") || mnem.toUpperCase.equals("BAK_LAB")) {
       try {
         actions = createJobTicketsForActions(actions, eventId)
       } catch {
@@ -324,7 +325,7 @@ with I18nable {
                                                postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
     var actions: java.util.List[Action] = null
     val userId = userData.getUser.getId
-    val flgLab = mnem.toUpperCase.compareTo("LAB") == 0
+    val flgLab = mnem.toUpperCase.equals("LAB") || mnem.toUpperCase.equals("BAK_LAB")
 
     directions.getEntity.foreach((action) => {
       //Проверка прав у пользователя на редактирование направления
