@@ -149,6 +149,7 @@ public class PrescriptionTest extends Arquillian {
         createDrugComponent(actionPrescription);
         em.flush();
         pharmacyBean.sendPrescriptionTo1C();
+        //TODO: Добавить проверку выходного пакета!
     }
 
     private void createDrugComponent(Action actionPrescription) {
