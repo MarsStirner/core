@@ -4,11 +4,11 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.CoreException
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbDiseaseCharacter
 import scala.collection.JavaConversions._
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 /**
  * Created with IntelliJ IDEA.

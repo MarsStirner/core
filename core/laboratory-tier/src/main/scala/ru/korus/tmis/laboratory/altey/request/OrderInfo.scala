@@ -6,9 +6,10 @@ import ru.korus.tmis.laboratory.altey.{ws => lab}
 
 
 import scala.collection.JavaConversions._
-import ru.korus.tmis.util.Defaultible._
+import ru.korus.tmis.scala.util.Defaultible
+import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.util.Defaultible
+import ru.korus.tmis.scala.util.Defaultible
 
 sealed case class OrderInfo(
                              diagnosticCode: Option[String] = None,

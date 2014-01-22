@@ -1,10 +1,10 @@
 package ru.korus.tmis.core.util
 
 import org.junit.Test
-import ru.korus.tmis.util.{I18nable, General}
 import java.util.{List => JList, LinkedList}
 
 import org.junit.Assert._
+import ru.korus.tmis.scala.util.I18nable
 
 
 class I18nableTest {

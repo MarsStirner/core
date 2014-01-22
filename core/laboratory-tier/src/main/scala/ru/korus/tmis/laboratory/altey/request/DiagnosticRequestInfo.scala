@@ -7,7 +7,8 @@ import ru.korus.tmis.laboratory.altey.{ws => lab}
 import DataConverter._
 import ru.korus.tmis.core.exception.CoreException
 
-import ru.korus.tmis.util.Defaultible.setDefault
+import ru.korus.tmis.scala.util.Defaultible
+import Defaultible.setDefault
 
 sealed case class DiagnosticRequestInfo(
                                          orderMisId: Int,

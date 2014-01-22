@@ -9,7 +9,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "ActionProperty_HospitalBed", catalog = "", schema = "")
+@Table(name = "ActionProperty_HospitalBed")
 @NamedQueries(
         {
                 @NamedQuery(name = "APValueHospitalBed.findAll", query = "SELECT a FROM APValueHospitalBed a")

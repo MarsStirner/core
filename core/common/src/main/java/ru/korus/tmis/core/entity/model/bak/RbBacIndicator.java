@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Description:  <br>
  */
 @Entity
-@Table(name = "rbBacIndicator", catalog = "", schema = "")
+@Table(name = "rbBacIndicator")
 public class RbBacIndicator  implements Serializable {
 
     @Id

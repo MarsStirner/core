@@ -12,7 +12,7 @@ import java.io.Serializable;
  */
 
 @Entity
-@Table(name = "rbAttachType", catalog = "", schema = "")
+@Table(name = "rbAttachType")
 @NamedQueries(
         {
                 @NamedQuery(name = "rbAttachType.findAll", query = "SELECT r FROM RbAttachType r")

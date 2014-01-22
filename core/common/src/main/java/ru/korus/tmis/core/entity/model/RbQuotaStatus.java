@@ -11,7 +11,7 @@ import java.io.Serializable;
  * @since 1.0.0.48
  */
 @Entity
-@Table(name = "rbQuotaStatus", catalog = "", schema = "")
+@Table(name = "rbQuotaStatus")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbQuotaStatus.findAll", query = "SELECT cq FROM RbQuotaStatus cq")

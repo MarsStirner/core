@@ -13,7 +13,7 @@ import java.util.Date;
  * allows it to be passed by value through a remote interface.
  */
 @Entity
-@Table(name = "rb_V006_UslMp", catalog = "", schema = "")
+@Table(name = "rb_V006_UslMp")
 public class V006UslMp implements Serializable {
     /**
      * Код условия оказания медицинской помощи

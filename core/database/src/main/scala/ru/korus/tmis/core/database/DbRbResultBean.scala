@@ -6,9 +6,9 @@ import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbResult
-import ru.korus.tmis.util.{I18nable, ConfigManager}
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConversions._
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 /**
  * Created with IntelliJ IDEA.

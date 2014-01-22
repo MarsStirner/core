@@ -13,7 +13,7 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name = "ClientAttach", catalog = "", schema = "")
+@Table(name = "ClientAttach")
 @NamedQueries(
         {
                 @NamedQuery(name = "ClientAttach.findAll", query = "SELECT p FROM ClientAttach p")

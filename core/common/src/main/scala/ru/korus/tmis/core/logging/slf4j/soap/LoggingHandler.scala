@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.logging.slf4j.soap
 
-import ru.korus.tmis.util.I18nable
 
 import java.io.ByteArrayOutputStream
 import javax.xml.ws.handler.MessageContext
@@ -9,11 +8,13 @@ import javax.xml.ws.handler.soap.{SOAPHandler, SOAPMessageContext}
 import grizzled.slf4j.Logging
 import javax.servlet.http.HttpServletRequest
 
-import ru.korus.tmis.util.General.nullity_implicits
+import ru.korus.tmis.scala.util.{General, I18nable}
+import General.nullity_implicits
 import javax.xml.rpc.handler.HandlerInfo
 import javax.xml.rpc.handler.soap.{SOAPMessageContext => RPCSOAPMessageContext}
 import javax.xml.rpc.handler
 import javax.xml.soap.SOAPMessage
+import ru.korus.tmis.scala.util.I18nable
 
 
 // slf4j to soap logging adapter
@@ -23,7 +24,7 @@ class LoggingHandler
   with Logging
   with I18nable {
 
-  import ru.korus.tmis.util.General.flow_implicits
+  import General.flow_implicits
   import ru.korus.tmis.util.reflect.Manifests.{actuallyWorkingClassOf => classOf}
 
   val handlerInfo: HandlerInfo = new HandlerInfo().stating {

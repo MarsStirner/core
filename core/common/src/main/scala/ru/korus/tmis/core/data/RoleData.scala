@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.data
 
 import ru.korus.tmis.core.entity.model.Role
-import ru.korus.tmis.util.ConfigManager
 
 import java.util.{LinkedList, Set}
 import javax.xml.bind.annotation.{XmlType, XmlRootElement}
@@ -11,6 +10,7 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.AuthData
 import javax.xml.bind.annotation.XmlType._
 import ru.korus.tmis.core.entity.model.{Staff, Role}
+import ru.korus.tmis.scala.util.ConfigManager
 
 /**
  * Контейнер с данными о пользователе и его ролях в системе tmis

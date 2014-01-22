@@ -2,8 +2,10 @@ package ru.korus.tmis.laboratory.across.accept
 
 import java.util.Date
 import ru.korus.tmis.laboratory.across.{accept2 => lab2}
-import ru.korus.tmis.util.Variant.{EitherOf4, Variant3, Variant2, Variant1, Variant0}
+import ru.korus.tmis.scala.util.{Variant, General}
+import Variant.{EitherOf4, Variant3, Variant2, Variant1, Variant0}
 import scala.collection.JavaConversions._
+import ru.korus.tmis.scala.util.General
 
 
 object AnalysisResultAcross {
@@ -33,7 +35,7 @@ object AnalysisResultAcross {
   }
 
   implicit def fromLab2(v: lab2.AnalysisResult) = {
-    import ru.korus.tmis.util.General.NumberImplicits.optFloat
+    import General.NumberImplicits.optFloat
 
     AnalysisResultAcross(
       Option(v.getCode),

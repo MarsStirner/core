@@ -6,12 +6,12 @@ import ru.korus.tmis.core.entity.model._
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import org.codehaus.jackson.map.annotate.JsonView
 import java.util.{Calendar, Date}
-import ru.korus.tmis.util.ConfigManager
 import scala.collection.JavaConversions._
 import java.text.{DateFormat, SimpleDateFormat}
 import ru.korus.tmis.core.filter.AbstractListDataFilter
 import java.util
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.scala.util.ConfigManager
 
 /**
  * Набор View для сериализации HospitalBedEntry

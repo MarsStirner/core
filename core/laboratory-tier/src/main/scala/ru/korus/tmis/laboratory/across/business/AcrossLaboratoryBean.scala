@@ -1,6 +1,8 @@
 package ru.korus.tmis.laboratory.across.business
 
 import ru.korus.tmis.core.database._
+import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal}
+import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 
@@ -21,10 +23,11 @@ import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 import scala.collection.JavaConversions._
 import java.text.SimpleDateFormat
 import scala.Some
-import ru.korus.tmis.util.Types.JList
+import ru.korus.tmis.scala.util.Types.JList
 import java.util.{ArrayList, GregorianCalendar, Collections}
 import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
-import ru.korus.tmis.util.{CompileTimeConfigManager, ConfigManager, I18nable}
+import ru.korus.tmis.util.CompileTimeConfigManager
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 import javax.xml.namespace.QName
 import java.net.{PasswordAuthentication, Authenticator}
 import java.util.Date
@@ -107,7 +110,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
       val port = service.getIAcrossIntf_FNKCPort
 
-      import ru.korus.tmis.util.General.cast_implicits
+      import ru.korus.tmis.scala.util.General.cast_implicits
 
       for (
         user <- Option(ConfigManager.Laboratory2.User);
@@ -421,7 +424,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   def setAnalysisResults(a: Action, results: List[AnalysisResultAcross], finished: Boolean, biomaterialDefects: String) = {
     // Сохраняем результаты анализов
     val entities = scala.collection.mutable.Buffer[AnyRef](a)
-    import ru.korus.tmis.util.General.typedEquality
+    import ru.korus.tmis.scala.util.General.typedEquality
 
     results.foreach {
       r =>
@@ -574,7 +577,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   def setLis2AnalysisResults(requestId: Int, barCode: Int, period: Int, lastPiece: Boolean, lis_results: JList[AResult2],
                              biomaterialDefects: String) = {
 
-    import ru.korus.tmis.util.General.cast_implicits
+    import ru.korus.tmis.scala.util.General.cast_implicits
 
     val results: mutable.Buffer[AnalysisResultAcross] = lis_results map {
       _.castTo[AnalysisResultAcross]

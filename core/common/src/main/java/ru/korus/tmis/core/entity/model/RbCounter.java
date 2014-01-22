@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "rbCounter", catalog = "", schema = "")
+@Table(name = "rbCounter")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbCounter.findAll", query = "SELECT r FROM RbCounter r")

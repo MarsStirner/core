@@ -7,9 +7,10 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.database._
+import ru.korus.tmis.core.database.common._
+import common._
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.AuthData
-import ru.korus.tmis.util.{CAPids, ConfigManager, I18nable}
 import javax.persistence.{PersistenceContext, EntityManager}
 import collection.mutable.{HashMap, HashSet}
 import java.util.{ArrayList, Date, LinkedList}
@@ -22,6 +23,7 @@ import ru.korus.tmis.core.event.{Notification, ModifyActionNotification}
 import javax.inject.Inject
 import javax.enterprise.inject.Any
 import java.lang.Iterable
+import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 ;
 
 @Interceptors(Array(classOf[LoggingInterceptor]))

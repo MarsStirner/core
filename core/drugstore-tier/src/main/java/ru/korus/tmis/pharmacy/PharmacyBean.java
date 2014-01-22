@@ -6,7 +6,8 @@ import org.hl7.v3.*;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.DbRbFinance1CBeanLocal;
+import ru.korus.tmis.core.database.common.*;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.*;
 import ru.korus.tmis.core.exception.CoreException;
@@ -15,15 +16,13 @@ import ru.korus.tmis.pharmacy.exception.MessageProcessException;
 import ru.korus.tmis.pharmacy.exception.NoSuchOrgStructureException;
 import ru.korus.tmis.pharmacy.exception.SkipMessageProcessException;
 import ru.korus.tmis.prescription.Constants;
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
 
 import javax.ejb.EJB;
-import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import java.sql.Timestamp;
 import java.util.*;
-import java.util.UUID;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -46,9 +45,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     @EJB
     private DbOrgStructureBeanLocal dbOrgStructureBeanLocal = null;
-
-    @EJB
-    private DbActionPropertyBeanLocal dbActionProperty = null;
 
     @EJB
     private DbPharmacyBeanLocal dbPharmacy = null;
@@ -94,8 +90,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
      */
     @Override
-    // Шедулер отключен, т.к. работает таймер PharmacyTimer
-    // @Schedule(minute = "*/1", hour = "*", persistent = false)
+    //@Schedule(minute = "*/1", hour = "*", persistent = false)
     public void pooling() {
         if (ConfigManager.Drugstore().isActive()) {
             try {
@@ -503,7 +498,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             final String code[] = {Constants.MOA};
             String routeOfAdministration = null;
 
-            final Map<ActionProperty, List<APValue>> actionProp = dbActionProperty.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList(code));
+            final Map<ActionProperty, List<APValue>> actionProp = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList(code));
             if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
                 Object codeId = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
                 if (codeId instanceof Integer) {
@@ -553,14 +548,16 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     if (request != null) {
                         prescription.setErrCount(prescription.getErrCount() + 1);
                         toLog.add("prepare message... \n\n # \n", HL7PacketBuilder.marshallMessage(request, "misexchange"));
-                        final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
-                        toLog.add("Connection successful. Result: # \n\n # \n",
-                                result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
+                        if (!HL7PacketBuilder.isTestMode()) {
+                            final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+                            toLog.add("Connection successful. Result: # \n\n # \n",
+                                    result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
 
-                        if (isOk(result)) {
-                            prescriptionSendingRes.setUuid(prescriptionInfo.getPrescrUUID());
-                            prescriptionSendingRes.setVersion(prescriptionSendingRes.getVersion() == null ? 1 : (prescriptionSendingRes.getVersion() + 1));
-                            res = true;
+                            if (isOk(result)) {
+                                prescriptionSendingRes.setUuid(prescriptionInfo.getPrescrUUID());
+                                prescriptionSendingRes.setVersion(prescriptionSendingRes.getVersion() == null ? 1 : (prescriptionSendingRes.getVersion() + 1));
+                                res = true;
+                            }
                         }
                     }
                 } finally {

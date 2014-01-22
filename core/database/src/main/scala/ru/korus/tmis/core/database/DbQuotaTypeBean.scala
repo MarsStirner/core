@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.database
 
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.QuotaType
 import ru.korus.tmis.core.exception.CoreException
@@ -11,6 +10,7 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
 import ru.korus.tmis.core.filter.ListDataFilter
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 /**
  * Класс с методами для работы с таблицей s11r64.QuotaType

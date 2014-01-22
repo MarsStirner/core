@@ -7,9 +7,9 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import reflect.BeanProperty
 import ru.korus.tmis.core.entity.model._
 import java.util.{LinkedList, Date}
-import ru.korus.tmis.util.ConfigManager
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.entity.model.fd.{FDField, FDFieldValue, FDRecord}
+import fd.{APValueFlatDirectory, FDField, FDFieldValue, FDRecord}
+import ru.korus.tmis.scala.util.ConfigManager
 
 @XmlType(name = "assignmentData")
 @XmlRootElement(name = "assignmentData")

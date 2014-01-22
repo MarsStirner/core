@@ -8,7 +8,8 @@ import ru.korus.tmis.laboratory.across.{ws => lab2}
 import DataConverter._
 import ru.korus.tmis.core.exception.CoreException
 
-import ru.korus.tmis.util.Defaultible.setDefault
+import ru.korus.tmis.scala.util.Defaultible
+import Defaultible.setDefault
 import ru.korus.tmis.laboratory.across.request.Utility._
 
 sealed case class DiagnosticRequestInfo(

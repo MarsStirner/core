@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.patient
 
-import ru.korus.tmis.util.{CAPids, ConfigManager, I18nable}
 import grizzled.slf4j.Logging
 import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import ru.korus.tmis.core.logging.LoggingInterceptor
@@ -10,6 +9,7 @@ import ru.korus.tmis.core.data.{HospitalBedDataListFilter, HospitalBedData}
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.database._
+import common._
 import ru.korus.tmis.core.exception.CoreException
 import collection.mutable.HashSet
 import scala.collection.JavaConversions._
@@ -24,6 +24,7 @@ import java.util.Date
 import org.slf4j.LoggerFactory
 import ru.korus.tmis.util.reflect.TmisLogging
 import org.apache.commons.collections.{CollectionUtils, Transformer}
+import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

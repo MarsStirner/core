@@ -1,13 +1,13 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation._
-import ru.korus.tmis.util.ConfigManager
 import reflect.BeanProperty
 import javax.xml.bind.annotation.adapters.{XmlAdapter, XmlJavaTypeAdapter}
 import java.util.ArrayList
 import ru.korus.tmis.core.entity.model.OrgStructure
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import scala.collection.JavaConversions._
+import ru.korus.tmis.scala.util.ConfigManager
 
 /**
  * Created with IntelliJ IDEA.

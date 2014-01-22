@@ -2,9 +2,10 @@ package ru.korus.tmis.laboratory.altey
 
 import javax.jws.{HandlerChain, WebService}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{CompileTimeConfigManager, I18nable}
+import ru.korus.tmis.util.{CompileTimeConfigManager}
 import javax.ejb.EJB
 import ru.korus.tmis.laboratory.altey.business.AlteyBusinessBeanLocal
+import ru.korus.tmis.scala.util.I18nable
 
 
 /**

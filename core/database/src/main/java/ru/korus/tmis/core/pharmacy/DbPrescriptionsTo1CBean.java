@@ -18,7 +18,7 @@ import java.util.Date;
 @Stateless
 public class DbPrescriptionsTo1CBean implements DbPrescriptionsTo1CBeanLocal {
     @PersistenceContext(unitName = "s11r64")
-    private EntityManager em = null;
+    private EntityManager em;
 
     @Override
     public Iterable<PrescriptionsTo1C> getPrescriptions() {

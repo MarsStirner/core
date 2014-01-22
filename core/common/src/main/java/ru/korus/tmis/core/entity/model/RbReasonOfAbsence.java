@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlType;
  * Description: <br>
  */
 @Entity
-@Table(name = "rbReasonOfAbsence", catalog = "", schema = "")
+@Table(name = "rbReasonOfAbsence")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbReasonOfAbsence.findAll", query = "SELECT ra FROM RbReasonOfAbsence ra")

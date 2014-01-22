@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.common
 
-import ru.korus.tmis.core.database.{DbEventBeanLocal, DbOrgStructureBeanLocal}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 
@@ -13,7 +12,8 @@ import ru.korus.tmis.core.entity.model.{Event, ActionType}
 
 import ru.korus.tmis.core.age.AgeSelector
 
-import ru.korus.tmis.util.CloneUtils
+import ru.korus.tmis.scala.util.CloneUtils
+import ru.korus.tmis.core.database.common.DbOrgStructureBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

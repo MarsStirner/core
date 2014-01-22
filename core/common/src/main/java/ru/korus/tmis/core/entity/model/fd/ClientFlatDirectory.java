@@ -11,7 +11,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "ClientFlatDirectory", catalog = "", schema = "")
+@Table(name = "ClientFlatDirectory")
 @NamedQueries(
         {
                 @NamedQuery(name = "ClientFlatDirectory.findAll", query = "SELECT cd FROM ClientFlatDirectory cd")

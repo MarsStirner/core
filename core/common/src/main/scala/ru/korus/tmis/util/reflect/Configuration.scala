@@ -1,11 +1,11 @@
 package ru.korus.tmis.util.reflect
 
-import ru.korus.tmis.util.{ConfigManager, StringId}
 import java.net.URL
 import java.text.SimpleDateFormat
 import reflect.Manifest
 
 import Manifests.manifestFromClass
+import ru.korus.tmis.scala.util.StringId
 
 trait Configuration extends Reflective {
   private lazy val conversions = Map[Manifest[_], String => Any](

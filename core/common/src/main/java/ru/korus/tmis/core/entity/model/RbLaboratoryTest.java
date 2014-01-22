@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 
 @Entity
-@Table(name = "rbLaboratory_Test", catalog = "", schema = "")
+@Table(name = "rbLaboratory_Test")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbLaboratoryTest.findAll", query = "SELECT j FROM RbLaboratoryTest j")

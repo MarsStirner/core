@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "rbUnit", catalog = "", schema = "")
+@Table(name = "rbUnit")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbUnit.findAll", query = "SELECT r FROM RbUnit r"),

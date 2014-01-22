@@ -4,10 +4,10 @@ import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import reflect.BeanProperty
 import java.util.{LinkedList, Date}
 import scala.collection.JavaConversions._
-import ru.korus.tmis.util.ConfigManager
 import ru.korus.tmis.core.entity.model.{JobTicket, ActionStatus, Staff, Action}
 import ru.korus.tmis.core.filter.AbstractListDataFilter
 import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.scala.util.ConfigManager
 
 //Контейнер для списка диагностик
 @XmlType(name = "diagnosticsListData")

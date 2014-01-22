@@ -23,7 +23,7 @@ import ru.korus.tmis.core.entity.model.IndexedId;
 import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.util.EntityMgr;
 
 /**
@@ -287,7 +287,7 @@ public class Database {
         actionProp.setAction(action);
         em.persist(actionProp);
         em.flush();
-        logger.info("The new property {} for action {} has been added. Property id: {}", propTypeId, actionId, actionProp.getId());
+//        logger.info("The new property {} for action {} has been added. Property id: {}", propTypeId, actionId, actionProp.getId());
         return actionProp.getId();
     }
 

@@ -15,11 +15,13 @@ import javax.xml.ws.WebServiceContext
 import org.apache.shiro.SecurityUtils
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
+import common.{DbOrgStructureBeanLocal, DbEventPersonBeanLocal, DbContractBeanLocal}
 import ru.korus.tmis.util._
 import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
 import javax.servlet.http.HttpServletRequest
 import ru.korus.tmis.core.patient._
 import java.util._
+import ru.korus.tmis.scala.util.{Defaultible, I18nable, ConfigManager}
 
 
 @Named

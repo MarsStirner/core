@@ -16,7 +16,7 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name = "ClientPolicy", catalog = "", schema = "")
+@Table(name = "ClientPolicy")
 @NamedQueries(
         {
                 @NamedQuery(name = "ClientPolicy.findAll", query = "SELECT p FROM ClientPolicy p"),

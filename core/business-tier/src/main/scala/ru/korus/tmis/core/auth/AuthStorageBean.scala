@@ -3,7 +3,6 @@ package ru.korus.tmis.core.auth
 import ru.korus.tmis.core.database.DbStaffBeanLocal
 import ru.korus.tmis.core.exception.NoSuchUserException
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.util.{I18nable, ConfigManager}
 
 import grizzled.slf4j.Logging
 import java.util.Date
@@ -18,6 +17,7 @@ import javax.servlet.http.HttpServletRequest
 import scala.None
 import ru.korus.tmis.core.exception.{AuthenticationException, NoSuchUserException}
 import ru.korus.tmis.util.reflect.TmisLogging
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)

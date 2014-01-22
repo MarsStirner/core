@@ -1,7 +1,5 @@
 package ru.korus.tmis.ws.handlers
 
-import ru.korus.tmis.core.database.InternalLoggerBeanLocal
-import ru.korus.tmis.util.I18nable
 
 import java.io.ByteArrayOutputStream
 import javax.ejb.EJB
@@ -10,6 +8,8 @@ import javax.xml.ws.handler.MessageContext
 import javax.xml.ws.handler.soap.{SOAPHandler, SOAPMessageContext}
 
 import grizzled.slf4j.Logging
+import ru.korus.tmis.scala.util.I18nable
+import ru.korus.tmis.core.database.common.InternalLoggerBeanLocal
 
 class ExceptionLoggingHandler
   extends SOAPHandler[SOAPMessageContext]

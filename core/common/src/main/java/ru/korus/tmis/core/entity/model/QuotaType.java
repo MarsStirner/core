@@ -12,7 +12,7 @@ import java.util.Date;
  * @since 1.0.0.48
  */
 @Entity
-@Table(name = "QuotaType", catalog = "", schema = "")
+@Table(name = "QuotaType")
 @NamedQueries(
         {
                 @NamedQuery(name = "QuotaType.findAll", query = "SELECT cq FROM QuotaType cq")

@@ -15,7 +15,7 @@ import java.io.Serializable;
  * allows it to be passed by value through a remote interface.
  */
 @Entity
-@Table(name = "rb_V005_Pol", catalog = "", schema = "")
+@Table(name = "rb_V005_Pol")
 public class V005Pol implements Serializable {
     /**
      * Код пола застрахованного

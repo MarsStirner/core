@@ -7,11 +7,11 @@ import java.lang.Iterable
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbPolicyType
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.NoSuchRbPolicyTypeException
 import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.filter.ListDataFilter
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

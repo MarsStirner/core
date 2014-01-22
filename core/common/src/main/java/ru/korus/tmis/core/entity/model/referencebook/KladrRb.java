@@ -15,7 +15,7 @@ import java.io.Serializable;
  * <rec name="Адыгея" socr="Респ" code="0100000000000" index="385000" gninmb="0100" uno="" ocatd="79000000000" status="0"/>
  */
 @Entity
-@Table(name = "rb_Kladr", catalog = "", schema = "")
+@Table(name = "rb_Kladr")
 public class KladrRb implements Serializable {
 
     @Id

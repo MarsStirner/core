@@ -11,7 +11,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{RlsDataListFilter, QueryDataStructure}
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.util.{I18nable, ConfigManager}
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

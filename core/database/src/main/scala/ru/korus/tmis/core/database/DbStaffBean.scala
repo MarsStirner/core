@@ -2,7 +2,6 @@ package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.exception.{CoreException, NoSuchUserException}
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.util.{I18nable, ConfigManager}
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -20,6 +19,7 @@ import org.eclipse.persistence.jpa.JpaEntityManager
 import org.eclipse.persistence.sessions.{DatabaseRecord, Session}
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl
 import org.eclipse.persistence.queries.DatabaseQuery
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 
 @Interceptors(Array(classOf[LoggingInterceptor]))

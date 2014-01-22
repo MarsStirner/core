@@ -1,5 +1,6 @@
 package ru.korus.tmis.core
 
+import database.common._
 import entity.model._
 import exception.CoreException
 import org.junit.runner.RunWith
@@ -13,12 +14,12 @@ import ru.korus.tmis.core.patient.HospitalBedBean
 import org.slf4j.{LoggerFactory, Logger}
 import org.junit.{Assert, Test, Before}
 import data.{HospitalBedDataListFilter, HospitalBedData}
-import ru.korus.tmis.util.ConfigManager
 import ru.korus.tmis.test.data.{TestDataEntity, TestDataEntityImpl}
 import org.codehaus.jackson.map.ObjectMapper
 import scala.collection.JavaConversions._
 import java.util.Date
 import javax.persistence.EntityManager
+import ru.korus.tmis.scala.util.ConfigManager
 
 /**
  * Author:      Ivan Dmitriev <br>

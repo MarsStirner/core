@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.patient
 
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import grizzled.slf4j.Logging
 import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.logging.LoggingInterceptor
@@ -9,6 +8,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
+import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import javax.inject.Inject
 import ru.korus.tmis.core.event.{ModifyActionNotification, Notification}
 import java.util.{LinkedList, Date}
@@ -17,6 +17,7 @@ import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConversions._
 import collection.mutable
 import javax.enterprise.inject.Any
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
