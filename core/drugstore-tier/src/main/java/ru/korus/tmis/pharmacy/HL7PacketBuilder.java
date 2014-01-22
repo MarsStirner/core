@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigInteger;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -40,7 +39,17 @@ public final class HL7PacketBuilder {
     private static final String DATETIME_FORMAT = "yyyyMMddHHmmss";
 
 
+    private static boolean isTestMode = false;  //TODO: убрать!
+
     private HL7PacketBuilder() {
+    }
+
+    public static boolean isTestMode() {
+        return isTestMode;
+    }
+
+    public static void setTestMode(boolean testMode) {
+        isTestMode = testMode;
     }
 
     /**
@@ -597,10 +606,10 @@ public final class HL7PacketBuilder {
         if (!AssignmentType.ASSIGNMENT.equals(type) || negationInd) {
             section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, type, negationInd, prescrUUID, financeType));
         }*/
-        for (PrescriptionInfo.IntervalInfo curInterval : prescriptionInfo.getIntervalInfoList() )  {
-            for(PrescriptionInfo.ComponentInfo curComp : curInterval.getComponentInfoList()) {
-                if( (curInterval.isPrescription() && !curInterval.getStatus().equals(PrescriptionStatus.PS_CANCELED)) ||
-                    (!curInterval.isPrescription() && curInterval.getStatus().equals(PrescriptionStatus.PS_FINISHED))) {
+        for (PrescriptionInfo.IntervalInfo curInterval : prescriptionInfo.getIntervalInfoList()) {
+            for (PrescriptionInfo.ComponentInfo curComp : curInterval.getComponentInfoList()) {
+                if ((curInterval.isPrescription() && !curInterval.getStatus().equals(PrescriptionStatus.PS_CANCELED)) ||
+                        (!curInterval.isPrescription() && curInterval.getStatus().equals(PrescriptionStatus.PS_FINISHED))) {
                     final POCDMT000040Entry entry = createEntry(curInterval, curComp, prescriptionInfo);
                     section.getEntry().add(entry);
                 }
@@ -710,9 +719,12 @@ public final class HL7PacketBuilder {
 
 
     public static String marshallMessage(final Object msg, final String contextPath) {
-        final StringWriter writer = new StringWriter();
+        if(isTestMode) { //т.к. под Arcuillian  повисает на JAXBContext jaxbContext = JAXBContext.newInstance(contextPath, msg.getClass().getClassLoader());
+            return "TEST MODE! msg: " + msg;
+        }
+            final StringWriter writer = new StringWriter();
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance(contextPath);
+            JAXBContext jaxbContext = JAXBContext.newInstance(contextPath, msg.getClass().getClassLoader());
             final Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(msg, writer);

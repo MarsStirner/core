@@ -1,6 +1,7 @@
 package ru.korus.tmis.laboratory.altey.business
 
 import ru.korus.tmis.core.database._
+import common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.altey.accept.{AnalysisResult => AResult1}
@@ -16,11 +17,12 @@ import scala.collection.JavaConversions._
 import java.text.SimpleDateFormat
 import javax.xml.ws.BindingProvider
 import scala.Some
-import ru.korus.tmis.util.Types.{JList, JSet}
+import ru.korus.tmis.scala.util.{Types, General, I18nable, ConfigManager}
+import Types.{JList, JSet}
 import java.util.{ArrayList, GregorianCalendar, Collections}
 import javax.xml.ws.handler.{MessageContext, Handler}
 import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
-import ru.korus.tmis.util.{CompileTimeConfigManager, ConfigManager, I18nable}
+import ru.korus.tmis.util.{CompileTimeConfigManager}
 import javax.xml.namespace.QName
 import java.net.{PasswordAuthentication, Authenticator}
 import java.util.{LinkedList, Date}
@@ -32,6 +34,8 @@ import javax.xml.rpc.Stub
 import org.apache.axis.client.{Stub => AxisStub}
 
 import scala.collection.mutable
+import ru.korus.tmis.scala.util.{General, I18nable, ConfigManager}
+import scala.Some
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 //@Remote(Array(classOf[LaboratoryBeanLocal]))
@@ -320,7 +324,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     // DoctorCode (string) -- уникальный код или идентификатор врача
     info("Request.DoctorCode=" + drCode)
 
-    import ru.korus.tmis.util.General.NumberImplicits._
+    import General.NumberImplicits._
 
     DiagnosticRequestInfo(
       id,
@@ -443,7 +447,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
   def setAnalysisResults(a: Action, results: List[AnalysisResult], finished: Boolean, biomaterialDefects: String) = {
     // Сохраняем результаты анализов
     val entities = scala.collection.mutable.Buffer[AnyRef](a)
-    import ru.korus.tmis.util.General.typedEquality
+    import General.typedEquality
 
     results.foreach {
       r =>
@@ -600,7 +604,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     // Получаем действие направления
     info("SetAnalysisResults requested with id = " + requestId)
 
-    import ru.korus.tmis.util.General.cast_implicits
+    import General.cast_implicits
 
     val a = dbActionBean.getActionById(requestId)
     val res: mutable.Buffer[AnalysisResult] = results map {

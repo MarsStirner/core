@@ -5,12 +5,12 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.entity.model.{JobTicket, OrgStructure, Action, Job}
 import java.util.{Calendar, Date}
 import java.text.SimpleDateFormat
+import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 
 /**
  * Методы для работы с Job

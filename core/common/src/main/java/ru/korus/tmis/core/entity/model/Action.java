@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.*;
 
 @Entity
-@Table(name = "Action", catalog = "", schema = "")
+@Table(name = "Action")
 @NamedQueries(
         {
                 @NamedQuery(name = "Action.findAll", query = "SELECT a FROM Action a"),

@@ -4,7 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
-import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal;
+import ru.korus.tmis.core.database.common.DbUUIDBeanLocal;
 import ru.korus.tmis.core.service.interfaces.PatientService;
 
 import javax.ejb.EJB;

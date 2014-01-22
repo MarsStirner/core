@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
 import ru.korus.tmis.core.entity.model.fd.ClientFlatDirectory;
+import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -12,7 +13,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 @Entity
-@Table(name = "Client", catalog = "", schema = "")
+@Table(name = "Client")
 @NamedQueries(
         {
                 @NamedQuery(name = "Patient.findAll", query = "SELECT p FROM Patient p"),

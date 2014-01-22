@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "ClientFDProperty", catalog = "", schema = "")
+@Table(name = "ClientFDProperty")
 @NamedQueries(
         {
                 @NamedQuery(name = "ClientFDProperty.findAll", query = "SELECT cp FROM ClientFDProperty cp")

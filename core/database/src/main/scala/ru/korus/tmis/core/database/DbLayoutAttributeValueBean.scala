@@ -7,7 +7,7 @@ import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
 import scala.collection.JavaConversions._
-import ru.korus.tmis.util.I18nable
+import ru.korus.tmis.scala.util.I18nable
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

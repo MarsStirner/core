@@ -18,7 +18,7 @@ import org.hl7.v3.POCDMT000040LabeledDrug;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -619,7 +619,7 @@ public class SyncWith1C {
                                     em.flush();
                                     ++updateCount;
                                 } catch (ParseException ex) {
-                                    logger.info("Wrong date format '{}', drug code: '{}', storage: '{}'", goods.getBestBefore(), drugRlsCode, rbStorage.getUuid());
+                                    //logger.info("Wrong date format '{}', drug code: '{}', storage: '{}'", goods.getBestBefore(), "" + drugRlsCode, rbStorage.getUuid());
                                 } catch (NumberFormatException ex) {
                                     logger.info("Wrong dosage format for drug # {}: {}",drugRlsCode, ex );
                                     res += "Wrong storage value format for drug #" + drugRlsCode + ": " + goods.getQty().getValue() + EOL;

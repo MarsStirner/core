@@ -22,7 +22,7 @@ import java.util.Date;
  *         Date: 07.09.13 14:10
  */
 @Entity
-@Table(name = "ClientIdentification", catalog = "", schema = "")
+@Table(name = "ClientIdentification")
 @XmlType(name = "clientidentification")
 @XmlRootElement(name = "clientidentification")
 public class ClientIdentification implements Serializable, Cloneable {

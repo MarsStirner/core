@@ -2,7 +2,7 @@
 package ru.korus.tmis.laboratory.bak.ws.client;
 
 import ru.korus.tmis.laboratory.bak.BakSendService;
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;

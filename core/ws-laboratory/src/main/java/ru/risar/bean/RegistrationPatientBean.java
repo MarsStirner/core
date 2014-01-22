@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbClientContactBeanLocal;
 import ru.korus.tmis.core.database.DbClientDocumentBeanLocal;
 import ru.korus.tmis.core.database.DbClientPolicyBeanLocal;
-import ru.korus.tmis.core.database.DbPatientBeanLocal;
+import ru.korus.tmis.core.database.common.DbPatientBeanLocal;
 import ru.korus.tmis.core.database.DbRbContactTypeBeanLocal;
 import ru.korus.tmis.core.database.DbRbDocumentTypeBeanLocal;
 import ru.korus.tmis.core.database.DbRbPolicyTypeBeanLocal;

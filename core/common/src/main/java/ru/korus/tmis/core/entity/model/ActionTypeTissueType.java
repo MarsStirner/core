@@ -12,7 +12,7 @@ import java.io.Serializable;
  * Since: 1.0.0.64
  */
 @Entity
-@Table(name = "ActionType_TissueType", catalog = "", schema = "")
+@Table(name = "ActionType_TissueType")
 @NamedQueries(
         {
                 @NamedQuery(name = "ActionTypeTissueType.findAll", query = "SELECT attp FROM ActionTypeTissueType attp")

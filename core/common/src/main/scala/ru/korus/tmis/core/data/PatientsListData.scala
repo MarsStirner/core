@@ -5,11 +5,11 @@ import reflect.BeanProperty
 import scala.collection.JavaConversions._
 import java.util.{Calendar, Date, LinkedList}
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.map.annotate.JsonView
 import collection.JavaConversions
 import collection.immutable.ListMap
 import java.util
+import ru.korus.tmis.scala.util.ConfigManager
 
 object PatientsListDataViews {
   class AttendingDoctorView {}

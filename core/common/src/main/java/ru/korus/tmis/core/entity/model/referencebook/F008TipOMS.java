@@ -13,7 +13,7 @@ import java.util.Date;
  * allows it to be passed by value through a remote interface.
  */
 @Entity
-@Table(name = "rb_F008_TipOMS", catalog = "", schema = "")
+@Table(name = "rb_F008_TipOMS")
 public class F008TipOMS implements Serializable {
     /**
      * Код типа документа, подтверждающего факт страхования по ОМС

@@ -6,7 +6,8 @@ import java.util.Date
 
 import DataConverter._
 
-import ru.korus.tmis.util.Defaultible._
+import ru.korus.tmis.scala.util.Defaultible
+import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
 
 sealed case class BiomaterialInfo(

@@ -7,7 +7,7 @@ import java.util.GregorianCalendar;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "AssignmentHour", catalog = "", schema = "")
+@Table(name = "AssignmentHour")
 public class AssignmentHour
         implements Serializable, Cloneable {
 

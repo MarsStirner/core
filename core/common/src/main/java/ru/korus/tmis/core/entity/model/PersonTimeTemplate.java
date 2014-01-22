@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "Person_TimeTemplate", catalog = "", schema = "")
+@Table(name = "Person_TimeTemplate")
 @NamedQueries(
         {
                 @NamedQuery(name = "PersonTimeTemplate.findAll", query = "SELECT ptt FROM PersonTimeTemplate ptt")

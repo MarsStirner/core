@@ -2,7 +2,6 @@ package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.entity.model.{Nomenclature, RbAnalysisStatus, DbEnumerable}
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.util.I18nable
 
 import javax.annotation.{Resource, PostConstruct}
 import javax.ejb._
@@ -12,6 +11,7 @@ import javax.transaction.UserTransaction
 
 import grizzled.slf4j.Logging
 import scala.collection.JavaConversions._
+import ru.korus.tmis.scala.util.I18nable
 
 @Startup
 @Interceptors(Array(classOf[LoggingInterceptor]))

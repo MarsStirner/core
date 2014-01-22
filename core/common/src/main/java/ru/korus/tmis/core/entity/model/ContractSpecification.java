@@ -14,7 +14,7 @@ import java.io.Serializable;
  */
 
 @Entity
-@Table(name = "Contract_Specification", catalog = "", schema = "")
+@Table(name = "Contract_Specification")
 @NamedQueries(
         {
                 @NamedQuery(name = "ContractSpecification.findAll", query = "SELECT c FROM ContractSpecification c")

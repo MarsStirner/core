@@ -5,8 +5,7 @@ import java.util.Date;
 import javax.ejb.Local;
 
 import ru.korus.tmis.core.data.DocumentContainer;
-import ru.korus.tmis.core.entity.model.ClientDocument;
-import ru.korus.tmis.core.entity.model.ClientSocStatus;
+import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;

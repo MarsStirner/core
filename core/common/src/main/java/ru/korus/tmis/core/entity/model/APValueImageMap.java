@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "ActionProperty_ImageMap", catalog = "", schema = "")
+@Table(name = "ActionProperty_ImageMap")
 @NamedQueries(
         {
                 @NamedQuery(name = "APValueImageMap.findAll", query = "SELECT a FROM APValueImageMap a")

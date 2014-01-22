@@ -6,12 +6,12 @@ import reflect.BeanProperty
 import java.util.{Calendar, Date}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.reflect.{LoggingManager, TmisLogging}
-import ru.korus.tmis.util.{I18nable, ConfigManager}
 import java.text.SimpleDateFormat
 import java.util.LinkedList
 import scala.collection.JavaConversions._
 import java.util
 import collection.JavaConversions
+import ru.korus.tmis.scala.util.ConfigManager
 
 /**
  * Контейнер с данными о заборе биоматериала

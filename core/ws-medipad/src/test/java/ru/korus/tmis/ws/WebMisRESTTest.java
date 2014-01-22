@@ -7,16 +7,13 @@ import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.*;
 import org.mockito.runners.MockitoJUnitRunner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.data.*;
-import ru.korus.tmis.core.database.DbOrgStructureBeanLocal;
-import ru.korus.tmis.core.database.DbRbBloodTypeBeanLocal;
+import ru.korus.tmis.core.database.common.DbOrgStructureBeanLocal;
+import ru.korus.tmis.core.database.common.DbRbBloodTypeBeanLocal;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 import static org.mockito.Mockito.*;

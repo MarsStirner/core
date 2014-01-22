@@ -14,11 +14,12 @@ import ru.korus.tmis.core.exception.CoreException
 import org.slf4j.{LoggerFactory, Logger}
 import org.codehaus.jackson.map.ObjectMapper
 import ru.korus.tmis.core.data.{PatientsListRequestData, JobTicketStatusDataList, TakingOfBiomaterialRequesData, TakingOfBiomaterialRequesDataFilter}
-import ru.korus.tmis.core.database.{DbActionPropertyBeanLocal, DbJobTicketBeanLocal}
+import ru.korus.tmis.core.database.{DbJobTicketBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import java.util
 import java.util.Date
 import ru.korus.tmis.test.data.{TestDataEntity, TestDataEntityImpl}
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal
 
 /**
  * Author:      Ivan Dmitriev <br>

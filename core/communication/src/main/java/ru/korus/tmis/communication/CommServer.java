@@ -14,6 +14,7 @@ import ru.korus.tmis.communication.thriftgen.OrgStructure;
 import ru.korus.tmis.communication.thriftgen.Queue;
 import ru.korus.tmis.communication.thriftgen.Speciality;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.common.*;
 import ru.korus.tmis.core.database.epgu.EPGUTicketBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Patient;

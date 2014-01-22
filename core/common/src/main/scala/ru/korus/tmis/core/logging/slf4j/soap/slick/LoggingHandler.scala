@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.logging.slf4j.soap.slick
 
-import ru.korus.tmis.util.I18nable
 
 import java.io.ByteArrayOutputStream
 import javax.xml.ws.handler.MessageContext
@@ -9,7 +8,9 @@ import javax.xml.ws.handler.soap.{SOAPHandler, SOAPMessageContext}
 import grizzled.slf4j.Logging
 import javax.servlet.http.HttpServletRequest
 
-import ru.korus.tmis.util.General.nullity_implicits
+import ru.korus.tmis.scala.util.{General, I18nable}
+import General.nullity_implicits
+import ru.korus.tmis.scala.util.I18nable
 
 // slf4j to soap logging adapter, logging only ips
 class LoggingHandler

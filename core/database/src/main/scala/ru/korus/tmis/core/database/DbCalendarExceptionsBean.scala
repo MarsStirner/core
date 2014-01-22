@@ -3,7 +3,6 @@ package ru.korus.tmis.core.database
 import javax.ejb.Stateless
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, I18nable, CAPids}
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.exception.CoreException
@@ -11,6 +10,7 @@ import java.util.{Calendar, Date}
 import ru.korus.tmis.core.entity.model.CalendarExceptions
 import scala.collection.JavaConversions._
 import java.text.SimpleDateFormat
+import ru.korus.tmis.scala.util.{CAPids, I18nable}
 
 /**
  * Created with IntelliJ IDEA.

@@ -4,13 +4,13 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.RbQuotaStatus
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.ListDataFilter
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 /**
  * Класс с методами для работы с таблицей s11r64.RbQuotaStatus

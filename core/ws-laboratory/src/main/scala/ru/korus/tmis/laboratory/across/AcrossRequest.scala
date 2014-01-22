@@ -2,10 +2,10 @@ package ru.korus.tmis.laboratory.across
 
 import javax.jws.{HandlerChain, WebService}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.I18nable
 import javax.ejb.EJB
 
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
+import ru.korus.tmis.scala.util.I18nable
 
 /**
  *  Запрос на анализ в ЛИС Акрос

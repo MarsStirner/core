@@ -15,7 +15,7 @@ import java.util.Date;
  */
 
 @Entity
-@Table(name = "CalendarExceptions", catalog = "", schema = "")
+@Table(name = "CalendarExceptions")
 @NamedQueries(
         {
                 @NamedQuery(name = "CalendarExceptions.findAll", query = "SELECT ce FROM CalendarExceptions ce")

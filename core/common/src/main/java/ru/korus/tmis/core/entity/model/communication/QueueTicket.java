@@ -15,7 +15,7 @@ import java.util.Date;
  * Description: Таблица для сохранения всех записей на прием к врачу (также созданных не через КС (компонента связи))<br>
  */
 @Entity
-@Table(name = "EPGUTickets", catalog = "", schema = "")
+@Table(name = "EPGUTickets")
 @NamedQueries(
         {
                 @NamedQuery(name = "QueueTicket.findAll", query = "SELECT t FROM QueueTicket t"),

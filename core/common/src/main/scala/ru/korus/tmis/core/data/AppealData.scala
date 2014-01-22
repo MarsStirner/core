@@ -7,7 +7,6 @@ import ru.korus.tmis.core.entity.model._
 import fd.FDRecord
 import kladr.{Street, Kladr}
 import collection.JavaConversions._
-import ru.korus.tmis.util.{I18nable, ConfigManager}
 
 import java.util.{Date, HashMap, LinkedList}
 import javax.xml.bind.annotation.XmlRootElement._
@@ -16,6 +15,7 @@ import org.codehaus.jackson.annotate.{JsonAutoDetect, JsonMethod, JsonIgnoreProp
 import collection.mutable.LinkedHashSet
 import java.util
 import collection.JavaConversions
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 /**
  * Dynamic Filters

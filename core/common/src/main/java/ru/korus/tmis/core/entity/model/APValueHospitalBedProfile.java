@@ -15,7 +15,7 @@ import java.io.Serializable;
  */
 
 @Entity
-@Table(name = "ActionProperty_HospitalBedProfile", catalog = "", schema = "")
+@Table(name = "ActionProperty_HospitalBedProfile")
 @NamedQueries(
         {
                 @NamedQuery(name = "APValueHospitalBedProfile.findAll", query = "SELECT a FROM APValueHospitalBedProfile a")

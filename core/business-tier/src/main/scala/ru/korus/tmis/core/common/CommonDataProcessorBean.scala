@@ -3,11 +3,11 @@ package ru.korus.tmis.core.common
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
+import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.event._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.util.{I18nable, StringId, ConfigManager}
 
 import grizzled.slf4j.Logging
 import java.lang.String
@@ -21,8 +21,8 @@ import scala.collection.JavaConversions._
 import java.util.{Calendar, Date}
 import java.util
 import ru.korus.tmis.core.patient.DiagnosisBeanLocal
-import ru.korus.tmis.util.StringId
 import scala.Some
+import ru.korus.tmis.scala.util.{StringId, I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

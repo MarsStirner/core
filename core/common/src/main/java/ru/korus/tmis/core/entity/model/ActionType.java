@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "ActionType", catalog = "", schema = "")
+@Table(name = "ActionType")
 @NamedQueries(
         {
                 @NamedQuery(name = "ActionType.findAll", query = "SELECT a FROM ActionType a"),

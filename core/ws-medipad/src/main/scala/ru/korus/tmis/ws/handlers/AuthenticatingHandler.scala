@@ -2,7 +2,6 @@ package ru.korus.tmis.ws.handlers
 
 import ru.korus.tmis.core.auth.{TmisShiroRealm, TmisShiroToken, AuthToken, AuthStorageBeanLocal}
 import ru.korus.tmis.core.exception.{FaultBean, AuthenticationException}
-import ru.korus.tmis.util.{I18nable, ConfigManager}
 
 import grizzled.slf4j.Logging
 import java.util.Date
@@ -13,6 +12,7 @@ import javax.xml.ws.handler.soap.{SOAPMessageContext, SOAPHandler}
 import javax.xml.ws.soap.SOAPFaultException
 import org.apache.shiro.SecurityUtils
 import org.apache.shiro.mgt.DefaultSecurityManager
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 class AuthenticatingHandler
   extends SOAPHandler[SOAPMessageContext]

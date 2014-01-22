@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "ActionProperty_rbReasonOfAbsence", catalog = "", schema = "")
+@Table(name = "ActionProperty_rbReasonOfAbsence")
 @NamedQueries(
         {
                 @NamedQuery(name = "APValueRbReasonOfAbsence.findAll", query = "SELECT a FROM APValueRbReasonOfAbsence a")

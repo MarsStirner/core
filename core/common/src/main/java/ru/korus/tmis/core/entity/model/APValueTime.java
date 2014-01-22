@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "ActionProperty_Time", catalog = "", schema = "")
+@Table(name = "ActionProperty_Time")
 @NamedQueries(
         {
                 @NamedQuery(name = "APValueTime.findAll", query = "SELECT a FROM APValueTime a")

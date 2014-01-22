@@ -1,18 +1,19 @@
 package ru.korus.tmis.core.database
 
+import common.DbPatientBeanLocal
 import grizzled.slf4j.Logging
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.ejb.{EJB, Stateless}
 import java.lang.Iterable
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import java.util.Date
 import ru.korus.tmis.core.exception.NoSuchClientRelationException
 import ru.korus.tmis.core.data.{RelationEntryContainer, ClientContactContainer}
 import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientRelation}
 import scala.collection.JavaConversions._
 import scala.util.control.Breaks._
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

@@ -1,6 +1,7 @@
 package ru.korus.tmis.core
 
 import auth.AuthData
+import database.common._
 import entity.model._
 import exception.CoreException
 import org.junit.runner.RunWith
@@ -14,7 +15,6 @@ import patient.{AppealBeanLocal, AppealBean, DiagnosisBeanLocal, HospitalBedBean
 import org.slf4j.{LoggerFactory, Logger}
 import org.junit.{Assert, Test, Before}
 import data._
-import ru.korus.tmis.util.ConfigManager
 import ru.korus.tmis.test.data.{TestDataEntity, TestDataEntityImpl}
 import org.codehaus.jackson.map.ObjectMapper
 import scala.collection.JavaConversions._
@@ -22,6 +22,7 @@ import java.util.Date
 import javax.persistence.EntityManager
 import java.util
 import collection.JavaConversions
+import ru.korus.tmis.scala.util.ConfigManager
 
 /**
  * Author:      Ivan Dmitriev <br>

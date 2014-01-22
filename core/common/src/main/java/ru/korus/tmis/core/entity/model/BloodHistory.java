@@ -13,7 +13,7 @@ import java.util.Date;
  * Since: 1.0.1.1
  */
 @Entity
-@Table(name = "BloodHistory", catalog = "", schema = "")
+@Table(name = "BloodHistory")
 @NamedQueries(
         {
           @NamedQuery(name = "BloodHistory.findAll", query = "SELECT bh FROM BloodHistory bh"),

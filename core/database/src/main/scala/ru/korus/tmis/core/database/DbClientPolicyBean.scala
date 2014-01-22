@@ -1,17 +1,18 @@
 package ru.korus.tmis.core.database
 
+import common.DbOrganizationBeanLocal
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import java.lang.Iterable
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.ejb.{EJB, Stateless}
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import java.util.Date
 import ru.korus.tmis.core.entity.model.{RbPolicyType, Staff, Patient, ClientPolicy}
 import ru.korus.tmis.core.exception.{CoreException, NoSuchOrganisationException, NoSuchClientPolicyException}
 import scala.collection.JavaConversions._
 import java.util
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

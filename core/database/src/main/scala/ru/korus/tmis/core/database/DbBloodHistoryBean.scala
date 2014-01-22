@@ -1,16 +1,17 @@
 package ru.korus.tmis.core.database
 
+import common.{DbRbBloodTypeBeanLocal, DbPatientBeanLocal}
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.BloodHistory
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.exception.CoreException
 import java.util.Date
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "EventType", catalog = "", schema = "")
+@Table(name = "EventType")
 @NamedQueries(
         {
                 @NamedQuery(name = "EventType.findAll", query = "SELECT e FROM EventType e"),

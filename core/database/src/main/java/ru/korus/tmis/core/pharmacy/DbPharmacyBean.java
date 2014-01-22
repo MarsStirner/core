@@ -3,9 +3,9 @@ package ru.korus.tmis.core.pharmacy;
 import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
-import ru.korus.tmis.core.database.DbActionPropertyTypeBeanLocal;
-import ru.korus.tmis.core.database.DbManagerBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyTypeBeanLocal;
+import ru.korus.tmis.core.database.common.DbManagerBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
@@ -29,7 +29,7 @@ import java.util.List;
  * Company: Korus Consulting IT<br>
  * Description: Работа с таблицей Pharmacy<br>
  */
-@Interceptors(LoggingInterceptor.class)
+//@Interceptors(LoggingInterceptor.class)
 @Stateless
 public class DbPharmacyBean implements DbPharmacyBeanLocal {
 
