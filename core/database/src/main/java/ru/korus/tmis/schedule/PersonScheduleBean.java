@@ -615,7 +615,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
         //У врача нету талончиков на запрошенную дату.
         logger.warn("Doctor has no tickets to this date:[{}]", paramsDateTime);
         return new EnqueuePatientResult().setSuccess(false)
-                .setMessage(CommunicationErrors.msgTicketNotFound.getMessage() + "  [" + paramsDateTime.toString() + "]");
+                .setMessage(CommunicationErrors.msgTicketNotFound.getMessage());
     }
 
     /**

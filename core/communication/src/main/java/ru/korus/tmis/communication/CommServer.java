@@ -8,6 +8,8 @@ import org.joda.time.DateMidnight;
 import org.joda.time.DateTimeZone;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.communication.thriftgen.Address;
 import ru.korus.tmis.communication.thriftgen.OrgStructure;
@@ -37,6 +39,7 @@ import java.util.*;
 public class CommServer implements Communications.Iface {
     //Logger
     private static final Logger logger = LoggerFactory.getLogger(CommServer.class);
+    //private static final Marker LOGGING_SUBSYSTEM_MARKER = MarkerFactory.getMarker("LOGGING_SUBSYSTEM_MARKER");
     //Beans
     private static DbOrgStructureBeanLocal orgStructureBean = null;
     private static DbPatientBeanLocal patientBean = null;
@@ -254,7 +257,7 @@ public class CommServer implements Communications.Iface {
 //        }
         personScheduleBean.takeConstraintsOnTickets(currentSchedule, CommunicationHelper.getTypeOfQuota(params));
         final Amb result = ParserToThriftStruct.parsePersonScheduleToAmb(currentSchedule);
-        logger.info("End of #{} TimeAndStatus. Return \"{}\" as result.",
+        logger.info("End of #{} getWorkTimeAndStatus. Return \"{}\" as result.",
                 currentRequestNum, result);
         return result;
     }

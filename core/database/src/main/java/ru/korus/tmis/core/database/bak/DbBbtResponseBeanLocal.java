@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database.bak;
 
 import ru.korus.tmis.core.entity.model.bak.BbtResponse;
 
+import javax.annotation.CheckForNull;
 import javax.ejb.Local;
 
 /**
@@ -15,6 +16,7 @@ public interface DbBbtResponseBeanLocal {
 
     void add(final BbtResponse bbtResponse);
 
+    @CheckForNull
     BbtResponse get(final Integer id);
 
     void remove(final int id);

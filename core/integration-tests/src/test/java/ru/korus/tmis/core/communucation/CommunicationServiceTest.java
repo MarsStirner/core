@@ -58,9 +58,10 @@ public class CommunicationServiceTest {
     }
 
     @AfterClass
-    public void closeConnection() {
+    public void closeConnection() throws InterruptedException {
         transport.close();
         logger.warn("End of all communication component test suite. Closing transport... ");
+        Thread.sleep(10000);
     }
 
     @Test(enabled = true)

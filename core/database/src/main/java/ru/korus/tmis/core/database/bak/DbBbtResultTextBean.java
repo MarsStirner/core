@@ -3,7 +3,6 @@ package ru.korus.tmis.core.database.bak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.bak.BbtResultText;
-import ru.korus.tmis.core.entity.model.bak.RbAntibiotic;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -34,6 +33,13 @@ public class DbBbtResultTextBean implements DbBbtResultTextBeanLocal {
         List<BbtResultText> antibioticList =
                 em.createQuery("SELECT a FROM BbtResultText a WHERE a.id = :id", BbtResultText.class).setParameter("id", id).getResultList();
         return !antibioticList.isEmpty() ? antibioticList.get(0) : null;
+    }
+
+    @Override
+    public Iterable<BbtResultText> getByActionId(Integer actionId) {
+        List<BbtResultText> antibioticList =
+                em.createQuery("SELECT a FROM BbtResultText a WHERE a.actionId = :actionId", BbtResultText.class).setParameter("actionId", actionId).getResultList();
+        return antibioticList;
     }
 
     @Override

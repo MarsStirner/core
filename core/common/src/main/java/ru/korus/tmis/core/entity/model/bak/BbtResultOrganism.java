@@ -2,6 +2,8 @@ package ru.korus.tmis.core.entity.model.bak;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -30,6 +32,10 @@ public class BbtResultOrganism implements Serializable {
     @Basic(optional = false)
     @Column(name = "concentration")
     private String concentration;
+
+    @OneToMany(mappedBy = "bbtResultOrganism")
+    @JoinColumn(name = "organism_id", referencedColumnName = "bbtResult_Organism_id")
+    private List<BbtOrganismSensValues> sensValues = new ArrayList<BbtOrganismSensValues>();
 
     public BbtResultOrganism() {
     }
@@ -64,6 +70,14 @@ public class BbtResultOrganism implements Serializable {
 
     public String getConcentration() {
         return concentration;
+    }
+
+    public List<BbtOrganismSensValues> getSensValues() {
+        return sensValues;
+    }
+
+    public void setSensValues(List<BbtOrganismSensValues> sensValues) {
+        this.sensValues = sensValues;
     }
 
     @Override
