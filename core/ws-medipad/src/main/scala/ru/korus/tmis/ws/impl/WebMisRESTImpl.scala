@@ -14,14 +14,15 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.WebMisREST
 import javax.ejb.EJB
 import ru.korus.tmis.core.database._
-import common._
+import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.patient._
 import scala.collection.JavaConversions._
 import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
 import scala.Predef._
 
-import ru.korus.tmis.util.StringId
+import ru.korus.tmis.scala.util._
+import ru.korus.tmis.core.database.bak.{DbBbtResultOrganismBeanLocal, DbBbtResponseBeanLocal, DbBbtResultTextBeanLocal}
 
 /**
  * User: idmitriev
