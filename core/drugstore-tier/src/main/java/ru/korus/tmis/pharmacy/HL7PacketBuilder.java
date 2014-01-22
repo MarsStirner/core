@@ -546,8 +546,10 @@ public final class HL7PacketBuilder {
         author.setTime(createTS(new Date(), DATE_FORMAT));
         final POCDMT000040AssignedAuthor assignedAuthor = FACTORY_HL7.createPOCDMT000040AssignedAuthor();
         // UUID автора медицинского документа
-        assignedAuthor.getId().add(createII(executorStaff.getUuid().getUuid()));
-
+        final ru.korus.tmis.core.entity.model.UUID uuidStaff = executorStaff.getUuid();
+        if(uuidStaff != null) {
+            assignedAuthor.getId().add(createII(uuidStaff.getUuid()));
+        }
 
         final POCDMT000040Person assignedPerson = FACTORY_HL7.createPOCDMT000040Person();
         //ФИО автора медицинского документа
