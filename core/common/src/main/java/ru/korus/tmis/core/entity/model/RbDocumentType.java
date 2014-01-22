@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "rbDocumentType", catalog = "", schema = "")
+@Table(name = "rbDocumentType")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbDocumentType.findAll", query = "SELECT r FROM RbDocumentType r"),

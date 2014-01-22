@@ -9,11 +9,15 @@ import java.util.Locale;
 import java.util.PropertyResourceBundle;
 import java.util.ResourceBundle;
 
-class Utf8ResourceBundleControl extends ResourceBundle.Control {
+public class Utf8ResourceBundleControl extends ResourceBundle.Control {
     static String BUNDLE_EXTENSION = "properties";
 
     static final Utf8ResourceBundleControl Singleton =
             new Utf8ResourceBundleControl();
+
+    static  public Utf8ResourceBundleControl Singleton() {
+         return Singleton;
+    }
 
     private Utf8ResourceBundleControl() {
         //

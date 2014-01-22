@@ -3,6 +3,7 @@ package ru.korus.tmis.communication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.common.*;
 import ru.korus.tmis.core.database.epgu.EPGUTicketBeanLocal;
 import ru.korus.tmis.schedule.PatientQueueBeanLocal;
 import ru.korus.tmis.schedule.PersonScheduleBeanLocal;

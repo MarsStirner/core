@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "Contract_Tariff", catalog = "", schema = "")
+@Table(name = "Contract_Tariff")
 @NamedQueries(
         {
                 @NamedQuery(name = "ContractTariff.findAll", query = "SELECT ct FROM ContractTariff ct")

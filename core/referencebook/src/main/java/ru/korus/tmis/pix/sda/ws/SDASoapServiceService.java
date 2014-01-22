@@ -1,7 +1,7 @@
 
 package ru.korus.tmis.pix.sda.ws;
 
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 import java.net.MalformedURLException;
 import java.net.URL;

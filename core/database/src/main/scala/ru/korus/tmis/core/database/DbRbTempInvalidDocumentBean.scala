@@ -4,12 +4,12 @@ import ru.korus.tmis.core.entity.model.RbTempInvalidDocument
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
 import java.lang.Iterable
 import ru.korus.tmis.core.exception.NoSuchRbTempInvalidDocumentException
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

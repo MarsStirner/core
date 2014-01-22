@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Description:  <br>
  */
 @Entity
-@Table(name = "Pharmacy", catalog = "", schema = "")
+@Table(name = "Pharmacy")
 public class Pharmacy implements Serializable {
 
     private static final long serialVersionUID = 1L;

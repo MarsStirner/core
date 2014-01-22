@@ -8,9 +8,11 @@ import java.lang.{Integer => JInteger}
 
 import DataConverter._
 
-import ru.korus.tmis.util.General.nullity_implicits
+import ru.korus.tmis.scala.util.{General, Defaultible}
+import General.nullity_implicits
 import java.util
-import ru.korus.tmis.util.Defaultible._
+import ru.korus.tmis.scala.util.Defaultible
+import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
 
 sealed case class BiomaterialInfo(

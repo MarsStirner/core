@@ -4,15 +4,16 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
-import ru.korus.tmis.util.ConfigManager._
+import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
+import ConfigManager._
 import ru.korus.tmis.core.database._
+import common._
 import java.{lang, util}
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.exception.CoreException

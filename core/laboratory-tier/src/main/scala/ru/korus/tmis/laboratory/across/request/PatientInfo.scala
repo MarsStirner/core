@@ -2,13 +2,15 @@ package ru.korus.tmis.laboratory.across.request
 
 import ru.korus.tmis.laboratory.across.{ws => lab2}
 
-import ru.korus.tmis.util.General.nullity_implicits
+import ru.korus.tmis.scala.util.{General, Defaultible}
+import General.nullity_implicits
 
 import DataConverter._
 import java.util.Date
 import ru.korus.tmis.core.entity.model.Sex
 import java.util
-import ru.korus.tmis.util.Defaultible._
+import ru.korus.tmis.scala.util.Defaultible
+import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
 
 sealed case class PatientInfo(

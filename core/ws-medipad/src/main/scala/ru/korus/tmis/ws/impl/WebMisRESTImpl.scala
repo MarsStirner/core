@@ -1,5 +1,6 @@
 package ru.korus.tmis.ws.impl
 
+import _root_.ru.korus.tmis.core.patient.SeventhFormBeanLocal
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
 import org.codehaus.jackson.map.ObjectMapper
@@ -13,14 +14,15 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.WebMisREST
 import javax.ejb.EJB
 import ru.korus.tmis.core.database._
+import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.patient._
 import scala.collection.JavaConversions._
 import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
 import scala.Predef._
 
-import ru.korus.tmis.core.database.bak._
-import ru.korus.tmis.util.StringId
+import ru.korus.tmis.scala.util._
+import ru.korus.tmis.core.database.bak.{DbBbtResultOrganismBeanLocal, DbBbtResponseBeanLocal, DbBbtResultTextBeanLocal}
 
 /**
  * User: idmitriev

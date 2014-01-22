@@ -14,7 +14,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "ActionProperty_Double", catalog = "", schema = "")
+@Table(name = "ActionProperty_Double")
 @NamedQueries(
         {
                 @NamedQuery(name = "APValueDouble.findAll", query = "SELECT a FROM APValueDouble a")

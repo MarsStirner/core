@@ -4,10 +4,11 @@ import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.common.{CommonDataProcessorBeanLocal, TypeFilterBeanLocal}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
+import common.{DbCustomQueryLocal, DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.util.ConfigManager
-import ru.korus.tmis.util.ConfigManager.APWI
+import ru.korus.tmis.scala.util.ConfigManager
+import ConfigManager.APWI
 
 import grizzled.slf4j.Logging
 import java.util.Date
@@ -17,6 +18,7 @@ import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.core.entity.model.{ActionPropertyWrapper, ActionWrapper, ActionPropertyType, Nomenclature}
+import ru.korus.tmis.scala.util.ConfigManager
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

@@ -1,7 +1,8 @@
 package ru.korus.tmis.laboratory.altey.request
 
-import ru.korus.tmis.util.Defaultible
-import ru.korus.tmis.util.Defaultible.defaultValue
+import ru.korus.tmis.scala.util.Defaultible
+import Defaultible.defaultValue
+import ru.korus.tmis.scala.util.Defaultible
 
 object Utility {
   def setAsOptional[A](v: Option[A])(lam: A => Unit) = v match {

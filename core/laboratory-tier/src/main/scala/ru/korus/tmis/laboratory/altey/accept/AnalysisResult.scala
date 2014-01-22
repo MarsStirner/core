@@ -3,7 +3,8 @@ package ru.korus.tmis.laboratory.altey.accept
 import java.util.Date
 import ru.korus.tmis.laboratory.altey.{accept2 => lab}
 
-import ru.korus.tmis.util.Variant.{EitherOf4, Variant3, Variant2, Variant1, Variant0}
+import ru.korus.tmis.scala.util.Variant
+import Variant.{EitherOf4, Variant3, Variant2, Variant1, Variant0}
 import scala.collection.JavaConversions._
 
 

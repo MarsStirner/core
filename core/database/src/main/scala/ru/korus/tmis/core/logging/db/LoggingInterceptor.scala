@@ -1,11 +1,11 @@
 package ru.korus.tmis.core.logging.db
 
-import ru.korus.tmis.core.database.InternalLoggerBeanLocal
 
 import javax.ejb.EJB
 import javax.interceptor.{AroundInvoke, InvocationContext}
 
 import grizzled.slf4j.Logging
+import ru.korus.tmis.core.database.common.InternalLoggerBeanLocal
 
 class LoggingInterceptor extends Logging {
 

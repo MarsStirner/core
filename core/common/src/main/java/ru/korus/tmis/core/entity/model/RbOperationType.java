@@ -13,7 +13,7 @@ import java.io.Serializable;
  * To change this template use File | Settings | File Templates.
  */
 @Entity
-@Table(name = "rbOperationType", catalog = "", schema = "")
+@Table(name = "rbOperationType")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbOperationType.findAll", query = "SELECT ot FROM RbOperationType ot"),

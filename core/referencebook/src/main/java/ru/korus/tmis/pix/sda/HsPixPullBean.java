@@ -2,14 +2,14 @@ package ru.korus.tmis.pix.sda;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
-import ru.korus.tmis.core.database.DbOrganizationBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.pix.sda.ws.SDASoapServiceService;
 import ru.korus.tmis.pix.sda.ws.SDASoapServiceServiceSoap;
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;

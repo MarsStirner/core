@@ -6,11 +6,10 @@ import ru.korus.tmis.core.data.CommonData;
 import ru.korus.tmis.core.data.CommonGroup;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.util.StringId;
+import ru.korus.tmis.scala.util.StringId;
 import scala.Function1;
 import scala.Function2;
 
-import java.util.Calendar;
 import java.util.List;
 import java.util.Set;
 import javax.ejb.Local;

@@ -12,7 +12,7 @@ import java.util.List;
  * Description:  <br>
  */
 @Entity
-@Table(name = "bbtResult_Organism", catalog = "", schema = "")
+@Table(name = "bbtResult_Organism")
 public class BbtResultOrganism implements Serializable {
 
     @Id

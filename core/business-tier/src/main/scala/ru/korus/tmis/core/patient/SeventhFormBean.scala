@@ -1,15 +1,15 @@
 package ru.korus.tmis.core.patient
 
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import scala.collection.JavaConversions._
 import javax.ejb.{EJB, Stateless}
 import java.text.SimpleDateFormat
 import java.util.{TimeZone, Calendar, Date, List}
 import ru.korus.tmis.core.data.{SeventhFormRequestData, FormOfAccountingMovementOfPatientsData}
-import ru.korus.tmis.core.database.DbOrgStructureBeanLocal
 import scala.collection.JavaConverters._
+import ru.korus.tmis.scala.util.{CAPids, I18nable}
+import ru.korus.tmis.core.database.common.DbOrgStructureBeanLocal
 
 
 /**

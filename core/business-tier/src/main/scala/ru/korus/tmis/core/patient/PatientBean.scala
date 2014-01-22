@@ -3,6 +3,7 @@ package ru.korus.tmis.core.patient
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
+import common._
 import ru.korus.tmis.core.entity.model._
 
 import grizzled.slf4j.Logging
@@ -10,11 +11,9 @@ import java.lang.{Double => JDouble}
 import javax.ejb.{EJB, Stateless}
 import javax.interceptor.Interceptors
 
-import kladr.{Street, Kladr}
 import scala.collection.JavaConversions._
 import java.util.{Calendar, LinkedList, Date}
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.CoreException
 import org.codehaus.jackson.map.ObjectMapper
 import javax.ejb._
@@ -22,6 +21,8 @@ import scala.util.control.Breaks._
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import java.util
 import util.Calendar
+import ru.korus.tmis.scala.util.{General, I18nable, ConfigManager}
+import ru.korus.tmis.core.entity.model.kladr.{Street, Kladr}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -107,7 +108,7 @@ class PatientBean
   }
 
   def getCurrentPatientsForDepartment(userData: AuthData) = {
-    import ru.korus.tmis.util.General.nullity_implicits
+    import General.nullity_implicits
 
     val id = userData.user.getOrgStructure ?!! { _.getId.intValue } getOrElse {
       throw new CoreException(i18n("error.user.noOrgStructureFound"))

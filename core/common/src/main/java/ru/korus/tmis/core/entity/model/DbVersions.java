@@ -4,7 +4,7 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 @Entity
-@Table(name = "Versions", catalog = "", schema = "")
+@Table(name = "Versions")
 @NamedQueries(
         {
                 @NamedQuery(name = "DbVersions.findAll",

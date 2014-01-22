@@ -9,7 +9,7 @@ import ru.korus.tmis.core.entity.model.referencebook.*;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.dao.*;
 import ru.korus.tmis.hs.wss.AuthentificationHeaderHandlerResolver;
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.utils.DateUtil;
 import wsdl.NsiService;
 

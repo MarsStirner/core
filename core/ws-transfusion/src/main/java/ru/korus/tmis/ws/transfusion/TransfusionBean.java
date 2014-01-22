@@ -8,7 +8,7 @@ import javax.xml.ws.WebServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
 import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService_Service;
 import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;

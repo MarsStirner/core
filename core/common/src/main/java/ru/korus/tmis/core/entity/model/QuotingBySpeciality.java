@@ -11,7 +11,7 @@ import java.io.Serializable;
  * Company Korus Consulting IT<br>
  */
 @Entity
-@Table(name = "QuotingBySpeciality", catalog = "", schema = "")
+@Table(name = "QuotingBySpeciality")
 @NamedQueries(
         {
                 @NamedQuery(name = "QuotingBySpeciality.findAll", query = "SELECT o FROM QuotingBySpeciality o"),
@@ -43,7 +43,7 @@ public class QuotingBySpeciality implements Serializable {
     private Speciality speciality;
 
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne//(fetch = FetchType.LAZY)
     @JoinColumn(name = "organisation_id")
     private Organisation organisation;
 

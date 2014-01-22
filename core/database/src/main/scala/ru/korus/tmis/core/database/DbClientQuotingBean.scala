@@ -1,9 +1,9 @@
 package ru.korus.tmis.core.database
 
+import common.DbOrgStructureBeanLocal
 import javax.interceptor.Interceptors
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.{EntityManager, PersistenceContext}
 import java.util.Date
@@ -12,6 +12,7 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.exception.CoreException
 import javax.swing.table.TableModel
 import ru.korus.tmis.util.reflect.TmisLogging
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 /**
  * Класс с методами для работы с таблицей s11r64.Client_Quoting

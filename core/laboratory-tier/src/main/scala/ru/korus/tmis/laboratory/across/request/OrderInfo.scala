@@ -5,9 +5,10 @@ import java.util.{List => JList}
 import ru.korus.tmis.laboratory.across.{ws => lab2}
 
 import scala.collection.JavaConversions._
-import ru.korus.tmis.util.Defaultible._
-import ru.korus.tmis.util.Defaultible
+import ru.korus.tmis.scala.util.Defaultible
+import Defaultible._
 import ru.korus.tmis.laboratory.across.ws.Tindicator
+import ru.korus.tmis.scala.util.Defaultible
 
 sealed case class OrderInfo(
                              diagnosticCode: Option[String] = None,

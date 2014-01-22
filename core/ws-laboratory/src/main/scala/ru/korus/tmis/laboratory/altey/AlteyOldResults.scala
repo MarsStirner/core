@@ -2,19 +2,19 @@ package ru.korus.tmis.laboratory.altey
 
 import grizzled.slf4j.Logging
 
-import ru.korus.tmis.util.I18nable
 import javax.ejb.EJB
 import ru.korus.tmis.laboratory.altey.accept._
 
 
-import ru.korus.tmis.util.General.catchy
+import ru.korus.tmis.scala.util.{Types, General, I18nable}
+import General.catchy
 import ru.korus.tmis.core.exception.CoreException
 import javax.jws.{HandlerChain, WebService}
 
-import ru.korus.tmis.util.General.nullity_implicits
+import General.nullity_implicits
 
 
-import ru.korus.tmis.util.Types._
+import Types._
 import ru.korus.tmis.laboratory.altey.business.AlteyBusinessBeanLocal
 
 /**

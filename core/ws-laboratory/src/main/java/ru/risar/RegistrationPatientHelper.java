@@ -1,7 +1,7 @@
 package ru.risar;
 
 import ru.korus.tmis.core.database.DbClientPolicyBeanLocal;
-import ru.korus.tmis.core.database.DbPatientBeanLocal;
+import ru.korus.tmis.core.database.common.DbPatientBeanLocal;
 import ru.korus.tmis.core.entity.model.ClientPolicy;
 import ru.korus.tmis.core.entity.model.RbPolicyType;
 import ru.korus.tmis.core.exception.CoreException;

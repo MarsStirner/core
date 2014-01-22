@@ -13,7 +13,7 @@ import java.util.Date;
  * allows it to be passed by value through a remote interface.
  */
 @Entity
-@Table(name = "rb_O004_Okfs", catalog = "", schema = "")
+@Table(name = "rb_O004_Okfs")
 public class O004Okfs implements Serializable {
     /**
      * Код позиции

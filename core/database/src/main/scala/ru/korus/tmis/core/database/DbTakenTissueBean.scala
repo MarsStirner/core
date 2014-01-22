@@ -1,16 +1,17 @@
 package ru.korus.tmis.core.database
 
+import common.DbManagerBeanLocal
 import scala.collection.JavaConversions._
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{FlushModeType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.entity.model.{ActionTypeTissueType, Action, Event, TakenTissue}
 import java.util.Date
 import javax.annotation.Nullable
+import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 
 /**
  * Методы для работы с TakenTissueJournal
