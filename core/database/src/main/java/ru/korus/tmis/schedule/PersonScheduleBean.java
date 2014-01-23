@@ -670,8 +670,10 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             queueAction.setDeleted(true);
             queueAction.setModifyDatetime(new Date());
             em.merge(queueAction);
+            em.flush();
             //Выставляем флаг удаления у соответствующего события пользователя
-            logger.debug("Action deleted.\n Deleting Event[{}]", queueEvent.getId());
+            logger.debug("Action deleted.");
+            logger.debug("Deleting Event[{}]", queueEvent.getId());
             queueEvent.setDeleted(true);
             queueEvent.setModifyDatetime(new Date());
             em.merge(queueEvent);
