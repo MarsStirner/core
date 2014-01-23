@@ -22,7 +22,7 @@ import ru.korus.tmis.util.TextUtils;
  */
 
 @Entity
-@Table(name = "ActionProperty_Reference", catalog = "", schema = "")
+@Table(name = "ActionProperty_Reference")
 @NamedQueries(
         {
                 @NamedQuery(name = "APValueReference.findAll", query = "SELECT a FROM APValueReference a")

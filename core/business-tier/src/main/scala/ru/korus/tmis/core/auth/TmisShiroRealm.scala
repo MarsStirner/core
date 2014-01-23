@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.auth
 
 import ru.korus.tmis.core.entity.model.Role
-import ru.korus.tmis.util.ConfigManager
 
 import org.apache.shiro.authc.{SimpleAuthenticationInfo, AuthenticationToken}
 import org.apache.shiro.authz.SimpleAuthorizationInfo
@@ -10,6 +9,7 @@ import org.apache.shiro.subject.PrincipalCollection
 
 import grizzled.slf4j.Logging
 import scala.collection.JavaConversions._
+import ru.korus.tmis.scala.util.ConfigManager
 
 class TmisShiroRealm
   extends AuthorizingRealm

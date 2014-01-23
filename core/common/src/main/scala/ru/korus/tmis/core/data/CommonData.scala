@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.data
 
-import ru.korus.tmis.util.ConfigManager
 
 import reflect.BeanProperty
 import java.lang.Integer
@@ -11,6 +10,7 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import java.util
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
 import javax.management.remote.rmi._RMIConnectionImpl_Tie
+import ru.korus.tmis.scala.util.ConfigManager
 
 @XmlType(name = "entities")
 @XmlRootElement(name = "entities")
@@ -160,6 +160,13 @@ class CommonEntity {
     this.flatCode = flatCode
   }
 
+  var mnem: String = _
+
+  @XmlAttribute(name = "mnem")
+  def getMnem():String = mnem
+
+  def setMnem(mnem: String) = this.mnem = mnem
+
   private def this(id: Integer,
                    name: String,
                    eType: String,
@@ -208,9 +215,11 @@ class CommonEntity {
            eTypeId: Integer,
            status: Integer,
            code: String,
-           flatCode: String) = {
+           flatCode: String,
+           mnem: String) = {
     this(id, version, name, eType, eTypeId, status, code)
     this.flatCode = flatCode
+    this.mnem = mnem
   }
 
   @BeanProperty

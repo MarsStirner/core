@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "FDFieldType", catalog = "", schema = "")
+@Table(name = "FDFieldType")
 @NamedQueries(
         {
                 @NamedQuery(name = "FDFieldType.findAll", query = "SELECT ft FROM FDFieldType ft")

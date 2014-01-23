@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
+import ru.korus.tmis.core.entity.model.fd.APValueFlatDirectory;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;

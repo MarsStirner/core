@@ -2,7 +2,6 @@ package ru.korus.tmis.ws.impl
 
 import ru.korus.tmis.core.exception.{CoreException, AuthenticationException}
 import ru.korus.tmis.ws.medipad.AuthenticationWebService
-import ru.korus.tmis.util.I18nable
 import java.lang.String
 import javax.ejb.EJB
 import javax.jws.{HandlerChain, WebService}
@@ -11,6 +10,7 @@ import javax.inject.Named
 import ru.korus.tmis.core.database.DbStaffBeanLocal
 import ru.korus.tmis.core.auth.{AuthToken, AuthData, AuthStorageBeanLocal}
 import ru.korus.tmis.core.data.{DoctorSpecsContainer, StaffEntity, RoleData}
+import ru.korus.tmis.scala.util.I18nable
 
 
 @Named

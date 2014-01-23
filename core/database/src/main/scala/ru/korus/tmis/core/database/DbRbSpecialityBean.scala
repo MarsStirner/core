@@ -4,12 +4,12 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.I18nable
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.Speciality
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import ru.korus.tmis.core.filter.ListDataFilter
+import ru.korus.tmis.scala.util.I18nable
 
 /**
  * Created with IntelliJ IDEA.

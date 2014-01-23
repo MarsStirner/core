@@ -3,7 +3,6 @@ package ru.korus.test.common;
 import static org.junit.Assert.*;
 
 import java.io.File;
-import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
@@ -24,7 +23,7 @@ import org.jboss.arquillian.container.test.api.*;
 
 import ru.korus.tmis.core.database.*;
 
-import ru.korus.tmis.core.entity.model.ClientAllergy;
+import ru.korus.tmis.core.database.common.*;
 import ru.korus.tmis.core.entity.model.ClientDocument;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.RbSocStatusType;
@@ -86,8 +85,8 @@ public class CommonTestCase {
                 ClientFlatDirectory.class, ClientFDProperty.class,
 
                 ru.korus.tmis.core.logging.LoggingInterceptor.class,
-                ru.korus.tmis.core.database.InternalLoggerBeanLocal.class,
-                ru.korus.tmis.core.database.InternalLoggerBean.class
+                InternalLoggerBeanLocal.class,
+                InternalLoggerBean.class
         };
 
         /*

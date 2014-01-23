@@ -1,6 +1,6 @@
 package ru.korus.tmis.ws.transfusion.efive;
 
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 import java.net.MalformedURLException;
 import java.net.URL;

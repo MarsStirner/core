@@ -23,7 +23,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 
 @Entity
-@Table(name = "rbDocumentTypeGroup", catalog = "", schema = "")
+@Table(name = "rbDocumentTypeGroup")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbDocumentTypeGroup.findAll", query = "SELECT r FROM RbDocumentTypeGroup r")

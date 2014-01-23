@@ -6,13 +6,13 @@ import javax.xml.bind.annotation.XmlRootElement._
 import reflect.BeanProperty
 import java.util.{Calendar, Date, LinkedList}
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.util.{I18nable, ConfigManager}
 import scala.collection.JavaConversions._
 import java.text.SimpleDateFormat
 import org.codehaus.jackson.map.annotate.JsonView
 import collection.JavaConversions
 import java.util
 import org.codehaus.jackson.map.ObjectMapper
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 /**
  * Типы возможных View для сериализации данных в контейнерах ReceivedPatients

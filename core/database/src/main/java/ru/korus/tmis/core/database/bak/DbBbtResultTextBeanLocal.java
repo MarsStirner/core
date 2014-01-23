@@ -18,5 +18,7 @@ public interface DbBbtResultTextBeanLocal {
 
     BbtResultText get(final Integer id);
 
+    Iterable<BbtResultText> getByActionId(Integer actionId);
+
     void removeByActionId(int actionId);
 }

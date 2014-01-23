@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Description:  <br>
  */
 @Entity
-@Table(name = "bbtOrganism_SensValues", catalog = "", schema = "")
+@Table(name = "bbtOrganism_SensValues")
 public class BbtOrganismSensValues implements Serializable {
 
     @Id
@@ -19,13 +19,13 @@ public class BbtOrganismSensValues implements Serializable {
     @Column(name = "id")
     private Integer id;
 
-    @Basic(optional = false)
-    @Column(name = "bbtResult_Organism_id")
-    private Integer bbtResultOrganismId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "bbtResult_Organism_id")
+    private BbtResultOrganism bbtResultOrganism;
 
-    @Basic(optional = false)
-    @Column(name = "antibiotic_id")
-    private Integer antibioticId;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "antibiotic_id", unique = true, nullable = false)
+    private RbAntibiotic antibioticId;
 
     @Basic(optional = false)
     @Column(name = "MIC")
@@ -42,11 +42,15 @@ public class BbtOrganismSensValues implements Serializable {
         this.id = id;
     }
 
-    public void setBbtResultOrganismId(Integer bbtResultOrganismId) {
-        this.bbtResultOrganismId = bbtResultOrganismId;
+    public void setBbtResultOrganism(BbtResultOrganism bbtResultOrganism) {
+        this.bbtResultOrganism = bbtResultOrganism;
     }
 
-    public void setAntibioticId(Integer antibioticId) {
+    public BbtResultOrganism getBbtResultOrganism() {
+        return bbtResultOrganism;
+    }
+
+    public void setAntibioticId(RbAntibiotic antibioticId) {
         this.antibioticId = antibioticId;
     }
 
@@ -62,11 +66,7 @@ public class BbtOrganismSensValues implements Serializable {
         return id;
     }
 
-    public Integer getBbtResultOrganismId() {
-        return bbtResultOrganismId;
-    }
-
-    public Integer getAntibioticId() {
+    public RbAntibiotic getAntibioticId() {
         return antibioticId;
     }
 
@@ -82,7 +82,7 @@ public class BbtOrganismSensValues implements Serializable {
     public String toString() {
         final StringBuilder sb = new StringBuilder("BbtOrganismSensValues{");
         sb.append("id=").append(id);
-        sb.append(", bbtResultOrganismId=").append(bbtResultOrganismId);
+        sb.append(", bbtResultOrganismId=").append(bbtResultOrganism);
         sb.append(", antibioticId=").append(antibioticId);
         sb.append(", mic='").append(mic).append('\'');
         sb.append(", activity='").append(activity).append('\'');

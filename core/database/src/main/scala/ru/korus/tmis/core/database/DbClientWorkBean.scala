@@ -5,12 +5,12 @@ import javax.ejb.{Stateless, EJB}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.NoSuchEntityException
 import java.util.Date
 import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientWork}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.fd.FDRecord
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

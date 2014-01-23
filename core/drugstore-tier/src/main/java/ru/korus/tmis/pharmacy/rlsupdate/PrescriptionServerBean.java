@@ -3,9 +3,15 @@ package ru.korus.tmis.pharmacy.rlsupdate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.common.DbActionBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyTypeBeanLocal;
+import ru.korus.tmis.core.database.common.DbEventBeanLocal;
+import ru.korus.tmis.core.pharmacy.DbDrugChartBeanLocal;
+import ru.korus.tmis.core.pharmacy.DbDrugComponentBeanLocal;
 import ru.korus.tmis.prescription.BalanceOfGoodsInfo;
 import ru.korus.tmis.prescription.PrescriptionServer;
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;

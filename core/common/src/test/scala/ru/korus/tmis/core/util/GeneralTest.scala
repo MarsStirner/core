@@ -1,10 +1,11 @@
 package ru.korus.tmis.core.util
 
 import org.junit.Test
-import ru.korus.tmis.util.{General, Types}
 
 import org.junit.Assert._
+import ru.korus.tmis.scala.util.{Types, General}
 import Types.{JLinked, JDouble, JInteger}
+import ru.korus.tmis.scala.util.General
 
 // this is no error, we override standard scala assert to junit one
 

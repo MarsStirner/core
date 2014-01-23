@@ -8,13 +8,13 @@ import org.junit.{Assert, Test, Before}
 import org.mockito.Mockito._
 import org.mockito.Matchers._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.database.DbPatientBeanLocal
 import ru.korus.tmis.core.patient.PatientBeanLocal
 import ru.korus.tmis.core.entity.model.kladr.{Street, Kladr}
 import java.util
 import org.slf4j.{LoggerFactory, Logger}
 import ru.korus.tmis.test.data.{TestDataEntityImpl, TestDataEntity}
 import ru.korus.tmis.core.data.BloodHistoryData
+import ru.korus.tmis.core.database.common.DbPatientBeanLocal
 
 /**
  * Author:      mmakankov <br>

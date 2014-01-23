@@ -21,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
 import ru.korus.tmis.util.PublicClonable;
 
 @Entity
-@Table(name = "ActionPropertyType", catalog = "", schema = "")
+@Table(name = "ActionPropertyType")
 @NamedQueries(
 {
         @NamedQuery(name = "ActionPropertyType.findAll", query = "SELECT a FROM ActionPropertyType a")

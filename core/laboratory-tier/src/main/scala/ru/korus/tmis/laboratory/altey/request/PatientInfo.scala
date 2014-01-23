@@ -6,7 +6,8 @@ import ru.korus.tmis.laboratory.altey.{ws => lab}
 import DataConverter._
 import java.util.Date
 import ru.korus.tmis.core.entity.model.Sex
-import ru.korus.tmis.util.Defaultible._
+import ru.korus.tmis.scala.util.Defaultible
+import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
 
 sealed case class PatientInfo(

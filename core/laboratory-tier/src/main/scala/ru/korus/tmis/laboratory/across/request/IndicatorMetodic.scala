@@ -2,10 +2,12 @@ package ru.korus.tmis.laboratory.across.request
 
 import ru.korus.tmis.laboratory.across.{ws => lab2}
 
-import ru.korus.tmis.util.General.nullity_implicits
+import ru.korus.tmis.scala.util.{General, Defaultible}
+import General.nullity_implicits
 
 import DataConverter._
-import ru.korus.tmis.util.Defaultible._
+import ru.korus.tmis.scala.util.Defaultible
+import Defaultible._
 
 
 sealed case class IndicatorMetodic(

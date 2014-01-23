@@ -3,11 +3,11 @@ package ru.korus.tmis.core.common
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
+import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.event._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.util.{I18nable, StringId, ConfigManager}
 
 import grizzled.slf4j.Logging
 import java.lang.String
@@ -21,8 +21,8 @@ import scala.collection.JavaConversions._
 import java.util.{Calendar, Date}
 import java.util
 import ru.korus.tmis.core.patient.DiagnosisBeanLocal
-import ru.korus.tmis.util.StringId
 import scala.Some
+import ru.korus.tmis.scala.util.{StringId, I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -619,7 +619,8 @@ class CommonDataProcessorBean
         at.getGroupId,
         null,
         at.getCode,
-        at.getFlatCode)
+        at.getFlatCode,
+        at.getMnemonic)
       val group = new CommonGroup
       dbActionType.getActionTypePropertiesById(at.getId.intValue).foreach(
         (apt) => group add converter(apt)
@@ -647,7 +648,8 @@ class CommonDataProcessorBean
         at.getId.intValue(),
         null,
         at.getCode,
-        at.getFlatCode)
+        at.getFlatCode,
+        at.getMnemonic)
       //***
       val group0 = new CommonGroup(0, "Summary")
       var a = new Action()
@@ -736,7 +738,8 @@ class CommonDataProcessorBean
           action.getActionType.getId,
           action.getStatus,
           action.getActionType.getCode,
-          action.getActionType.getFlatCode)
+          action.getActionType.getFlatCode,
+          action.getActionType.getMnemonic)
       )((entity, converter) => entity add converter(action))
     })
   }

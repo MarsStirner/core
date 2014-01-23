@@ -14,7 +14,7 @@ import java.util.Date;
  * allows it to be passed by value through a remote interface.
  */
 @Entity
-@Table(name = "rb_F002_SMO", catalog = "", schema = "")
+@Table(name = "rb_F002_SMO")
 public class F002Smo implements Serializable {
     /**
      * Код субъекта РФ по ОКАТО, где зарегистрирована СМО

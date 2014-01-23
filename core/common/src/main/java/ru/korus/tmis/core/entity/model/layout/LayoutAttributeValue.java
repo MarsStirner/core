@@ -16,7 +16,7 @@ import java.io.Serializable;
  * Since: 1.0.1.10
  */
 @Entity
-@Table(name = "LayoutAttributeValue", catalog = "", schema = "")
+@Table(name = "LayoutAttributeValue")
 @NamedQueries({
         @NamedQuery(name = "LayoutAttributeValue.findByActionPropertyTypeId", query = "SELECT lov FROM LayoutAttributeValue lov WHERE lov.actionPropertyType.id = :id")})
 @XmlType(name = "layoutAttributeValue")

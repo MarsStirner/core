@@ -10,8 +10,8 @@ import ru.korus.tmis.core.entity.model.Setting
 import collection.mutable.Buffer
 
 import java.util.{List => JList}
-import ru.korus.tmis.util.I18nable
 import java.util
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Startup
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -31,7 +31,7 @@ with I18nable {
   }
 
   def load_settings = {
-    import ru.korus.tmis.util.ConfigManager._
+    import ConfigManager._
     import collection.JavaConversions._
     val settings: Buffer[Setting] = tmis_core.createNamedQuery[Setting]("Setting.findAll", classOf[Setting]).getResultList.toBuffer
 

@@ -11,7 +11,7 @@ import java.util.Date;
  * Description:  <br>
  */
 @Entity
-@Table(name = "bbtResult_Table", catalog = "", schema = "")
+@Table(name = "bbtResult_Table")
 public class BbtResultTable implements Serializable {
 
     @Id

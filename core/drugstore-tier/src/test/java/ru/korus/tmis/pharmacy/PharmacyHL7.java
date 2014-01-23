@@ -93,9 +93,9 @@ public class PharmacyHL7 {
         doctor.setSpeciality(speciality);
 
         logger.info("Start test 1C Pharmacy integration with patameter: " +
-                "Action {}, Patient {}, clientUUID {}, externalId {}, externalUUUID {}, " +
-                "orgUUID {}, org2UUID {}, staff {}",
-                action, client, clientUUID, externalId, externalUUID, orgUUID, orgUUID2, doctor);
+                "Action " + action + ", Patient " + client + ", clientUUID " + clientUUID +
+                ", externalId " + externalId + ", externalUUUID " + externalUUID + ", " +
+                "orgUUID " + orgUUID + ", org2UUID " + orgUUID2 + ", staff " +  doctor);
     }
 
 

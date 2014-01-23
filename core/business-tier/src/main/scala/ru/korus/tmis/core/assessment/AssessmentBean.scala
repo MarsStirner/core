@@ -4,10 +4,11 @@ import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.common.{CommonDataProcessorBeanLocal, TypeFilterBeanLocal}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
+import common.{DbCustomQueryLocal, DbActionPropertyBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.util.{ConfigManager, I18nable}
-import ru.korus.tmis.util.ConfigManager.APWI
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import ConfigManager.APWI
 
 import grizzled.slf4j.Logging
 import javax.ejb.{EJB, Stateless}

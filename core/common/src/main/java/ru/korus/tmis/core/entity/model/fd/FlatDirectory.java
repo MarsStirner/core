@@ -10,7 +10,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "FlatDirectory", catalog = "", schema = "")
+@Table(name = "FlatDirectory")
 @NamedQueries(
         {
                 @NamedQuery(name = "FlatDirectory.findAll", query = "SELECT fd FROM FlatDirectory fd")

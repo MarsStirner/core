@@ -18,7 +18,7 @@ import java.util.Date;
                 @NamedQuery(name = "DrugChart.findByEvent", query = "SELECT i FROM DrugChart i WHERE i.action.event.id = :eventId")
         })
 @Entity
-@Table(name = "DrugChart", catalog = "", schema = "")
+@Table(name = "DrugChart")
 public class DrugChart {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -39,7 +39,6 @@ public class DrugChart {
     @Temporal(TemporalType.TIMESTAMP)
     private Date begDateTime;
 
-    @Basic(optional = false)
     @Column(name = "endDateTime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDateTime;

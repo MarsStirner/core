@@ -7,7 +7,7 @@ import java.util.Date;
 import java.util.List;
 
 @Entity
-@Table(name = "OrgStructure_Address", catalog = "", schema = "")
+@Table(name = "OrgStructure_Address")
 @NamedQueries(
         {
                 @NamedQuery(name = "OrgStructureAddress.findAll", query = "SELECT o FROM OrgStructureAddress o"),

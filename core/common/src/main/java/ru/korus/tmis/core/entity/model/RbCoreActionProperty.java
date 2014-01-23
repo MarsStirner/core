@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "rbCoreActionProperty", catalog = "", schema = "")
+@Table(name = "rbCoreActionProperty")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbCoreActionProperty.findAll", query = "SELECT cap FROM RbCoreActionProperty cap")

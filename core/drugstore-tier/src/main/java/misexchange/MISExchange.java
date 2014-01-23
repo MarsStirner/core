@@ -2,7 +2,7 @@
 package misexchange;
 
 import ru.korus.tmis.core.database.DbSettingsBeanLocal;
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.util.reflect.Configuration;
 
 import javax.ejb.EJB;

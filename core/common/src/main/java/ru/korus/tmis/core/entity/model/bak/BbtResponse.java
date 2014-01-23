@@ -10,7 +10,7 @@ import java.io.Serializable;
  * Description:  <br>
  */
 @Entity
-@Table(name = "bbtResponse", catalog = "", schema = "")
+@Table(name = "bbtResponse")
 public class BbtResponse implements Serializable {
 
     /**
