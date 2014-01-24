@@ -3,6 +3,7 @@ package ru.korus.tmis.core.data
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import reflect.BeanProperty
 import java.util.{LinkedList, Date}
+import java.{lang => jl}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.{JobTicket, ActionStatus, Staff, Action}
 import ru.korus.tmis.core.filter.AbstractListDataFilter
@@ -161,7 +162,7 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
   var urgent: Int = _
 
   @BeanProperty
-  var mnemonic: String = _
+  var mnemonic: Iterable[String] = _
 
   @BeanProperty
   var clazz: Short = -1
@@ -170,8 +171,6 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
 
   def this(code_x: String,
            eventId: Int,
-           //diagnosticDate: Long,
-           //directionDate: Long,
            plannedEndDate: Long,
            diagnosticName: String,
            assignPersonId: Int,
@@ -180,7 +179,7 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
            statusId: Int,
            urgent: Int,
            diaType_x: String,
-           mnemonic: String,
+           mnemonic: jl.Iterable[String],
            clazz: Short) {
 
     this()
@@ -206,8 +205,6 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
       }
     }
     this.eventId = eventId
-    //this.diagnosticDate = if (diagnosticDate == 0) null else new Date(diagnosticDate)
-    //this.directionDate = if (directionDate == 0) null else new Date(directionDate)
     this.plannedEndDate = if (plannedEndDate == 0) null else new Date(plannedEndDate)
     this.diagnosticName = diagnosticName
     this.assignPersonId = assignPersonId
@@ -268,8 +265,8 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
       qs.add("urgent", (this.urgent != 0): java.lang.Boolean)
     }
     if (this.mnemonic != null && !this.mnemonic.isEmpty) {
-      qs.query += "AND a.actionType.mnemonic = :mnemonic\n"
-      qs.add("mnemonic", this.mnemonic)
+      qs.query += "AND a.actionType.mnemonic IN :mnemonic\n"
+      qs.add("mnemonic", asJavaCollection(this.mnemonic))
     }
     if (this.clazz >= 0) {
       qs.query += "AND a.actionType.clazz = :clazz\n"
@@ -282,8 +279,6 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
       case "plannedEndDate" => {"a.plannedEndDate %s".format(sortingMethod)}
-      //case "directionDate" => {"a.directionDate %s".format(sortingMethod)}
-      //case "diagnosticDate" => {"a.endDate %s".format(sortingMethod)}
       case "diagnosticName" => {"a.actionType.name %s".format(sortingMethod)}
       case "execPerson" => {"a.executor.lastName %s, a.executor.firstName %s, a.executor.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
       case "assignPerson" => {"a.assigner.lastName %s, a.assigner.firstName %s, a.assigner.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}

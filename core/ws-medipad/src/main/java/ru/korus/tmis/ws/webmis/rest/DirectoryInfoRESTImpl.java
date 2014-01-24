@@ -497,7 +497,7 @@ public class DirectoryInfoRESTImpl {
             public String getMnemonic() { return "LAB";}
         },
         BAK_LABORATORY("bak_lab") {
-            public String getSubType() { return "bak_laboratory";}
+            public String getSubType() { return "laboratory";}
             public String getMnemonic() { return "BAK_LAB";}
         },
         DIAG("diag"){
