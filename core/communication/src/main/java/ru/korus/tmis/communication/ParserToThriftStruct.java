@@ -2,9 +2,15 @@ package ru.korus.tmis.communication;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.communication.thriftgen.Organization;
-import ru.korus.tmis.communication.thriftgen.PatientInfo;
+import ru.korus.tmis.communication.thriftgen.*;
+import ru.korus.tmis.communication.thriftgen.Address;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.OrgStructure;
+import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.communication.QueueTicket;
+import ru.korus.tmis.schedule.*;
+import ru.korus.tmis.schedule.Ticket;
+
 
 /**
  * User: EUpatov<br>
@@ -22,25 +28,18 @@ public final class ParserToThriftStruct {
     private ParserToThriftStruct() {
     }
 
-    public static PatientInfo parsePatientInfo(final Patient item) {
-        if (item == null) {
-            logger.warn("Parser: NullPointer patient item. Return \"null\"");
-            return null;
-        }
-        final PatientInfo result = new PatientInfo().setFirstName(item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
-        result.setSex(item.getSex()).setBirthDate(DateConvertions.convertDateToUTCMilliseconds(item.getBirthDate()));
-        return result;
-    }
-
     public static ru.korus.tmis.communication.thriftgen.Patient parsePatient(final Patient item) {
         if (item == null) {
             logger.warn("Parser: NullPointer patient item. Return \"null\"");
             return null;
         }
-        final ru.korus.tmis.communication.thriftgen.Patient result =
-                new ru.korus.tmis.communication.thriftgen.Patient().setFirstName(
-                        item.getFirstName()).setLastName(item.getLastName()).setPatrName(item.getPatrName());
-        result.setSex(item.getSex()).setBirthDate(item.getBirthDate().getTime()).setId(item.getId());
+        final ru.korus.tmis.communication.thriftgen.Patient result = new ru.korus.tmis.communication.thriftgen.Patient()
+                .setFirstName(item.getFirstName())
+                .setLastName(item.getLastName())
+                .setPatrName(item.getPatrName())
+                .setSex(item.getSex())
+                .setBirthDate(DateConvertions.convertDateToUTCMilliseconds(item.getBirthDate()))
+                .setId(item.getId());
         return result;
     }
 
@@ -104,12 +103,11 @@ public final class ParserToThriftStruct {
             logger.warn("Parser: NullPointer Speciality item. Return \"null\"");
             return null;
         }
-        final ru.korus.tmis.communication.thriftgen.Speciality speciality = new ru.korus.tmis.communication.thriftgen.Speciality()
+        return new ru.korus.tmis.communication.thriftgen.Speciality()
                 .setTicketsAvailable(item.getCouponsRemaining())
                 .setTicketsPerMonths(item.getCouponsQuote())
                 .setSpeciality(item.getSpeciality().getName())
                 .setId(item.getSpeciality().getId());
-        return speciality;
     }
 
     public static ru.korus.tmis.communication.thriftgen.Organization parseOrganisation(final Organisation item) {
@@ -117,19 +115,123 @@ public final class ParserToThriftStruct {
             logger.warn("Parser: NullPointer Organisation item. Return \"null\"");
             return null;
         }
-        final ru.korus.tmis.communication.thriftgen.Organization result = new Organization()
+        return new Organization()
                 .setFullName(item.getFullName()).setAddress(item.getAddress()).setInfisCode(item.getInfisCode())
                 .setShortName(item.getShortName());
+    }
+
+    public static QueueCoupon parseQueueCoupon(final QueueTicket item) {
+        if (item == null || item.getPerson() == null || item.getPatient() == null) {
+            logger.warn("Parser: NullPointer Speciality item. Return \"null\"");
+            return null;
+        }
+        final ru.korus.tmis.communication.thriftgen.Patient patient =
+                new ru.korus.tmis.communication.thriftgen.Patient(item.getPatient().getId())
+                        .setBirthDate(DateConvertions.convertDateToUTCMilliseconds(item.getPatient().getBirthDate()))
+                        .setLastName(item.getPatient().getLastName())
+                        .setFirstName(item.getPatient().getFirstName())
+                        .setPatrName(item.getPatient().getPatrName())
+                        .setSex(item.getPatient().getSex());
+        final QueueCoupon coupon = new QueueCoupon()
+                .setUuid(item.getQueueAction().getId().toString())
+                .setPersonId(item.getPerson().getId())
+                .setPatient(patient)
+                .setBegDateTime(DateConvertions.convertDateToUTCMilliseconds(item.getBegDateTime()))
+                .setEndDateTime(DateConvertions.convertDateToUTCMilliseconds(item.getEndDateTime()));
+        if (item.getOffice() != null && !item.getOffice().isEmpty()) {
+            coupon.setOffice(item.getOffice());
+        }
+        if (QueueTicket.Status.NEW.toString().equals(item.getStatus())) {
+            coupon.setStatus(CouponStatus.NEW);
+        } else if (QueueTicket.Status.CANCELLED.toString().equals(item.getStatus())) {
+            coupon.setStatus(CouponStatus.CANCELLED);
+        } else {
+            logger.error("QueueTicket[{}] has unknown Status = {}", item.getId(), item.getStatus());
+        }
+        return coupon;
+    }
+
+    public static TTicket parseTTicket(final PersonScheduleBean.PersonSchedule schedule, final Ticket ticket) {
+        final TTicket result = new TTicket();
+        result.setDate(DateConvertions.convertDateToUTCMilliseconds(schedule.getAmbulatoryDate()));
+        result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(ticket.getBegTime()));
+        result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(ticket.getEndTime()));
+        result.setOffice(schedule.getOffice());
+        result.setAvailable(ticket.isAvailable());
+        result.setFree(ticket.isFree());
+        result.setTimeIndex(ticket.getTimeCellIndex());
+        final Patient patient = ticket.getPatient();
+        if (patient != null) {
+            result.setPatientId(patient.getId());
+            result.setPatientInfo(new StringBuilder(patient.getLastName()).append(' ')
+                    .append(patient.getFirstName()).append(' ').append(patient.getPatrName()).toString());
+        } else {
+            result.setPatientId(0);
+        }
         return result;
     }
 
-    public static String convertDotPatternToSQLLikePattern(final String dotPattern) {
-        if (dotPattern != null && dotPattern.length() > 0) {
-            return dotPattern.replaceAll("(\\.{3})|(\\*)", "%").replaceAll("\\.", "_");
-        } else {
-            return "";
+    public static Schedule parsePersonSchedule(final PersonScheduleBean.PersonSchedule schedule) {
+        final Schedule result = new Schedule();
+        result.setAvailable(schedule.isAvailable());
+        result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getBegTime()));
+        result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getEndTime()));
+        result.setOffice(schedule.getOffice());
+        result.setPlan(schedule.getPlan());
+        result.setDate(DateConvertions.convertDateToUTCMilliseconds(schedule.getAmbulatoryDate()));
+        for (Ticket currentTicket : schedule.getTickets()) {
+            result.addToTickets(parseTTicket(schedule, currentTicket));
         }
+        return result;
     }
 
+    @Deprecated
+    public static Amb parsePersonScheduleToAmb(final PersonScheduleBean.PersonSchedule schedule) {
+        final Amb result = new Amb();
+        result.setAvailable(schedule.isAvailable() ? 1 : 0);
+        result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getBegTime()));
+        result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(schedule.getEndTime()));
+        result.setOffice(schedule.getOffice());
+        result.setPlan(schedule.getPlan());
+        for (Ticket currentTicket : schedule.getTickets()) {
+            result.addToTickets(parseTicket(currentTicket));
+        }
+        return result;
+    }
 
+    @Deprecated
+    private static ru.korus.tmis.communication.thriftgen.Ticket parseTicket(Ticket ticket) {
+        final ru.korus.tmis.communication.thriftgen.Ticket result = new ru.korus.tmis.communication.thriftgen.Ticket();
+        result.setAvailable(ticket.isAvailable() ? 1 : 0);
+        result.setFree(ticket.isFree() ? 1 : 0);
+        result.setTime(DateConvertions.convertDateToUTCMilliseconds(ticket.getBegTime()));
+        final Patient patient = ticket.getPatient();
+        if (patient != null) {
+            result.setPatientId(patient.getId());
+            result.setPatientInfo(new StringBuilder(patient.getLastName()).append(' ')
+                    .append(patient.getFirstName()).append(' ').append(patient.getPatrName()).toString());
+        } else {
+            result.setPatientId(0);
+        }
+        return result;
+    }
+
+    public static EnqueuePatientStatus parseEnqueuePatientResult(final EnqueuePatientResult item) {
+        final EnqueuePatientStatus result = new EnqueuePatientStatus();
+        result.setIndex(item.getIndex()).setMessage(item.getMessage()).setQueueId(item.getQueueId()).setSuccess(item.isSuccess());
+        return result;
+    }
+
+    public static Address parseAddress(final OrgStructure orgStructure, final OrgStructureAddress orgStructureAddress) {
+        final AddressHouse adrHouse = orgStructureAddress.getAddressHouseList();
+        if (adrHouse == null) {
+            return null;
+        }
+        return new Address().setOrgStructureId(orgStructure.getId())
+                .setPointKLADR(adrHouse.getKLADRCode())
+                .setStreetKLADR(adrHouse.getKLADRStreetCode())
+                .setCorpus(adrHouse.getCorpus()).setNumber(adrHouse.getNumber())
+                .setFirstFlat(orgStructureAddress.getFirstFlat())
+                .setLastFlat(orgStructureAddress.getLastFlat());
+    }
 }

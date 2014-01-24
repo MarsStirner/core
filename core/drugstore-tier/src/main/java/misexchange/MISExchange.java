@@ -29,6 +29,8 @@ public class MISExchange
     private final static WebServiceException MISEXCHANGE_EXCEPTION;
     private final static QName MISEXCHANGE_QNAME = new QName("MISExchange", "MISExchange");
 
+    private  static String tmp;
+
     static {
         final String login = ConfigManager.Drugstore().User();
         final String password = ConfigManager.Drugstore().Password();
@@ -45,7 +47,10 @@ public class MISExchange
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL(MISExchange.class.getResource("."), "../MISExchange.wsdl");
+            if (MISExchange.class.getResource("") != null) {
+                tmp = new URL(MISExchange.class.getResource(""), "../MISExchange.wsdl").toString();
+            }
+            url =new URL(MISExchange.class.getResource(""), "../MISExchange.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

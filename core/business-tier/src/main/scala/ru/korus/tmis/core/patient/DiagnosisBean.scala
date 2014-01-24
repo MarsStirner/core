@@ -54,7 +54,6 @@ class DiagnosisBean  extends DiagnosisBeanLocal
     var diagnosis: Diagnosis = null
     var oldDiagnostic: Diagnostic = null
 
-
     val option =
       if(diagnosticId>0) {
         oldDiagnostic = dbDiagnosticBean.getDiagnosticById(diagnosticId)
@@ -79,16 +78,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
 
     option match {
       case ID_CREATE => {
-        var lastDiag = dbDiagnosticBean.getLastDiagnosticByEventIdAndType(eventId, diaTypeFlatCode)
-        if (lastDiag != null) {
-          lastDiag.setDeleted(true)
-          val diagi = lastDiag.getDiagnosis
-          if (diagi != null) {
-            diagi.setDeleted(true)
-            em.merge(diagi)
-          }
-          em.merge(lastDiag)
-        }
+        this.deleteDiagnosis(eventId, diaTypeFlatCode)
         diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(0,
                                                             patient.getId.intValue(),
                                                             diaTypeFlatCode,
@@ -138,21 +128,28 @@ class DiagnosisBean  extends DiagnosisBeanLocal
   def insertDiagnoses(eventId: Int, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: AuthData) = {
 
     var entities = List.empty[AnyRef]
-    mkbs.foreach(f=>f._2.asInstanceOf[java.util.Set[(java.lang.Integer, String, java.lang.Integer, java.lang.Integer, java.lang.Integer)]]
-          .foreach(mkb=>{
-            val value = insertDiagnosis(mkb._1.intValue(),                                    //diagnosticId
-                                        eventId,
-                                        f._1,
-                                        if (mkb._4.intValue() > 0) mkb._4.intValue() else 3,  // characterId     //3,
-                                        mkb._2,                                               // description
-                                        mkb._3.intValue(),                                    // mkbId
-                                        mkb._5.intValue(),                                    // stageId
-                                        userData)
-            if(value._1!= null)
-              entities = value._1 :: entities
-            if(value._2!= null)
-              entities = value._2 :: entities
-    }))
+    mkbs.foreach(f => {
+      val set = f._2.asInstanceOf[java.util.Set[(java.lang.Integer, String, java.lang.Integer, java.lang.Integer, java.lang.Integer)]]
+      if (set==null || set.size()<=0) {   //Значения пустые для диагноза (помечаем как удалены)
+        this.deleteDiagnosis(eventId, f._1)
+      }
+      else {
+        set.foreach(mkb=>{
+          val value = insertDiagnosis(mkb._1.intValue(),                                    //diagnosticId
+            eventId,
+            f._1,
+            if (mkb._4.intValue() > 0) mkb._4.intValue() else 3,  // characterId     //3,
+            mkb._2,                                               // description
+            mkb._3.intValue(),                                    // mkbId
+            mkb._5.intValue(),                                    // stageId
+            userData)
+          if(value._1!= null)
+            entities = value._1 :: entities
+          if(value._2!= null)
+            entities = value._2 :: entities
+        })
+      }
+    })
     entities
   }
 
@@ -179,5 +176,20 @@ class DiagnosisBean  extends DiagnosisBeanLocal
       new DiagnosesListData(diagnostics)
     }
     else new DiagnosesListData()
+  }
+
+  def deleteDiagnosis(eventId: Int,
+                      diaTypeFlatCode: String) = {
+    var lastDiag = dbDiagnosticBean.getLastDiagnosticByEventIdAndType(eventId, diaTypeFlatCode)
+    if (lastDiag != null) {
+      lastDiag.setDeleted(true)
+      val diagi = lastDiag.getDiagnosis
+      if (diagi != null) {
+        diagi.setDeleted(true)
+        em.merge(diagi)
+      }
+      em.merge(lastDiag)
+    }
+    true
   }
 }

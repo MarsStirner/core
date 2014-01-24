@@ -10,7 +10,8 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "EventType", catalog = "", schema = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "EventType.findAll", query = "SELECT e FROM EventType e")
+                @NamedQuery(name = "EventType.findAll", query = "SELECT e FROM EventType e"),
+                @NamedQuery(name = "EventType.getQueueEventType", query = "SELECT e FROM EventType e WHERE e.code = 'queue'")
         })
 @XmlType(name = "eventType")
 @XmlRootElement(name = "eventType")

@@ -71,23 +71,11 @@ class DbEventBean
     em.flush()
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEventById(id: Int) = {
-    val result = em.createQuery(EventByIdQuery,
-      classOf[Event])
-      .setParameter("id", id)
-      .getResultList
-
-    result.size() match {
-      case 0 => {
-        null //ексепшн нужен
-      }
-      case size => {
-        val e = result.get(0)
-        em.detach(e)
-        e
-      }
-    }
+    val e = em.find(classOf[Event], id)
+    if(e != null) em.detach(e)
+    e
   }
 
   def getActionTypeFilter(eventId: Int) = {
@@ -206,6 +194,7 @@ class DbEventBean
     catch {
       case ex: Exception => throw new CoreException("error while creating event ");
     }
+    em.flush()
     newEvent
   }
 
@@ -271,6 +260,55 @@ class DbEventBean
     val result = typed.getResultList
     result.foreach(em.detach(_))
     result
+  }
+
+  def getCountOfAppealsForReceivedPatientByPeriod(filter: Object) = {
+
+    val queryStr: QueryDataStructure = if(filter.isInstanceOf[ReceivedRequestDataFilter]) {
+      filter.asInstanceOf[ReceivedRequestDataFilter].toQueryStructure()
+    }
+    else {new QueryDataStructure()}
+
+    val typed= em.createQuery(AllAppealsWithFilterQuery.format("count(e)", i18n("db.flatDirectory.eventType.hospitalization"), queryStr.query, ""), classOf[Long])
+
+    if(queryStr.data.size()>0) {
+      queryStr.data.foreach(qdp=>typed.setParameter(qdp.name, qdp.value))
+    }
+    typed.getSingleResult
+  }
+
+  def getAllAppealsForReceivedPatientByPeriod (page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+
+    val queryStr: QueryDataStructure = if(filter.isInstanceOf[ReceivedRequestDataFilter]) {
+      filter.asInstanceOf[ReceivedRequestDataFilter].toQueryStructure()
+    }
+    else {new QueryDataStructure()}
+
+    val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
+
+    val q = AllAppealsWithFilterQuery.format("e", i18n("db.flatDirectory.eventType.hospitalization") ,queryStr.query, sorting)
+    val typed = em.createQuery(q, classOf[Event])
+                  .setMaxResults(limit)
+                  .setFirstResult(limit*page)
+
+    if(queryStr.data.size()>0) {
+      queryStr.data.foreach(qdp=>typed.setParameter(qdp.name, qdp.value))
+    }
+
+    val result = typed.getResultList
+    result.foreach(e=>em.detach(e))
+    result
+  }
+
+
+
+  def getEventTypeByCode(code: String): EventType = {
+    val result = em.createQuery(EventTypeByCodeQuery, classOf[EventType])
+      .setParameter("code", code)
+      .getResultList
+    val et = result(0)
+    result.foreach(em.detach(_))
+    et
   }
 
   val EventGetCountRecords = """
@@ -551,12 +589,21 @@ class DbEventBean
       %s
     """
 
-  def getEventTypeByCode(code: String): EventType = {
-    val result = em.createQuery(EventTypeByCodeQuery, classOf[EventType])
-      .setParameter("code", code)
-      .getResultList
-    val et = result(0)
-    result.foreach(em.detach(_))
-    et
-  }
+  val AllAppealsWithFilterQuery = """
+    SELECT %s
+    FROM
+      Event e
+    WHERE
+      e.deleted = 0
+    AND
+      e.eventType.code IN (
+        SELECT fdfv.value
+        FROM
+          FDFieldValue fdfv
+        WHERE
+          fdfv.pk.fdRecord.flatDirectory.id = '%s'
+      )
+    %s
+    %s
+  """
 }

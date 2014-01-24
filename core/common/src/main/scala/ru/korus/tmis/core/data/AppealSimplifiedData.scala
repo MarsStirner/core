@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.data
 
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.util.{Date, LinkedList}
 import javax.xml.bind.annotation.{XmlAttribute, XmlRootElement, XmlType}
 import ru.korus.tmis.util.ConfigManager
@@ -133,7 +133,7 @@ class AppealSimplifiedRequestDataFilter {
     this.code = code
   }
 
-  def toQueryStructure() = {
+  def toQueryStructure = {
     var qs = new QueryDataStructure()
     if(this.patientId>0){
       qs.query += "AND e.patient.id = :patientId\n"
@@ -163,8 +163,10 @@ class AppealSimplifiedRequestDataFilter {
       qs.query += "AND upper(e.externalId) LIKE upper(:number)\n"
       qs.add("number","%"+this.number+"%")
     }
-    qs.query += "AND e.eventType.code IN :code\n"
-    qs.add("code",this.code)
+    if (!this.code.isEmpty) {
+      qs.query += "AND e.eventType.code IN :code\n"
+      qs.add("code",this.code)
+    }
     qs
   }
   def toSortingString (sortingField: String) = {
@@ -212,13 +214,9 @@ class AppealSimplifiedData {
         if(d._1!=null) {
           if(d._1.isInstanceOf[Diagnostic]) {
             this.diagnoses += new DiagnosisContainer(d._1.asInstanceOf[Diagnostic])
-          } else if(d._1.isInstanceOf[ActionProperty]) {
-            val diagnosisKind = d._1.asInstanceOf[ActionProperty].getType.getCode /*getAction.getActionType.getCode match {
-              case "4501" => "clinical"
-              case "1_1_01" => "admission"
-              case "4201" => "assignment"
-              case _ => ""
-            }                       */
+          }
+          else if(d._1.isInstanceOf[ActionProperty]) {
+            val diagnosisKind = d._1.asInstanceOf[ActionProperty].getType.getCode
             val mkbContainer =
               if(d._2!=null) {
                 if(d._2.isInstanceOf[Mkb]) {

@@ -1,8 +1,9 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
-import reflect.BeanProperty
-import java.util.{LinkedList, Date}
+import scala.beans.BeanProperty
+import java.util.Date
+import java.{util => ju}
 import ru.korus.tmis.core.entity.model.{Staff, Action}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.util.ConfigManager
@@ -16,9 +17,9 @@ class AssessmentsListData {
   @BeanProperty
   var requestData: AssessmentsListRequestData = _
   @BeanProperty
-  var data: LinkedList[AssessmentsListEntry] = new LinkedList[AssessmentsListEntry]
+  var data: ju.LinkedList[AssessmentsListEntry] = new ju.LinkedList[AssessmentsListEntry]
 
-  def this(actions: java.util.List[Action], requestData: AssessmentsListRequestData) {
+  def this(actions: ju.List[Action], requestData: AssessmentsListRequestData) {
     this()
     this.requestData = requestData
     actions.foreach(action => this.data.add(new AssessmentsListEntry(action)))
@@ -52,14 +53,14 @@ class AssessmentsListRequestData {
            page: Int,
            filter: AbstractListDataFilter) = {
     this()
-    this.filter = if(filter!=null) {filter} else {new AssessmentsListRequestDataFilter()}
+    this.filter = if(filter!=null) filter else {new AssessmentsListRequestDataFilter()}
     this.sortingField = sortingField match {
       case null => {"id"}
-      case _ => {sortingField}
+      case _ => sortingField
     }
     this.sortingMethod = sortingMethod match {
       case null => {"asc"}
-      case _ => {sortingMethod}
+      case _ => sortingMethod
     }
     this.limit = if (limit > 0) limit else ConfigManager.Messages("misCore.pages.limit.default").toInt
     this.page = if(page>1) page else 1
@@ -97,7 +98,9 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
   @BeanProperty
   var eventId: Int = _
   @BeanProperty
-  var mnemonics: java.util.List[String] = new java.util.LinkedList[String]
+  var mnemonics: ju.List[String] = new ju.LinkedList[String]
+  @BeanProperty
+  var flatCodes: ju.List[String] = new ju.LinkedList[String]
 
   def this(eventId: Int,
            actionTypeId: Int,
@@ -109,7 +112,8 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
            speciality: String,
            assessmentName: String,
            departmentName: String,
-           mnemonics: java.util.List[String]) {
+           mnemonics: ju.List[String],
+           flatCodes: ju.List[String]) {
     this()
     this.eventId = eventId
     this.actionTypeId = actionTypeId
@@ -125,11 +129,11 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
     this.speciality = speciality
     this.assessmentName = assessmentName
     this.departmentName = departmentName
-    this.mnemonics = mnemonics.filter(p=>(p!=null && !p.isEmpty))
+    this.mnemonics = mnemonics.filter(p=> p != null && !p.isEmpty )
+    this.flatCodes = flatCodes.filter(p=> p != null && !p.isEmpty )
   }
 
-  @Override
-  def toQueryStructure() = {
+  def toQueryStructure = {
     var qs = new QueryDataStructure()
     if(this.eventId>0){
       qs.query += "AND a.event.id = :eventId\n"
@@ -148,7 +152,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
       qs.add("doctorId", this.doctorId:java.lang.Integer)
     }
     if (this.doctorName != null && !this.doctorName.isEmpty) {
-      qs.query += ("AND upper(a.createPerson.lastName) LIKE upper(:doctorName)\n")
+      qs.query += "AND upper(a.createPerson.lastName) LIKE upper(:doctorName)\n"
       qs.add("doctorName", "%" + this.doctorName + "%")
     }
     if (this.begDate != null) {
@@ -172,8 +176,12 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
       qs.add("departmentName", "%" + this.departmentName + "%")
     }
     if (this.mnemonics!=null && this.mnemonics.size() > 0) {
-      qs.query += ("AND a.actionType.mnemonic IN  :mnemonic\n")
+      qs.query += "AND a.actionType.mnemonic IN  :mnemonic\n"
       qs.add("mnemonic",asJavaCollection(this.mnemonics))
+    }
+    if (this.flatCodes!=null && this.flatCodes.size() > 0) {
+      qs.query += "AND a.actionType.flatCode IN  :flatCodes\n"
+      qs.add("flatCodes",asJavaCollection(this.flatCodes))
     }
     qs
   }
@@ -207,6 +215,9 @@ class AssessmentsListEntry {
   var assessmentDate: Date = _ //дата создания
 
   @BeanProperty
+  var beginDate: Date = _ //дата создания
+
+  @BeanProperty
   var closeDate: Date = _ //дата закрытия
 
   @BeanProperty
@@ -215,14 +226,23 @@ class AssessmentsListEntry {
   @BeanProperty
   var doctor: DoctorSpecsContainer = new DoctorSpecsContainer() //Врач
 
+  @BeanProperty
+  var mnemonic: String = _
+
+  @BeanProperty
+  var flatCode: String = _
+
   def this(action: Action) {
     this()
-    this.id = action.getId.intValue()
-    this.typeId = action.getActionType.getId.intValue()
-    this.assessmentDate = action.getCreateDatetime
-    this.closeDate = action.getEndDate
-    this.assessmentName = new IdNameContainer(action.getActionType.getId.intValue(), action.getActionType.getName)
-    this.doctor = new DoctorSpecsContainer(action.getCreatePerson)
+    id = action.getId.intValue()
+    typeId = action.getActionType.getId.intValue()
+    assessmentDate = action.getCreateDatetime
+    beginDate = action.getBegDate
+    closeDate = action.getEndDate
+    assessmentName = new IdNameContainer(action.getActionType.getId.intValue(), action.getActionType.getName)
+    doctor = new DoctorSpecsContainer(action.getCreatePerson)
+    flatCode = action.getActionType.getFlatCode
+    mnemonic = action.getActionType.getMnemonic
   }
 }
 

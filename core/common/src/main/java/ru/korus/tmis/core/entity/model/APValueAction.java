@@ -20,7 +20,7 @@ public class APValueAction extends AbstractAPValue implements Serializable, APVa
 
     private static final long serialVersionUID = 1L;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "value")
     private Action value;
 
@@ -51,7 +51,11 @@ public class APValueAction extends AbstractAPValue implements Serializable, APVa
     @Override
     public boolean setValueFromString(final String value) throws CoreException {
         try {
-            this.setValue(new Action(TextUtils.getRobustInt(value)));
+            if (value == null) {
+                this.setValue(null);
+            } else {
+                this.setValue(new Action(TextUtils.getRobustInt(value)));
+            }
             return true;
         } catch (NumberFormatException ex) {
             throw new CoreException(

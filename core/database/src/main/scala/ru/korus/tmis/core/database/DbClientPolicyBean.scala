@@ -11,6 +11,7 @@ import java.util.Date
 import ru.korus.tmis.core.entity.model.{RbPolicyType, Staff, Patient, ClientPolicy}
 import ru.korus.tmis.core.exception.{CoreException, NoSuchOrganisationException, NoSuchClientPolicyException}
 import scala.collection.JavaConversions._
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -184,4 +185,21 @@ class DbClientPolicyBean
   AND
     p.deleted = 0
                                                  """
+
+  def persistNewPolicy(policy: ClientPolicy): ClientPolicy = {
+    em.persist(policy)
+    em.merge(policy)
+  }
+
+  def findBySerialAndNumberAndTypeCode(serial: String, number: String, typeCode: String): util.List[ClientPolicy] = {
+    em.createNamedQuery("ClientPolicy.findBySerialAndNumberAndTypeCode", classOf[ClientPolicy])
+      .setParameter("serial", serial).setParameter("number", number).setParameter("typeCode", typeCode).getResultList
+  }
+
+  def deleteAllClientPoliciesByType(patientId: Int, policyTypeCode: String): Int = {
+    em.createNamedQuery("ClientPolicy.deleteAllClientPoliciesByType")
+      .setParameter("patientId", patientId)
+      .setParameter("policyTypeCode", policyTypeCode)
+    .executeUpdate()
+  }
 }

@@ -8,8 +8,7 @@ import javax.jws.WebService;
 import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
-import org.hl7.v3.MCCIIN000002UV01;
-import org.hl7.v3.POCDMT000040LabeledDrug;
+import org.hl7.v3.MCCIIN000002UV012;
 
 
 /**
@@ -29,35 +28,18 @@ public interface MISExchangePortType {
     /**
      * 
      * @param organizationRef
-     * @param drug
-     * @return
-     *     returns misexchange.BalanceOfGoods
-     */
-    @WebMethod(operationName = "BalanceOfGoodsInOrganization", action = "MISExchange#MISExchange:BalanceOfGoodsInOrganization")
-    @WebResult(targetNamespace = "MISExchange")
-    @RequestWrapper(localName = "BalanceOfGoodsInOrganization", targetNamespace = "MISExchange", className = "misexchange.BalanceOfGoodsInOrganization")
-    @ResponseWrapper(localName = "BalanceOfGoodsInOrganizationResponse", targetNamespace = "MISExchange", className = "misexchange.BalanceOfGoodsInOrganizationResponse")
-    public BalanceOfGoods balanceOfGoodsInOrganization(
-        @WebParam(name = "Drug", targetNamespace = "MISExchange")
-        POCDMT000040LabeledDrug drug,
-        @WebParam(name = "OrganizationRef", targetNamespace = "MISExchange")
-        String organizationRef);
-
-    /**
-     * 
-     * @param organizationRef
      * @param storageRef
-     * @param drug
+     * @param drugList
      * @return
-     *     returns misexchange.BalanceOfGoods
+     *     returns misexchange.BalanceOfGoods2
      */
-    @WebMethod(operationName = "BalanceOfGoodsInStorage", action = "MISExchange#MISExchange:BalanceOfGoodsInStorage")
+    @WebMethod(operationName = "BalanceOfGoods", action = "MISExchange#MISExchange:BalanceOfGoods")
     @WebResult(targetNamespace = "MISExchange")
-    @RequestWrapper(localName = "BalanceOfGoodsInStorage", targetNamespace = "MISExchange", className = "misexchange.BalanceOfGoodsInStorage")
-    @ResponseWrapper(localName = "BalanceOfGoodsInStorageResponse", targetNamespace = "MISExchange", className = "misexchange.BalanceOfGoodsInStorageResponse")
-    public BalanceOfGoods balanceOfGoodsInStorage(
-        @WebParam(name = "Drug", targetNamespace = "MISExchange")
-        POCDMT000040LabeledDrug drug,
+    @RequestWrapper(localName = "BalanceOfGoods", targetNamespace = "MISExchange", className = "misexchange.BalanceOfGoods")
+    @ResponseWrapper(localName = "BalanceOfGoodsResponse", targetNamespace = "MISExchange", className = "misexchange.BalanceOfGoodsResponse")
+    public BalanceOfGoods2 balanceOfGoods(
+        @WebParam(name = "DrugList", targetNamespace = "MISExchange")
+        DrugList drugList,
         @WebParam(name = "OrganizationRef", targetNamespace = "MISExchange")
         String organizationRef,
         @WebParam(name = "StorageRef", targetNamespace = "MISExchange")
@@ -114,13 +96,13 @@ public interface MISExchangePortType {
      * 
      * @param request
      * @return
-     *     returns org.hl7.v3.MCCIIN000002UV01
+     *     returns org.hl7.v3.MCCIIN000002UV012
      */
     @WebMethod(operationName = "ProcessHL7v3Message", action = "MISExchange#MISExchange:ProcessHL7v3Message")
     @WebResult(targetNamespace = "MISExchange")
     @RequestWrapper(localName = "ProcessHL7v3Message", targetNamespace = "MISExchange", className = "misexchange.ProcessHL7V3Message")
     @ResponseWrapper(localName = "ProcessHL7v3MessageResponse", targetNamespace = "MISExchange", className = "misexchange.ProcessHL7V3MessageResponse")
-    public MCCIIN000002UV01 processHL7V3Message(
+    public MCCIIN000002UV012 processHL7V3Message(
         @WebParam(name = "Request", targetNamespace = "MISExchange")
         Request request);
 

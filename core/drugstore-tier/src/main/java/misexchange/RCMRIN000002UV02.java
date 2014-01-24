@@ -26,10 +26,10 @@ import org.hl7.v3.RCMRIN000002UV022;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 @XmlType(name = "RCMR_IN000002UV02", propOrder = {
     "message"
 })
-@XmlRootElement
 public class RCMRIN000002UV02
     extends Request
 {

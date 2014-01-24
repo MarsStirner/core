@@ -10,16 +10,13 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="rlsFilling")
-public class RlsFilling implements Serializable {
+public class RlsFilling implements Serializable, UniqueName {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
 	@Column(unique=true, nullable=false)
 	private int id;
-
-	@Column(nullable=false)
-	private boolean disabledForPrescription;
 
 	@Column(length=128)
 	private String name;
@@ -33,14 +30,6 @@ public class RlsFilling implements Serializable {
 
 	public void setId(int id) {
 		this.id = id;
-	}
-
-	public boolean getDisabledForPrescription() {
-		return this.disabledForPrescription;
-	}
-
-	public void setDisabledForPrescription(boolean disabledForPrescription) {
-		this.disabledForPrescription = disabledForPrescription;
 	}
 
 	public String getName() {

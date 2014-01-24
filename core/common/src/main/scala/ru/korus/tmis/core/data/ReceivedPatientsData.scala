@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlRootElement._
 import reflect.BeanProperty
 import java.util.{Calendar, Date, LinkedList}
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.util.ConfigManager
+import ru.korus.tmis.util.{I18nable, ConfigManager}
 import scala.collection.JavaConversions._
 import java.text.SimpleDateFormat
 import org.codehaus.jackson.map.annotate.JsonView
@@ -31,7 +31,7 @@ class ReceivedPatientsDataViews {}
  */
 @XmlType(name = "receivedPatientsData")
 @XmlRootElement(name = "receivedPatientsData")
-class ReceivedPatientsData {
+class ReceivedPatientsData extends I18nable  {
   @BeanProperty
   var requestData: ReceivedRequestData = new ReceivedRequestData()
   @BeanProperty
@@ -52,7 +52,7 @@ class ReceivedPatientsData {
   def this(events: java.util.List[Event],
            request:  ReceivedRequestData,
            mDiagnoses: (Int, String) => java.util.HashMap[String, java.util.List[Mkb]],
-           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
+           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int, Boolean) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            mHasPrimary: (Int, java.util.Set[java.lang.Integer]) => Int,
            mHospStatus: (Int) => String,
            mIntake: (Int, Int) => Action) {
@@ -218,6 +218,11 @@ class ReceivedRequestDataFilter {
     this.role = role
   }
 
+  def this(externalId: String) = {
+    this()
+    this.externalId = externalId
+  }
+
   /**
    * Метод на формирование структуры поисковых запросов, с использование набора фильтров ReceivedRequestDataFilter
    * @return Структурированный поисковый запрос в виде QueryDataStructure
@@ -288,7 +293,7 @@ class ReceivedRequestDataFilter {
  */
 @XmlType(name = "receivedPatientsEntry")
 @XmlRootElement(name = "receivedPatientsEntry")
-class ReceivedPatientsEntry {
+class ReceivedPatientsEntry extends I18nable  {
 
   @BeanProperty
   var id: Int = -1
@@ -348,7 +353,7 @@ class ReceivedPatientsEntry {
    */
   def this(event: Event,
            mDiagnoses: (Int, String) => java.util.HashMap[String, java.util.List[Mkb]],
-           mMovingProperties: (Int, java.util.Set[java.lang.Integer], java.util.Set[java.lang.Integer]) => java.util.Map[ActionProperty, java.util.List[APValue]],
+           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int, Boolean) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            mHospStatus: (Int) => String,
            mHasPrimary: (Int, java.util.Set[java.lang.Integer]) => Int,
            mIntake: (Int, Int) => Action,
@@ -359,31 +364,38 @@ class ReceivedPatientsEntry {
     roleId match {
       case 29 => {//Сестра приемного отделения
         this.status = if (mHospStatus != null) mHospStatus(event.getId.intValue()) else ""    //только для роли сестра приемного отделения
-
+        val eventIds: java.util.List[java.lang.Integer] = new util.LinkedList[java.lang.Integer]();
+        eventIds.add(event.getId.intValue())
         if (status.compareTo(ConfigManager.Messages("patient.status.sentTo"))==0) {
-          val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
-          val setCoreIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
+          //Движения
+          val setATCodes = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
+                                                         i18n("db.apt.moving.codes.orgStructTransfer")))
           if (mMovingProperties!=null){
-            val move = mMovingProperties(event.getId.intValue(), setATIds, setCoreIds)
-            if (move!=null && move.size>0) {
-              val filtred = move.filter(element=>element._2.size>0)
+            val moveProps = mMovingProperties(eventIds, setATCodes, 1, false)
+            if (moveProps!=null && moveProps.size>0) {
+              val filtred = moveProps.get(event.getId.intValue()).filter(element=>element._2.size>0)
               if (filtred.size>0){
-                this.moving = new MovingContainer(filtred.iterator.next._2.get(0).getValue.asInstanceOf[OrgStructure])
+                var res = filtred.find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirection"))==0}).getOrElse(null)
+                var res2 = filtred.find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer"))==0}).getOrElse(null)
+                if (res2 != null) {
+                  this.moving = new MovingContainer(res2._2.get(0).getValue.asInstanceOf[OrgStructure])
+                } else {
+                  this.moving = new MovingContainer(res._2.get(0).getValue.asInstanceOf[OrgStructure])
+                }
               }
             }
           }
         }
         else if (status.compareTo(ConfigManager.Messages("patient.status.regToBed"))==0){
-          val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer))
-          val setCoreIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.rbCAP.moving.id.bed").toInt :java.lang.Integer,
-            ConfigManager.Messages("db.rbCAP.moving.id.located").toInt :java.lang.Integer))
+          val setATCodes = JavaConversions.asJavaSet(Set(i18n("db.apt.moving.codes.hospitalBed"),
+                                                         i18n("db.apt.moving.codes.hospOrgStruct")))
           if (mMovingProperties!=null){
-            val move = mMovingProperties(event.getId.intValue(), setATIds, setCoreIds)
-            if (move!=null && move.size>0) {
-              val filtred = move.filter(element=>element._2.size>0)
+            val moveProps = mMovingProperties(eventIds, setATCodes, 1, false)
+            if (moveProps!=null && moveProps.size>0) {
+              val filtred = moveProps.get(event.getId.intValue()).filter(element=>element._2.size>0)
               if (filtred.size>0){
-                val res = filtred.find(element => element._1.getType.getName.compareTo(ConfigManager.Messages("db.actionPropertyType.moving.name.bed"))==0).getOrElse(null)
-                val res2 = filtred.find(element => element._1.getType.getName.compareTo(ConfigManager.Messages("db.actionPropertyType.moving.name.located"))==0).getOrElse(null)
+                var res = filtred.find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospitalBed"))==0}).getOrElse(null)
+                var res2 = filtred.find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0}).getOrElse(null)
                 val department = if(res2!=null)res2._2.get(0).getValue.asInstanceOf[OrgStructure] else null
                 val bed = if(res!=null)res._2.get(0).getValueAsString else null
                 this.moving = new MovingContainer(department, bed)

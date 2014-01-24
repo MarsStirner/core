@@ -39,7 +39,7 @@ class AppealData extends I18nable {
   @BeanProperty
   var requestData: AppealRequestData = _
   @BeanProperty
-  var data: AppealEntry = _
+  var data: AppealEntry = new AppealEntry()
 
   /**
    * Конструктор класса AppealData
@@ -56,7 +56,6 @@ class AppealData extends I18nable {
    * @param requestData Данные из запроса с клиента как AppealRequestData
    * @param postProcessing Делегируемый метод по поиску идентификатора первичного осмотра по идентификатору обращения.
    * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
-   * @param mCorrList Делегируемый метод, предоставляющий список соответствий идентификаторов ActionPropertyType и rbCoreActionProperty
    * @param contract Контракт
    * @param mDiagnosticList Делегируемый метод по получению диагностик госпитализации
    */
@@ -64,7 +63,7 @@ class AppealData extends I18nable {
   def this(event: Event,
            appeal: Action,
            values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]],
-           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
+           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int, Boolean) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -72,11 +71,10 @@ class AppealData extends I18nable {
            postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int,
            mRelationByRelativeId: (Int)=> ClientRelation,
            mAdmissionDiagnosis: (Int , java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
-           mCorrList: (java.util.List[java.lang.Integer])=> java.util.List[RbCoreActionProperty],
            contract: Contract,
            currentDepartment: OrgStructure,
            mDiagnosticList: (Int, java.util.Set[String]) => java.util.List[Diagnostic],
-           tempInvalid: TempInvalid){
+           tempInvalid: TempInvalid) {
     this ()
     this.requestData = requestData
 
@@ -124,8 +122,6 @@ class AppealData extends I18nable {
       lstAllIds.addAll(setExtractIds)
       lstAllIds.addAll(setMovingIds)
 
-      //val corrMap = if(mCorrList!=null) mCorrList(lstAllIds) else null
-
       val primaryId = postProcessing(event.getId.intValue(), setATIds)
       val admissions = if (mAdmissionDiagnosis!=null && primaryId>0) mAdmissionDiagnosis(primaryId, setAdmissionIds) else null
 
@@ -134,7 +130,6 @@ class AppealData extends I18nable {
 
       new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, null, contract, currentDepartment, diagnostics, tempInvalid)
     } else {
-      //val corrMap = if(mCorrList!=null) mCorrList(setMovingIds) else null
       new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, null, contract, currentDepartment, diagnostics, tempInvalid)
      }
   }
@@ -287,44 +282,34 @@ class AppealEntry extends I18nable {
 
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
-  var ward: OrgStructureContainer = _                                            //Отделение
+  var ward: OrgStructureContainer = _                                           //Отделение
   @JsonView(Array(classOf[Views.DynamicFieldsPrintForm]))
   @BeanProperty
-  var totalDays: String = _                                       //Проведено койко-дней
+  var totalDays: String = _                                                     //Проведено койко-дней
   @BeanProperty
   var currentDepartment: IdNameContainer = _
   //данные о последующей госпитализации (reeadonly)
   //согласно спецификации: https://docs.google.com/spreadsheet/ccc?key=0Au-ED6EnawLcdHo0Z3BiSkRJRVYtLUxhaG5uYkNWaGc#gid=5
   @BeanProperty
   var leaved: LeavedInfoContainer = _
-  /*
-  @BeanProperty
-  var nextHospDate: String = _
-  @BeanProperty
-  var nextHospDepartment: String = _
-  @BeanProperty
-  var nextHospFinanceType: String = _
-  @BeanProperty
-  var hospOutcome: String = _
-  @BeanProperty
-  var hospLength: String = _
-  @BeanProperty
-  var outcomeDate: Date = _
-  @BeanProperty
-  var leavedDoctor: DoctorContainer = _
-  */
   @BeanProperty
   var result: IdNameContainer = _
   @BeanProperty
-  var tempInvalid: TempInvalidAppealContainer = _  //
+  var tempInvalid: TempInvalidAppealContainer = _   //
   @BeanProperty
-  var laboratory: LaboratoryPropertiesContainer = _  //
+  var laboratory: LaboratoryPropertiesContainer = _ //
   @BeanProperty
-  var preHospitalDefects: String = _  //
+  var preHospitalDefects: String = _                //
   @BeanProperty
-  var closed: Boolean = false       //Флаг закрыта ли госпитализация
+  var closed: Boolean = false                       //Флаг закрыта ли госпитализация
   @BeanProperty
-  var closeDateTime: Date = _       //Дата закрытия госпитализации госпитализация
+  var closeDateTime: Date = _                       //Дата закрытия госпитализации госпитализация
+  @BeanProperty
+  var orgStructStay: Int = _                        //Отделение поступления
+  @BeanProperty
+  var orgStructDirectedFrom: Int = _                //Направлен из
+  @BeanProperty
+  var reopening: String = _                   //Повторное обращение
 
   /**
    * Конструктор класса AppealEntry
@@ -348,7 +333,7 @@ class AppealEntry extends I18nable {
   def this(event: Event,
            action: Action,
            values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]],
-           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
+           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int, Boolean) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -373,6 +358,37 @@ class AppealEntry extends I18nable {
     this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
     this.execPerson = new DoctorContainer(event.getExecutor)
     this.urgent = action.getIsUrgent
+
+
+    val getOrgStructPropByCode: String => Integer = (code: String) => {
+      val orgs = values.entrySet.filter(e => {
+        val ap = e.getKey._2
+        if(ap != null && ap.getType != null && ap.getType.getCode != null && ap.getType.getCode.equals(i18n(code))) {
+          true
+        } else
+          false
+      })
+      if(orgs.size == 1 && orgs.head.getValue.size == 1  && orgs.head.getValue.head.isInstanceOf[OrgStructure])
+        orgs.head.getValue.head.asInstanceOf[OrgStructure].getId
+      else
+        0
+    }
+    this.orgStructStay = getOrgStructPropByCode("db.apt.moving.codes.hospOrgStruct")
+    this.orgStructDirectedFrom = getOrgStructPropByCode("db.apt.received.codes.orgStructDirectedFrom")
+    this.reopening = {
+      val vals = values.entrySet.filter(e => {
+        val ap = e.getKey._2
+        if(ap != null && ap.getType != null && ap.getType.getCode != null && ap.getType.getCode.equals(i18n("db.apt.received.codes.reopening"))) {
+          true
+        } else
+          false
+      })
+      if(vals.size == 1 && vals.head.getValue.size == 1  && vals.head.getValue.head.isInstanceOf[String])
+        vals.head.getValue.head.toString
+      else
+        "null"
+    }
+
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt :java.lang.Integer), values).get("0")
     this.ambulanceNumber = exValue.get(0).asInstanceOf[String]
@@ -572,12 +588,14 @@ class AppealEntry extends I18nable {
     val setATCodes = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
                                                    i18n("db.apt.moving.codes.orgStructTransfer"),
                                                    i18n("db.apt.documents.codes.RW"),
-                                                   i18n("db.apt.documents.codes.preHospitalDefects")
+                                                   i18n("db.apt.documents.codes.preHospitalDefects"),
+                                                   i18n("db.apt.moving.codes.hospOrgStruct"),
+                                                   i18n("db.apt.received.codes.orgStructDirectedFrom")
         ))
     if (mMovingProperties!=null){
       val eventIds: java.util.List[java.lang.Integer] = new util.LinkedList[java.lang.Integer]();
       eventIds.add(event.getId.intValue())
-      val moveProps = mMovingProperties(eventIds, setATCodes, 1)
+      val moveProps = mMovingProperties(eventIds, setATCodes, 1, true)
       if (moveProps!=null && moveProps.size>0) {
         var res = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer"))==0}).getOrElse(null)
         if (res==null) {
@@ -587,7 +605,15 @@ class AppealEntry extends I18nable {
         if (labProp != null) {
           this.laboratory = new LaboratoryPropertiesContainer(labProp._2.get(0).getValueAsString)
         }
-        var preHospitalDefects = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.preHospitalDefects"))==0}).getOrElse(null)
+        val orgStructStay = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0}).getOrElse(null)
+        if(orgStructStay != null) {
+          this.orgStructStay = orgStructStay._2.get(0).getValueAsId.toInt
+        }
+        val orgStructDirectedFrom = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirectedFrom"))==0}).getOrElse(null)
+        if(orgStructDirectedFrom != null) {
+          this.orgStructDirectedFrom = orgStructDirectedFrom._2.get(0).getValueAsId.toInt
+        }
+        val preHospitalDefects = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.preHospitalDefects"))==0}).getOrElse(null)
         if (labProp != null) {
           this.preHospitalDefects = preHospitalDefects._2.get(0).asInstanceOf[String]
         }
@@ -606,30 +632,7 @@ class AppealEntry extends I18nable {
     this.havePrimary = havePrimary
     //Данные о последующей госпитализации
     this.leaved = new LeavedInfoContainer(extractProperties)
-    /*
-    if (extractProperties!=null) {
-      extractProperties.foreach(prop => {
-        if (prop != null && prop._1 != null && prop._2 != null && prop._2.size() > 0) {
-          if (this.outcomeDate == null && this.leavedDoctor == null) {
-            this.outcomeDate = prop._1.getAction.getEndDate
-            this.leavedDoctor = new DoctorContainer(prop._1.getAction.getExecutor)
-          }
-          if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.nextHospDate"))==0){
-            this.nextHospDate = prop._2.get(0).getValueAsString
-          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0
-                     && prop._2.get(0).getValue != null && prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName != null){
-            this.nextHospDepartment = "%s(%s)".format(prop._2.get(0).getValue.asInstanceOf[OrgStructure].getName, prop._2.get(0).getValue.asInstanceOf[OrgStructure].getAddress)
-          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.nextHospFinance"))==0){
-            this.nextHospFinanceType = prop._2.get(0).getValueAsString
-          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.hospOutcome"))==0){
-            this.hospOutcome = prop._2.get(0).getValueAsString
-          } else if (prop._1.getType.getCode.compareTo(i18n("db.apt.leaved.codes.hospLength"))==0){
-            this.hospLength = prop._2.get(0).getValueAsString
-          }
-        }
-      })
-    }
-    */
+
     //Контракт
     if (contract != null)
       this.contract = new ContractContainer(contract)

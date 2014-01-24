@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database;
 
+import ru.korus.tmis.core.database.bak.BakDiagnosis;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
@@ -120,9 +121,13 @@ public interface DbCustomQueryLocal {
      *
      * @param e - карточка пациента
      * @return - код источника финансирования
-     * @throws CoreException
      */
     Integer getFinanceId(Event e);
 
-
+    /**
+     * Получить код и описание диагноза
+     * (для БАК направления)
+     */
+    @Deprecated
+    BakDiagnosis getBakDiagnosis(Action action);
 }

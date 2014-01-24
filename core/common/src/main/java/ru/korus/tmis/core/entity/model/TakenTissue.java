@@ -62,11 +62,11 @@ public class TakenTissue implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "barcode")
-    private int barcode;
+    private Integer barcode;
 
     @Basic(optional = false)
     @Column(name = "period")
-    private int period;
+    private Integer period;
 
     public TakenTissue() {
     }

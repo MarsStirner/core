@@ -225,11 +225,13 @@ class CommonDataProcessorBean
               case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
                 if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
                   if (ap.getType.getDefaultValue.compareTo("нет") != 0) {     //костылик для мкб
-                    val apv = dbActionProperty.setActionPropertyValue(
-                      ap,
-                      ap.getType.getDefaultValue,
-                      0)
-                    apv :: list
+                    val apv = dbActionProperty.setActionPropertyValue(ap,
+                                                                      null,
+                                                                      0)
+                    if(apv != null)
+                      apv :: list
+                    else
+                      list
                   } else list
                 } else list
               }
@@ -254,15 +256,18 @@ class CommonDataProcessorBean
           entities = (entities /: apvList)(_ + _)
           dbManager.persistAll(apvList)
           //Сохранение диагнозов в таблицу Диагностик
-          var apsForDiag = new util.LinkedList[ActionProperty]()
-          apList.foreach(f => apsForDiag.add(f._1))
-          dbManager.persistAll(this.saveDiagnoses(eventId ,apsForDiag, userData))
+          //var apsForDiag = new util.LinkedList[ActionProperty]()
+          //apList.foreach(f => apsForDiag.add(f._1))
+          dbManager.persistAll(this.saveDiagnoses(eventId ,
+                              apList.map(_._1).toList,
+                              apvList,
+                              userData))
 
           // Save empty AP values (set to default values)
           //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
-          val emptyApvList = emptyApList.filter(p => (p.asInstanceOf[ActionProperty].getType.getTypeName.compareTo("FlatDictionary") != 0 && p.asInstanceOf[ActionProperty].getType.getTypeName.compareTo("FlatDirectory") != 0)).map(
+          val emptyApvList = emptyApList.filter(p => (p.getType.getTypeName.compareTo("FlatDictionary") != 0 && p.getType.getTypeName.compareTo("FlatDirectory") != 0)).map(
             ap => {
-              dbActionProperty.setActionPropertyValue(ap.asInstanceOf[ActionProperty], ap.asInstanceOf[ActionProperty].getType.getDefaultValue, 0)
+              dbActionProperty.setActionPropertyValue(ap, ap.getType.getDefaultValue, 0)
             })
 
           entities = (entities /: emptyApvList)(_ + _)
@@ -412,10 +417,14 @@ class CommonDataProcessorBean
           } else {
             (attribute.properties.get("valueId"), attribute.properties.get("value")) match {
 
-              case (None | Some(null) | Some(""), None | Some(null)) => {
+              case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
                 new ActionPropertyWrapper(ap).set(attribute)
+
+                //Удаление значений свойств, если они присутствуют
+                  dbManager.removeAll(dbActionProperty.getActionPropertyValue(ap))
+
                 entities = entities + ap
               }
 
@@ -424,10 +433,17 @@ class CommonDataProcessorBean
                   id.intValue,
                   attribute.version.intValue,
                   userData)
-                val apv = dbActionProperty.setActionPropertyValue(
-                  ap,
-                  value,
-                  0)
+                var apv: APValue = null
+
+                if (ap.getType.getTypeName.compareTo("MKB")==0 && (value==null || value.isEmpty)) {
+                  val apvs = dbActionProperty.getActionPropertyValue(ap)
+                  if(apvs != null && apvs.size()>0) {
+                    dbManager.removeAll(apvs.map(_.unwrap()))
+                  }
+                } else {
+                  apv = dbActionProperty.setActionPropertyValue(ap, value, 0)
+                }
+
                 new ActionPropertyWrapper(ap).set(attribute)
                 if (apv != null) {
                   entities = entities + ap + apv.unwrap
@@ -458,10 +474,6 @@ class CommonDataProcessorBean
         }
         eventId = a.getEvent.getId.intValue()
       })
-      //Сохранение диагнозов в таблицу Диагностик
-      var apsForDiag = new util.LinkedList[ActionProperty]()
-      entities.foreach(f => if (f.isInstanceOf[ActionProperty]) apsForDiag.add(f.asInstanceOf[ActionProperty]))
-      dbManager.persistAll(this.saveDiagnoses(eventId ,apsForDiag, userData))
 
       result = dbManager
         .mergeAll(entities)
@@ -470,6 +482,15 @@ class CommonDataProcessorBean
         .toList
 
       val r = dbManager.detachAll[Action](result).toList
+
+      //Сохранение диагнозов в таблицу Диагностик
+      //var apsForDiag = new util.LinkedList[ActionProperty]()
+      //entities.foreach(f => if (f.isInstanceOf[ActionProperty]) apsForDiag.add(f.asInstanceOf[ActionProperty]))
+      dbManager.persistAll(this.saveDiagnoses(eventId ,
+                              entities.filter(_.isInstanceOf[ActionProperty]).map(_.asInstanceOf[ActionProperty]).toList,
+                              entities.filter(_.isInstanceOf[APValue]).map(_.asInstanceOf[APValue]).toList,
+                              userData))
+
       /*
       r.foreach(newAction => {
         val newValues = dbActionProperty.getActionPropertiesByActionId(newAction.getId.intValue)
@@ -486,7 +507,8 @@ class CommonDataProcessorBean
     }
   }
 
-  private def saveDiagnoses(eventId: Int, apList: java.util.List[ActionProperty], userData: AuthData): java.util.List[AnyRef] = {
+  private def saveDiagnoses(eventId: Int, apList: java.util.List[ActionProperty], apValue: java.util.List[APValue], userData: AuthData): java.util.List[AnyRef] = {
+
     var map = Map.empty[String, java.util.Set[AnyRef]]
     val characterAP = apList.find(p => p.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseCharacter"))==0).getOrElse((null))
     val stageAP = apList.find(p => p.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseStage"))==0).getOrElse((null))
@@ -494,12 +516,25 @@ class CommonDataProcessorBean
     var preCharacterId = 0
     var preStageId = 0
 
-    val characterAPV = if (characterAP!=null) dbActionProperty.getActionPropertyValue(characterAP) else null
-    if (characterAPV != null && characterAPV.size() > 0 && characterAPV.get(0).getValueAsId.compareTo("") != 0) {
+    //val characterAPV =  if (characterAP!=null) dbActionProperty.getActionPropertyValue(characterAP) else null
+    val characterAPV = if (characterAP!=null) {
+      apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueString]) &&
+                             (apv.unwrap().asInstanceOf[APValueString].getId.getId == characterAP.getId)
+                            )
+                    ).toList
+    } else null
+    if (characterAPV != null && characterAPV.size > 0 && characterAPV.get(0).getValueAsId.compareTo("") != 0) {
       preCharacterId = Integer.valueOf(characterAPV.get(0).getValueAsId).intValue()
     }
-    val stageAPV = if (stageAP!=null) dbActionProperty.getActionPropertyValue(stageAP) else null
-    if (stageAPV != null && stageAPV.size() > 0 && stageAPV.get(0).getValueAsId.compareTo("") != 0) {
+
+    //val stageAPV = if (stageAP!=null) dbActionProperty.getActionPropertyValue(stageAP) else null
+    val stageAPV = if (stageAP!=null) {
+      apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueString]) &&
+        (apv.unwrap().asInstanceOf[APValueString].getId.getId == stageAP.getId)
+        )
+      ).toList
+    } else null
+    if (stageAPV != null && stageAPV.size > 0 && stageAPV.get(0).getValueAsId.compareTo("") != 0) {
       preStageId = Integer.valueOf(stageAPV.get(0).getValueAsId).intValue()
     }
 
@@ -507,7 +542,7 @@ class CommonDataProcessorBean
       var characterId = 0
       var stageId = 0
       if (ap.getType.getTypeName.compareTo("MKB")==0) {
-        val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode !=null && p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 4))==0).getOrElse((null))
+        val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode !=null && !ap.equals(p) && ap.getType.getCode.contains(p.getType.getCode)/*p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 3))==0*/).getOrElse((null))
         if (ap.getType.getCode != null) {
           if (ap.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb"))==0) {
             characterId = preCharacterId
@@ -519,14 +554,26 @@ class CommonDataProcessorBean
               stageId = preStageId
             }
           }
-          val mkbAPV = dbActionProperty.getActionPropertyValue(ap)
-          val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
-          if (mkbAPV != null && mkbAPV.size() > 0 && mkbAPV.get(0).getValueAsId.compareTo("") != 0) {
-            map += (ap.getType.getCode -> Set[AnyRef](( -1,
-                                                        if (descAPV != null) descAPV.get(0).getValueAsString() else "",
+
+          //val mkbAPV = dbActionProperty.getActionPropertyValue(ap)
+          //val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
+          val mkbAPV = apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueMKB]) &&
+                                              (apv.unwrap().asInstanceOf[APValueMKB].getId.getId == ap.getId)
+                                             )
+                                     ).toList
+          val descAPV = apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueString]) &&
+                                               descriptionAP != null &&
+                                               (apv.unwrap().asInstanceOf[APValueString].getId.getId == descriptionAP.getId)
+                                              )
+                                      ).toList
+          if (mkbAPV != null && mkbAPV.size > 0 && mkbAPV.get(0).getValueAsId.compareTo("") != 0) {
+            map += (ap.getType.getCode -> Set[AnyRef](( -1,  //TODO: ???Всегда создавать новые записи в истории в т.ч. и при редактировании
+                                                        if (descAPV != null && descAPV.size > 0) descAPV.get(0).getValueAsString() else "",
                                                         Integer.valueOf(mkbAPV.get(0).getValueAsId),
                                                         characterId,
                                                         stageId)))
+          } else {
+            map += (ap.getType.getCode -> null)
           }
         }
       }
@@ -571,7 +618,8 @@ class CommonDataProcessorBean
         typeName,
         at.getGroupId,
         null,
-        at.getCode)
+        at.getCode,
+        at.getFlatCode)
       val group = new CommonGroup
       dbActionType.getActionTypePropertiesById(at.getId.intValue).foreach(
         (apt) => group add converter(apt)
@@ -587,6 +635,8 @@ class CommonDataProcessorBean
                                   converter: (java.util.List[String], ActionPropertyType) => CommonAttribute,
                                   patient: Patient) = {
     val age = defineAgeOfPatient(patient)
+    //val (year, month, week, date2) = age.asInstanceOf[(Int, Int, Int, Int)]
+
     types.foldLeft(
       new CommonData(0, dbVersion.getGlobalVersion)
     )((data, at) => {
@@ -596,7 +646,8 @@ class CommonDataProcessorBean
         typeName,
         at.getId.intValue(),
         null,
-        at.getCode)
+        at.getCode,
+        at.getFlatCode)
       //***
       val group0 = new CommonGroup(0, "Summary")
       var a = new Action()
@@ -608,7 +659,7 @@ class CommonDataProcessorBean
 
       at.getDefaultPlannedEndDate match {
         case 0 => {
-          //a.setPlannedEndDate(null)
+          a.setPlannedEndDate(null)
         }
         case 1 => {
           date.add(Calendar.DAY_OF_YEAR, 1)
@@ -684,7 +735,8 @@ class CommonDataProcessorBean
           actionName,
           action.getActionType.getId,
           action.getStatus,
-          action.getActionType.getCode)
+          action.getActionType.getCode,
+          action.getActionType.getFlatCode)
       )((entity, converter) => entity add converter(action))
     })
   }
@@ -697,54 +749,58 @@ class CommonDataProcessorBean
     )
   }
 
-  def defineAgeOfPatient(patient: Patient): Calendar = {
+  def defineAgeOfPatient(patient: Patient): CustomCalendar = {
     if (patient != null) {
       val now = Calendar.getInstance()
       now.setTime(new Date())
       val birth = Calendar.getInstance()
       birth.setTime(if (patient != null) patient.getBirthDate else new Date())
 
-      val age = Calendar.getInstance()
-      age.set(now.get(Calendar.YEAR) - birth.get(Calendar.YEAR),
-        now.get(Calendar.MONTH) - birth.get(Calendar.MONTH),
-        now.get(Calendar.DATE) - birth.get(Calendar.DATE))
+      var age = Calendar.getInstance()
+      val year = now.get(Calendar.YEAR) - birth.get(Calendar.YEAR)
+      val month = now.get(Calendar.MONTH) - birth.get(Calendar.MONTH)
+      val week = now.get(Calendar.WEEK_OF_YEAR) - birth.get(Calendar.WEEK_OF_YEAR)
+      val date = now.get(Calendar.DATE) - birth.get(Calendar.DATE)
+      age.set(year, month, date, 0, 0)
 
-      age
+      new CustomCalendar(year, month, week, date)
+      //(year, month, week, date)
     } else {
       null
     }
   }
 
-  def checkActionPropertyTypeForPatientAge(age: Calendar, apt: ActionPropertyType): Boolean = {
+  def checkActionPropertyTypeForPatientAge(age: CustomCalendar, apt: ActionPropertyType): Boolean = {
     var needProp: Boolean = false
-    if (age == null || age.get(Calendar.YEAR) == 0 || (apt.getAge_bc == 0 && apt.getAge_ec == 0 && apt.getAge_bu == 0 && apt.getAge_eu == 0)) {
+    if (age == null || age.getYear.intValue() == 0 || (apt.getAge_bc == 0 && apt.getAge_ec == 0 && apt.getAge_bu == 0 && apt.getAge_eu == 0)) {
       apt.getAge_eu match {
         case 1 => {   //дней
-          if ((age.get(Calendar.DAY_OF_YEAR) >= apt.getAge_bc || apt.getAge_bc == 0)  &&
-            (age.get(Calendar.DAY_OF_YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
+          if ((age.getDay.intValue() >= apt.getAge_bc || apt.getAge_bc == 0)  &&
+              (age.getDay.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
         case 2 => {   //недель
-          if ((age.get(Calendar.WEEK_OF_YEAR) >= apt.getAge_bc || apt.getAge_bc == 0) &&
-            (age.get(Calendar.WEEK_OF_YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
+          if ((age.getWeek.intValue() >= apt.getAge_bc || apt.getAge_bc == 0) &&
+              (age.getWeek.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
         case 3 => {   //месяцев
-          if ((age.get(Calendar.MONTH) >= apt.getAge_bc || apt.getAge_bc == 0) &&
-            (age.get(Calendar.MONTH) < apt.getAge_ec || apt.getAge_ec == 0)) {
+          if ((age.getMonth.intValue() >= apt.getAge_bc || apt.getAge_bc == 0) &&
+              (age.getMonth.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
             needProp = true
           }
         }
+        case 4 => needProp = false //лет
         case _ => {
           needProp = true
         }
       }
     } else {             //лет
       if ( apt.getAge_eu == 4 &&
-        (age.get(Calendar.YEAR) >= apt.getAge_bc || apt.getAge_bc == 0) &&
-        (age.get(Calendar.YEAR) < apt.getAge_ec || apt.getAge_ec == 0)) {
+        (age.getYear.intValue() >= apt.getAge_bc || apt.getAge_bc == 0) &&
+        (age.getYear.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
         needProp = true
       }
     }

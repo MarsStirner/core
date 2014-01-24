@@ -61,6 +61,7 @@ class PrimaryAssessmentBean
       AWI.doctorFirstName,
       AWI.doctorMiddleName,
       AWI.doctorSpecs,
+      AWI.executorPost,
       AWI.urgent,
       AWI.multiplicity,
       AWI.Status,
@@ -118,7 +119,8 @@ class PrimaryAssessmentBean
 
         apvs.size match {
           case 0 => {
-            group add apw.get(null, List(APWI.Unit, APWI.Norm))
+            val ca = apw.get(null, List(APWI.Unit, APWI.Norm))
+            group add new CommonAttributeWithLayout(ca, dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList)
           }
           case _ => {
             apvs.foreach((apv) => {
@@ -150,6 +152,7 @@ class PrimaryAssessmentBean
     new CommonAttributeWithLayout(apt.getId,
                                   0,
                                   apt.getName,
+                                  apt.getCode,
                                   apt.getTypeName,
                                   apt.getValueDomain,//apt.getConstructorValueDomain,
                                   map,

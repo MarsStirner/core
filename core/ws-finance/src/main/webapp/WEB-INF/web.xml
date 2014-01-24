@@ -17,7 +17,7 @@
 		<servlet-name>finance-serlvet</servlet-name>
 		<url-pattern>/*</url-pattern>
 	</servlet-mapping>
-    <security-constraint>
+<!--    <security-constraint>
         <display-name>SecurityConstraint</display-name>
         <web-resource-collection>
             <web-resource-name>WRCollection</web-resource-name>
@@ -36,5 +36,5 @@
     </security-constraint>
     <security-role>
         <role-name>FinanceUser</role-name>
-    </security-role>
+    </security-role>-->
 </web-app>

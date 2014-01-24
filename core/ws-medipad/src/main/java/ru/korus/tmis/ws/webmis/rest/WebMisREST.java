@@ -2,16 +2,16 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.entity.model.APValueAction;
 import ru.korus.tmis.core.exception.CoreException;
 
 import java.io.Serializable;
+import java.util.Date;
 
 /**
- * Created with IntelliJ IDEA.
  * User: idmitriev
  * Date: 3/19/13
  * Time: 12:05 PM
- * To change this template use File | Settings | File Templates.
  */
 public interface WebMisREST extends Serializable {
 
@@ -73,14 +73,21 @@ public interface WebMisREST extends Serializable {
 
     BedDataListContainer getVacantHospitalBeds(int departmentId, AuthData authData) throws CoreException;
 
+    HospitalBedProfileContainer getBedProfileById(int profileId, AuthData authData) throws CoreException;
+
+    HospitalBedProfilesListContainer getAllAvailableBedProfiles(AuthData authData) throws CoreException;
+
     //FormOfAccountingMovementOfPatientsData getFormOfAccountingMovementOfPatients(int departmentId) throws CoreException;
 
     FormOfAccountingMovementOfPatientsData getForm007( int departmentId,
                                                        long beginDate,
                                                        long endDate,
+                                                       java.util.List<Integer> profileBeds,
                                                        AuthData authData) throws CoreException;
 
     String movingPatientToDepartment(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
+
+    String  closeLastMovingOfAppeal(int eventId, AuthData authData, Date date) throws CoreException;
 
     TalonSPODataList getAllTalonsForPatient(TalonSPOListRequestData requestData) throws CoreException;
 
@@ -94,11 +101,25 @@ public interface WebMisREST extends Serializable {
      */
     AllDepartmentsListDataMP getAllDepartmentsByHasBeds(String hasBeds, String hasPatients) throws CoreException;
 
-    DiagnosticsListData getListOfDiagnosticsForPatientByEvent(DiagnosticsListRequestData requestData) throws CoreException;
+    /**
+     * Сервис получения списка направлений на исследования
+     * @param requestData Данные из запроса
+     * @param authData Данные о пользователе
+     * @return Список направлений как DiagnosticsListData
+     * @throws CoreException
+     */
+    DiagnosticsListData getListOfDiagnosticsForPatientByEvent(DiagnosticsListRequestData requestData, AuthData authData) throws CoreException;
 
-    JSONCommonData getInfoAboutDiagnosticsForPatientByEvent(int actionId) throws CoreException;
+    /**
+     * Получение информации по направлению.
+     * @param actionId Идентификатор направления (Action)
+     * @param authData Данные о пользователе
+     * @return Направление как JSONCommonData
+     * @throws CoreException
+     */
+    JSONCommonData getInfoAboutDiagnosticsForPatientByEvent(int actionId, AuthData authData) throws CoreException;
 
-    FreePersonsListData getFreePersons(ListDataRequest requestData) throws CoreException;
+    FreePersonsListData getFreePersons(ListDataRequest requestData, long beginDate) throws CoreException;
 
     /**
      * Получение справочника типов действий плоской структурой либо структуры CommonData для нужного ActionType
@@ -129,6 +150,9 @@ public interface WebMisREST extends Serializable {
 
     boolean removeDirection(AssignmentsToRemoveDataList data, String directionType, AuthData auth) throws CoreException;
 
+    void checkCountOfConsultations(int eventId, int pqt, int executorId, long data) throws CoreException;
+
+    //APValueAction getPlannedTime(Action action) throws CoreException;
     /**
      * Получение справочника FlatDirectory
      * @param request Данные из запроса как FlatDirectoryRequestData

@@ -15,13 +15,12 @@ enum PropType {
     BLOOD_COMP_TYPE("trfuReqBloodCompId", "rbBloodComponentType"), // Требуемый компонент крови
     TYPE("trfuReqBloodCompType", "String"), // Вид трансфузии
     VOLUME("trfuReqBloodCompValue", "Integer"), // Объем требуемого компонента крови (все, кроме тромбоцитов)
-    DOSE_COUNT("trfuReqBloodCompDose", "Double"), // Количество требуемых донорских доз (тромбоциты)
     ROOT_CAUSE("trfuReqBloodCompRootCause", "String"), // Показания к проведению трансфузии
     ORDER_REQUEST_ID("trfuReqBloodCompResult", "String"), // Результат передачи требования в систему ТРФУ
     ORDER_ISSUE_RES_DATE("trfuReqBloodCompDate", "Date"), // Дата выдачи КК
     ORDER_ISSUE_RES_TIME("trfuReqBloodCompTime", "Time"), // Время выдачи КК
     ORDER_ISSUE_BLOOD_COMP_PASPORT("trfuReqBloodCompPasport", "Integer"),
-    PATIENT_ORG_STRUCT("hospOrgStruct", "OrgStructure"),
+    PATIENT_ORG_STRUCT("orgStructStay", "OrgStructure"),
 
     DONOR_ID("trfuProcedureDonor", "Integer"),
     CONTRAINDICATION("trfuProcedureContraindication", "String"),

@@ -1,11 +1,8 @@
 package ru.korus.tmis.util.logs;
 
 import org.joda.time.DateTime;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
+import java.util.StringTokenizer;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -14,7 +11,7 @@ import java.util.Date;
  * Description: Класс для записи продолжительных операций в виде строки, последовательность отделяется через скобки "[]" <br>
  */
 public class ToLog {
-    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd hh:mm:ss,SS";
+    private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss,SS";
     private StringBuffer sb;
     private long startTime;
     private long delta = 0;
@@ -31,17 +28,7 @@ public class ToLog {
         this.sb = new StringBuffer("[" + DateTime.now().toString(DATE_TIME_FORMAT) + "]");
     }
 
-    public void add(String toLog) {
-        curr = System.currentTimeMillis();
-        raz = curr - delta;
-        delta = curr;
-        sb.append("[").append(toLog).append("]");
-        if (raz > 0) {
-            sb.append("(").append(String.valueOf(raz)).append("mls) ");
-        }
-    }
-
-//    public void add(String toLog,Object... arguments) {
+//    public void add(String toLog) {
 //        curr = System.currentTimeMillis();
 //        raz = curr - delta;
 //        delta = curr;
@@ -50,6 +37,38 @@ public class ToLog {
 //            sb.append("(").append(String.valueOf(raz)).append("mls) ");
 //        }
 //    }
+
+
+    public void add(String toLog, Object... arguments) {
+        curr = System.currentTimeMillis();
+        raz = curr - delta;
+        delta = curr;
+        if (arguments != null) {
+            int idx = 0;
+            final StringBuilder str = new StringBuilder();
+            for (StringTokenizer stringTokenizer = new StringTokenizer(toLog, "#", true); stringTokenizer.hasMoreTokens(); ) {
+                String s = stringTokenizer.nextToken();
+                if (s.equals("#")) {
+                    if (idx < arguments.length) {
+                        str.append(arguments[idx]);
+                        idx++;
+                    }
+                } else {
+                    str.append(s);
+                }
+            }
+            toLog = str.toString();
+        }
+        sb.append("[").append(toLog).append("]");
+        if (raz > 0) {
+            sb.append("(").append(String.valueOf(raz)).append("mls) ");
+        }
+    }
+
+    public void addN(String toLog, Object... arguments) {
+        add(toLog, arguments);
+        sb.append("\n");
+    }
 
     public void startAdd(String toLog) {
         sb.append("[").append(toLog);

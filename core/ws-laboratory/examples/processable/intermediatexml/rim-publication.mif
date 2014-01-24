@@ -1,0 +1,823 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<publication packageKind="version" name="V3-2011N" title="HL7 Reference Information Model" schemaVersion="2.1.6" xmlns="urn:hl7-org:v3/mif2" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3/mif2 ../../../ToolFiles/MIF2Schemas/mif-COMPLETE.xsd">
+	<!--	 <publication packageKind="version" name="2010Jan" title="HL7 Reference Information Model" schemaVersion="2.1.6" xmlns="urn:hl7-org:v3/mif2"> -->
+	<packageLocation root="PUB" artifact="RIM" realmNamespace="UV" version="V3-2011N"/>
+	<header>
+		<renderingInformation application="XMLspy by gwb" renderingTime="2010-11-16T00:00:01"/>
+		<legalese copyrightOwner="Health Level Seven" copyrightYears="2010">
+			<notation>All rights reserved.</notation>
+		</legalese>
+		<responsibleGroup organizationName="Health Level Seven"/>
+<!-- Drop contributords for Normative editions
+		<contributor>
+			<role>Modeling &amp; Methodology Co-Chair</role>
+			<name key="Beeler, George Jr" name="George Beeler, Jr., PhD."/>
+			<affiliation>Beeler Consulting LLC</affiliation>
+		</contributor>
+		<contributor>
+			<role>Modeling &amp; Methodology Co-Chair</role>
+			<name key="Duteau, Jean-Henri" name="Jean-Henri Duteau"/>
+			<affiliation>Gordon Point Informatics</affiliation>
+		</contributor>
+		<contributor>
+			<role>Modeling &amp; Methodology Co-Chair</role>
+			<name key="Grieve, Grahame" name="Grahame Grieve"/>
+			<affiliation>Kestral Computing</affiliation>
+		</contributor>
+		<contributor>
+			<role>Modeling &amp; Methodology Co-Chair</role>
+			<name key="McKenzie, Lloyd" name="Lloyd McKenzie"/>
+			<affiliation>McKenzie Consulting</affiliation>
+		</contributor>
+		<contributor>
+			<role>Modeling &amp; Methodology Co-Chair</role>
+			<name key="Natarajan, Ravi" name="Ravi Natarajan"/>
+			<affiliation>NHS Connecting for Health</affiliation>
+		</contributor>
+-->
+		<approvalInfo approvalStatus="Reference" ballotOccurrence="1" approvingOrganization="HL7"/>
+		<realmNamespace value="UV"/>
+	</header>
+	<publishedGroup name="preface-notes" title="Preface - Notes To Readers" contentsLevel="Detailed" renderToLocation="false">
+		<precedingText lang="EN">
+			<div hl7Id="ANSI-note" title="Balloting Under ANSI Continuous Maintenance Process">
+				<p>This American National Standard is maintained using the continuous maintenance process. Comments or proposals for revision to any part of this standard may be submitted to HL7 at any time.  Comments or proposals may be submitted on-line at www.HL7.org  or in writing to the Associate Executive Director at Health Level Seven, Inc., 3300 Washtenaw Avenue Suite 227, Ann Arbor, Michigan 48104-4261.  Comments or proposals submitted in writing must identify the standard in question and include the submitter’s name, affiliation, telephone number, and e-mail address.</p>
+			</div>
+			<div title="Normative RIM Release 3" hl7Id="noteNE">
+				<p>This is Normative RIM Release 3.  It passed ballot in September 2010.</p>
+				<p>As a result of decisions endorsed in the Fall of 2009 and 2010 by the HL7 Technical Steering Committee, this Normative Edition provides static models whose content is based on RIM Release 3, but whose data types are derived from Abstract Data Types Release 1. (Note that RIM Release 3 is "formally" bound to Abstract Data Types Release 2, but those data types did not complete ballot reconciliation in time to be released as part of this Normative Edition.)</p>
+				<p>This rendering of the RIM expresses the full content of RIM Release 3, but the data types used within it are mapped "back" to <a href="../../infrastructure/datatypes/datatypes.html">Abstract Data Types R1</a>.  This RIM is provided as the reference basis for the static models in this Normative Edition.</p>
+			</div>
+<!--			<div title="Normative RIM Release 3" hl7Id="noteBalJanCycle">
+				<p>This RIM is <b>not under ballot</b>. It is the first Harmonized update to RIM Release 3.  It includes changes adopted during RIM and Vocabulary Harmonization in November 2010.  The Normative RIM R3 is Version 02-33, which will be included in Normative Edition 2011.</p>
+			</div> -->
+			<!--			<div title="First Ballot RIM R3" hl7Id="noteBalMayCycle">
+				<p>This is the RIM version for the first Normative Ballot on RIM Release 3.  The scope of this ballot (see below) is limited to changes that have been accepted through HL7's RIM Harmonization process since the previous normative ballot concluded in September 2009.</p>
+			</div> -->
+			<!--			<div title="Second Ballot RIM R3" hl7Id="noteBallSepCycle">
+				<p>This is the RIM version for the second Normative Ballot on RIM Release 3.  The scope of this ballot (see below) is limited to changes that have been made as a result of ballot reconciliation from the previous ballot cycle.  These changes have been accepted through HL7's RIM Harmonization process  in August 2010.</p></div> -->
+			<!-- Toggle above four above (with edits) for the  ballot cycles -->
+			<!-- Toggle following two between Normative Editions and Ballots -->
+			<div title="Scope of Normative RIM Content" hl7Id="noteNEscope">
+				<p>The section outlines the portions of the RIM Content that were balloted as "in scope" subject to negative comments. The establishment of Normative ballot status for any particular section of the document is determined by two factors: the intention or objective of the document section in question; and the current Normative status of specific elements within those sections. The following two subsections address these facets.</p>
+<!--			<div title="Scope of Normative RIM Content" hl7Id="noteBal">
+				<p>The section outlines the portions of the RIM Normative Content for which negative ballot comments will be considered "in scope." The establishment of Normative ballot status for any particular section of the document is determined by two factors: the intention or objective of the document section in question; and the current Normative status of specific elements within those sections. The following two subsections address these facets.</p>
+-->
+				<div title="Ballot Status by Section" hl7Id="noteBalBySect">
+					<p>This ballot is made up of seven sections, including this one. As indicated by the icons in the ballot, the status for these seven sections is as follows:</p>
+					<ol>
+						<li>
+							Preface - Notes to Balloters - <b>Reference:</b> Provides a guide to the reviewers for their review and establishes the "scope" of this ballot.<br/>
+							<br/>
+						</li>
+						<li>
+							Introduction - <b>Mixed:</b>See following sub-topics.  and design of the RIM.							<br/>
+							<br/>
+							<ul>
+								<li>2.1 Uses of a Reference Information Model (RIM) in Health Informatics - <b>Reference</b> Provides an overview of the requirements for the RIM.							<br/>
+									<br/>
+								</li>
+								<li>2.2 Specification contents &amp; 2.3 RIM Abstraction and UML Properties - <b>Normative Ballot</b> Relate to the core structure of the RIM and the extensions to the UML to represent HL7-specific properties in the RIM.							<br/>
+									<br/>
+								</li>
+							</ul>
+						</li>
+						<li>
+							Vocabulary and Data Types Specifications - <b>Normative Ballot:</b> Expresses the Normative vocabulary content that is also part of this ballot, as well as the Normative binding to specific data types in both Data Types Release 1, and Data Types Release 2.<br/>
+							<br/>
+						</li>
+						<li>
+							RIM Diagrams - <b>Reference:</b> Facilitates reviewing the detailed elements of the RIM that appear in later sections.<br/>
+							<br/>
+						</li>
+						<li>
+							RIM Subject Areas - <b>Reference:</b> Provide a convenient, but non-normative grouping of classes by related areas.<br/>
+							<br/>
+						</li>
+						<li>
+							RIM Classes - <b>Normative Ballot:</b> This is the core content of the HL7 Reference Information Model, including the complete specification of each class in the RIM, the attributes of those classes, and data type and vocabulary constraints on those attributes.<br/>
+							<br/>
+						</li>
+						<li>
+							RIM Associations - <b>Normative Ballot</b>: This is a complete definition of the associations within the RIM, including, where a they exist, descriptions of those associations.</li>
+					</ol>
+				</div>
+				<!-- for NON-ballot, drop this section 
+				<div title="Ballot Scope for Specific Content Types" hl7Id="noteBalScopebyType"> -->
+				<!-- For first Ballot 
+					<p>The HL7 RIM is currently being balloted for a new release. Material that was balloted and approved as part of the previous release, and that has been unchanged since that ballot, is considered to be out of scope. This section considers the types of changes that may have occurred in the period between the completion of one release, and the beginning of formal balloting on the next release as:</p>
+-->
+				<!-- For second ballot 
+					<p>The HL7 RIM is currently being re-balloted for a release. Changes have been made to achieve reconciliation of negative votes.  Material that was balloted and approved as part of the previous release, and that has been unchanged since that ballot, is considered to be out of scope. This section considers the types of changes that may have occurred in the period between the first and second ballots in this release as:</p>
+					<ul>
+						<li>
+							<b>Changes to specifications that govern RIM content: </b> Material that defines how the RIM is modeled within the UML framework is represented in sections 2.2 and 2.3 of this document. <b>To the degree that these are new or have been changed since the previous ballot, they are within scope for the ballot.</b>
+							<br/>
+							<br/>
+						</li>
+						<li>
+							<b>Classes Added to the RIM:</b> Classes may have been added to the RIM, or moved within their inheritance hierarchy between two releases.  <b>All classes that have been added or moved are "in scope" and subject to ballot comment and vote</b>, as are the attributes and associations of those classes, and the vocabulary content created to support them. A specific listing of the classes that have been added can be found in subsequent sections.<br/>
+							<br/>
+						</li>
+						<li>
+							<b>Attributes Added to the RIM:</b> New attributes may have been added to existing RIM classes. <b>Where these attributes exist, they are "in scope" for ballot review and comment,</b> as are the vocabulary concept domain constraints created to support those attributes. A specific listing of the attributes that have been added  can be found in subsequent sections.<br/>
+							<br/>
+						</li>-->
+				<!-- the following <li/> should ONLY appear as part of the second ballot introduction for a given RIM release
+						<li>
+							<b>Attributes Deleted from the RIM:</b> Attributes that were added to the RIM since the prior Normative release was approved and that were subject to a "Persuasive" negative ballot may have been deleted to reconcile such a negative vote. These attributes were deleted rather than "deprecated" because they were never present in a Normative RIM release (and therefore also not in a Normative Edition) and appeared in at most two versions of the RIM. Deletion represents a significant change in the status of the attribute, and therefore <b>is "in scope" for ballot review, comment and vote.</b> The voter should be aware however, that the removal of these attributes was reviewed both during Ballot Reconciliation and during RIM Harmonization and was deemed appropriate in both settings. A specific listing of the attributes that have been deleted  can be found in subsequent sections.<br/>
+							<br/>
+						</li> -->
+				<!-- nnot in NON Ballot 						<li>
+							<b>Attributes Deprecated in the RIM:</b> Selected attributes within the previously Normative RIM have been "Deprecated" from further use. Deprecation represents a significant change in the status of the attribute, and therefore <b>deprecation is "in scope" for ballot review, comment and vote.</b> A specific listing of the attributes that have been deprecated  can be found in subsequent sections.<br/>
+							<br/>
+						</li>
+						<li>
+							<b>Changes in the Cardinality and other properties of Attributes and Associations:</b> Previously Normative attributes and associations may have had their cardinality changed. Such changes have always reflected a "relaxation" of the cardinality constraint, in order that the change would not affect existing designs. Nevertheless, <b>these changes are "in scope" for comment and vote.</b> A listing of these changes  can be found in subsequent sections.<br/>
+							<br/>
+						</li>
+						<li>
+							<b>Class and Attribute descriptive changes:</b> Modeling and Methodology has an on-going process to review and improve the textual definitions and descriptions in the RIM  The objective is to improve the definitions and descriptions that are at the core of the specification for Classes and Attributes in the RIM. In each case, <b>
+								<i>the objective is to clarify the descriptions, not to alter them.</i>
+							</b> The activity may also involve splitting the descriptive text into various annotation types.<br/>
+							<br/>
+The presence of such alterations in the class and attribute descriptions are not "in scope" as changes in the class or attribute in question, unless it can be demonstrated that the alteration changed the semantic interpretation of the element in question. Therefore, negative comments and <b>votes against the descriptions of previously Normative Classes and Attributes will be found "out of scope" (Unrelated) , unless a case is made that the semantic definition of the element in question has been altered.</b> In general, the semantic definition includes only the "Definition", "Description", "FormalConstraint" and "UsageConstraint" annotations.<br/>
+							<br/>
+The above notwithstanding, editorial comments and suggestions on the definitions are always welcome.<br/>
+							<br/>
+						</li>
+						<li>
+							<b>Additions and changes to Vocabulary Governing RIM Attributes with Data Type CS:</b> In the period between RIM release there are always numerous additions to the Code Systems that provide concept codes for RIM attributes whose data type is "CS".  These code systems are part of the Normative RIM Ballot, and thus <b>these changes are "in scope" for comment and vote.</b>
+						</li>
+					</ul>
+				</div> -->
+			</div>
+			<div title="Management of RIM Changes Arising from Ballot" hl7Id="rim-delta">
+				<p>The RIM is developed and maintained within HL7 using a process known as Harmonization. In this process, change proposals are developed by individual Work Groups that are developing content for forthcoming ballots. These change proposals are forwarded for review at a scheduled Harmonization Meeting, where they are reviewed by representatives of all of the Working Groups involved in ballot development. The results of those meetings are announced, and are subject to appeal at the Technical Steering Committee, although there has never been such an appeal to date.</p>
+				<p>With the adoption of the "ANSI Continuous Maintenance Process" for the RIM, which amounts to a continuous balloting process, the Methodology and Modeling Work Group (M&amp;M) has determined that it wishes to continue using the Harmonization process as the <b>primary method</b> of adopting RIM and Vocabulary content changes. As a consequence, any RIM changes needed to reconcile Negative ballots will be documented and submitted for review at the next-available Harmonization meeting. The specific process, which was followed with prior "continuous maintenance" ballots, is as follows:</p>
+				<ul>
+					<li>In face-to-face ballot reconciliation meetings and scheduled reconciliation conference calls, the Methodology and Modeling Work Group will review each negative comment and determine a recommended action. This action is documented in the Ballot reconciliation spreadsheet.
+<br/>
+						<br/>
+					</li>
+					<li>For each reconciliation action that would require Harmonization review, whether or not the change was found persuasive, M&amp;M will seek to have a formal harmonization change proposal made to implement that change. The vote of M&amp;M during reconciliation, will be noted as the "Interested Committee's Position" on the issue.
+<br/>
+						<br/>
+					</li>
+					<li>The change proposal will then be reviewed and acted upon at the next Harmonization meeting.
+<br/>
+						<br/>
+					</li>
+					<li>If the Harmonization Meeting does not agree with the recommendations from the M&amp;M reconciliation meeting, the reconciliation group will be reconvened to consider what action to take next.
+</li>
+				</ul>
+				<p>One of the consequences of this decision is that individuals submitting Negative votes should provide enough documentation that a formal Harmonization Change Proposal can be developed in support of the voter's position.</p>
+			</div>
+			<!-- folloing DIV appears ONLY in the Second RIM ballot for each release
+			<div title="Changes to RIM and Vocabulary Content Between First and Second Ballots for R3" hl7Id="noteBallAddsSep2010">
+				<p>As a result of routine RIM Harmonization in August 2010, and the activity of reconciling negative votes cast in the first Normative Ballot for RIM Release 3, a number of substantive changes were made to the RIM and its defining vocabulary.  <b>These changes are the only RIM content that is "in scope" for vote in the second Normative Ballot during Ballot2010Sep</b>. These are listed in the following sub-sections.
+					</p>
+				<div title="Changes to Revise Approach to Defining Criteria with RIM Classes" hl7Id="noteBallAddsCriteria">
+					<p>A significant Negative vote challenge was raised to changes added to the previous RIM version for defining criteria.  The concern was that the strategy adopted in March was open to ambiguous interpretation and ambiguous designs.  Several Reconciliation meetings and calls, and a special Harmonization session agreed to the following solution:</p>
+					<ul>
+						<li>Delete attribute <b>Act.recordStatus</b>
+						</li>
+						<li>Delete attribute <b>Participation.criterionInd</b>
+						</li>
+						<li>Add new attribute <a href="#Act-isCriterionInd-att">Act.isCriterionInd</a>
+						</li>
+						<li>Retire (delete) the following codes from code system <a href="../vocabulary/ActMood.html">ActMood</a>: GOL.CRT, INT.CRT, PRMS.CRT, RQO.CRT and RSK.CRT </li>
+						<li>Deprecate the following codes from code system <a href="../vocabulary/ActMood.html">ActMood</a>: CRT and EVN.CRT </li>
+						<li>Add new code <a href="../vocabulary/ActRelationshipType.html#META">META</a> was added to code system  <a href="../vocabulary/ActRelationshipType.html">ActRelationshipType</a>
+						</li>
+					</ul>
+				</div>
+				<div title="Revise Designation of Context Conduction Style" hl7Id="noteBallAddsConduction">
+					<p>A significant Negative vote challenge was raised to using an Act attribute to convey the context conduction style for a whole model.  This was resolved by removing the attribute from act and representing the concept as a new property of a static model. Changes that resulted are:</p>
+					<ul>
+						<li>Delete attribute <b>Act.contextConductionStyleCode</b>
+						</li>
+					</ul>
+				</div>
+				<div title="Strengthen Constraints and Definitions for various &quot;quanity&quot; Attributes" hl7Id="noteBallAddsQuantity">
+					<p>A significant Negative vote challenge was raised to the  interpretation of the various "quanity" attributes in the RIM.  (The addition of <a href="#Participation-quantity-att">Participation.quantity</a> in March 2010 precipitated the concern.  Several MnM Reconciliation calls and Harmonization resulted in substantive changes to the constraints and definitions of the following RIM attributes:</p>
+					<ul>
+						<li>Attribute <a href="#Entity-quantity-att">Entity.quantity</a>
+						</li>
+						<li>Attribute <a href="#Role-quantity-att">Role.quantity</a>
+						</li>
+						<li>Attribute <a href="#Participation-quantity-att">Participation.quantity</a>
+						</li>
+						<li>Attribute <a href="#Supply-quantity-att">Supply.quantity</a>
+						</li>
+						<li>Attribute <a href="#SubstanceAdministration-doseQuantity-att">SubstanceAdministration.doseQuantity</a>
+						</li>
+					</ul>
+				</div>
+				<div title="Less Substantive Changes to RIM and Vocabulary Content Due to Harmonization and Reconciliation" hl7Id="noteBallAddsHarm">
+					<p>The less substantive changes were adopted in Reconciliation and Harmonization meeting:</p>
+					<ul>
+						<li>Corrected the definition of class <a href="#Exposure-cls">Exposure</a> and its class code <a href="../vocabulary/ActClass.html#EXPOS">EXPOS</a>.</li>
+						<li>Corrected definitions and relationships for <a href="../vocabulary/ActRelationshipType.html">ActRelationshipType</a>  codes: <a href="../vocabulary/ActRelationshipType.html#EAE">EAE</a>, <a href="../vocabulary/ActRelationshipType.html#SAE">SAE</a>, and <a href="../vocabulary/ActRelationshipType.html#CONCURRENT">CONCURRENT</a>.</li>
+						<li>Change the concept relationships in code system <a href="../vocabulary/AddressPartType.html">AddressPartType</a>  to reflect their semantics as components rather than specializations.</li>
+						<li>Relaxed the constraint on code <a href="../vocabulary/ActRelationshipType.html#CAUS">ActRelationshipType.CAUS</a>.</li>
+						<li>Revised the formal Name:Class property on  on code <a href="../vocabulary/ActClass.html#PCPR">ActClass.PCPR</a> from "patient care provision" to "care provision", in keeping with the definition and print name of that code.</li>
+					</ul>
+				</div>
+			</div>   -->
+			<!-- Pattern for the FIRST ballot on a new release 
+			<div title="Changes to RIM and Vocabulary Content Between R2 and BallotMay2010" hl7Id="noteBallAddsMay2010">
+				<p>Between the conclusion of balloting on RIM Release 2 in September 2009, and the initiation of balloting on RIM Release 3 in 2010, there were two Harmonization meetings. These resulted in the following RIM changes.  The changes are listed in the following sections.  These are the changes that are  "in scope" for Ballot2010May.</p>
+ -->
+			<!-- Pattern for the FIRST ballot on a new release  
+				<p>Between the conclusion of balloting on RIM Release 2 in September 2009, and the initiation of balloting on RIM Release 3 in 2010, there were two Harmonization meetings. These resulted in the following RIM changes.  The changes are listed in the following sections.  These are the changes that  were "in scope" for Ballot2010May, but <b>these changes are "out of scope" for the second ballot in Ballot2010Sep unless the change was specifically voted upon in Ballot2010May and revised as a result of that ballot.  Lists of elements that changed in this regard are provided in the preceding separate section.</b>
+				</p>
+				<div title="Additions to RIM Normative Content Since R2" hl7Id="noteBallAdds">
+					<p>The <b>specifications that govern RIM content (sections 2.2 and 2.3)</b> were added to the RIM normative scope for this release.</p>
+					<p>
+						<b>No classes were added</b> in their entirety as new elements of the RIM since Release 2 was approved:</p>
+					<p>The following attributes were added to Normative classes of the RIM since Release 2 was approved:</p>
+					<ul>
+						<li>
+							<a href="#Act-recordStatusCode-att">Act.recordStatusCode</a> (November 2009)
+						</li>
+						<li>
+							<a href="#Act-contextConductionStyleCode-att">Act.contextConductionStyleCode</a> (March 2010)
+						</li>
+						<li>
+							<a href="#ActRelationship-blockedContextActRelationshipType-att">ActRelationship.blockedContextActRelationshipType</a> (March 2010)
+						</li>
+						<li>
+							<a href="#ActRelationship-blockedContextParticipationType-att">ActRelationship.blockedContextParticipationType</a> (March 2010)
+						</li>
+						<li>
+							<a href="#Participation-priorityNumber-att">Participation.priorityNumber</a> (November 2009)
+						</li>
+						<li>
+							<a href="#Participation-criterionInd-att">Participation.criterionInd</a> (November 2009)
+						</li>
+						<li>
+							<a href="#Participation-quantity-att">Participation.quantity</a> (March 2010)
+						</li>
+						<li>
+							<a href="#Role-priorityNumber-att">Role.priorityNumber</a> (November 2009)
+						</li>
+					</ul>
+				</div>
+				<div title="Attributes Deprecated in RIM Normative Content Since R2" hl7Id="noteBallDepr">
+					<p>The following attributes in Normative RIM classes were Deprecated from further use since Release 2 was approved:</p>
+					<ul>
+						<li>
+							<a href="#ActRelationship-contextControlCode-att">ActRelationship.contextControlCode</a> (March 2010)
+						</li>
+						<li>
+							<a href="#ActRelationship-contextConductionInd-att">ActRelationship.contextConductionInd</a> (March 2010)
+						</li>
+						<li>
+							<a href="#Participation-contextControlCode-att">Participation.contextControlCode</a> (March 2010)
+						</li>
+					</ul>
+				</div>
+				<div title="Cardinality Changes in RIM Normative Content Since R2" hl7Id="noteBallCard">
+					<p>The following attributes in Normative RIM classes had their Cardinality changed since Release 2 was approved:</p>
+					<ul>
+						<li>
+							<a href="#Acknowledgement-typeCode-att">Acknowledgement.typeCode</a> from 0..1 to 1..1 and Mandatory=true (November 2009)</li>
+						<li>
+							<a href="#AcknowledgementDetail-typeCode-att">AcknowledgementDetail.typeCode</a> from 0..1 to 1..1 and Mandatory=true (November 2009)</li>
+						<li>
+							<a href="#CommunicationFunction-typeCode-att">CommunicationFunction.typeCode</a> from 0..1 to 1..1 and Mandatory=true (November 2009)</li>
+					</ul>
+				</div>
+				<div title="Other Substantive Changes in RIM Normative Content Since R2" hl7Id="noteBallOther">
+					<p>The additional changes represent substantive change to the RIM Release 2 was approved:</p>
+					<ul>
+						<li>
+							<a href="#ContextStructure-versionNumber-att">ContextStructure.versionNumber</a> from data type of INT.pos to data type of ST (March 2010)
+						</li>
+						<li>
+							<a href="#Role-effectiveTime-att">Role.effectiveTime</a> from data type of IVL&lt;TS> to data type of QSET&lt;TS> (November 2009)</li>
+					</ul>
+				</div>
+			</div>-->
+			<div title="Release notes" hl7Id="relnote-rimdiv2"/>
+		</precedingText>
+		<publishedItem name="preface-rimdiv3" title="Preface" contentsLevel="None">
+			<itemReference root="DEFN" artifact="RIM" realmNamespace="UV"/>
+			<filter name="Reference" root="DEFN" filterType="Include" artifact="RIM" realmNamespace="UV" artifactName="//mif:staticModel/mif:historyItem/mif:description"/>
+		</publishedItem>
+	</publishedGroup>
+	<publishedGroup name="true-intro" title="Introduction: Requirements and Interpretation of the RIM" contentsLevel="Detailed">
+		<precedingText>
+			<div hl7Id="rimIntUses" title="Uses of a Reference Information Model (RIM) in Health Informatics [Reference]">
+				<div hl7Id="rimIntH7use" title="Use of the RIM by HL7">
+					<p>The HL7 RIM is a critical component of the V3 development process.  It is the root of all information models and structures developed as part of the V3 development process.</p>
+					<p>The HL7 V3 standard development process is a model-driven methodology in which a network of inter-related models are developed that depict the static and behavioral aspects of the requirements and design of HL7 standards, as well as the underlying semantics and business rules that govern them.</p>
+					<p>The RIM provides a static view of the information needs of HL7 V3 standards.  It includes class and state-machine diagrams and is accompanied by story boards, interaction models, data type models, terminology models, and other types of models to provide a complete view of the requirements and design of HL7 standards.  The classes, attributes, state-machines, and relationships in the RIM are used to derive domain-specific information models that are then transformed through a series of constraining refinement processes to eventually yield a static model of the information content of an HL7 standard.</p>
+					<p>The HL7 V3 standard development process defines the rules governing the derivation of domain information models from the RIM and the refinement of those models into HL7 standard specifications.  The rules require that all information structures in derived models be traceable back to the RIM and that their semantic and related business rules not conflict with those specified in the RIM.  The RIM therefore is the ultimate source for all information content in HL7 V3 standards.</p>
+					<p>The RIM is used by HL7 affiliates to extend HL7 V3 standards to meet local needs.  Through a process known as localization, V3 standard specifications are extended using the RIM as the source for new information content.  This new information is derived from the RIM and refined in the same manner used to create the original specification.</p>
+				</div>
+				<div hl7Id="RimIntOutUse" title="Uses of the RIM Outside of HL7">
+					<p>The RIM is primarily for use by HL7 and its international affiliates.  However, others outside of HL7 have also found the RIM useful.  Although HL7 maintains a copyright on the expression of this standard, HL7 does not seek to license or otherwise control the use of information structures or programs that implement this specification.</p>  
+					<p>Some adopters use the V3 standards development process and the RIM to develop HL7-like message specifications in their own environments.  Other organizations are known to use the RIM as a source of input to their enterprise information architectures, as a starting place for systems analysis and design, as internal application objects, or even as the basic model for enterprise integration databases.These adopters include vendors, large integrated delivery networks, and government agencies.  These same adopters are extremely active in HL7 and provide practical input to the RIM and other aspects of V3 the development process.</p>
+					<p>The RIM is only one model of health care information needs.  The abstract style of the RIM and the ability to extend the RIM through vocabulary specifications make the RIM applicable to any conceivable healthcare system information interchange scenario.  In fact, it is conceptually applicable to any information domain involving entities playing roles and participating in acts.</p>
+					<p>The universal applicability of the RIM makes it particularly useful for an organization like HL7 that has to consider the needs of a large and diverse membership.  The style of the RIM makes it extremely stable, which is another important characteristic for HL7.  The HL7 standards development process calls for the creation of domain specific models derived from the RIM and the incremental refinement of those models into design models that are specific to the problem area.  These problem area specific design models narrow the abstractness of the RIM and include constraints on attribute values and class relationships that are use case specific.  External organizations considering using the HL7 RIM are advised to adopt a similar process of deriving design models as a transformation of the RIM.</p>
+				</div>
+			</div>
+			<div hl7Id="SpecContents" title="Specification contents [Normative]">
+				<p>The RIM consists of classes assigned to one or more subject area packages.  Attributes, Relationships, and State Machines are associated with classes.</p>
+				<p>Each class within the RIM represents information about a concept that must be documented and communicated within the health care environment.  The names that are assigned to these classes are drawn from normal language, but the use of these names is necessarily constrained to the "name space" of the RIM.  The meaning of these classes is entirely embodied in the definition of the class, and the definitions of the properties (attributes and associations) assigned to that class.   Thus, for example, the meaning of the "Role" class can only be understood by studying the definition provided and the properties assigned.  Definitions from another context or dictionary definitions for the name are not relevant within the context of the RIM name space.</p>
+				<p>The RIM is expressed using the Unified Modeling Language (UML) with HL7 specific tags as extensions to the UML model element meta-data.  All standard UML model element metadata values are normative but only the following HL7 extensions are also normative:</p>
+				<ol>
+					<li>Class.stateAttribute</li>
+					<li>Class.classCode</li>
+					<li>Attribute.mandatoryInclusion</li>
+					<li>Attribute.conductible</li>
+					<li>Attribute.conformance</li>
+					<li>Attribute.isDocumentCharacteristic</li>
+					<li>Attribute.isImmutable</li>
+					<li>Attribute.defaultValue</li>
+					<li>Attribute.vocabDomain</li>
+					<li>Association.conformance</li>
+				</ol>
+			</div>
+			<div hl7Id="RimInterpretUnd" title="RIM Abstraction and UML Properties [Normative]">
+				<p>The RIM uses a very abstract modeling style.  At the core of the RIM are its back-bone classes, their specializations (sub-types), and the "structural" attributes that encode definitions for further enumerated sub-types that have no additional attributes and associations and are therefore not diagrammed as part of the RIM structure.  An understanding of these classes and attributes is essential to understanding the RIM.  This section describes how the abstractions are represented in UML and controlled through the application of controlling vocabulary that is part of this specification.  An "executive overview" or high-level tutorial that provides examples of how these abstractions can be used to represent more detailed health information is contained in Annex B. <i>[Note: the designation of attributes as "structural" is only an informal designation. Formally, these class codes and other type codes in the RIM are designated with the "<b>isImmutable</b>" property set to "true".  Immutable attributes receive special handling in the Implementable Technology Specifications(ITS) and in the rules surrounding the allowed values in instances of the class.]</i>
+				</p>
+				<div hl7Id="rimUnderAbst" title="RIM as an abstract model">
+					<p>The "back-bone" of the RIM, which is used to express the clinical and administrative content of health care, is comprised of six classes:</p>
+					<ul>
+						<li>
+							<object name="classRef">
+								<param name="root" value="DEFN"/>
+								<param name="realmNamespace" value="UV"/>
+								<param name="artifact" value="RIM"/>
+								<param name="className" value="Act"/>
+							</object> which represents the actions that are executed and must be documented as health care is managed and provided;</li>
+						<li>
+							<object name="classRef">
+								<param name="root" value="DEFN"/>
+								<param name="realmNamespace" value="UV"/>
+								<param name="artifact" value="RIM"/>
+								<param name="className" value="Participation"/>
+							</object> which expresses the context for an act in terms such as who performed it, for whom it was done, where it was done, etc.;</li>
+						<li>
+							<object name="classRef">
+								<param name="root" value="DEFN"/>
+								<param name="realmNamespace" value="UV"/>
+								<param name="artifact" value="RIM"/>
+								<param name="className" value="Entity"/>
+							</object> which represents the physical things and beings that are of interest to, and take part in health care;</li>
+						<li>
+							<object name="classRef">
+								<param name="root" value="DEFN"/>
+								<param name="realmNamespace" value="UV"/>
+								<param name="artifact" value="RIM"/>
+								<param name="className" value="Role"/>
+							</object> which establishes the roles that entities play as they participate in health care acts;</li>
+						<li>
+							<object name="classRef">
+								<param name="root" value="DEFN"/>
+								<param name="realmNamespace" value="UV"/>
+								<param name="artifact" value="RIM"/>
+								<param name="className" value="ActRelationship"/>
+							</object> which represents the binding of one act to another, such as the relationship between an order for an observation and the observation event as it occurs; and</li>
+						<li>
+							<object name="classRef">
+								<param name="root" value="DEFN"/>
+								<param name="realmNamespace" value="UV"/>
+								<param name="artifact" value="RIM"/>
+								<param name="className" value="RoleLink"/>
+							</object> which represents relationships between individual roles.</li>
+					</ul>
+					<p>Three of these classes - Act, Entity and Role - are further represented by a set of specialized classes, where the set of sub-types are not fully enumerated in the class model . In the HL7 representation, a sub-type is only added to the RIM class model if it requires one or more attributes or associations that are not inherited from its parents. Classes that represent distinct concepts, but which need no further attributes or associations are represented solely as a unique code in the controlling vocabulary. Therefore, these three classes include the following coded attributes, which serve to further define the concept being modeled:</p>
+					<ul>
+						<li>
+							<b>classCode </b>(in Act, Entity and Role) represents the exact class or concept intended, whether or not that class is represented as a class in the RIM hierarchy;</li>
+						<li>
+							<b>moodCode </b>(in Act) and <b>determinerCode </b>(in Entity) an attribute that distinguishes whether the class represents an instance or a kind of Act or Entity. If the class is a specialization of Act then moodCode further delineates the instance as an occurrence or an intent;</li>
+						<li>
+							<b>code </b>(in Act, Entity and Role) provides for further classification within a particular classCode value, such as a particular type of observation within the Observation class.
+</li>
+					</ul>
+					<p>The other three RIM back-bone classes - Participation, ActRelationship and RoleLink - are not represented by enumerated generalization-specialization hierarchies. Nevertheless, these classes represent a variety of concepts, such as different forms of participation or different kinds of relationships between acts. These distinctions are represented by a <b>typeCode </b>attribute that is asserted for each of these classes.</p>
+				</div>
+				<div hl7Id="rimUnderClsRep" title="Representation of RIM class structure">
+					<p>As noted previously, the RIM is modeled using a subset of the semantics embodied in UML. The RIM is a set of UML classes, each containing one or more attributes, which are assigned a data type based on an independent specification of data types. The classes are linked either by a set of association relationships, identified by unique role names, or by generalization relationships.
+					</p>
+					<p>Selected classes have defined state machines.  The primary purpose of these state machines is to allow "trigger events" (events that initiate communication) to be defined with respect to the state transitions.  These state machines are not intended to represent a full behavioral model for their respective classes.  At present state machines are only defined for those "back bone" classes that have a unique identity, and thus represent persistent concepts. These classes are: Act, Managed Participation, Role and Entity.  A state machine is also defined for the QueryEvent class in the QueryControl subject area.  
+				</p>
+					<p>Each of these elements includes a textual definition. The appearance of attributes and associations is controlled by cardinality and related constraints applied to the attributes and to the roles that link the associations to the classes.
+				</p>
+					<div hl7Id="rimUnderClsProp" title="HL7 Properties for RIM classes">
+						<p>In order to meet the requirements of model-based development, the UML profile defined by HL7 includes two additional "properties" for RIM classes.  These are:
+						</p>
+						<ul>
+							<li>Property: <b>stateAttribute</b> - For classes with a state machine, this property names the attribute that will be encoded with the name of the state of the class.
+							</li>
+							<li>Property: <b>classCode</b> - For classes that have specializations and a coded attribute that designates which of the specializations is active (Act Role and Entity in the current RIM), this property contains the defined class code for each specialization.  Thus, for the Observation class in the RIM, the value of this property is "OBS."
+							</li>
+						</ul>
+					</div>
+				</div>
+				<div hl7Id="rimUnderAttRep" title="Representation of RIM attributes">
+					<p>As noted previously, the RIM draws its static model elements from UML. Thus the attributes of the RIM classes each have a definition (and related annotations), a specified cardinality, and a defined data type. As was the case with classes (see above), the UML profile defined by HL7 includes five additional "properties" for RIM attributes.  These are:
+					</p>
+					<ul>
+						<li>Property: <b>mandatoryInclusion</b> - <ul>
+								<li>In a static model for communication, the mandatory  property indicates whether a particular attribute must always have a non-null value in any HL7 instance. This property is asserted as true for a limited number of RIM attributes. Thus these attributes must be included in any static model class that is derived from the RIM class that contains the attribute. </li>
+							</ul>
+						</li>
+						<li>Property: <b>conductible</b> - Specific characteristics of this property are:
+							<ul>
+								<li>It applies to all attributes of the Act class and of the specializations of the Act class</li>
+								<li> It is a Boolean property;  conformance to it is mandatory; and its default value is false.</li>
+								<li>The interpretation of this property is that:
+									<ul>
+										<li>
+											<b>If the property is <i>true</i>  for a particular attribute</b> it asserts that the value of that attribute will conduct.  Conducted Act attributes are treated as propagating and overriding.</li>
+										<li>
+											<b>Example: </b>In an instance, ActA.confidentialityCode = I. The "conductible" property for the RIM attribute <a href="#Act-confidentialityCode-att">Act.confidentialityCode</a>  is <b>true</b> and therefore, in this instance,  the confidentialityCode value is conducted to ActB via a component act relationship. If ActB.confidentialityCode is not present, then ActB.confidentialityCode inherits the value “I” via conduction (<b>propagating</b>). If ActB.confidentialityCode were populated with a value of “N”, for instance, then the ActB value overrides the value conducted in, and propagates to subsequent acts (<b>overriding and propagating</b>).
+										</li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li>Property: <b>conformance</b> - <ul>
+								<li>The conformance constraint specifies how a model element must be handled by sending or receiving applications. Every attribute and association element in a model has an explicit or implicit conformance indicator constraint. The constraint has one of three values: Required, Unspecified or Not Permitted. The <a href="../../infrastructure/conformance/conformance.html#CECconformInd3"> full specification of this property</a> can be found in the <a href="../../infrastructure/conformance/conformance.html">Refinement, Constraint and Localization</a> specification.</li>
+							</ul>
+						</li>
+						<li>Property: <b>isDocumentCharacteristic: </b>  - Specific characteristics of this property are:
+							<ul>
+								<li>Complete specification is in the document <a href="../../infrastructure/coreprinciples/v3modelcoreprinciples.html#Special_DocumentCharacteristic">Core Principles and Properties of HL7 Version 3 Models</a>, where the following definition is provided:<ul>
+										<li>If true, indicates that the Act attribute or association (as represented by a typeCode for either ActRelationship or Participation) is a descriptor of the document (record) represented by the act object.</li>
+										<li>If false, indicates the property is a descriptor of the action itself — actual, intended, or potential. Applies to interpretation of attributes and associations with respect to changes in the value of Act.actionNegationInd and Act.moodCode. (See descriptions of these attributes for further discussion.) </li>
+										<li>For example, in an order, the "id" attribute [isDocumentCharacteristic = true] is an identifier of the record of the order, not an identifier of the intended event. On the other hand, the "code" attribute [isDocumentCharacteristic = false] describes a characteristic of the intended event. </li>
+									</ul>
+								</li>
+							</ul>
+						</li>
+						<li>Property: <b>isImmutable</b> - <ul>
+								<li>Selected attributes of the RIM are designated as "immutable" by setting this property true.  Once an object instance is defined that contains a value for an immutable attribute, that attribute cannot be changed for the life of that instance.  (Note that for coded attributes, the attribute can be expressed at greater and lesser levels of granularity.  For example, a public health case could be expressed with a classCode of CASE, OBS or ACT without violating the "no change" rule.</li>
+							</ul>
+						</li>
+						<li>Property: <b>defaultValue</b> - <ul>
+								<li>Selected RIM attributes, primarily those with a Boolean data type, have a designated "default value" specified with this property.  If the attribute is not otherwise specified applications should treat the class as though this attribute is equal to its default value.</li>
+							</ul>
+						</li>
+						<li>Property: <b>vocabDomain</b>  - Specific characteristics of this property are:
+							<ul>
+								<li>Each attribute of the RIM that is assigned a data type indicating that the attributes are coded (or might be constrained to a coded data type - such as ANY) has a "vocabDomain" property designating the HL7-defined Concept Domain whose concept space satisfies the requirements of that attribute.   All of these concept domains are included as part of this ballot and are subject to the same voting principles as the other elements of the RIM.
+								</li>
+								<li>Further, several of the attributes in the RIM are coded with the CS data type.  In these cases the designated "vocabDomain" has been bound in the universal realm to a value set from which the codes for this SHALL be drawn.  Moreover, this value set is defined against a code system that SHALL be defined and maintained by HL7. The classCode and typeCode attributes mentioned above are examples of attributes with a CS data type. All of the code systems for these attributes are included as part of this ballot and are subject to the same voting principles as the other elements of the RIM.
+								</li>
+							</ul>
+						</li>
+					</ul>
+				</div>
+				<div title="Related specifications" hl7Id="rimUnderRelated">
+					<p>As noted above, each attribute in the RIM is assigned a data type. The formal specification for these data types is embodied in the normative specification "<a href="../../infrastructure/datatypes_r2/datatypes_r2.html">HL7 Version 3 Standard: Data Types - Abstract Specification, Release 2</a>".</p>
+				</div>
+			</div>
+			<div hl7Id="rimIntOtherInfo" title="Further information">
+				<p>Questions or comments about the content of the standard may be addressed to HL7 at (<a href="http://www.hl7.org">www.hl7.org</a>), to one of the HL7 International Affiliate organizations.</p>
+			</div>
+		</precedingText>
+		<publishedItem name="introduc-rimdiv" title="Introduction" contentsLevel="None">
+			<itemReference root="DEFN" artifact="RIM" realmNamespace="UV"/>
+			<filter name="MixedContent" root="DEFN" filterType="Exclude" artifact="RIM" realmNamespace="UV" artifactName="//mif:staticModel/mif:historyItem/mif:description"/>
+		</publishedItem>
+	</publishedGroup>
+	<publishedGroup name="RIMrelated" title="Vocabulary and Data Types Specifications" contentsLevel="Detailed">
+		<precedingText>
+			<div title="Normative Vocabulary for the RIM" hl7Id="rimSpecVoc">
+				<div title="Normative Concept Domain Constraints for RIM Attributes" hl7Id="rimSpecConceptDomain">
+					<p>The <a href="../../infrastructure/vocabulary/vocabulary.html">HL7 vocabulary specifications</a> are detailed in a separate document. A selected sub-set of these specifications is part of the normative RIM specification. Specifically, each RIM attribute that is assigned a coded data type also has a defined <b>Concept Domain</b> that is the RIM-level constraint for that attribute. At the point where each RIM attribute is defined (below) 
+the Concept Domain constraint for the coded attributes will be shown along with a hyper-link to the Concept Domain specification in the Vocabulary. Each of these Concept Domain definitions is part of this Normative specification.</p>
+				</div>
+				<div title="Normative Code Systems for RIM Attributes of Data Type CS" hl7Id="rimSpecCodeSystem">
+					<p>Where RIM attributes are assigned <b>data type "CS"</b> a further normative constraint arises. Each such attribute <b>SHALL</b> draw its coded content from an HL7-defined code system that is considered to be part of the Normative RIM specification, and therefore subject to ballot as part of the RIM ballot. These <strong>Normative Code Systems</strong> are listed below :</p>
+					<table border="0" width="95%" cellspacing="10">
+						<col width="30%" span="3"/>
+						<tbody>
+							<tr>
+								<td>
+									<strong>
+										<a href="../../infrastructure/vocabulary/AcknowledgementCondition.html">AcknowledgementCondition</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/AcknowledgementDetailType.html">AcknowledgementDetailType</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/AcknowledgementType.html">AcknowledgementType</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ActClass.html">ActClass</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ActMood.html">ActMood</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ActRelationshipCheckpoint.html">ActRelationshipCheckpoint</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ActRelationshipJoin.html">ActRelationshipJoin</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ActRelationshipSplit.html">ActRelationshipSplit</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ActRelationshipSubset.html">ActRelationshipSubset</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ActRelationshipType.html">ActRelationshipType</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ActStatus.html">ActStatus</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/CommunicationFunctionType.html">CommunicationFunctionType</a>
+									</strong>
+								</td>
+								<td>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ContextControl.html">ContextControl</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/EntityClass.html">EntityClass</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/EntityDeterminer.html">EntityDeterminer</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/EntityStatus.html">EntityStatus</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/HL7ContextConductionStyle.html">HL7ContextConductionStyle</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/HL7StandardVersionCode.html">HL7StandardVersionCode</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ManagedParticipationStatus.html">ManagedParticipationStatus</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ModifyIndicator.html">ModifyIndicator</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/NullFlavor.html">NullFlavor</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ParticipationType.html">ParticipationType</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ProcessingID.html">ProcessingID</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ProcessingMode.html">ProcessingMode</a>
+									</strong>
+								</td>
+								<td>
+									<strong>
+										<a href="../../infrastructure/vocabulary/QueryPriority.html">QueryPriority</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/QueryResponse.html">QueryResponse</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/QueryStatusCode.html">QueryStatusCode</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/RelationshipConjunction.html">RelationshipConjunction</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ResponseLevel.html">ResponseLevel</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ResponseModality.html">ResponseModality</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/ResponseMode.html">ResponseMode</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/RoleClass.html">RoleClass</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/RoleLinkType.html">RoleLinkType</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/RoleStatus.html">RoleStatus</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/Sequencing.html">Sequencing</a>
+									</strong>
+									<br/>
+									<br/>
+									<strong>
+										<a href="../../infrastructure/vocabulary/TransmissionRelationshipTypeCode.html">TransmissionRelationshipTypeCode</a>
+									</strong>
+								</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+			<div title="Governing Data Type Specifications for the RIM" hl7Id="rimSpecData">
+				<!--				<div title="Data Types Transition" hl7Id="rimSpecDataTrans">
+					<p>As this release goes to Ballot, HL7 is undertaking the final ballot of a new specification of the data types that govern the HL7 Reference Information Model.  The original RIM Normative ballot referenced the <a href="../../infrastructure/datatypes/datatypes.html">HL7 Version 3 Standard: Data Types - Abstract Specification, Release 1 (ANSI/HL7 V3 DT, R1-2004)</a>. Per previously announced plans to migrate the RIM, this is no longer the governing binding.</p>
+					<p>  With this final ballot for RIM Release 2, Each of the attributes listed in the RIM specification is bound to a data type from : <a href="../../infrastructure/datatypes_r2/datatypes_r2.html">HL7 Version 3 Standard: Data Types - Abstract Specification, Release 2</a> that is finishing both an HL7 Ballot and a parallel ballot in ISO.  The detailed attribute listings below include a hyper-link to the appropriate location in that specification.</p>
+				</div> -->
+				<div title="Rationale for Data Types Binding" hl7Id="rimDtBind">
+					<p>The formally approved RIM Release 3 is bound to HL7 Version 3 Standard: Data Types - Abstract Specification, Release 2.  The original intention had been to convert all HL7 V3 specifications to these data types in this Normative Edition.  This plan was stymied by the lack of an approved ITS for Structures and the fact that all of the Normative models included in this Edition were balloted with Data Types R1.  Consequently, M&amp;M, with TSC concurrence, determined to publish this RIM with its proper Normative bindings  to data types  R2, but the static models in this Normative Edition  are bound to <a href="../../infrastructure/datatypes/datatypes.html">HL7 Version 3 Standard: Data Types - Abstract Specification, Release 1</a>.</p>
+					<!--					<p>Therefore, in this ballot, each of the attributes listed in the RIM specification is bound to a data type from : <a href="../../infrastructure/datatypes/datatypes.html">HL7 Version 3 Standard: Data Types - Abstract Specification, Release 1</a>.  The detailed attribute listings below include a hyper-link to the appropriate location in that specification.</p> -->
+				</div>
+			</div>
+		</precedingText>
+		<publishedItem name="relatedSpecs-rimdiv" title="Related Specs" contentsLevel="None">
+			<itemReference root="DEFN" artifact="RIM" realmNamespace="UV"/>
+			<filter name="MembershipNormativeBallot" root="DEFN" filterType="Exclude" artifact="RIM" realmNamespace="UV" artifactName="//mif:staticModel/mif:historyItem/mif:description"/>
+		</publishedItem>
+	</publishedGroup>
+	<publishedGroup name="RIMGraphics" title="UML Diagrams of RIM Content" contentsLevel="Detailed">
+		<precedingText>
+			<div title="Available Diagrams" hl7Id="rimSpecDgms">
+				<p>The representations available for the RIM include a diagram for most of the subject areas, state-machine diagrams for classes and a reference to the full RIM "billboard" in a PDF file where 'zooming' is more readily supported. The diagrams for the subject areas and state machines are grouped below.</p>
+				<ul>
+					<li>
+						<a href="./Graphics/RIM_billboard.pdf">The RIM Billboard as a PDF file can be reached from here.</a>
+					</li>
+				</ul>
+			</div>
+			<div title="Graphic Diagrams of the RIM Back Bone content" hl7Id="RIM-CoreGraphics">
+				<p>The classes in the "back-bone" of the RIM are represented in the following diagrams:</p>
+				<div title="FoundationClasses Subject Area" hl7Id="FoundationClasses">
+					<img imageType="image/gif" class="graphic" src="./Graphics/RIM_NormativeContent.gif" alt="FoundationClasses Subject Area"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="Acts Subject Area" hl7Id="Acts">
+					<img imageType="image/gif" class="graphic" alt="Acts Subject Area" src="./Graphics/RIM_Acts.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="Entities Subject Area" hl7Id="Entities">
+					<img imageType="image/gif" class="graphic" alt="Entities Subject Area" src="./Graphics/RIM_Entities.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="Roles Subject Area" hl7Id="Roles">
+					<img imageType="image/gif" class="graphic" alt="Roles Subject Area" src="./Graphics/RIM_Roles.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="State-machine diagram for Act class" hl7Id="ActStatus">
+					<img imageType="image/gif" class="graphic" alt="State-machine diagram for Act class" src="./Graphics/RIM_ActStatus.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="State-machine diagram for Entity class" hl7Id="EntityStatus">
+					<img imageType="image/gif" class="graphic" alt="State-machine diagram for Entity class" src="./Graphics/RIM_EntityStatus.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="State-machine diagram for ManagedParticipation class" hl7Id="ManagedParticipationStatus">
+					<img imageType="image/gif" class="graphic" alt="State-machine diagram for ManagedParticipation class" src="./Graphics/RIM_ManagedParticipationStatus.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="State-machine diagram for Role class" hl7Id="RoleStatus">
+					<img imageType="image/gif" class="graphic" alt="State-machine diagram for Role class" src="./Graphics/RIM_RoleStatus.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="State-machine diagram for RoleLink class" hl7Id="RoleLinkStatus">
+					<img imageType="image/gif" class="graphic" alt="State-machine diagram for RoleLink class" src="./Graphics/RIM_RoleLinkStatus.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="StructuredDocuments Subject Area" hl7Id="StructuredDocuments">
+					<img imageType="image/gif" class="graphic" alt="StructuredDocuments Subject Area" src="./Graphics/RIM_StructuredDocuments.gif"/>
+					<br/>
+					<br/>
+				</div>
+			</div>
+			<div title="Graphic Diagrams of the RIM Infrastructure classes" hl7Id="RIM-AddlGraphics">
+				<p>The classes in the Communication Infrastructure subject areas are represented in the following diagrams:</p>
+				<div title="MessageCommunicationsControl Subject Area" hl7Id="MessageCommunicationsControl">
+					<img imageType="image/gif" class="graphic" alt="MessageCommunicationsControl Subject Area" src="./Graphics/RIM_MessageCommunicationsControl.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="MessageControl Subject Area" hl7Id="MessageControl">
+					<img imageType="image/gif" class="graphic" alt="MessageControl Subject Area" src="./Graphics/RIM_MessageControl.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="QueryControl Subject Area" hl7Id="QueryControl">
+					<img imageType="image/gif" class="graphic" alt="QueryControl Subject Area" src="./Graphics/RIM_QueryControl.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="CoreInfrastructure Subject Area" hl7Id="CoreInfrastructure">
+					<img imageType="image/gif" class="graphic" alt="CoreInfrastructure Subject Area" src="./Graphics/RIM_CoreInfrastructure.gif"/>
+					<br/>
+					<br/>
+				</div>
+				<div title="State-machine diagram for QueryEvent class" hl7Id="QueryEventStatus">
+					<img imageType="image/gif" class="graphic" alt="State-machine diagram for QueryEvent class" src="./Graphics/RIM_QueryEventStatus.gif"/>
+					<br/>
+					<br/>
+				</div>
+			</div>
+		</precedingText>
+		<publishedItem name="graphics-rimdiv" title="Graphics" contentsLevel="None">
+			<itemReference root="DEFN" artifact="RIM" realmNamespace="UV"/>
+			<filter name="Reference" root="DEFN" filterType="Exclude" artifact="RIM" realmNamespace="UV" artifactName="//mif:staticModel/mif:historyItem/mif:description"/>
+		</publishedItem>
+	</publishedGroup>
+	<publishedGroup name="sbj-rimdiv" title="Subject areas" contentsLevel="Detailed">
+		<publishedItem contentsLevel="None">
+			<itemReference root="DEFN" artifact="RIM" realmNamespace="UV"/>
+			<filter name="Reference" root="DEFN" filterType="Include" artifact="RIM" realmNamespace="UV" artifactName="//mif:staticModel/mif:subjectAreaPackage"/>
+		</publishedItem>
+	</publishedGroup>
+	<publishedGroup name="cls-rimdiv" title="Classes" contentsLevel="Detailed">
+		<precedingText>
+			<p>Each of the classes is listed below. They are sorted in the alphabetic order of their names. Each class includes a hyper-link to its primary subject area adjacent to the class name. This link can be used to quickly locate similar classes.</p>
+		</precedingText>
+		<publishedItem name="cnt-Classes" title="All RIM Classes" contentsLevel="Detailed">
+			<itemReference root="DEFN" artifact="RIM" realmNamespace="UV"/>
+			<filter name="MembershipNormativeBallot" root="DEFN" filterType="Include" artifact="RIM" realmNamespace="UV" artifactName="//mif:class"/>
+		</publishedItem>
+	</publishedGroup>
+	<publishedGroup name="assoc-rimdiv" title="Associations" contentsLevel="Detailed">
+		<publishedItem contentsLevel="None">
+			<itemReference root="DEFN" artifact="RIM" realmNamespace="UV"/>
+			<filter name="MembershipNormativeBallot" root="DEFN" filterType="Include" artifact="RIM" realmNamespace="UV" artifactName="//mif:association"/>
+		</publishedItem>
+	</publishedGroup>
+</publication>

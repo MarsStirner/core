@@ -8,7 +8,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "Profile", catalog = "", schema = "tmis_core")
+@Table(name = "Profile", catalog = "", schema = "")
 @NamedQueries(
         {
                 @NamedQuery(name = "ProfileEvent.findAll", query = "SELECT a FROM ProfileEvent a")

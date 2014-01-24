@@ -49,7 +49,11 @@ class PatientsListData {
       var toDep : OrgStructure = null
 
       val value: Object = if (e._2!=null && e._2.size()>0) {
-        val apvs = e._2.iterator.next()
+        val apvs = if (e._2.size() > 1) {
+          e._2.find(f => f._1.getType.getCode.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer")) == 0).getOrElse(null)
+        } else {
+          e._2.iterator.next()
+        }
         if (apvs._2!=null && apvs._2.size()>0){
           apvs._2.get(0).getValue
         } else null
@@ -137,7 +141,7 @@ class PatientsListData {
           case condition => condInfo.get(event.getId)
         }
       } else null
-      this.data.add(new PatientsListEntry(event, bed, action.getBegDate/*begDate*/, condition, from, toDep, mDiagnostics))
+      this.data.add(new PatientsListEntry(action, bed, action.getBegDate/*begDate*/, condition, from, toDep, mDiagnostics))
     })
   }
 
@@ -346,21 +350,21 @@ class PatientsListEntry {
   @BeanProperty
   var condition: PersonConditionContainer = _       //Состояние пациента
 
-  def this(event: Event,
+  def this(action: Action,
            bed: OrgStructureHospitalBed,
            condition: java.util.Map[ActionProperty, java.util.List[APValue]],
            from: OrgStructure,
            toDep: OrgStructure) {
      this()
-     val patient = event.getPatient
-     this.id = event.getId.intValue()
-     this.number = event.getExternalId
+     val patient = action.getEvent.getPatient
+     this.id = action.getEvent.getId.intValue()
+     this.number = action.getEvent.getExternalId
      this.name = new PersonNameContainer(patient)
      this.birthDate = patient.getBirthDate
-     if (event.getExecutor != null) {
-       this.doctor =  new DoctorSpecsContainer(event.getExecutor)
+     if (action.getEvent.getExecutor != null) {
+       this.doctor =  new DoctorSpecsContainer(action.getEvent.getExecutor)
      }
-     this.createDateTime = event.getCreateDatetime
+     this.createDateTime = action.getBegDate
      this.checkOut = ""                               //TODO: "Выписка через" - расчетное поле, алгоритм не утвержден
      if(bed!=null)
        this.hospitalBed = new HospitalBedContainer(bed)
@@ -372,14 +376,14 @@ class PatientsListEntry {
        this.movingTo = new IdNameContainer(toDep.getId.intValue(),toDep.getName)
   }
 
-  def this(event: Event,
+  def this(action: Action,
            bed: OrgStructureHospitalBed,
            begDate: Date,
            condition: java.util.Map[ActionProperty, java.util.List[APValue]],
            from: OrgStructure,
            toDep: OrgStructure) {
-    this(event, bed, condition, from, toDep)
-    val eType = event.getEventType
+    this(action, bed, condition, from, toDep)
+    val eType = action.getEvent.getEventType
     if(eType!=null) {
       if (eType.getFinance!=null)
         this.finance = new IdNameContainer(eType.getFinance.getId.intValue(), eType.getFinance.getName)
@@ -396,16 +400,16 @@ class PatientsListEntry {
       }
     }
   }
-  def this(event: Event,
+  def this(action: Action,
            bed: OrgStructureHospitalBed,
            begDate: Date,
            condition: java.util.Map[ActionProperty, java.util.List[APValue]],
            from: OrgStructure,
            toDep: OrgStructure,
            mDiagnostics: (Int)=> java.util.List[Diagnostic]) {
-    this(event, bed, begDate, condition, from, toDep)
+    this(action, bed, begDate, condition, from, toDep)
     if (mDiagnostics!=null){
-       val diagnostics = mDiagnostics(event.getId.intValue())
+       val diagnostics = mDiagnostics(action.getEvent.getId.intValue())
        if (diagnostics!=null && diagnostics.size()>0) {
           diagnostics.foreach(dia => this.diagnoses.add(new DiagnosisContainer(dia)))
        }

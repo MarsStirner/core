@@ -1,42 +1,35 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.indicators.IndicatorValue
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.util.{CAPids, I18nable}
 
 import grizzled.slf4j.Logging
-import java.util.Date
-import javax.ejb.{TransactionAttributeType, TransactionAttribute, Stateless}
 import javax.interceptor.Interceptors
-import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
 
 import scala.collection.JavaConversions._
-import scala.collection.mutable.LinkedHashMap
-import java.lang.{String, Double}
 import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model._
 import scala.Predef._
-import java.util.{Date, ArrayList, List}
+import java.util.{Date, List}
 import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless, TransactionAttributeType, TransactionAttribute}
-import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.util.General._
 
 import java.lang.{Double => JDouble}
-import collection.immutable.{HashMap, ListMap}
+import collection.immutable.ListMap
 import ru.korus.tmis.core.filter.ListDataFilter
-import collection.JavaConversions
-import java.util
+import ru.korus.tmis.core.database.bak.BakDiagnosis
+import scala.collection.mutable
+import java.{util => ju}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
-@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+//@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 class DbCustomQueryBean
   extends DbCustomQueryLocal
   with Logging
   with I18nable
-  with CAPids{
+  with CAPids {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -88,59 +81,56 @@ class DbCustomQueryBean
                                             filter: Object,
                                             records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val sorting = if(sortingField.compareTo("bed")==0 || sortingField.compareTo("number")==0) ""
-                  else filter.asInstanceOf[PatientsListRequestDataFilter].toSortingString(sortingField, sortingMethod)
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[PatientsListRequestDataFilter]) {
-      filter.asInstanceOf[PatientsListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val sorting = if (sortingField.compareTo("bed") == 0 || sortingField.compareTo("number") == 0) ""
+    else filter.asInstanceOf[PatientsListRequestDataFilter].toSortingString(sortingField, sortingMethod)
+
+    val queryStr: QueryDataStructure = filter match {
+      case f: PatientsListRequestDataFilter => f.toQueryStructure()
+      case _ => new QueryDataStructure()
     }
 
     val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx
-                               .format(queryStr.query,
-                                       i18n("db.action.leavingFlatCode"),
-                                       i18n("db.apt.moving.codes.hospitalBed"),
-                                       i18n("db.apt.moving.codes.hospOrgStruct"),
-                                       i18n("db.apt.moving.codes.orgStructTransfer"),
-                                       sorting), classOf[ActionProperty])
+      .format(queryStr.query,
+      i18n("db.apt.moving.codes.hospitalBed"),
+      i18n("db.apt.moving.codes.hospOrgStruct"),
+      sorting), classOf[ActionProperty])
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
 
+    typed.setParameter("transferCodes", asJavaCollection(Set(i18n("db.apt.moving.codes.orgStructTransfer"),
+      i18n("db.apt.received.codes.orgStructDirection"))))
+
     typed.setParameter("flatCodes", asJavaCollection(Set(i18n("db.action.admissionFlatCode"),
-                                                         i18n("db.action.movingFlatCode"))))
-    typed.setParameter("gr1Codes", asJavaCollection(Set(i18n("db.apt.received.codes.orgStructDirection"),
-                                                        i18n("db.apt.moving.codes.orgStructTransfer"))))
-
+      i18n("db.action.movingFlatCode"))))
     var result = typed.getResultList
-    //Перепишем общее количество записей для запроса
-    if (records!=null) records(result.size)
 
-    var actions = result.foldLeft(LinkedHashMap.empty[Action, java.util.Map[ActionProperty, List[APValue]]])(
+    var actions = result.foldLeft(mutable.LinkedHashMap.empty[Action, ju.Map[ActionProperty, ju.List[APValue]]])(
       (map, e) => {
-        var entryMap = Map.empty[ActionProperty, List[APValue]]
+        var entryMap = Map.empty[ActionProperty, ju.List[APValue]]
         entryMap += (e -> dbActionPropertyBean.getActionPropertyValue(e))
         map += (e.getAction -> entryMap)
         em.detach(e)
         map
       })
+    //Перепишем общее количество записей для запроса
+    if (actions != null) records(actions.size)
 
     if (sortingField.compareTo("bed") == 0) {
       //предобработка
-      val sorted = actions.toList.sortWith((a, b)=> getSortingConditionByMethod(sortingField, sortingMethod, a._2, b._2))
-      actions = sorted.foldLeft(LinkedHashMap.empty[Action, java.util.Map[ActionProperty, List[APValue]]])((map, e) => map += (e._1 -> e._2))
+      val sorted = actions.toList.sortWith((a, b) => getSortingConditionByMethod(sortingField, sortingMethod, a._2, b._2))
+      actions = sorted.foldLeft(mutable.LinkedHashMap.empty[Action, ju.Map[ActionProperty, ju.List[APValue]]])((map, e) => map += (e._1 -> e._2))
     } else if (sortingField.compareTo("number") == 0) {
-      val sorted = actions.toList.sortWith((a, b)=> getSortingConditionByMethod(sortingField, sortingMethod, a._1.getEvent, b._1.getEvent))
-      actions = sorted.foldLeft(LinkedHashMap.empty[Action, java.util.Map[ActionProperty, List[APValue]]])((map, e) => map += (e._1 -> e._2))
+      val sorted = actions.toList.sortWith((a, b) => getSortingConditionByMethod(sortingField, sortingMethod, a._1.getEvent, b._1.getEvent))
+      actions = sorted.foldLeft(mutable.LinkedHashMap.empty[Action, ju.Map[ActionProperty, ju.List[APValue]]])((map, e) => map += (e._1 -> e._2))
     }
     //проведем  разбиение на страницы вручную (необходимо чтобы не использовать отдельный запрос на recordcounts)
-    if((actions.size - limit*(page+1))>0) {
-      actions.dropRight(actions.size - limit*(page+1)).drop(page*limit)
+    if ((actions.size - limit * (page + 1)) > 0) {
+      actions.dropRight(actions.size - limit * (page + 1)).drop(page * limit)
     }
     else
-      actions.drop(page*limit)
+      actions.drop(page * limit)
   }
 
   def getAdmissionsByEvents(events: java.util.List[Event]) = {
@@ -170,7 +160,7 @@ class DbCustomQueryBean
   def getEntitiesByEvents[T](events: java.util.List[Event],
                              query: String): collection.mutable.Map[Event, T] = {
     if (events.isEmpty) {
-      return LinkedHashMap.empty[Event, T]
+      return mutable.LinkedHashMap.empty[Event, T]
     }
 
     val ids = events.map((event) => event.getId.intValue)
@@ -180,7 +170,7 @@ class DbCustomQueryBean
       asJavaCollection(ids))
       .getResultList
 
-    result.foldLeft(LinkedHashMap.empty[Event, T])(
+    result.foldLeft(mutable.LinkedHashMap.empty[Event, T])(
       (map, pair) => {
         val event = pair(0).asInstanceOf[Event]
         val entity = pair(1).asInstanceOf[T]
@@ -196,7 +186,7 @@ class DbCustomQueryBean
     getAllActionsByQueryAndEventId(AllAssessmentsByEventIdQuery, eventId)
   }
 
-  def getLastAssessmentByEvents(events: List[Event]) = {
+  def getLastAssessmentByEvents(events: ju.List[Event]) = {
     getEntitiesByEvents[Action](events, LastAssessmentByEventIdsQuery)
   }
 
@@ -209,11 +199,9 @@ class DbCustomQueryBean
 
   def getAllDiagnosticsWithFilter(page: Int, limit: Int, sorting: String, filter: Object) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DiagnosticsListRequestDataFilter]) {
-      filter.asInstanceOf[DiagnosticsListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case f: DiagnosticsListRequestDataFilter => f.toQueryStructure()
+      case _ => new QueryDataStructure()
     }
 
     var typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("a", i18n("db.action.diagnosticClass"), queryStr.query, sorting), classOf[Action])
@@ -231,11 +219,9 @@ class DbCustomQueryBean
 
   def getCountDiagnosticsWithFilter(filter: Object) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DiagnosticsListRequestDataFilter]) {
-      filter.asInstanceOf[DiagnosticsListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case f: DiagnosticsListRequestDataFilter => f.toQueryStructure()
+      case _ => new QueryDataStructure()
     }
 
     var typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("count(a)", i18n("db.action.diagnosticClass"), queryStr.query, ""), classOf[Long])
@@ -358,14 +344,10 @@ class DbCustomQueryBean
 
   def getCountOfAppealsWithFilter(filter: Object) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[TalonSPODataListFilter]) {
-      filter.asInstanceOf[TalonSPODataListFilter].toQueryStructure()
-    }
-    else if (filter.isInstanceOf[AppealSimplifiedRequestDataFilter]) {
-      filter.asInstanceOf[AppealSimplifiedRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case f: TalonSPODataListFilter => f.toQueryStructure
+      case f: AppealSimplifiedRequestDataFilter => f.toQueryStructure
+      case _ => new QueryDataStructure()
     }
 
     var typed = em.createQuery(AllAppealsWithFilterQuery.format("count(e)", queryStr.query, "", ""), classOf[Long])
@@ -401,33 +383,27 @@ class DbCustomQueryBean
 
     val default_org = orgStructure.getAllOrgStructures.filter(element => element.getType == 4).toList.get(0) //Приемное отделение
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[TalonSPODataListFilter]) {
-      filter.asInstanceOf[TalonSPODataListFilter].toQueryStructure()
-    }
-    else if (filter.isInstanceOf[AppealSimplifiedRequestDataFilter]) {
-      if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].diagnosis != null && !filter.asInstanceOf[AppealSimplifiedRequestDataFilter].diagnosis.isEmpty) {
-        diagnostic_filter = "AND upper(mkb.diagID) LIKE upper(:diagnosis)\n"
-        ap_string_filter = "AND upper(apv.value) LIKE upper(:diagnosis)\n"
-        ap_mkb_filter = "AND upper(apv.mkb.diagID) LIKE upper(:diagnosis)\n"
-        flgDiagnosesSwitched = true
+    val queryStr: QueryDataStructure = filter match {
+      case f: TalonSPODataListFilter => f.toQueryStructure
+      case f: AppealSimplifiedRequestDataFilter => {
+        if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].diagnosis != null && !filter.asInstanceOf[AppealSimplifiedRequestDataFilter].diagnosis.isEmpty) {
+          diagnostic_filter = "AND upper(mkb.diagID) LIKE upper(:diagnosis)\n"
+          ap_string_filter = "AND upper(apv.value) LIKE upper(:diagnosis)\n"
+          ap_mkb_filter = "AND upper(apv.mkb.diagID) LIKE upper(:diagnosis)\n"
+          flgDiagnosesSwitched = true
+        }
+        if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId > 0 &&
+          filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId != default_org.getId.intValue()) {
+          department_filter = " AND exists ( SELECT val.id FROM APValueOrgStructure val WHERE val.id.id = ap.id AND val.value.id = :departmentId)"
+          flgDepartmentSwitched = true
+        }
+        filter.asInstanceOf[AppealSimplifiedRequestDataFilter].toQueryStructure
       }
-      if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId > 0 &&
-        filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId != default_org.getId.intValue()) {
-        department_filter = " AND exists ( SELECT val.id FROM APValueOrgStructure val WHERE val.id.id = ap.id AND val.value.id = :departmentId)"
-        flgDepartmentSwitched = true
-      }
-      filter.asInstanceOf[AppealSimplifiedRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+      case _ => new QueryDataStructure()
     }
 
     //Получаем список всех обращений (без диагнозов) (сортированный)
-    val query = AllAppealsWithFilterExQuery.format("e", queryStr.query, "", sorting)
-    var typed = em.createQuery(query, classOf[Event])
-    //     .setMaxResults(limit)
-    //     .setFirstResult(limit * page)
-
+    var typed = em.createQuery(AllAppealsWithFilterExQuery.format("e", queryStr.query, "", sorting), classOf[Event])
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
@@ -441,14 +417,13 @@ class DbCustomQueryBean
     if (res.size() > 0) {
       res.foreach(e => ids.add(e.getId))
 
-      //Получение отделения из последнего из последнего экшена движения
+      //Получение отделения из последнего экшена движения
       val depArrayTyped = em.createQuery(OrgStructureSubQuery.format(department_filter), classOf[ActionProperty])
-                            .setParameter("ids", asJavaCollection(ids))
-                            .setParameter("flatCode", i18n("db.action.movingFlatCode"))
-                            .setParameter("code", i18n("db.apt.moving.codes.hospOrgStruct"))
+        .setParameter("ids", asJavaCollection(ids))
+        .setParameter("flatCode", setAsJavaSet(Set(i18n("db.action.movingFlatCode"), i18n("db.action.admissionFlatCode"))))
+        .setParameter("code", i18n("db.apt.moving.codes.hospOrgStruct"))
       if (flgDepartmentSwitched)
         depArrayTyped.setParameter("departmentId", filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId)
-
       val depArray = depArrayTyped.getResultList
 
 
@@ -457,7 +432,7 @@ class DbCustomQueryBean
           em.detach(pair)
           val ap_values = dbActionPropertyBean.getActionPropertyValue(pair)
           val department: OrgStructure =
-            if(ap_values!=null && ap_values.size()>0)
+            if (ap_values != null && ap_values.size() > 0)
               ap_values.get(0).getValue.asInstanceOf[OrgStructure]
             else null
           map.put(pair.getAction.getEvent, department)
@@ -469,9 +444,9 @@ class DbCustomQueryBean
       val map = new java.util.LinkedHashMap[java.lang.Integer, Object]()
       map.put(0, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.clinical"), ""))
       map.put(1, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.main"), ""))
-      map.put(2, (ClinicalDiagnosisQuery, "4501", "Основной клинический диагноз"))
-      map.put(3, (AttendantDiagnosisQuery, "1_1_01", "Основной клинический диагноз"))
-      map.put(4, (AttendantDiagnosisQuery, "4201", "Диагноз направившего учреждения"))
+      map.put(2, (ClinicalDiagnosisQuery, "4501", i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb")))
+      map.put(3, (AttendantDiagnosisQuery, "1_1_01", i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb")))
+      map.put(4, (AttendantDiagnosisQuery, "4201", i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb")))
 
       var i = 0
       while (ids.size() > 0 && i <= 4) {
@@ -488,9 +463,8 @@ class DbCustomQueryBean
         val res2 = typed2.setParameter("ids", asJavaCollection(ids)).getResultList
 
         res2.foreach(f => {
-          if (f(0).isInstanceOf[Event]) {
-            ids.remove(f(0).asInstanceOf[Event].getId)
-          }
+          f.head match { case e: Event => ids remove e.getId }
+
           val internalMap = new java.util.HashMap[Object, Object]
           internalMap.put(f(1), f(2))
           ret_value.put(f(0).asInstanceOf[Event], internalMap)
@@ -508,7 +482,7 @@ class DbCustomQueryBean
       ids.clear()
     }
     //вернуть первоначальную сортировку и прописать отделения (учитывая страницу и лимит)
-    val ret_value_sorted = LinkedHashMap.empty[Event, Object]
+    val ret_value_sorted = mutable.LinkedHashMap.empty[Event, Object]
     res.foreach(e => {
       val pos = ret_value.get(e)
       if (pos != null) {
@@ -533,11 +507,15 @@ class DbCustomQueryBean
         ListMap(ret_value_sorted.toList.sortBy(_._2.asInstanceOf[(Map[Object, Object], OrgStructure)]._2.getName): _*)
     } else if (flgAppealNumberSort) {
       //Cортировка по AppealNumber (externalId) как int
+      try {
       if (sortingMethod.compareTo("desc") == 0) //desc
         ListMap(ret_value_sorted.toList.sortWith(_._1.getExternalId.substring(5).toInt > _._1.getExternalId.substring(5).toInt)
-                                       .sortWith(_._1.getExternalId.substring(0, 4).toInt > _._1.getExternalId.substring(0, 4).toInt): _*)
+          .sortWith(_._1.getExternalId.substring(0, 4).toInt > _._1.getExternalId.substring(0, 4).toInt): _*)
       else //asc
         ListMap(ret_value_sorted.toList.sortBy(m => (m._1.getExternalId.substring(0, 4).toInt, m._1.getExternalId.substring(5).toInt)): _*)
+      } catch {
+        case e:StringIndexOutOfBoundsException => { ListMap(ret_value_sorted.toList: _*) }
+     }
     } else {
       ListMap(ret_value_sorted.toList: _*)
     }
@@ -564,11 +542,11 @@ class DbCustomQueryBean
     val ret_value = new java.util.LinkedHashMap[Event, java.util.Map[Object, Object]]
     val map = new java.util.LinkedHashMap[java.lang.Integer, Object]()
     //map.put(0, (MainDiagnosisQuery,"",""))
-    map.put(0, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.clinical"), ""))   //этих двух диагнозов тут не было
-    map.put(1, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.main"), ""))       //
-    map.put(2, (ClinicalDiagnosisQuery, "4501", "Основной клинический диагноз"))
-    map.put(3, (AttendantDiagnosisQuery, "1_1_01", "Основной клинический диагноз"))
-    map.put(4, (AttendantDiagnosisQuery, "4201", "Диагноз направившего учреждения"))
+    map.put(0, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.clinical"), "")) //этих двух диагнозов тут не было
+    map.put(1, (MainDiagnosisQuery, i18n("db.diagnostics.diagnosisType.id.main"), "")) //
+    map.put(2, (ClinicalDiagnosisQuery, "4501", i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb"))) //"Основной клинический диагноз"))
+    map.put(3, (AttendantDiagnosisQuery, "1_1_01", i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb")))
+    map.put(4, (AttendantDiagnosisQuery, "4201", i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb")))
 
     var i = 0
     while (ids.size() > 0 && i <= 4) {
@@ -651,8 +629,8 @@ class DbCustomQueryBean
   def getDistinctMkbsWithFilter(sorting: String, filter: ListDataFilter) = {
 
     val retValue = new java.util.HashMap[String, java.util.Map[String, Mkb]]
-    if (filter.asInstanceOf[MKBListRequestDataFilter].display == true) {
-      val queryStr = filter.toQueryStructure()
+    if (filter.asInstanceOf[MKBListRequestDataFilter].display) {
+      val queryStr = filter.toQueryStructure
       if (queryStr.data.size() > 0) {
         var pos = 0
         var value: AnyRef = null
@@ -735,7 +713,7 @@ class DbCustomQueryBean
 
   def getAllMkbsWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
 
-    val queryStr = filter.toQueryStructure()
+    val queryStr = filter.toQueryStructure
 
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
@@ -744,8 +722,8 @@ class DbCustomQueryBean
     }
 
     val typed = em.createQuery(AllMkbWithFilterQuery.format("mkb", queryStr.query, sorting), classOf[Mkb])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -760,11 +738,9 @@ class DbCustomQueryBean
 
   def getCountOfMkbsWithFilter(filter: Object) = {
 
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[MKBListRequestDataFilter]) {
-      filter.asInstanceOf[MKBListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    var queryStr: QueryDataStructure = filter match {
+      case f: MKBListRequestDataFilter => f.toQueryStructure()
+      case _ => new QueryDataStructure()
     }
 
     if (queryStr.data.size() > 0) {
@@ -783,11 +759,9 @@ class DbCustomQueryBean
   }
 
   def getCountOfThesaurusWithFilter(filter: Object) = {
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[ThesaurusListRequestDataFilter]) {
-      filter.asInstanceOf[ThesaurusListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case f: ThesaurusListRequestDataFilter => f.toQueryStructure()
+      case _ => new QueryDataStructure()
     }
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
@@ -804,15 +778,15 @@ class DbCustomQueryBean
 
   def getAllThesaurusWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
 
-    val queryStr = filter.toQueryStructure()
+    val queryStr = filter.toQueryStructure
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
     val typed = em.createQuery(AllThesaurusWithFilterQuery.format("r", queryStr.query, sorting), classOf[Thesaurus])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
@@ -869,23 +843,23 @@ class DbCustomQueryBean
   /**
    * Получение uuid оргструктуры
    */
-//  def getOrgStructureUuid(a: Action) = {
-//    em.createQuery(
-//      """
-//         SELECT u.uuid
-//         FROM   Action a, ActionType at, ActionProperty ap, APValueOrgStructure apos, OrgStructure os, UUID u
-//         WHERE  a.id = :action1
-//          AND a.actionType.id = at.id
-//          AND ap.action.id = :action2
-//          AND ap.id = apos.id
-//          AND apos.value.id = os.id
-//          AND os.uuid.id = u.id
-//
-//      """, classOf[String])
-//      .setParameter("action1", a.getId)
-//      .setParameter("action2", a.getId)
-//      .getSingleResult
-//  }
+  //  def getOrgStructureUuid(a: Action) = {
+  //    em.createQuery(
+  //      """
+  //         SELECT u.uuid
+  //         FROM   Action a, ActionType at, ActionProperty ap, APValueOrgStructure apos, OrgStructure os, UUID u
+  //         WHERE  a.id = :action1
+  //          AND a.actionType.id = at.id
+  //          AND ap.action.id = :action2
+  //          AND ap.id = apos.id
+  //          AND apos.value.id = os.id
+  //          AND os.uuid.id = u.id
+  //
+  //      """, classOf[String])
+  //      .setParameter("action1", a.getId)
+  //      .setParameter("action2", a.getId)
+  //      .getSingleResult
+  //  }
 
   /**
    * Сложная сортировка
@@ -902,14 +876,14 @@ class DbCustomQueryBean
         val aVal = getBedValueForSortingCondition(a)
         val bVal = getBedValueForSortingCondition(b)
 
-        if (aVal==0) true
+        if (aVal == 0) true
         else {
-          if (bVal==0)false
+          if (bVal == 0) false
           else {
             if (method.compareTo("desc") == 0)
-              (aVal > bVal)
+              aVal > bVal
             else
-              (bVal > aVal)
+              bVal > aVal
           }
         }
       }
@@ -926,15 +900,18 @@ class DbCustomQueryBean
   }
 
   private def getBedValueForSortingCondition(a: AnyRef) = {
-    if(a.isInstanceOf[MapWrapper[ActionProperty, List[APValue]]]) {
-      val apvs = a.asInstanceOf[MapWrapper[ActionProperty, List[APValue]]]
-      if(apvs!=null && apvs.size>0){
-        val values = apvs.iterator.next()._2
-        if (values!=null && values.size()>0 && values.get(0).isInstanceOf[APValueHospitalBed])
-          values.get(0).asInstanceOf[APValueHospitalBed].getValue.getId.intValue()
-        else 0
-      } else 0
-    } else 0
+    a match {
+      case b: MapWrapper[ActionProperty, List[APValue]] => {
+        val apvs = a.asInstanceOf[MapWrapper[ActionProperty, List[APValue]]]
+        if (apvs != null && apvs.size > 0) {
+          val values = apvs.iterator.next()._2
+          if (values != null && values.size() > 0 && values.get(0).isInstanceOf[APValueHospitalBed])
+            values.get(0).asInstanceOf[APValueHospitalBed].getValue.getId.intValue()
+          else 0
+        } else 0
+      }
+      case _ => 0
+    }
   }
 
   // ---- Секция кастомных запросов
@@ -1057,7 +1034,7 @@ class DbCustomQueryBean
 
 
   //Спецификация https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
-val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery = """
+  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery = """
 SELECT %s
 FROM
   ActionProperty ap
@@ -1156,8 +1133,18 @@ AND
   ap.deleted = '0'
 %s
 %s
-                                                             """
-val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx = """
+                                                               """
+  /*      в спеке нет проверки на выписку https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
+  AND a.event.id NOT IN (
+        SELECT leaved.event.id
+        FROM Action leaved
+        WHERE leaved.actionType.flatCode = '%s'
+        AND leaved.event.id = a.event.id
+        AND leaved.createDatetime < :endDate
+        AND leaved.deleted = 0
+    )
+   */
+  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx = """
 SELECT ap
 FROM ActionProperty ap
 WHERE ap.action.id IN (
@@ -1166,13 +1153,7 @@ WHERE ap.action.id IN (
     WHERE (a.event.execDate IS NULL OR a.event.execDate > :endDate )
     %s
     AND a.event.deleted = '0'
-    AND a.event.id NOT IN (
-        SELECT leaved.event.id
-        FROM Action leaved
-        WHERE leaved.actionType.flatCode = '%s'
-        AND leaved.event.id = a.event.id
-        AND leaved.createDatetime < :endDate
-    )
+
     AND a.begDate <= :endDate
     AND a.actionType.flatCode IN :flatCodes
     AND a.deleted = '0'
@@ -1188,7 +1169,7 @@ WHERE ap.action.id IN (
 AND
 (
     (
-        ap.actionPropertyType.code IN :gr1Codes
+        ap.actionPropertyType.code IN :transferCodes
         AND ap.action.endDate < :endDate
         AND exists (
             SELECT valA.id
@@ -1197,6 +1178,7 @@ AND
             AND valA.value.id = :departmentId
         )
     )
+
     OR
     (
         ap.actionPropertyType.code = '%s'
@@ -1219,7 +1201,7 @@ AND
                FROM ActionProperty ap2,
                     APValueOrgStructure val2
                WHERE ap2.action.id = ap.action.id
-               AND ap2.actionPropertyType.code = '%s'
+               AND ap2.actionPropertyType.code IN :transferCodes
                AND ap2.id = val2.id.id
             )
             AND ap.action.endDate <= :endDate
@@ -1229,7 +1211,7 @@ AND
 )
 AND ap.deleted = 0
 %s
-                                                               """
+                                                                 """
 
   val ActionsByEventIdsAndFlatCodeQuery = """
     SELECT e, a
@@ -1606,7 +1588,7 @@ AND ap.deleted = 0
       e.id IN :ids
     AND ap.id = apv.id.id
     AND at.code = '%s'
-    AND apt.name = '%s'
+    AND apt.code = '%s'
     AND apv.value IS NOT NULL
     %s
     GROUP BY e
@@ -1624,7 +1606,7 @@ AND ap.deleted = 0
       e.id IN :ids
     AND ap.id = apv.id.id
     AND at.code = '%s'
-    AND apt.name = '%s'
+    AND apt.code = '%s'
     AND apv.mkb IS NOT NULL
     %s
     GROUP BY e
@@ -1708,42 +1690,75 @@ AND ap.deleted = 0
           SELECT a.id
           FROM Action a
           WHERE a.event.id IN :ids
-          AND a.actionType.flatCode = :flatCode
+          AND a.actionType.flatCode IN :flatCode
           AND a.deleted = '0'
           AND a.createDatetime = (
             SELECT Max(a2.createDatetime)
             FROM Action a2
             WHERE a2.event.id = a.event.id
-            AND a2.actionType.flatCode = :flatCode
+            AND a2.actionType.flatCode IN :flatCode
             AND a2.deleted = '0'
           )
         )
       AND ap.actionPropertyType.code = :code
       %s
     """
-    /*"""
-    SELECT e, apv.value, MAX(a.createDatetime)
-    FROM
-      ActionProperty ap
-        JOIN ap.action a
-        JOIN a.event e
-        JOIN a.actionType at
-        JOIN ap.actionPropertyType apt,
-      APValueOrgStructure apv
-    WHERE
-      e.id IN :ids
-    AND
-      at.id = '%s'
-    AND
-      apt.id IN (
-         SELECT cap.actionPropertyType.id
-         FROM RbCoreActionProperty cap
-         WHERE cap.actionType.id = at.id
-         AND cap.id = '%s'
-      )
-    AND ap.id = apv.id.id
-    AND apv.value IS NOT NULL
-    %s
-    GROUP BY e
-                             """ */
+  /*"""
+  SELECT e, apv.value, MAX(a.createDatetime)
+  FROM
+    ActionProperty ap
+      JOIN ap.action a
+      JOIN a.event e
+      JOIN a.actionType at
+      JOIN ap.actionPropertyType apt,
+    APValueOrgStructure apv
+  WHERE
+    e.id IN :ids
+  AND
+    at.id = '%s'
+  AND
+    apt.id IN (
+       SELECT cap.actionPropertyType.id
+       FROM RbCoreActionProperty cap
+       WHERE cap.actionType.id = at.id
+       AND cap.id = '%s'
+    )
+  AND ap.id = apv.id.id
+  AND apv.value IS NOT NULL
+  %s
+  GROUP BY e
+                           """ */
+
+  /**
+   * @see
+   * @param action
+   */
+  def getBakDiagnosis(action: Action): BakDiagnosis = {
+    val res = em.createNativeQuery( """
+         SELECT MKB.DiagID, MKB.DiagName
+          FROM Action
+          JOIN ActionProperty ON ActionProperty.action_id = Action.id
+          JOIN ActionPropertyType ON ActionPropertyType.id = ActionProperty.type_id
+          JOIN ActionProperty_MKB ON ActionProperty.id = ActionProperty_MKB.id
+          JOIN MKB ON MKB.id = ActionProperty_MKB.value
+          WHERE
+          Action.createDatetime <= ?
+          AND Action.event_id = ?
+          AND ActionPropertyType.code = ?
+          AND Action.deleted = 0
+          ORDER BY
+          Action.createDatetime DESC
+          LIMIT 0, 1 """)
+      .setParameter(1, action.getCreateDatetime)
+      .setParameter(2, action.getEvent.getId)
+      .setParameter(3, "mainDiagMkb")
+      .getSingleResult
+
+    if (res!=null) {
+      val objects: Array[Object] = res.asInstanceOf[Array[Object]]
+      new BakDiagnosis(objects(0).asInstanceOf[java.lang.String], objects(1).asInstanceOf[java.lang.String])
+    } else {
+      null
+    }
+  }
 }

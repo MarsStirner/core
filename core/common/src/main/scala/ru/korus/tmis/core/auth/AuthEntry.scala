@@ -32,3 +32,16 @@ class AuthEntry {
     this.roleId = roleId
   }
 }
+
+@XmlType(name = "auth3")
+@XmlRootElement(name = "auth3")
+class AuthWithTokenEntry {
+
+  @BeanProperty
+  var roleId: Int = _
+
+  def this(roleId: Int) = {
+    this()
+    this.roleId = roleId
+  }
+}

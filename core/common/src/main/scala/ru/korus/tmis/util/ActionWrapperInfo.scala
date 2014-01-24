@@ -31,49 +31,31 @@ object ActionWrapperInfo extends Configuration {
   var PlannedEndDate = StringId("plannedEndDate")
   var AssignerId = StringId("assignerId")
   var ExecutorId = StringId("executorId")
+  var PacientInQueueType = StringId("pacientInQueueType")
   //var ToOrder = StringId("toOrder")
 
   // Typed internal Ids
   def TypedId = (Id, Types.Integer)
-
   def TypedName = (Name, Types.String)
-
   def TypedBeginDate = (BeginDate, Types.Datetime)
-
   def TypedEndDate = (EndDate, Types.Datetime)
-
   def TypedDates = (Dates, Types.Datetime)
-
   def TypedExecutorLastName = (ExecutorLastName, Types.String)
-
   def TypedExecutorFirstName = (ExecutorFirstName, Types.String)
-
   def TypedExecutorMiddleName = (ExecutorMiddleName, Types.String)
-
   def TypedExecutorSpecs = (ExecutorSpecs, Types.String)
-
   def TypedExecutorPost = (ExecutorPost, Types.String)
-
   def TypedAssignerLastName = (AssignerLastName, Types.String)
-
   def TypedAssignerFirstName = (AssignerFirstName, Types.String)
-
   def TypedAssignerMiddleName = (AssignerMiddleName, Types.String)
-
   def TypedAssignerSpecs = (AssignerSpecs, Types.String)
-
   def TypedAssignerPost = (AssignerPost, Types.String)
-
   def TypedStatus = (Status, Types.Integer)
-
   def TypedUrgent = (Urgent, Types.Boolean)
-
   def TypedMultiplicity = (Multiplicity, Types.Integer)
-
   def TypedFinance = (Finance, Types.String)
-
   def TypedPlannedEndDate = (PlannedEndDate, Types.Datetime)
-
+  def TypedPacientInQueueType = (PacientInQueueType, Types.Integer)
   //def TypedToOrder = (ToOrder, Types.Boolean)
   def TypedAssignerId = (AssignerId, Types.Integer)
   def TypedExecutorId = (ExecutorId, Types.Integer)
@@ -111,6 +93,7 @@ object ActionWrapperInfo extends Configuration {
   var plannedEndDate = StringId("plannedEndDate")
   var assignerId = StringId("assignerId")
   var executorId = StringId("executorId")
+  var pacientInQueueType = StringId("pacientInQueueType")
   //var toOrder = StringId("toOrder")
   //////////////////////////////////////////////////////////////////////////////
 
@@ -155,7 +138,7 @@ object ActionWrapperInfo extends Configuration {
     assignerPost -> TypedAssignerPost,
 
     actionStatus -> TypedStatus,
-
+    pacientInQueueType -> TypedPacientInQueueType,
     urgent -> TypedUrgent,
     multiplicity -> TypedMultiplicity,
     finance -> TypedFinance,
@@ -196,6 +179,7 @@ object ActionWrapperInfo extends Configuration {
     val PlannedEndDate = awi.PlannedEndDate
     val AssignerId = awi.AssignerId
     val ExecutorId = awi.ExecutorId
+    val PacientInQueueType = awi.PacientInQueueType
     //val ToOrder = awi.ToOrder
 
     def apply(key: StringId) = awi(key)

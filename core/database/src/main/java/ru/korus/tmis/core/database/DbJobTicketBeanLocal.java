@@ -50,7 +50,7 @@ public interface DbJobTicketBeanLocal {
      * @see Job
      * @see CoreException
      */
-    Object getJobTicketAndTakenTissueForAction(int eventId, int atId, Date date, int departmentId) throws CoreException;
+    Object getJobTicketAndTakenTissueForAction(int eventId, int atId, Date date, int departmentId, boolean urgent) throws CoreException;
 
     List<Action> getActionsForJobTicket(int jobTicketId) throws CoreException;
 
@@ -64,4 +64,6 @@ public interface DbJobTicketBeanLocal {
      * @see CoreException
      */
     ActionTypeTissueType getActionTypeTissueTypeForActionType(int actionTypeId) throws CoreException;
+
+    String getLaboratoryCodeForActionId(int actionId) throws CoreException;
 }

@@ -13,7 +13,7 @@ import java.io.Serializable;
         })
 @XmlType(name = "kladr")
 @XmlRootElement(name = "kladr")
-public class Kladr
+public class    Kladr
         implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;

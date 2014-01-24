@@ -10,6 +10,7 @@ import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import java.util
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
+import javax.management.remote.rmi._RMIConnectionImpl_Tie
 
 @XmlType(name = "entities")
 @XmlRootElement(name = "entities")
@@ -137,6 +138,28 @@ class CommonEntity {
     this.code = code
   }
 
+  var isEditable: Boolean = true
+
+  @XmlAttribute(name = "isEditable")
+  def getIsEditable() = {
+    isEditable
+  }
+
+  def setIsEditable(isEditable: Boolean) = {
+    this.isEditable = isEditable
+  }
+
+  var flatCode: String = _
+
+  @XmlAttribute(name = "flatCode")
+  def getFlatCode() = {
+    flatCode
+  }
+
+  def setFlatCode(flatCode: String) = {
+    this.flatCode = flatCode
+  }
+
   private def this(id: Integer,
                    name: String,
                    eType: String,
@@ -176,6 +199,18 @@ class CommonEntity {
            code: String) = {
     this(id, version, name, eType, eTypeId, status)
     this.code = code
+  }
+
+  def this(id: Integer,
+           version: Integer,
+           name: String,
+           eType: String,
+           eTypeId: Integer,
+           status: Integer,
+           code: String,
+           flatCode: String) = {
+    this(id, version, name, eType, eTypeId, status, code)
+    this.flatCode = flatCode
   }
 
   @BeanProperty
@@ -291,6 +326,17 @@ trait AbstractCommonAttribute {
 
   def setName(name: String) = {
     this.name = name
+  }
+
+  var code: String = _
+
+  @XmlAttribute(name = "code")
+  def getCode() = {
+    code
+  }
+
+  def setCode(code: String) = {
+    this.code = code
   }
 
   var aType: String = _
@@ -454,6 +500,7 @@ class CommonAttribute  extends AbstractCommonAttribute{
   def this(id: Integer,
            version: Integer,
            name: String,
+           code: String,
            aType: String,
            mandatory: String,
            readOnly: String,
@@ -462,17 +509,19 @@ class CommonAttribute  extends AbstractCommonAttribute{
     this(id, version, name, aType, scope, props)
     this.mandatory = mandatory
     this.readOnly = readOnly
+    this.code = code
   }
 }
 
 class CommonAttributeWithLayout(id: Integer,
                                 version: Integer,
                                 name: String,
+                                code: String,
                                 aType: String,
                                 mandatory: String,
                                 readOnly: String,
                                 scope: String,
-                                props: Map[String, String]) extends CommonAttribute (id, version, name, aType, mandatory, readOnly, scope, props){
+                                props: Map[String, String]) extends CommonAttribute (id, version, name, code, aType, mandatory, readOnly, scope, props){
 
   @BeanProperty
   var layoutAttributeValues = new LinkedList[LayoutAttributeSimplifyDataContainer]
@@ -480,19 +529,20 @@ class CommonAttributeWithLayout(id: Integer,
   def this(id: Integer,
            version: Integer,
            name: String,
+           code: String,
            aType: String,
            scope: String,
            props: Map[String, String],
            layout: List[LayoutAttributeValue],
            mandatory: String,
            readOnly: String) = {
-    this(id, version, name, aType, mandatory, readOnly, scope, props)
+    this(id, version, name, code, aType, mandatory, readOnly, scope, props)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 
   def this (ca: CommonAttribute,
             layout: List[LayoutAttributeValue] ) = {
-    this(ca.id, ca.version, ca.name, ca.aType, ca.mandatory, ca.readOnly, ca.scope, ca.properties)
+    this(ca.id, ca.version, ca.name, ca.code, ca.aType, ca.mandatory, ca.readOnly, ca.scope, ca.properties)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 }

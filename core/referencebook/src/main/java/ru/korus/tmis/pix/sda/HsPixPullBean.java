@@ -1,9 +1,15 @@
 package ru.korus.tmis.pix.sda;
 
-import java.sql.Timestamp;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.DbOrganizationBeanLocal;
+import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
+import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.pix.sda.ws.SDASoapServiceService;
+import ru.korus.tmis.pix.sda.ws.SDASoapServiceServiceSoap;
+import ru.korus.tmis.util.ConfigManager;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
@@ -12,22 +18,10 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
-import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.ClientAllergy;
-import ru.korus.tmis.core.entity.model.Diagnostic;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.HSIntegration;
-import ru.korus.tmis.core.entity.model.PatientsToHs;
-import ru.korus.tmis.pix.sda.ws.SDASoapServiceService;
-import ru.korus.tmis.pix.sda.ws.SDASoapServiceServiceSoap;
-import ru.korus.tmis.util.ConfigManager;
+import java.sql.Timestamp;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -37,12 +31,13 @@ import ru.korus.tmis.util.ConfigManager;
  */
 
 /**
- * 
+ *
  */
 @Stateless
 public class HsPixPullBean {
 
     private static final Logger logger = LoggerFactory.getLogger(HsPixPullBean.class);
+    private static final int MAX_RESULT = 100;
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
@@ -52,76 +47,87 @@ public class HsPixPullBean {
 
     @EJB
     DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal;
+    private String defOrgName;
+
+    @EJB
+    DbOrganizationBeanLocal organizationBeanLocal;
 
     @Schedule(hour = "*", minute = "*", second = "30")
     void pullDb() {
-        logger.info("HS integration entry...");
-        if (ConfigManager.HealthShare().isSdaActive()) {
-            logger.info("HS integration is active...");
-            SDASoapServiceService service = new SDASoapServiceService();
-            service.setHandlerResolver(new SdaHandlerResolver());
-            SDASoapServiceServiceSoap port = service.getSDASoapServiceServiceSoap();
+        try {
+            logger.info("HS integration entry...");
+            if (ConfigManager.HealthShare().isSdaActive()) {
+                logger.info("HS integration is active...");
+                SDASoapServiceService service = new SDASoapServiceService();
+                service.setHandlerResolver(new SdaHandlerResolver());
+                SDASoapServiceServiceSoap port = service.getSDASoapServiceServiceSoap();
 
-            logger.info("HS integration ... SDASoapServiceServiceSoap is avalable");
-            Integer maxId = em.createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
-            if (maxId == null) {
-                maxId = 0;
+                logger.info("HS integration ... SDASoapServiceServiceSoap is avalable");
+                Integer maxId = em.createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
+                if (maxId == null) {
+                    maxId = 0;
+                }
+                logger.info("HS integration ... maxId = {}", maxId);
+                List<Event> newEvents =
+                        em.createNamedQuery("Event.toHS", Event.class).setParameter("max", maxId).setMaxResults(MAX_RESULT).getResultList();
+
+                addNewEvent(newEvents);
+
+                // Отправка завершенных обращений
+                sendNewEventToHS(port);
+                // Отправка карточек новых/обновленных пациентов
+                sendPatientsInfo(port);
+            } else {
+                logger.info("HS integration is disabled...");
             }
-            logger.info("HS integration ... maxId = {}", maxId );
-            List<Event> newEvents =
-                    em.createQuery("SELECT e FROM Event e WHERE e.id > :max AND (" +
-                            "e.eventType.requestType.code = 'clinic' OR " +
-                            "e.eventType.requestType.code = 'hospital' OR " +
-                            "e.eventType.requestType.code = 'stationary' OR " +
-                            "e.eventType.requestType.code = '4' OR " +
-                            "e.eventType.requestType.code = '6' )", Event.class).setParameter("max", maxId).getResultList();
-
-            addNewEvent(newEvents);
-
-            // Отправка завершенных обращений
-            sendNewEventToHS(port);
-            // Отправка карточек новых/обновленных пациентов
-            sendPatientsInfo(port);
+        } catch (Exception ex) {
+            logger.error("HS integration internal error.", ex);
         }
-        else {
-            logger.info("HS integration is disabled...");
-        }
+
     }
 
     /**
      * @param port
-     * 
      */
     private void sendPatientsInfo(SDASoapServiceServiceSoap port) {
         List<PatientsToHs> patientsToHs = em.
-                createQuery("SELECT pths FROM PatientsToHs pths WHERE pths.sendTime < :now", PatientsToHs.class)
-                .setParameter("now", new Timestamp((new Date()).getTime())).getResultList();
+                createNamedQuery("PatientsToHs.ToSend", PatientsToHs.class)
+                .setParameter("now", new Timestamp((new Date()).getTime())).setMaxResults(MAX_RESULT).getResultList();
         for (PatientsToHs patientToHs : patientsToHs) {
             try {
-                int errCount = patientToHs.getErrCount();
-                long step = 89 * 1000; // время до слейдующей попытки передачи данных
-                patientToHs.setErrCount(errCount + 1);
-                patientToHs.setSendTime(new Timestamp(patientToHs.getSendTime().getTime() + (long) (errCount) * step));
-                final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
-                List<DiagnosisInfo> emptyDiag = new LinkedList<DiagnosisInfo>();
-                List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
-                port.sendSDA(PixInfo.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), null, emptyAllergy, emptyDiag, emptyEpi));
-                em.remove(patientToHs);
-            } catch (SOAPFaultException ex) {
-                patientToHs.setInfo(ex.getMessage());
-                ex.printStackTrace();
-                em.flush();
-            } catch (WebServiceException ex) {
-                patientToHs.setInfo(ex.getMessage());
-                ex.printStackTrace();
-                em.flush();
+                logger.info("HS integration processing. Sending patient info. PatientsToHs.client_id = {}", patientToHs.getPatientId());
+                sendPatientInfo(port, patientToHs);
+            } catch (Exception ex) {
+                logger.error("Sending patient info. HS integration internal error.", ex);
             }
+        }
+    }
+
+    private void sendPatientInfo(SDASoapServiceServiceSoap port, PatientsToHs patientToHs) {
+        try {
+            logger.info("HS integration processing PatientsToHs.patientId = {}", patientToHs.getPatientId());
+            int errCount = patientToHs.getErrCount();
+            long step = 89 * 1000; // время до слейдующей попытки передачи данных
+            patientToHs.setErrCount(errCount + 1);
+            patientToHs.setSendTime(new Timestamp(patientToHs.getSendTime().getTime() + (long) (errCount) * step));
+            final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
+            List<DiagnosisInfo> emptyDiag = new LinkedList<DiagnosisInfo>();
+            List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
+            port.sendSDA(PixInfo.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(getDefOrgName()), emptyAllergy, emptyDiag, emptyEpi));
+            em.remove(patientToHs);
+        } catch (SOAPFaultException ex) {
+            patientToHs.setInfo(ex.getMessage());
+            ex.printStackTrace();
+            em.flush();
+        } catch (WebServiceException ex) {
+            patientToHs.setInfo(ex.getMessage());
+            ex.printStackTrace();
+            em.flush();
         }
     }
 
     /**
      * @param port
-     * 
      */
     private void sendNewEventToHS(SDASoapServiceServiceSoap port) {
         List<Event> newEvents = em.
@@ -133,11 +139,17 @@ public class HsPixPullBean {
                         "hsi.event.eventType.requestType.code = '6' )", Event.class).setParameter("newEvent", HSIntegration.Status.NEW).getResultList();
 
         for (Event event : newEvents) {
-            sendNewEventToHS(event, em, dbSchemeKladrBeanLocal, port);
+            try {
+                logger.info("HS integration processing Event.Id = {}", event.getId());
+                sendNewEventToHS(event, em, dbSchemeKladrBeanLocal, port);
+            } catch (Exception ex) {
+                logger.error("Sending event info. HS integration internal error.", ex);
+            }
         }
     }
 
-    public void sendNewEventToHS(Event event, EntityManager em, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, SDASoapServiceServiceSoap port) {
+
+    private void sendNewEventToHS(Event event, EntityManager em, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, SDASoapServiceServiceSoap port) {
         final HSIntegration hsIntegration = em.find(HSIntegration.class, event.getId());
         try {
             final ClientInfo clientInfo = new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal);
@@ -215,6 +227,19 @@ public class HsPixPullBean {
             hsi.setStatus(HSIntegration.Status.NEW);
             em.persist(hsi);
             em.flush();
+        }
+    }
+
+    public String getDefOrgName() {
+        Organisation organization = null;
+        try {
+            organization = organizationBeanLocal.getOrganizationById(ConfigManager.Common().OrgId());
+        } catch (CoreException e) {
+        }
+        if (organization == null) {
+            return "Не задано";
+        } else {
+            return organization.getShortName();
         }
     }
 }

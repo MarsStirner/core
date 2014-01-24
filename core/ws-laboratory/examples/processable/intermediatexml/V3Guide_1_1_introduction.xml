@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XML Spy v4.0 (http://www.xmlspy.com) by Sandy Boyer -->
+<div2 id="v3gintro">
+	<head>Introduction</head>
+	<p>The Version 3 publication consists of several documents.  Some of these documents contain the Version 3 specifications themselves while others contain information that is crucial to the development or transport of HL7 <xtermref href="message">messages.</xtermref>  The foundation component documents fall into the latter category and are illustrated in the figure below:</p>
+	<p>
+		<graphic source="graphics/bb_Backbone.gif"/>
+	</p>
+	<p>A general understanding of the foundation components discussed in this section is needed to appreciate the messaging components discussed in the MESSAGING COMPONENTS section of the Version 3 Guide. The foundation components include:</p>
+	<!-- MAC: 01/15/2002, note that the information mode, vocab, its and data types should all be links to those chapters, but references I cannot seem to get working -->
+	<list role="unordered">
+		<item>
+			<emph role="strong">Information Model</emph> - Describes the types of information models in HL7's Version 3 standard, including the <ilxspecref spec="&rimfile;">Reference Information Model</ilxspecref> (RIM).</item>
+		<item>
+			<emph role="strong">Vocabulary</emph> - Discusses the use of controlled vocabulary within the HL7 Version 3 Specifications and the HL7 Vocabulary Technical Committee's principles and approach to <ilxspecref spec="&vocabfile;">vocabulary</ilxspecref> use and management.</item>
+			<item><emph role="strong">Security</emph> - This document presents <ilxspecref spec="&securityfile;">healthcare permissions</ilxspecref> that may be assigned to licensed, certified and non-licensed healthcare personnel.</item>
+		<item>
+			<emph role="strong">Implementation Technology Specification (ITS)</emph> - Describes the Implementation Technology Specification document and its function.</item>
+		<item>
+			<emph role="strong">Data Types</emph> - Describes the underlying principles of the Version 3 <ilxspecref spec="&datatypesfile;">data types.</ilxspecref></item>
+		<item>
+			<emph role="strong">Common Message Element Types (CMETs)</emph> - Describes the purpose, definition, and use of CMETs.</item>
+		<item>
+			<emph role="strong">Examples</emph> - Shows an example of a V2.4 message and an equivalent Version 3 representation of that same message using the XML ITS (including mapping notes).</item>
+	</list>
+</div2>

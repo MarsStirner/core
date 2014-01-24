@@ -15,6 +15,7 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.reflect.LoggingManager
 import java.util.Date
 import java.text.SimpleDateFormat
+import java.util
 
 /**
  * Методы для работы с JobTicket
@@ -120,15 +121,15 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
 
     if (id > 0) {
       val jobTicket = this.getJobTicketById(id)
-      val oldJobTicket = JobTicket.clone(jobTicket)
-      val lockId = appLock.acquireLock("Job_Ticket", id, oldJobTicket.getId.intValue(), auth)
+      //val oldJobTicket = JobTicket.clone(jobTicket)
+      //val lockId = appLock.acquireLock("Job_Ticket", id, oldJobTicket.getId.intValue(), auth)
 
       try {
         jobTicket.setStatus(status)
         dbManager.merge(jobTicket)
         isComplete = true
       } finally {
-        appLock.releaseLock(lockId)
+        //appLock.releaseLock(lockId)
       }
     } else {
       LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
@@ -138,7 +139,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     isComplete
   }
 
-  def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date, departmentId: Int) = {
+  def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date, departmentId: Int, urgent: Boolean) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm")
     val strDate = formatter.format(datef)
     val date = formatter.parse(strDate)
@@ -148,6 +149,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
                   .setParameter("eventId", eventId)
                   .setParameter("actionTypeId", atId)
                   .setParameter("departmentId", departmentId)
+                  .setParameter("urgent", urgent)
 
     val result = query.getResultList
 
@@ -234,9 +236,12 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
 
     result.size match {
       case 0 => {
+        new util.LinkedList[Action]
+        /*
         throw new CoreException(
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.ActionsForJobTicketNotFound").format(jobTicketId))
+          */
       }
       case size => {
         result.foreach(a => {em.detach(a)})
@@ -244,6 +249,49 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       result
     }
   }
+
+  def getLaboratoryCodeForActionId(actionId: Int) = {
+    val query = em.createQuery(LaboratoryCodeByActionIdQuery, classOf[String])
+      .setParameter("actionId", actionId)
+
+    val result = query.getResultList
+    if (result.size() > 0) {
+      result.get(0)
+    } else {
+      null
+    }
+
+  }
+
+  val LaboratoryCodeByActionIdQuery =
+    """
+    SELECT
+      lab.code
+    FROM
+      Action a,
+      ActionProperty ap,
+      ActionPropertyType apt,
+      RbTest rbTest,
+      RbLaboratoryTest labTest,
+      RbLaboratory lab,
+      ActionType at
+    WHERE
+      ap.action.id = a.id
+    AND
+      ap.actionPropertyType.id = apt.id
+    AND
+      apt.test.id = rbTest.id
+    AND
+      labTest.testId = rbTest.id
+    AND
+      labTest.masterId = lab.id
+    AND
+      at.id = a.actionType.id
+    AND
+      a.id = :actionId
+    AND
+      ap.isAssigned = 1
+    """
 
   val JobTicketByIdQuery =
     """
@@ -345,7 +393,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       AND
         a.actionType.mnemonic = 'LAB'
       AND
-        a.isUrgent = 0
+        a.isUrgent = :urgent
       AND
         apval.id.id = ap.id
       AND

@@ -49,6 +49,10 @@ public interface DbActionPropertyBeanLocal {
     getActionPropertiesByActionIdAndActionPropertyTypeCodes(int actionId, Set<String> codes)
             throws CoreException;
 
+    Map<ActionProperty, List<APValue>>
+    getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(int actionId, Set<String> codes)
+            throws CoreException;
+
     /**
      * Возвращает список свойств со значениями из последнего Action внутри выбранного Event по идентификаторам из таблицы rbCoreActionProperty
      *
@@ -66,8 +70,22 @@ public interface DbActionPropertyBeanLocal {
     getActionPropertiesForEventByActionTypes(int eventId, Set<Integer> atIds, Set<Integer> coreIds)
             throws CoreException;
 
+    /**
+     * Возвращает список заданного количества свойств со значениями из последних Action внутри заданного списка Event с возможностью выбора статуса акшена по кодам акшенПропертиТайпов
+     *
+     * @param eventId Список идентификаторов обращения.
+     * @param codes   Список кодов ActionPropertyType, по которым будет производиться поиск ActionProperty
+     * @param countInGroup количество возвращяемых пропертей для каждого кода и каждого евента
+     * @param needStatus Параметр, указывающий, нужна ли проверка на статус акшена (используется в мониторинге) a.status = 2
+     * @return Набор свойств со значениями для списка евентов как LinkedHashMap<Integer, LinkedHashMap<ActionProperty, List<APValue>>>
+     * @throws CoreException
+     * @see ActionProperty
+     * @see APValue
+     * @see CoreException
+     * @since 1.0.1.34
+     */
     LinkedHashMap<Integer, LinkedHashMap<ActionProperty, List<APValue>>>
-    getActionPropertiesByEventIdsAndActionPropertyTypeCodes(java.util.List<Integer> eventId, java.util.Set<String> codes, int countInGroup)
+    getActionPropertiesByEventIdsAndActionPropertyTypeCodes(java.util.List<Integer> eventId, java.util.Set<String> codes, int countInGroup, boolean needStatus)
             throws CoreException;
 
     List<APValue>

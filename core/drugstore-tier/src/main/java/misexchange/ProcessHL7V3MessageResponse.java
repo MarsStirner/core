@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
-import org.hl7.v3.MCCIIN000002UV01;
+import org.hl7.v3.MCCIIN000002UV012;
 
 
 /**
@@ -35,18 +35,18 @@ import org.hl7.v3.MCCIIN000002UV01;
 @XmlRootElement(name = "ProcessHL7v3MessageResponse")
 public class ProcessHL7V3MessageResponse {
 
-    @XmlElement(name = "return", required = true)
-    protected MCCIIN000002UV01 _return;
+    @XmlElement(name = "return", required = true, nillable = true)
+    protected MCCIIN000002UV012 _return;
 
     /**
      * Gets the value of the return property.
      * 
      * @return
      *     possible object is
-     *     {@link MCCIIN000002UV01 }
+     *     {@link MCCIIN000002UV012 }
      *     
      */
-    public MCCIIN000002UV01 getReturn() {
+    public MCCIIN000002UV012 getReturn() {
         return _return;
     }
 
@@ -55,10 +55,10 @@ public class ProcessHL7V3MessageResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link MCCIIN000002UV01 }
+     *     {@link MCCIIN000002UV012 }
      *     
      */
-    public void setReturn(MCCIIN000002UV01 value) {
+    public void setReturn(MCCIIN000002UV012 value) {
         this._return = value;
     }
 

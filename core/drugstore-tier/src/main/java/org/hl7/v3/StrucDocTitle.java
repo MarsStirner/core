@@ -53,12 +53,12 @@ import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 public class StrucDocTitle {
 
     @XmlElementRefs({
-        @XmlElementRef(name = "sup", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "footnote", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "footnoteRef", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "content", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "sup", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "sub", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "footnote", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "br", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "sub", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "footnoteRef", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     })
     @XmlMixed
     protected List<Serializable> content;
@@ -95,12 +95,12 @@ public class StrucDocTitle {
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link String }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocSub }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocSup }{@code >}
-     * {@link JAXBElement }{@code <}{@link StrucDocTitleFootnote }{@code >}
-     * {@link String }
      * {@link JAXBElement }{@code <}{@link StrucDocTitleContent }{@code >}
+     * {@link JAXBElement }{@code <}{@link StrucDocSup }{@code >}
+     * {@link JAXBElement }{@code <}{@link StrucDocSub }{@code >}
+     * {@link JAXBElement }{@code <}{@link StrucDocTitleFootnote }{@code >}
+     * {@link JAXBElement }{@code <}{@link String }{@code >}
+     * {@link String }
      * {@link JAXBElement }{@code <}{@link StrucDocFootnoteRef }{@code >}
      * 
      * 
@@ -199,7 +199,7 @@ public class StrucDocTitle {
      */
     public String getMediaType() {
         if (mediaType == null) {
-            return "text/x-hl7-title+xml";
+            return "text/x-hl7-title+handlers";
         } else {
             return mediaType;
         }

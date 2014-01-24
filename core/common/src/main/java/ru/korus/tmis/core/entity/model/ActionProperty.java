@@ -9,7 +9,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 @Entity
-@Table(name = "ActionProperty", catalog = "", schema = "")
+@Table(name = "ActionProperty")
 @NamedQueries(
         {
                 @NamedQuery(name = "ActionProperty.findAll", query = "SELECT a FROM ActionProperty a")
@@ -111,6 +111,7 @@ public class ActionProperty
         valueTypeMap.put("Date", APValueDate.class);
         valueTypeMap.put("Double", APValueDouble.class);
         valueTypeMap.put("HospitalBed", APValueHospitalBed.class);
+        valueTypeMap.put("HospitalBedProfile", APValueHospitalBedProfile.class);
         valueTypeMap.put("Html", APValueString.class);
         valueTypeMap.put("Integer", APValueInteger.class);
         valueTypeMap.put("JobTicket", APValueJobTicket.class);
@@ -129,7 +130,6 @@ public class ActionProperty
         valueTypeMap.put("FlatDirectory", APValueFlatDirectory.class);
         valueTypeMap.put("Legal_representative_id", APValueInteger.class);//че за тип такой?
         valueTypeMap.put("rbReasonOfAbsence", APValueRbReasonOfAbsence.class); //Причина отсутствия
-
     }
 
     @SuppressWarnings("rawtypes")

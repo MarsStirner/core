@@ -1,0 +1,13 @@
+<usage><!--Have 2 CMET usage sets for MCCI and UV--><cmetuse role="uses">
+      <hmdref ref="MCCI_HD200100UV-hmd" refname="Batch Wrapper"
+              refidentifier="MCCI_HD200100UV"/>
+      <cmetref ref="COCT_MT040203UV09-msg" refname="R_NotificationPartyContact"
+               refidentifier="COCT_MT040203UV09"/>
+   </cmetuse>
+   <cmetuse role="uses">
+      <hmdref ref="MCCI_HD200101UV-hmd" refname="Response Batch Wrapper"
+              refidentifier="MCCI_HD200101UV"/>
+      <cmetref ref="COCT_MT040203UV09-msg" refname="R_NotificationPartyContact"
+               refidentifier="COCT_MT040203UV09"/>
+   </cmetuse>
+</usage>

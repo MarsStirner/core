@@ -210,15 +210,33 @@ class HospitalBedEntry {
     val received = actions.filter(p => p.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.admissionFlatCode"))==0)
     if(received!=null && received.size>0) {
       val action = received.get(0)
-      //Первая запись всегда "Приемное отделение"
+      val properties = mGetPropertiesWithValuesByCodes(action.getId.intValue(), Set(ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct")))
+
+      // Стандартное отделение поступления
+      var orgStructId = 28
+      var orgStructName = "Приемное отделение"
+     // Если свойство "Приемное отделение не выставлено на действии "Поступление",
+     // то пользователю выводится приемное отделение, а в лог пишется запись о критической ситуации.
+      if(properties.size == 1) {
+        val apvList = properties.head._2
+        if(apvList != null && apvList.size == 1 && apvList.get(0).asInstanceOf[APValueOrgStructure].getValue != null) {
+          orgStructId = apvList.get(0).asInstanceOf[APValueOrgStructure].getValue.getId
+          orgStructName = apvList.get(0).asInstanceOf[APValueOrgStructure].getValue.getName
+        } else {
+          //TODO Log - неверное количество значений свойства "Отденение поступления", должно быть 1
+        }
+      } else {
+        //TODO Log - неверное количество свойств с кодом "orgStructStay", должно быть 1
+      }
+
       this.moves.add(new MovesListHospitalBedContainer(action,
-                                                       28,
-                                                       "Приемное отделение",
+                                                       orgStructId,
+                                                       orgStructName,
                                                        action.getBegDate,
                                                        null))
       //Смотрим, куда направлен (apt.code - db.apt.received.codes.sentTo)
       if(mGetPropertiesWithValuesByCodes!=null) {
-        val properties = mGetPropertiesWithValuesByCodes(action.getId.intValue(), asJavaSet(Set(ConfigManager.Messages("db.apt.received.codes.orgStructDirection"))))
+        val properties = mGetPropertiesWithValuesByCodes(action.getId.intValue(), Set(ConfigManager.Messages("db.apt.received.codes.orgStructDirection")))
         if(properties!=null && properties.size()>0){
           val property = properties.iterator.next()
           if (property!=null && property._2!=null && property._2.size()>0)
@@ -239,7 +257,7 @@ class HospitalBedEntry {
                                   ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"),
                                   ConfigManager.Messages("db.apt.moving.codes.timeArrival"),
                                   ConfigManager.Messages("db.apt.moving.codes.timeLeaved"))
-          val properties = mGetPropertiesWithValuesByCodes(action.getId.intValue(), asJavaSet(codes))
+          val properties = mGetPropertiesWithValuesByCodes(action.getId.intValue(), codes)
           val flgClose = if (action.getEndDate!=null)true else false
 
           properties.foreach(ap => {
@@ -264,7 +282,7 @@ class HospitalBedEntry {
 
           if (flgUpdateReceivedEndDate){  //Из первого движения запишем дату поступления как дату выбытия из приемного отделения
             this.moves.get(0).setLeave(getFormattedDate(action.getBegDate, timeArrival))
-            this.moves.get(0).calculate()
+            this.moves.get(0).calculate(action.getEvent.getEventType.getRequestType.getCode)
             flgUpdateReceivedEndDate = false
           }
 
@@ -444,13 +462,23 @@ class MovesListHospitalBedContainer {
     this.leave = leave
     if(action.getAssigner!=null)
       this.doctorCode = action.getAssigner.getId.toString
-    this.calculate()
+    this.calculate(action.getEvent.getEventType.getRequestType.getCode)
   }
 
-  def calculate() = {
+  // исправлен подсчет количества дней https://korusconsulting.atlassian.net/browse/WEBMIS-972
+  // https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=3
+  def calculate(eventRequestCode: String) = {
     if (this.leave!=null && this.admission!=null) {
       this.days = (this.leave.getTime - this.admission.getTime)/(1000*60*60*24)
-      this.bedDays = this.days + 1
+      this.bedDays = this.days
+      if (unit.compareTo("Приемное отделение")!=0 && this.days!=0) {
+        if (eventRequestCode.compareTo("hospital")==0) {     //hospital
+          this.bedDays = this.bedDays + 1
+        } else {                                             //clinic
+          //this.bedDays = this.days
+        }
+      }
+
     }
   }
 }
@@ -472,6 +500,9 @@ class RegistrationHospitalBedContainer {
   var movedFromUnitId: Int = _
   @BeanProperty
   var patronage: String = _
+  @BeanProperty
+  var bedProfileId: Int = _
+
   @JsonView(Array(classOf[HospitalBedViews.RegistrationFormView]))
   @BeanProperty
   var chamberList: java.util.LinkedList[ChamberDataContainer] = new java.util.LinkedList[ChamberDataContainer]
@@ -582,6 +613,8 @@ class BedDataContainer {
   @BeanProperty
   var code: String = _
   @BeanProperty
+  var profileId: Int = _
+  @BeanProperty
   var busy: String = _
 
   /**
@@ -592,9 +625,10 @@ class BedDataContainer {
   def this(bed: OrgStructureHospitalBed, busy: Boolean){
     this()
     if(bed!=null){
-      this.bedId = bed.getId.intValue()
+      this.bedId = bed.getId.intValue
       this.name = bed.getName
       this.code = bed.getCode
+      this.profileId = bed.getProfileId.getId.intValue
       this.busy = if(busy) "yes" else "no"
     }
   }

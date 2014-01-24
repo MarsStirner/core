@@ -30,6 +30,17 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Address
+ * Структура с данными об адресах, которые обслуживаются подразделением
+ * @param orgStructureId		1) Внутренний идентификатор подразделения, к которому приписан этот адрес
+ * @param pointKLADR			2) Соответствующий адресу КЛАДР-код
+ * @param streetKLADR 			3) Соответствующий КЛАДР-код улицы
+ * @param number				4) Номер дома\строения
+ * @param corpus				5) Номер корпуса
+ * @param firstFlat				6) Начало диапозона обслуживаемых квартир
+ * @param lastFlat				7) Конец диапозона обслуживаемых квартир
+ */
 public class Address implements org.apache.thrift.TBase<Address, Address._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Address");
 

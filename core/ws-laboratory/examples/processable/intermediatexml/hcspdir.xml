@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE spec SYSTEM "../../support/dtd/v3m.dtd">
+<spec>
+	<header>
+		<title>Healthcare, Community Services and Provider Directory</title>
+		<version>1.0</version>
+		<date>20 June, 2010</date>
+		<authlist>
+			<author>
+				<role>Project Lead</role>
+				<name key="Walker, Max">Max Walker</name>
+				<affiliation>DHS, Victoria State, Australia</affiliation>
+				<email href="Max.Walker@dhs.vic.gov.au">Max.Walker@dhs.vic.gov.au</email>
+			</author>
+			<author>
+				<role>Editor</role>
+				<name key="Walker, Max">Max Walker</name>
+				<affiliation>DHS, Victoria State, Australia</affiliation>
+				<email href="Max.Walker@dhs.vic.gov.au">Max.Walker@dhs.vic.gov.au</email>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Walker, Max">Max Walker</name>
+				<affiliation>DHS, Victoria State, Australia</affiliation>
+				<email href="Max.Walker@dhs.vic.gov.au">Max.Walker@dhs.vic.gov.au</email>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Honey, Alan">Alan Honey</name>
+				<affiliation>Kaiser Permanente, USA</affiliation>
+				<email href="alan.p.honey@kp.org">alan.p.honey@kp.org</email>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Laidlaw, Bruce">Bruce Laidlaw</name>
+				<affiliation>CGI Group, Alberta, Canada</affiliation>
+				<email href="bruce.laidlaw@CGI.com">bruce.laidlaw@CGI.com</email>
+			</author>
+		</authlist>
+			</header>
+	<body>
+		<div1 id="hcspdir_intro" ballotStatus="NormativeStandard" ballotNumber="1">
+			<head>Introduction</head>
+			<div2 id="NotestoReaders">
+					<head>Notes to Readers</head>
+<p>This document is the Service Functional Model (SFM) for the Healthcare, Community Services and Provider Directory which is specified under the Service Specification Framework process under the auspices of the Healthcare Services Specification Project (HSSP). One key point to note is that the SFM provides a Service Interface specification, NOT the specification of a service implementation. This is a critical distinction in terms of Service Oriented Architecture. There could be many different ways of implementing all or part of the functionality to support the behaviour described in this specification.</p>
+			</div2>
+			<div2 id="context">
+				<head>Context of this SFM within HSSP Roadmap</head>
+<p>The purpose of an HL7 SFM is to identify and document the functional requirements of services important to healthcare.  Accordingly, this particular SFM seeks to define the functional requirements of a Healthcare, Community Services, and Provider Directory Service (Referred to from here on as Human Services Directory or HSD).</p>
+<p>Use the link below to review the full ballot document:<br/>
+<loc href="HL7_V3_HCSPDIR_R1_2010FEB.pdf">Click here to download a copy of the approved document.</loc>
+</p>
+			</div2>
+		</div1>
+	</body>
+</spec>

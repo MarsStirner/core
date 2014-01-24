@@ -1,43 +1,41 @@
 package ru.korus.tmis.core.data
 
-import javax.xml.bind.annotation.XmlType._
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
-import javax.xml.bind.annotation.XmlRootElement._
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
-import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 import reflect.BeanProperty
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
-import java.util.{Calendar, Date}
-import java.util
-import ru.korus.tmis.lis.data.PatientInfo
+import java.util.Date
 
 /**
  * Список возможных ключей для запросов формы 007
  */
-class Form007QueryStatuses{}
+class Form007QueryStatuses {}
 
 object Form007QueryStatuses extends Enumeration {
 
   type Form007QueryStatuses = Value
 
-  val F007QS_PERMANENT_BEDS,                  //1.3  Количество развернутых коек
-  F007QS_ALL_PATIENTS_LOCATED_AT_BEGIN_DATE,  //1.5  Состояло на начало суток
-  F007QS_RECEIVED_ALL,                        //1.6  Поступило больных всего
-  F007QS_RECEIVED_DAY_HOSPITAL,               //1.7  В том числе из дневного стационара.
-  F007QS_RECEIVED_VILLAGERS,                  //1.8  Кол-во сельских жителей
-  F007QS_RECEIVED_CHILDREN,                   //1.9  Кол-во детей в возрасте от 0 до 17 лет
-  F007QS_RECEIVED_AFTER60,                    //1.10 Кол-во граждан, старше 60 лет
-  F007QS_MOVING_FROM,                         //1.11 Кол-во переводов из отделений
-  F007QS_MOVING_IN,                           //1.12 Кол-во переводов в отделения
-  F007QS_LEAVED_ALL,                          //1.13 Выписано всего
-  F007QS_LEAVED_ANOTHER_HOSPITAL,             //1.14 Переведено в другие стационары
-  F007QS_LEAVED_HOUR_HOSPITAL,                //1.15 Переведено в другие отделения
-  F007QS_LEAVED_DAY_HOSPITAL,                 //1.16 Переведено в дневной стационар
-  F007QS_LEAVED_DEAD,                         //1.17 Умерло
-  F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE,    //1.18 Состоит на начало текущего дня
-  F007QS_PATRONAGE                            //1.19 Состоит матерей
-  = Value
+  val F007QS_PERMANENT_BEDS = Value(1,"countPermanents") //1.3  Количество развернутых коек (колнка №3 в приказе)
+  val F007QS_BEDS_REPAIR = Value(2,"countBedsRepair") // кол-во коек на ремонте (колнка №4 в приказе)
+  val F007QS_ALL_PATIENTS_LOCATED_AT_BEGIN_DATE = Value(3,"countLocated") //1.5  Состояло на начало суток (колнка №5 в приказе)
+  val F007QS_RECEIVED_ALL = Value(4,"FIOinput007") //1.6  Поступило больных всего (колнка №6 в приказе)
+  val F007QS_RECEIVED_DAY_HOSPITAL = Value(5,"FIOinpuFrom12") //1.7  В том числе из дневного стационара. (колнка №7 в приказе)
+  val F007QS_RECEIVED_VILLAGERS = Value(6,"countReceivedVillages") //1.8  Кол-во сельских жителей (колнка №8 в приказе)
+  val F007QS_RECEIVED_CHILDREN = Value(7,"countReceivedChildren") //1.9  Кол-во детей в возрасте от 0 до 17 лет (колнка №9 в приказе)
+  val F007QS_RECEIVED_AFTER60 = Value(8,"countReceivedAfter60") //1.10 Кол-во граждан, старше 60 лет (колнка №10 в приказе)
+  val F007QS_MOVING_FROM = Value(9,"countMovingForm") //1.11 Кол-во переводов из отделений (колнка №11 в приказе)
+  val F007QS_MOVING_IN = Value(10,"FIOoutToOtherUnit") //1.12 Кол-во переводов в отделения (колнка №12 в приказе)
+  val F007QS_LEAVED_ALL = Value(11,"FIOoutTotal") //1.13 Выписано всего (колнка №13 в приказе))
+  val F007QS_LEAVED_ANOTHER_HOSPITAL = Value(12,"FIOoutToOtherHospital") //1.14 Переведено в другие стационары (колнка №14 в приказе)
+  val F007QS_LEAVED_HOUR_HOSPITAL = Value(13,"countLeavedHourHosp") //1.15 Переведено в круглосуточный стационар (колнка №15 в приказе)
+  val F007QS_LEAVED_DAY_HOSPITAL = Value(14,"countDayHosp") //1.16 Переведено в дневной стационар (колнка №16 в приказе)
+  val F007QS_LEAVED_DEAD = Value(15,"FIOtotalDeath") //1.17 Умерло (колнка №17 в приказе)
+  val F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE = Value(16,"countAllEndDay") //1.18 Состоит на начало текущего дня (колнка №18 в приказе))
+  val F007QS_PATRONAGE = Value(17,"countPatronage") //1.19 Состоит матерей (колнка №19 в приказе)
+  val F007QS_FREE_BEDS_MALE = Value(18,"countMaleBeds") // кол-во свободных мужских мест
+  val F007QS_FREE_BEDS_FEMALE = Value(19,"countFemaleBeds")// кол-во свободных женских мест
+
 }
 
 @XmlType(name = "formOfAccountingMovementOfPatientsData")
@@ -50,11 +48,12 @@ class FormOfAccountingMovementOfPatientsData {
   var data: FormOfAccountingMovementOfPatientsEntry = _
 
   def this(department: OrgStructure,
-           that: Map[Form007QueryStatuses.Form007QueryStatuses, (Long, List[Event])],
+           cnts: Map[String, scala.collection.mutable.Map[Form007QueryStatuses.Form007QueryStatuses, Long]],
+           pat: Map[Form007QueryStatuses.Form007QueryStatuses, List[String]],
            request: SeventhFormRequestData) {
     this()
     this.requestData = request
-    this.data = new FormOfAccountingMovementOfPatientsEntry(request, department, that)
+    this.data = new FormOfAccountingMovementOfPatientsEntry(request, department, cnts, pat)
   }
 }
 
@@ -64,17 +63,17 @@ class FormOfAccountingMovementOfPatientsData {
 class SeventhFormRequestData {
 
   @BeanProperty
-  var departmentId: Int = _                                                   //Отделение
+  var departmentId: Int = _ //Отделение
 
   @BeanProperty
-  var beginDate: Date = _                                                     //Дата начала
+  var beginDate: Date = _ //Дата начала
 
   @BeanProperty
-  var endDate: Date = _                                                       //Дата окончания
+  var endDate: Date = _ //Дата окончания
 
   def this(departmentId: Int,
            beginDate: Date,
-           endDate: Date ){
+           endDate: Date) {
     this()
     this.departmentId = departmentId
     this.beginDate = beginDate
@@ -101,18 +100,18 @@ class FormOfAccountingMovementOfPatientsEntry {
 
   def this(request: SeventhFormRequestData,
            department: OrgStructure,
-           that: Map[Form007QueryStatuses.Form007QueryStatuses, (Long, List[Event])]) {
+           cnts: Map[String, scala.collection.mutable.Map[Form007QueryStatuses.Form007QueryStatuses, Long]],
+           pat: Map[Form007QueryStatuses.Form007QueryStatuses, List[String]]) {
     this()
     this.rangeReportDateTime = new DatePeriodContainer(request.getBeginDate, request.getEndDate)
-    var cnt = Map.empty[Form007QueryStatuses.Form007QueryStatuses, Long]
-    var pat = Map.empty[Form007QueryStatuses.Form007QueryStatuses, List[Event]]
-    that.foreach(f=> {
-      if (f._2!=null){
-        cnt += f._1 -> f._2._1
-        if (f._2._2!=null && f._2._2.size>0) pat += f._1 -> f._2._2
-      }
+    val totalCnts = scala.collection.mutable.Map.empty[Form007QueryStatuses.Form007QueryStatuses, Long]
+    var pos: Int = 0
+    cnts.foreach(cnt => {
+      cnt._2.foreach(c => totalCnts += c._1 -> (totalCnts.getOrElse[Long](c._1, 0) + c._2))
+      pos += 1
+      this.counts.add(new SeventhFormFrontPage( pos, RbHospitalBedProfile.newInstance(cnt._1), cnt._2))
     })
-    this.counts.add(new SeventhFormFrontPage(0, null, cnt)) //Всего
+    this.counts.add(new SeventhFormFrontPage(0, null, totalCnts)) //Всего
     this.patients = new SeventhFormReversePage(pat)
     this.department = new OrgStructureContainer(department)
   }
@@ -121,32 +120,33 @@ class FormOfAccountingMovementOfPatientsEntry {
 @XmlType(name = "seventhFormFrontPage")
 @XmlRootElement(name = "seventhFormFrontPage")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class SeventhFormFrontPage {                                                    //Аверс формы 007
+class SeventhFormFrontPage {
+  //Аверс формы 007
 
   @BeanProperty
-  var pos: Int = -1                                                             //Номер строки формы
+  var pos: Int = -1 //Номер строки формы
 
   @BeanProperty
-  var name: IdNameContainer = new IdNameContainer                               //Профиль койки
+  var name: IdNameContainer = new IdNameContainer //Профиль койки
 
   @BeanProperty
-  var code: String = ""                                                         //Код
+  var code: String = "" //Код
 
   @BeanProperty
-  var deployedBed: Long = 0                                                     //Развернуто коек всего
+  var deployedBed: Long = 0 //Развернуто коек всего
 
   @BeanProperty
-  var closedBed: Long = 0                                                       //Свернуто на ремонт
+  var closedBed: Long = 0 //Свернуто на ремонт
 
   @BeanProperty
-  var movement: MovementDataContainer = new MovementDataContainer               //Движение больных за истекшие сутки
+  var movement: MovementDataContainer = new MovementDataContainer //Движение больных за истекшие сутки
 
   @BeanProperty
-  var atBeginingOfDay: AtBeginingOfDayContainer = _                             //На начало текущего дня
+  var atBeginingOfDay: AtBeginingOfDayContainer = _ //На начало текущего дня
 
   def this(id: Int,
            name: RbHospitalBedProfile,
-           that: Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
+           that: scala.collection.mutable.Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
     this()
     this.pos = id
     if (name != null) {
@@ -191,12 +191,12 @@ class SeventhFormReversePage {
   @BeanProperty
   var toVacation: java.util.LinkedList[PatientInfoContainer] = new java.util.LinkedList[PatientInfoContainer]
 
-  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, List[Event]]) {
+  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, List[String]]) {
     this()
 
     import Form007QueryStatuses._
 
-    that.foreach(f=>{
+    that.foreach(f => {
       f._1 match {
         case F007QS_RECEIVED_ALL => f._2.foreach(e => this.received.add(new PatientInfoContainer(e)))
         case F007QS_MOVING_FROM => f._2.foreach(e => this.receivedFromHourHospital.add(new PatientInfoContainer(e)))
@@ -224,7 +224,7 @@ class MovementDataContainer {
   var received: CountOfReceivedPatientsContainer = new CountOfReceivedPatientsContainer
 
   @BeanProperty
-  var moving: CountOfTransferredPatientsContainer = _//new CountOfTransferredPatientsContainer
+  var moving: CountOfTransferredPatientsContainer = _ //new CountOfTransferredPatientsContainer
 
   @BeanProperty
   var leaved: CountOfDischargedPatientsContainer = new CountOfDischargedPatientsContainer
@@ -232,14 +232,14 @@ class MovementDataContainer {
   @BeanProperty
   var died: Long = 0
 
-  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
+  def this(that: scala.collection.mutable.Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
     this()
 
     import Form007QueryStatuses._
     this.atBeginingLastDay = that.get(F007QS_ALL_PATIENTS_LOCATED_AT_BEGIN_DATE).getOrElse(0)
     this.received = new CountOfReceivedPatientsContainer(that)
     this.moving = new CountOfTransferredPatientsContainer(that.get(F007QS_MOVING_FROM).getOrElse(0),
-                                                          that.get(F007QS_MOVING_IN).getOrElse(0))
+      that.get(F007QS_MOVING_IN).getOrElse(0))
     this.leaved = new CountOfDischargedPatientsContainer(that)
     this.died = that.get(F007QS_LEAVED_DEAD).getOrElse(0)
   }
@@ -259,13 +259,13 @@ class AtBeginingOfDayContainer {
   @BeanProperty
   var freePlaces: CountOfFreePlacesContainer = _
 
-  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
+  def this(that:  scala.collection.mutable.Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
     this()
 
     import Form007QueryStatuses._
     this.summary = that.get(F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE).getOrElse(0)
-    this.mothers = that.get(F007QS_ALL_PATIENTS_LOCATED_AT_END_DATE).getOrElse(0)
-    this.freePlaces = new CountOfFreePlacesContainer(0, 0)  //Не используется в этой реализации
+    this.mothers = that.get(F007QS_PATRONAGE).getOrElse(0)
+    this.freePlaces = new CountOfFreePlacesContainer(0, 0) //Не используется в этой реализации
   }
 }
 
@@ -283,15 +283,15 @@ class CountOfReceivedPatientsContainer {
   @BeanProperty
   var including: IncludingReceivedPatientsContainer = _
 
-  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
+  def this(that: scala.collection.mutable.Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
     this()
 
     import Form007QueryStatuses._
     this.summary = that.get(F007QS_RECEIVED_ALL).getOrElse(0)
     this.fromDayHospital = that.get(F007QS_RECEIVED_DAY_HOSPITAL).getOrElse(0)
     this.including = new IncludingReceivedPatientsContainer(that.get(F007QS_RECEIVED_VILLAGERS).getOrElse(0),
-                                                            that.get(F007QS_RECEIVED_CHILDREN).getOrElse(0),
-                                                            that.get(F007QS_RECEIVED_AFTER60).getOrElse(0))
+      that.get(F007QS_RECEIVED_CHILDREN).getOrElse(0),
+      that.get(F007QS_RECEIVED_AFTER60).getOrElse(0))
   }
 }
 
@@ -326,14 +326,14 @@ class CountOfDischargedPatientsContainer {
   @BeanProperty
   var including: IncludingDischargedPatientsContainer = _
 
-  def this(that: Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
+  def this(that: scala.collection.mutable.Map[Form007QueryStatuses.Form007QueryStatuses, Long]) {
     this()
 
     import Form007QueryStatuses._
     this.summary = that.get(F007QS_LEAVED_ALL).getOrElse(0)
     this.including = new IncludingDischargedPatientsContainer(that.get(F007QS_LEAVED_ANOTHER_HOSPITAL).getOrElse(0),
-                                                              that.get(F007QS_LEAVED_HOUR_HOSPITAL).getOrElse(0),
-                                                              that.get(F007QS_LEAVED_DAY_HOSPITAL).getOrElse(0))
+      that.get(F007QS_LEAVED_HOUR_HOSPITAL).getOrElse(0),
+      that.get(F007QS_LEAVED_DAY_HOSPITAL).getOrElse(0))
   }
 }
 
@@ -415,7 +415,7 @@ class IdNameTransferredPatientsContainer {
   @BeanProperty
   var toHospital: java.util.LinkedList[PatientInfoContainer] = new java.util.LinkedList[PatientInfoContainer]
 
-  def add(value: Event,
+  def add(value: String,
           to: Int) {
     to match {
       case 0 => this.toDepartment.add(new PatientInfoContainer(value))
@@ -439,11 +439,19 @@ class PatientInfoContainer {
   @BeanProperty
   var patient: PersonNameContainer = _
 
-  def this(event: Event){
+  @BeanProperty
+  var patientInfo: String = _
+
+  def this(event: Event) {
     this()
     this.appealId = event.getId.intValue()
     this.externalId = event.getExternalId
     this.patient = new PersonNameContainer(event.getPatient)
+  }
+
+  def this(patientInfo: String) {
+    this()
+    this.patientInfo = patientInfo
   }
 }
 

@@ -6,10 +6,9 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.DbActionPropertyTypeBeanLocal;
 import ru.korus.tmis.core.database.DbManagerBeanLocal;
-import ru.korus.tmis.core.entity.model.APValue;
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionProperty;
 import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
@@ -23,7 +22,6 @@ import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Author   Dmitriy E. Nosov <br>
@@ -64,23 +62,12 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
         return nonCompleteList;
     }
 
-    /**
-     * Получение лекарственного средства назначенного пациенту. Метод требует переработки в дальнейшем.
-     *
-     * @param action связанное действие
-     * @return код (code) в формате ФОЛС из RLS
-     */
-    public String getDrugCode(final Action action) {
-        List result = em.createNativeQuery(
-                "SELECT api.value FROM ActionProperty ap "
-                        + "JOIN ActionProperty_Integer api  ON ap.id = api.id "
-                        + "JOIN ActionPropertyType apt ON ap.type_id = apt.id "
-                        + "WHERE ap.action_id = ? AND apt.typeName = ?")
-                .setParameter(1, action.getId())
-                .setParameter(2, "RLS")
-                .getResultList();
-        return String.valueOf(getResult(result));
+    public List<DrugComponent> getDrugComponent(final Action action) {
+        List<DrugComponent> comps = em.createNamedQuery("DrugComponent.getByActionId", DrugComponent.class).setParameter("actionId", action.getId()).getResultList();
+
+        return comps;
     }
+
 
     private Integer getResult(final List input) {
         if (!input.isEmpty()) {
@@ -98,16 +85,14 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
      */
     @Override
     public Pharmacy getOrCreate(final Action action) throws CoreException {
-
         Pharmacy pharmacy = em.find(Pharmacy.class, action.getId());
         if (pharmacy == null) {
-
             final ActionType actionType = action.getActionType();
             pharmacy = new Pharmacy();
             pharmacy.setActionId(action.getId());
             pharmacy.setFlatCode(actionType.getFlatCode());
             pharmacy.setStatus(PharmacyStatus.ADDED);
-            dbManager.persist(pharmacy);
+            em.persist(pharmacy);
             logger.info("create pharmacy {}", pharmacy);
         } else {
             logger.info("find pharmacy {}", pharmacy);
@@ -125,7 +110,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
             findPharmacy.setStatus(pharmacy.getStatus());
             findPharmacy.setDocumentUUID(pharmacy.getDocumentUUID());
             findPharmacy.setResult(pharmacy.getResult());
-            dbManager.merge(findPharmacy);
+            em.merge(findPharmacy);
             return findPharmacy;
         }
         return null;
@@ -161,7 +146,9 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     private List<String> getFlatCodeStrings() {
         final List<String> flatCodeList = new ArrayList<String>(10);
         for (FlatCode fc : FlatCode.values()) {
-            flatCodeList.add(fc.getCode());
+            if (!FlatCode.PRESCRIPTION.equals(fc)) {
+                flatCodeList.add(fc.getCode());
+            }
         }
         return flatCodeList;
     }
@@ -172,7 +159,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     @Override
     public List<Action> getVirtualActionsAfterDate(final DateTime after) {
         return em.createQuery(
-                "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCode AND a.modifyDatetime > :modifyDatetime", Action.class)
+                "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCode AND a.createDatetime > :modifyDatetime ORDER BY a.createDatetime ASC", Action.class)
                 .setParameter("flatCode", getFlatCodeStrings())
                 .setParameter("modifyDatetime", after.toDate())
                 .getResultList();

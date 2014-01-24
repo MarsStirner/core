@@ -30,6 +30,16 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Patient
+ * Структура с данными о пациенте
+ * @param id					1) Внутренний идентификатор пациента
+ * @param lastName				2) Фамилия
+ * @param firstName				3) Имя
+ * @param patrName				4) Отчество
+ * @param birthDate				5) Дата рождения
+ * @param sex					6) Пол (1-М, 2-Ж)
+ */
 public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Patient");
 

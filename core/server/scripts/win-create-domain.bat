@@ -50,12 +50,12 @@ echo Add JVM options
 echo.
 echo for logback.xml
 echo.
-call ${glassfish.home}\bin\asadmin --user ${glassfish.admin.login} ^
-        --passwordfile %GF_PASSWD_FILE% ^
-        create-jvm-options --target server-config '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
-call ${glassfish.home}\bin\asadmin --user ${glassfish.admin.login} ^
-        --passwordfile %GF_PASSWD_FILE% ^
-        create-jvm-options --target default-config '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
+REM call ${glassfish.home}\bin\asadmin --user ${glassfish.admin.login} ^
+REM        --passwordfile %GF_PASSWD_FILE% ^
+REM        create-jvm-options --target server-config '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
+REM call ${glassfish.home}\bin\asadmin --user ${glassfish.admin.login} ^
+REM        --passwordfile %GF_PASSWD_FILE% ^
+REM        create-jvm-options --target default-config '-Dlogback.configurationFile=${com.sun.aas.instanceRoot}/config/logback.xml'
 echo.
 echo for encoding UTF-8
 echo.

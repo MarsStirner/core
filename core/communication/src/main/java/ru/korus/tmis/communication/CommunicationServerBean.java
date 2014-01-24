@@ -3,6 +3,9 @@ package ru.korus.tmis.communication;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.epgu.EPGUTicketBeanLocal;
+import ru.korus.tmis.schedule.PatientQueueBeanLocal;
+import ru.korus.tmis.schedule.PersonScheduleBeanLocal;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -33,14 +36,29 @@ public class CommunicationServerBean {
     private DbOrganizationBeanLocal dbOrganizationBeanLocal = null;
     @EJB(beanName = "DbActionPropertyBean")
     private DbActionPropertyBeanLocal dbActionPropertyBeanLocal = null;
-    @EJB(beanName = "DbQuotingByTimeBean")
-    private DbQuotingByTimeBeanLocal dbQuotingByTimeBeanLocal = null;
     @EJB(beanName = "DbManagerBean")
     private DbManagerBeanLocal dbManagerBeanLocal = null;
-    @EJB(beanName = "DbEventBean")
-    private DbEventBeanLocal dbEventBeanLocal = null;
     @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbActionBeanLocal = null;
+
+    @EJB(beanName = "PatientQueueBean")
+    private PatientQueueBeanLocal patientQueueBeanLocal = null;
+
+    @EJB(beanName = "DbClientDocumentBean")
+    private DbClientDocumentBeanLocal dbClientDocumentBeanLocal = null;
+    @EJB(beanName = "DbRbDocumentTypeBean")
+    private DbRbDocumentTypeBeanLocal dbRbDocumentTypeBeanLocal = null;
+
+    @EJB(beanName = "DbClientPolicyBean")
+    private DbClientPolicyBeanLocal dbClientPolicyBeanLocal = null;
+    @EJB(beanName = "DbRbPolicyTypeBean")
+    private DbRbPolicyTypeBeanLocal dbRbPolicyTypeBeanLocal = null;
+
+    @EJB(beanName = "EPGUTicketBean")
+    private EPGUTicketBeanLocal  ticketBeanLocal = null;
+
+    @EJB(beanName = "PersonScheduleBean")
+    private PersonScheduleBeanLocal personScheduleBeanLocal = null;
 
     private CommServer server = null;
 
@@ -55,10 +73,17 @@ public class CommunicationServerBean {
             CommServer.setSpecialityBean(dbQuotingBySpecialityBeanLocal);
             CommServer.setOrganisationBean(dbOrganizationBeanLocal);
             CommServer.setActionPropertyBean(dbActionPropertyBeanLocal);
-            CommServer.setQuotingByTimeBean(dbQuotingByTimeBeanLocal);
             CommServer.setManagerBean(dbManagerBeanLocal);
-            CommServer.setEventBean(dbEventBeanLocal);
+            CommServer.setPatientQueueBean(patientQueueBeanLocal);
             CommServer.setActionBean(dbActionBeanLocal);
+            ////////////////////////////////////////////////////////////
+            CommServer.setDocumentBean(dbClientDocumentBeanLocal);
+            CommServer.setDocumentTypeBean(dbRbDocumentTypeBeanLocal);
+            CommServer.setPolicyBean(dbClientPolicyBeanLocal);
+            CommServer.setPolicyTypeBean(dbRbPolicyTypeBeanLocal);
+            CommServer.setQueueTicketBean(ticketBeanLocal);
+            ////////////////////////////////////////////////////////////
+            CommServer.setPersonScheduleBean(personScheduleBeanLocal);
             server.startService();
         } catch (Exception exception) {
             logger.error("Exception while initialize CommunicationBean", exception);

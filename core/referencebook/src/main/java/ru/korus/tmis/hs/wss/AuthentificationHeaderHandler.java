@@ -45,9 +45,10 @@ public class AuthentificationHeaderHandler implements SOAPHandler<SOAPMessageCon
                         usernameToken.addChildElement("Password", "wsse");
                 password1.setAttribute("Type", "http://docs.oasis-open.org/wss/2004/01/oasis-200401-wss-username-token-profile-1.0#PasswordText");
                 password1.addTextNode(ConfigManager.HealthShare().Password());
+             //   System.out.println("password: " + ConfigManager.HealthShare().Password());
 
                 message.saveChanges();
-                // writeMessage(message);
+               // writeMessage(message);
             } catch (Exception e) {
                 e.printStackTrace();
             }

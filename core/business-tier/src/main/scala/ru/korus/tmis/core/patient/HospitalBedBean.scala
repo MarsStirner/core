@@ -66,6 +66,9 @@ with TmisLogging{
   @EJB
   var dbEventPerson: DbEventPersonBeanLocal = _
 
+  @EJB
+  var dbOrgStructureHospitalBed: DbOrgStructureHospitalBedBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: Event[Notification] = _
@@ -97,10 +100,12 @@ with TmisLogging{
     val lastActions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "desc"), filter.unwrap, null, authData)
     val lastAction: Action = if(lastActions!=null && lastActions.size()>0) lastActions.get(0) else null
 
-    if(hbData.data.bedRegistration!=null && hbData.data.bedRegistration.moveDatetime!=null)
-      date = hbData.data.bedRegistration.moveDatetime
-    else if (lastAction!=null)//ищем дату выписки в последнем Action
-      date = lastAction.getEndDate
+    //if(hbData.data.bedRegistration!=null && hbData.data.bedRegistration.moveDatetime!=null)
+    //  date = hbData.data.bedRegistration.moveDatetime
+    //else
+    if (lastAction!=null)//ищем дату выписки в последнем Action
+      date = new Date(lastAction.getEndDate.getTime + 1000)
+    else date = new Date()
 
     if(date==null) {
       throw new CoreException("Регистрация пациента невозможна. \nНе заданы дата и время поступления")
@@ -146,7 +151,7 @@ with TmisLogging{
           }
           else { //берем значение по умолчанию из предыдущего действия
             if (lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.admissionFlatCode"))==0) {
-              value = formatter.format(lastAction.getBegDate)  //TODO: getBegDate???
+              value = formatter.format(lastAction.getEndDate)  //TODO: getBegDate???
             }
             else if(lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.movingFlatCode"))==0){
               val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.timeLeaved"))
@@ -167,21 +172,26 @@ with TmisLogging{
             Integer.valueOf(hbData.data.bedRegistration.bedId)
           else null
         }
+        else if (code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospitalBedProfile"))==0) {
+          value = if(hbData.getData.getBedRegistration.getBedProfileId>0)
+            Integer.valueOf(hbData.getData.getBedRegistration.getBedProfileId)
+          else null
+          //TODO Implement writing hospital bed profile
+        }
+
         else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructReceived"))==0){
           if(hbData.data.bedRegistration.movedFromUnitId>0)
             value = Integer.valueOf(hbData.data.bedRegistration.movedFromUnitId)
           else { //берем значение по умолчанию из предыдущего действия
-            if (lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.admissionFlatCode"))==0) {
-              //Закоментировано по таске [WEBMIS-1012] Сохранение пустого отделения в первом движении
-              //value = Integer.valueOf(ConfigManager.Messages("db.dayHospital.id").toInt) //Если есть только поступление, то запишем дневной стационар
-              value = null
-            }
-            else if(lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.movingFlatCode"))==0){
+            if(
+              lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.movingFlatCode"))==0 ||
+              lastAction.getActionType.getFlatCode.compareTo(ConfigManager.Messages("db.action.admissionFlatCode"))==0
+            ) {
               val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct"))
               val lastProperties = actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(lastAction.getId.intValue, codes)
               if(lastProperties!=null && lastProperties.size()>0){
                 val apv = lastProperties.iterator.next()._2
-                if(apv!=null && apv.size()>0)
+                if(apv!=null && apv.size > 0 && apv.get(0).asInstanceOf[APValueOrgStructure].getValue != null)
                   value = apv.get(0).asInstanceOf[APValueOrgStructure].getValue.getId
               }
             }
@@ -398,19 +408,13 @@ with TmisLogging{
   //Запрос на занятые койки в отделении
   def getCaseHospitalBedsByDepartmentId(departmentId: Int) = {
 
-    val allBeds = em.createQuery(AllHospitalBedsByDepartmentIdQuery, classOf[OrgStructureHospitalBed])
-                .setParameter("departmentId", departmentId)
-                .getResultList
+    val allBeds = dbOrgStructureHospitalBed.getHospitalBedByDepartmentId(departmentId)
 
-    val ids = CollectionUtils.collect(allBeds, new Transformer() {
+    /*val ids = CollectionUtils.collect(allBeds, new Transformer() {
        def transform(orgBed: Object) = orgBed.asInstanceOf[OrgStructureHospitalBed].getId
-    })
-
-    val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
-                                                                           i18n("db.apt.moving.codes.hospitalBed")),
-                                classOf[OrgStructureHospitalBed])
-      .setParameter("ids", asJavaCollection(ids))
-      .getResultList
+    }) */
+    val ids = allBeds.map(f=>f.getId)
+    val result =  dbOrgStructureHospitalBed.getBusyHospitalBedByIds(asJavaCollection(ids))
 
     val map = new java.util.LinkedHashMap[OrgStructureHospitalBed, java.lang.Boolean]()
     allBeds.foreach(allBed => {
@@ -418,7 +422,6 @@ with TmisLogging{
       if(res==None) map.put(allBed, false)
       else map.put(allBed, true)
     })
-    result.foreach(em.detach(_))
     map
   }
 
@@ -535,12 +538,7 @@ with TmisLogging{
           val result = oldLastValues.find(p=> p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospitalBed"))==0).getOrElse(null)
           if (result!=null && result._2!=0 && result._2.size()>0) {
             bed = result._2.get(0).getValue.asInstanceOf[OrgStructureHospitalBed]
-            val result2 = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
-                                                                                    i18n("db.apt.moving.codes.hospitalBed")),
-                                                                                    classOf[OrgStructureHospitalBed])
-                                                                                    .setParameter("ids", asJavaCollection(Set(bed.getId.intValue())))
-                                                                                    .getResultList
-            result2.foreach(em.detach(_))
+            val result2 = dbOrgStructureHospitalBed.getBusyHospitalBedByIds(asJavaCollection(asJavaCollection(Set(bed.getId))))
             if(result2!=null && result2.size()>0) { //Койка уже занята, инициируем перевод в это же отделение (Редактируем значения Переведен в и Время выбытия)
               flgEdit = 1
             }
@@ -617,7 +615,7 @@ with TmisLogging{
   /////////Внутренние методы/////////
 
   @throws(classOf[CoreException])
-  private def verificationData(eventId: Int, actionId: Int, hbData: HospitalBedData, flgParent:Int): Boolean = {
+  def verificationData(eventId: Int, actionId: Int, hbData: HospitalBedData, flgParent:Int): Boolean = {
 
     if (hbData==null){
       throw new CoreException("Некорректные данные в HospitalBedData")
@@ -675,32 +673,63 @@ with TmisLogging{
   }
 
   def getLastCloseMovingActionForEventId(eventId: Int) = {
-    this.getLastActionByCondition(eventId, "AND a.endDate IS NOT NULL ORDER BY a.endDate desc, a.id desc")
+    this.getLastMovingActionByCondition(eventId, "AND a.endDate IS NOT NULL ORDER BY a.endDate desc, a.id desc")
   }
 
   def getLastMovingActionForEventId(eventId: Int) = {
-     this.getLastActionByCondition(eventId, "ORDER BY a.createDatetime desc")
+     this.getLastMovingActionByCondition(eventId, "ORDER BY a.createDatetime desc")
   }
 
+  /**
+   * Получение отделения в котором находится госпитализированый пациент
+   * (Когда нибудь код здесь надо будет поправить, надо посмотреть, где еще используются
+   * методы и аккуратно поправить поиск не по движениям а по движениям и поступлениям в 1 запрос).
+   * Если ты пришел править этот метод - то задача по рефакторингу ложится на тебя.
+   * @param id Идентификатор госпитализации
+   *@return Экземпляр класса, описывающего организационную структуру в БД
+   */
   def getCurrentDepartmentForAppeal(id: Int) = {
     // Текущее отделение пребывания пациента
     val moving = this.getLastMovingActionForEventId(id)
-    var department = dbOrgStructureBean.getOrgStructureById(i18n("db.dayHospital.id").toInt)//приемное отделение
+    var department: OrgStructure = null
     if (moving != null) {
-      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(moving.getId.intValue(),
+      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(moving.getId.intValue,
         JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
       if (bedValues!=null && bedValues.size()>0) {
         val values = bedValues.iterator.next()._2
         if (values!=null && values.size()>0){
-          department = values.get(0).getValue.asInstanceOf[OrgStructure]//.asInstanceOf[OrgStructureHospitalBed].getMasterDepartment
+          department = values.get(0).getValue.asInstanceOf[OrgStructure]
+        }
+      }
+    // Отсутствуют движения, смотрим поступления
+    } else {
+      val receiving = getReceivingActionByCondition(id, "ORDER BY a.createDatetime desc")
+      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(receiving.getId.intValue, JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
+      if (bedValues!=null && bedValues.size()>0) {
+        val values = bedValues.iterator.next()._2
+        if (values!=null && values.size()>0){
+          department = values.get(0).getValue.asInstanceOf[OrgStructure]
         }
       }
     }
-    department
+    //Добавлено для совместимости с предыдущим поведением, когда если не было движений - возвращалось приемное отделение
+    //Рекомендую убрать, когда точно будет ясно, что
+    if(department == null)
+      dbOrgStructureBean.getOrgStructureById(i18n("db.dayHospital.id").toInt)
+    else
+      department
   }
 
-  private def getLastActionByCondition(eventId: Int, condition: String) = {
-    val result = em.createQuery(LastMovingActionByEventIdQuery.format(i18n("db.action.movingFlatCode"), condition),
+  private def getLastMovingActionByCondition(eventId: Int, condition: String) = {
+    getActionByConditionAndCode(eventId, condition, i18n("db.action.movingFlatCode"))
+  }
+
+  private def getReceivingActionByCondition(eventId: Int, condition: String) = {
+    getActionByConditionAndCode(eventId, condition, i18n("db.action.admissionFlatCode"))
+  }
+
+  private def getActionByConditionAndCode(eventId: Int, condition: String, code: String) = {
+    val result = em.createQuery(LastMovingActionByEventIdQuery.format(code, condition),
       classOf[Action])
       .setParameter("id", eventId)
       .getResultList
@@ -713,47 +742,6 @@ with TmisLogging{
       }
     }
   }
-
-  val AllHospitalBedsByDepartmentIdQuery =
-    """
-    SELECT DISTINCT bed
-    FROM
-      OrgStructureHospitalBed bed
-      WHERE
-        bed.masterDepartment.id = :departmentId
-    ORDER BY bed.id
-    """
-
-
-  val BusyHospitalBedsByDepartmentIdQuery =
-    """
-    SELECT DISTINCT bed
-    FROM
-      APValueHospitalBed apval
-        JOIN apval.value bed,
-      ActionProperty ap
-        JOIN ap.actionPropertyType apt
-        JOIN ap.action a
-        JOIN a.actionType at
-      WHERE
-        apval.id.id = ap.id
-      AND
-        bed.id IN :ids
-      AND
-        at.flatCode = '%s'
-      AND
-        apt.code = '%s'
-      AND
-        a.endDate IS NULL
-      AND
-        a.deleted = 0
-      AND
-        ap.deleted = 0
-      AND
-        at.deleted = 0
-      AND
-        apt.deleted = 0
-    """
 
   val LastMovingActionByEventIdQuery =
     """

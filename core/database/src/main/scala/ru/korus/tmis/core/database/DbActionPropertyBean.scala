@@ -26,8 +26,6 @@ class DbActionPropertyBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  @PersistenceContext(unitName = "rls")
-  var emRls: EntityManager = _
 
   @EJB
   var dbAction: DbActionBeanLocal = _
@@ -40,7 +38,7 @@ class DbActionPropertyBean
   private val FILTER_CODE = 2
   private val FILTER_TYPENAME = 3
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertyById(id: Int) = {
     val result = em.createQuery(ActionPropertyFindQuery,
       classOf[ActionProperty])
@@ -61,7 +59,7 @@ class DbActionPropertyBean
     }
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionId(actionId: Int) = {
     val result = em.createQuery(ActionPropertiesByActionIdQuery,
       classOf[ActionProperty])
@@ -171,14 +169,17 @@ class DbActionPropertyBean
         }
         else null
       }
-      case size => {
+      case _ => {
         if (ap.getType.getIsVector) {
-          val apv = createActionPropertyValue(ap, value, index)
-          apv
-        }
-        else {
+          createActionPropertyValue(ap, value, index)
+        } else {
           val apv = apvs.get(0)
-          if (apv.unwrap.setValueFromString(value)) apv else null
+          if(value != null)
+            if (apv.unwrap.setValueFromString(value)) apv else null
+          else {
+            em remove apv
+            null
+          }
         }
       }
     }
@@ -186,17 +187,16 @@ class DbActionPropertyBean
 
   def createActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
     val cls = ap.getValueClass
-    cls match {
-      case null => {
+    if(cls == null)
         throw new CoreException(i18n("error.actionPropertyTypeClassNotFound").format(ap.getId))
-      }
-      case _ => {}
-    }
-    val apv = cls.newInstance.asInstanceOf[APValue]
-    // Устанваливаем id, index
-    apv.linkToActionProperty(ap, index)
-    // Записываем значение
-    if (apv.setValueFromString(value)) apv else null
+    if(value != null) {
+      val apv = cls.newInstance.asInstanceOf[APValue]
+      // Устанваливаем id, index
+      apv.linkToActionProperty(ap, index)
+      // Записываем значение
+      if (apv.setValueFromString(value)) apv else null
+    } else
+      null
   }
 
   ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -204,7 +204,7 @@ class DbActionPropertyBean
   /**
    * Получить APValue в простом случае по id и имени entity-класса
    */
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getPropertyValues(id: Int, entityName: String) = {
     val query = APValueQuery.format(entityName)
     val apvs = em.createQuery(query)
@@ -217,30 +217,30 @@ class DbActionPropertyBean
   /**
    * @param code поле code в таблице rls.vNomen
    */
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getRLSNomenclature(code: Int): List[Nomenclature] = {
-    emRls.createQuery("SELECT n FROM Nomenclature n WHERE n.code = :code",
+    em.createQuery("SELECT n FROM Nomenclature n WHERE n.code = :code",
       classOf[Nomenclature])
       .setParameter("code", code)
       .getResultList
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeNames(actionId: Int, names: java.util.List[String]) = {
     this.getActionPropertiesByActionIdAndCustomParameters(actionId, names, FILTER_NAME)
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeCodes(actionId: Int, codes: java.util.List[String]) = {
     this.getActionPropertiesByActionIdAndCustomParameters(actionId, codes, FILTER_CODE)
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeTypeNames(actionId: Int, codes: java.util.List[String]) = {
     this.getActionPropertiesByActionIdAndCustomParameters(actionId, codes, FILTER_TYPENAME)
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndTypeId(actionId: Int, typeId: Int) = {
     val result = em.createQuery(ActionPropertiesByActionIdAndTypeIdQuery,
       classOf[ActionProperty])
@@ -252,7 +252,7 @@ class DbActionPropertyBean
     result
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndRbCoreActionPropertyIds(actionId: Int, ids: java.util.List[java.lang.Integer]) = {
     val result = em.createQuery(ActionPropertiesByActionIdAndRbCoreActionPropertyIds, classOf[ActionProperty])
       .setParameter("actionId", actionId)
@@ -268,7 +268,7 @@ class DbActionPropertyBean
     )
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesByActionIdAndActionPropertyTypeCodes(actionId: Int, codes: java.util.Set[String]) = {
     val result = em.createQuery(ActionPropertiesByActionIdAndTypeCodesQuery, classOf[ActionProperty])
       .setParameter("actionId", actionId)
@@ -284,7 +284,23 @@ class DbActionPropertyBean
     )
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(actionId: Int, codes: java.util.Set[String]) = {
+    val result = em.createQuery(ActionPropertiesByActionIdAndTypeCodesQuery2, classOf[ActionProperty])
+      .setParameter("actionId", actionId)
+      .setParameter("codes", asJavaCollection(codes))
+      .getResultList
+
+    result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
+      (map, ap) => {
+        em.detach(ap)
+        map.put(ap, getActionPropertyValue(ap))
+        map
+      }
+    )
+  }
+
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionPropertiesForEventByActionTypes(eventId: Int, atIds: java.util.Set[java.lang.Integer], coreIds: java.util.Set[java.lang.Integer]) = {
     val result = em.createQuery(ActionPropertiesForEventByActionTypesQuery, classOf[Array[AnyRef]])
       .setParameter("eventId", eventId)
@@ -301,12 +317,16 @@ class DbActionPropertyBean
     )
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventIds: java.util.List[java.lang.Integer], codes: java.util.Set[String], cntRead: Int) = {
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventIds: java.util.List[java.lang.Integer], codes: java.util.Set[String], cntRead: Int, needStatus: Boolean) = {
 
     val sqlCodes = convertCollectionToSqlString(asJavaCollection(codes))
     val sqlEventIds = convertCollectionToSqlString(asJavaCollection(eventIds))
-    val result = em.createNativeQuery(ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx.format(sqlEventIds, sqlCodes))
+    var status = ""
+    if (needStatus) {
+      status = "AND a.status = 2"
+    }
+    val result = em.createNativeQuery(ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx.format(sqlEventIds, sqlCodes, status))
                    //.setParameter(1, new java.util.LinkedList(eventIds map(f => f.toString)))
                    //.setParameter(2, sqlCodes)
                    .setParameter(3, cntRead)
@@ -359,12 +379,37 @@ class DbActionPropertyBean
     )
   }
 
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertyValue_ActionByValue(action: Action): APValueAction = {
-    val apv = em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
-    em.detach(apv)
-    apv
+  def getCountOfActionsWithAppointmentType(appointmentType: Int) {
+    val result = em.createQuery(ActionsWithAppointmentTypeQuery,
+      classOf[Action])
+      .setParameter("appointmentType", appointmentType)
+      .getSingleResult
   }
+
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+  def getActionPropertyValue_ActionByValue(action: Action): APValueAction = {
+    val result = em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getResultList
+    result.size match {
+      case 0 => {
+        null
+      }
+      case size => {
+        result.foreach(em.detach(_))
+        result(0)
+      }
+    }
+  }
+
+  val ActionsWithAppointmentTypeQuery = """
+    SELECT COUNT(a)
+    FROM
+      ActionProperty ap
+        JOIN ap.action a
+    WHERE
+      a.appointmentType = :appointmentType
+    ORDER BY
+      v.id.index ASC
+                     """
 
   val ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx =
     """
@@ -391,9 +436,8 @@ class DbActionPropertyBean
                     AND
                       a.deleted = 0
                     AND
-                      a.status = 2
-                    AND
                       apt.code IN (%s)
+                    %s
                     AND
                       apt.deleted = 0
                     AND (
@@ -422,13 +466,29 @@ class DbActionPropertyBean
                           WHERE
                               ap_s.id = ap.id
                       )
+                      OR
+                      exists (
+                          SELECT ap_b.id
+                          FROM
+                              ActionProperty_HospitalBed ap_b
+                          WHERE
+                              ap_b.id = ap.id
+                      )
+                      OR
+                      exists (
+                          SELECT ap_os.id
+                          FROM
+                              ActionProperty_OrgStructure ap_os
+                          WHERE
+                              ap_os.id = ap.id
+                      )
                     )
                     GROUP BY idd, apt.code, ap.createDatetime DESC
         ) grouped
       ) counted
       WHERE rown <= ?3
     """
-
+                        //ORDER BY ap.id DESC
   val ActionPropertyFindQuery = """
     SELECT ap
     FROM
@@ -499,6 +559,16 @@ class DbActionPropertyBean
       ap.deleted = 0
                                                  """
 
+  val ActionPropertiesByActionIdAndTypeCodesQuery2 = """
+    SELECT ap
+    FROM
+      ActionProperty ap
+    WHERE
+      ap.action.id = :actionId
+    AND
+      ap.actionPropertyType.code IN :codes
+                                                 """
+
   val ActionPropertiesByActionIdAndRbCoreActionPropertyIds =
     """
       SELECT ap
@@ -558,6 +628,7 @@ class DbActionPropertyBean
     catch {
       case ex: Exception => throw new CoreException("error while creating action ");
     }
+    em.flush();
     newActionProperty
   }
 

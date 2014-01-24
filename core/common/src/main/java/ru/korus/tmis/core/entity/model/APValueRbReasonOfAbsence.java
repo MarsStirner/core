@@ -1,11 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -21,8 +17,9 @@ public class APValueRbReasonOfAbsence extends AbstractAPValue implements Seriali
 
     private static final long serialVersionUID = 1L;
 
-    @Column(name = "value")
-    private Integer value;
+    @ManyToOne
+    @JoinColumn(name = "value")
+    private RbReasonOfAbsence value;
 
     public APValueRbReasonOfAbsence() {
     }
@@ -36,11 +33,11 @@ public class APValueRbReasonOfAbsence extends AbstractAPValue implements Seriali
     }
 
     @Override
-    public Integer getValue() {
+    public RbReasonOfAbsence getValue() {
         return value;
     }
 
-    public void setValue(Integer value) {
+    public void setValue(RbReasonOfAbsence value) {
         this.value = value;
     }
 

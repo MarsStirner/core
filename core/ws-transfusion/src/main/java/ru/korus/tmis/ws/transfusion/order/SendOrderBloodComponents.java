@@ -1,35 +1,24 @@
 package ru.korus.tmis.ws.transfusion.order;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.xml.datatype.DatatypeConfigurationException;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.RbBloodType;
-import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
-import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.EntityMgr;
 import ru.korus.tmis.ws.transfusion.PropType;
 import ru.korus.tmis.ws.transfusion.SenderUtils;
 import ru.korus.tmis.ws.transfusion.TrfuActionProp;
-import ru.korus.tmis.ws.transfusion.efive.ComponentType;
-import ru.korus.tmis.ws.transfusion.efive.OrderInformation;
-import ru.korus.tmis.ws.transfusion.efive.OrderResult;
-import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
-import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
+import ru.korus.tmis.ws.transfusion.efive.*;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.xml.datatype.DatatypeConfigurationException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -96,7 +85,6 @@ public class SendOrderBloodComponents {
             PropType.BLOOD_COMP_TYPE, // "Требуемый компонент крови"
             PropType.TYPE, // "Вид трансфузии"
             PropType.VOLUME, // "Объем требуемого компонента крови (все, кроме тромбоцитов)"
-            PropType.DOSE_COUNT, // "Количество требуемых донорских доз (тромбоциты)"
             PropType.ROOT_CAUSE, // "Показания к проведению трансфузии"
             PropType.ORDER_REQUEST_ID, // "Результат передачи требования в систему ТРФУ"
             PropType.ORDER_ISSUE_RES_DATE, // "Дата выдачи КК"
@@ -125,16 +113,12 @@ public class SendOrderBloodComponents {
 
     /**
      * Информация о пациенте для предачи требования КК в ТРФУ
-     * 
-     * 
-     * @param action
-     *            - действие, соответсвующее новому требованию КК
+     *
+     * @param action         - действие, соответсвующее новому требованию КК
      * @param trfuActionProp
      * @return - информацию о пациенте для передачи в ТРФУ
-     * @throws CoreException
-     *             - при ошибке во время работы с БД
-     * @throws DatatypeConfigurationException
-     *             - если невозможно преобразовать дату рождения пациента в XMLGregorianCalendar (@see {@link Database#toGregorianCalendar(Date)})
+     * @throws CoreException                  - при ошибке во время работы с БД
+     * @throws DatatypeConfigurationException - если невозможно преобразовать дату рождения пациента в XMLGregorianCalendar (@see {@link Database#toGregorianCalendar(Date)})
      */
     public static PatientCredentials getPatientCredentials(final Action action, final TrfuActionProp trfuActionProp, EntityManager em) throws CoreException,
             DatatypeConfigurationException {
@@ -219,20 +203,19 @@ public class SendOrderBloodComponents {
                 logger.error("The order {} was not registrate in TRFU. Internal core error. Error description: '{}'", action.getId(),
                         e.getMessage());
                 e.printStackTrace();
+            } catch (final Exception ex) {
+                logger.error("General exception in trfu integration (in SendOrderBloodComponents): {}", ex.getMessage());
             }
         }
     }
 
     /**
      * Создание требования на выдачу КК
-     * 
-     * @param action
-     *            - действие, соответствующее требованию КК
+     *
+     * @param action - действие, соответствующее требованию КК
      * @return - параметры, заданные врачом для передаваемого требования на выдачу КК
-     * @throws CoreException
-     *             - при ошибке во время работы с БД
-     * @throws DatatypeConfigurationException
-     *             - если невозможно преобразовать дату рождения пациента в XMLGregorianCalendar (@see {@link Database#toGregorianCalendar(Date)})
+     * @throws CoreException                  - при ошибке во время работы с БД
+     * @throws DatatypeConfigurationException - если невозможно преобразовать дату рождения пациента в XMLGregorianCalendar (@see {@link Database#toGregorianCalendar(Date)})
      */
     private OrderInformation getOrderInformation(final Action action) throws CoreException,
             DatatypeConfigurationException {
@@ -251,8 +234,8 @@ public class SendOrderBloodComponents {
         final Integer compTypeId = compType != null ? compType.getId() : null;
         res.setComponentTypeId(convertComponentType(em, action.getId(), compTypeId));
         res.setVolume(trfuActionProp.getProp(action.getId(), PropType.VOLUME, 0));
-        res.setDoseCount(trfuActionProp.getProp(action.getId(), PropType.DOSE_COUNT, 0.0));
         res.setIndication(convertFromXml((String) trfuActionProp.getProp(action.getId(), PropType.ROOT_CAUSE)));
+        res.setDoseCount(0.0); //данный параметер не используется
         res.setTransfusionType(convertTrfuType((String) trfuActionProp.getProp(action.getId(), PropType.TYPE)));
         final Date plannedEndDate = senderUtils.getPlannedData(action, trfuActionProp);
         res.setPlanDate(Database.toGregorianCalendar(plannedEndDate));
@@ -348,7 +331,7 @@ public class SendOrderBloodComponents {
     /**
      * Преобразование кода группы крови из формата БД МИС ("1+", "1-" ... "4+", "4-") в формат протоколоа обмена с ТРФУ (группа: 1- первая 0 (I), 2 – вторая А
      * (II), 3 – третья В (III), 4 – четвертая АВ (IV); резус-фактора: 0 – Положительный, 1 -– Отрицательный)
-     * 
+     *
      * @param code
      * @return
      * @throws CoreException

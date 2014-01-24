@@ -8,12 +8,11 @@ import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
+import ru.korus.tmis.schedule.QueueActionParam;
 import scala.Function1;
 
 import javax.ejb.Local;
-import java.util.Date;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Методы для работы с данными таблицы БД s11r64.Action
@@ -87,6 +86,17 @@ public interface DbActionBeanLocal {
     Action updateActionStatus(int id, short status)
             throws CoreException;
 
+    /**
+     * Обновление статуса действия  (Action)
+     *
+     * @param id     Идентификатор действия (Action).
+     * @param status Новый статус.
+     * @return Отредактированное действие  (Action).
+     * @throws CoreException
+     * @see Action
+     */
+    void updateActionStatusWithFlush(int id, short status)
+            throws CoreException;
     /**
      * Получение действия для обращения заданного типа
      *
@@ -175,7 +185,29 @@ public interface DbActionBeanLocal {
 
     ActionType getActionTypeByCode(String code) throws CoreException;
 
-    Action createAction(ActionType actionType, Event event, Staff person, Date date, String hospitalUidFrom, String note);
+    Action createAction(ActionType actionType, Event event, Staff person, Date date, QueueActionParam queueActionParam);
+
+    Action updateAction(Action action);
 
     Action getEvent29AndAction19ForAction (Action action) throws CoreException;
+
+    /**
+     * Возвращает количество записей для указанного евента и типа PacientInQueueType (срочно и сверх сетки приема)
+     * @param eventId идентификатор обращения
+     * @param pacientInQueueType какой-то типа акшена (срочно и сверх сетки приема)
+     * @return количество записей как int
+     */
+    long getActionForEventAndPacientInQueueType(int eventId, long date, int pacientInQueueType) throws CoreException;
+
+    long getActionForDateAndPacientInQueueType(long beginDate, int pacientInQueueType) throws CoreException;
+
+    /**
+     * Возвращает список действий относящихся к заданному обращению и типу действия(по flatCode)
+     * @param eventId идентификатор обращения
+     * @param actionTypeFlatCode значение flatCode типа действия
+     * @return Список действий
+     */
+    List<Action> getActionsByTypeFlatCodeAndEventId(int eventId, String actionTypeFlatCode);
+
+    Action createAction(ActionType queueActionType, Event queueEvent, Staff doctor, Date paramsDateTime, String hospitalUidFrom, String note);
 }

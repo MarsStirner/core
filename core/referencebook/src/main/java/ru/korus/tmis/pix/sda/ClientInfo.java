@@ -173,8 +173,8 @@ public class ClientInfo {
                         }
                         if (street != null) {
                             addrStreet =
-                                    street.getOcatd() + "." + street.getName() + ("".equals(addrHouse.getNumber()) ? "" : addrHouse.getNumber())
-                                            + addrHouse.getCorpus();
+                                    street.getSocr() + "." + street.getName() + ("".equals(addrHouse.getNumber()) ? "" : (" д." + addrHouse.getNumber()))
+                                            + ("".equals(addrHouse.getCorpus()) ? "" : (" корп." + addrHouse.getCorpus()));
                             addrZip = street.getIndex();
                         }
                     }
@@ -231,16 +231,11 @@ public class ClientInfo {
 
     }
 
-    /**
-     * @param client
-     * @param homeTel
-     * @return
-     */
     private ClientContact getContact(Patient client, String type) {
         List<ClientContact> docs = client.getClientContacts();
         for (ClientContact contact : docs) {
-            if (contact.isDeleted() &&
-                    contact.getContactType().getCode().equals(type))
+            if (contact.isDeleted() && contact.getContactType() != null &&
+                    type.equals(contact.getContactType().getCode()))
                 return contact;
         }
         return null;
@@ -253,7 +248,7 @@ public class ClientInfo {
     private ClientDocument getDoc(final Patient client, final String type) {
         List<ClientDocument> docs = client.getClientDocuments();
         for (ClientDocument doc : docs) {
-            if (doc.isDeleted() &&
+            if (doc.isDeleted() && doc.getDocumentType() != null &&
                     doc.getDocumentType().getCode().equals(type))
                 return doc;
         }
@@ -267,7 +262,7 @@ public class ClientInfo {
     private ClientPolicy getOMS(Patient client) {
         List<ClientPolicy> policies = client.getClientPolicies();
         for (ClientPolicy policy : policies) {
-            if (policy.isDeleted() &&
+            if (policy.isDeleted() && policy.getPolicyType() != null &&
                     (policy.getPolicyType().getCode().equals(OMS_LOC) ||
                     policy.getPolicyType().getCode().equals(OMS_WORK)))
                 return policy;

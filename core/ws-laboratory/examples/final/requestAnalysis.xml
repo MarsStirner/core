@@ -1,0 +1,183 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<S:Envelope xmlns:S="http://schemas.xmlsoap.org/soap/envelope/">
+    <S:Body>
+        <ns3:queryAnalysis xmlns:ns3="urn:cgm.ru:cgmsoap" xmlns:ns2="http://cgm.ru">
+            <?xml version="1.0" encoding="windows-1251"?>
+            <ClinicalDocument xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="urn:hl7-org:v3"
+                              xsi:schemaLocation="urn:hl7-org:v3 CDA.xsd">
+                <typeId extension="POCD_HD000040" root="2.16.840.1.113883.1.3"/>
+                <!-- идентификатор мед документа -->
+                <id root="2.16.840.1.113883.1.3" extension="orderMisId"/>
+                <!-- код для документа type - пустой в нашем случае   -->
+                <code/>
+                <!-- Title для документа -->
+                <title>Заказ лабораторных исследований</title>
+                <effectiveTime value="дата и время создания направления врачом, YYYYMMDDHHmm "/>
+                <!-- уровень конфиденциальности документа : Normal -->
+                <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+                <!--язык для этого документа -->
+                <languageCode code="ru-RU"/>
+                <versionNumber value="{Код статуса заказа (статус actionId)}"/>
+                <!-- Record target - демографические данные пациента -->
+                <recordTarget typeCode="RCT">
+                    <patientRole classCode="PAT">
+                        <id extension="{идентификатор пациента}" root="{UUID пациента}"/>
+                        <addr>{адрес пациента}</addr>
+                        <patient classCode="PSN" determinerCode="INSTANCE">
+                            <!-- фио пациента -->
+                            <name>
+                                <given>{Имя пациента}</given>
+                                <suffix>{Отчество пациента}</suffix>
+                                <family>{Фамилия пациента}</family>
+                            </name>
+                            <administrativeGenderCode code="{Пол пациента 1 - мужской, 2 - женский}"/>
+                            <birthTime value="{дата рождения пациента, в формате YYYYMMDD}"/>
+                        </patient>
+
+                        <providerOrganization classCode="ORG" determinerCode="INSTANCE">
+                            <id root="{UUID медицинского учереждения}"/>
+                            <name>{Название ЛПУ, которое посылает в ЛИС направление}</name>
+                        </providerOrganization>
+                    </patientRole>
+                </recordTarget>
+                <!-- создатель документа. Обязательный -->
+                <author typeCode="AUT">
+                    <!--  -->
+                    <time value="{дата и время создания направления врачом, в формате YYYYMMDDHHMM}"/>
+                    <assignedAuthor classCode="ASSIGNED">
+                        <id extension="{уникальный код назначившего врача}" root="{UUID врача}"/>
+                        <assignedPerson classCode="PSN" determinerCode="INSTANCE">
+                            <!-- ФИО направивишего врача -->
+                            <name>
+                                <family>{Фамилия, направившего врача}</family>
+                                <given>{Имя, направившего врача}</given>
+                                <suffix>{Отчество, направившего врача}</suffix>
+                            </name>
+                        </assignedPerson>
+                        <representedOrganization>
+                            <id root="{UUID лпу в котором работает врач}"/>
+                            <name>{название, лпу в котором работает врач}</name>
+                        </representedOrganization>
+                    </assignedAuthor>
+                </author>
+                <componentOf>
+                    <encompassingEncounter>
+                        <id root="{UUID ЛПУ, которое посылает в ЛИС направление}" extension="{номер мед.карты пациента}"/>
+                        <code codeSystem="2.16.840.1.113883.5.4"
+                              codeSystemName="actCode"
+                              code="IMP"
+                              displayName="Inpatient encounter"/>
+                        <effectiveTime nullFlavor='NI'/>
+                    </encompassingEncounter>
+                </componentOf>
+
+                <component>
+                    <structuredBody>
+                        <!-- информация по биоматериалу -->
+                        <component>
+                            <entry>
+                                <observation classCode="OBS" moodCode="ENT" negationInd="false">
+                                    <effectiveTime value="{дата и время забора биоматериала, в формате YYYYMMDDHHMM}"/>
+                                    <specimen>
+                                        <specimenRole>
+                                            <id root="{идентификатор штрих-кода на контейнере c биоматериалом}"/>
+                                            <specimenPlayingEntity>
+                                                <code code="{код  биоматериала}">
+                                                    <translation displayName="{название биоматериала}"/>
+                                                </code>
+                                                <quantity value="{Количество/объем биоматериала}"/>
+                                                <unit code="{Код единицы измерения биоматериала}" codename="{название биоматериала}"/>
+                                                <text value="{комментарий к биоматериалу}"/>
+                                            </specimenPlayingEntity>
+                                        </specimenRole>
+                                    </specimen>
+                                </observation>
+                            </entry>
+                        </component>
+                        <component>
+                            <section>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <id root="{UUID отделения}" extension="1"/>
+                                        <code code="{Код отделения}" displayName="{Название отделения}"/>
+                                    </observation>
+                                </entry>
+
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <id root="{UUID события}" extension="1"/>
+                                        <code code="{Флаг срочности, true - срочно, false - не срочно}" displayName=""/>
+                                    </observation>
+                                </entry>
+
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <id root="{UUID события}" extension="1"/>
+                                        <code code="{Код МКБ10}" displayName="{Название диагноза}"/>
+                                    </observation>
+                                </entry>
+
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <id root="{UUID события}" extension="1"/>
+                                        <id extension="{Название типа финансирования}"/>
+                                        <code code="{код исследования}" displayName="{название исследования}"/>
+                                    </observation>
+                                </entry>
+
+                                <!--таблица индикаторов - может быть несколько строк   -->
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <id root="{UUID индикатора 1}" extension="1"/>
+                                        <code code="{код индикатора 1}" displayName="{название индикатора 1}"/>
+                                    </observation>
+                                </entry>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <id root="{UUID индикатора 2}" extension="1"/>
+                                        <code code="{код индикатора 2}" displayName="{название индикатора 2}"/>
+                                    </observation>
+                                </entry>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="RQO" negationInd="false">
+                                        <id root="{UUID индикатора Х}" extension="1"/>
+                                        <code code="{код индикатора Х}" displayName="{название индикатора Х}"/>
+                                    </observation>
+                                </entry>
+                            </section>
+                        </component>
+
+                        <!--  появляется если пациент женщина и беременная  -->
+                        <component>
+                            <section>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="EVN">
+                                        <code code="">
+                                            <translation displayName="{описание}"/>
+                                        </code>
+                                        <value value="{срок беременности в неделях}" unit="нед"/>
+                                    </observation>
+                                </entry>
+                            </section>
+                        </component>
+                        <!-- Блок комментариев -->
+                        <component>
+                            <section>
+                                <entry>
+                                    <observation classCode="OBS" moodCode="EVN">
+                                        <code code="">
+                                            <translation displayName="{комментарий к направлению}"/>
+                                        </code>
+                                        <value value="{комментарий к заказу}"/>
+                                    </observation>
+                                </entry>
+                            </section>
+                        </component>
+
+                    </structuredBody>
+                </component>
+            </ClinicalDocument>
+        </ns3:queryAnalysis>
+    </S:Body>
+</S:Envelope>
+

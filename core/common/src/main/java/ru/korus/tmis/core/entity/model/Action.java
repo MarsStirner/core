@@ -11,7 +11,8 @@ import java.util.*;
 @NamedQueries(
         {
                 @NamedQuery(name = "Action.findAll", query = "SELECT a FROM Action a"),
-                @NamedQuery(name = "Action.findById", query = "SELECT a FROM Action a WHERE a.id = :id")
+                @NamedQuery(name = "Action.findById", query = "SELECT a FROM Action a WHERE a.id = :id"),
+                @NamedQuery(name = "Action.findNewByFlatCode", query = "SELECT a FROM Action a WHERE a.status = 0 AND a.actionType.flatCode = :flatCode AND a.event IS NOT NULL AND a.event.patient IS NOT NULL AND a.deleted = 0 ")
         })
 @XmlType(name = "action")
 @XmlRootElement(name = "action")
@@ -58,7 +59,7 @@ public class Action
 
     @Basic(optional = false)
     @Column(name = "idx")
-    private int idx = Integer.MAX_VALUE;
+    private int idx = 0;
 
     @Column(name = "directionDate")
     @Temporal(TemporalType.TIMESTAMP)
@@ -158,6 +159,10 @@ public class Action
     @Column(name = "pacientInQueueType")
     private Short pacientInQueueType = 0;
 
+    @Basic(optional = true)
+    @Column(name = "appointmentType")
+    private String appointmentType = AppointmentType.NONE.getName();
+
     @Version
     @Basic(optional = false)
     @Column(name = "version")
@@ -180,7 +185,7 @@ public class Action
 
     @Basic(optional = false)
     @Column(name = "parentAction_id")
-    private int parentActionId = 0;
+    private Integer parentActionId = null;
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -530,6 +535,14 @@ public class Action
         this.pacientInQueueType = pacientInQueueType;
     }
 
+    public AppointmentType getAppointmentType() {
+        return AppointmentType.getByValue(appointmentType);
+    }
+
+    public void setAppointmentType(AppointmentType appointmentType) {
+        this.appointmentType = appointmentType.getName();
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -562,7 +575,7 @@ public class Action
         this.tissue = tissue;
     }
 
-    public int getParentActionId() {
+    public Integer getParentActionId() {
         return parentActionId;
     }
 

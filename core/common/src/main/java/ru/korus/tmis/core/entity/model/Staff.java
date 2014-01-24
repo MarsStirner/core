@@ -219,6 +219,19 @@ public class Staff implements Serializable {
     @JoinColumn(name = "speciality_id")
     private Speciality speciality;
 
+    @Basic(optional = false)
+    @Column(name = "maxCito")
+    private int maxCito;
+
+    @Basic(optional = false)
+    @Column(name = "maxOverQueue")
+    private int maxOverQueue;
+
+    @Basic(optional = true)
+    @Column(name = "quotUnit")
+    private Integer quoteUnit;
+    //
+
     @ManyToOne
     @JoinColumn(name = "uuid_id")
     // @Transient
@@ -659,6 +672,30 @@ public class Staff implements Serializable {
         this.speciality = speciality;
     }
 
+    public int getMaxCito() {
+        return maxCito;
+    }
+
+    public void setMaxCito(int maxCito) {
+        this.maxCito = maxCito;
+    }
+
+    public int getMaxOverQueue() {
+        return maxOverQueue;
+    }
+
+    public void setMaxOverQueue(int maxOverQueue) {
+        this.maxOverQueue = maxOverQueue;
+    }
+
+    public Integer getQuoteUnit() {
+        return quoteUnit;
+    }
+
+    public void setQuoteUnit(Integer quoteUnit) {
+        this.quoteUnit = quoteUnit;
+    }
+
     public UUID getUuid() {
         return uuid;
     }
@@ -710,5 +747,19 @@ public class Staff implements Serializable {
         }
 
         return sb.toString().trim();
+    }
+
+    /**
+     * Детальное описание врача
+     * @return строка с описанием
+     */
+    public String getInfoString(){
+        return new StringBuilder("Staff[id=").append(id)
+                .append(" sex=").append(sex)
+                .append(" FIO=\"").append(lastName)
+                .append(" ").append(firstName)
+                .append(" ").append(patrName)
+                .append("\" Speciality=").append(speciality != null ? speciality.getName() : "null")
+                .append(']').toString();
     }
 }

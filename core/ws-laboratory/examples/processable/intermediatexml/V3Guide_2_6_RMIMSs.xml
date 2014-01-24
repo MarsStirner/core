@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- edited with XMLSPY v5 rel. 3 U (http://www.xmlspy.com) by andrew hinchley (HL7 Publications TC) -->
+<!-- edited with XML Spy v4.0 (http://www.xmlspy.com) by Sandy Boyer -->
+<div2 id="v3grmim">
+	<head>Refined Message Information Models</head>
+	<p><xtermref href="rmim">Refined Message Information Models</xtermref> (R-MIMs) are used to express the information content for one or more <xtermref href="hmd">HMDs</xtermref> that originate from the root class identified by the Entry Point in the R-MIM. Each R-MIM is a subset of the <xtermref href="dmim">D-MIM</xtermref> and contains only those <xtermref href="class">classes</xtermref>, <xtermref href="attribute">attributes</xtermref> and <xtermref href="association">associations</xtermref> required to compose the set of <xtermref href="message">messages</xtermref> derived from the HMDs that originate from the R-MIM root class. Classes, attributes and associations that are not required for those HMDs are eliminated and the generalization hierarchies are also collapsed.</p>
+	<p> Each <xtermref href="cmet">CMET</xtermref> has an associated R-MIM and these can be seen in the CMET chapter which defines all currently used CMETs</p>
+	<p> The R-MIM diagrams use the same conventions and notions that are used in the D-MIM diagrams. Please refer to that chapter for specific information about how to read these diagrams. There is however an additional level of documentation available for R-MIMs. An R-MIM now has clickable hyperlinks  on each class in the R-MIM which link to a <xtermref href="table_view">table view.</xtermref> This provides an easy way to reference any additional documentation which has been provided in the table view.</p>
+</div2>

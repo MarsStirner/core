@@ -11,6 +11,7 @@ import java.util.Date
 import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientDocument}
 import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -124,5 +125,19 @@ class DbClientDocumentBean
     d.setDeleted(true)
     d.setModifyPerson(sessionUser)
     d.setModifyDatetime(now)
+  }
+
+  @Override
+  def persistNewDocument(document : ClientDocument) : ClientDocument = {
+    em.persist(document)
+    em.merge(document)
+  }
+
+  def findBySerialAndNumberAndTypeCode(serial: String, number: String, typeCode: String): util.List[ClientDocument] = {
+    em.createNamedQuery("ClientDocument.findBySerialAndNumberAndTypeCode", classOf[ClientDocument])
+      .setParameter("serial", serial)
+      .setParameter("number", number)
+      .setParameter("typeCode", typeCode)
+    .getResultList
   }
 }

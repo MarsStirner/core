@@ -5,6 +5,8 @@ import ru.korus.tmis.util.CompileTimeConfigManager;
 import ru.risar.bean.RegistrationPatient;
 import ru.risar.data.Container;
 import ru.risar.data.Patient;
+import ru.risar.data.RegistrationPatientResponse;
+import ru.risar.exception.RisarCoreException;
 
 import javax.ejb.EJB;
 import javax.jws.WebMethod;
@@ -12,7 +14,7 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
-import static ru.korus.tmis.ws.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
+import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
 
 /**
  * @author anosov
@@ -32,19 +34,32 @@ public class RegistationPatient implements RegistartionPatientWS {
     @Override
     @WebMethod(operationName = "registrationPatient")
     @WebResult(name = RESULT, targetNamespace = NAMESPACE, partName = "Body")
-    public int registrationPatient(
+    public RegistrationPatientResponse registrationPatient(
             @WebParam(name = "container", targetNamespace = "http://korus.ru/tmis/ws/sda")
             final Container container) throws CoreException {
 
         final Patient patient = container.getPatient();
         if (patient != null) {
-            final boolean isSaved = registrationPatientBean.register(patient);
-            if (isSaved) {
-                return 1;
+            try {
+                final boolean isSaved = registrationPatientBean.register(patient);
+                if (isSaved) {
+                    final RegistrationPatientResponse response = new RegistrationPatientResponse();
+                    response.setCode("0");
+                    response.setDescription("Данные переданы без ошибок");
+                    return response;
+                }
+            } catch (RisarCoreException ex) {
+                final RegistrationPatientResponse response = new RegistrationPatientResponse();
+                response.setCode("1");
+                response.setDescription(ex.description);
+                return response;
             }
-            return 0;
         } else {
             throw new CoreException("Tag patient not found");
         }
+        final RegistrationPatientResponse response = new RegistrationPatientResponse();
+        response.setCode("1");
+        response.setDescription("Данные переданы с ошибоками");
+        return response;
     }
 }

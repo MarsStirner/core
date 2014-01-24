@@ -91,12 +91,11 @@ public interface DbOrgStructureBeanLocal {
     List<OrgStructure> getRecursiveOrgStructures(int parentId, boolean recursive, String infisCode) throws CoreException;
 
     /**
-     * Запрос на получение ИД оргструктур по заданному адресу
+     * Запрос на получение ИД оргструктур, которые работают с пациентом по заданному адресу
      *
-     * @return Список ИД оргутруктур удовлятворяющих заданному адресу
-     * @throws CoreException
+     * @return Список ИД оргутруктур удовлятворяющих заданному адресу \ EmptyList
      */
-    List<Integer> getOrgStructureByAddress(String KLADRCode, String KLADRStreetCode, String number, String corpus, Integer flat) throws CoreException;
+    List<Integer> getOrgStructureIdListByAddress(String KLADRCode, String KLADRStreetCode, String number, String corpus, Integer flat);
 
     /**
      * Получение списка работников заданной оргструктуры

@@ -24,12 +24,20 @@
             <version>${version.tmis.core}</version>
             <type>jar</type>
         </dependency>
+
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
             <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
+
+        <!--<dependency>-->
+            <!--<groupId>ru.korus.tmis.laboratory</groupId>-->
+            <!--<artifactId>tmis-ws-laboratory</artifactId>-->
+            <!--<version>${version.tmis.core}</version>-->
+            <!--<type>war</type>-->
+        <!--</dependency>-->
 
         <dependency>
             <groupId>org.aspectj</groupId>
@@ -71,63 +79,63 @@
 
     <build>
         <plugins>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>axistools-maven-plugin</artifactId>
-                <version>1.4</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>wsdl2java</goal>
-                        </goals>
-                        <configuration>
-                            <outputDirectory>${project.build.directory}/generated-sources/labis2ws</outputDirectory>
-                            <sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>
-                            <packageSpace>ru.korus.ws.laboratory2</packageSpace>
-                            <testCases>false</testCases>
-                            <serverSide>false</serverSide>
-                            <subPackageByFileName>false</subPackageByFileName>
-                            <wsdlFiles>
-                                <wsdlFile>labisws2.wsdl</wsdlFile>
-                            </wsdlFiles>
-                            <debug>false</debug>
-                        </configuration>
-                        <id>axistools-generate-laboratory2-ws</id>
-                        <phase>generate-sources</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxws-maven-plugin</artifactId>
-                <version>1.12</version>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>wsimport</goal>
-                        </goals>
-                        <configuration>
-                            <sourceDestDir>
-                                ${project.build.directory}/generated-sources/labisws
-                            </sourceDestDir>
-                            <wsdlDirectory>
-                                ${project.basedir}/src/main/resources
-                            </wsdlDirectory>
-                            <wsdlFiles>
-                                <wsdlFile>labisws.wsdl</wsdlFile>
-                            </wsdlFiles>
-                            <!-- The service is located at /ru/korus/ws/laboratory/, wsdl is at /labisws.wsdl -->
-                            <wsdlLocation>../../../../labisws.wsdl</wsdlLocation>
-                            <packageName>ru.korus.ws.laboratory</packageName>
-                            <staleFile>
-                                ${project.build.directory}/stale/tmis/laboratory/service
-                            </staleFile>
-                        </configuration>
-                        <id>wsimport-generate-laboratory-ws</id>
-                        <phase>generate-sources</phase>
-                    </execution>
-                </executions>
-            </plugin>
+            <!--<plugin>-->
+                <!--<groupId>org.codehaus.mojo</groupId>-->
+                <!--<artifactId>axistools-maven-plugin</artifactId>-->
+                <!--<version>1.4</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<goals>-->
+                            <!--<goal>wsdl2java</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<outputDirectory>${project.build.directory}/generated-sources/labis2ws</outputDirectory>-->
+                            <!--<sourceDirectory>${project.basedir}/src/main/resources</sourceDirectory>-->
+                            <!--<packageSpace>ru.korus.ws.laboratory2</packageSpace>-->
+                            <!--<testCases>false</testCases>-->
+                            <!--<serverSide>false</serverSide>-->
+                            <!--<subPackageByFileName>false</subPackageByFileName>-->
+                            <!--<wsdlFiles>-->
+                                <!--<wsdlFile>labisws2.wsdl</wsdlFile>-->
+                            <!--</wsdlFiles>-->
+                            <!--<debug>false</debug>-->
+                        <!--</configuration>-->
+                        <!--<id>axistools-generate-laboratory2-ws</id>-->
+                        <!--<phase>generate-sources</phase>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
+            <!--<plugin>-->
+                <!--<groupId>org.codehaus.mojo</groupId>-->
+                <!--<artifactId>jaxws-maven-plugin</artifactId>-->
+                <!--<version>1.12</version>-->
+                <!--<executions>-->
+                    <!--<execution>-->
+                        <!--<goals>-->
+                            <!--<goal>wsimport</goal>-->
+                        <!--</goals>-->
+                        <!--<configuration>-->
+                            <!--<sourceDestDir>-->
+                                <!--${project.build.directory}/generated-sources/labisws-->
+                            <!--</sourceDestDir>-->
+                            <!--<wsdlDirectory>-->
+                                <!--${project.basedir}/src/main/resources-->
+                            <!--</wsdlDirectory>-->
+                            <!--<wsdlFiles>-->
+                                <!--<wsdlFile>labisws.wsdl</wsdlFile>-->
+                            <!--</wsdlFiles>-->
+                            <!--&lt;!&ndash; The service is located at /ru/korus/ws/laboratory/, wsdl is at /labisws.wsdl &ndash;&gt;-->
+                            <!--<wsdlLocation>../../../../labisws.wsdl</wsdlLocation>-->
+                            <!--<packageName>ru.korus.ws.laboratory</packageName>-->
+                            <!--<staleFile>-->
+                                <!--${project.build.directory}/stale/tmis/laboratory/service-->
+                            <!--</staleFile>-->
+                        <!--</configuration>-->
+                        <!--<id>wsimport-generate-laboratory-ws</id>-->
+                        <!--<phase>generate-sources</phase>-->
+                    <!--</execution>-->
+                <!--</executions>-->
+            <!--</plugin>-->
 
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -137,7 +145,7 @@
                     <ejbVersion>3.1</ejbVersion>
                     <generateClient>true</generateClient>
                     <clientIncludes>
-                        <include>*.wsdl</include>
+                        <include>../../*.wsdl</include>
                     </clientIncludes>
                 </configuration>
             </plugin>

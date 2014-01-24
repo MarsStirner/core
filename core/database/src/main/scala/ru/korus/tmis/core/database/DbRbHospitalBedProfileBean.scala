@@ -7,6 +7,7 @@ import grizzled.slf4j.Logging
 import javax.ejb.Stateless
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
+import java.lang.Iterable
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -54,6 +55,12 @@ class DbRbHospitalBedProfileBean
     }
   }
 
+  def getAllRbHospitalBedProfiles: Iterable[RbHospitalBedProfile] = {
+    val result = em.createQuery(allRbHospitalBedProfiles,
+      classOf[RbHospitalBedProfile]).getResultList
+    result
+  }
+
   val RbHospitalBedProfileByIdQuery = """
     SELECT hbp
     FROM  RbHospitalBedProfile hbp
@@ -65,4 +72,9 @@ class DbRbHospitalBedProfileBean
     FROM  RbHospitalBedProfile hbp
     WHERE hbp.name LIKE :name
                                         """
+
+  val allRbHospitalBedProfiles = """
+    SELECT hbp
+    FROM RbHospitalBedProfile hbp
+                                 """
 }

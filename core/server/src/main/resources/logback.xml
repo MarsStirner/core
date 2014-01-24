@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <configuration scan="true" scanPeriod="30 seconds" debug="true">
-    <!--<jmxConfigurator/>-->
+    <jmxConfigurator/>
     <contextName>tmis-core</contextName>
 
     <!-- dump status message on the console as they arrive -->
@@ -50,7 +50,8 @@
         </filter>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <FileNamePattern>${com.sun.aas.instanceRoot}/logs/exceptions/exceptions.%d{yyyy-MM-dd}.log.gz</FileNamePattern>
+            <FileNamePattern>${com.sun.aas.instanceRoot}/logs/exceptions/exceptions.%d{yyyy-MM-dd}.log.gz
+            </FileNamePattern>
             <MaxHistory>365</MaxHistory>
         </rollingPolicy>
 
@@ -92,6 +93,9 @@
 
     <logger name="ru.korus.tmis" level="INFO" additivity="false">
         <appender-ref ref="TMIS"/>
+        <appender-ref ref="LIS_ACROSS"/>
+        <appender-ref ref="LIS_ALTEY"/>
+        <appender-ref ref="LIS_BAK"/>
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
@@ -113,6 +117,62 @@
         <appender-ref ref="STDOUT_ERROR"/>
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
+
+
+    <!--  Лаборатория Акросс -->
+    <appender name="LIS_ACROSS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/lis/across/across.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis.laboratory.across" level="INFO" additivity="true">
+        <appender-ref ref="LIS_ACROSS"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </logger>
+
+    <!--  Лаборатория Алтей -->
+    <appender name="LIS_ALTEY" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/lis/altey/altey.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis.laboratory.altey" level="INFO" additivity="true">
+        <appender-ref ref="LIS_ALTEY"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </logger>
+
+    <!--  Лаборатория БАК CGM -->
+    <appender name="LIS_BAK" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/lis/bak/bak.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis.laboratory.bak" level="INFO" additivity="false">
+        <appender-ref ref="LIS_BAK"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </logger>
+
 
     <!--Логер для модуля WS-FINANCE-->
     <appender name="WS-FINANCE" class="ch.qos.logback.core.rolling.RollingFileAppender">
@@ -140,7 +200,8 @@
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/ws-transfusion/transfusion.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/ws-transfusion/transfusion.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
         </rollingPolicy>
     </appender>
 
@@ -159,7 +220,8 @@
         </encoder>
 
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/communication/communication.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/communication/communication.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
         </rollingPolicy>
     </appender>
 
@@ -216,6 +278,22 @@
         <appender-ref ref="DEBUGLOG"/>
     </logger>
 
+    <appender name="PRESCRIPTION" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %msg%n</pattern>
+            <charset>UTF8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/prescription/prescription.%d{yyyy-MM-dd}.log.gz
+            </fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis.prescription" level="DEBUG" additivity="false">
+        <appender-ref ref="PRESCRIPTION"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </logger>
 
     <root level="${logs.level}">
         <appender-ref ref="STDOUT"/>

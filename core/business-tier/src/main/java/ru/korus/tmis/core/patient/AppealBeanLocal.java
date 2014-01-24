@@ -52,27 +52,6 @@ public interface AppealBeanLocal {
     AppealSimplifiedDataList getAllAppealsByPatient(AppealSimplifiedRequestData request, AuthData authData)
         throws CoreException;
 
-    /**
-     * Запрос на список поступивших за период (список госпитализаций)
-     * @param page Фильтр номера выводимой страницы.
-     * @param limit Максимальное количество выводим записей.
-     * @param sortingField  Наименование поля для сортировки.
-     * @param sortingMethod Метод сортировки.
-     * @param filter Фильтр выводимых значений как Object
-     * @return Отсортированный и отфильтрованный список обращений на госпитализацию за период.
-     * @throws CoreException
-     * @since 1.0.0.43
-     */
-    List<Event> getAllAppealsForReceivedPatientByPeriod(int page, int limit, String sortingField, String sortingMethod, Object filter)
-            throws CoreException;
-
-    /**
-     * Метод возвращает количество обращений.
-     * @param filter Фильтр значений возвращаемого списка как Object.
-     * @return Количество обращений.
-     * @throws CoreException
-     */
-    long getCountOfAppealsForReceivedPatientByPeriod (Object filter) throws CoreException;
 
    // JSONArray getBasicInfoOfDiseaseHistory(int patientId, String externalId, AuthData authData)
    //         throws CoreException;

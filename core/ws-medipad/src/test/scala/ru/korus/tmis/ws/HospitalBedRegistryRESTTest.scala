@@ -13,6 +13,7 @@ import ru.korus.tmis.core.entity.model.{Action, OrgStructureHospitalBed}
 import org.mockito.Mockito._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.data.{HospitalBedData, HospitalBedDataRequest, HospitalBedDataListFilter}
+import ru.korus.tmis.test.data.{TestDataEntityImpl, TestDataEntity}
 
 
 /**
@@ -39,6 +40,8 @@ class HospitalBedRegistryRESTTest {
   @Before
   def init() {
   }
+
+  //!!!!! Тесты в HospitalBedBeanTest (Сервис ретранслирует выполнение в HospitalBedBean)
 
   /*
   @Test

@@ -171,4 +171,19 @@ class DbRbDocumentTypeBean
           }
         }
   }
+
+  @Override
+  def findByCode(code: String): RbDocumentType = {
+    val result = em.createNamedQuery("RbDocumentType.findByCode", classOf[RbDocumentType])
+      .setParameter("code", code).setMaxResults(1).getResultList
+    result.size match {
+      case 0 => {
+        null
+      }
+      case size => {
+        em.detach(result(0))
+        result(0)
+      }
+    }
+  }
 }

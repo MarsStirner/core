@@ -2,6 +2,7 @@ package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import java.util.List;
 
 
 /**
@@ -10,7 +11,7 @@ import javax.persistence.*;
  */
 @Entity
 @Table(name="rlsPacking")
-public class RlsPacking implements Serializable {
+public class RlsPacking implements Serializable, UniqueName {
 	private static final long serialVersionUID = 1L;
 
 	@Id
@@ -18,11 +19,12 @@ public class RlsPacking implements Serializable {
 	@Column(unique=true, nullable=false)
 	private int id;
 
-	@Column(nullable=false)
-	private boolean disabledForPrescription;
-
 	@Column(length=128)
 	private String name;
+
+	//bi-directional many-to-one association to RlsNomen
+	@OneToMany(mappedBy="rlsPacking")
+	private List<RlsNomen> rlsNomens;
 
 	public RlsPacking() {
 	}
@@ -35,20 +37,20 @@ public class RlsPacking implements Serializable {
 		this.id = id;
 	}
 
-	public boolean getDisabledForPrescription() {
-		return this.disabledForPrescription;
-	}
-
-	public void setDisabledForPrescription(boolean disabledForPrescription) {
-		this.disabledForPrescription = disabledForPrescription;
-	}
-
 	public String getName() {
 		return this.name;
 	}
 
 	public void setName(String name) {
 		this.name = name;
+	}
+
+	public List<RlsNomen> getRlsNomens() {
+		return this.rlsNomens;
+	}
+
+	public void setRlsNomens(List<RlsNomen> rlsNomens) {
+		this.rlsNomens = rlsNomens;
 	}
 
 }

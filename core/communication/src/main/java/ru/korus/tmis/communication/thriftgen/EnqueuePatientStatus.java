@@ -30,6 +30,14 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * EnqueuePatientStatus
+ * Статус записи пациента к врачу
+ * @param success				1) Флажок успешности записи к врачу
+ * @param message				2) Сообщение
+ * @param index					3) Индекс ячейки записи
+ * @param queueId				4) Идентификатор новой записи
+ */
 public class EnqueuePatientStatus implements org.apache.thrift.TBase<EnqueuePatientStatus, EnqueuePatientStatus._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("EnqueuePatientStatus");
 

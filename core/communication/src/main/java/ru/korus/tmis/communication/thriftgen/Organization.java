@@ -30,6 +30,14 @@ import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Organization
+ * Структура с данными об организации
+ * @param fullName				1) Полное наименование организации
+ * @param shortName				2) Краткое наименование организации
+ * @param address				3) Строковое представление адреса организации
+ * @param infisCode				4) Инфис-код организации
+ */
 public class Organization implements org.apache.thrift.TBase<Organization, Organization._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Organization");
 

@@ -3,6 +3,7 @@ package ru.korus.tmis.pharmacy;
 import misexchange.MISExchange;
 import misexchange.Request;
 import org.hl7.v3.MCCIIN000002UV01;
+import org.hl7.v3.MCCIIN000002UV012;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.BeforeSuite;
@@ -124,20 +125,9 @@ public class PharmacyHL7 {
         send(HL7PacketBuilder.processDelReceived(action));
     }
 
-    @Test(enabled = true, priority = 6)
-    public void processCDA() {
-        send(HL7PacketBuilder.processPrescription(
-                action,
-                client,
-                doctor,
-                organisation,
-                "20044",
-                AssignmentType.ASSIGNMENT));
-    }
-
     private void send(Request request) {
         logger.info("prepare message... \n\n {}", HL7PacketBuilder.marshallMessage(request, "misexchange"));
-        final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+        final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
         if (result != null) {
             logger.info("Connection successful. Result: {} \n\n {}",
                     result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));

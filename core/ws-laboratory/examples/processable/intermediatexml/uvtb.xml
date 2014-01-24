@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE spec SYSTEM "../../support/dtd/v3m.dtd">
+<spec>
+	<header>
+		<title>Domain Analysis Model: Tuberculosis Surveillance, Diagnosis, Treatment and Research, Release 1</title>
+		<version>1.0</version>
+		<date>4 June, 2009</date>
+		<authlist>
+			<author>
+				<role>Project Lead</role>
+				<name key="Walden, Anita">Anita Walden</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="McCourt, Brian">Brian McCourt</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Nahm, Meredith">Meredith Nahm</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Diefenbach, Jane">Jane Diefenbach</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Kisler, Bron">Bron Kisler</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Honeycutt, Emily">Emily Honeycutt</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Walker, Mead">Mead Walker</name>
+			</author>
+			<author>
+				<role>Author</role>
+				<name key="Hammond, Ed">Ed Hammond</name>
+			</author>
+		</authlist>
+	</header>
+	<body>
+		<div1 id="CV-intro" ballotStatus="InformativeStandard" ballotNumber="2">
+			<head>Introduction</head>
+			<div2 id="NotestoReaders">
+					<head>Notes to Readers</head>
+					<p>The National Institutes of Health has funded the Tuberculosis Project (supported by HHSN268200425214C) to
+develop a methodology for standardizing tuberculosis data collected in the healthcare process such that the data
+will support multiple secondary uses in the areas of research, surveillance, and quality improvement.</p>
+
+<p>This project relies on the ANSI accreditation process espoused by Health Level Seven (HL7) and CDISC, both of 
+which are standard data organizations engaged with this undertaking.</p>
+<p>For 2 years, global stakeholders from industry, government agencies, and medical professional societies 
+met regularly, participating in a consensus process to develop standard terminology and associated definitions 
+called data elements. The next steps in the process was to obtain input from the community on the materials 
+produced and then to ballot or register them as official standards.  The final balloted version is for data elements representing 
+diagnosis and treatment of pulmonary tuberculosis.  Subsequent data elements will be added to this current list.</p>
+<p>The data elements are in the TB Class and Activity Model document.  The data elements in excel format are also in the Supporting Documents zip file labeled &quot;Data Elements&quot;.</p>
+<p>For questions please contact <loc href="mailto:anita.walden@duke.edu">anita.walden@duke.edu</loc>.</p>
+</div2>
+
+<div2 id="TB_ballotdocs">
+	<head>Ballot Documents</head>
+	<p><loc href="V3_RR_TBDAM_R1_INFORM_2009 Class and Activity Model.pdf">TB Class and Activity Model &mdash; Click here to open this document.</loc><br /><br />
+
+			<!--<loc href="V3_RR_TBDAM_R1_INFORM_2009_TB_Class_Model.pdf">TB Class Model &mdash; Click here to open this document.</loc><br /><br />-->
+			
+			<loc href="V3_RR_TBDAM_R1_INFORM_2009TB_Use Cases and Storyboards.pdf">TB Use Case and Storyboards &mdash; Click here to open this document.</loc><br /><br />
+			
+			<loc href="V3_RR_TBDAM_R1_INFORM_2009TB_Diagrams.xls">TB Diagrams &mdash; Click here to open this document.</loc><br /><br />
+
+			<loc href="BallotComment_V3_RR_TBDAM_R1_INFORM_2009.xls">Ballot Comment Spreadsheet (also available on the Ballot Desktop) &mdash; Right-click and select 'Save Target As' to download a copy of this document for editing on your desktop.</loc><br /><br />
+			</p>
+</div2>
+
+<div2 id="CV_suppotingdocs">
+	<head>Supporting Documents</head>
+	<p>The following package of supporting materials is available to guide you as you review the ballot documents<br />
+			<loc href="V3_RR_TBDAM_R1_INFORM_2009_Supporing_Documents.zip">TB Supporting Documents Zip File &mdash; Click here to download this document.</loc><br /><br /></p>
+
+</div2>
+
+
+		</div1>
+	</body>
+</spec>

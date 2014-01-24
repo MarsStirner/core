@@ -137,15 +137,21 @@ class ActionWrapper(a: Action)
       case AWI.ExecutorPost => {
         if (this.a.getExecutor != null && this.a.getExecutor.getPost != null) {
           List(
-            Map(APWI.Value.toString -> this.a.getExecutor.getPost.getName)
+            Map(APWI.Value.toString -> this.a.getExecutor.getPost.getName,
+                APWI.ValueId.toString -> this.a.getExecutor.getPost.getId.toString,
+                APWI.Code.toString -> this.a.getExecutor.getPost.getCode)
           )
         } else if (this.a.getActionType.getDefaultExecutor != null && this.a.getActionType.getDefaultExecutor.getPost != null) {
           List(
-            Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getPost.getName)
+            Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getPost.getName,
+                APWI.ValueId.toString -> this.a.getActionType.getDefaultExecutor.getPost.getId.toString,
+                APWI.Code.toString -> this.a.getActionType.getDefaultExecutor.getPost.getCode)
           )
         } else {
           List(
-            Map(APWI.Value.toString -> "")
+            Map(APWI.Value.toString -> "",
+                APWI.ValueId.toString -> "",
+                APWI.Code.toString -> "")
           )
         }
       }
@@ -214,6 +220,11 @@ class ActionWrapper(a: Action)
       case AWI.Urgent => {
         List(
           Map(APWI.Value.toString -> this.a.getIsUrgent.toString)
+        )
+      }
+      case AWI.PacientInQueueType => {
+        List(
+          Map(APWI.Value.toString -> this.a.getPacientInQueueType.toString)
         )
       }
       case AWI.Multiplicity => {

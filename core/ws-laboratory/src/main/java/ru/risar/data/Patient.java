@@ -12,14 +12,20 @@ import java.util.Date;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Patient", propOrder = {
+        "identifier",
         "name",
         "gender",
         "birthTime",
+        "socStatus",
+        "bloodType",
         "patientNumbers",
         "addresses",
         "contactInfo"
 })
 public class Patient {
+
+    @XmlElement(required = true)
+    protected String identifier;
 
     @XmlElement(required = true)
     protected Name name;
@@ -30,6 +36,20 @@ public class Patient {
     @XmlElement(required = true)
     protected Date birthTime;
 
+    /**
+     * Социальный статус
+     *
+     * Справочник 'Социальный статус' {rbsocstatustype}
+     */
+    protected Integer socStatus;
+
+    /**
+     * Группа крови
+     *
+     * Справочник 'Группа крови' {rbbloodtype}
+     */
+    protected String bloodType;
+
     @XmlElement(required = true)
     protected PatientNumbers patientNumbers;
 
@@ -39,6 +59,13 @@ public class Patient {
     @XmlElement(required = false)
     protected ContactInfo contactInfo;
 
+    public String getIdentifier() {
+        return identifier;
+    }
+
+    public void setIdentifier(String identifier) {
+        this.identifier = identifier;
+    }
 
     public Addresses getAddressesList() {
         return addresses;
@@ -86,5 +113,21 @@ public class Patient {
 
     public void setContactInfo(ContactInfo contactInfo) {
         this.contactInfo = contactInfo;
+    }
+
+    public Integer getSocStatus() {
+        return socStatus;
+    }
+
+    public void setSocStatus(Integer socStatus) {
+        this.socStatus = socStatus;
+    }
+
+    public String getBloodType() {
+        return bloodType;
+    }
+
+    public void setBloodType(String bloodType) {
+        this.bloodType = bloodType;
     }
 }

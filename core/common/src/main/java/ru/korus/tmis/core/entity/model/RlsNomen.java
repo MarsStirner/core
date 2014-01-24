@@ -2,17 +2,9 @@ package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 
 /**
  * The persistent class for the rlsNomen database table.
@@ -20,178 +12,87 @@ import javax.persistence.TemporalType;
  */
 @Entity
 @Table(name = "rlsNomen")
+
 public class RlsNomen implements Serializable {
     private static final long serialVersionUID = 1L;
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(unique = true, nullable = false)
-    private int id;
+    private Integer id;
 
-    @Temporal(TemporalType.DATE)
-    private Date annDate;
-
-    @Column(nullable = false)
-    private int code;
-
-    @Column(nullable = false)
-    private boolean disabledForPrescription;
-
-    @ManyToOne
-    @JoinColumn(name = "dosage_id")
-    private RlsDosage rlsDosage;
-
-    @ManyToOne
-    @JoinColumn(name = "filling_id")
-    private RlsFilling rlsFilling;
-
-    @ManyToOne
-    @JoinColumn(name = "form_id")
-    private RlsForm rlsForm;
-
-    @ManyToOne
-    @JoinColumn(name = "INPName_id")
-    private RlsInpName rlsInpName;
-
-    @ManyToOne
-    @JoinColumn(name = "packing_id")
-    private RlsPacking rlsPacking;
+    @Column(length = 128)
+    private String dosageValue;
 
     @Temporal(TemporalType.DATE)
     private Date regDate;
 
-    @ManyToOne
-    @JoinColumn(name = "tradeName_id")
+    // bi-directional many-to-one association to RlsBalanceOfGood
+    @OneToMany(mappedBy = "rlsNomen")
+    private List<RlsBalanceOfGood> rlsBalanceOfGoods;
+
+    // uni-directional many-to-one association to RbUnit
+	@ManyToOne(cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "unit_id")
+    private RbUnit unit;
+
+    // uni-directional many-to-one association to RbUnit
+	@ManyToOne(cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "dosageUnit_id")
+    private RbUnit dosageUnit;
+
+    // bi-directional many-to-one association to RlsActMatter
+    @ManyToOne(cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "actMatters_id")
+    private RlsActMatter rlsActMatter;
+
+	//uni-directional many-to-one association to RlsFilling
+	@ManyToOne(cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "filling_id")
+    private RlsFilling rlsFilling;
+
+    // bi-directional many-to-one association to RlsForm
+	@ManyToOne(cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "form_id")
+    private RlsForm rlsForm;
+
+    // bi-directional many-to-one association to RlsPacking
+	@ManyToOne(cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "packing_id")
+    private RlsPacking rlsPacking;
+
+    // bi-directional many-to-one association to RlsTradeName
+	@ManyToOne(cascade=CascadeType.PERSIST)
+    @JoinColumn(name = "tradeName_id", nullable = false)
     private RlsTradeName rlsTradeName;
 
-    @Column(nullable=false)
-    @JoinColumn(name = "version")
-    private Integer version = 0;
-
+    @Column(nullable = true)
+    private Integer drugLifetime;
 
     public RlsNomen() {
     }
 
-    /**
-     * @return the rlsDosage
-     */
-    public RlsDosage getRlsDosage() {
-        return rlsDosage;
-    }
-
-    /**
-     * @param rlsDosage
-     *            the rlsDosage to set
-     */
-    public void setRlsDosage(RlsDosage rlsDosage) {
-        this.rlsDosage = rlsDosage;
-    }
-
-    /**
-     * @return the rlsFilling
-     */
-    public RlsFilling getRlsFilling() {
-        return rlsFilling;
-    }
-
-    /**
-     * @param rlsFilling
-     *            the rlsFilling to set
-     */
-    public void setRlsFilling(RlsFilling rlsFilling) {
-        this.rlsFilling = rlsFilling;
-    }
-
-    /**
-     * @return the rlsForm
-     */
-    public RlsForm getRlsForm() {
-        return rlsForm;
-    }
-
-    /**
-     * @param rlsForm
-     *            the rlsForm to set
-     */
-    public void setRlsForm(RlsForm rlsForm) {
-        this.rlsForm = rlsForm;
-    }
-
-    /**
-     * @return the rlsInpName
-     */
-    public RlsInpName getRlsInpName() {
-        return rlsInpName;
-    }
-
-    /**
-     * @param rlsInpName
-     *            the rlsInpName to set
-     */
-    public void setRlsInpName(RlsInpName rlsInpName) {
-        this.rlsInpName = rlsInpName;
-    }
-
-    /**
-     * @return the rlsPacking
-     */
-    public RlsPacking getRlsPacking() {
-        return rlsPacking;
-    }
-
-    /**
-     * @param rlsPacking
-     *            the rlsPacking to set
-     */
-    public void setRlsPacking(RlsPacking rlsPacking) {
-        this.rlsPacking = rlsPacking;
-    }
-
-    /**
-     * @return the rlsTradeName
-     */
-    public RlsTradeName getRlsTradeName() {
-        return rlsTradeName;
-    }
-
-    /**
-     * @param rlsTradeName
-     *            the rlsTradeName to set
-     */
-    public void setRlsTradeName(RlsTradeName rlsTradeName) {
-        this.rlsTradeName = rlsTradeName;
-    }
-
-    public int getId() {
+    public Integer getId() {
         return this.id;
     }
 
-    public void setId(int id) {
+    public void setId(Integer id) {
         this.id = id;
     }
 
-    public Date getAnnDate() {
-        return this.annDate;
+    public String getDosageValue() {
+        return this.dosageValue;
     }
 
-    public void setAnnDate(Date annDate) {
-        this.annDate = annDate;
+    public void setDosageValue(String dosageValue) {
+        this.dosageValue = dosageValue;
     }
 
-    public int getCode() {
-        return this.code;
+    public Integer getDrugLifetime() {
+        return this.drugLifetime;
     }
 
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public boolean getDisabledForPrescription() {
-        return this.disabledForPrescription;
-    }
-
-    public void setDisabledForPrescription(boolean disabledForPrescription) {
-        this.disabledForPrescription = disabledForPrescription;
+    public void setDrugLifetime(Integer drugLifetime) {
+        this.drugLifetime = drugLifetime;
     }
 
     public Date getRegDate() {
@@ -202,12 +103,68 @@ public class RlsNomen implements Serializable {
         this.regDate = regDate;
     }
 
-    public Integer getVersion() {
-        return version;
+    public List<RlsBalanceOfGood> getRlsBalanceOfGoods() {
+        return this.rlsBalanceOfGoods;
     }
 
-    public void setVersion(Integer version) {
-        this.version = version;
+    public void setRlsBalanceOfGoods(List<RlsBalanceOfGood> rlsBalanceOfGoods) {
+        this.rlsBalanceOfGoods = rlsBalanceOfGoods;
+    }
+
+    public RbUnit getUnit() {
+        return this.unit;
+    }
+
+    public void setUnit(RbUnit unit) {
+        this.unit = unit;
+    }
+
+    public RbUnit getDosageUnit() {
+        return this.dosageUnit;
+    }
+
+    public void setDosageUnit(RbUnit dosageUnit) {
+        this.dosageUnit = dosageUnit;
+    }
+
+    public RlsActMatter getRlsActMatter() {
+        return this.rlsActMatter;
+    }
+
+    public void setRlsActMatter(RlsActMatter rlsActMatter) {
+        this.rlsActMatter = rlsActMatter;
+    }
+
+    public RlsFilling getRlsFilling() {
+        return this.rlsFilling;
+    }
+
+    public void setRlsFilling(RlsFilling rlsFilling) {
+        this.rlsFilling = rlsFilling;
+    }
+
+    public RlsForm getRlsForm() {
+        return this.rlsForm;
+    }
+
+    public void setRlsForm(RlsForm rlsForm) {
+        this.rlsForm = rlsForm;
+    }
+
+    public RlsPacking getRlsPacking() {
+        return this.rlsPacking;
+    }
+
+    public void setRlsPacking(RlsPacking rlsPacking) {
+        this.rlsPacking = rlsPacking;
+    }
+
+    public RlsTradeName getRlsTradeName() {
+        return this.rlsTradeName;
+    }
+
+    public void setRlsTradeName(RlsTradeName rlsTradeName) {
+        this.rlsTradeName = rlsTradeName;
     }
 
 }

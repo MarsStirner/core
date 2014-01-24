@@ -278,11 +278,11 @@ class DbPatientBean
 
   def savePatientToDataBase(patient: Patient): java.lang.Integer = {
     if (patient != null) {
-      em.persist(patient);
-      return patient.getId
+      em.persist(patient)
+      em.merge(patient).getId
+    } else{
+      0
     }
-    else
-      return 0;
   }
 
   val patientIsAliveQuery =
@@ -304,7 +304,7 @@ class DbPatientBean
     !(em.createQuery(patientIsAliveQuery, classOf[Long]).setParameter("PATIENT", patient).getSingleResult > 0)
   }
 
-  def findPatientByPolicy(params: util.Map[String, String], policySerial: String, policyNumber: String, policyType: Int)
+  def findPatientByPolicy(params: util.Map[String, String], policySerial: String, policyNumber: String, policyType: String)
   : util.List[Patient] = {
     var findPatientQuery = """
     SELECT DISTINCT patient
@@ -318,7 +318,7 @@ class DbPatientBean
     AND patient.sex = :SEX
     AND policy.number = :POLICYNUMBER
     AND policy.serial = :POLICYSERIAL
-    AND policy.policyType.id = :POLICYTYPEID
+    AND policy.policyType.code = :POLICYTYPECODE
     AND policy.deleted = 0
                            """
 
@@ -344,11 +344,11 @@ class DbPatientBean
       millisecondsCount.longValue() - TimeZone.getDefault.getOffset(millisecondsCount.longValue())))
       .setParameter("POLICYNUMBER", policyNumber)
       .setParameter("POLICYSERIAL", policySerial)
-      .setParameter("POLICYTYPEID", policyType)
+      .setParameter("POLICYTYPECODE", policyType)
       .getResultList
   }
 
-  def findPatientByDocument(params: util.Map[String, String], documentSerial: String, documentNumber: String, documentCode: Int): util.List[Patient] = {
+  def findPatientByDocument(params: util.Map[String, String], documentSerial: String, documentNumber: String, documentCode: String): util.List[Patient] = {
     // def findPatient(lastName: String, firstName: String, patrName: String, birthDate: Long, sex: Int, identifierType: String, identifier: String, omiPolicySerial: String, omiPolicyNumber: String): util.List[Patient] = {
     var findPatientQuery = """
     SELECT DISTINCT patient
@@ -362,7 +362,7 @@ class DbPatientBean
     AND patient.sex = :SEX
     AND document.number = :DOCNUMBER
     AND document.serial = :DOCSERIAL
-    AND document.documentType.id = :DOCTYPEID
+    AND document.documentType.TFOMSCode = :DOCTYPECODE
     AND document.deleted = 0
                            """
     if (params.contains("identifier") && params.contains("identifierType")) {
@@ -374,10 +374,10 @@ class DbPatientBean
       )
       AND identifier='%s'
         AND ClientIdentification.deleted=0
-      )""".format(params.get("identifierType"), params.get("identifier"));
+      )""".format(params.get("identifierType"), params.get("identifier"))
     }
 
-    val millisecondsCount: java.lang.Long = java.lang.Long.parseLong(params.get("birthDate"));
+    val millisecondsCount: java.lang.Long = java.lang.Long.parseLong(params.get("birthDate"))
 
     em.createQuery(findPatientQuery, classOf[Patient])
       .setParameter("LASTNAME", params.get("lastName"))
@@ -388,105 +388,101 @@ class DbPatientBean
       millisecondsCount.longValue() - TimeZone.getDefault.getOffset(millisecondsCount.longValue())))
       .setParameter("DOCNUMBER", documentNumber)
       .setParameter("DOCSERIAL", documentSerial)
-      .setParameter("DOCTYPEID", documentCode)
+      .setParameter("DOCTYPECODE", documentCode.toString)
       .getResultList
   }
 
   def findPatientsByParams(params: util.Map[String, String], documents: util.Map[String, String]): util.List[Patient] = {
     val query: java.lang.StringBuilder = new java.lang.StringBuilder(
-      "SELECT pat FROM Patient pat ");
+      "SELECT pat FROM Patient pat ")
     //Construct query  string
     //JOIN tables if needed
     if (documents != null && documents.size() > 0) {
       if (documents.containsKey("client_id")) {
-        query.append(" WHERE pat.deleted=0 AND pat.id = :CLIENTID");
+        query.append(" WHERE pat.deleted=0 AND pat.id = :CLIENTID")
       }
       else {
         if (documents.containsKey("document_code")) {
           query.append("INNER JOIN pat.clientDocuments doc WHERE pat.deleted=0 AND doc.deleted=0" +
-            " AND doc.number = :NUMBER AND doc.serial = :SERIAL AND doc.documentType.id = :DOCTYPEID"
-          );
+            " AND doc.number = :NUMBER AND doc.serial = :SERIAL AND doc.documentType.TFOMSCode = :DOCTYPECODE"
+          )
         }
         else {
           if (documents.containsKey("policy_type")) {
-            query.append("INNER JOIN patient.clientPolicies policy WHERE pat.deleted=0 AND policy.deleted = 0" +
-              " AND policy.number = :NUMBER AND policy.serial = :SERIAL AND policy.policyType.id = :POLICYTYPEID"
-            );
+            query.append("INNER JOIN pat.clientPolicies policy WHERE pat.deleted=0 AND policy.deleted = 0" +
+              " AND policy.number = :NUMBER AND policy.serial = :SERIAL AND policy.policyType.CODE = :POLICYTYPECODE"
+            )
           }
         }
       }
     }
     else {
-      query.append(" WHERE pat.deleted=0");
+      query.append(" WHERE pat.deleted=0")
     }
     //End of join tables
     if (params.contains("firstName")) {
-      query.append(" AND pat.firstName LIKE :FIRSTNAME");
+      query.append(" AND pat.firstName LIKE :FIRSTNAME")
     }
     if (params.contains("lastName")) {
-      query.append(" AND pat.lastName LIKE :LASTNAME");
+      query.append(" AND pat.lastName LIKE :LASTNAME")
     }
     if (params.contains("patrName")) {
-      query.append(" AND pat.patrName LIKE :PATRNAME");
+      query.append(" AND pat.patrName LIKE :PATRNAME")
     }
     if (params.contains("birthDate")) {
-      query.append(" AND pat.birthDate = :BIRTHDATE");
+      query.append(" AND pat.birthDate = :BIRTHDATE")
     }
     if (params.contains("sex")) {
-      query.append(" AND pat.sex = :SEX");
+      query.append(" AND pat.sex = :SEX")
     }
     //End of construct query string
     val typedQuery: TypedQuery[Patient] = em.createQuery(query.toString, classOf[Patient])
     //SetParameters block
     if (documents != null && documents.size() > 0) {
       if (documents.containsKey("client_id")) {
-        typedQuery.setParameter("CLIENTID", Integer.parseInt(documents.get("client_id")));
+        typedQuery.setParameter("CLIENTID", Integer.parseInt(documents.get("client_id")))
       }
       else {
         if (documents.containsKey("document_code")) {
-          typedQuery.setParameter("DOCTYPEID", java.lang.Integer.parseInt(documents.get("document_code")));
-          typedQuery.setParameter("SERIAL", documents.get("serial"));
-          typedQuery.setParameter("NUMBER", documents.get("number"));
+          typedQuery.setParameter("DOCTYPECODE", documents.get("document_code"))
+          .setParameter("SERIAL", documents.get("serial"))
+          .setParameter("NUMBER", documents.get("number"))
         }
         else {
           if (documents.containsKey("policy_type")) {
-            typedQuery.setParameter("POLICYTYPEID", java.lang.Integer.parseInt(documents.get("policy_type")));
-            typedQuery.setParameter("SERIAL", documents.get("serial"));
-            typedQuery.setParameter("NUMBER", documents.get("number"));
+            typedQuery.setParameter("POLICYTYPECODE", documents.get("policy_type"))
+            .setParameter("SERIAL", documents.get("serial"))
+            .setParameter("NUMBER", documents.get("number"))
           }
         }
       }
     }
     else {
-      query.append(" WHERE pat.deleted=0");
+      query.append(" WHERE pat.deleted=0")
     }
     //End of join tables
     if (params.contains("firstName")) {
-      typedQuery.setParameter("FIRSTNAME", params.get("firstName"));
+      typedQuery.setParameter("FIRSTNAME", params.get("firstName"))
     }
     if (params.contains("lastName")) {
-      typedQuery.setParameter("LASTNAME", params.get("lastName"));
+      typedQuery.setParameter("LASTNAME", params.get("lastName"))
     }
     if (params.contains("patrName")) {
-      typedQuery.setParameter("PATRNAME", params.get("patrName"));
+      typedQuery.setParameter("PATRNAME", params.get("patrName"))
     }
     if (params.contains("birthDate")) {
-      val millisecondsCount: java.lang.Long = java.lang.Long.parseLong(params.get("birthDate"));
+      val millisecondsCount: java.lang.Long = java.lang.Long.parseLong(params.get("birthDate"))
       typedQuery.setParameter("BIRTHDATE", new java.util.Date(
         millisecondsCount.longValue() - TimeZone.getDefault.getOffset(millisecondsCount.longValue())
-      ));
+      ))
     }
     if (params.contains("sex")) {
-      typedQuery.setParameter("SEX", java.lang.Short.parseShort(params.get("sex")));
+      typedQuery.setParameter("SEX", java.lang.Short.parseShort(params.get("sex")))
     }
     //End of set Parameters
-    commlogger.debug("JPQL query string is \"" + query.toString + "\"");
-    commlogger.debug("SQL query string is \"" + typedQuery.toString + "\"");
-    if (params.contains("birthDate")) {
-      commlogger.debug("SQL params is \"" + typedQuery.getParameterValue("BIRTHDATE") + "\"")
-    }
+    commlogger.debug("JPQL query string is \"" + query.toString + "\"")
+    commlogger.debug("SQL query string is \"" + typedQuery.toString + "\"")
     typedQuery.getResultList
-
   }
 
   def deletePatient(id: Int) = {
@@ -539,5 +535,20 @@ class DbPatientBean
     commlogger.debug("SQL =" + resultQuery.toString)
     commlogger.debug("BirthDate param is {}", resultQuery.getParameterValue("BIRTHDATE"))
     resultQuery.getResultList
+  }
+
+  def findPatientsByPersonalInfo(
+                                  lastName: String,
+                                  firstName: String,
+                                  patrName: String,
+                                  sex: Short,
+                                  birthDate: Date)
+  : util.List[Patient] = {
+    em.createNamedQuery("Patient.findByPersonalInfo", classOf[Patient])
+      .setParameter("lastName", lastName.toUpperCase)
+      .setParameter("firstName", firstName.toUpperCase)
+      .setParameter("patrName", patrName.toUpperCase)
+      .setParameter("sex", sex)
+      .setParameter("birthDate", birthDate, TemporalType.DATE).getResultList
   }
 }

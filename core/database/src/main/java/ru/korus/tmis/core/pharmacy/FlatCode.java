@@ -30,7 +30,11 @@ public enum FlatCode {
     /**
      * Назначение пациенту
      */
-    PRESCRIPTION("prescription");
+    PRESCRIPTION("prescription"),
+    /**
+     * Исполнение назначения пациенту
+     */
+    RELEASE_PRESCRIPTION("release_prescription");
 
     private String code;
 

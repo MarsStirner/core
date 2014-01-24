@@ -14,9 +14,13 @@ import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
+import ru.korus.tmis.schedule.DateConvertions;
 import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.communication.thriftgen.Queue;
 
+import java.io.*;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.*;
 
 import static org.testng.Assert.*;
@@ -32,7 +36,7 @@ public class CommunicationServiceTest {
     private Communications.Client client;
     private String[] hosts = {"10.2.1.58", "localhost", "192.168.1.100"};
     private static int port = 7911;
-    private static int timeout = 35000;
+    private static int timeout = 3500000;
     private TTransport transport;
 
     @BeforeClass
@@ -54,32 +58,107 @@ public class CommunicationServiceTest {
     }
 
     @AfterClass
-    public void closeConnection() {
+    public void closeConnection() throws InterruptedException {
         transport.close();
         logger.warn("End of all communication component test suite. Closing transport... ");
+        Thread.sleep(10000);
+    }
+
+    @Test(enabled = true)
+    public void findPatientByPolicyAndDocument() {
+        logger.info("Start of findPatientByPolicyAndDocument test.");
+        List<PatientStatus> status = new ArrayList<PatientStatus>(28);
+        List<FindPatientByPolicyAndDocumentParameters> params = new ArrayList<FindPatientByPolicyAndDocumentParameters>(status.size());
+        final File paramsFile = new File(
+                this.getClass().getResource("").getPath()
+                        .concat("/../../../../../communication/findPatientsByPolicyAndDocuments.csv"));
+        logger.info("Path to params file: {}", paramsFile.getAbsolutePath());
+        try {
+            BufferedReader fileReader = new BufferedReader(new InputStreamReader(new FileInputStream(paramsFile)));
+            String line;
+            short i = -1;
+            SimpleDateFormat formatter = new SimpleDateFormat("dd.MM.yyyy");
+            fileReader.readLine(); //skip first line with headers
+            while ((line = fileReader.readLine()) != null) {
+                i++;
+                String[] partsToParse = line.split(";");
+                try {
+                    FindPatientByPolicyAndDocumentParameters newParam = new FindPatientByPolicyAndDocumentParameters();
+                    newParam.setLastName(partsToParse[0]); //lastName
+                    newParam.setFirstName(partsToParse[1]); //firstName
+                    newParam.setPatrName(partsToParse[2]); //patrName
+                    newParam.setSex(Short.parseShort(partsToParse[3])); //sex
+                    newParam.setBirthDate(DateConvertions.convertDateToUTCMilliseconds(formatter.parse(partsToParse[4]))); //birthDate
+                    newParam.setDocumentSerial(partsToParse[9]); //doc serial
+                    newParam.setDocumentNumber(partsToParse[10]); //doc number
+                    newParam.setDocumentTypeCode(partsToParse[11]); //doc typeCode
+                    newParam.setPolicySerial(partsToParse[5]); //pol serial
+                    newParam.setPolicyNumber(partsToParse[6]); //pol number
+                    newParam.setPolicyTypeCode(partsToParse[7]); //pol typeCode
+                    newParam.setPolicyInsurerInfisCode(partsToParse[8]);
+                    params.add(newParam);
+                    logger.info("Test case #{}::{}", i, newParam);
+                } catch (ParseException e) {
+                    logger.error("#{}: Cannot parse (PE) {}", i, Arrays.toString(partsToParse));
+                } catch (NumberFormatException e) {
+                    logger.error("#{}: Cannot parse (NFE) {}", i, Arrays.toString(partsToParse));
+                }
+            }
+            fileReader.close();
+        } catch (FileNotFoundException e) {
+            logger.error("File {} not found", paramsFile.getAbsolutePath());
+            fail("No params file founded");
+        } catch (IOException e) {
+            fail("ERROR: I/O exception while reading file.");
+        }
+        Short i = -1;
+        for (FindPatientByPolicyAndDocumentParameters currentParams : params) {
+            i++;
+            try {
+                if (currentParams != null) {
+                    PatientStatus currentStatus = client.findPatientByPolicyAndDocument(currentParams);
+                    logger.info("{}\t|\t{}", i, currentStatus);
+                } else {
+                    logger.info("{}\t|\t{}", i, "skip");
+                }
+            } catch (NotFoundException e) {
+                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getError_msg());
+            } catch (InvalidPersonalInfoException e) {
+                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getMessage());
+            } catch (InvalidDocumentException e) {
+                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getMessage());
+            } catch (AnotherPolicyException e) {
+                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getMessage());
+            } catch (NotUniqueException e) {
+                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getMessage());
+            } catch (TException e) {
+                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getMessage());
+            }
+        }
     }
 
 
     @Test(enabled = true)
     public void getOrganisationInfo() {
-        logger.warn("Start of GetOrganisationInfo test:");
+        logger.info("Start of GetOrganisationInfo test:");
         String infisCodeParam = "500";
         Organization result;
         try {
             result = client.getOrganisationInfo(infisCodeParam);
             logger.info("Send and recieve is successfully done. Result is {}", result.toString());
-            logger.warn("Successful end of getOrganisationInfoTest");
+            logger.info("Successful end of getOrganisationInfoTest");
         } catch (NotFoundException e) {
-            logger.error("None of organisation found by this infisCode =" + infisCodeParam, e);
+            logger.error("None of organisation found by this infisCode[{}]: {}",
+                    infisCodeParam, e.getError_msg());
         } catch (TException e) {
             logger.error("Get organisationInfo test failed");
-            assertTrue(false);
+            fail();
         }
     }
 
     @Test(enabled = true)
     public void getSpecialities() {
-        logger.warn("Start of GetSpecialities test:");
+        logger.info("Start of GetSpecialities test:");
         String hospitalUIDParam = "500";
         List<Speciality> result;
         try {
@@ -89,39 +168,39 @@ public class CommunicationServiceTest {
             for (Speciality speciality : result) {
                 logger.debug(speciality.toString());
             }
-            logger.warn("Successful end of getSpecialities test.");
+            logger.info("Successful end of getSpecialities test.");
         } catch (NotFoundException e) {
             logger.error("No one speciality found or LPU is incorrect.", e);
         } catch (TException e) {
             logger.error("Exception on server side", e);
-            assertTrue(false);
+            fail();
         }
     }
 
     @Test(enabled = true)
     public void dequeuePatient() {
-        logger.warn("Start of dequeuePatient test:");
+        logger.info("Start of dequeuePatient test:");
         Integer dequeuePatientIdParam = 6227;
         Integer dequeuePatientQueueActionIdParam = 244074;
         DequeuePatientStatus status;
         try {
             status = client.dequeuePatient(dequeuePatientIdParam, dequeuePatientQueueActionIdParam);
             logger.info("Send and recieve is successfully done. Result is {}", status.toString());
-            logger.warn("Successful end of dequeuePatient test.");
+            logger.info("Successful end of dequeuePatient test.");
         } catch (NotFoundException e) {
             logger.error("Something not found", e);
         } catch (SQLException e) {
             logger.error("SQLEXCEPTION server side error", e);
-            assertTrue(false);
+            fail();
         } catch (TException e) {
             logger.error("dequeuePatient test failed", e);
-            assertTrue(false);
+            fail();
         }
     }
 
     @Test(enabled = true)
     public void addPatient() {
-        logger.warn("Start of addPatient test:");
+        logger.info("Start of addPatient test:");
         PatientStatus status;
         AddPatientParameters parameters = new AddPatientParameters()
                 .setLastName("ТЕСТОВ3")
@@ -133,7 +212,7 @@ public class CommunicationServiceTest {
             assertTrue(status.isSuccess(), "Статус удачный");
             assertTrue(status.getPatientId() > 0);
             logger.info("Send and recieve is successfully done. Result is {}", status.toString());
-            logger.warn("Successful end of addPatient test.");
+            logger.info("Successful end of addPatient test.");
         } catch (TException e) {
             logger.error("addPatient test FAILED", e);
         }
@@ -141,7 +220,7 @@ public class CommunicationServiceTest {
 
     @Test(enabled = true)
     public void findPatient() {
-        logger.warn("Start of findPatient test:");
+        logger.info("Start of findPatient test:");
 
         HashMap<String, String> documents = new HashMap<String, String>();
 //        documents.put("policy_type", "1");
@@ -163,7 +242,7 @@ public class CommunicationServiceTest {
         try {
             status = client.findPatient(parameters);
             logger.info("Send and recieve is successfully done. Result is {}", status.toString());
-            logger.warn("Successful end of findPatient test.");
+            logger.info("Successful end of findPatient test.");
         } catch (TException e) {
             logger.error("findPatient test FAILED", e);
         }
@@ -171,12 +250,12 @@ public class CommunicationServiceTest {
 
     @Test(enabled = true)
     public void findPatients() {
-        logger.warn("Start of findPatientS test:");
+        logger.info("Start of findPatientS test:");
         FindMultiplePatientsParameters parameters = new FindMultiplePatientsParameters()
-                .setLastName("Ив...")
-                .setFirstName("*")
+                .setLastName("Иванов")
+                .setFirstName("Иван")
                 .setPatrName("*")
-                .setSex(2);
+                .setSex(1);
         List<Patient> result;
         try {
             result = client.findPatients(parameters);
@@ -187,16 +266,16 @@ public class CommunicationServiceTest {
             for (Patient patient : result) {
                 logger.debug(patient.toString());
             }
-            logger.warn("Successful end of findPatientS test.");
+            logger.info("Successful end of findPatientS test.");
         } catch (TException e) {
             logger.error("findPatientS test FAILED", e);
-            assertTrue(false);
+            fail();
         }
     }
 
     @Test(enabled = true)
     public void findOrgStructureByAddress() {
-        logger.warn("Start of findOrgStructureByAddress test");
+        logger.info("Start of findOrgStructureByAddress test");
         List<Integer> result;
         FindOrgStructureByAddressParameters parameters = new FindOrgStructureByAddressParameters()
                 .setFlat(10)
@@ -209,39 +288,38 @@ public class CommunicationServiceTest {
             logger.info("Send and recieve is successfully done.");
             assertTrue(result != null);
             logger.info("Received list size=" + result.size());
-
             for (Integer orgStructureId : result) {
                 logger.debug(orgStructureId.toString());
             }
-            logger.warn("Successful end of findOrgStructureByAddress test.");
+            logger.info("Successful end of findOrgStructureByAddress test.");
         } catch (NotFoundException e) {
-            logger.error("OrgStructure not found", e);
+            logger.error("OrgStructure not found: {}", e.getError_msg());
         } catch (TException e) {
             logger.error("Fail findOrgStructureByAddress test. Exception stacktrace:", e);
-            assertTrue(false);
+            fail();
         }
     }
 
 
     @Test(enabled = true)
     public void getPatientInfo() {
-        logger.warn("Start of getPatientInfo test:");
+        logger.info("Start of getPatientInfo test:");
         List<Integer> ids = new ArrayList<Integer>();
         ids.add(414);
         ids.add(212);
         ids.add(1000);
         ids.add(152);
         ids.add(1);
-        HashMap<Integer, PatientInfo> result;
+        HashMap<Integer, Patient> result;
         try {
-            result = (HashMap<Integer, PatientInfo>) client.getPatientInfo(ids);
+            result = (HashMap<Integer, Patient>) client.getPatientInfo(ids);
             logger.info("Send and recieve is successfully done.");
             assertTrue(result != null);
             logger.info("Received list size=" + result.size());
             for (Integer key : result.keySet()) {
                 logger.debug("KEY:" + key + " VALUE:" + result.get(key));
             }
-            logger.warn("Successful end of getPatientInfo test.");
+            logger.info("Successful end of getPatientInfo test.");
         } catch (TException e) {
             logger.error("getPatientInfo test failed", e);
         }
@@ -249,7 +327,7 @@ public class CommunicationServiceTest {
 
     @Test(enabled = true)
     public void getOrgStructures() {
-        logger.warn("Start of getOrgStructures test:");
+        logger.info("Start of getOrgStructures test:");
         List<OrgStructure> result;
         Integer parentOrgStructureId = 3;
         boolean recursive = true;
@@ -263,18 +341,18 @@ public class CommunicationServiceTest {
             for (OrgStructure orgStructure : result) {
                 logger.debug(orgStructure.toString());
             }
-            logger.warn("Successful end of getOrgStructures test.");
+            logger.info("Successful end of getOrgStructures test.");
         } catch (NotFoundException e) {
-            logger.error("OrgStructure not found", e);
+            logger.error("OrgStructure not found: {}", e.getError_msg());
         } catch (TException e) {
             logger.error("get OrgStructures test failed.", e);
-            assertTrue(false);
+            fail("Get OrgStructures failed");
         }
     }
 
     @Test(enabled = true)
     public void getPersonnel() {
-        logger.warn("Start of getPersonnel test:");
+        logger.info("Start of getPersonnel test:");
         List<Person> result;
         Integer orgStructureId = 0;
         boolean recursive = true;
@@ -288,7 +366,7 @@ public class CommunicationServiceTest {
             for (Person person : result) {
                 logger.debug(person.toString());
             }
-            logger.warn("Successful end of getPersonnel test.");
+            logger.info("Successful end of getPersonnel test.");
         } catch (TException e) {
             logger.error("getPersonnel Failed.", e);
         }
@@ -297,7 +375,7 @@ public class CommunicationServiceTest {
 
     @Test(enabled = true)
     public void getWorkTimeAndStatus() {
-        logger.warn("Start of getWorkTimeAndStatus test:");
+        logger.info("Start of getWorkTimeAndStatus test:");
         Amb result;
         GetTimeWorkAndStatusParameters parameters = new GetTimeWorkAndStatusParameters()
                 .setPersonId(242)
@@ -308,7 +386,7 @@ public class CommunicationServiceTest {
             logger.info("Send and recieve is successfully done.");
             assertTrue(result != null);
             logger.info(result.toString());
-            logger.warn("Successful end of getWorkTimeAndStatus test.");
+            logger.info("Successful end of getWorkTimeAndStatus test.");
         } catch (NotFoundException e) {
             logger.error("getWorkTimeAndStatus test failed. #{}#", e.getError_msg());
         } catch (TException e) {
@@ -318,7 +396,7 @@ public class CommunicationServiceTest {
 
     @Test(enabled = true)
     public void enqueuePatient() {
-        logger.warn("Start of enqueuePatient test:");
+        logger.info("Start of enqueuePatient test:");
         EnqueuePatientStatus result;
         EnqueuePatientParameters parameters = new EnqueuePatientParameters()
                 .setDateTime(new DateTime(2013, 1, 31, 15, 30, 0, 0).getMillis())
@@ -327,7 +405,7 @@ public class CommunicationServiceTest {
         try {
             result = client.enqueuePatient(parameters);
             logger.info("Send and recieve is successfully done. Result is {}", result.toString());
-            logger.warn("Successful end of enqueuePatient test.");
+            logger.info("Successful end of enqueuePatient test.");
         } catch (TException e) {
             logger.error("Fail of enqueuePatient test. Exception stacktrace:", e);
         }
@@ -335,13 +413,13 @@ public class CommunicationServiceTest {
 
     @Test(enabled = true)
     public void getPatientQueue() {
-        logger.warn("Start getPatientQueue test:");
+        logger.info("Start getPatientQueue test:");
         List<Queue> result;
         Integer patientId = 6226;
         try {
             result = client.getPatientQueue(patientId);
             logger.info("Send and recieve is successfully done. Result is {}", result.toString());
-            logger.warn("Successful end of getpatientQueue test.");
+            logger.info("Successful end of getpatientQueue test.");
         } catch (TException e) {
             logger.error("Fail of getPatientQueue test. Exception stacktrace:", e);
         }
@@ -349,13 +427,13 @@ public class CommunicationServiceTest {
 
     @Test(enabled = true)
     public void getPatientContacts() {
-        logger.warn("Start getPatientContacts test:");
+        logger.info("Start getPatientContacts test:");
         List<Contact> result;
         Integer patientId = 6226;
         try {
             result = client.getPatientContacts(patientId);
             logger.info("Send and recieve is successfully done. Result is {}", result.toString());
-            logger.warn("Successful end of getPatientContacts test.");
+            logger.info("Successful end of getPatientContacts test.");
         } catch (TException e) {
             logger.error("getPatientContacts Failed.", e);
         }
@@ -363,7 +441,7 @@ public class CommunicationServiceTest {
 
     @Test(enabled = true)
     public void linkedTest() {
-        logger.warn(
+        logger.info(
                 "Start of linked test. Try to add patient, get patientInfo on him and check enqueue/dequeue to doctor");
         final String lastName = "Фамилия";
         final String firstName = "Имя";
@@ -403,7 +481,7 @@ public class CommunicationServiceTest {
             findPatientsByFirstNameOnly(firstName, id);
 
             logger.info("4) Call findPatients method with \"birthDate\" param.");
-            findPatientsByBirthFateOnly(birthDate, id);
+            findPatientsByBirthDateOnly(birthDate, id);
 
             logger.info("5) Call findPatients method with same param as findPatient.");
             findPatient(lastName, firstName, patrName, birthDate, id);
@@ -414,7 +492,8 @@ public class CommunicationServiceTest {
             logger.info("Fourth step is to find free ticket to a doctor and find a doctor too.");
             Map<Integer, List<DateTime>> enqueueParam = checkAvailableDoctors();
             if (enqueueParam.isEmpty()) {
-                fail("No one pair doctorId, dateTime");
+                logger.warn("No one pair doctorId, dateTime");
+                return;
             }
             logger.info("1) Available tickets is {}", enqueueParam);
             Iterator<Map.Entry<Integer, List<DateTime>>> iterator = enqueueParam.entrySet().iterator();
@@ -509,7 +588,7 @@ public class CommunicationServiceTest {
             }
 
             if (result.isEmpty()) {
-                fail("No one doctor has available tickets in next week");
+                logger.warn("No one doctor has available tickets in next week");
             }
             return result;
         } catch (TException e) {
@@ -641,11 +720,11 @@ public class CommunicationServiceTest {
     private void getPatientInfoFromLinkedTest(String lastName, String firstName, String patrName, long birthDate, Integer id) throws TException {
         List<Integer> idPseudoList = new ArrayList<Integer>(1);
         idPseudoList.add(id);
-        final Map<Integer, PatientInfo> patientInfoMap = client.getPatientInfo(idPseudoList);
+        final Map<Integer, Patient> patientInfoMap = client.getPatientInfo(idPseudoList);
         logger.info("Recieved result from method \"getPatientInfo\" call = {}", patientInfoMap);
         assertEquals(patientInfoMap.size(), 1, "В возвращаемой коллекциии не ровно один пациент");
         assertTrue(patientInfoMap.containsKey(id), "Возвращаемая коллекция не имеет пациента с заданным ID");
-        PatientInfo patientInfo = patientInfoMap.get(id);
+        Patient patientInfo = patientInfoMap.get(id);
         logger.info("Result is {}", patientInfo);
         assertEquals(patientInfo.getFirstName(), firstName, "Имя несовпало");
         assertEquals(patientInfo.getLastName(), lastName, "Фамилия несовпала");
@@ -738,7 +817,7 @@ public class CommunicationServiceTest {
 
     }
 
-    private void findPatientsByBirthFateOnly(long birthDate, Integer id) throws TException {
+    private void findPatientsByBirthDateOnly(long birthDate, Integer id) throws TException {
         List<Patient> patientList = client.findPatients(new FindMultiplePatientsParameters()
                 .setBirthDate(birthDate)
         );
@@ -752,5 +831,35 @@ public class CommunicationServiceTest {
         assertTrue(findIsSuccessfull,
                 "4) In recieved list there are no requested patient. Method findPatients failed");
         logger.debug("4) Find patient by id result is {}", patientList);
+    }
+
+
+
+    @Test(enabled = true)
+    public void getFirstFreeTicket() {
+        logger.info("Start of getFirstFreeTicket test:");
+       try {
+           TTicket result = client.getFirstFreeTicket(new ScheduleParameters().setPersonId(303).setBeginDateTime(0).setHospitalUidFrom("").setQuotingType(QuotingType.FROM_PORTAL));
+            logger.info("Send and recieve is successfully done.");
+            assertTrue(result != null);
+            logger.info("Received = {}", result.toString());
+            logger.info("Successful end of getFirstFreeTicket test.");
+        } catch (TException e) {
+            logger.error("getFirstFreeTicket test failed", e);
+        }
+    }
+
+
+    @Test(enabled = true)
+    public void checkForNewQueueCoupons(){
+        try {
+            final List<QueueCoupon> result = client.checkForNewQueueCoupons();
+            for(QueueCoupon current : result){
+                logger.info(current.toString());
+            }
+        } catch (TException e) {
+            logger.error("Failed to checkForNewQueueCoupons: ", e);
+            fail("Not working");
+        }
     }
 }
