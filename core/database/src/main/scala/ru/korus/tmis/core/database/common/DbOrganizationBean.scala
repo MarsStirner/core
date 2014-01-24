@@ -160,10 +160,6 @@ class DbOrganizationBean
     list
   }
 
-  def getAllOrganizations() = {
-    em.createNamedQuery("Organisation.findAll", classOf[Organisation]).getResultList
-  }
-
   def getOrganizationById(id: Int): Organisation = {
     val result = em.createQuery(OrganisationFindQuery,
       classOf[Organisation])

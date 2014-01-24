@@ -3,12 +3,14 @@ package ru.korus.tmis.pix.sda.ws;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
+ * Документы
+ * 
  * <p>Java class for Document complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -16,42 +18,21 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="Document">
  *   &lt;complexContent>
- *     &lt;extension base="{}SuperClass">
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="DocumentTime" type="{}TimeStamp" minOccurs="0"/>
- *         &lt;element name="NoteText" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="DocumentType" type="{}DocumentType" minOccurs="0"/>
- *         &lt;element name="Clinician" type="{}CareProvider" minOccurs="0"/>
- *         &lt;element name="TranscriptionTime" type="{}TimeStamp" minOccurs="0"/>
- *         &lt;element name="AuthorizationTime" type="{}TimeStamp" minOccurs="0"/>
- *         &lt;element name="DocumentName" minOccurs="0">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="220"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="FileType" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="Stream" type="{http://www.w3.org/2001/XMLSchema}base64Binary" minOccurs="0"/>
- *         &lt;element name="DocumentURL" minOccurs="0">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="220"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="DocumentNumber" minOccurs="0">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="220"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="Facilities" type="{}ArrayOfOrganizationOrganization" minOccurs="0"/>
- *         &lt;element name="Status" type="{}DocumentStatus" minOccurs="0"/>
- *         &lt;element name="ActionTime" type="{}TimeStamp" minOccurs="0"/>
+ *         &lt;element name="extId" type="{}String" minOccurs="0"/>
+ *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
+ *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
+ *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
+ *         &lt;element name="noteText" type="{}String" minOccurs="0"/>
+ *         &lt;element name="docType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="docNum" type="{}String" minOccurs="0"/>
+ *         &lt;element name="docDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
+ *         &lt;element name="docName" type="{}String" minOccurs="0"/>
+ *         &lt;element name="fileType" type="{}String" minOccurs="0"/>
+ *         &lt;element name="stream" type="{http://www.w3.org/2001/XMLSchema}base64Binary" minOccurs="0"/>
  *       &lt;/sequence>
- *     &lt;/extension>
+ *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -60,76 +41,128 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Document", propOrder = {
-    "documentTime",
+    "extId",
+    "encounterCode",
+    "enteredBy",
+    "enteredOn",
     "noteText",
-    "documentType",
-    "clinician",
-    "transcriptionTime",
-    "authorizationTime",
-    "documentName",
+    "docType",
+    "docNum",
+    "docDate",
+    "docName",
     "fileType",
-    "stream",
-    "documentURL",
-    "documentNumber",
-    "facilities",
-    "status",
-    "actionTime"
+    "stream"
 })
-public class Document
-    extends SuperClass
-{
+public class Document {
 
-    @XmlElement(name = "DocumentTime")
-    protected XMLGregorianCalendar documentTime;
-    @XmlElement(name = "NoteText")
+    protected String extId;
+    protected String encounterCode;
+    protected Employee enteredBy;
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar enteredOn;
     protected String noteText;
-    @XmlElement(name = "DocumentType")
-    protected DocumentType documentType;
-    @XmlElement(name = "Clinician")
-    protected CareProvider clinician;
-    @XmlElement(name = "TranscriptionTime")
-    protected XMLGregorianCalendar transcriptionTime;
-    @XmlElement(name = "AuthorizationTime")
-    protected XMLGregorianCalendar authorizationTime;
-    @XmlElement(name = "DocumentName")
-    protected String documentName;
-    @XmlElement(name = "FileType")
+    protected CodeAndName docType;
+    protected String docNum;
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar docDate;
+    protected String docName;
     protected String fileType;
-    @XmlElement(name = "Stream")
     protected byte[] stream;
-    @XmlElement(name = "DocumentURL")
-    protected String documentURL;
-    @XmlElement(name = "DocumentNumber")
-    protected String documentNumber;
-    @XmlElement(name = "Facilities")
-    protected ArrayOfOrganizationOrganization facilities;
-    @XmlElement(name = "Status")
-    protected DocumentStatus status;
-    @XmlElement(name = "ActionTime")
-    protected XMLGregorianCalendar actionTime;
 
     /**
-     * Gets the value of the documentTime property.
+     * Gets the value of the extId property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getExtId() {
+        return extId;
+    }
+
+    /**
+     * Sets the value of the extId property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setExtId(String value) {
+        this.extId = value;
+    }
+
+    /**
+     * Gets the value of the encounterCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getEncounterCode() {
+        return encounterCode;
+    }
+
+    /**
+     * Sets the value of the encounterCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setEncounterCode(String value) {
+        this.encounterCode = value;
+    }
+
+    /**
+     * Gets the value of the enteredBy property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Employee }
+     *     
+     */
+    public Employee getEnteredBy() {
+        return enteredBy;
+    }
+
+    /**
+     * Sets the value of the enteredBy property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Employee }
+     *     
+     */
+    public void setEnteredBy(Employee value) {
+        this.enteredBy = value;
+    }
+
+    /**
+     * Gets the value of the enteredOn property.
      * 
      * @return
      *     possible object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public XMLGregorianCalendar getDocumentTime() {
-        return documentTime;
+    public XMLGregorianCalendar getEnteredOn() {
+        return enteredOn;
     }
 
     /**
-     * Sets the value of the documentTime property.
+     * Sets the value of the enteredOn property.
      * 
      * @param value
      *     allowed object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setDocumentTime(XMLGregorianCalendar value) {
-        this.documentTime = value;
+    public void setEnteredOn(XMLGregorianCalendar value) {
+        this.enteredOn = value;
     }
 
     /**
@@ -157,123 +190,99 @@ public class Document
     }
 
     /**
-     * Gets the value of the documentType property.
+     * Gets the value of the docType property.
      * 
      * @return
      *     possible object is
-     *     {@link DocumentType }
+     *     {@link CodeAndName }
      *     
      */
-    public DocumentType getDocumentType() {
-        return documentType;
+    public CodeAndName getDocType() {
+        return docType;
     }
 
     /**
-     * Sets the value of the documentType property.
+     * Sets the value of the docType property.
      * 
      * @param value
      *     allowed object is
-     *     {@link DocumentType }
+     *     {@link CodeAndName }
      *     
      */
-    public void setDocumentType(DocumentType value) {
-        this.documentType = value;
+    public void setDocType(CodeAndName value) {
+        this.docType = value;
     }
 
     /**
-     * Gets the value of the clinician property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link CareProvider }
-     *     
-     */
-    public CareProvider getClinician() {
-        return clinician;
-    }
-
-    /**
-     * Sets the value of the clinician property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link CareProvider }
-     *     
-     */
-    public void setClinician(CareProvider value) {
-        this.clinician = value;
-    }
-
-    /**
-     * Gets the value of the transcriptionTime property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getTranscriptionTime() {
-        return transcriptionTime;
-    }
-
-    /**
-     * Sets the value of the transcriptionTime property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setTranscriptionTime(XMLGregorianCalendar value) {
-        this.transcriptionTime = value;
-    }
-
-    /**
-     * Gets the value of the authorizationTime property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getAuthorizationTime() {
-        return authorizationTime;
-    }
-
-    /**
-     * Sets the value of the authorizationTime property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setAuthorizationTime(XMLGregorianCalendar value) {
-        this.authorizationTime = value;
-    }
-
-    /**
-     * Gets the value of the documentName property.
+     * Gets the value of the docNum property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDocumentName() {
-        return documentName;
+    public String getDocNum() {
+        return docNum;
     }
 
     /**
-     * Sets the value of the documentName property.
+     * Sets the value of the docNum property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDocumentName(String value) {
-        this.documentName = value;
+    public void setDocNum(String value) {
+        this.docNum = value;
+    }
+
+    /**
+     * Gets the value of the docDate property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public XMLGregorianCalendar getDocDate() {
+        return docDate;
+    }
+
+    /**
+     * Sets the value of the docDate property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link XMLGregorianCalendar }
+     *     
+     */
+    public void setDocDate(XMLGregorianCalendar value) {
+        this.docDate = value;
+    }
+
+    /**
+     * Gets the value of the docName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDocName() {
+        return docName;
+    }
+
+    /**
+     * Sets the value of the docName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDocName(String value) {
+        this.docName = value;
     }
 
     /**
@@ -320,126 +329,6 @@ public class Document
      */
     public void setStream(byte[] value) {
         this.stream = value;
-    }
-
-    /**
-     * Gets the value of the documentURL property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDocumentURL() {
-        return documentURL;
-    }
-
-    /**
-     * Sets the value of the documentURL property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDocumentURL(String value) {
-        this.documentURL = value;
-    }
-
-    /**
-     * Gets the value of the documentNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDocumentNumber() {
-        return documentNumber;
-    }
-
-    /**
-     * Sets the value of the documentNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDocumentNumber(String value) {
-        this.documentNumber = value;
-    }
-
-    /**
-     * Gets the value of the facilities property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ArrayOfOrganizationOrganization }
-     *     
-     */
-    public ArrayOfOrganizationOrganization getFacilities() {
-        return facilities;
-    }
-
-    /**
-     * Sets the value of the facilities property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ArrayOfOrganizationOrganization }
-     *     
-     */
-    public void setFacilities(ArrayOfOrganizationOrganization value) {
-        this.facilities = value;
-    }
-
-    /**
-     * Gets the value of the status property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DocumentStatus }
-     *     
-     */
-    public DocumentStatus getStatus() {
-        return status;
-    }
-
-    /**
-     * Sets the value of the status property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DocumentStatus }
-     *     
-     */
-    public void setStatus(DocumentStatus value) {
-        this.status = value;
-    }
-
-    /**
-     * Gets the value of the actionTime property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getActionTime() {
-        return actionTime;
-    }
-
-    /**
-     * Sets the value of the actionTime property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setActionTime(XMLGregorianCalendar value) {
-        this.actionTime = value;
     }
 
 }

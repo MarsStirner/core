@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ArrayOfDocumentDocument complex type.
+ * <p>Java class for ArrayOfdocumentDocument complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ArrayOfDocumentDocument">
+ * &lt;complexType name="ArrayOfdocumentDocument">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Document" type="{}Document" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="document" type="{}Document" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,12 +29,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfDocumentDocument", propOrder = {
+@XmlType(name = "ArrayOfdocumentDocument", propOrder = {
     "document"
 })
-public class ArrayOfDocumentDocument {
+public class ArrayOfdocumentDocument {
 
-    @XmlElement(name = "Document", nillable = true)
+    @XmlElement(nillable = true)
     protected List<Document> document;
 
     /**

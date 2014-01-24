@@ -141,7 +141,7 @@ public class HsPixPullBean {
         for (Event event : newEvents) {
             try {
                 logger.info("HS integration processing Event.Id = {}", event.getId());
-                sendNewEventToHS(event, em, dbSchemeKladrBeanLocal, port);
+                sendNewEventToHS(event, dbSchemeKladrBeanLocal, port);
             } catch (Exception ex) {
                 logger.error("Sending event info. HS integration internal error.", ex);
             }
@@ -149,7 +149,7 @@ public class HsPixPullBean {
     }
 
 
-    private void sendNewEventToHS(Event event, EntityManager em, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, SDASoapServiceServiceSoap port) {
+    private void sendNewEventToHS(Event event, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, SDASoapServiceServiceSoap port) {
         final HSIntegration hsIntegration = em.find(HSIntegration.class, event.getId());
         try {
             final ClientInfo clientInfo = new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal);

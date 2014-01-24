@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ArrayOfDiagnosisDiagnosis complex type.
+ * <p>Java class for ArrayOfdiagnosisDiagnosis complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ArrayOfDiagnosisDiagnosis">
+ * &lt;complexType name="ArrayOfdiagnosisDiagnosis">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Diagnosis" type="{}Diagnosis" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="diagnosis" type="{}Diagnosis" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,12 +29,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfDiagnosisDiagnosis", propOrder = {
+@XmlType(name = "ArrayOfdiagnosisDiagnosis", propOrder = {
     "diagnosis"
 })
-public class ArrayOfDiagnosisDiagnosis {
+public class ArrayOfdiagnosisDiagnosis {
 
-    @XmlElement(name = "Diagnosis", nillable = true)
+    @XmlElement(nillable = true)
     protected List<Diagnosis> diagnosis;
 
     /**

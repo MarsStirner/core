@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ArrayOfAllergyAllergy complex type.
+ * <p>Java class for ArrayOfallergyAllergy complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ArrayOfAllergyAllergy">
+ * &lt;complexType name="ArrayOfallergyAllergy">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Allergy" type="{}Allergy" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="allergy" type="{}Allergy" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,12 +29,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfAllergyAllergy", propOrder = {
+@XmlType(name = "ArrayOfallergyAllergy", propOrder = {
     "allergy"
 })
-public class ArrayOfAllergyAllergy {
+public class ArrayOfallergyAllergy {
 
-    @XmlElement(name = "Allergy", nillable = true)
+    @XmlElement(nillable = true)
     protected List<Allergy> allergy;
 
     /**

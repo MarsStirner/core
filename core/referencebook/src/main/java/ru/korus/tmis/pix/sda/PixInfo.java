@@ -39,8 +39,8 @@ public class PixInfo {
             List<EpicrisisInfo> epicrisisInfo) {
         Container res = new Container();
         final Patient patient = new Patient();
-        final String orgName = eventInfo == null || eventInfo.getOrgName() == null || "".equals(eventInfo.getOrgName()) ? "Не задано" : eventInfo.getOrgName();
-        res.setSendingFacility(orgName);
+        res.setFacilityCode(eventInfo.getOrgOid());
+        res.setPatientMRN(clientInfo.getTmisId().toString());
         res.setPatient(patient);
         final Name name = new Name();
         // ФИО

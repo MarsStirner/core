@@ -21,6 +21,7 @@ import ru.korus.tmis.core.entity.model.RbRequestType;
  */
 public class EventInfo {
     private static final int MAX_ORG_NAME_LENGHT = 50;
+    private static final String ORG_UNKNOWN = "unknown";
     /**
      * UUID события
      */
@@ -29,6 +30,10 @@ public class EventInfo {
      * Краткое наименование ЛПУ
      */
     final private String orgName;
+    /**
+     * Код ЛПУ из справочника 1.2.643.5.1.13.2.1.1.178 (MDR308)
+     */
+    final private String orgOid;
     /**
      * Код типа обращения (rbRequestType.code)
      */
@@ -64,15 +69,18 @@ public class EventInfo {
         this.begDate = begDate;
         this.endDate = endDate;
         this.orgName = getOrgShortName(event);
+        this.orgOid = getOrgOid(event);
         this.type = event.getEventType().getId();
+
     }
     public EventInfo(String defaultOrgShortName ) {
-        this.orgName = defaultOrgShortName;
+        this.orgName = isEmptyString(defaultOrgShortName) ? ORG_UNKNOWN : defaultOrgShortName;
         eventUuid = null;
         requestType = null;
         begDate = null;
         endDate = null;
         type = null;
+        orgOid = null;
     }
 
     /**
@@ -80,11 +88,23 @@ public class EventInfo {
      * @return
      */
     public static String getOrgShortName(Event event) {
-        if ( event.getOrganisation() == null || event.getOrganisation().getShortName() == null) {
-            return "unknown";
+        if (event.getOrganisation() == null || isEmptyString(event.getOrganisation().getShortName())) {
+            return ORG_UNKNOWN;
         } else {
             String res = event.getOrganisation().getShortName();
             return res.substring(0, Math.min(MAX_ORG_NAME_LENGHT, res.length()));
+        }
+    }
+
+    private static boolean isEmptyString(String shortName) {
+        return shortName == null || "".equals(shortName);
+    }
+
+    private static String getOrgOid(Event event) {
+        if ( event.getOrganisation() == null || isEmptyString(event.getOrganisation().getOid())) {
+            return ORG_UNKNOWN;
+        } else {
+            return event.getOrganisation().getOid();
         }
     }
 
@@ -137,4 +157,7 @@ public class EventInfo {
         return Arrays.asList(inpatient).indexOf(requestType) >= 0;
     }
 
+    public String getOrgOid() {
+        return orgOid;
+    }
 }

@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ArrayOfEncounterEncounter complex type.
+ * <p>Java class for ArrayOfencounterEncounter complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ArrayOfEncounterEncounter">
+ * &lt;complexType name="ArrayOfencounterEncounter">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="Encounter" type="{}Encounter" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="encounter" type="{}Encounter" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,12 +29,12 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfEncounterEncounter", propOrder = {
+@XmlType(name = "ArrayOfencounterEncounter", propOrder = {
     "encounter"
 })
-public class ArrayOfEncounterEncounter {
+public class ArrayOfencounterEncounter {
 
-    @XmlElement(name = "Encounter", nillable = true)
+    @XmlElement(nillable = true)
     protected List<Encounter> encounter;
 
     /**

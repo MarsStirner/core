@@ -1,14 +1,19 @@
 
 package ru.korus.tmis.pix.sda.ws;
 
+import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
+ * Пациент
+ * 
  * <p>Java class for Patient complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -16,48 +21,72 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="Patient">
  *   &lt;complexContent>
- *     &lt;extension base="{}SuperClass">
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="MPIID" minOccurs="0">
+ *         &lt;element name="baseClinic" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="snils" type="{}Snils" minOccurs="0"/>
+ *         &lt;element name="enp" type="{}Enp" minOccurs="0"/>
+ *         &lt;element name="familyName" type="{}String" minOccurs="0"/>
+ *         &lt;element name="givenName" type="{}String" minOccurs="0"/>
+ *         &lt;element name="middleName" type="{}String" minOccurs="0"/>
+ *         &lt;element name="dob" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
+ *         &lt;element name="birthAddress" type="{}Address" minOccurs="0"/>
+ *         &lt;element name="gender" minOccurs="0">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="220"/>
+ *               &lt;enumeration value="M"/>
+ *               &lt;enumeration value="F"/>
  *             &lt;/restriction>
  *           &lt;/simpleType>
  *         &lt;/element>
- *         &lt;element name="Name" type="{}Name" minOccurs="0"/>
- *         &lt;element name="MothersMaidenName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="Aliases" type="{}ArrayOfNameName" minOccurs="0"/>
- *         &lt;element name="PrimaryLanguage" type="{}Language" minOccurs="0"/>
- *         &lt;element name="OtherLanguages" type="{}ArrayOfPatientLanguagePatientLanguage" minOccurs="0"/>
- *         &lt;element name="Religion" type="{}Religion" minOccurs="0"/>
- *         &lt;element name="MaritalStatus" type="{}MaritalStatus" minOccurs="0"/>
- *         &lt;element name="Gender" type="{}Gender" minOccurs="0"/>
- *         &lt;element name="Race" type="{}Race" minOccurs="0"/>
- *         &lt;element name="EthnicGroup" type="{}EthnicGroup" minOccurs="0"/>
- *         &lt;element name="SupportContacts" type="{}ArrayOfSupportContactSupportContact" minOccurs="0"/>
- *         &lt;element name="BirthTime" type="{}TimeStamp" minOccurs="0"/>
- *         &lt;element name="BirthPlace" type="{}Address" minOccurs="0"/>
- *         &lt;element name="DeathTime" type="{}TimeStamp" minOccurs="0"/>
- *         &lt;element name="IsDead" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="DeathLocation" minOccurs="0">
+ *         &lt;element name="legalAddress" type="{}Address" minOccurs="0"/>
+ *         &lt;element name="actualAddress" type="{}Address" minOccurs="0"/>
+ *         &lt;element name="postalAddress" type="{}Address" minOccurs="0"/>
+ *         &lt;element name="prevAddresses" type="{}ArrayOfaddressHistoryEntry" minOccurs="0"/>
+ *         &lt;element name="dwellingType" minOccurs="0">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="255"/>
+ *               &lt;enumeration value="1"/>
+ *               &lt;enumeration value="2"/>
  *             &lt;/restriction>
  *           &lt;/simpleType>
  *         &lt;/element>
- *         &lt;element name="DeathDeclaredBy" type="{}CareProvider" minOccurs="0"/>
- *         &lt;element name="Citizenship" type="{}Citizenship" minOccurs="0"/>
- *         &lt;element name="PatientNumbers" type="{}ArrayOfPatientNumberPatientNumber" minOccurs="0"/>
- *         &lt;element name="PriorPatientNumbers" type="{}ArrayOfPatientNumberPatientNumber" minOccurs="0"/>
- *         &lt;element name="Addresses" type="{}ArrayOfAddressAddress" minOccurs="0"/>
- *         &lt;element name="ContactInfo" type="{}ContactInfo" minOccurs="0"/>
- *         &lt;element name="FamilyDoctor" type="{}FamilyDoctor" minOccurs="0"/>
- *         &lt;element name="InactiveMRNs" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="Occupation" type="{}Occupation" minOccurs="0"/>
+ *         &lt;element name="privilege" type="{}Privilege" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="socialStatus" type="{}CodeAndName" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="isHomeless" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
+ *         &lt;element name="isServicemanFamily" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
+ *         &lt;element name="occupation" type="{}Occupation" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="prevOccupations" type="{}ArrayOfoccupationHistoryEntry" minOccurs="0"/>
+ *         &lt;element name="citizenship" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="identityDocument" type="{}IdentityDocument" minOccurs="0"/>
+ *         &lt;element name="prevIdentityDocuments" type="{}ArrayOfidentityDocumentIdentityDocument" minOccurs="0"/>
+ *         &lt;element name="birthCertificate" type="{}IdentityDocument" minOccurs="0"/>
+ *         &lt;element name="omsInsurance" type="{}Insurance" minOccurs="0"/>
+ *         &lt;element name="dmsInsurance" type="{}Insurance" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="bloodGroup" minOccurs="0">
+ *           &lt;simpleType>
+ *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
+ *               &lt;enumeration value="1"/>
+ *               &lt;enumeration value="2"/>
+ *               &lt;enumeration value="3"/>
+ *               &lt;enumeration value="4"/>
+ *             &lt;/restriction>
+ *           &lt;/simpleType>
+ *         &lt;/element>
+ *         &lt;element name="rhesusFactor" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
+ *         &lt;element name="contactInfo" type="{}ContactInfo" minOccurs="0"/>
+ *         &lt;element name="isTrustee" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
+ *         &lt;element name="trusteeList" type="{}ArrayOftrusteeTrustee" minOccurs="0"/>
+ *         &lt;element name="newBornData" type="{}String" minOccurs="0"/>
+ *         &lt;element name="isUnidentified" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
+ *         &lt;element name="isForeigner" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
+ *         &lt;element name="inn" type="{}Inn" minOccurs="0"/>
+ *         &lt;element name="race" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="maritalStatus" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="children" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
+ *         &lt;element name="levelOfEducation" type="{}CodeAndName" minOccurs="0"/>
  *       &lt;/sequence>
- *     &lt;/extension>
+ *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -66,280 +95,283 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Patient", propOrder = {
-    "mpiid",
-    "name",
-    "mothersMaidenName",
-    "aliases",
-    "primaryLanguage",
-    "otherLanguages",
-    "religion",
-    "maritalStatus",
+    "baseClinic",
+    "snils",
+    "enp",
+    "familyName",
+    "givenName",
+    "middleName",
+    "dob",
+    "birthAddress",
     "gender",
-    "race",
-    "ethnicGroup",
-    "supportContacts",
-    "birthTime",
-    "birthPlace",
-    "deathTime",
-    "isDead",
-    "deathLocation",
-    "deathDeclaredBy",
+    "legalAddress",
+    "actualAddress",
+    "postalAddress",
+    "prevAddresses",
+    "dwellingType",
+    "privilege",
+    "socialStatus",
+    "isHomeless",
+    "isServicemanFamily",
+    "occupation",
+    "prevOccupations",
     "citizenship",
-    "patientNumbers",
-    "priorPatientNumbers",
-    "addresses",
+    "identityDocument",
+    "prevIdentityDocuments",
+    "birthCertificate",
+    "omsInsurance",
+    "dmsInsurance",
+    "bloodGroup",
+    "rhesusFactor",
     "contactInfo",
-    "familyDoctor",
-    "inactiveMRNs",
-    "occupation"
+    "isTrustee",
+    "trusteeList",
+    "newBornData",
+    "isUnidentified",
+    "isForeigner",
+    "inn",
+    "race",
+    "maritalStatus",
+    "children",
+    "levelOfEducation"
 })
-public class Patient
-    extends SuperClass
-{
+public class Patient {
 
-    @XmlElement(name = "MPIID")
-    protected String mpiid;
-    @XmlElement(name = "Name")
-    protected Name name;
-    @XmlElement(name = "MothersMaidenName")
-    protected String mothersMaidenName;
-    @XmlElement(name = "Aliases")
-    protected ArrayOfNameName aliases;
-    @XmlElement(name = "PrimaryLanguage")
-    protected Language primaryLanguage;
-    @XmlElement(name = "OtherLanguages")
-    protected ArrayOfPatientLanguagePatientLanguage otherLanguages;
-    @XmlElement(name = "Religion")
-    protected Religion religion;
-    @XmlElement(name = "MaritalStatus")
-    protected MaritalStatus maritalStatus;
-    @XmlElement(name = "Gender")
-    protected Gender gender;
-    @XmlElement(name = "Race")
-    protected Race race;
-    @XmlElement(name = "EthnicGroup")
-    protected EthnicGroup ethnicGroup;
-    @XmlElement(name = "SupportContacts")
-    protected ArrayOfSupportContactSupportContact supportContacts;
-    @XmlElement(name = "BirthTime")
-    protected XMLGregorianCalendar birthTime;
-    @XmlElement(name = "BirthPlace")
-    protected Address birthPlace;
-    @XmlElement(name = "DeathTime")
-    protected XMLGregorianCalendar deathTime;
-    @XmlElement(name = "IsDead")
-    protected Boolean isDead;
-    @XmlElement(name = "DeathLocation")
-    protected String deathLocation;
-    @XmlElement(name = "DeathDeclaredBy")
-    protected CareProvider deathDeclaredBy;
-    @XmlElement(name = "Citizenship")
-    protected Citizenship citizenship;
-    @XmlElement(name = "PatientNumbers")
-    protected ArrayOfPatientNumberPatientNumber patientNumbers;
-    @XmlElement(name = "PriorPatientNumbers")
-    protected ArrayOfPatientNumberPatientNumber priorPatientNumbers;
-    @XmlElement(name = "Addresses")
-    protected ArrayOfAddressAddress addresses;
-    @XmlElement(name = "ContactInfo")
+    protected CodeAndName baseClinic;
+    protected String snils;
+    protected String enp;
+    protected String familyName;
+    protected String givenName;
+    protected String middleName;
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar dob;
+    protected Address birthAddress;
+    protected String gender;
+    protected Address legalAddress;
+    protected Address actualAddress;
+    protected Address postalAddress;
+    protected ArrayOfaddressHistoryEntry prevAddresses;
+    protected String dwellingType;
+    @XmlElement(nillable = true)
+    protected List<Privilege> privilege;
+    @XmlElement(nillable = true)
+    protected List<CodeAndName> socialStatus;
+    protected Boolean isHomeless;
+    protected Boolean isServicemanFamily;
+    @XmlElement(nillable = true)
+    protected List<Occupation> occupation;
+    protected ArrayOfoccupationHistoryEntry prevOccupations;
+    protected CodeAndName citizenship;
+    protected IdentityDocument identityDocument;
+    protected ArrayOfidentityDocumentIdentityDocument prevIdentityDocuments;
+    protected IdentityDocument birthCertificate;
+    protected Insurance omsInsurance;
+    @XmlElement(nillable = true)
+    protected List<Insurance> dmsInsurance;
+    protected String bloodGroup;
+    protected Boolean rhesusFactor;
     protected ContactInfo contactInfo;
-    @XmlElement(name = "FamilyDoctor")
-    protected FamilyDoctor familyDoctor;
-    @XmlElement(name = "InactiveMRNs")
-    protected String inactiveMRNs;
-    @XmlElement(name = "Occupation")
-    protected Occupation occupation;
+    protected Boolean isTrustee;
+    protected ArrayOftrusteeTrustee trusteeList;
+    protected String newBornData;
+    protected Boolean isUnidentified;
+    protected Boolean isForeigner;
+    protected String inn;
+    protected CodeAndName race;
+    protected CodeAndName maritalStatus;
+    protected Long children;
+    protected CodeAndName levelOfEducation;
 
     /**
-     * Gets the value of the mpiid property.
+     * Gets the value of the baseClinic property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getBaseClinic() {
+        return baseClinic;
+    }
+
+    /**
+     * Sets the value of the baseClinic property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setBaseClinic(CodeAndName value) {
+        this.baseClinic = value;
+    }
+
+    /**
+     * Gets the value of the snils property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getMPIID() {
-        return mpiid;
+    public String getSnils() {
+        return snils;
     }
 
     /**
-     * Sets the value of the mpiid property.
+     * Sets the value of the snils property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setMPIID(String value) {
-        this.mpiid = value;
+    public void setSnils(String value) {
+        this.snils = value;
     }
 
     /**
-     * Gets the value of the name property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Name }
-     *     
-     */
-    public Name getName() {
-        return name;
-    }
-
-    /**
-     * Sets the value of the name property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Name }
-     *     
-     */
-    public void setName(Name value) {
-        this.name = value;
-    }
-
-    /**
-     * Gets the value of the mothersMaidenName property.
+     * Gets the value of the enp property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getMothersMaidenName() {
-        return mothersMaidenName;
+    public String getEnp() {
+        return enp;
     }
 
     /**
-     * Sets the value of the mothersMaidenName property.
+     * Sets the value of the enp property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setMothersMaidenName(String value) {
-        this.mothersMaidenName = value;
+    public void setEnp(String value) {
+        this.enp = value;
     }
 
     /**
-     * Gets the value of the aliases property.
+     * Gets the value of the familyName property.
      * 
      * @return
      *     possible object is
-     *     {@link ArrayOfNameName }
+     *     {@link String }
      *     
      */
-    public ArrayOfNameName getAliases() {
-        return aliases;
+    public String getFamilyName() {
+        return familyName;
     }
 
     /**
-     * Sets the value of the aliases property.
+     * Sets the value of the familyName property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ArrayOfNameName }
+     *     {@link String }
      *     
      */
-    public void setAliases(ArrayOfNameName value) {
-        this.aliases = value;
+    public void setFamilyName(String value) {
+        this.familyName = value;
     }
 
     /**
-     * Gets the value of the primaryLanguage property.
+     * Gets the value of the givenName property.
      * 
      * @return
      *     possible object is
-     *     {@link Language }
+     *     {@link String }
      *     
      */
-    public Language getPrimaryLanguage() {
-        return primaryLanguage;
+    public String getGivenName() {
+        return givenName;
     }
 
     /**
-     * Sets the value of the primaryLanguage property.
+     * Sets the value of the givenName property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Language }
+     *     {@link String }
      *     
      */
-    public void setPrimaryLanguage(Language value) {
-        this.primaryLanguage = value;
+    public void setGivenName(String value) {
+        this.givenName = value;
     }
 
     /**
-     * Gets the value of the otherLanguages property.
+     * Gets the value of the middleName property.
      * 
      * @return
      *     possible object is
-     *     {@link ArrayOfPatientLanguagePatientLanguage }
+     *     {@link String }
      *     
      */
-    public ArrayOfPatientLanguagePatientLanguage getOtherLanguages() {
-        return otherLanguages;
+    public String getMiddleName() {
+        return middleName;
     }
 
     /**
-     * Sets the value of the otherLanguages property.
+     * Sets the value of the middleName property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ArrayOfPatientLanguagePatientLanguage }
+     *     {@link String }
      *     
      */
-    public void setOtherLanguages(ArrayOfPatientLanguagePatientLanguage value) {
-        this.otherLanguages = value;
+    public void setMiddleName(String value) {
+        this.middleName = value;
     }
 
     /**
-     * Gets the value of the religion property.
+     * Gets the value of the dob property.
      * 
      * @return
      *     possible object is
-     *     {@link Religion }
+     *     {@link XMLGregorianCalendar }
      *     
      */
-    public Religion getReligion() {
-        return religion;
+    public XMLGregorianCalendar getDob() {
+        return dob;
     }
 
     /**
-     * Sets the value of the religion property.
+     * Sets the value of the dob property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Religion }
+     *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setReligion(Religion value) {
-        this.religion = value;
+    public void setDob(XMLGregorianCalendar value) {
+        this.dob = value;
     }
 
     /**
-     * Gets the value of the maritalStatus property.
+     * Gets the value of the birthAddress property.
      * 
      * @return
      *     possible object is
-     *     {@link MaritalStatus }
+     *     {@link Address }
      *     
      */
-    public MaritalStatus getMaritalStatus() {
-        return maritalStatus;
+    public Address getBirthAddress() {
+        return birthAddress;
     }
 
     /**
-     * Sets the value of the maritalStatus property.
+     * Sets the value of the birthAddress property.
      * 
      * @param value
      *     allowed object is
-     *     {@link MaritalStatus }
+     *     {@link Address }
      *     
      */
-    public void setMaritalStatus(MaritalStatus value) {
-        this.maritalStatus = value;
+    public void setBirthAddress(Address value) {
+        this.birthAddress = value;
     }
 
     /**
@@ -347,10 +379,10 @@ public class Patient
      * 
      * @return
      *     possible object is
-     *     {@link Gender }
+     *     {@link String }
      *     
      */
-    public Gender getGender() {
+    public String getGender() {
         return gender;
     }
 
@@ -359,227 +391,290 @@ public class Patient
      * 
      * @param value
      *     allowed object is
-     *     {@link Gender }
+     *     {@link String }
      *     
      */
-    public void setGender(Gender value) {
+    public void setGender(String value) {
         this.gender = value;
     }
 
     /**
-     * Gets the value of the race property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Race }
-     *     
-     */
-    public Race getRace() {
-        return race;
-    }
-
-    /**
-     * Sets the value of the race property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Race }
-     *     
-     */
-    public void setRace(Race value) {
-        this.race = value;
-    }
-
-    /**
-     * Gets the value of the ethnicGroup property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link EthnicGroup }
-     *     
-     */
-    public EthnicGroup getEthnicGroup() {
-        return ethnicGroup;
-    }
-
-    /**
-     * Sets the value of the ethnicGroup property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link EthnicGroup }
-     *     
-     */
-    public void setEthnicGroup(EthnicGroup value) {
-        this.ethnicGroup = value;
-    }
-
-    /**
-     * Gets the value of the supportContacts property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ArrayOfSupportContactSupportContact }
-     *     
-     */
-    public ArrayOfSupportContactSupportContact getSupportContacts() {
-        return supportContacts;
-    }
-
-    /**
-     * Sets the value of the supportContacts property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ArrayOfSupportContactSupportContact }
-     *     
-     */
-    public void setSupportContacts(ArrayOfSupportContactSupportContact value) {
-        this.supportContacts = value;
-    }
-
-    /**
-     * Gets the value of the birthTime property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getBirthTime() {
-        return birthTime;
-    }
-
-    /**
-     * Sets the value of the birthTime property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setBirthTime(XMLGregorianCalendar value) {
-        this.birthTime = value;
-    }
-
-    /**
-     * Gets the value of the birthPlace property.
+     * Gets the value of the legalAddress property.
      * 
      * @return
      *     possible object is
      *     {@link Address }
      *     
      */
-    public Address getBirthPlace() {
-        return birthPlace;
+    public Address getLegalAddress() {
+        return legalAddress;
     }
 
     /**
-     * Sets the value of the birthPlace property.
+     * Sets the value of the legalAddress property.
      * 
      * @param value
      *     allowed object is
      *     {@link Address }
      *     
      */
-    public void setBirthPlace(Address value) {
-        this.birthPlace = value;
+    public void setLegalAddress(Address value) {
+        this.legalAddress = value;
     }
 
     /**
-     * Gets the value of the deathTime property.
+     * Gets the value of the actualAddress property.
      * 
      * @return
      *     possible object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link Address }
      *     
      */
-    public XMLGregorianCalendar getDeathTime() {
-        return deathTime;
+    public Address getActualAddress() {
+        return actualAddress;
     }
 
     /**
-     * Sets the value of the deathTime property.
+     * Sets the value of the actualAddress property.
      * 
      * @param value
      *     allowed object is
-     *     {@link XMLGregorianCalendar }
+     *     {@link Address }
      *     
      */
-    public void setDeathTime(XMLGregorianCalendar value) {
-        this.deathTime = value;
+    public void setActualAddress(Address value) {
+        this.actualAddress = value;
     }
 
     /**
-     * Gets the value of the isDead property.
+     * Gets the value of the postalAddress property.
      * 
      * @return
      *     possible object is
-     *     {@link Boolean }
+     *     {@link Address }
      *     
      */
-    public Boolean isIsDead() {
-        return isDead;
+    public Address getPostalAddress() {
+        return postalAddress;
     }
 
     /**
-     * Sets the value of the isDead property.
+     * Sets the value of the postalAddress property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Boolean }
+     *     {@link Address }
      *     
      */
-    public void setIsDead(Boolean value) {
-        this.isDead = value;
+    public void setPostalAddress(Address value) {
+        this.postalAddress = value;
     }
 
     /**
-     * Gets the value of the deathLocation property.
+     * Gets the value of the prevAddresses property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ArrayOfaddressHistoryEntry }
+     *     
+     */
+    public ArrayOfaddressHistoryEntry getPrevAddresses() {
+        return prevAddresses;
+    }
+
+    /**
+     * Sets the value of the prevAddresses property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ArrayOfaddressHistoryEntry }
+     *     
+     */
+    public void setPrevAddresses(ArrayOfaddressHistoryEntry value) {
+        this.prevAddresses = value;
+    }
+
+    /**
+     * Gets the value of the dwellingType property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getDeathLocation() {
-        return deathLocation;
+    public String getDwellingType() {
+        return dwellingType;
     }
 
     /**
-     * Sets the value of the deathLocation property.
+     * Sets the value of the dwellingType property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setDeathLocation(String value) {
-        this.deathLocation = value;
+    public void setDwellingType(String value) {
+        this.dwellingType = value;
     }
 
     /**
-     * Gets the value of the deathDeclaredBy property.
+     * Gets the value of the privilege property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the privilege property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getPrivilege().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Privilege }
+     * 
+     * 
+     */
+    public List<Privilege> getPrivilege() {
+        if (privilege == null) {
+            privilege = new ArrayList<Privilege>();
+        }
+        return this.privilege;
+    }
+
+    /**
+     * Gets the value of the socialStatus property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the socialStatus property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getSocialStatus().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link CodeAndName }
+     * 
+     * 
+     */
+    public List<CodeAndName> getSocialStatus() {
+        if (socialStatus == null) {
+            socialStatus = new ArrayList<CodeAndName>();
+        }
+        return this.socialStatus;
+    }
+
+    /**
+     * Gets the value of the isHomeless property.
      * 
      * @return
      *     possible object is
-     *     {@link CareProvider }
+     *     {@link Boolean }
      *     
      */
-    public CareProvider getDeathDeclaredBy() {
-        return deathDeclaredBy;
+    public Boolean isIsHomeless() {
+        return isHomeless;
     }
 
     /**
-     * Sets the value of the deathDeclaredBy property.
+     * Sets the value of the isHomeless property.
      * 
      * @param value
      *     allowed object is
-     *     {@link CareProvider }
+     *     {@link Boolean }
      *     
      */
-    public void setDeathDeclaredBy(CareProvider value) {
-        this.deathDeclaredBy = value;
+    public void setIsHomeless(Boolean value) {
+        this.isHomeless = value;
+    }
+
+    /**
+     * Gets the value of the isServicemanFamily property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isIsServicemanFamily() {
+        return isServicemanFamily;
+    }
+
+    /**
+     * Sets the value of the isServicemanFamily property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setIsServicemanFamily(Boolean value) {
+        this.isServicemanFamily = value;
+    }
+
+    /**
+     * Gets the value of the occupation property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the occupation property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getOccupation().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Occupation }
+     * 
+     * 
+     */
+    public List<Occupation> getOccupation() {
+        if (occupation == null) {
+            occupation = new ArrayList<Occupation>();
+        }
+        return this.occupation;
+    }
+
+    /**
+     * Gets the value of the prevOccupations property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ArrayOfoccupationHistoryEntry }
+     *     
+     */
+    public ArrayOfoccupationHistoryEntry getPrevOccupations() {
+        return prevOccupations;
+    }
+
+    /**
+     * Sets the value of the prevOccupations property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ArrayOfoccupationHistoryEntry }
+     *     
+     */
+    public void setPrevOccupations(ArrayOfoccupationHistoryEntry value) {
+        this.prevOccupations = value;
     }
 
     /**
@@ -587,10 +682,10 @@ public class Patient
      * 
      * @return
      *     possible object is
-     *     {@link Citizenship }
+     *     {@link CodeAndName }
      *     
      */
-    public Citizenship getCitizenship() {
+    public CodeAndName getCitizenship() {
         return citizenship;
     }
 
@@ -599,83 +694,184 @@ public class Patient
      * 
      * @param value
      *     allowed object is
-     *     {@link Citizenship }
+     *     {@link CodeAndName }
      *     
      */
-    public void setCitizenship(Citizenship value) {
+    public void setCitizenship(CodeAndName value) {
         this.citizenship = value;
     }
 
     /**
-     * Gets the value of the patientNumbers property.
+     * Gets the value of the identityDocument property.
      * 
      * @return
      *     possible object is
-     *     {@link ArrayOfPatientNumberPatientNumber }
+     *     {@link IdentityDocument }
      *     
      */
-    public ArrayOfPatientNumberPatientNumber getPatientNumbers() {
-        return patientNumbers;
+    public IdentityDocument getIdentityDocument() {
+        return identityDocument;
     }
 
     /**
-     * Sets the value of the patientNumbers property.
+     * Sets the value of the identityDocument property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ArrayOfPatientNumberPatientNumber }
+     *     {@link IdentityDocument }
      *     
      */
-    public void setPatientNumbers(ArrayOfPatientNumberPatientNumber value) {
-        this.patientNumbers = value;
+    public void setIdentityDocument(IdentityDocument value) {
+        this.identityDocument = value;
     }
 
     /**
-     * Gets the value of the priorPatientNumbers property.
+     * Gets the value of the prevIdentityDocuments property.
      * 
      * @return
      *     possible object is
-     *     {@link ArrayOfPatientNumberPatientNumber }
+     *     {@link ArrayOfidentityDocumentIdentityDocument }
      *     
      */
-    public ArrayOfPatientNumberPatientNumber getPriorPatientNumbers() {
-        return priorPatientNumbers;
+    public ArrayOfidentityDocumentIdentityDocument getPrevIdentityDocuments() {
+        return prevIdentityDocuments;
     }
 
     /**
-     * Sets the value of the priorPatientNumbers property.
+     * Sets the value of the prevIdentityDocuments property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ArrayOfPatientNumberPatientNumber }
+     *     {@link ArrayOfidentityDocumentIdentityDocument }
      *     
      */
-    public void setPriorPatientNumbers(ArrayOfPatientNumberPatientNumber value) {
-        this.priorPatientNumbers = value;
+    public void setPrevIdentityDocuments(ArrayOfidentityDocumentIdentityDocument value) {
+        this.prevIdentityDocuments = value;
     }
 
     /**
-     * Gets the value of the addresses property.
+     * Gets the value of the birthCertificate property.
      * 
      * @return
      *     possible object is
-     *     {@link ArrayOfAddressAddress }
+     *     {@link IdentityDocument }
      *     
      */
-    public ArrayOfAddressAddress getAddresses() {
-        return addresses;
+    public IdentityDocument getBirthCertificate() {
+        return birthCertificate;
     }
 
     /**
-     * Sets the value of the addresses property.
+     * Sets the value of the birthCertificate property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ArrayOfAddressAddress }
+     *     {@link IdentityDocument }
      *     
      */
-    public void setAddresses(ArrayOfAddressAddress value) {
-        this.addresses = value;
+    public void setBirthCertificate(IdentityDocument value) {
+        this.birthCertificate = value;
+    }
+
+    /**
+     * Gets the value of the omsInsurance property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Insurance }
+     *     
+     */
+    public Insurance getOmsInsurance() {
+        return omsInsurance;
+    }
+
+    /**
+     * Sets the value of the omsInsurance property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Insurance }
+     *     
+     */
+    public void setOmsInsurance(Insurance value) {
+        this.omsInsurance = value;
+    }
+
+    /**
+     * Gets the value of the dmsInsurance property.
+     * 
+     * <p>
+     * This accessor method returns a reference to the live list,
+     * not a snapshot. Therefore any modification you make to the
+     * returned list will be present inside the JAXB object.
+     * This is why there is not a <CODE>set</CODE> method for the dmsInsurance property.
+     * 
+     * <p>
+     * For example, to add a new item, do as follows:
+     * <pre>
+     *    getDmsInsurance().add(newItem);
+     * </pre>
+     * 
+     * 
+     * <p>
+     * Objects of the following type(s) are allowed in the list
+     * {@link Insurance }
+     * 
+     * 
+     */
+    public List<Insurance> getDmsInsurance() {
+        if (dmsInsurance == null) {
+            dmsInsurance = new ArrayList<Insurance>();
+        }
+        return this.dmsInsurance;
+    }
+
+    /**
+     * Gets the value of the bloodGroup property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getBloodGroup() {
+        return bloodGroup;
+    }
+
+    /**
+     * Sets the value of the bloodGroup property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setBloodGroup(String value) {
+        this.bloodGroup = value;
+    }
+
+    /**
+     * Gets the value of the rhesusFactor property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isRhesusFactor() {
+        return rhesusFactor;
+    }
+
+    /**
+     * Sets the value of the rhesusFactor property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setRhesusFactor(Boolean value) {
+        this.rhesusFactor = value;
     }
 
     /**
@@ -703,75 +899,243 @@ public class Patient
     }
 
     /**
-     * Gets the value of the familyDoctor property.
+     * Gets the value of the isTrustee property.
      * 
      * @return
      *     possible object is
-     *     {@link FamilyDoctor }
+     *     {@link Boolean }
      *     
      */
-    public FamilyDoctor getFamilyDoctor() {
-        return familyDoctor;
+    public Boolean isIsTrustee() {
+        return isTrustee;
     }
 
     /**
-     * Sets the value of the familyDoctor property.
+     * Sets the value of the isTrustee property.
      * 
      * @param value
      *     allowed object is
-     *     {@link FamilyDoctor }
+     *     {@link Boolean }
      *     
      */
-    public void setFamilyDoctor(FamilyDoctor value) {
-        this.familyDoctor = value;
+    public void setIsTrustee(Boolean value) {
+        this.isTrustee = value;
     }
 
     /**
-     * Gets the value of the inactiveMRNs property.
+     * Gets the value of the trusteeList property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ArrayOftrusteeTrustee }
+     *     
+     */
+    public ArrayOftrusteeTrustee getTrusteeList() {
+        return trusteeList;
+    }
+
+    /**
+     * Sets the value of the trusteeList property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ArrayOftrusteeTrustee }
+     *     
+     */
+    public void setTrusteeList(ArrayOftrusteeTrustee value) {
+        this.trusteeList = value;
+    }
+
+    /**
+     * Gets the value of the newBornData property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getInactiveMRNs() {
-        return inactiveMRNs;
+    public String getNewBornData() {
+        return newBornData;
     }
 
     /**
-     * Sets the value of the inactiveMRNs property.
+     * Sets the value of the newBornData property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setInactiveMRNs(String value) {
-        this.inactiveMRNs = value;
+    public void setNewBornData(String value) {
+        this.newBornData = value;
     }
 
     /**
-     * Gets the value of the occupation property.
+     * Gets the value of the isUnidentified property.
      * 
      * @return
      *     possible object is
-     *     {@link Occupation }
+     *     {@link Boolean }
      *     
      */
-    public Occupation getOccupation() {
-        return occupation;
+    public Boolean isIsUnidentified() {
+        return isUnidentified;
     }
 
     /**
-     * Sets the value of the occupation property.
+     * Sets the value of the isUnidentified property.
      * 
      * @param value
      *     allowed object is
-     *     {@link Occupation }
+     *     {@link Boolean }
      *     
      */
-    public void setOccupation(Occupation value) {
-        this.occupation = value;
+    public void setIsUnidentified(Boolean value) {
+        this.isUnidentified = value;
+    }
+
+    /**
+     * Gets the value of the isForeigner property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Boolean }
+     *     
+     */
+    public Boolean isIsForeigner() {
+        return isForeigner;
+    }
+
+    /**
+     * Sets the value of the isForeigner property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Boolean }
+     *     
+     */
+    public void setIsForeigner(Boolean value) {
+        this.isForeigner = value;
+    }
+
+    /**
+     * Gets the value of the inn property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getInn() {
+        return inn;
+    }
+
+    /**
+     * Sets the value of the inn property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setInn(String value) {
+        this.inn = value;
+    }
+
+    /**
+     * Gets the value of the race property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getRace() {
+        return race;
+    }
+
+    /**
+     * Sets the value of the race property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setRace(CodeAndName value) {
+        this.race = value;
+    }
+
+    /**
+     * Gets the value of the maritalStatus property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getMaritalStatus() {
+        return maritalStatus;
+    }
+
+    /**
+     * Sets the value of the maritalStatus property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setMaritalStatus(CodeAndName value) {
+        this.maritalStatus = value;
+    }
+
+    /**
+     * Gets the value of the children property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Long }
+     *     
+     */
+    public Long getChildren() {
+        return children;
+    }
+
+    /**
+     * Sets the value of the children property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Long }
+     *     
+     */
+    public void setChildren(Long value) {
+        this.children = value;
+    }
+
+    /**
+     * Gets the value of the levelOfEducation property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getLevelOfEducation() {
+        return levelOfEducation;
+    }
+
+    /**
+     * Sets the value of the levelOfEducation property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setLevelOfEducation(CodeAndName value) {
+        this.levelOfEducation = value;
     }
 
 }

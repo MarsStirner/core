@@ -4,11 +4,14 @@ package ru.korus.tmis.pix.sda.ws;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
+ * Эпизод (амбулаторное обращение или госпитализация)
+ * 
  * <p>Java class for Encounter complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
@@ -16,72 +19,35 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="Encounter">
  *   &lt;complexContent>
- *     &lt;extension base="{}SuperClass">
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="AdmissionType" type="{}AdmissionType" minOccurs="0"/>
- *         &lt;element name="EncounterType" minOccurs="0">
+ *         &lt;element name="extId" type="{}String"/>
+ *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
+ *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
+ *         &lt;element name="encType">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;enumeration value="E"/>
  *               &lt;enumeration value="I"/>
  *               &lt;enumeration value="O"/>
- *               &lt;enumeration value="N"/>
- *               &lt;enumeration value="G"/>
- *               &lt;enumeration value="P"/>
- *               &lt;enumeration value="S"/>
  *             &lt;/restriction>
  *           &lt;/simpleType>
  *         &lt;/element>
- *         &lt;element name="AdmittingClinician" type="{}CareProvider" minOccurs="0"/>
- *         &lt;element name="AttendingClinicians" type="{}ArrayOfCareProviderCareProvider" minOccurs="0"/>
- *         &lt;element name="ConsultingClinicians" type="{}ArrayOfCareProviderCareProvider" minOccurs="0"/>
- *         &lt;element name="ReferringClinician" type="{}ReferralDoctor" minOccurs="0"/>
- *         &lt;element name="AccountNumber" minOccurs="0">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="220"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="PriorVisitNumber" minOccurs="0">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="220"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="PreAdmissionNumber" minOccurs="0">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="220"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="AdmissionSource" type="{}AdmissionSource" minOccurs="0"/>
- *         &lt;element name="AssignedWard" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="AssignedRoom" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="AssignedBed" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="PriorWard" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="PriorRoom" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="PriorBed" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="AdmitReason" type="{}AdmitReason" minOccurs="0"/>
- *         &lt;element name="HealthCareFacility" type="{}HealthCareFacility" minOccurs="0"/>
- *         &lt;element name="DischargeLocation" type="{}DischargeLocation" minOccurs="0"/>
- *         &lt;element name="VisitDescription" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="EncounterMRN" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
- *         &lt;element name="HealthFunds" type="{}ArrayOfHealthFundHealthFund" minOccurs="0"/>
- *         &lt;element name="EndTime" type="{}TimeStamp" minOccurs="0"/>
- *         &lt;element name="SeparationMode" type="{}SeparationMode" minOccurs="0"/>
- *         &lt;element name="Specialties" type="{}ArrayOfCareProviderTypeCareProviderType" minOccurs="0"/>
- *         &lt;element name="RecommendationsProvided" type="{}ArrayOfRecommendationRecommendation" minOccurs="0"/>
- *         &lt;element name="ExpectedAdmitTime" type="{}TimeStamp" minOccurs="0"/>
- *         &lt;element name="ExpectedDischargeTime" type="{}TimeStamp" minOccurs="0"/>
- *         &lt;element name="PublicityCode" type="{}PublicityCode" minOccurs="0"/>
- *         &lt;element name="Priority" type="{}EncounterPriority" minOccurs="0"/>
- *         &lt;element name="ExpectedLOAReturnTime" type="{}TimeStamp" minOccurs="0"/>
- *         &lt;element name="DiagnosisRelatedGroup" type="{}DiagnosisRelatedGroup" minOccurs="0"/>
+ *         &lt;element name="paymentType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="isAtHome" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
+ *         &lt;element name="encounterReason" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="facilityDept" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="referralFacility" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="admissionInfo" type="{}Admission" minOccurs="0"/>
+ *         &lt;element name="encounterResult" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="encounterOutcome" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="finalAbilityToWork" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="careType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="mes" type="{}ArrayOfmesCodeString" minOccurs="0"/>
+ *         &lt;element name="recordNumber" type="{}String" minOccurs="0"/>
+ *         &lt;element name="fromTime" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
+ *         &lt;element name="toTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *       &lt;/sequence>
- *     &lt;/extension>
+ *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
@@ -90,874 +56,482 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Encounter", propOrder = {
-    "admissionType",
-    "encounterType",
-    "admittingClinician",
-    "attendingClinicians",
-    "consultingClinicians",
-    "referringClinician",
-    "accountNumber",
-    "priorVisitNumber",
-    "preAdmissionNumber",
-    "admissionSource",
-    "assignedWard",
-    "assignedRoom",
-    "assignedBed",
-    "priorWard",
-    "priorRoom",
-    "priorBed",
-    "admitReason",
-    "healthCareFacility",
-    "dischargeLocation",
-    "visitDescription",
-    "encounterMRN",
-    "healthFunds",
-    "endTime",
-    "separationMode",
-    "specialties",
-    "recommendationsProvided",
-    "expectedAdmitTime",
-    "expectedDischargeTime",
-    "publicityCode",
-    "priority",
-    "expectedLOAReturnTime",
-    "diagnosisRelatedGroup"
+    "extId",
+    "enteredBy",
+    "enteredOn",
+    "encType",
+    "paymentType",
+    "isAtHome",
+    "encounterReason",
+    "facilityDept",
+    "referralFacility",
+    "admissionInfo",
+    "encounterResult",
+    "encounterOutcome",
+    "finalAbilityToWork",
+    "careType",
+    "mes",
+    "recordNumber",
+    "fromTime",
+    "toTime"
 })
-public class Encounter
-    extends SuperClass
-{
+public class Encounter {
 
-    @XmlElement(name = "AdmissionType")
-    protected AdmissionType admissionType;
-    @XmlElement(name = "EncounterType")
-    protected String encounterType;
-    @XmlElement(name = "AdmittingClinician")
-    protected CareProvider admittingClinician;
-    @XmlElement(name = "AttendingClinicians")
-    protected ArrayOfCareProviderCareProvider attendingClinicians;
-    @XmlElement(name = "ConsultingClinicians")
-    protected ArrayOfCareProviderCareProvider consultingClinicians;
-    @XmlElement(name = "ReferringClinician")
-    protected ReferralDoctor referringClinician;
-    @XmlElement(name = "AccountNumber")
-    protected String accountNumber;
-    @XmlElement(name = "PriorVisitNumber")
-    protected String priorVisitNumber;
-    @XmlElement(name = "PreAdmissionNumber")
-    protected String preAdmissionNumber;
-    @XmlElement(name = "AdmissionSource")
-    protected AdmissionSource admissionSource;
-    @XmlElement(name = "AssignedWard")
-    protected String assignedWard;
-    @XmlElement(name = "AssignedRoom")
-    protected String assignedRoom;
-    @XmlElement(name = "AssignedBed")
-    protected String assignedBed;
-    @XmlElement(name = "PriorWard")
-    protected String priorWard;
-    @XmlElement(name = "PriorRoom")
-    protected String priorRoom;
-    @XmlElement(name = "PriorBed")
-    protected String priorBed;
-    @XmlElement(name = "AdmitReason")
-    protected AdmitReason admitReason;
-    @XmlElement(name = "HealthCareFacility")
-    protected HealthCareFacility healthCareFacility;
-    @XmlElement(name = "DischargeLocation")
-    protected DischargeLocation dischargeLocation;
-    @XmlElement(name = "VisitDescription")
-    protected String visitDescription;
-    @XmlElement(name = "EncounterMRN")
-    protected String encounterMRN;
-    @XmlElement(name = "HealthFunds")
-    protected ArrayOfHealthFundHealthFund healthFunds;
-    @XmlElement(name = "EndTime")
-    protected XMLGregorianCalendar endTime;
-    @XmlElement(name = "SeparationMode")
-    protected SeparationMode separationMode;
-    @XmlElement(name = "Specialties")
-    protected ArrayOfCareProviderTypeCareProviderType specialties;
-    @XmlElement(name = "RecommendationsProvided")
-    protected ArrayOfRecommendationRecommendation recommendationsProvided;
-    @XmlElement(name = "ExpectedAdmitTime")
-    protected XMLGregorianCalendar expectedAdmitTime;
-    @XmlElement(name = "ExpectedDischargeTime")
-    protected XMLGregorianCalendar expectedDischargeTime;
-    @XmlElement(name = "PublicityCode")
-    protected PublicityCode publicityCode;
-    @XmlElement(name = "Priority")
-    protected EncounterPriority priority;
-    @XmlElement(name = "ExpectedLOAReturnTime")
-    protected XMLGregorianCalendar expectedLOAReturnTime;
-    @XmlElement(name = "DiagnosisRelatedGroup")
-    protected DiagnosisRelatedGroup diagnosisRelatedGroup;
+    @XmlElement(required = true)
+    protected String extId;
+    protected Employee enteredBy;
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar enteredOn;
+    @XmlElement(required = true)
+    protected String encType;
+    protected CodeAndName paymentType;
+    protected Boolean isAtHome;
+    protected CodeAndName encounterReason;
+    protected CodeAndName facilityDept;
+    protected CodeAndName referralFacility;
+    protected Admission admissionInfo;
+    protected CodeAndName encounterResult;
+    protected CodeAndName encounterOutcome;
+    protected CodeAndName finalAbilityToWork;
+    protected CodeAndName careType;
+    protected ArrayOfmesCodeString mes;
+    protected String recordNumber;
+    @XmlElement(required = true)
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar fromTime;
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar toTime;
 
     /**
-     * Gets the value of the admissionType property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link AdmissionType }
-     *     
-     */
-    public AdmissionType getAdmissionType() {
-        return admissionType;
-    }
-
-    /**
-     * Sets the value of the admissionType property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link AdmissionType }
-     *     
-     */
-    public void setAdmissionType(AdmissionType value) {
-        this.admissionType = value;
-    }
-
-    /**
-     * Gets the value of the encounterType property.
+     * Gets the value of the extId property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getEncounterType() {
-        return encounterType;
+    public String getExtId() {
+        return extId;
     }
 
     /**
-     * Sets the value of the encounterType property.
+     * Sets the value of the extId property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setEncounterType(String value) {
-        this.encounterType = value;
+    public void setExtId(String value) {
+        this.extId = value;
     }
 
     /**
-     * Gets the value of the admittingClinician property.
+     * Gets the value of the enteredBy property.
      * 
      * @return
      *     possible object is
-     *     {@link CareProvider }
+     *     {@link Employee }
      *     
      */
-    public CareProvider getAdmittingClinician() {
-        return admittingClinician;
+    public Employee getEnteredBy() {
+        return enteredBy;
     }
 
     /**
-     * Sets the value of the admittingClinician property.
+     * Sets the value of the enteredBy property.
      * 
      * @param value
      *     allowed object is
-     *     {@link CareProvider }
+     *     {@link Employee }
      *     
      */
-    public void setAdmittingClinician(CareProvider value) {
-        this.admittingClinician = value;
+    public void setEnteredBy(Employee value) {
+        this.enteredBy = value;
     }
 
     /**
-     * Gets the value of the attendingClinicians property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ArrayOfCareProviderCareProvider }
-     *     
-     */
-    public ArrayOfCareProviderCareProvider getAttendingClinicians() {
-        return attendingClinicians;
-    }
-
-    /**
-     * Sets the value of the attendingClinicians property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ArrayOfCareProviderCareProvider }
-     *     
-     */
-    public void setAttendingClinicians(ArrayOfCareProviderCareProvider value) {
-        this.attendingClinicians = value;
-    }
-
-    /**
-     * Gets the value of the consultingClinicians property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ArrayOfCareProviderCareProvider }
-     *     
-     */
-    public ArrayOfCareProviderCareProvider getConsultingClinicians() {
-        return consultingClinicians;
-    }
-
-    /**
-     * Sets the value of the consultingClinicians property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ArrayOfCareProviderCareProvider }
-     *     
-     */
-    public void setConsultingClinicians(ArrayOfCareProviderCareProvider value) {
-        this.consultingClinicians = value;
-    }
-
-    /**
-     * Gets the value of the referringClinician property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ReferralDoctor }
-     *     
-     */
-    public ReferralDoctor getReferringClinician() {
-        return referringClinician;
-    }
-
-    /**
-     * Sets the value of the referringClinician property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ReferralDoctor }
-     *     
-     */
-    public void setReferringClinician(ReferralDoctor value) {
-        this.referringClinician = value;
-    }
-
-    /**
-     * Gets the value of the accountNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getAccountNumber() {
-        return accountNumber;
-    }
-
-    /**
-     * Sets the value of the accountNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setAccountNumber(String value) {
-        this.accountNumber = value;
-    }
-
-    /**
-     * Gets the value of the priorVisitNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPriorVisitNumber() {
-        return priorVisitNumber;
-    }
-
-    /**
-     * Sets the value of the priorVisitNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPriorVisitNumber(String value) {
-        this.priorVisitNumber = value;
-    }
-
-    /**
-     * Gets the value of the preAdmissionNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPreAdmissionNumber() {
-        return preAdmissionNumber;
-    }
-
-    /**
-     * Sets the value of the preAdmissionNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPreAdmissionNumber(String value) {
-        this.preAdmissionNumber = value;
-    }
-
-    /**
-     * Gets the value of the admissionSource property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link AdmissionSource }
-     *     
-     */
-    public AdmissionSource getAdmissionSource() {
-        return admissionSource;
-    }
-
-    /**
-     * Sets the value of the admissionSource property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link AdmissionSource }
-     *     
-     */
-    public void setAdmissionSource(AdmissionSource value) {
-        this.admissionSource = value;
-    }
-
-    /**
-     * Gets the value of the assignedWard property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getAssignedWard() {
-        return assignedWard;
-    }
-
-    /**
-     * Sets the value of the assignedWard property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setAssignedWard(String value) {
-        this.assignedWard = value;
-    }
-
-    /**
-     * Gets the value of the assignedRoom property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getAssignedRoom() {
-        return assignedRoom;
-    }
-
-    /**
-     * Sets the value of the assignedRoom property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setAssignedRoom(String value) {
-        this.assignedRoom = value;
-    }
-
-    /**
-     * Gets the value of the assignedBed property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getAssignedBed() {
-        return assignedBed;
-    }
-
-    /**
-     * Sets the value of the assignedBed property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setAssignedBed(String value) {
-        this.assignedBed = value;
-    }
-
-    /**
-     * Gets the value of the priorWard property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPriorWard() {
-        return priorWard;
-    }
-
-    /**
-     * Sets the value of the priorWard property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPriorWard(String value) {
-        this.priorWard = value;
-    }
-
-    /**
-     * Gets the value of the priorRoom property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPriorRoom() {
-        return priorRoom;
-    }
-
-    /**
-     * Sets the value of the priorRoom property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPriorRoom(String value) {
-        this.priorRoom = value;
-    }
-
-    /**
-     * Gets the value of the priorBed property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPriorBed() {
-        return priorBed;
-    }
-
-    /**
-     * Sets the value of the priorBed property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPriorBed(String value) {
-        this.priorBed = value;
-    }
-
-    /**
-     * Gets the value of the admitReason property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link AdmitReason }
-     *     
-     */
-    public AdmitReason getAdmitReason() {
-        return admitReason;
-    }
-
-    /**
-     * Sets the value of the admitReason property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link AdmitReason }
-     *     
-     */
-    public void setAdmitReason(AdmitReason value) {
-        this.admitReason = value;
-    }
-
-    /**
-     * Gets the value of the healthCareFacility property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link HealthCareFacility }
-     *     
-     */
-    public HealthCareFacility getHealthCareFacility() {
-        return healthCareFacility;
-    }
-
-    /**
-     * Sets the value of the healthCareFacility property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link HealthCareFacility }
-     *     
-     */
-    public void setHealthCareFacility(HealthCareFacility value) {
-        this.healthCareFacility = value;
-    }
-
-    /**
-     * Gets the value of the dischargeLocation property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DischargeLocation }
-     *     
-     */
-    public DischargeLocation getDischargeLocation() {
-        return dischargeLocation;
-    }
-
-    /**
-     * Sets the value of the dischargeLocation property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DischargeLocation }
-     *     
-     */
-    public void setDischargeLocation(DischargeLocation value) {
-        this.dischargeLocation = value;
-    }
-
-    /**
-     * Gets the value of the visitDescription property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getVisitDescription() {
-        return visitDescription;
-    }
-
-    /**
-     * Sets the value of the visitDescription property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setVisitDescription(String value) {
-        this.visitDescription = value;
-    }
-
-    /**
-     * Gets the value of the encounterMRN property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEncounterMRN() {
-        return encounterMRN;
-    }
-
-    /**
-     * Sets the value of the encounterMRN property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEncounterMRN(String value) {
-        this.encounterMRN = value;
-    }
-
-    /**
-     * Gets the value of the healthFunds property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link ArrayOfHealthFundHealthFund }
-     *     
-     */
-    public ArrayOfHealthFundHealthFund getHealthFunds() {
-        return healthFunds;
-    }
-
-    /**
-     * Sets the value of the healthFunds property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link ArrayOfHealthFundHealthFund }
-     *     
-     */
-    public void setHealthFunds(ArrayOfHealthFundHealthFund value) {
-        this.healthFunds = value;
-    }
-
-    /**
-     * Gets the value of the endTime property.
+     * Gets the value of the enteredOn property.
      * 
      * @return
      *     possible object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public XMLGregorianCalendar getEndTime() {
-        return endTime;
+    public XMLGregorianCalendar getEnteredOn() {
+        return enteredOn;
     }
 
     /**
-     * Sets the value of the endTime property.
+     * Sets the value of the enteredOn property.
      * 
      * @param value
      *     allowed object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setEndTime(XMLGregorianCalendar value) {
-        this.endTime = value;
+    public void setEnteredOn(XMLGregorianCalendar value) {
+        this.enteredOn = value;
     }
 
     /**
-     * Gets the value of the separationMode property.
+     * Gets the value of the encType property.
      * 
      * @return
      *     possible object is
-     *     {@link SeparationMode }
+     *     {@link String }
      *     
      */
-    public SeparationMode getSeparationMode() {
-        return separationMode;
+    public String getEncType() {
+        return encType;
     }
 
     /**
-     * Sets the value of the separationMode property.
+     * Sets the value of the encType property.
      * 
      * @param value
      *     allowed object is
-     *     {@link SeparationMode }
+     *     {@link String }
      *     
      */
-    public void setSeparationMode(SeparationMode value) {
-        this.separationMode = value;
+    public void setEncType(String value) {
+        this.encType = value;
     }
 
     /**
-     * Gets the value of the specialties property.
+     * Gets the value of the paymentType property.
      * 
      * @return
      *     possible object is
-     *     {@link ArrayOfCareProviderTypeCareProviderType }
+     *     {@link CodeAndName }
      *     
      */
-    public ArrayOfCareProviderTypeCareProviderType getSpecialties() {
-        return specialties;
+    public CodeAndName getPaymentType() {
+        return paymentType;
     }
 
     /**
-     * Sets the value of the specialties property.
+     * Sets the value of the paymentType property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ArrayOfCareProviderTypeCareProviderType }
+     *     {@link CodeAndName }
      *     
      */
-    public void setSpecialties(ArrayOfCareProviderTypeCareProviderType value) {
-        this.specialties = value;
+    public void setPaymentType(CodeAndName value) {
+        this.paymentType = value;
     }
 
     /**
-     * Gets the value of the recommendationsProvided property.
+     * Gets the value of the isAtHome property.
      * 
      * @return
      *     possible object is
-     *     {@link ArrayOfRecommendationRecommendation }
+     *     {@link Boolean }
      *     
      */
-    public ArrayOfRecommendationRecommendation getRecommendationsProvided() {
-        return recommendationsProvided;
+    public Boolean isIsAtHome() {
+        return isAtHome;
     }
 
     /**
-     * Sets the value of the recommendationsProvided property.
+     * Sets the value of the isAtHome property.
      * 
      * @param value
      *     allowed object is
-     *     {@link ArrayOfRecommendationRecommendation }
+     *     {@link Boolean }
      *     
      */
-    public void setRecommendationsProvided(ArrayOfRecommendationRecommendation value) {
-        this.recommendationsProvided = value;
+    public void setIsAtHome(Boolean value) {
+        this.isAtHome = value;
     }
 
     /**
-     * Gets the value of the expectedAdmitTime property.
+     * Gets the value of the encounterReason property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getEncounterReason() {
+        return encounterReason;
+    }
+
+    /**
+     * Sets the value of the encounterReason property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setEncounterReason(CodeAndName value) {
+        this.encounterReason = value;
+    }
+
+    /**
+     * Gets the value of the facilityDept property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getFacilityDept() {
+        return facilityDept;
+    }
+
+    /**
+     * Sets the value of the facilityDept property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setFacilityDept(CodeAndName value) {
+        this.facilityDept = value;
+    }
+
+    /**
+     * Gets the value of the referralFacility property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getReferralFacility() {
+        return referralFacility;
+    }
+
+    /**
+     * Sets the value of the referralFacility property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setReferralFacility(CodeAndName value) {
+        this.referralFacility = value;
+    }
+
+    /**
+     * Gets the value of the admissionInfo property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Admission }
+     *     
+     */
+    public Admission getAdmissionInfo() {
+        return admissionInfo;
+    }
+
+    /**
+     * Sets the value of the admissionInfo property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Admission }
+     *     
+     */
+    public void setAdmissionInfo(Admission value) {
+        this.admissionInfo = value;
+    }
+
+    /**
+     * Gets the value of the encounterResult property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getEncounterResult() {
+        return encounterResult;
+    }
+
+    /**
+     * Sets the value of the encounterResult property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setEncounterResult(CodeAndName value) {
+        this.encounterResult = value;
+    }
+
+    /**
+     * Gets the value of the encounterOutcome property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getEncounterOutcome() {
+        return encounterOutcome;
+    }
+
+    /**
+     * Sets the value of the encounterOutcome property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setEncounterOutcome(CodeAndName value) {
+        this.encounterOutcome = value;
+    }
+
+    /**
+     * Gets the value of the finalAbilityToWork property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getFinalAbilityToWork() {
+        return finalAbilityToWork;
+    }
+
+    /**
+     * Sets the value of the finalAbilityToWork property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setFinalAbilityToWork(CodeAndName value) {
+        this.finalAbilityToWork = value;
+    }
+
+    /**
+     * Gets the value of the careType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getCareType() {
+        return careType;
+    }
+
+    /**
+     * Sets the value of the careType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setCareType(CodeAndName value) {
+        this.careType = value;
+    }
+
+    /**
+     * Gets the value of the mes property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ArrayOfmesCodeString }
+     *     
+     */
+    public ArrayOfmesCodeString getMes() {
+        return mes;
+    }
+
+    /**
+     * Sets the value of the mes property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ArrayOfmesCodeString }
+     *     
+     */
+    public void setMes(ArrayOfmesCodeString value) {
+        this.mes = value;
+    }
+
+    /**
+     * Gets the value of the recordNumber property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getRecordNumber() {
+        return recordNumber;
+    }
+
+    /**
+     * Sets the value of the recordNumber property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setRecordNumber(String value) {
+        this.recordNumber = value;
+    }
+
+    /**
+     * Gets the value of the fromTime property.
      * 
      * @return
      *     possible object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public XMLGregorianCalendar getExpectedAdmitTime() {
-        return expectedAdmitTime;
+    public XMLGregorianCalendar getFromTime() {
+        return fromTime;
     }
 
     /**
-     * Sets the value of the expectedAdmitTime property.
+     * Sets the value of the fromTime property.
      * 
      * @param value
      *     allowed object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setExpectedAdmitTime(XMLGregorianCalendar value) {
-        this.expectedAdmitTime = value;
+    public void setFromTime(XMLGregorianCalendar value) {
+        this.fromTime = value;
     }
 
     /**
-     * Gets the value of the expectedDischargeTime property.
+     * Gets the value of the toTime property.
      * 
      * @return
      *     possible object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public XMLGregorianCalendar getExpectedDischargeTime() {
-        return expectedDischargeTime;
+    public XMLGregorianCalendar getToTime() {
+        return toTime;
     }
 
     /**
-     * Sets the value of the expectedDischargeTime property.
+     * Sets the value of the toTime property.
      * 
      * @param value
      *     allowed object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setExpectedDischargeTime(XMLGregorianCalendar value) {
-        this.expectedDischargeTime = value;
-    }
-
-    /**
-     * Gets the value of the publicityCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link PublicityCode }
-     *     
-     */
-    public PublicityCode getPublicityCode() {
-        return publicityCode;
-    }
-
-    /**
-     * Sets the value of the publicityCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link PublicityCode }
-     *     
-     */
-    public void setPublicityCode(PublicityCode value) {
-        this.publicityCode = value;
-    }
-
-    /**
-     * Gets the value of the priority property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link EncounterPriority }
-     *     
-     */
-    public EncounterPriority getPriority() {
-        return priority;
-    }
-
-    /**
-     * Sets the value of the priority property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link EncounterPriority }
-     *     
-     */
-    public void setPriority(EncounterPriority value) {
-        this.priority = value;
-    }
-
-    /**
-     * Gets the value of the expectedLOAReturnTime property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public XMLGregorianCalendar getExpectedLOAReturnTime() {
-        return expectedLOAReturnTime;
-    }
-
-    /**
-     * Sets the value of the expectedLOAReturnTime property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
-     */
-    public void setExpectedLOAReturnTime(XMLGregorianCalendar value) {
-        this.expectedLOAReturnTime = value;
-    }
-
-    /**
-     * Gets the value of the diagnosisRelatedGroup property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link DiagnosisRelatedGroup }
-     *     
-     */
-    public DiagnosisRelatedGroup getDiagnosisRelatedGroup() {
-        return diagnosisRelatedGroup;
-    }
-
-    /**
-     * Sets the value of the diagnosisRelatedGroup property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link DiagnosisRelatedGroup }
-     *     
-     */
-    public void setDiagnosisRelatedGroup(DiagnosisRelatedGroup value) {
-        this.diagnosisRelatedGroup = value;
+    public void setToTime(XMLGregorianCalendar value) {
+        this.toTime = value;
     }
 
 }
