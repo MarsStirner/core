@@ -360,7 +360,7 @@ public class BakResult implements BakResultService {
                 final BbtResultOrganism resultOrganism = new BbtResultOrganism();
                 resultOrganism.setActionId(bakPosev.getActionId());
                 resultOrganism.setConcentration(microorganism.getComment());
-                resultOrganism.setOrganismId(mic.getId());
+                resultOrganism.setOrganism(mic);
                 dbBbtResultOrganismBean.add(resultOrganism);
 
                 if (!"".equals(microorganism.getComment())) {

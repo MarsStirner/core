@@ -25,9 +25,9 @@ public class BbtResultOrganism implements Serializable {
     @Column(name = "action_id")
     private Integer actionId;
 
-    @Basic(optional = false)
-    @Column(name = "organism_id")
-    private Integer organismId;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "organism_id", unique = true, nullable = false)
+    private RbMicroorganism organism;
 
     @Basic(optional = false)
     @Column(name = "concentration")
@@ -48,8 +48,8 @@ public class BbtResultOrganism implements Serializable {
         this.actionId = actionId;
     }
 
-    public void setOrganismId(Integer organismId) {
-        this.organismId = organismId;
+    public void setOrganism(RbMicroorganism organismId) {
+        this.organism = organismId;
     }
 
     public void setConcentration(String concentration) {
@@ -64,8 +64,8 @@ public class BbtResultOrganism implements Serializable {
         return actionId;
     }
 
-    public Integer getOrganismId() {
-        return organismId;
+    public RbMicroorganism getOrganism() {
+        return organism;
     }
 
     public String getConcentration() {
@@ -85,7 +85,7 @@ public class BbtResultOrganism implements Serializable {
         final StringBuilder sb = new StringBuilder("BbtResultOrganism{");
         sb.append("id=").append(id);
         sb.append(", actionId=").append(actionId);
-        sb.append(", organismId=").append(organismId);
+        sb.append(", organismId=").append(organism);
         sb.append(", concentration='").append(concentration).append('\'');
         sb.append('}');
         return sb.toString();

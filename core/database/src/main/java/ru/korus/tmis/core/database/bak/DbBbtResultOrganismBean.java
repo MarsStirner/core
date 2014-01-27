@@ -8,7 +8,6 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -46,7 +45,7 @@ public class DbBbtResultOrganismBean implements DbBbtResultOrganismBeanLocal {
     @Override
     public BbtResultOrganism get(Integer organismId, Integer actionId) {
         List<BbtResultOrganism> resultOrganismList =
-                em.createQuery("SELECT a FROM BbtResultOrganism a WHERE a.actionId = :actionId AND a.organismId = :organismId", BbtResultOrganism.class)
+                em.createQuery("SELECT a FROM BbtResultOrganism a WHERE a.actionId = :actionId AND a.organism = :organismId", BbtResultOrganism.class)
                         .setParameter("actionId", actionId)
                         .setParameter("organismId", organismId)
                         .getResultList();
