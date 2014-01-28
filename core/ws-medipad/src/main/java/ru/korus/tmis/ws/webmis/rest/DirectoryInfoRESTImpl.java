@@ -14,8 +14,8 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
-import java.util.ArrayList;
 import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Список REST-сервисов для получения данных из справочников
@@ -174,7 +174,7 @@ public class DirectoryInfoRESTImpl {
     @Produces("application/x-javascript")
     public Object getAllDepartments(@QueryParam("filter[hasBeds]")String hasBeds) {
 
-        Boolean flgBeds =  (hasBeds!=null && hasBeds.indexOf("true")>=0) ? true : false;
+        Boolean flgBeds =  hasBeds!=null && hasBeds.contains("true");
         DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         AllDepartmentsListData data = wsImpl.getAllDepartments(request);
@@ -230,7 +230,7 @@ public class DirectoryInfoRESTImpl {
                                         @QueryParam("filter[display]")String display,
                                         @QueryParam("filter[sex]")int sex) {
 
-        Boolean flgDisplay =  (display!=null && display.indexOf("true")>=0) ? true : false;
+        Boolean flgDisplay =  display!=null && display.contains("true");
         MKBListRequestDataFilter filter = new MKBListRequestDataFilter(mkbId, classId, blockId, code, diagnosis, view, flgDisplay, sex);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         return new JSONWithPadding(wsImpl.getAllMkbs(request, this.auth),this.callback);
@@ -470,7 +470,34 @@ public class DirectoryInfoRESTImpl {
     public Object getLayoutAttributes() {
         return new JSONWithPadding(wsImpl.getLayoutAttributes(),this.callback);
     }
-            //__________________________________________________________________________________________________________________
+
+    /**
+     * Метод получения действия по условию
+     */
+    @GET
+    @Path("/actionsByParams")
+    @Produces("application/x-javascript")
+    public Object getActionByParams(@QueryParam("filter[mnem]") List<String> mnem,
+                                @QueryParam("eventId") int eventId) {
+        DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter(null,
+                eventId,
+                0,
+                null,
+                0,
+                0,
+                null,
+                0,
+                (short)-1,
+                null,
+                mnem,
+                (short)-1);
+
+        DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData, this.auth),this.callback);
+    }
+
+
+    //__________________________________________________________________________________________________________________
     //***********************************   ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ   ***********************************
     //__________________________________________________________________________________________________________________
 
