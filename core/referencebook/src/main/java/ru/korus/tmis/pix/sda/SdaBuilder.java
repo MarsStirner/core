@@ -67,7 +67,7 @@ public class SdaBuilder {
     private static void addEncouter(EventInfo eventInfo, Container res) {
         Encounter encounter = SDAFactory.createEncounter();
         //Идентификатор в МИС
-        encounter.setExtId(eventInfo.getUuid());
+        encounter.setExtId(eventInfo.getI());
 
         //Автор записи
         if(eventInfo.getAutorInfo() != null) {
@@ -586,14 +586,14 @@ public class SdaBuilder {
      * @param epicrisisInfo
      * @return
      */
-    private static Container addepicrisis(Container res, List<EpicrisisInfo> epicrisisInfo) {
+    private static Container addepicrisis(Container res, EventInfo eventInfo, List<EpicrisisInfo> epicrisisInfo) {
         res.setDocuments(new ArrayOfdocumentDocument());
         for (EpicrisisInfo epInfo : epicrisisInfo) {
             final Document doc = new Document();
             boolean addNew = false;
             if (epInfo.getEventUuid() != null) {
                 addNew = true;
-                doc.setEncounterNumber(epInfo.getEventUuid());
+                doc.setEncounterCode(eventInfo.getEventId());
             }
             if (epInfo.getCode() != null && !epInfo.getCode().isEmpty() ||
                     epInfo.getDocName() != null && !epInfo.getDocName().isEmpty()) {
@@ -648,57 +648,67 @@ public class SdaBuilder {
         return res;
     }
 
-    private static Container addDiagnosis(Container res, List<DiagnosisInfo> diagisesInfo) {
+    private static Container addDiagnosis(Container res, EventInfo eventInfo, List<DiagnosisInfo> diagisesInfo) {
         res.setDiagnoses(new ArrayOfdiagnosisDiagnosis());
         for (DiagnosisInfo diagInfo : diagisesInfo) {
-            Diagnosis diagnosis = null;
-            if (diagInfo.getEventUuid() != null) {
-                diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-                diagnosis.setEncounterNumber(diagInfo.getEventUuid());
-            }
-            if (diagInfo.getPersonCreatedId() != null || (diagInfo.getPersonCreatedName() != null && !diagInfo.getPersonCreatedName().isEmpty())) {
-                diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-                User createdPerson = new User();
-                if (diagInfo.getPersonCreatedId() != null) {
-                    createdPerson.setCode(String.valueOf(diagInfo.getPersonCreatedId()));
-                }
-                if (diagInfo.getPersonCreatedName() != null && !diagInfo.getPersonCreatedName().isEmpty()) {
-                    createdPerson.setDescription(diagInfo.getPersonCreatedName());
-                }
-                diagnosis.setEnteredBy(createdPerson);
-            }
-            if (diagInfo.getCreateDate() != null) {
-                diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-                diagnosis.setEnteredOn(diagInfo.getCreateDate());
-            }
-            if (diagInfo.getMkb() != null || (diagInfo.getDiagName() != null && !diagInfo.getDiagName().isEmpty())) {
-                diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-                DiagnosisCode diagCode = new DiagnosisCode();
-                if (diagInfo.getMkb() != null) {
-                    diagCode.setCode(diagInfo.getMkb());
-                }
-                if (diagInfo.getDiagName() != null && !diagInfo.getDiagName().isEmpty()) {
-                    diagCode.setDescription(diagInfo.getDiagName());
-                }
-                diagnosis.setDiagnosis(diagCode);
-            }
-            if (diagInfo.getDiagTypeCode() != null || diagInfo.getDiagTypeName() != null) {
-                diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-                DiagnosisType diagType = new DiagnosisType();
-                if (diagInfo.getDiagTypeCode() != null) {
-                    diagType.setCode(diagInfo.getDiagTypeCode());
-                }
-                if (diagInfo.getDiagTypeName() != null) {
-                    diagType.setDescription(diagInfo.getDiagTypeName());
-                }
-                diagnosis.setDiagnosisType(diagType);
-            }
-
+            Diagnosis diagnosis = toSdaDiagnosis(eventInfo, diagInfo);
             if (diagnosis != null) {
                 res.getDiagnoses().getDiagnosis().add(diagnosis);
             }
         }
         return res;
+    }
+
+    private static Diagnosis toSdaDiagnosis(EventInfo eventInfo, DiagnosisInfo diagInfo) {
+        Diagnosis diagnosis = null;
+        //Идентификатор в МИС
+        if(diagInfo.getDiagId() != null) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            diagnosis.setExtId(diagInfo.getDiagId());
+        }
+        //Идентификатор текущего обращения
+        if (eventInfo.getEventId() != null) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            diagnosis.setEncounterCode(eventInfo.getEventId());
+        }
+        if (diagInfo.getPersonCreatedId() != null || (diagInfo.getPersonCreatedName() != null && !diagInfo.getPersonCreatedName().isEmpty())) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            User createdPerson = new User();
+            if (diagInfo.getPersonCreatedId() != null) {
+                createdPerson.setCode(String.valueOf(diagInfo.getPersonCreatedId()));
+            }
+            if (diagInfo.getPersonCreatedName() != null && !diagInfo.getPersonCreatedName().isEmpty()) {
+                createdPerson.setDescription(diagInfo.getPersonCreatedName());
+            }
+            diagnosis.setEnteredBy(createdPerson);
+        }
+        if (diagInfo.getCreateDate() != null) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            diagnosis.setEnteredOn(diagInfo.getCreateDate());
+        }
+        if (diagInfo.getMkb() != null || (diagInfo.getDiagName() != null && !diagInfo.getDiagName().isEmpty())) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            DiagnosisCode diagCode = new DiagnosisCode();
+            if (diagInfo.getMkb() != null) {
+                diagCode.setCode(diagInfo.getMkb());
+            }
+            if (diagInfo.getDiagName() != null && !diagInfo.getDiagName().isEmpty()) {
+                diagCode.setDescription(diagInfo.getDiagName());
+            }
+            diagnosis.setDiagnosis(diagCode);
+        }
+        if (diagInfo.getDiagTypeCode() != null || diagInfo.getDiagTypeName() != null) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            DiagnosisType diagType = new DiagnosisType();
+            if (diagInfo.getDiagTypeCode() != null) {
+                diagType.setCode(diagInfo.getDiagTypeCode());
+            }
+            if (diagInfo.getDiagTypeName() != null) {
+                diagType.setDescription(diagInfo.getDiagTypeName());
+            }
+            diagnosis.setDiagnosisType(diagType);
+        }
+        return diagnosis;
     }
 
     /**

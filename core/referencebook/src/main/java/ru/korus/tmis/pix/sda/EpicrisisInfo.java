@@ -39,11 +39,6 @@ public class EpicrisisInfo {
     private static final Logger logger = LoggerFactory.getLogger(SdaBuilder.class);
 
     /**
-     * UUID события
-     */
-    private final String eventUuid;
-
-    /**
      * код типа документа (по справочнику типов документов, поддерживаемому в МИС)
      */
     private final String code;
@@ -80,12 +75,12 @@ public class EpicrisisInfo {
      * Отчество
      */
     final private String middleName;
+    /**
+     * Идентификатор текущего обращения
+     */
+    private String eventId;
 
     public EpicrisisInfo(Action action, ClientInfo clientInfo, String orgName, DbActionPropertyBeanLocal apBean) {
-        Event event = action.getEvent();
-        assert event != null;
-        final UUID uuid = event.getUuid();
-        this.eventUuid = uuid != null ? uuid.getUuid() : null;
 
         this.code = action.getActionType().getMnemonic();
         this.docName = action.getActionType().getName();
@@ -169,10 +164,6 @@ public class EpicrisisInfo {
         }
 
         return LET;
-    }
-
-    public String getEventUuid() {
-        return eventUuid;
     }
 
     public String getCode() {

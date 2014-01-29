@@ -22,10 +22,6 @@ import ru.korus.tmis.core.entity.model.UUID;
  * 
  */
 public class DiagnosisInfo {
-    /**
-     * UUID события
-     */
-    private final String eventUuid;
 
     /**
      * Идентификатор врача, зафиксировавшего данные
@@ -62,9 +58,13 @@ public class DiagnosisInfo {
      */
     private final String diagTypeName;
 
-    public DiagnosisInfo(Event event, Diagnosis diagnosis, RbDiagnosisType diagnosisType) {
-        final UUID uuid = event.getUuid();
-        this.eventUuid = uuid != null ? uuid.getUuid() : null;
+    /**
+     * Идентификатор в МИС
+     */
+    private final String diagId;
+
+
+    public DiagnosisInfo(Diagnosis diagnosis, RbDiagnosisType diagnosisType) {
         final Staff person = diagnosis.getPerson();
         this.personCreatedId = person != null ? person.getId() : null;
         this.personCreatedName = person != null ? person.getFullName() : null;
@@ -86,13 +86,7 @@ public class DiagnosisInfo {
         }
         this.diagTypeName = diagTypeName;
         this.diagTypeCode = diagTypeCode;
-    }
-
-    /**
-     * @return the eventUuid
-     */
-    public String getEventUuid() {
-        return eventUuid;
+        this.diagId = String.valueOf(diagnosis.getId());
     }
 
     /**
@@ -136,5 +130,10 @@ public class DiagnosisInfo {
 
     public String getDiagTypeName() {
         return diagTypeName;
+    }
+
+
+    public String getDiagId() {
+        return diagId;
     }
 }
