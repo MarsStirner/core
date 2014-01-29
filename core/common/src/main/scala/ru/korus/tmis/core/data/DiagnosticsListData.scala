@@ -397,6 +397,7 @@ class LaboratoryDiagnosticsListEntry {
    * RbTest -> RbLaboratoryTest -> RbLaboratory
    * @param a Исследование, относительно которого отпределяем имя лаборатории
    * @return Поле labName таблицы rbLaboratory соответствующей лаборатории
+   *         или пустую строку, если лабораторию не удалось достоверно определить
    *
    */
   private def getLabNameByAction(a: Action): String = {
