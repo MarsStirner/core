@@ -5,6 +5,7 @@ import java.util.*;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import com.google.common.collect.Multimap;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
@@ -61,7 +62,7 @@ public class EventInfo {
     private final AdmissionInfo admissionInfo;
     private final CodeNamePair encounterResult;
 
-    public EventInfo(Event event, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
+    public EventInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
         final ru.korus.tmis.core.entity.model.UUID uuid = event.getUuid();
         this.eventUuid = uuid != null ? uuid.getUuid() : null;
         RbRequestType requestType = event.getEventType().getRequestType();
@@ -85,7 +86,7 @@ public class EventInfo {
         financeType = finance == null ? null : new CodeNamePair(finance.getCode(), finance.getName());
         atHome = initAtHome(event.getEventType());//TODO: Impl:  rbScene.name<=rbScene.id<=EventType.scene_id<=EventType.id<=Event.id (если значение содержит "дом" то передаем "true", иначе "false")
         orgStructure = initOrgStructByPerson(event.getExecutor());
-        admissionInfo = new AdmissionInfo(event, dbActionPropertyBeanLocal);
+        admissionInfo = new AdmissionInfo(event, actions, dbActionPropertyBeanLocal);
         encounterResult = event.getResult() == null ? null : new CodeNamePair(event.getResult().getCode(), event.getResult().getName());
     }
 

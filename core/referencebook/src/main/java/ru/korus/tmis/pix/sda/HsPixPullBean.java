@@ -1,8 +1,10 @@
 package ru.korus.tmis.pix.sda;
 
+import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
@@ -19,9 +21,7 @@ import javax.persistence.PersistenceContext;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
 import java.sql.Timestamp;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -51,6 +51,9 @@ public class HsPixPullBean {
 
     @EJB
     DbOrganizationBeanLocal organizationBeanLocal;
+
+    @EJB
+    DbEventBeanLocal dbEventBeanLocal;
 
     @Schedule(hour = "*", minute = "*", second = "30")
     void pullDb() {
@@ -153,7 +156,10 @@ public class HsPixPullBean {
         final HSIntegration hsIntegration = em.find(HSIntegration.class, event.getId());
         try {
             final ClientInfo clientInfo = new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal);
-            final EventInfo eventInfo = new EventInfo(event);
+
+            final HashSet<String> flatCodes = new HashSet<String>(Arrays.asList("recieved", "moving"));
+            final Multimap<String,Action> actionsByTypeCode = dbEventBeanLocal.getActionsByTypeCode(event, flatCodes);
+            final EventInfo eventInfo = new EventInfo(event, actionsByTypeCode, dbActionPropertyBeanLocal);
             port.sendSDA(SdaBuilder.toSda(clientInfo, eventInfo, getAllergies(event), getDiagnosis(event), getEpicrisis(event, clientInfo)));
             hsIntegration.setStatus(HSIntegration.Status.SENDED);
             hsIntegration.setInfo("");
@@ -166,6 +172,10 @@ public class HsPixPullBean {
         } catch (WebServiceException ex) {
             hsIntegration.setInfo(ex.getMessage());
             ex.printStackTrace();
+            em.flush();
+        } catch (CoreException e) {
+            hsIntegration.setInfo(e.getMessage());
+            e.printStackTrace();
             em.flush();
         }
     }
