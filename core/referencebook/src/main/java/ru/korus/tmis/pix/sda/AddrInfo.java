@@ -34,6 +34,35 @@ public class AddrInfo {
      * Код субъекта РФ согласно КЛАДР
      */
     final private String addrStateKladrCode;
+    /**
+     * Район
+     */
+    private final String district;
+
+    /**
+     * Код населенного пункта согласно КЛАДР
+     */
+    private final String addrStreetKladr;
+    /**
+     * Код района (или города субъектного подчинения) согласно КЛАДР
+     */
+    private final String districtKladr;
+    /**
+     * Код населенного пункта согласно КЛАДР
+     */
+    private final String addrCityKladr;
+    /**
+     * Номер дома
+     */
+    private final String house;
+    /**
+     * Номер квартиры
+     */
+    private final String appartment;
+    /**
+     * ОКАТО
+     */
+    private final String okato;
 
     public AddrInfo(ClientAddress homeAddr, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal) {
         String addrCity = null;
@@ -77,6 +106,14 @@ public class AddrInfo {
         this.addrStreet = addrStreet;
         this.addrZip = addrZip;
         this.addrStateKladrCode = addrStateKladrCode;
+
+        district = //TODO
+        districtKladr = //TODO;
+        addrStreetKladr = //TODO;
+        addrCityKladr = //TODO;
+        house = //TODO;
+        appartment = //TODO;
+        okato = //TODO
     }
 
     public String getAddrStreet() {
@@ -97,5 +134,33 @@ public class AddrInfo {
 
     public String getAddrStateKladrCode() {
         return addrStateKladrCode;
+    }
+
+    public String getDistrict() {
+        return district;
+    }
+
+    public String getAddrStreetKladr() {
+        return addrStreetKladr;
+    }
+
+    public String getDistrictKladr() {
+        return districtKladr;
+    }
+
+    public String getAddrCityKladr() {
+        return addrCityKladr;
+    }
+
+    public String getHouse() {
+        return house;
+    }
+
+    public String getAppartment() {
+        return appartment;
+    }
+
+    public String getOkato() {
+        return okato;
     }
 }

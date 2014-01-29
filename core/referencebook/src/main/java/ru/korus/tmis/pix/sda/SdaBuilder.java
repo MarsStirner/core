@@ -494,16 +494,6 @@ public class SdaBuilder {
 
     private static Address toSdaAddr(AddrInfo regAddr) {
         Address addr = null;
-        if (regAddr.getAddrStreet() != null) {
-            addr = getAddrInstance(addr);
-            addr.setStreet(regAddr.getAddrStreet());
-        }
-
-        // Населенный пункт
-        if (regAddr.getAddrCity() != null) {
-            addr = getAddrInstance(addr);
-            addr.setCity(regAddr.getAddrCity());
-        }
 
         // Область/край/республика/... (субъект РФ)
         if (regAddr.getAddrState() != null) {
@@ -511,10 +501,70 @@ public class SdaBuilder {
             addr.setRegion(regAddr.getAddrState());
         }
 
+        //Код субъекта РФ согласно КЛАДР
+        if (regAddr.getAddrStateKladrCode() != null) {
+            addr = getAddrInstance(addr);
+            addr.setRegionKladr(regAddr.getAddrStateKladrCode());
+        }
+
         // Почтовый индекс
         if (regAddr.getAddrZip() != null) {
             addr = getAddrInstance(addr);
             addr.setPostalCode(regAddr.getAddrZip());
+        }
+
+        //Район
+        if (regAddr.getDistrict() != null) {
+            addr = getAddrInstance(addr);
+            addr.setDistrict(regAddr.getDistrict());
+        }
+
+        //Код района (или города субъектного подчинения) согласно КЛАДР
+        if (regAddr.getDistrictKladr() != null) {
+            addr = getAddrInstance(addr);
+            addr.setDistrictKladr(regAddr.getDistrictKladr());
+        }
+
+        //Населенный пункт
+        if (regAddr.getAddrCity() != null) {
+            addr = getAddrInstance(addr);
+            addr.setCity(regAddr.getAddrCity());
+        }
+
+        //Код населенного пункта согласно КЛАДР
+        if(regAddr.getAddrCityKladr() != null) {
+            addr = getAddrInstance(addr);
+            addr.setCityKladr(regAddr.getAddrCityKladr());
+        }
+
+        //Название улицы
+        if (regAddr.getAddrStreet() != null) {
+            addr = getAddrInstance(addr);
+            addr.setStreet(regAddr.getAddrStreet());
+        }
+
+        //Код улицы согласно КЛАДР
+        if (regAddr.getAddrStreetKladr() != null) {
+            addr = getAddrInstance(addr);
+            addr.setStreetKladr(regAddr.getAddrStreetKladr());
+        }
+
+        //Номер дома
+        if (regAddr.getHouse() != null ) {
+            addr = getAddrInstance(addr);
+            addr.setHouse(regAddr.getHouse());
+        }
+
+        //Номер квартиры
+        if (regAddr.getAppartment() != null) {
+            addr = getAddrInstance(addr);
+            addr.setHouse(regAddr.getAppartment());
+        }
+
+        //ОКАТО
+        if (regAddr.getOkato() != null) {
+            addr = getAddrInstance(addr);
+            addr.setHouse(regAddr.getOkato());
         }
 
         return addr;
@@ -601,13 +651,13 @@ public class SdaBuilder {
     private static Container addDiagnosis(Container res, List<DiagnosisInfo> diagisesInfo) {
         res.setDiagnoses(new ArrayOfdiagnosisDiagnosis());
         for (DiagnosisInfo diagInfo : diagisesInfo) {
-            final Diagnosis diagnosis = new Diagnosis();
-            boolean addNew = false;
+            Diagnosis diagnosis = null;
             if (diagInfo.getEventUuid() != null) {
-                addNew = true;
+                diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
                 diagnosis.setEncounterNumber(diagInfo.getEventUuid());
             }
             if (diagInfo.getPersonCreatedId() != null || (diagInfo.getPersonCreatedName() != null && !diagInfo.getPersonCreatedName().isEmpty())) {
+                diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
                 User createdPerson = new User();
                 if (diagInfo.getPersonCreatedId() != null) {
                     createdPerson.setCode(String.valueOf(diagInfo.getPersonCreatedId()));
@@ -616,13 +666,13 @@ public class SdaBuilder {
                     createdPerson.setDescription(diagInfo.getPersonCreatedName());
                 }
                 diagnosis.setEnteredBy(createdPerson);
-                addNew = true;
             }
             if (diagInfo.getCreateDate() != null) {
+                diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
                 diagnosis.setEnteredOn(diagInfo.getCreateDate());
-                addNew = true;
             }
             if (diagInfo.getMkb() != null || (diagInfo.getDiagName() != null && !diagInfo.getDiagName().isEmpty())) {
+                diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
                 DiagnosisCode diagCode = new DiagnosisCode();
                 if (diagInfo.getMkb() != null) {
                     diagCode.setCode(diagInfo.getMkb());
@@ -631,9 +681,9 @@ public class SdaBuilder {
                     diagCode.setDescription(diagInfo.getDiagName());
                 }
                 diagnosis.setDiagnosis(diagCode);
-                addNew = true;
             }
             if (diagInfo.getDiagTypeCode() != null || diagInfo.getDiagTypeName() != null) {
+                diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
                 DiagnosisType diagType = new DiagnosisType();
                 if (diagInfo.getDiagTypeCode() != null) {
                     diagType.setCode(diagInfo.getDiagTypeCode());
@@ -642,10 +692,9 @@ public class SdaBuilder {
                     diagType.setDescription(diagInfo.getDiagTypeName());
                 }
                 diagnosis.setDiagnosisType(diagType);
-                addNew = true;
             }
 
-            if (addNew) {
+            if (diagnosis != null) {
                 res.getDiagnoses().getDiagnosis().add(diagnosis);
             }
         }
