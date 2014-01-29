@@ -26,8 +26,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="docSer" type="{}String" minOccurs="0"/>
  *         &lt;element name="docNum" type="{}String" minOccurs="0"/>
- *         &lt;element name="reason" type="{}CodeNamePair" minOccurs="0"/>
- *         &lt;element name="diagnosis" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="reason" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="diagnosis" type="{}CodeAndName" minOccurs="0"/>
  *         &lt;element name="attendantGender" minOccurs="0">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">

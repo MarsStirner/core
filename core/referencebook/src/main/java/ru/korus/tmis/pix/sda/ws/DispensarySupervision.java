@@ -24,7 +24,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="stopDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
  *         &lt;element name="startedBy" type="{}Employee" minOccurs="0"/>
  *         &lt;element name="stoppedBy" type="{}Employee" minOccurs="0"/>
- *         &lt;element name="stopReason" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="stopReason" type="{}CodeAndName" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>

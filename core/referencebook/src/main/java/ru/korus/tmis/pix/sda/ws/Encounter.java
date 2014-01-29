@@ -32,16 +32,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *             &lt;/restriction>
  *           &lt;/simpleType>
  *         &lt;/element>
- *         &lt;element name="paymentType" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="paymentType" type="{}CodeAndName" minOccurs="0"/>
  *         &lt;element name="isAtHome" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="encounterReason" type="{}CodeNamePair" minOccurs="0"/>
- *         &lt;element name="facilityDept" type="{}CodeNamePair" minOccurs="0"/>
- *         &lt;element name="referralFacility" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="encounterReason" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="facilityDept" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="referralFacility" type="{}CodeAndName" minOccurs="0"/>
  *         &lt;element name="admissionInfo" type="{}Admission" minOccurs="0"/>
- *         &lt;element name="encounterResult" type="{}CodeNamePair" minOccurs="0"/>
- *         &lt;element name="encounterOutcome" type="{}CodeNamePair" minOccurs="0"/>
- *         &lt;element name="finalAbilityToWork" type="{}CodeNamePair" minOccurs="0"/>
- *         &lt;element name="careType" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="encounterResult" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="encounterOutcome" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="finalAbilityToWork" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="careType" type="{}CodeAndName" minOccurs="0"/>
  *         &lt;element name="mes" type="{}ArrayOfmesCodeString" minOccurs="0"/>
  *         &lt;element name="recordNumber" type="{}String" minOccurs="0"/>
  *         &lt;element name="fromTime" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>

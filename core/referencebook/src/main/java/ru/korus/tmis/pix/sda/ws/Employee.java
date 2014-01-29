@@ -21,8 +21,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="code" type="{}String" minOccurs="0"/>
  *         &lt;element name="name" type="{}String" minOccurs="0"/>
  *         &lt;element name="codingSystem" type="{}String" minOccurs="0"/>
- *         &lt;element name="specialty" type="{}CodeNamePair" minOccurs="0"/>
- *         &lt;element name="role" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="specialty" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="role" type="{}CodeAndName" minOccurs="0"/>
  *         &lt;element name="snils" type="{}Snils" minOccurs="0"/>
  *         &lt;element name="familyName" type="{}String" minOccurs="0"/>
  *         &lt;element name="givenName" type="{}String" minOccurs="0"/>

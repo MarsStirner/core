@@ -537,7 +537,7 @@ public class SdaBuilder {
      * @return
      */
     private static Container addepicrisis(Container res, List<EpicrisisInfo> epicrisisInfo) {
-        res.setDocuments(new ArrayOfDocumentDocument());
+        res.setDocuments(new ArrayOfdocumentDocument());
         for (EpicrisisInfo epInfo : epicrisisInfo) {
             final Document doc = new Document();
             boolean addNew = false;
@@ -599,7 +599,7 @@ public class SdaBuilder {
     }
 
     private static Container addDiagnosis(Container res, List<DiagnosisInfo> diagisesInfo) {
-        res.setDiagnoses(new ArrayOfDiagnosisDiagnosis());
+        res.setDiagnoses(new ArrayOfdiagnosisDiagnosis());
         for (DiagnosisInfo diagInfo : diagisesInfo) {
             final Diagnosis diagnosis = new Diagnosis();
             boolean addNew = false;
@@ -658,7 +658,7 @@ public class SdaBuilder {
      * @return
      */
     private static Container addAllergies(Container res, List<AllergyInfo> allergies) {
-        res.setAllergies(new ArrayOfAllergyAllergy());
+        res.setAllergies(new ArrayOfallergyAllergy());
         for (AllergyInfo allergyInfo : allergies) {
             final Allergy allergy = new Allergy();
             boolean addNew = false;

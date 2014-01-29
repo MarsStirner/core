@@ -24,8 +24,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
  *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="allergy" type="{}CodeNamePair" minOccurs="0"/>
- *         &lt;element name="reaction" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="allergy" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="reaction" type="{}CodeAndName" minOccurs="0"/>
  *         &lt;element name="comments" type="{}String" minOccurs="0"/>
  *         &lt;element name="onsetTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *       &lt;/sequence>

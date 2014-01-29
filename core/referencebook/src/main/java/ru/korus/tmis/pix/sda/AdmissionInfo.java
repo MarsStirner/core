@@ -3,6 +3,7 @@ package ru.korus.tmis.pix.sda;
 import com.google.common.collect.Multimap;
 import org.joda.time.DateTime;
 import org.joda.time.Days;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 
 import java.util.HashMap;
@@ -55,6 +56,7 @@ public class AdmissionInfo {
     private final CodeNamePair admissionsThisYear;
 
     public AdmissionInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
+        this.dbActionPropertyBeanLocal = dbActionPropertyBeanLocal;
         final Action recieved = actions.get("recieved").iterator().next();
         final List<CodeNamePair> propsInfoMapRecieved = new LinkedList<CodeNamePair>() {{
             add(IS_URGENT_ADMISSION);
