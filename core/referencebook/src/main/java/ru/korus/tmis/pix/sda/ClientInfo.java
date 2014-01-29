@@ -312,7 +312,7 @@ public class ClientInfo {
         privileges = initPriveleges(client);
         socialStatusList = initSocialStatus(client);
         homeless = initIsFromeSocGroup("БОМЖ");
-        servicemanFamily = initIsFromeSocGroup("Член семьи военнослужащего")
+        servicemanFamily = initIsFromeSocGroup("Член семьи военнослужащего");
         citizenship = initCitizenship(client);
         final RbBloodType bloodType = client.getBloodType();
         bloodGroup = bloodType.getId() > 0 ? bloodType.getCode() : null;

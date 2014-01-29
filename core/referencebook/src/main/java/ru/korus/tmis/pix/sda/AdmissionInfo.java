@@ -88,7 +88,7 @@ public class AdmissionInfo {
         //Лечащий врач
         attendingDoctor = new EmployeeInfo(event.getExecutor());
         //Врач приемного отделения
-        admittingDoctor = new EmployeeInfo(event.getAssigner();
+        admittingDoctor = new EmployeeInfo(event.getAssigner());
     }
 
     private Action getFirstMoving(Multimap<String, Action> actions) {

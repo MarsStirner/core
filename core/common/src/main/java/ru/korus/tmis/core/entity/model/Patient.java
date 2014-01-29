@@ -133,6 +133,12 @@ public class Patient implements Serializable, Cloneable {
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Event> events = new LinkedList<Event>();
 
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    private List<TempInvalid> tempInvalids = new LinkedList<TempInvalid>();
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)//{CascadeType.PERSIST, CascadeType.REMOVE}
+    private List<ClientDocument> clientDocuments = new LinkedList<ClientDocument>();
+
     public List<Event> getEvents() {
         return events;
     }
@@ -143,10 +149,6 @@ public class Patient implements Serializable, Cloneable {
             event.setPatient(this);
         }
     }
-
-
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)//{CascadeType.PERSIST, CascadeType.REMOVE}
-    private List<ClientDocument> clientDocuments = new LinkedList<ClientDocument>();
 
     public List<ClientDocument> getClientDocuments() {
         return this.clientDocuments;

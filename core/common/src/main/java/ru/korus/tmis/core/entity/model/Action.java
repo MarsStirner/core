@@ -651,8 +651,4 @@ public class Action
         }
         dbEnumsById = newDbEnumsById;
     }
-
-    public APValue getActionProppertyByCodeOrName(String code, String name) {
-        for
-    }
 }
