@@ -157,4 +157,18 @@ public class Street
     public String toString() {
         return "ru.korus.tmis.core.database.model.Street[code=" + code + "]";
     }
+
+    public String print() {
+        final StringBuilder sb = new StringBuilder("Street{");
+        sb.append("code='").append(code).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", socr='").append(socr).append('\'');
+        sb.append(", index='").append(index).append('\'');
+        sb.append(", gninmb='").append(gninmb).append('\'');
+        sb.append(", uno='").append(uno).append('\'');
+        sb.append(", ocatd='").append(ocatd).append('\'');
+        sb.append(", infis='").append(infis).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
