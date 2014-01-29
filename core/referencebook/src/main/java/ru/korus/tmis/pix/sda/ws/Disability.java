@@ -34,11 +34,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *           &lt;/simpleType>
  *         &lt;/element>
  *         &lt;element name="isDisabledChild" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="disabilityCause" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="diagnosis" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="disabilityLevel" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="disabilityCause" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="diagnosis" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="disabilityLevel" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="isFirstTime" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="cancelReason" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="cancelReason" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="fromTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="toTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *       &lt;/sequence>

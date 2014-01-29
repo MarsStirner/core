@@ -16,12 +16,12 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="trusteeType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="trusteeType" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="familyName" type="{}String" minOccurs="0"/>
  *         &lt;element name="givenName" type="{}String" minOccurs="0"/>
  *         &lt;element name="middleName" type="{}String" minOccurs="0"/>
- *         &lt;element name="kinship" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="trusteeDocType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="kinship" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="trusteeDocType" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="identityDocument" type="{}IdentityDocument" minOccurs="0"/>
  *         &lt;element name="legalAddress" type="{}Address" minOccurs="0"/>
  *         &lt;element name="actualAddress" type="{}Address" minOccurs="0"/>

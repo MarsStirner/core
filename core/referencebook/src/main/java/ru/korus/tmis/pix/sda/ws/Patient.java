@@ -23,7 +23,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="baseClinic" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="baseClinic" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="snils" type="{}Snils" minOccurs="0"/>
  *         &lt;element name="enp" type="{}Enp" minOccurs="0"/>
  *         &lt;element name="familyName" type="{}String" minOccurs="0"/>
@@ -52,12 +52,12 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *           &lt;/simpleType>
  *         &lt;/element>
  *         &lt;element name="privilege" type="{}Privilege" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="socialStatus" type="{}CodeAndName" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="socialStatus" type="{}CodeNamePair" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="isHomeless" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="isServicemanFamily" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="occupation" type="{}Occupation" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="prevOccupations" type="{}ArrayOfoccupationHistoryEntry" minOccurs="0"/>
- *         &lt;element name="citizenship" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="citizenship" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="identityDocument" type="{}IdentityDocument" minOccurs="0"/>
  *         &lt;element name="prevIdentityDocuments" type="{}ArrayOfidentityDocumentIdentityDocument" minOccurs="0"/>
  *         &lt;element name="birthCertificate" type="{}IdentityDocument" minOccurs="0"/>
@@ -81,10 +81,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="isUnidentified" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="isForeigner" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="inn" type="{}Inn" minOccurs="0"/>
- *         &lt;element name="race" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="maritalStatus" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="race" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="maritalStatus" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="children" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
- *         &lt;element name="levelOfEducation" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="levelOfEducation" type="{}CodeNamePair" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

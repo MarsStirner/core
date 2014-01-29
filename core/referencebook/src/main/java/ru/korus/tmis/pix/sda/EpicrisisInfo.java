@@ -36,7 +36,7 @@ import ru.korus.tmis.core.exception.CoreException;
  */
 public class EpicrisisInfo {
 
-    private static final Logger logger = LoggerFactory.getLogger(PixInfo.class);
+    private static final Logger logger = LoggerFactory.getLogger(SdaBuilder.class);
 
     /**
      * UUID события
@@ -171,65 +171,38 @@ public class EpicrisisInfo {
         return LET;
     }
 
-    /**
-     * @return the eventUuid
-     */
     public String getEventUuid() {
         return eventUuid;
     }
 
-    /**
-     * @return the code
-     */
     public String getCode() {
         return code;
     }
 
-    /**
-     * @return the name
-     */
     public String getDocName() {
         return docName;
     }
 
-    /**
-     * @return the createDate
-     */
     public XMLGregorianCalendar getCreateDate() {
         return createDate;
     }
 
-    /**
-     * @return the text
-     */
     public String getText() {
         return text;
     }
 
-    /**
-     * @return the personCreatedId
-     */
     public Integer getPersonCreatedId() {
         return personCreatedId;
     }
 
-    /**
-     * @return the familyName
-     */
     public String getFamilyName() {
         return familyName;
     }
 
-    /**
-     * @return the givenName
-     */
     public String getGivenName() {
         return givenName;
     }
 
-    /**
-     * @return the middleName
-     */
     public String getMiddleName() {
         return middleName;
     }

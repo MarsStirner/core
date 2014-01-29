@@ -1,13 +1,13 @@
 package ru.korus.tmis.pix.sda;
 
-import java.util.Arrays;
+import java.util.*;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.RbRequestType;
+import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -53,7 +53,15 @@ public class EventInfo {
 
     final private String[] inpatient = { "clinic", "hospital", "stationary" };
 
-    public EventInfo(Event event) {
+    private final EmployeeInfo autorInfo;
+
+    private final CodeNamePair financeType;
+    private final boolean atHome;
+    private final CodeNamePair orgStructure;
+    private final AdmissionInfo admissionInfo;
+    private final CodeNamePair encounterResult;
+
+    public EventInfo(Event event, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
         final ru.korus.tmis.core.entity.model.UUID uuid = event.getUuid();
         this.eventUuid = uuid != null ? uuid.getUuid() : null;
         RbRequestType requestType = event.getEventType().getRequestType();
@@ -72,7 +80,31 @@ public class EventInfo {
         this.orgOid = getOrgOid(event);
         this.type = event.getEventType().getId();
 
+        autorInfo = event.getCreatePerson() == null ? null : new EmployeeInfo(event.getCreatePerson());
+        final RbFinance finance = event.getEventType().getFinance();
+        financeType = finance == null ? null : new CodeNamePair(finance.getCode(), finance.getName());
+        atHome = initAtHome(event.getEventType());//TODO: Impl:  rbScene.name<=rbScene.id<=EventType.scene_id<=EventType.id<=Event.id (если значение содержит "дом" то передаем "true", иначе "false")
+        orgStructure = initOrgStructByPerson(event.getExecutor());
+        admissionInfo = new AdmissionInfo(event, dbActionPropertyBeanLocal);
+        encounterResult = event.getResult() == null ? null : new CodeNamePair(event.getResult().getCode(), event.getResult().getName());
     }
+
+    private CodeNamePair initOrgStructByPerson(Staff executor) {
+        if(executor == null) {
+            return null;
+        }
+        final OrgStructure orgStructure = executor.getOrgStructure();
+        if(orgStructure == null) {
+            return null;
+        }
+        return  new CodeNamePair(orgStructure.getCode(), orgStructure.getName());
+    }
+
+    private boolean initAtHome(EventType event) {
+        //TODO: Impl:  rbScene.name<=rbScene.id<=EventType.scene_id<=EventType.id<=Event.id (если значение содержит "дом" то передаем "true", иначе "false")
+        return false;
+    }
+
     public EventInfo(String defaultOrgShortName ) {
         this.orgName = isEmptyString(defaultOrgShortName) ? ORG_UNKNOWN : defaultOrgShortName;
         eventUuid = null;
@@ -81,6 +113,12 @@ public class EventInfo {
         endDate = null;
         type = null;
         orgOid = null;
+        autorInfo = null;
+        financeType = null;
+        atHome = false;
+        orgStructure = null;
+        admissionInfo = null;
+        encounterResult = null;
     }
 
     /**
@@ -160,4 +198,29 @@ public class EventInfo {
     public String getOrgOid() {
         return orgOid;
     }
+
+    public EmployeeInfo getAutorInfo() {
+        return autorInfo;
+    }
+
+    public CodeNamePair getFinanceType() {
+        return financeType;
+    }
+
+    public boolean isAtHome() {
+        return atHome;
+    }
+
+    public CodeNamePair getOrgStructure() {
+        return orgStructure;
+    }
+
+    public AdmissionInfo getAdmissionInfo() {
+        return admissionInfo;
+    }
+
+    public CodeNamePair getEncounterResult() {
+        return encounterResult;
+    }
+
 }

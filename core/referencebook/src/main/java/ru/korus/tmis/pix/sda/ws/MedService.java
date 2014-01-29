@@ -25,24 +25,24 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
  *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="service" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="standard" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="diagnosis" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="service" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="standard" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="diagnosis" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="quantity" type="{http://www.w3.org/2001/XMLSchema}decimal" minOccurs="0"/>
- *         &lt;element name="unitOfMeasure" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="unitOfMeasure" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="renderedOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="renderedBy" type="{}Employee" minOccurs="0"/>
  *         &lt;element name="description" type="{}String" minOccurs="0"/>
- *         &lt;element name="anesthesia" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="anesthesia" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="complications" type="{}String" minOccurs="0"/>
- *         &lt;element name="servCareType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="typeOper" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="interventionType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="facilityDept" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="careProfile" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="servCareType" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="typeOper" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="interventionType" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="facilityDept" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="careProfile" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="isChildProfile" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="bedProfile" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="servPaymentType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="bedProfile" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="servPaymentType" type="{}CodeNamePair" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

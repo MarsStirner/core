@@ -113,7 +113,7 @@ public class HsPixPullBean {
             final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
             List<DiagnosisInfo> emptyDiag = new LinkedList<DiagnosisInfo>();
             List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
-            port.sendSDA(PixInfo.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(getDefOrgName()), emptyAllergy, emptyDiag, emptyEpi));
+            port.sendSDA(SdaBuilder.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(getDefOrgName()), emptyAllergy, emptyDiag, emptyEpi));
             em.remove(patientToHs);
         } catch (SOAPFaultException ex) {
             patientToHs.setInfo(ex.getMessage());
@@ -154,7 +154,7 @@ public class HsPixPullBean {
         try {
             final ClientInfo clientInfo = new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal);
             final EventInfo eventInfo = new EventInfo(event);
-            port.sendSDA(PixInfo.toSda(clientInfo, eventInfo, getAllergies(event), getDiagnosis(event), getEpicrisis(event, clientInfo)));
+            port.sendSDA(SdaBuilder.toSda(clientInfo, eventInfo, getAllergies(event), getDiagnosis(event), getEpicrisis(event, clientInfo)));
             hsIntegration.setStatus(HSIntegration.Status.SENDED);
             hsIntegration.setInfo("");
             em.flush();

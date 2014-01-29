@@ -120,8 +120,11 @@ public class Patient implements Serializable, Cloneable {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
-//    @Transient
     private UUID uuid;
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    private List<ClientSocStatus> clientSocStatuses = new LinkedList<ClientSocStatus>();
+
 
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
@@ -348,10 +351,6 @@ public class Patient implements Serializable, Cloneable {
         }
     }
 
-
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
-    private List<ClientSocStatus> clientSocStatuses = new LinkedList<ClientSocStatus>();
-
     public List<ClientSocStatus> getClientSocStatuses() {
         return clientSocStatuses;
     }
@@ -372,10 +371,6 @@ public class Patient implements Serializable, Cloneable {
             socStatus.setPatient(this);
         }
     }
-
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
-    private List<TempInvalid> tempInvalids = new LinkedList<TempInvalid>();
-
 
     public List<TempInvalid> getTempInvalids() {
         return tempInvalids;

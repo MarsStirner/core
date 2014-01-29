@@ -19,12 +19,12 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *     &lt;extension base="{}BaseSerial">
  *       &lt;sequence>
  *         &lt;element name="organizationName" type="{}String" minOccurs="0"/>
- *         &lt;element name="organizationType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="organizationType" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="position" type="{}String" minOccurs="0"/>
  *         &lt;element name="profession" type="{}String" minOccurs="0"/>
- *         &lt;element name="laborType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="socialProfessionalGroup" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="okved" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="laborType" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="socialProfessionalGroup" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="okved" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="startedOn" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
  *         &lt;element name="harmfulConditions" type="{}String" minOccurs="0"/>
  *         &lt;element name="dayDuration" type="{}String" minOccurs="0"/>

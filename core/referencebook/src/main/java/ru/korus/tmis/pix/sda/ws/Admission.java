@@ -19,17 +19,17 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;extension base="{}BaseSerial">
  *       &lt;sequence>
  *         &lt;element name="isUrgentAdmission" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="timeAfterFallingIll" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="transportType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="department" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="finalDepartment" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="timeAfterFallingIll" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="transportType" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="department" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="finalDepartment" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="ward" type="{}String" minOccurs="0"/>
  *         &lt;element name="bedDayCount" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
  *         &lt;element name="admittingDoctor" type="{}Employee" minOccurs="0"/>
  *         &lt;element name="attendingDoctor" type="{}Employee" minOccurs="0"/>
- *         &lt;element name="admissionReferral" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="priorityCode" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="admissionsThisYear" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="admissionReferral" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="priorityCode" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="admissionsThisYear" type="{}CodeNamePair" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>

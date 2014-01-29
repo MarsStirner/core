@@ -24,9 +24,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
  *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="diagnosis" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="diagnosisType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="diagnosisKind" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="diagnosis" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="diagnosisType" type="{}CodeNamePair" minOccurs="0"/>
+ *         &lt;element name="diagnosisKind" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="replacedExtId" type="{}String" minOccurs="0"/>
  *         &lt;element name="acuteOrChronic" minOccurs="0">
  *           &lt;simpleType>
@@ -39,7 +39,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="onsetTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="isFirstTime" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="dispensarySupervision" type="{}DispensarySupervision" minOccurs="0"/>
- *         &lt;element name="traumaType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="traumaType" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="admissionsThisYear" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>

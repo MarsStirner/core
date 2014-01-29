@@ -18,14 +18,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;extension base="{}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="insuranceCompany" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="insuranceCompany" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="insuranceCompanyOkato" type="{}String" minOccurs="0"/>
- *         &lt;element name="policyType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="policyType" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="policySer" type="{}String" minOccurs="0"/>
  *         &lt;element name="policyNum" type="{}String" minOccurs="0"/>
  *         &lt;element name="effectiveDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
  *         &lt;element name="expirationDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
- *         &lt;element name="insuranceCompanyKladr" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="insuranceCompanyKladr" type="{}CodeNamePair" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>

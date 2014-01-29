@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database.common;
 
+import com.google.common.collect.Multimap;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
@@ -25,6 +26,16 @@ public interface DbEventBeanLocal {
      * @see Event
      */
     Event getEventById(int id) throws CoreException;
+
+    /**
+     * Получение действий для обращения по списку flatCodes
+     * @param event
+     * @param codes
+     * @return
+     * @throws CoreException
+     */
+    Multimap<String, Action> getActionsByTypeCode(Event event, Set<String> codes)
+            throws CoreException;
 
     void setExecPersonForEventWithId(int eventId, Staff execPerson) throws CoreException;
 

@@ -18,7 +18,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;extension base="{}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="docType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="docType" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="docSer" type="{}String" minOccurs="0"/>
  *         &lt;element name="docNum" type="{}String" minOccurs="0"/>
  *         &lt;element name="docDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>

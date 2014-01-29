@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;extension base="{}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="category" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="category" type="{}CodeNamePair" minOccurs="0"/>
  *         &lt;element name="document" type="{}PrivilegeDocument" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
