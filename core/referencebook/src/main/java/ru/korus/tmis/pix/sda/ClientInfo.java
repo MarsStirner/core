@@ -3,6 +3,7 @@ package ru.korus.tmis.pix.sda;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -314,8 +315,8 @@ public class ClientInfo {
         homeless = initIsFromeSocGroup("БОМЖ");
         servicemanFamily = initIsFromeSocGroup("Член семьи военнослужащего");
         citizenship = initCitizenship(client);
-        final RbBloodType bloodType = client.getBloodType();
-        bloodGroup = bloodType.getId() > 0 ? bloodType.getCode() : null;
+        //final RbBloodType bloodType = client.getBloodType();
+        //bloodGroup = bloodType.getId() > 0 ? bloodType.getCode() : null;
     }
 
     private CodeNamePair initCitizenship(Patient client) {
