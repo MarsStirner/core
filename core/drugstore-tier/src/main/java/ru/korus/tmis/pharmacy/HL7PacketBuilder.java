@@ -421,12 +421,12 @@ public final class HL7PacketBuilder {
         //номер версии
         final Integer version = prescriptionSendingRes.getVersion() == null ? 1 : (prescriptionSendingRes.getVersion() + 1);
         //uuid в 1С. Если новый интервал то должен быть равен null
-        final String uuid = prescriptionSendingRes.getUuid();
+        //final String uuid = prescriptionSendingRes.getUuid();
         //Врач, назначивший ЛС
         final Staff executorStaff = action.getExecutor();
 
         final POCDMT000040ClinicalDocument clinicalDocument =
-                getClinicalDocument(prescriptionInfo, client, organisation, executorStaff, uuid, version);
+                getClinicalDocument(prescriptionInfo, client, organisation, executorStaff,  version);
         final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
         toLog.add("prepare inner document... \n\n #", innerDocument);
 
@@ -496,7 +496,6 @@ public final class HL7PacketBuilder {
             final Patient client,
             final Organisation organisation,
             final Staff executorStaff,
-            String uuid,
             Integer version) {
 
         final POCDMT000040ClinicalDocument clinicalDocument = FACTORY_HL7.createPOCDMT000040ClinicalDocument();
@@ -506,7 +505,7 @@ public final class HL7PacketBuilder {
         root.setExtension("POCD_HD000040");
         root.setRoot("2.16.840.1.113883.1.3");
         clinicalDocument.setTypeId(root);
-        clinicalDocument.setId(createII(uuid == null ? prescriptionInfo.getUuidDocument() : uuid));
+        clinicalDocument.setId(createII(prescriptionInfo.getUuidDocument()));
 
         clinicalDocument.setCode(createCE("18610-6", "2.16.840.1.113883.6.1", "LOINC", "MEDICATION ADMINISTERED"));
         clinicalDocument.setEffectiveTime(createTS(prescriptionInfo.getCreateDatetime(), DATE_FORMAT));
