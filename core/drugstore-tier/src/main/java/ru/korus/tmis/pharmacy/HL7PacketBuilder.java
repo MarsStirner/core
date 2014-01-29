@@ -22,7 +22,6 @@ import java.io.IOException;
 import java.io.StringWriter;
 import java.math.BigInteger;
 import java.util.Date;
-import java.util.List;
 import java.util.UUID;
 
 /**
@@ -597,12 +596,14 @@ public final class HL7PacketBuilder {
             section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, type, negationInd, prescrUUID, financeType));
         }*/
         for (PrescriptionInfo.IntervalInfo curInterval : prescriptionInfo.getIntervalInfoList() )  {
-            for(PrescriptionInfo.ComponentInfo curComp : curInterval.getComponentInfoList()) {
-                if( (curInterval.isPrescription() && !curInterval.getStatus().equals(PrescriptionStatus.PS_CANCELED)) ||
-                    (!curInterval.isPrescription() && curInterval.getStatus().equals(PrescriptionStatus.PS_FINISHED))) {
-                    final POCDMT000040Entry entry = createEntry(curInterval, curComp, prescriptionInfo);
-                    section.getEntry().add(entry);
-                }
+            if (curInterval.isPrescription()) {
+                addEntries(prescriptionInfo, section, curInterval);
+            }
+        }
+
+        for (PrescriptionInfo.IntervalInfo curInterval : prescriptionInfo.getIntervalInfoList() )  {
+            if (!curInterval.isPrescription()) {
+                addEntries(prescriptionInfo, section, curInterval);
             }
         }
 
@@ -618,6 +619,16 @@ public final class HL7PacketBuilder {
         clinicalDocument.setVersionNumber(intValue);
 
         return clinicalDocument;
+    }
+
+    private static void addEntries(PrescriptionInfo prescriptionInfo, POCDMT000040Section section, PrescriptionInfo.IntervalInfo curInterval) {
+        for(PrescriptionInfo.ComponentInfo curComp : curInterval.getComponentInfoList()) {
+            if( (curInterval.isPrescription() && !curInterval.getStatus().equals(PrescriptionStatus.PS_CANCELED)) ||
+                (!curInterval.isPrescription() && curInterval.getStatus().equals(PrescriptionStatus.PS_FINISHED))) {
+                final POCDMT000040Entry entry = createEntry(curInterval, curComp, prescriptionInfo);
+                section.getEntry().add(entry);
+            }
+        }
     }
 
     private static SXCMTS createSXCMTS(TS begDate, TS endDate) {
