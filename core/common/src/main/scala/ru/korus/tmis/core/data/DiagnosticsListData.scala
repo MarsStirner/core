@@ -1,11 +1,11 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.util.{LinkedList, Date}
 import java.{lang => jl}
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.entity.model.{JobTicket, ActionStatus, Staff, Action}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.filter.AbstractListDataFilter
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.scala.util.ConfigManager
@@ -348,12 +348,6 @@ class LaboratoryDiagnosticsListEntry {
   @BeanProperty
   var id: Int = _ //Ид действия
 
-  //@BeanProperty
-  //var directionDate: Date = _ //Дата направления
-
-  //@BeanProperty
-  //var diagnosticDate: Date = _ //Дата диагностики   (выполнения)
-
   @BeanProperty
   var plannedEndDate: Date = _ //Дата направления (Дата забора БМ)
 
@@ -378,14 +372,12 @@ class LaboratoryDiagnosticsListEntry {
   @BeanProperty
   var isEditable: Boolean = _ //Признак возможности редактирования
 
-  //@BeanProperty
-  //var toOrder: Boolean = _ //Дозаказ  (не используется)
+  @BeanProperty
+  var laboratoryTitle: String = _ //Имя лаборатории
 
   def this(action: Action, jt: JobTicket, authData: AuthData) {
     this()
     this.id = action.getId.intValue()
-    //this.diagnosticDate = action.getEndDate
-    //this.directionDate = action.getBegDate //getDirectionDate
     this.plannedEndDate = action.getPlannedEndDate
     this.diagnosticName = new IdNameContainer(action.getActionType.getId.intValue, action.getActionType.getName)
     this.assignPerson = new DoctorContainer(action.getAssigner)
@@ -396,8 +388,35 @@ class LaboratoryDiagnosticsListEntry {
     val isTrueDoctor = (authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue() ||
                         authData.getUser.getId.intValue() == action.getAssigner.getId.intValue() )
     this.isEditable = (action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
-    //this.toOrder = action.getToOrder
+    laboratoryTitle = getLabNameByAction(action)
   }
+
+  /**
+   * Получаем имя лаборатории по исследованию
+   * Связь достаточно хитрая - ActionProperty -> ActionPropertyType.test_id ->
+   * RbTest -> RbLaboratoryTest -> RbLaboratory
+   * @param a Исследование, относительно которого отпределяем имя лаборатории
+   * @return Поле labName таблицы rbLaboratory соответствующей лаборатории
+   *
+   */
+  private def getLabNameByAction(a: Action): String = {
+    val labs = a.getActionProperties.map(ap => {
+      if(
+        ap.getType.getTest != null && ap.getType.getIsAssignable &&      // Поле test_id заполнено (как и таблица rbTest) и поставлен флаг is_Assignable
+        ap.getType.getTest.getRbLaboratoryTest != null &&                // Заполнена таблица rbLaboratory_Test
+        ap.getType.getTest.getRbLaboratoryTest.getRbLaboratory != null)  // Заполнена таблица rbLaboratory
+        Some(ap.getType.getTest.getRbLaboratoryTest.getRbLaboratory)
+      else
+        None
+    }).flatten
+
+    val names = labs.groupBy(_.getLabName)
+    if(names.size == 1)
+      names.head._1
+    else
+      ""
+  }
+
 }
 
 @XmlType(name = "instrumentalDiagnosticsListEntry")
