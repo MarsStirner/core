@@ -1,6 +1,6 @@
 package ru.korus.tmis.ws.impl
 
-import _root_.ru.korus.tmis.core.patient.SeventhFormBeanLocal
+import scala.collection.JavaConverters._
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
 import org.codehaus.jackson.map.ObjectMapper
@@ -1247,7 +1247,7 @@ class WebMisRESTImpl  extends WebMisREST
     if (result == null)
       new Object()
     else
-      result
+      result.map(x => new ContractContainer(x)).asJava
 
   }
 
