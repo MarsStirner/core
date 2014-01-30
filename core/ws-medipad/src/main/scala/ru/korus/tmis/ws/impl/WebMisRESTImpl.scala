@@ -1238,6 +1238,19 @@ class WebMisRESTImpl  extends WebMisREST
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
 
+  def getContracts(eventTypeId: Int, showDeleted: Boolean, showExpired: Boolean) = {
+    if(eventTypeId < 1)
+      throw new CoreException("Идентификатор типа события не может быть меньше 1")
+
+    val e = dbEventTypeBean.getEventTypeById(eventTypeId)
+    val result = dbContractBean.getContractsByEventTypeId(eventTypeId, e.getFinance.getId, showDeleted, showExpired)
+    if (result == null)
+      new Object()
+    else
+      result
+
+  }
+
   def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
     patientBean.getCurrentPatientsByDepartmentId(departmentId)
   }
