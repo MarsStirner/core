@@ -568,23 +568,25 @@ class AppealBean extends AppealBeanLocal
   @throws(classOf[CoreException])
   def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {   //для создания ид пациента, для редактирование ид обращения
 
-    if (authData==null){
-      throw new CoreException("Mетод для изменения обращения по госпитализации не доступен для неавторизованного пользователя.")
-      return null
-    }
+    if (authData==null)
+      throw new CoreException(i18n("error.appeal.create.NoAuthData"))
+
 
     var event: Event = null
     if (flgCreate) {            //Создаем новое
       if (id <= 0) {
-        throw new CoreException("Невозможно создать госпитализацию. Пациент не установлен.")
-        return null
+        throw new CoreException(i18n("error.appeal.create.InvalidPatientData").format(id))
       }
+
       if (appealData.data.appealType==null ||
         appealData.data.appealType.eventType==null ||
         appealData.data.appealType.eventType.getId<=0){
-        throw new CoreException("Невозможно создать госпитализацию. Не задан тип обращения.")
-        return null
+        throw new CoreException(i18n("error.appeal.create.NoAppealType"))
       }
+
+      if(appealData.data.contract == null || appealData.data.contract.getId < 1)
+        throw new CoreException(i18n("error.appeal.create.InvalidContractData"))
+
       event = dbEventBean.createEvent(id,
                                     //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
                                     appealData.data.appealType.eventType.getId,
