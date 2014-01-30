@@ -307,6 +307,9 @@ class AppealBean extends AppealBeanLocal
       if (lockId>0) appLock.releaseLock(lockId)
     }
 
+    // Устанавливаем договор
+
+
     if (!flgCreate){
       //Редактирование обращения (В случае если изменен НИБ)
       var flgEventRewrite = true
@@ -417,6 +420,9 @@ class AppealBean extends AppealBeanLocal
     dbManager.mergeAll(mergedItems)
     dbManager.persistAll(persistedItems)
     //
+
+    //
+
     newEvent.getId.intValue()
   }
 
@@ -585,6 +591,7 @@ class AppealBean extends AppealBeanLocal
                                     //dbEventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
                                     appealData.data.rangeAppealDateTime.getStart(),
                                     /*appealData.data.rangeAppealDateTime.getEnd()*/null,
+                                    appealData.getData.getContract.getId,
                                     authData)
     }
     else {                      //Редактирование
