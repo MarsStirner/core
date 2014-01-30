@@ -62,6 +62,11 @@ public class EventInfo {
     private final AdmissionInfo admissionInfo;
     private final CodeNamePair encounterResult;
 
+    /**
+     * Идентификатор текущего обращения
+     */
+    private final String eventId;
+
     public EventInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
         final ru.korus.tmis.core.entity.model.UUID uuid = event.getUuid();
         this.eventUuid = uuid != null ? uuid.getUuid() : null;
@@ -88,6 +93,7 @@ public class EventInfo {
         orgStructure = initOrgStructByPerson(event.getExecutor());
         admissionInfo = new AdmissionInfo(event, actions, dbActionPropertyBeanLocal);
         encounterResult = event.getResult() == null ? null : new CodeNamePair(event.getResult().getCode(), event.getResult().getName());
+        eventId = String.valueOf(event.getId());
     }
 
     private CodeNamePair initOrgStructByPerson(Staff executor) {
@@ -120,6 +126,7 @@ public class EventInfo {
         orgStructure = null;
         admissionInfo = null;
         encounterResult = null;
+        eventId = null;
     }
 
     /**
@@ -224,4 +231,7 @@ public class EventInfo {
         return encounterResult;
     }
 
+    public String getEventId() {
+        return eventId;
+    }
 }

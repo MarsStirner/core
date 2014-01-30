@@ -210,7 +210,7 @@ public class HsPixPullBean {
                 em.createQuery("SELECT d FROM Diagnostic d WHERE d.event.id = :eventId AND d.deleted = 0 AND d.diagnosis IS NOT NULL", Diagnostic.class)
                         .setParameter("eventId", event.getId()).getResultList();
         for (Diagnostic diagnostic : diagnostics) {
-            res.add(new DiagnosisInfo(event, diagnostic.getDiagnosis(), diagnostic.getDiagnosisType()));
+            res.add(new DiagnosisInfo(diagnostic));
         }
         return res;
     }

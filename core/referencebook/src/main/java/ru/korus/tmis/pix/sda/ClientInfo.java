@@ -7,6 +7,7 @@ import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -92,6 +93,16 @@ public class ClientInfo {
     final private DocInfo passport;
     final private InsuranceInfo omsInfo;
 
+    /**
+     * Группа крови
+     */
+    private final String bloodGroup;
+
+    /**
+     * Резус фактор
+     */
+    private final Boolean bloodRhesus;
+
     public InsuranceInfo getDmsInfo() {
         return dmsInfo;
     }
@@ -137,6 +148,14 @@ public class ClientInfo {
 
     public InsuranceInfo getOmsInfo() {
         return omsInfo;
+    }
+
+    public String getBloodGroup() {
+        return bloodGroup;
+    }
+
+    public Boolean getBloodRhesus() {
+        return bloodRhesus;
     }
 
     /**
@@ -312,11 +331,16 @@ public class ClientInfo {
 
         privileges = initPriveleges(client);
         socialStatusList = initSocialStatus(client);
-        homeless = initIsFromeSocGroup("БОМЖ");
-        servicemanFamily = initIsFromeSocGroup("Член семьи военнослужащего");
+        homeless = initIsFromeSocGroup(client, "БОМЖ");
+        servicemanFamily = initIsFromeSocGroup(client, "Член семьи военнослужащего");
         citizenship = initCitizenship(client);
-        //final RbBloodType bloodType = client.getBloodType();
-        //bloodGroup = bloodType.getId() > 0 ? bloodType.getCode() : null;
+        final RbBloodType bloodType = client.getBloodType();
+        final List<String> supportedBloodGroupCode = Arrays.asList("1", "2", "3", "4");
+        bloodGroup = bloodType == null ? null : (
+                 supportedBloodGroupCode.contains(bloodType.getCode().substring(0, 1)) ? bloodType.getCode().substring(0, 1) : null ) ;
+        final List<String> supportedBloodRhesusCode = Arrays.asList("+", "-");
+        bloodRhesus = bloodType == null ? null : (
+                  supportedBloodRhesusCode.contains(bloodType.getCode().substring(1, 2)) ? "+".equals(bloodType.getCode().substring(1, 2)) : null) ;
     }
 
     private CodeNamePair initCitizenship(Patient client) {
@@ -330,7 +354,7 @@ public class ClientInfo {
         return res;
     }
 
-    static private  XMLGregorianCalendar getXmlGregorianCalendar(Date birthDate) {
+    protected static XMLGregorianCalendar getXmlGregorianCalendar(Date birthDate) {
         XMLGregorianCalendar birth = null;
         if (birthDate != null) {
             try {

@@ -7,14 +7,14 @@ package ru.korus.tmis.pix.sda;
  * Description:  <br>
  */
 
-import java.util.List;
-
 import ru.korus.tmis.pix.sda.ws.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.registry.infomodel.Organization;
+import java.util.List;
 
 /**
- * 
+ *
  */
 public class SdaBuilder {
 
@@ -30,10 +30,11 @@ public class SdaBuilder {
     private static ru.korus.tmis.pix.sda.ws.ObjectFactory SDAFactory = new ru.korus.tmis.pix.sda.ws.ObjectFactory();
 
     static public Container toSda(ClientInfo clientInfo,
-            EventInfo eventInfo,
-            List<AllergyInfo> allergies,
-            List<DiagnosisInfo> diagnosesInfo,
-            List<EpicrisisInfo> epicrisisInfo) {
+                                  EventInfo eventInfo,
+                                  List<AllergyInfo> allergies,
+                                  List<DiagnosisInfo> diagnosesInfo,
+                                  List<DisabilitiesInfo> disabilitiesInfo,
+                                  List<EpicrisisInfo> epicrisisInfo) {
         Container res = new Container();
 
         // Уникальный идентификатор пациента в МИС и краткое наименование ЛПУ
@@ -49,16 +50,23 @@ public class SdaBuilder {
             addEncouter(eventInfo, res);
         }
 
+        //Раздел "Диагнозы"
+        if (!diagnosesInfo.isEmpty()) {
+            res = addDiagnosis(res, eventInfo, diagnosesInfo);
+        }
+
+        //Раздел "Инвалидность"
+        if (!disabilitiesInfo.isEmpty()) {
+            res = addDisabilities(res, disabilitiesInfo);
+        }
+
         if (!allergies.isEmpty()) {
             res = addAllergies(res, allergies);
         }
 
-        if (!diagnosesInfo.isEmpty()) {
-            res = addDiagnosis(res, diagnosesInfo);
-        }
 
         if (!epicrisisInfo.isEmpty()) {
-            res = addepicrisis(res, epicrisisInfo);
+            res = addepicrisis(res, eventInfo, epicrisisInfo);
         }
 
         return res;
@@ -70,9 +78,9 @@ public class SdaBuilder {
         encounter.setExtId(eventInfo.getI());
 
         //Автор записи
-        if(eventInfo.getAutorInfo() != null) {
+        if (eventInfo.getAutorInfo() != null) {
             Employee autor = toSdaEmployee(eventInfo.getAutorInfo());
-            if(autor != null) {
+            if (autor != null) {
                 encounter.setEnteredBy(autor);
             }
         }
@@ -92,7 +100,7 @@ public class SdaBuilder {
         encounter.setEncType(eventInfo.isInpatient() ? "I" : "O");
 
         //Вид оплаты (ОМС, бюджет, платные услуги, ДМС, ...)
-        if(eventInfo.getFinanceType() != null) {
+        if (eventInfo.getFinanceType() != null) {
             encounter.setPaymentType(getCodeAndName(eventInfo.getFinanceType(), "1.2.643.5.1.13.2.1.1.528"));
         }
 
@@ -100,17 +108,17 @@ public class SdaBuilder {
         encounter.setIsAtHome(eventInfo.isAtHome());
 
         //Подразделение МО лечения из регионального справочника
-        if(eventInfo.getOrgStructure() != null) {
+        if (eventInfo.getOrgStructure() != null) {
             encounter.setFacilityDept(getCodeAndName(eventInfo.getOrgStructure(), null));
         }
 
         //Данные о госпитализации
-        if(eventInfo.getAdmissionInfo() != null ) {
+        if (eventInfo.getAdmissionInfo() != null) {
             encounter.setAdmissionInfo(toSdaAdmission(eventInfo.getAdmissionInfo()));
         }
 
         //Результат обращения/госпитализации
-        if(eventInfo.getEncounterResult() != null) {
+        if (eventInfo.getEncounterResult() != null) {
             encounter.setEncounterResult(getCodeAndName(eventInfo.getEncounterResult(), "1.2.643.5.1.13.2.1.1.551"));
         }
 
@@ -123,43 +131,43 @@ public class SdaBuilder {
         //Доставлен в стационар по экстренным показаниям
         res.setIsUrgentAdmission(admissionInfo.isUrgent());
         //Время, прошедшее c начала заболевания (получения травмы) до госпитализации
-        if(admissionInfo.getTimeAftreFalling() != null ) {
-            res.setTimeAfterFallingIll(getCodeAndName(admissionInfo.getTimeAftreFalling(),"1.2.643.5.1.13.2.1.1.537"));
+        if (admissionInfo.getTimeAftreFalling() != null) {
+            res.setTimeAfterFallingIll(getCodeAndName(admissionInfo.getTimeAftreFalling(), "1.2.643.5.1.13.2.1.1.537"));
         }
         //Виды транспортировки (на каталке, на кресле, может идти)
-        if(admissionInfo.getTransportType() != null) {
+        if (admissionInfo.getTransportType() != null) {
             res.setTransportType(getCodeAndName(admissionInfo.getTransportType(), null));
         }
         //Отделение
-        if(admissionInfo.getDepartment() != null) {
+        if (admissionInfo.getDepartment() != null) {
             res.setDepartment(getCodeAndName(admissionInfo.getDepartment(), null));
         }
         //Переведен в отделение
-        if(admissionInfo.getFinalDepartment() != null) {
+        if (admissionInfo.getFinalDepartment() != null) {
             res.setFinalDepartment(getCodeAndName(admissionInfo.getFinalDepartment(), null));
         }
         //Палата
-        if(admissionInfo.getWard() != null) {
+        if (admissionInfo.getWard() != null) {
             res.setWard(admissionInfo.getWard());
         }
         //Проведено койко-дней в стационаре
-        if(admissionInfo.getBedDayCount() != null) {
+        if (admissionInfo.getBedDayCount() != null) {
             res.setBedDayCount(admissionInfo.getBedDayCount());
         }
         //Врач приемного отделения
-        if(admissionInfo.getAdmittingDoctor() != null) {
+        if (admissionInfo.getAdmittingDoctor() != null) {
             res.setAttendingDoctor(toSdaEmployee(admissionInfo.getAttendingDoctor()));
         }
         //Лечащий врач
-        if(admissionInfo.getAttendingDoctor() != null) {
+        if (admissionInfo.getAttendingDoctor() != null) {
             res.setAttendingDoctor(toSdaEmployee(admissionInfo.getAttendingDoctor()));
         }
         //Кем доставлен
-        if(admissionInfo.getAdmissionReferral() != null) {
+        if (admissionInfo.getAdmissionReferral() != null) {
             res.setAdmissionReferral(getCodeAndName(admissionInfo.getAdmissionReferral(), "1.2.643.5.1.13.2.1.1.281"));
         }
         //Кол-во госпитализации в текущем году
-        if(admissionInfo.getAdmissionsThisYear() != null) {
+        if (admissionInfo.getAdmissionsThisYear() != null) {
             res.setAdmissionsThisYear(getCodeAndName(admissionInfo.getAdmissionsThisYear(), "1.2.643.5.1.13.2.1.1.109"));
         }
 
@@ -169,37 +177,37 @@ public class SdaBuilder {
     private static Employee toSdaEmployee(EmployeeInfo autorInfo) {
         Employee res = null;
         //Код врача
-        if(autorInfo.getCode() != null) {
+        if (autorInfo.getCode() != null) {
             res = res == null ? SDAFactory.createEmployee() : res;
             res.setCode(autorInfo.getCode());
         }
         //Специальность
-        if(autorInfo.getSpesialty() != null) {
+        if (autorInfo.getSpesialty() != null) {
             res = res == null ? SDAFactory.createEmployee() : res;
             res.setSpecialty(getCodeAndName(autorInfo.getSpesialty(), "1.2.643.5.1.13.2.1.1.181"));
         }
         //Должность
-        if(autorInfo.getRole() != null) {
+        if (autorInfo.getRole() != null) {
             res = res == null ? SDAFactory.createEmployee() : res;
             res.setRole(getCodeAndName(autorInfo.getRole(), "1.2.643.5.1.13.2.1.1.607"));
         }
         //Снилс
-        if(autorInfo.getSnils() != null) {
+        if (autorInfo.getSnils() != null) {
             res = res == null ? SDAFactory.createEmployee() : res;
             res.setSnils(autorInfo.getSnils());
         }
         //Фамилия
-        if(autorInfo.getFamily() != null) {
+        if (autorInfo.getFamily() != null) {
             res = res == null ? SDAFactory.createEmployee() : res;
             res.setFamilyName(autorInfo.getFamily());
         }
         //Имя
-        if(autorInfo.getGiven() != null) {
+        if (autorInfo.getGiven() != null) {
             res = res == null ? SDAFactory.createEmployee() : res;
             res.setGivenName(autorInfo.getGiven());
         }
         //Отчество
-        if(autorInfo.getMiddleName() != null) {
+        if (autorInfo.getMiddleName() != null) {
             res = res == null ? SDAFactory.createEmployee() : res;
             res.setMiddleName(autorInfo.getMiddleName());
         }
@@ -220,19 +228,19 @@ public class SdaBuilder {
         patient.setDob(clientInfo.getBirthDate());
 
         //Место рождения
-        if(clientInfo.getBirthPlace() != null) {
+        if (clientInfo.getBirthPlace() != null) {
             final Address birthAddress = SDAFactory.createAddress();
             birthAddress.setCity(clientInfo.getBirthPlace());
             patient.setBirthAddress(birthAddress);
         }
 
         // СНИЛС
-        if(clientInfo.getSnils() != null) {
+        if (clientInfo.getSnils() != null) {
             patient.setSnils(clientInfo.getSnils());
         }
 
         // Номер полиса единого образца
-        if(clientInfo.getEnpNumber() != null) {
+        if (clientInfo.getEnpNumber() != null) {
             patient.setEnp(clientInfo.getEnpNumber());
         }
 
@@ -249,23 +257,23 @@ public class SdaBuilder {
         }
 
         // Признак городского/сельского жителя
-        if(clientInfo.getDwellingType() != null) {
+        if (clientInfo.getDwellingType() != null) {
             patient.setDwellingType(clientInfo.getDwellingType());
         }
 
         //Данные о льготах
-        for(ClientInfo.Privilege curPrivilege : clientInfo.getPrivileges()) {
+        for (ClientInfo.Privilege curPrivilege : clientInfo.getPrivileges()) {
             final Privilege priv = toSdaPrivilege(curPrivilege);
-            if(priv != null) {
+            if (priv != null) {
                 patient.getPrivilege().add(priv);
             }
         }
 
         //Социальный статус
-        for(ClientInfo.SocialStatus socialStatus : clientInfo.getSocialStatus()) {
+        for (ClientInfo.SocialStatus socialStatus : clientInfo.getSocialStatus()) {
             String codeSystem = "1.2.643.5.1.13.2.1.1.366";
             final CodeAndName codeAndName = getCodeAndName(socialStatus.getCodeAndName(), codeSystem);
-            if(codeAndName != null) {
+            if (codeAndName != null) {
                 patient.getSocialStatus().add(codeAndName);
             }
         }
@@ -277,78 +285,82 @@ public class SdaBuilder {
         patient.setIsServicemanFamily(clientInfo.isServicemanFamily());
 
         //Место работы/учебы, профессия, должность
-        for(ClientInfo.WorkInfo workInfo : clientInfo.getWorkInfo()) {
+        for (ClientInfo.WorkInfo workInfo : clientInfo.getWorkInfo()) {
             Occupation occupation = toSdaOccupation(workInfo);
-            if(occupation != null) {
+            if (occupation != null) {
                 patient.getOccupation().add(occupation);
             }
         }
 
         //Гражданство
-        if(clientInfo.getCitizenship() != null) {
+        if (clientInfo.getCitizenship() != null) {
             final CodeAndName codeAndName = getCodeAndName(clientInfo.getCitizenship(), null);
-            if(codeAndName != null ) {
+            if (codeAndName != null) {
                 patient.setCitizenship(codeAndName);
             }
         }
 
         //Документ, удостоверяющий личность
-        if(clientInfo.getPassport() != null) {
+        if (clientInfo.getPassport() != null) {
             final IdentityDocument dcc = toSdaIdentityDoc(clientInfo.getPassport());
-            if(dcc != null) {
+            if (dcc != null) {
                 patient.setIdentityDocument(dcc);
             }
         }
 
         //Свидетельство о рождении
-        if(clientInfo.getPassport() != null) {
+        if (clientInfo.getPassport() != null) {
             final IdentityDocument doc = toSdaIdentityDoc(clientInfo.getBirthCertificate());
-            if(doc != null) {
+            if (doc != null) {
                 patient.setBirthCertificate(doc);
             }
         }
 
         //Данные полиса ОМС
-        if(clientInfo.getOmsInfo() != null) {
+        if (clientInfo.getOmsInfo() != null) {
             final Insurance insurance = toSdaInsurance(clientInfo.getOmsInfo());
-            if(insurance != null) {
+            if (insurance != null) {
                 patient.setOmsInsurance(insurance);
             }
         }
 
         //Данные полиса ДМС
-        if(clientInfo.getDmsInfo() != null) {
+        if (clientInfo.getDmsInfo() != null) {
             final Insurance insurance = toSdaInsurance(clientInfo.getDmsInfo());
-            if(insurance != null) {
+            if (insurance != null) {
                 patient.setOmsInsurance(insurance);
             }
         }
 
         // Группа крови и резус фактор
-       /* if(clientInfo.getBloodGroup() != null) {
-            patient.setBloodGroup(clientInfo.getBloodGroup());
-            patient.setRhesusFactor(  );
-        }*/
+        if(clientInfo.getBloodGroup() != null && clientInfo.getBloodRhesus() != null) {
+            if(clientInfo.getBloodGroup() != null ) {
+                patient.setBloodGroup(clientInfo.getBloodGroup());
+            }
+            if(clientInfo.getBloodRhesus() != null) {
+                patient.setRhesusFactor( clientInfo.getBloodRhesus() );
+            }
+        }
 
         //Номера телефонов пациента
         final ContactInfo contactInfo = getContactInfo(clientInfo);
-        if(clientInfo != null) {
+        if (clientInfo != null) {
             patient.setContactInfo(contactInfo);
         }
     }
 
     private static ContactInfo getContactInfo(ClientInfo clientInfo) {
         ContactInfo contactInfo = null;
-        if(clientInfo.getHomePhoneNumber() != null) {
-            contactInfo =  contactInfo == null ? SDAFactory.createContactInfo() : contactInfo;
+        if (clientInfo.getHomePhoneNumber() != null) {
+            contactInfo = contactInfo == null ? SDAFactory.createContactInfo() : contactInfo;
             contactInfo.setHomePhone(clientInfo.getHomePhoneNumber());
         }
-        if(clientInfo.getWorkPhoneNumber() != null) {
-            contactInfo =  contactInfo == null ? SDAFactory.createContactInfo() : contactInfo;
+        if (clientInfo.getWorkPhoneNumber() != null) {
+            contactInfo = contactInfo == null ? SDAFactory.createContactInfo() : contactInfo;
             contactInfo.setWorkPhone(clientInfo.getWorkPhoneNumber());
         }
-        if(clientInfo.getMobilePhoneNumber() != null) {
-            contactInfo =  contactInfo == null ? SDAFactory.createContactInfo() : contactInfo;
+        if (clientInfo.getMobilePhoneNumber() != null) {
+            contactInfo = contactInfo == null ? SDAFactory.createContactInfo() : contactInfo;
             contactInfo.setCellPhone(clientInfo.getMobilePhoneNumber());
         }
         return contactInfo;
@@ -356,15 +368,15 @@ public class SdaBuilder {
 
     private static Insurance toSdaInsurance(ClientInfo.InsuranceInfo insuranceInfo) {
         Insurance res = null;
-        if(insuranceInfo.getOrganization() != null) {
+        if (insuranceInfo.getOrganization() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
             res.setInsuranceCompany(getCodeAndName(insuranceInfo.getOrganization(), "1.2.643.5.1.13.2.1.1.635"));
         }
-        if(insuranceInfo.getOkato() != null) {
+        if (insuranceInfo.getOkato() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
             res.setInsuranceCompanyOkato(insuranceInfo.getOkato());
         }
-        if(insuranceInfo.getPolicyTypeName() != null) {
+        if (insuranceInfo.getPolicyTypeName() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
             res.setPolicyType(getCodeAndName(insuranceInfo.getPolicyTypeName(), null));
         }
@@ -372,15 +384,15 @@ public class SdaBuilder {
             res = res == null ? SDAFactory.createInsurance() : res;
             res.setPolicySer(insuranceInfo.getSerial());
         }
-        if(insuranceInfo.getNumber() != null ) {
+        if (insuranceInfo.getNumber() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
             res.setPolicyNum(insuranceInfo.getNumber());
         }
-        if(insuranceInfo.getBegDate() != null) {
+        if (insuranceInfo.getBegDate() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
             res.setEffectiveDate(insuranceInfo.getBegDate());
         }
-        if(insuranceInfo.getEndDate() != null) {
+        if (insuranceInfo.getEndDate() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
             res.setExpirationDate(insuranceInfo.getEndDate());
         }
@@ -395,7 +407,7 @@ public class SdaBuilder {
     private static IdentityDocument toSdaIdentityDoc(ClientInfo.DocInfo passport) {
         IdentityDocument res = null;
         res.setDocType(getCodeAndName(new CodeNamePair("21", "Паспорт гражданина РФ"), "1.2.643.5.1.13.2.1.1.498"));
-        if(passport.getNumber() != null) {
+        if (passport.getNumber() != null) {
             res = res == null ? SDAFactory.createIdentityDocument() : res;
             res.setDocNum(passport.getNumber());
         }
@@ -405,17 +417,17 @@ public class SdaBuilder {
             res.setDocSer(passport.getSerial());
         }
 
-        if(passport.getIssued() != null) {
+        if (passport.getIssued() != null) {
             res = res == null ? SDAFactory.createIdentityDocument() : res;
             res.setDocSource(passport.getIssued());
         }
 
-        if(passport.getCreateDate() != null) {
+        if (passport.getCreateDate() != null) {
             res = res == null ? SDAFactory.createIdentityDocument() : res;
             res.setDocDate(passport.getCreateDate());
         }
 
-        if(passport.getExpirationDate() != null) {
+        if (passport.getExpirationDate() != null) {
             res = res == null ? SDAFactory.createIdentityDocument() : res;
             res.setExpirationDate(passport.getExpirationDate());
         }
@@ -426,25 +438,25 @@ public class SdaBuilder {
     private static Occupation toSdaOccupation(ClientInfo.WorkInfo workInfo) {
         Occupation res = null;
         //Наименование места работы/учебы/службы
-        if(workInfo.getName() != null) {
+        if (workInfo.getName() != null) {
             res = res == null ? SDAFactory.createOccupation() : res;
             res.setOrganizationName(workInfo.getName());
         }
 
         //Должность/звание
-        if(workInfo.getPos() != null) {
+        if (workInfo.getPos() != null) {
             res = res == null ? SDAFactory.createOccupation() : res;
             res.setPosition(workInfo.getPos());
         }
 
         //ОКВЭД
-        if(workInfo.getOkved() != null ) {
+        if (workInfo.getOkved() != null) {
             res = res == null ? SDAFactory.createOccupation() : res;
             res.setOkved(getCodeAndName(workInfo.getOkved(), "1.2.643.5.1.13.2.1.1.62"));
         }
 
         //Профессиональная вредность
-        if(workInfo.getHarmful() != null ) {
+        if (workInfo.getHarmful() != null) {
             res = res == null ? SDAFactory.createOccupation() : res;
             res.setHarmfulConditions(workInfo.getHarmful());
         }
@@ -456,20 +468,20 @@ public class SdaBuilder {
         Privilege res = null;
         final String codeSystem = "1.2.643.5.1.13.2.1.1.358";
         final CodeAndName codeAndName = getCodeAndName(privilege.getCodeAndName(), codeSystem);
-        if(codeAndName != null) {
+        if (codeAndName != null) {
             res = res == null ? SDAFactory.createPrivilege() : res;
             res.setCategory(codeAndName);
         }
         final PrivilegeDocument privilegeDocument = SDAFactory.createPrivilegeDocument();
         final XMLGregorianCalendar docBegDate = privilege.getDocBegDate();
-        if(docBegDate != null) {
+        if (docBegDate != null) {
             privilegeDocument.setDocDate(docBegDate);
         }
         final XMLGregorianCalendar expirationDate = privilege.getExpirationDate();
-        if(expirationDate != null) {
+        if (expirationDate != null) {
             privilegeDocument.setExpirationDate(expirationDate);
         }
-        if(docBegDate != null || expirationDate != null) {
+        if (docBegDate != null || expirationDate != null) {
             res = res == null ? SDAFactory.createPrivilege() : res;
             res.setDocument(privilegeDocument);
         }
@@ -479,14 +491,14 @@ public class SdaBuilder {
     private static CodeAndName getCodeAndName(CodeNamePair codeAndName, String codeSystem) {
         final String code = codeAndName.getCode();
         final CodeAndName res = SDAFactory.createCodeAndName();
-        if(code != null) {
+        if (code != null) {
             res.setCode(code);
         }
         final String name = codeAndName.getName();
-        if(name != null) {
+        if (name != null) {
             res.setName(name);
         }
-        if(codeSystem != null) {
+        if (codeSystem != null) {
             res.setCodingSystem(codeSystem);
         }
         return (code == null && name == null) ? null : res;
@@ -532,7 +544,7 @@ public class SdaBuilder {
         }
 
         //Код населенного пункта согласно КЛАДР
-        if(regAddr.getAddrCityKladr() != null) {
+        if (regAddr.getAddrCityKladr() != null) {
             addr = getAddrInstance(addr);
             addr.setCityKladr(regAddr.getAddrCityKladr());
         }
@@ -550,7 +562,7 @@ public class SdaBuilder {
         }
 
         //Номер дома
-        if (regAddr.getHouse() != null ) {
+        if (regAddr.getHouse() != null) {
             addr = getAddrInstance(addr);
             addr.setHouse(regAddr.getHouse());
         }
@@ -649,7 +661,7 @@ public class SdaBuilder {
     }
 
     private static Container addDiagnosis(Container res, EventInfo eventInfo, List<DiagnosisInfo> diagisesInfo) {
-        res.setDiagnoses(new ArrayOfdiagnosisDiagnosis());
+        res.setDiagnoses(SDAFactory.createArrayOfdiagnosisDiagnosis());
         for (DiagnosisInfo diagInfo : diagisesInfo) {
             Diagnosis diagnosis = toSdaDiagnosis(eventInfo, diagInfo);
             if (diagnosis != null) {
@@ -659,10 +671,75 @@ public class SdaBuilder {
         return res;
     }
 
+    /**
+     * Раздел "Инвалидность"
+     * @param res
+     * @param disabilitiesInfo
+     * @return
+     */
+    private static Container addDisabilities(Container res, List<DisabilitiesInfo> disabilitiesInfo) {
+        res.setDisabilities(SDAFactory.createArrayOfdisabilityDisability());
+        for (DisabilitiesInfo disability : disabilitiesInfo) {
+            Disability sdaDisability = toSdaDisability(disability);
+            if(sdaDisability != null) {
+                res.getDisabilities().getDisability().add(sdaDisability)l
+            }
+        }
+        return res;
+    }
+
+    private static Disability toSdaDisability(DisabilitiesInfo disability) {
+        Disability res = null;
+
+        //Идентификатор в МИС
+        if(disability.getId() != null) {
+            res = res == null ? SDAFactory.createDisability() : res;
+            res.setExtId(disability.getId());
+        }
+
+        //Дата/время ввода записи в МИС
+        if(disability.getCreateDate() != null) {
+            res = res == null ? SDAFactory.createDisability() : res;
+            res.setEnteredOn(disability.getCreateDate());
+        }
+
+        //Группа инвалидности
+        if(disability.getGroup() != null) {
+            res = res == null ? SDAFactory.createDisability() : res;
+            res.setDisabilityGroup(disability.getGroup());
+        }
+
+        //Признак ребенок-инвалид
+        if(disability.getIsChild() != null) {
+            res = res == null ? SDAFactory.createDisability() : res;
+            res.setIsDisabledChild(disability.getIsChild());
+        }
+
+        //Установлена впервые в жизни
+        if(disability.getIsFirstTime() != null) {
+            res = res == null ? SDAFactory.createDisability() : res;
+            res.setIsFirstTime(disability.getIsFirstTime());
+        }
+
+        //Действует с
+        if(disability.getBegDate() != null) {
+            res = res == null ? SDAFactory.createDisability() : res;
+            res.setFromTime(disability.getBegDate());
+        }
+
+        //Действует по
+        if(disability.getEndDate() != null) {
+            res = res == null ? SDAFactory.createDisability() : res;
+            res.setFromTime(disability.getEndDate());
+        }
+
+        return res;
+    }
+
     private static Diagnosis toSdaDiagnosis(EventInfo eventInfo, DiagnosisInfo diagInfo) {
         Diagnosis diagnosis = null;
         //Идентификатор в МИС
-        if(diagInfo.getDiagId() != null) {
+        if (diagInfo.getDiagId() != null) {
             diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
             diagnosis.setExtId(diagInfo.getDiagId());
         }
@@ -671,44 +748,87 @@ public class SdaBuilder {
             diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
             diagnosis.setEncounterCode(eventInfo.getEventId());
         }
-        if (diagInfo.getPersonCreatedId() != null || (diagInfo.getPersonCreatedName() != null && !diagInfo.getPersonCreatedName().isEmpty())) {
+        //Врач
+        if (diagInfo.getEnteredPerson() != null) {
             diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-            User createdPerson = new User();
-            if (diagInfo.getPersonCreatedId() != null) {
-                createdPerson.setCode(String.valueOf(diagInfo.getPersonCreatedId()));
-            }
-            if (diagInfo.getPersonCreatedName() != null && !diagInfo.getPersonCreatedName().isEmpty()) {
-                createdPerson.setDescription(diagInfo.getPersonCreatedName());
-            }
-            diagnosis.setEnteredBy(createdPerson);
+            diagnosis.setEnteredBy(toSdaEmployee(diagInfo.getEnteredPerson()));
         }
+        //Дата/время ввода записи в МИС
         if (diagInfo.getCreateDate() != null) {
             diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
             diagnosis.setEnteredOn(diagInfo.getCreateDate());
         }
-        if (diagInfo.getMkb() != null || (diagInfo.getDiagName() != null && !diagInfo.getDiagName().isEmpty())) {
+        // Диагноз (код МКБ-10 и расшифровка)
+        if (diagInfo.getMkb() != null) {
             diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-            DiagnosisCode diagCode = new DiagnosisCode();
-            if (diagInfo.getMkb() != null) {
-                diagCode.setCode(diagInfo.getMkb());
-            }
-            if (diagInfo.getDiagName() != null && !diagInfo.getDiagName().isEmpty()) {
-                diagCode.setDescription(diagInfo.getDiagName());
-            }
-            diagnosis.setDiagnosis(diagCode);
+            diagnosis.setDiagnosis(getCodeAndName(diagInfo.getMkb(), "1.2.643.5.1.13.2.1.1.641"));
         }
-        if (diagInfo.getDiagTypeCode() != null || diagInfo.getDiagTypeName() != null) {
+        // Тип диагноза
+        if (diagInfo.getDiagType() != null) {
             diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-            DiagnosisType diagType = new DiagnosisType();
-            if (diagInfo.getDiagTypeCode() != null) {
-                diagType.setCode(diagInfo.getDiagTypeCode());
-            }
-            if (diagInfo.getDiagTypeName() != null) {
-                diagType.setDescription(diagInfo.getDiagTypeName());
-            }
-            diagnosis.setDiagnosisType(diagType);
+            diagnosis.setDiagnosisType(getCodeAndName(diagInfo.getDiagType(), null));
         }
+
+        //Вид диагноза
+        //TODO ????
+
+        //Острое или хроническое заболевание
+        if (diagInfo.getAcuteOrChronic() != null) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            diagnosis.setAcuteOrChronic(diagInfo.getAcuteOrChronic() ? "ACUTE" : "CHRONIC");
+        }
+
+        //Диспансерное наблюдение
+        if (diagInfo.getDispensarySuperVision() != null) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            diagnosis.setDispensarySupervision(toSdaDispensarySuperVision(diagInfo.getDispensarySuperVision()));
+        }
+
+        //Вид травмы
+        if(diagInfo.getTraumaType() != null) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            diagnosis.setTraumaType(getCodeAndName(diagInfo.getTraumaType(), "1.2.643.5.1.13.2.1.1.105"));
+        }
+
+        //Кол-во госпитализаций в текущем году с данным диагнозом
+        if(diagInfo.getCountAdmissionsThisYear() != null) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            diagnosis.setAdmissionsThisYear(diagInfo.getCountAdmissionsThisYear());
+        }
+
         return diagnosis;
+    }
+
+    private static DispensarySupervision toSdaDispensarySuperVision(DispensaryInfo dispensarySuperVision) {
+        DispensarySupervision res = null;
+        if( dispensarySuperVision.isStarted() == null ) {
+            return null;
+        }
+        if (dispensarySuperVision.isStarted()) {
+            //Дата постановки на диспансерное наблюдение
+            if (dispensarySuperVision.getDate() != null) {
+                res = res == null ? SDAFactory.createDispensarySupervision() : res;
+                res.setStartDate(dispensarySuperVision.getDate());
+            }
+            //Кто осуществил постановку на диспансерное наблюдение
+            if (dispensarySuperVision.getPerson() != null) {
+                res = res == null ? SDAFactory.createDispensarySupervision() : res;
+                res.setStartedBy(toSdaEmployee(dispensarySuperVision.getPerson()));
+            }
+
+        } else {
+            //Дата снятия с диспансерного наблюдения
+            if (dispensarySuperVision.getDate() != null) {
+                res = res == null ? SDAFactory.createDispensarySupervision() : res;
+                res.setStopDate(dispensarySuperVision.getDate());
+            }
+            //Кто осуществил снятие с диспансерного наблюдения
+            if (dispensarySuperVision.getPerson() != null) {
+                res = res == null ? SDAFactory.createDispensarySupervision() : res;
+                res.setStoppedBy(toSdaEmployee(dispensarySuperVision.getPerson()));
+            }
+        }
+        return res;
     }
 
     /**

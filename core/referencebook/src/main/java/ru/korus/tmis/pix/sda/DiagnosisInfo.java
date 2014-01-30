@@ -4,12 +4,8 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.Diagnosis;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.Mkb;
-import ru.korus.tmis.core.entity.model.RbDiagnosisType;
-import ru.korus.tmis.core.entity.model.Staff;
-import ru.korus.tmis.core.entity.model.UUID;
+import ru.korus.tmis.core.entity.model.*;
+
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -24,16 +20,6 @@ import ru.korus.tmis.core.entity.model.UUID;
 public class DiagnosisInfo {
 
     /**
-     * Идентификатор врача, зафиксировавшего данные
-     */
-    private final Integer personCreatedId;
-
-    /**
-     * ФИО врача, зафиксировавшего данные (Фамилия + Имя + Отчество)
-     */
-    private final String personCreatedName;
-
-    /**
      * Дата/время диагноза
      */
     private final XMLGregorianCalendar createDate;
@@ -41,12 +27,7 @@ public class DiagnosisInfo {
     /**
      * Код МКБ
      */
-    private final String mkb;
-
-    /**
-     * Диагноз
-     */
-    private final String diagName;
+    private final CodeNamePair mkb;
 
     /**
      * Код типа диагноза
@@ -63,11 +44,40 @@ public class DiagnosisInfo {
      */
     private final String diagId;
 
+    /**
+     * Врач
+     */
+    private final EmployeeInfo enteredPerson;
 
-    public DiagnosisInfo(Diagnosis diagnosis, RbDiagnosisType diagnosisType) {
-        final Staff person = diagnosis.getPerson();
-        this.personCreatedId = person != null ? person.getId() : null;
-        this.personCreatedName = person != null ? person.getFullName() : null;
+    /**
+     * Тип диагноза
+     */
+    private final CodeNamePair diagType;
+
+    /**
+     * Острое или хроническое заболевание
+     */
+    private final Boolean acuteOrChronic;
+
+    /**
+     * Диспансерное наблюдение
+     */
+    private final DispensaryInfo dispensarySuperVision;
+
+    /**
+     * Вид травмы
+     */
+    private final CodeNamePair traumaType;
+
+    /**
+     * Кол-во госпитализаций в текущем году с данным диагнозом
+     */
+    private final Long countAdmissionsThisYear;
+
+
+    public DiagnosisInfo(Diagnostic diagnostic) {
+        final Diagnosis diagnosis = diagnostic.getDiagnosis();
+        final RbDiagnosisType diagnosisType = diagnostic.getDiagnosisType();
         XMLGregorianCalendar createDate = null;
         try {
             createDate = Database.toGregorianCalendar(diagnosis.getCreateDatetime());
@@ -75,8 +85,9 @@ public class DiagnosisInfo {
         }
         this.createDate = createDate;
         final Mkb mkb = diagnosis.getMkb();
-        this.mkb = mkb != null ? mkb.getDiagID() : null;
-        this.diagName = (mkb != null ? mkb.getDiagName() : "").trim() + "(" + (diagnosisType != null ? diagnosisType.getName() : "") + ")";
+        final String mkbCode = mkb != null ? mkb.getDiagID() : null;
+        final String diagName = (mkb != null ? mkb.getDiagName() : "").trim() + "(" + (diagnosisType != null ? diagnosisType.getName() : "") + ")";
+        this.mkb = new CodeNamePair(mkbCode, diagName);
         RbDiagnosisType dt = diagnosis.getDiagnosisType();
         String diagTypeName = null;
         String diagTypeCode = null;
@@ -84,24 +95,20 @@ public class DiagnosisInfo {
             diagTypeCode = "".equals(dt.getCode())? null : dt.getCode();
             diagTypeName = "".equals(dt.getName())? null : dt.getName();
         }
+        diagType = new CodeNamePair(diagTypeCode, diagTypeName);
         this.diagTypeName = diagTypeName;
         this.diagTypeCode = diagTypeCode;
         this.diagId = String.valueOf(diagnosis.getId());
+        final Staff person = diagnosis.getPerson();
+        this.enteredPerson = person == null ? null : new EmployeeInfo(person);
+        this.acuteOrChronic = diagnosis.getCharacterId() == 1; //TODO: add entity for rbDiseaseCharacter!
+        dispensarySuperVision = new DispensaryInfo(diagnostic);
+        final RbTraumaType traumaTypeDb = diagnostic.getTraumaType();
+        traumaType = traumaTypeDb == null ? null : new CodeNamePair(traumaTypeDb.getCode(), traumaTypeDb.getName());
+        countAdmissionsThisYear = //TODO;
     }
 
-    /**
-     * @return the personCreatedId
-     */
-    public Integer getPersonCreatedId() {
-        return personCreatedId;
-    }
 
-    /**
-     * @return the personCreatedName
-     */
-    public String getPersonCreatedName() {
-        return personCreatedName;
-    }
 
     /**
      * @return the createDate
@@ -113,16 +120,10 @@ public class DiagnosisInfo {
     /**
      * @return the mkb
      */
-    public String getMkb() {
+    public CodeNamePair getMkb() {
         return mkb;
     }
 
-    /**
-     * @return the diagName
-     */
-    public String getDiagName() {
-        return diagName;
-    }
 
     public String getDiagTypeCode() {
         return diagTypeCode;
@@ -135,5 +136,29 @@ public class DiagnosisInfo {
 
     public String getDiagId() {
         return diagId;
+    }
+
+    public EmployeeInfo getEnteredPerson() {
+        return enteredPerson;
+    }
+
+    public CodeNamePair getDiagType() {
+        return diagType;
+    }
+
+    public Boolean getAcuteOrChronic() {
+        return acuteOrChronic;
+    }
+
+    public DispensaryInfo getDispensarySuperVision() {
+        return dispensarySuperVision;
+    }
+
+    public CodeNamePair getTraumaType() {
+        return traumaType;
+    }
+
+    public Long getCountAdmissionsThisYear() {
+        return countAdmissionsThisYear;
     }
 }
