@@ -36,7 +36,7 @@ public class DisabilitiesInfo {
      */
     private final XMLGregorianCalendar begDate;
 
-     /**
+    /**
      * Действует по
      */
     private final XMLGregorianCalendar endDate;
@@ -51,9 +51,16 @@ public class DisabilitiesInfo {
         createDate = ClientInfo.getXmlGregorianCalendar(clientSocStatus.getCreateDatetime());
         begDate = ClientInfo.getXmlGregorianCalendar(clientSocStatus.getBegDate());
         endDate = ClientInfo.getXmlGregorianCalendar(clientSocStatus.getEndDate());
-        group = //TODO;
-        isChild = //TODO;
-        isFirstTime = //TODO;
+        final String code = clientSocStatus.getSocStatusType().getCode();
+        if (code != null) {
+            group = code.equals("081") ? "1" : (code.equals("082") ? "2" : (code.equals("083") ? "3" : null));
+            isChild = code.equals("084");
+            isFirstTime = code.equals("088");
+        } else {
+            group = null;
+            isChild = null;
+            isFirstTime = null;
+        }
     }
 
     public String getId() {
