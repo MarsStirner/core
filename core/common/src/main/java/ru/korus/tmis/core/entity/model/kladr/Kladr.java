@@ -193,4 +193,21 @@ public class    Kladr
     public String toString() {
         return "ru.korus.tmis.core.database.model.KladrRb[code=" + code + "]";
     }
+
+    public String print() {
+        final StringBuilder sb = new StringBuilder("Kladr{");
+        sb.append("code='").append(code).append('\'');
+        sb.append(", name='").append(name).append('\'');
+        sb.append(", socr='").append(socr).append('\'');
+        sb.append(", index='").append(index).append('\'');
+        sb.append(", gninmb='").append(gninmb).append('\'');
+        sb.append(", uno='").append(uno).append('\'');
+        sb.append(", ocatd='").append(ocatd).append('\'');
+        sb.append(", status='").append(status).append('\'');
+        sb.append(", parent='").append(parent).append('\'');
+        sb.append(", infis='").append(infis).append('\'');
+        sb.append(", prefix='").append(prefix).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }
