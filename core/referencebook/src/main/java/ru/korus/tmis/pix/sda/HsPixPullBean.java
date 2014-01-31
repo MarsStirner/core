@@ -3,6 +3,7 @@ package ru.korus.tmis.pix.sda;
 import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.database.DbCustomQueryBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
@@ -55,6 +56,10 @@ public class HsPixPullBean {
 
     @EJB
     DbEventBeanLocal dbEventBeanLocal;
+
+    @EJB
+    private DbCustomQueryBeanLocal dbCustomQueryBean;
+
 
     @Schedule(hour = "*", minute = "*", second = "30")
     void pullDb() {
@@ -177,7 +182,7 @@ public class HsPixPullBean {
                     getDiagnosis(event),
                     getDisabilities(event.getPatient()),
                     getEpicrisis(event, clientInfo),
-                    getServices(event)));
+                    getServices(event, actionsByTypeCode)));
             hsIntegration.setStatus(HSIntegration.Status.SENDED);
             hsIntegration.setInfo("");
             em.flush();
@@ -197,13 +202,13 @@ public class HsPixPullBean {
         }
     }
 
-    private List<ServiceInfo> getServices(Event event) {
+    private List<ServiceInfo> getServices(final Event event, final Multimap<String,Action> actionsByTypeCode) {
         //TODO move to DbAtionBean!
         List<Action> services = em.createQuery("SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0 AND a.actionType IS NOT NULL", Action.class)
                 .setParameter("eventId", event.getId()).getResultList();
         List<ServiceInfo> res = new LinkedList<ServiceInfo>();
         for(Action action : services) {
-            res.add(new ServiceInfo(action));
+            res.add(new ServiceInfo(action, actionsByTypeCode, dbCustomQueryBean));
         }
         return res;
     }
