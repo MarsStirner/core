@@ -5,8 +5,7 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
 import org.codehaus.jackson.map.ObjectMapper
 import ru.korus.tmis.core.exception.CoreException
-import java.util
-import ru.korus.tmis.util._
+import java.{util => ju}
 import ru.korus.tmis.core.entity.model._
 import collection.mutable
 import java.util.{Date, LinkedList}
@@ -376,7 +375,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getAllAppealsByPatient(requestData: AppealSimplifiedRequestData, auth: AuthData): AppealSimplifiedDataList = {
     val set = appealBean.getAppealTypeCodesWithFlatDirectoryId(i18n("db.flatDirectory.eventType.hospitalization").toInt) //справочник госпитализаций
-    requestData.filter.asInstanceOf[AppealSimplifiedRequestDataFilter].code = set.asInstanceOf[util.Collection[String]]
+    requestData.filter.asInstanceOf[AppealSimplifiedRequestDataFilter].code = set.asInstanceOf[ju.Collection[String]]
     appealBean.getAllAppealsByPatient(requestData, auth)
   }
 
@@ -783,7 +782,7 @@ class WebMisRESTImpl  extends WebMisREST
                                                               requestData.sortingFieldInternal,
                                                               requestData.filter.unwrap())
     }
-    var ajtList = new util.LinkedList[(Action, JobTicket)]()
+    var ajtList = new ju.LinkedList[(Action, JobTicket)]()
     if (actions != null && actions.size() > 0) {
       actions.foreach(a => {
         ajtList.add((a, dbJobTicketBean.getJobTicketForAction(a.getId.intValue())))
@@ -1245,7 +1244,7 @@ class WebMisRESTImpl  extends WebMisREST
     val e = dbEventTypeBean.getEventTypeById(eventTypeId)
     val result = dbContractBean.getContractsByEventTypeId(eventTypeId, e.getFinance.getId, showDeleted, showExpired)
     if (result == null)
-      new Object()
+      new ju.ArrayList[Contract]()
     else
       result.map(x => new ContractContainer(x)).asJava
 
