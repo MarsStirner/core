@@ -7,22 +7,16 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.database._
-import ru.korus.tmis.core.database.common._
 import common._
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.AuthData
 import javax.persistence.{PersistenceContext, EntityManager}
-import collection.mutable.{HashMap, HashSet}
 import java.util.{ArrayList, Date, LinkedList}
-import java.text.{DateFormat, SimpleDateFormat}
 import ru.korus.tmis.core.exception.CoreException
-import java.{util, sql}
-import collection.{mutable, JavaConversions}
-import java.sql.{Connection, DriverManager, ResultSet}
-import ru.korus.tmis.core.event.{Notification, ModifyActionNotification}
+import collection.JavaConversions
+import ru.korus.tmis.core.event.Notification
 import javax.inject.Inject
 import javax.enterprise.inject.Any
-import java.lang.Iterable
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 ;
 
@@ -68,9 +62,6 @@ class AppealBean extends AppealBeanLocal
 
   @EJB
   private var dbMkbBean: DbMkbBeanLocal = _
-
-  @EJB
-  private var dbFDRecordBean: DbFDRecordBeanLocal = _
 
   @EJB
   var dbPatientBean: DbPatientBeanLocal = _
@@ -307,9 +298,6 @@ class AppealBean extends AppealBeanLocal
       if (lockId>0) appLock.releaseLock(lockId)
     }
 
-    // Устанавливаем договор
-
-
     if (!flgCreate){
       //Редактирование обращения (В случае если изменен НИБ)
       var flgEventRewrite = true
@@ -419,9 +407,6 @@ class AppealBean extends AppealBeanLocal
                                           ).toList
     dbManager.mergeAll(mergedItems)
     dbManager.persistAll(persistedItems)
-    //
-
-    //
 
     newEvent.getId.intValue()
   }
@@ -519,11 +504,11 @@ class AppealBean extends AppealBeanLocal
     val event = dbEventBean.getEventById(eventId)
     val execDate = event.getExecDate
 
-    var setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
+    var setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
     val hospId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
     if(hospId>0) { //Есть экшн - поступление
-      val lstSentToIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
-      val lstCancelIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
+      val lstSentToIds = JavaConversions.seqAsJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
+      val lstCancelIds = JavaConversions.seqAsJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
       val apSentToWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstSentToIds)
       val apCancelWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstCancelIds)
       if (execDate!= null){
@@ -539,7 +524,7 @@ class AppealBean extends AppealBeanLocal
           apSentToWithValues.size()>0 &&
           apSentToWithValues.filter(element => element._2.size()>0).size>0){
           //Проверяем наличие экшна - Движение
-          setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.moving").toInt :java.lang.Integer))
+          setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.moving").toInt :java.lang.Integer))
           val movingId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
           status = if (movingId>0)
             if (actionBean.getActionById(movingId).getEndDate == null) i18n("patient.status.regToBed").toString else i18n("patient.status.sentTo").toString
@@ -548,7 +533,7 @@ class AppealBean extends AppealBeanLocal
           if (execDate!= null)
             status = i18n("patient.status.discharged").toString
           else {
-            setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
+            setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
                                                      i18n("db.actionType.secondary").toInt :java.lang.Integer))
             val primaryId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
             status = if(primaryId>0) i18n("patient.status.hospitalized").toString
