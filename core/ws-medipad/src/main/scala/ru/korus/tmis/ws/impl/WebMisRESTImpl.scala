@@ -454,6 +454,7 @@ class WebMisRESTImpl  extends WebMisREST
     val at = actionTypeBean.getActionTypeById(actionTypeId)
     val flgDiagnostics = (at!=null &&
                           (at.getMnemonic.toUpperCase().compareTo("LAB")==0 ||
+                           at.getMnemonic.toUpperCase().compareTo("BAK_LAB")==0 ||
                            at.getMnemonic.toUpperCase().compareTo("DIAG")==0 ||
                            at.getMnemonic.toUpperCase().compareTo("CONS")==0))
     if(flgDiagnostics){
@@ -872,6 +873,7 @@ class WebMisRESTImpl  extends WebMisREST
           mnemonics!=null &&
           mnemonics.size()>0 &&
           (mnemonics.filter(p=>(p.toUpperCase().compareTo("LAB")==0 ||
+                                p.toUpperCase().compareTo("BAK_LAB")==0 ||
                                 p.toUpperCase().compareTo("DIAG")==0 ||
                                 p.toUpperCase().compareTo("CONS")==0))
           ).size>0

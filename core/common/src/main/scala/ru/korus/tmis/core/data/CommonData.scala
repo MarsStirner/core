@@ -160,6 +160,13 @@ class CommonEntity {
     this.flatCode = flatCode
   }
 
+  var mnem: String = _
+
+  @XmlAttribute(name = "mnem")
+  def getMnem():String = mnem
+
+  def setMnem(mnem: String) = this.mnem = mnem
+
   private def this(id: Integer,
                    name: String,
                    eType: String,
@@ -208,9 +215,11 @@ class CommonEntity {
            eTypeId: Integer,
            status: Integer,
            code: String,
-           flatCode: String) = {
+           flatCode: String,
+           mnem: String) = {
     this(id, version, name, eType, eTypeId, status, code)
     this.flatCode = flatCode
+    this.mnem = mnem
   }
 
   @BeanProperty
