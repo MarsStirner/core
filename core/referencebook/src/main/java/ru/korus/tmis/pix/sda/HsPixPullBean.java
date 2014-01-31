@@ -12,8 +12,6 @@ import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.pix.sda.ws.EMRReceiverService;
 import ru.korus.tmis.pix.sda.ws.EMRReceiverServiceSoap;
-import ru.korus.tmis.pix.sda.ws.SDASoapServiceService;
-import ru.korus.tmis.pix.sda.ws.SDASoapServiceServiceSoap;
 import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.ejb.EJB;
@@ -178,8 +176,8 @@ public class HsPixPullBean {
                     getAllergies(event),
                     getDiagnosis(event),
                     getDisabilities(event.getPatient()),
-                    getEpicrisis(event, clientInfo)),
-                    getServices(event));
+                    getEpicrisis(event, clientInfo),
+                    getServices(event)));
             hsIntegration.setStatus(HSIntegration.Status.SENDED);
             hsIntegration.setInfo("");
             em.flush();

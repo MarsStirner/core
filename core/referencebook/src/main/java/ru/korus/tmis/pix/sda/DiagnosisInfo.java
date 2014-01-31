@@ -100,15 +100,13 @@ public class DiagnosisInfo {
         this.diagTypeCode = diagTypeCode;
         this.diagId = String.valueOf(diagnosis.getId());
         final Staff person = diagnosis.getPerson();
-        this.enteredPerson = person == null ? null : new EmployeeInfo(person);
+        this.enteredPerson = EmployeeInfo.newInstance(person);
         this.acuteOrChronic = diagnosis.getCharacterId() == 1; //TODO: add entity for rbDiseaseCharacter!
         dispensarySuperVision = new DispensaryInfo(diagnostic);
         final RbTraumaType traumaTypeDb = diagnostic.getTraumaType();
         traumaType = traumaTypeDb == null ? null : new CodeNamePair(traumaTypeDb.getCode(), traumaTypeDb.getName());
 
-        diagnostic.getEvent().getEventType().getRequestType().getCode()
-
-
+        //diagnostic.getEvent().getEventType().getRequestType().getCode()
         countAdmissionsThisYear = null;//TODO;
     }
 
