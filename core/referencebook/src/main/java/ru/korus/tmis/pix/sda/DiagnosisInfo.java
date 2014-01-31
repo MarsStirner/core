@@ -105,6 +105,10 @@ public class DiagnosisInfo {
         dispensarySuperVision = new DispensaryInfo(diagnostic);
         final RbTraumaType traumaTypeDb = diagnostic.getTraumaType();
         traumaType = traumaTypeDb == null ? null : new CodeNamePair(traumaTypeDb.getCode(), traumaTypeDb.getName());
+
+        diagnostic.getEvent().getEventType().getRequestType().getCode()
+
+
         countAdmissionsThisYear = //TODO;
     }
 
