@@ -48,9 +48,16 @@ public class DbPrescriptionSendingResBean implements DbPrescriptionSendingResBea
             PrescriptionSendingRes master = getPrescriptionSendingRes(drugChart.getMaster(), drugComponent);
             if (master != null) {
                 res = master.getUuid();
+                if(res == null) {
+                    master.setUuid(UUID.randomUUID().toString());
+                    em.flush();
+                    res = master.getUuid();
+                }
             }
         } else {
             res = UUID.randomUUID().toString();
+            prescriptionSendingRes.setUuid(res);
+            em.flush();
         }
         return res;
     }
