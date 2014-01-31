@@ -54,87 +54,44 @@ public class EpicrisisInfo {
     private final XMLGregorianCalendar createDate;
 
     /**
-     * текст документа
+     * Идентификатор в МИС
      */
-    private final String text;
+    private final String id;
 
     /**
-     * Идентификатор врача, зафиксировавшего данные
+     * Автор записи (врач)
      */
-    private final Integer personCreatedId;
+    private final EmployeeInfo createdPerson;
 
     /**
-     * Фамилия
+     * Дата/время ввода записи в МИС
      */
-    final private String familyName;
+    private final XMLGregorianCalendar endDate;
+
     /**
-     * Имя
+     * Тип документа
      */
-    final private String givenName;
-    /**
-     * Отчество
-     */
-    final private String middleName;
-    /**
-     * Идентификатор текущего обращения
-     */
-    private String eventId;
+    private final CodeNamePair docType;
 
     public EpicrisisInfo(Action action, ClientInfo clientInfo, String orgName, DbActionPropertyBeanLocal apBean) {
-
         this.code = action.getActionType().getMnemonic();
         this.docName = action.getActionType().getName();
-
-        XMLGregorianCalendar createDate = null;
-        try {
-            createDate = Database.toGregorianCalendar(action.getEndDate());
-        } catch (DatatypeConfigurationException e) {
+        this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
+        this.id = String.valueOf(action.getId());
+        this.createdPerson =  EmployeeInfo.newInstance(action.getCreatePerson());
+        this.endDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
+        CodeNamePair docType = null;
+        if( "EPI".equals(action.getActionType().getMnemonic())) {
+            docType = new CodeNamePair("1", "Эпикриз стационара");
+        } else if ("EPIAMB".equals(action.getActionType().getMnemonic())) {
+            docType = new CodeNamePair("2", "Амбулаторный эпикриз");
+        }  else if ("DIR".equals(action.getActionType().getMnemonic())) {
+            docType = new CodeNamePair("3", "Направление");
         }
-        this.createDate = createDate;
-
-        Staff staff = action.getCreatePerson();
-        this.personCreatedId = staff != null ? staff.getId() : null;
-        this.familyName = staff != null ? staff.getLastName() : "";
-        this.givenName = staff != null ? staff.getFirstName() : "";
-        this.middleName = staff != null ? staff.getPatrName() : "";
-        this.text = genEpicrisisText(action, clientInfo, orgName, apBean);
+        this.docType = docType;
     }
 
-    private String genEpicrisisText(Action action, ClientInfo clientInfo, String orgName, DbActionPropertyBeanLocal apBean) {
-        final char XML_EOL = '\n';
-        StringBuilder res = new StringBuilder();
-        final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
-        res.append(orgName).append(' ')
-                .append("Дата и время: ").append(createDate != null ? dateFormat.format(createDate.toGregorianCalendar().getTime()) : "???").append(' ')
-                .append("Амбулаторная карта №").append("".equals(action.getEvent().getExternalId()) ? " Не задано" : action.getEvent().getExternalId()).append(' ')
-                .append("Ф.И.О. пациента: " + clientInfo.getFamilyName() + ' ' + clientInfo.getGivenName() + ' ' + clientInfo.getMiddleName()).append(' ')
-                .append("Возраст: " + (createDate != null && clientInfo.getBirthDate() != null ? getAge(createDate, clientInfo.getBirthDate()) : "???"))
-                .append(XML_EOL);
-        Map<ActionProperty, List<APValue>> ap;
-        try {
-            ap = apBean.getActionPropertiesByActionId(action.getId());
-            for (Map.Entry<ActionProperty, List<APValue>> prop : ap.entrySet()) {
-                if (prop.getValue() != null && !prop.getValue().isEmpty()) {
-                    res.append(prop.getKey().getType().getName() + ": " + prop.getValue().get(0).getValueAsString()).append(XML_EOL);
-                }
-            }
-        } catch (CoreException e) {
-            e.printStackTrace();
-        }
-        if (personCreatedId != null) {
-            res.append("идентификатор врача: " + personCreatedId).append(XML_EOL);
-
-        }
-        res.append(" " + familyName + ' ' + givenName + ' ' + middleName).append(XML_EOL);
-        return res.toString();
-    }
-
-    /**
-     * @param createDate2
-     * @param birthDate
-     * @return
-     */
-    private String getAge(XMLGregorianCalendar createDate, XMLGregorianCalendar birthDate) {
+     private String getAge(XMLGregorianCalendar createDate, XMLGregorianCalendar birthDate) {
         DateTime birth = new DateTime(birthDate.toGregorianCalendar());
         DateTime create = new DateTime(createDate.toGregorianCalendar());
         Integer years = Years.yearsBetween(birth, create).getYears();
@@ -178,24 +135,19 @@ public class EpicrisisInfo {
         return createDate;
     }
 
-    public String getText() {
-        return text;
+    public EmployeeInfo getCreatedPerson() {
+        return createdPerson;
     }
 
-    public Integer getPersonCreatedId() {
-        return personCreatedId;
+    public XMLGregorianCalendar getEndDate() {
+        return endDate;
     }
 
-    public String getFamilyName() {
-        return familyName;
+    public CodeNamePair getDocType() {
+        return docType;
     }
 
-    public String getGivenName() {
-        return givenName;
+    public String getId() {
+        return id;
     }
-
-    public String getMiddleName() {
-        return middleName;
-    }
-
 }

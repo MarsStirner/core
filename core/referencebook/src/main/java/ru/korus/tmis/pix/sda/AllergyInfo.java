@@ -8,6 +8,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.ClientAllergy;
+import ru.korus.tmis.core.entity.model.Staff;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -30,6 +31,7 @@ public class AllergyInfo {
 
     /**
      * Расшифровка вида аллергии по справочнику МИС
+     *  Аллергия/непереносимость (название препарата, шерсть животных, продукт питания, пыль, ...)
      */
     final private String nameSubstance;
 
@@ -42,6 +44,21 @@ public class AllergyInfo {
      * Расшифровка степени тяжести аллергической реакции по справочнику МИС
      */
     final private String severityDescription;
+
+    /**
+     * Идентификатор в МИС
+     */
+    private final String id;
+
+    /**
+     * Автор записи (Врач)
+     */
+    private final EmployeeInfo createdPerson;
+
+    /**
+     * Дополнительная информация
+     */
+    private final String note;
 
     /**
      * @return the orgName
@@ -96,5 +113,20 @@ public class AllergyInfo {
             }
         }
         this.severityDescription = severityDescription;
+        this.id = String.valueOf(clientAllergy.getId());
+        this.createdPerson = EmployeeInfo.newInstance(clientAllergy.getCreatePerson());
+        this.note = clientAllergy.getNotes();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public EmployeeInfo getCreatedPerson() {
+        return createdPerson;
+    }
+
+    public String getNote() {
+        return note;
     }
 }

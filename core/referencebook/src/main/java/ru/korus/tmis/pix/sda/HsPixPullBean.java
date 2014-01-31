@@ -8,7 +8,10 @@ import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.pix.sda.ws.EMRReceiverService;
+import ru.korus.tmis.pix.sda.ws.EMRReceiverServiceSoap;
 import ru.korus.tmis.pix.sda.ws.SDASoapServiceService;
 import ru.korus.tmis.pix.sda.ws.SDASoapServiceServiceSoap;
 import ru.korus.tmis.scala.util.ConfigManager;
@@ -61,9 +64,9 @@ public class HsPixPullBean {
             logger.info("HS integration entry...");
             if (ConfigManager.HealthShare().isSdaActive()) {
                 logger.info("HS integration is active...");
-                SDASoapServiceService service = new SDASoapServiceService();
+                EMRReceiverService service = new EMRReceiverService();
                 service.setHandlerResolver(new SdaHandlerResolver());
-                SDASoapServiceServiceSoap port = service.getSDASoapServiceServiceSoap();
+                EMRReceiverServiceSoap port = service.getEMRReceiverServiceSoap();
 
                 logger.info("HS integration ... SDASoapServiceServiceSoap is avalable");
                 Integer maxId = em.createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
@@ -92,7 +95,7 @@ public class HsPixPullBean {
     /**
      * @param port
      */
-    private void sendPatientsInfo(SDASoapServiceServiceSoap port) {
+    private void sendPatientsInfo(EMRReceiverServiceSoap port) {
         List<PatientsToHs> patientsToHs = em.
                 createNamedQuery("PatientsToHs.ToSend", PatientsToHs.class)
                 .setParameter("now", new Timestamp((new Date()).getTime())).setMaxResults(MAX_RESULT).getResultList();
@@ -106,7 +109,7 @@ public class HsPixPullBean {
         }
     }
 
-    private void sendPatientInfo(SDASoapServiceServiceSoap port, PatientsToHs patientToHs) {
+    private void sendPatientInfo(EMRReceiverServiceSoap port, PatientsToHs patientToHs) {
         try {
             logger.info("HS integration processing PatientsToHs.patientId = {}", patientToHs.getPatientId());
             int errCount = patientToHs.getErrCount();
@@ -116,7 +119,16 @@ public class HsPixPullBean {
             final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
             List<DiagnosisInfo> emptyDiag = new LinkedList<DiagnosisInfo>();
             List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
-            port.sendSDA(SdaBuilder.toSda(new ClientInfo(patientToHs.getPatient(), dbSchemeKladrBeanLocal), new EventInfo(getDefOrgName()), emptyAllergy, emptyDiag, emptyEpi));
+            port.container(
+                    SdaBuilder.toSda(new ClientInfo(
+                            patientToHs.getPatient(),
+                            dbSchemeKladrBeanLocal),
+                            new EventInfo(getDefOrgName()),
+                            emptyAllergy,
+                            emptyDiag,
+                            new LinkedList<DisabilitiesInfo>(),
+                            emptyEpi,
+                            new LinkedList<ServiceInfo>() ));
             em.remove(patientToHs);
         } catch (SOAPFaultException ex) {
             patientToHs.setInfo(ex.getMessage());
@@ -132,7 +144,7 @@ public class HsPixPullBean {
     /**
      * @param port
      */
-    private void sendNewEventToHS(SDASoapServiceServiceSoap port) {
+    private void sendNewEventToHS(EMRReceiverServiceSoap port) {
         List<Event> newEvents = em.
                 createQuery("SELECT hsi.event FROM HSIntegration hsi WHERE hsi.status = :newEvent AND hsi.event.execDate IS NOT NULL AND (" +
                         "hsi.event.eventType.requestType.code = 'clinic' OR " +
@@ -152,7 +164,7 @@ public class HsPixPullBean {
     }
 
 
-    private void sendNewEventToHS(Event event, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, SDASoapServiceServiceSoap port) {
+    private void sendNewEventToHS(Event event, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal, EMRReceiverServiceSoap port) {
         final HSIntegration hsIntegration = em.find(HSIntegration.class, event.getId());
         try {
             final ClientInfo clientInfo = new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal);
@@ -160,7 +172,14 @@ public class HsPixPullBean {
             final HashSet<String> flatCodes = new HashSet<String>(Arrays.asList("recieved", "moving"));
             final Multimap<String,Action> actionsByTypeCode = dbEventBeanLocal.getActionsByTypeCode(event, flatCodes);
             final EventInfo eventInfo = new EventInfo(event, actionsByTypeCode, dbActionPropertyBeanLocal);
-            port.sendSDA(SdaBuilder.toSda(clientInfo, eventInfo, getAllergies(event), getDiagnosis(event), getEpicrisis(event, clientInfo)));
+            port.container(SdaBuilder.toSda(
+                    clientInfo,
+                    eventInfo,
+                    getAllergies(event),
+                    getDiagnosis(event),
+                    getDisabilities(event.getPatient()),
+                    getEpicrisis(event, clientInfo)),
+                    getServices(event));
             hsIntegration.setStatus(HSIntegration.Status.SENDED);
             hsIntegration.setInfo("");
             em.flush();
@@ -178,6 +197,28 @@ public class HsPixPullBean {
             e.printStackTrace();
             em.flush();
         }
+    }
+
+    private List<ServiceInfo> getServices(Event event) {
+        //TODO move to DbAtionBean!
+        List<Action> services = em.createQuery("SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0 AND a.actionType IS NOT NULL", Action.class)
+                .setParameter("eventId", event.getId()).getResultList();
+        List<ServiceInfo> res = new LinkedList<ServiceInfo>();
+        for(Action action : services) {
+            res.add(new ServiceInfo(action));
+        }
+        return res;
+    }
+
+    private List<DisabilitiesInfo> getDisabilities(Patient patient) {
+        List<DisabilitiesInfo> res = new LinkedList<DisabilitiesInfo>();
+        for (ClientSocStatus clientSocStatus : patient.getClientSocStatuses()) {
+            if( ClientSocStatus.DISABILITY_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
+                final DisabilitiesInfo disability = new DisabilitiesInfo(clientSocStatus);
+                res.add(disability);
+            }
+        }
+       return res;
     }
 
     /**

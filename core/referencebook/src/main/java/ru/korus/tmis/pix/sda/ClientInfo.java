@@ -61,9 +61,6 @@ public class ClientInfo {
      */
     private static final String MOB_TEL = "03";
 
-    private static final String PRIVILEGE_CODE = "5";
-
-    private static final String SOCIAL_STATUS_CODE = "33";
 
     /**
      * Признак городского/сельского жителя
@@ -368,26 +365,28 @@ public class ClientInfo {
     private Iterable<Privilege> initPriveleges(Patient client) {
         List<Privilege> res = new LinkedList<Privilege>();
         for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
-            if( PRIVILEGE_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
+            if( ClientSocStatus.PRIVILEGE_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
                 final Privilege privelege = new Privilege(clientSocStatus);
                 res.add(privelege);
             }
         }
+        return res;
     }
 
     private Iterable<SocialStatus> initSocialStatus(Patient client) {
-        List<SocialStatus> res = new LinkedList<Privilege>();
+        List<SocialStatus> res = new LinkedList<SocialStatus>();
         for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
-            if( SOCIAL_STATUS_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
+            if( ClientSocStatus.SOCIAL_STATUS_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
                 final SocialStatus socStatus = new SocialStatus(clientSocStatus);
                 res.add(socStatus);
             }
         }
+        return res;
     }
 
     private boolean initIsFromeSocGroup(Patient client, String name) {
         for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
-            if(name.equals(clientSocStatus.clientSocStatus.getSocStatusType().getName())) {
+            if(name.equals(clientSocStatus.getSocStatusType().getName())) {
                 return true;
             }
         }

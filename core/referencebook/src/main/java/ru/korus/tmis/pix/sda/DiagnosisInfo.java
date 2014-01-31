@@ -109,7 +109,7 @@ public class DiagnosisInfo {
         diagnostic.getEvent().getEventType().getRequestType().getCode()
 
 
-        countAdmissionsThisYear = //TODO;
+        countAdmissionsThisYear = null;//TODO;
     }
 
 

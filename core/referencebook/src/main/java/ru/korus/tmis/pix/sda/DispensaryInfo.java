@@ -39,7 +39,7 @@ public class DispensaryInfo {
         final List<String> removeCode = Arrays.asList("3", "4", "5");
         started = setCode.contains(code) ? true : (removeCode.contains(code) ? false : null);
         date = ClientInfo.getXmlGregorianCalendar(diagnostic.getSetDate());
-        person = new EmployeeInfo(diagnostic.getPerson());
+        person = EmployeeInfo.newInstance(diagnostic.getPerson());
     }
 
     public Boolean isStarted() {

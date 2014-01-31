@@ -26,7 +26,7 @@ public class EmployeeInfo {
     //Отчество
     private final String middleName;
 
-    public EmployeeInfo(Staff createPerson) {
+    private EmployeeInfo(Staff createPerson) {
         code = createPerson.getCode();
         final Speciality speciality = createPerson.getSpeciality();
         spesialty = speciality == null ? null : new CodeNamePair(speciality.getCode(), speciality.getName());
@@ -36,6 +36,11 @@ public class EmployeeInfo {
         family = createPerson.getLastName();
         given = createPerson.getFirstName();
         middleName = createPerson.getPatrName();
+    }
+
+
+    public static EmployeeInfo newInstance(Staff createPerson) {
+        return createPerson == null ? null : new EmployeeInfo(createPerson);
     }
 
     public String getCode() {

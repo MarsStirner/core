@@ -1,14 +1,13 @@
 
 package ru.korus.tmis.pix.sda.ws;
 
+import ru.korus.tmis.scala.util.ConfigManager;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.Map;
 import javax.xml.namespace.QName;
-import javax.xml.ws.Service;
-import javax.xml.ws.WebEndpoint;
-import javax.xml.ws.WebServiceClient;
-import javax.xml.ws.WebServiceException;
-import javax.xml.ws.WebServiceFeature;
+import javax.xml.ws.*;
 
 
 /**
@@ -17,7 +16,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "EMRReceiverService", targetNamespace = "urn:wsdl", wsdlLocation = "file:/C:/Project/tmis-core/core/referencebook/src/main/resources/PIX/wsdl/sda.wsdl")
+@WebServiceClient(name = "EMRReceiverService", targetNamespace = "urn:wsdl", wsdlLocation =  "../../../../../../PIX/wsdl/sda.wsdl")
 public class EMRReceiverService
     extends Service
 {
@@ -30,7 +29,8 @@ public class EMRReceiverService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/C:/Project/tmis-core/core/referencebook/src/main/resources/PIX/wsdl/sda.wsdl");
+            final URL baseUrl = EMRReceiverService.class.getResource(".");
+            url = new URL(baseUrl, "../../../../../../PIX/wsdl/sda.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
@@ -69,7 +69,10 @@ public class EMRReceiverService
      */
     @WebEndpoint(name = "EMRReceiverServiceSoap")
     public EMRReceiverServiceSoap getEMRReceiverServiceSoap() {
-        return super.getPort(new QName("urn:wsdl", "EMRReceiverServiceSoap"), EMRReceiverServiceSoap.class);
+        EMRReceiverServiceSoap port = super.getPort(new QName("urn:wsdl", "EMRReceiverServiceSoap"), EMRReceiverServiceSoap.class);
+        Map<String, Object> requestContext = ((BindingProvider) port).getRequestContext();
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, ConfigManager.HealthShare().ServiceUrlSda().toString());
+        return port;
     }
 
     /**

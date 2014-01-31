@@ -86,7 +86,7 @@ public class EventInfo {
         this.orgOid = getOrgOid(event);
         this.type = event.getEventType().getId();
 
-        autorInfo = event.getCreatePerson() == null ? null : new EmployeeInfo(event.getCreatePerson());
+        autorInfo = EmployeeInfo.newInstance(event.getCreatePerson());
         final RbFinance finance = event.getEventType().getFinance();
         financeType = finance == null ? null : new CodeNamePair(finance.getCode(), finance.getName());
         atHome = initAtHome(event.getEventType());//TODO: Impl:  rbScene.name<=rbScene.id<=EventType.scene_id<=EventType.id<=Event.id (если значение содержит "дом" то передаем "true", иначе "false")

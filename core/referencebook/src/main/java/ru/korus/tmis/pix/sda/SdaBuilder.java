@@ -10,7 +10,7 @@ package ru.korus.tmis.pix.sda;
 import ru.korus.tmis.pix.sda.ws.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
-import javax.xml.registry.infomodel.Organization;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -34,7 +34,8 @@ public class SdaBuilder {
                                   List<AllergyInfo> allergies,
                                   List<DiagnosisInfo> diagnosesInfo,
                                   List<DisabilitiesInfo> disabilitiesInfo,
-                                  List<EpicrisisInfo> epicrisisInfo) {
+                                  List<EpicrisisInfo> epicrisisInfo,
+                                  List<ServiceInfo> servicesInfo) {
         Container res = new Container();
 
         // Уникальный идентификатор пациента в МИС и краткое наименование ЛПУ
@@ -61,21 +62,27 @@ public class SdaBuilder {
         }
 
         if (!allergies.isEmpty()) {
-            res = addAllergies(res, allergies);
+            res = addAllergies(res, eventInfo, allergies);
         }
 
 
         if (!epicrisisInfo.isEmpty()) {
-            res = addepicrisis(res, eventInfo, epicrisisInfo);
+            res = addEpicrisis(res, eventInfo, epicrisisInfo);
         }
+
+        if (!servicesInfo.isEmpty() )  {
+            res = addServices(res, eventInfo, servicesInfo);
+        }
+
 
         return res;
     }
 
+
     private static void addEncouter(EventInfo eventInfo, Container res) {
         Encounter encounter = SDAFactory.createEncounter();
         //Идентификатор в МИС
-        encounter.setExtId(eventInfo.getI());
+        encounter.setExtId(eventInfo.getEventId());
 
         //Автор записи
         if (eventInfo.getAutorInfo() != null) {
@@ -598,62 +605,48 @@ public class SdaBuilder {
      * @param epicrisisInfo
      * @return
      */
-    private static Container addepicrisis(Container res, EventInfo eventInfo, List<EpicrisisInfo> epicrisisInfo) {
+    private static Container addEpicrisis(Container res, EventInfo eventInfo, List<EpicrisisInfo> epicrisisInfo) {
         res.setDocuments(new ArrayOfdocumentDocument());
         for (EpicrisisInfo epInfo : epicrisisInfo) {
-            final Document doc = new Document();
-            boolean addNew = false;
-            if (epInfo.getEventUuid() != null) {
-                addNew = true;
+            Document doc = null;
+            //Идентификатор в МИС и Номер документа
+            if(epInfo.getId() != null ) {
+                doc = doc == null ? SDAFactory.createDocument() : doc;
+                doc.setExtId(epInfo.getId());
+                doc.setDocNum(epInfo.getId());
+            }
+            //Код эпизода
+            if (eventInfo.getEventId() != null) {
+                doc = doc == null ? SDAFactory.createDocument() : doc;
                 doc.setEncounterCode(eventInfo.getEventId());
             }
-            if (epInfo.getCode() != null && !epInfo.getCode().isEmpty() ||
-                    epInfo.getDocName() != null && !epInfo.getDocName().isEmpty()) {
-                DocumentType docType = new DocumentType();
-                if (epInfo.getCode() != null && !epInfo.getCode().isEmpty()) {
-                    docType.setCode(epInfo.getCode());
-                }
-                if (epInfo.getDocName() != null && !epInfo.getDocName().isEmpty()) {
-                    docType.setCode(epInfo.getDocName());
-                }
-                doc.setDocumentType(docType);
-            }
-            if (epInfo.getCreateDate() != null) {
-                doc.setEnteredOn(epInfo.getCreateDate());
-                addNew = true;
-            }
-            if (epInfo.getText() != null && !epInfo.getText().isEmpty()) {
-                doc.setNoteText(epInfo.getText());
-                addNew = true;
-            }
-            final boolean isNameSet = epInfo.getFamilyName() != null && !epInfo.getFamilyName().isEmpty() ||
-                    epInfo.getGivenName() != null && !epInfo.getGivenName().isEmpty() ||
-                    epInfo.getMiddleName() != null && !epInfo.getMiddleName().isEmpty();
-            if (epInfo.getPersonCreatedId() != null || isNameSet) {
 
-                CareProvider careProvider = new CareProvider();
-
-                if (epInfo.getPersonCreatedId() != null) {
-                    careProvider.setCode(String.valueOf(epInfo.getPersonCreatedId()));
-                }
-                if (isNameSet) {
-                    Name name = new Name();
-                    if (epInfo.getFamilyName() != null && !epInfo.getFamilyName().isEmpty()) {
-                        name.setFamilyName(epInfo.getFamilyName());
-                    }
-                    if (epInfo.getGivenName() != null && !epInfo.getGivenName().isEmpty()) {
-                        name.setGivenName(epInfo.getGivenName());
-                    }
-                    if (epInfo.getMiddleName() != null && !epInfo.getMiddleName().isEmpty()) {
-                        name.setMiddleName(epInfo.getMiddleName());
-                    }
-                    careProvider.setName(name);
-                }
-
-                doc.setClinician(careProvider);
+            //Автор записи (врач)
+            if (epInfo.getCreatedPerson() != null ) {
+                doc = doc == null ? SDAFactory.createDocument() : doc;
+                doc.setEnteredBy(toSdaEmployee(epInfo.getCreatedPerson()));
             }
 
-            if (addNew) {
+            //Дата/время ввода записи в МИС и Дата документа
+            if(epInfo.getEndDate() != null) {
+                doc = doc == null ? SDAFactory.createDocument() : doc;
+                doc.setEnteredOn(epInfo.getEndDate());
+                doc.setDocDate(epInfo.getEndDate());
+            }
+
+            //Тип документа
+            if(epInfo.getDocType() != null) {
+                doc = doc == null ? SDAFactory.createDocument() : doc;
+                doc.setDocType(getCodeAndName(epInfo.getDocType(), "1.2.643.5.1.13.2.1.1.646"));
+            }
+
+            //Название документа
+            if(epInfo.getDocName() != null) {
+                doc = doc == null ? SDAFactory.createDocument() : doc;
+                doc.setDocName(epInfo.getDocName());
+            }
+
+            if (doc != null) {
                 res.getDocuments().getDocument().add(doc);
             }
         }
@@ -682,7 +675,7 @@ public class SdaBuilder {
         for (DisabilitiesInfo disability : disabilitiesInfo) {
             Disability sdaDisability = toSdaDisability(disability);
             if(sdaDisability != null) {
-                res.getDisabilities().getDisability().add(sdaDisability)l
+                res.getDisabilities().getDisability().add(sdaDisability);
             }
         }
         return res;
@@ -836,43 +829,163 @@ public class SdaBuilder {
      * @param allergies
      * @return
      */
-    private static Container addAllergies(Container res, List<AllergyInfo> allergies) {
+    private static Container addAllergies(Container res, EventInfo eventInfo, List<AllergyInfo> allergies) {
         res.setAllergies(new ArrayOfallergyAllergy());
         for (AllergyInfo allergyInfo : allergies) {
-            final Allergy allergy = new Allergy();
-            boolean addNew = false;
-            if (allergyInfo.getOrgName() != null) {
-                Organization organisation = new Organization();
-                organisation.setCode(allergyInfo.getOrgName());
-                allergy.setEnteredAt(organisation);
-                addNew = true;
-            }
-            if (allergyInfo.getCreateDate() != null) {
-                allergy.setEnteredOn(allergyInfo.getCreateDate());
-                addNew = true;
-            }
-            if (allergyInfo.getNameSubstance() != null) {
-                AllergyCode allergyCode = new AllergyCode();
-                allergyCode.setDescription(allergyInfo.getNameSubstance());
-                allergy.setAllergy(allergyCode);
-                addNew = true;
-            }
-            if (allergyInfo.getSeverityCode() != null) {
-                Severity severity = new Severity();
-                severity.setCode(String.valueOf(allergyInfo.getSeverityCode().toString()));
-                if (allergyInfo.getSeverityDescription() != null) {
-                    severity.setDescription(allergyInfo.getSeverityDescription());
-                }
-                allergy.setSeverity(severity);
-                addNew = true;
-            }
-
-            if (addNew) {
+            Allergy allergy = getAllergy(eventInfo, allergyInfo);
+            if (allergy != null) {
                 res.getAllergies().getAllergy().add(allergy);
             }
         }
         return res;
     }
+
+    private static Allergy getAllergy(EventInfo eventInfo, AllergyInfo allergyInfo) {
+        Allergy allergy = null;
+        //Идентификатор в МИС
+        if(allergyInfo.getId() != null) {
+            allergy = allergy == null ? SDAFactory.createAllergy() : allergy;
+            allergy.setExtId(allergyInfo.getId());
+        }
+        //Код эпизода
+        if(eventInfo != null) {
+            allergy = allergy == null ? SDAFactory.createAllergy() : allergy;
+            allergy.setEncounterCode(eventInfo.getEventId());
+        }
+
+        //Автор записи (Врач)
+        if(allergyInfo.getCreatedPerson() != null) {
+            allergy = allergy == null ? SDAFactory.createAllergy() : allergy;
+            allergy.setEnteredBy(toSdaEmployee(allergyInfo.getCreatedPerson()));
+        }
+
+        //Дата/время ввода записи в МИС
+        if (allergyInfo.getCreateDate() != null) {
+            allergy = allergy == null ? SDAFactory.createAllergy() : allergy;
+            allergy.setEnteredOn(allergyInfo.getCreateDate());
+        }
+
+        //Аллергия/непереносимость (название препарата, шерсть животных, продукт питания, пыль, ...)
+        if(allergyInfo.getNameSubstance() != null) {
+            allergy = allergy == null ? SDAFactory.createAllergy() : allergy;
+            allergy.setAllergy(getCodeAndName(new CodeNamePair(null, allergyInfo.getNameSubstance()), null));
+        }
+
+        //Дополнительная информация
+        if (allergyInfo.getNote() != null ) {
+            allergy = allergy == null ? SDAFactory.createAllergy() : allergy;
+            allergy.setComments(allergyInfo.getNote());
+        }
+        return allergy;
+    }
+
+    /**
+     * Раздел "Медицинские услуги"
+     * @param res
+     * @param eventInfo
+     * @param servicesInfo
+     * @return
+     */
+
+    private static Container addServices(Container res, EventInfo eventInfo, List<ServiceInfo> servicesInfo) {
+        res.setServices(SDAFactory.createArrayOfserviceMedService());
+        for (ServiceInfo serviceInfo : servicesInfo) {
+            MedService service = getMedService(eventInfo, serviceInfo);
+            if (service != null) {
+                res.getServices().getService().add(service);
+            }
+        }
+        return res;
+    }
+
+    private static MedService getMedService(EventInfo eventInfo, ServiceInfo serviceInfo) {
+        MedService res = null;
+        //Идентификатор в МИС
+        if(serviceInfo.getId() != null){
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setExtId(serviceInfo.getId());
+        }
+        //Код эпизода
+        if(eventInfo.getEventId() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setEncounterCode(eventInfo.getEventId());
+        }
+
+        //Автор записи (врач)
+        if(serviceInfo.getCreatedPerson() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setEnteredBy(toSdaEmployee(serviceInfo.getCreatedPerson()));
+        }
+
+        //Дата/время ввода записи в МИС и Дата/время оказания
+        if(serviceInfo.getCreateDate() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setEnteredOn(serviceInfo.getCreateDate());
+            res.setRenderedOn(serviceInfo.getCreateDate());
+        }
+
+        //Код и название услуги
+        if(serviceInfo.getServiceCode() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setService(getCodeAndName(serviceInfo.getServiceCode(), "1.2.643.5.1.13.2.1.1.473"));
+        }
+
+        //Диагноз (код МКБ-10 и расшифровка)
+        if(serviceInfo.getDiagnosis() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setDiagnosis(getCodeAndName(serviceInfo.getDiagnosis(), "1.2.643.5.1.13.2.1.1.641"));
+        }
+
+        //Кол-во оказанных услуг
+        if(serviceInfo.getAmount() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setQuantity(new BigDecimal(serviceInfo.getAmount()));
+        }
+
+        //Исполнитель действия
+        if(serviceInfo.getPerson() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setRenderedBy(toSdaEmployee(serviceInfo.getPerson()));
+        }
+
+        //Вид медицинской помощи
+        if(serviceInfo.getServType() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setServCareType(getCodeAndName(serviceInfo.getServType(), null));
+        }
+
+        //Отделение МО лечения из регионального справочник
+        if(serviceInfo.getOrgStruct() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setFacilityDept(getCodeAndName(serviceInfo.getOrgStruct(), null));
+        }
+
+        //Профиль оказанной медицинской помощи
+        if(serviceInfo.getServiceProfile() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setCareProfile(getCodeAndName(serviceInfo.getServiceProfile(), null));
+        }
+
+        //Признак детского профиля
+        if(serviceInfo.getIsChildProfile() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setIsChildProfile(serviceInfo.getIsChildProfile());
+        }
+
+        //Профиль койки
+        if(serviceInfo.getBedProfile() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setBedProfile(getCodeAndName(new CodeNamePair(null, serviceInfo.getBedProfile()), null));
+        }
+
+        //Способ оплаты медицинской помощи
+        if(eventInfo.getFinanceType() != null) {
+            res = res == null ? SDAFactory.createMedService() : res;
+            res.setServPaymentType(getCodeAndName(eventInfo.getFinanceType(), "1.2.643.5.1.13.2.1.1.528"));
+        }
+        return res;
+    }
+
 
     private static String emptyToNull(String in) {
         return "".equals(in) ? null : in;

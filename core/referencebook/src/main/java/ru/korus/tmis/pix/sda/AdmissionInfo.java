@@ -5,6 +5,7 @@ import org.joda.time.DateTime;
 import org.joda.time.Days;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.exception.CoreException;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -12,11 +13,11 @@ import java.util.List;
 import java.util.Map;
 
 /**
-* Author:      Sergey A. Zagrebelny <br>
-* Date:        29.01.14, 9:27 <br>
-* Company:     Korus Consulting IT<br>
-* Description:  <br>
-*/
+ * Author:      Sergey A. Zagrebelny <br>
+ * Date:        29.01.14, 9:27 <br>
+ * Company:     Korus Consulting IT<br>
+ * Description:  <br>
+ */
 public class AdmissionInfo {
     private static final CodeNamePair IS_URGENT_ADMISSION = new CodeNamePair("isUrgentAdmission", "Экстренность");
     private static final CodeNamePair TIME_AFTER_FALLING_ILL = new CodeNamePair("timeAfterFallingIll", "Доставлен в стационар от начала заболевания");
@@ -41,11 +42,11 @@ public class AdmissionInfo {
     }};
     private final Map<String, String> admissionReferralMap = new HashMap<String, String>() {{
         put("СМП", "1");
-        put("Самостоятельно","2");
+        put("Самостоятельно", "2");
     }};
     private final Map<String, String> admissionsThisYearMap = new HashMap<String, String>() {{
         put("первично", "1");
-        put("повторно","2");
+        put("повторно", "2");
     }};
 
     private final CodeNamePair department;
@@ -88,15 +89,15 @@ public class AdmissionInfo {
         ward = apValue == null ? null : apValue.getValueAsString();
         bedDayCount = new Long(Days.daysBetween(new DateTime(event.getSetDate()), new DateTime(event.getExecDate())).getDays());
         //Лечащий врач
-        attendingDoctor = new EmployeeInfo(event.getExecutor());
+        attendingDoctor = EmployeeInfo.newInstance(event.getExecutor());
         //Врач приемного отделения
-        admittingDoctor = new EmployeeInfo(event.getAssigner());
+        admittingDoctor = EmployeeInfo.newInstance(event.getAssigner());
     }
 
     private Action getFirstMoving(Multimap<String, Action> actions) {
         Action res = null;
-        for(Action action : actions.get("moving")) {
-            if(res == null || action.getCreateDatetime().compareTo(res.getCreateDatetime()) < 0 ) {
+        for (Action action : actions.get("moving")) {
+            if (res == null || action.getCreateDatetime().compareTo(res.getCreateDatetime()) < 0) {
                 res = action;
             }
         }
@@ -105,8 +106,8 @@ public class AdmissionInfo {
 
     private Action getLastMoving(Multimap<String, Action> actions) {
         Action res = null;
-        for(Action action : actions.get("moving")) {
-            if(res == null || action.getCreateDatetime().compareTo(res.getCreateDatetime()) > 0 ) {
+        for (Action action : actions.get("moving")) {
+            if (res == null || action.getCreateDatetime().compareTo(res.getCreateDatetime()) > 0) {
                 res = action;
             }
         }
@@ -114,23 +115,29 @@ public class AdmissionInfo {
     }
 
     private APValue getActionPropertyByCodeOrName(Action recieved, CodeNamePair prop) {
-        for(ActionProperty actionProperty : recieved.getActionProperties()) {
-            if(prop.getCode().equals(actionProperty.getType().getCode())) {
-                final APValue value = dbActionPropertyBeanLocal.getActionPropertyValue(prop).iterator().next();
-                if(value != null) {
-                    return value;
+        try {
+            for (ActionProperty actionProperty : recieved.getActionProperties()) {
+                if (prop.getCode().equals(actionProperty.getType().getCode())) {
+                    final APValue value;
+                    value = dbActionPropertyBeanLocal.getActionPropertyValue(actionProperty).iterator().next();
+                    if (value != null) {
+                        return value;
+                    }
                 }
             }
-        }
-        for(ActionProperty actionProperty : recieved.getActionProperties()) {
-            if(prop.getName().equals(actionProperty.getType().getName())) {
-                final APValue value = dbActionPropertyBeanLocal.getActionPropertyValue(prop).iterator().next();
-                if(value != null) {
-                    return value;
+            for (ActionProperty actionProperty : recieved.getActionProperties()) {
+                if (prop.getName().equals(actionProperty.getType().getName())) {
+                    final APValue value = dbActionPropertyBeanLocal.getActionPropertyValue(actionProperty).iterator().next();
+                    if (value != null) {
+                        return value;
+                    }
                 }
             }
+            return null;
+        } catch (CoreException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+            return null;
         }
-        return null;
     }
 
 
