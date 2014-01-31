@@ -3,14 +3,15 @@ package ru.korus.tmis.core.patient
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
-import ru.korus.tmis.core.database.{DbEventBeanLocal, DbDiagnosisBeanLocal, DbDiagnosticBeanLocal, DbEventPersonBeanLocal}
+import ru.korus.tmis.core.database.{DbDiagnosisBeanLocal, DbDiagnosticBeanLocal}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.I18nable
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.{Diagnostic, Diagnosis, Mkb}
 import ru.korus.tmis.core.auth.AuthData
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.DiagnosesListData
+import ru.korus.tmis.scala.util.I18nable
+import ru.korus.tmis.core.database.common.DbEventBeanLocal
 
 /**
  * Методы для работы с диагнозами

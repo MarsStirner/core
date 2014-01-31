@@ -4,9 +4,10 @@ import util.parsing.combinator.JavaTokenParsers
 
 import scala.math.abs
 import java.util.{Calendar, GregorianCalendar, Date}
-import ru.korus.tmis.util.CloneUtils
 
-import ru.korus.tmis.util.General.nullity_implicits
+import ru.korus.tmis.scala.util.{General, CloneUtils}
+import General.nullity_implicits
+import ru.korus.tmis.scala.util.CloneUtils
 
 case class AgeSelector(age: String) {
 

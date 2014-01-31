@@ -18,7 +18,7 @@ import java.util.List;
 public class DbRbFinance1CBean implements DbRbFinance1CBeanLocal {
 
     @PersistenceContext(unitName = "s11r64")
-    private EntityManager em = null;
+    private EntityManager em;
 
     @Override
     public RbFinance1C getByFianceId(Integer id) {

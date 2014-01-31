@@ -14,7 +14,7 @@ import java.io.Serializable;
  * Description: <br>
  */
 @Entity
-@Table(name = "rb_KladrStreet", catalog = "", schema = "")
+@Table(name = "rb_KladrStreet")
 public class KladrStreet implements Serializable {
     //  <rec name="Абадзехская" socr="ул" code="01000001000000100" index="385000" gninmb="0105" uno="" ocatd="79401000000"/>
     @Id

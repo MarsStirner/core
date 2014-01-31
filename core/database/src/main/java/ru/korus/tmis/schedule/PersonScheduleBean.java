@@ -6,13 +6,14 @@ import org.joda.time.LocalTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.common.DbActionBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.text.SimpleDateFormat;

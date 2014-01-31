@@ -6,8 +6,8 @@ import java.util.Date
 import java.{util => ju}
 import ru.korus.tmis.core.entity.model.{Staff, Action}
 import scala.collection.JavaConversions._
-import ru.korus.tmis.util.ConfigManager
 import ru.korus.tmis.core.filter.AbstractListDataFilter
+import ru.korus.tmis.scala.util.ConfigManager
 
 //Контейнер для списка осмотров
 @XmlType(name = "assessmentsListData")

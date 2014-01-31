@@ -1,5 +1,6 @@
 package ru.korus.tmis.ws.impl
 
+import _root_.ru.korus.tmis.core.patient.SeventhFormBeanLocal
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
 import org.codehaus.jackson.map.ObjectMapper
@@ -13,13 +14,15 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.WebMisREST
 import javax.ejb.EJB
 import ru.korus.tmis.core.database._
+import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.patient._
 import scala.collection.JavaConversions._
 import com.google.common.collect.Lists
 import javax.servlet.http.HttpServletRequest
 import scala.Predef._
 
-import ru.korus.tmis.util.StringId
+import ru.korus.tmis.scala.util._
+import ru.korus.tmis.core.database.bak.{DbBbtResultOrganismBeanLocal, DbBbtResponseBeanLocal, DbBbtResultTextBeanLocal}
 
 /**
  * User: idmitriev
@@ -174,6 +177,15 @@ class WebMisRESTImpl  extends WebMisREST
 
   @EJB
   var dbTempInvalidBean: DbTempInvalidBeanLocal = _
+
+  @EJB
+  var dbBbtResultTextBean: DbBbtResultTextBeanLocal = _
+
+  @EJB
+  var dbBbtResponseBean: DbBbtResponseBeanLocal = _
+
+  @EJB
+  var dbBbtResultOrganismBean: DbBbtResultOrganismBeanLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -442,6 +454,7 @@ class WebMisRESTImpl  extends WebMisREST
     val at = actionTypeBean.getActionTypeById(actionTypeId)
     val flgDiagnostics = (at!=null &&
                           (at.getMnemonic.toUpperCase().compareTo("LAB")==0 ||
+                           at.getMnemonic.toUpperCase().compareTo("BAK_LAB")==0 ||
                            at.getMnemonic.toUpperCase().compareTo("DIAG")==0 ||
                            at.getMnemonic.toUpperCase().compareTo("CONS")==0))
     if(flgDiagnostics){
@@ -860,6 +873,7 @@ class WebMisRESTImpl  extends WebMisREST
           mnemonics!=null &&
           mnemonics.size()>0 &&
           (mnemonics.filter(p=>(p.toUpperCase().compareTo("LAB")==0 ||
+                                p.toUpperCase().compareTo("BAK_LAB")==0 ||
                                 p.toUpperCase().compareTo("DIAG")==0 ||
                                 p.toUpperCase().compareTo("CONS")==0))
           ).size>0
@@ -1287,6 +1301,19 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def getLayoutAttributes() = new LayoutAttributeListData(dbLayoutAttributeBean.getAllLayoutAttributes)
+
+  def getBakResult(actionId: Int, authData: AuthData): BakLabResultDataContainer = {
+    val response = dbBbtResponseBean.get(actionId)
+    if (response == null)
+      throw new CoreException("В базе данных отсутствуют результаты исследований БАК лаборатории для исследования с id=" + actionId)
+
+    val r = new BakLabResultDataContainer(
+      response,
+      dbBbtResultTextBean.getByActionId(actionId),
+      dbBbtResultOrganismBean.getByActionId(actionId)
+    )
+    r
+  }
 
 
   //__________________________________________________________________________________________________

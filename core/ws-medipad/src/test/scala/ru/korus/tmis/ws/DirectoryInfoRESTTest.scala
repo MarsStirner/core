@@ -18,12 +18,13 @@ import org.codehaus.jackson.map.ObjectMapper
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.fd.{FlatDirectory, FDRecord, FDFieldValue}
 import ru.korus.tmis.core.database._
+import common.{DbCustomQueryLocal, DbRbBloodTypeBeanLocal}
 import ru.korus.tmis.ws.impl.WebMisRESTImpl
 import org.slf4j.{Logger, LoggerFactory}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.patient.{PatientBeanLocal, PrimaryAssessmentBeanLocal}
-import ru.korus.tmis.util.StringId
 import ru.korus.tmis.core.filter.AbstractListDataFilter
+import ru.korus.tmis.scala.util.StringId
 
 /**
  * Author:      Ivan Dmitriev <br>

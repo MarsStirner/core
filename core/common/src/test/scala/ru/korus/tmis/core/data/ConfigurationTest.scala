@@ -4,7 +4,7 @@ import org.junit.Test
 import ru.korus.tmis.util.reflect.Configuration
 
 import reflect.Manifest
-import ru.korus.tmis.util.StringId
+import ru.korus.tmis.scala.util.StringId
 
 class ConfigurationTest {
 

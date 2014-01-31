@@ -3,7 +3,6 @@ package ru.korus.tmis.core.database
 import javax.ejb.Stateless
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
-import ru.korus.tmis.util.I18nable
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.auth.AuthData
@@ -11,6 +10,7 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.fd.{FDFieldValue, FDRecord, FlatDirectory}
 import ru.korus.tmis.auxiliary.{AuxiliaryFunctions, FDSortingStruct}
 import ru.korus.tmis.core.data.{FlatDirectoryRequestData, FlatDirectoryRequestDataListFilter, QueryDataStructure}
+import ru.korus.tmis.scala.util.I18nable
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

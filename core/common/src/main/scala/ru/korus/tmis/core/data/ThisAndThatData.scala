@@ -3,7 +3,6 @@ package ru.korus.tmis.core.data
 import reflect.BeanProperty
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import scala.collection.JavaConversions._
-import ru.korus.tmis.util.ConfigManager
 import util._
 import java.text.{DateFormat, SimpleDateFormat}
 import scala.Predef._
@@ -18,6 +17,7 @@ import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
 import org.codehaus.jackson.map.ObjectMapper
 import java.io.IOException
 import util.{TimeZone, Calendar, ArrayList, Date}
+import ru.korus.tmis.scala.util.ConfigManager
 
 @XmlType(name = "listRequestData")
 @XmlRootElement(name = "listRequestData")

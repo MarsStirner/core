@@ -9,7 +9,7 @@ import javax.ejb.Local;
  * DAO для работы с сущностью "Пациенты"
  * {@see ru.korus.tmis.core.entity.model.Patient}
  * <p/>
- * Рефакторинг класса {@see ru.korus.tmis.core.database.DbPatientBean}
+ * Рефакторинг класса {@see ru.korus.tmis.core.database.common.DbPatientBean}
  * <p/>
  * конкретные реализации:
  * {@see ru.risar.service.RisarPatientService} - интеграция с РИСАР

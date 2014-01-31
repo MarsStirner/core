@@ -3,17 +3,18 @@ package ru.korus.tmis.core.data
 import javax.xml.bind.annotation.{XmlType, XmlRootElement}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
+import fd.ClientSocStatus
 import kladr.{Street, Kladr}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import javax.xml.bind.annotation.XmlRootElement._
 import java.util.{Date, LinkedList}
 import reflect.BeanProperty
 import scala.Predef._
-import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 import org.codehaus.jackson.map.annotate.JsonView
 import java.util
 import ru.korus.tmis.core.filter.AbstractListDataFilter
+import ru.korus.tmis.scala.util.ConfigManager
 
 //Dynamic Filters
 object QuotaViews {

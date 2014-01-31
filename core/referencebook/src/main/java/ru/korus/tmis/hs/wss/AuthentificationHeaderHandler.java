@@ -1,6 +1,6 @@
 package ru.korus.tmis.hs.wss;
 
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.xml.namespace.QName;
 import javax.xml.soap.SOAPElement;

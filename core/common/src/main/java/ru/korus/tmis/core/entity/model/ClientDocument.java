@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "ClientDocument", catalog = "", schema = "")
+@Table(name = "ClientDocument")
 @NamedQueries(
         {
                 @NamedQuery(name = "ClientDocument.findAll", query = "SELECT p FROM ClientDocument p"),

@@ -3,7 +3,6 @@ package ru.korus.tmis.core.database
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.util.I18nable
 
 import grizzled.slf4j.Logging
 import java.lang.String
@@ -13,6 +12,7 @@ import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 import org.eclipse.persistence.jpa.JpaHelper
 import org.eclipse.persistence.queries.{ValueReadQuery, StoredProcedureCall}
+import ru.korus.tmis.scala.util.I18nable
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

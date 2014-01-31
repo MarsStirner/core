@@ -9,7 +9,8 @@ import org.mockito.{Mock, InjectMocks}
 import org.mockito.runners.MockitoJUnitRunner
 import org.slf4j.{LoggerFactory, Logger}
 import ru.korus.tmis.core.data.{BloodHistoryData, BloodHistoryListData}
-import ru.korus.tmis.core.database.{DbPatientBeanLocal, AppLockBeanLocal, DbBloodHistoryBeanLocal, DbManagerBeanLocal}
+import ru.korus.tmis.core.database.common.{DbManagerBeanLocal, DbPatientBeanLocal}
+import ru.korus.tmis.core.database.{AppLockBeanLocal, DbBloodHistoryBeanLocal}
 import ru.korus.tmis.core.entity.model.{Staff, RbBloodType, Patient, BloodHistory}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.patient.PatientBean

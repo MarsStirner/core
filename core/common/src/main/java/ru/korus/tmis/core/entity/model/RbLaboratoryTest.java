@@ -13,7 +13,7 @@ import javax.xml.bind.annotation.XmlType;
  */
 
 @Entity
-@Table(name = "rbLaboratory_Test", catalog = "", schema = "")
+@Table(name = "rbLaboratory_Test")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbLaboratoryTest.findAll", query = "SELECT j FROM RbLaboratoryTest j")
@@ -28,9 +28,9 @@ public class RbLaboratoryTest {
     @Column(name = "id")
     private Integer id;
 
-    @Basic(optional = false)
-    @Column(name = "master_id")
-    private Integer masterId;
+    @OneToOne(optional = false)
+    @JoinColumn(name = "master_id")
+    private RbLaboratory rbLaboratory;
 
     @Basic(optional = false)
     @Column(name = "test_id")
@@ -52,12 +52,8 @@ public class RbLaboratoryTest {
         this.id = id;
     }
 
-    public Integer getMasterId() {
-        return masterId;
-    }
-
-    public void setMasterId(Integer masterId) {
-        this.masterId = masterId;
+    public RbLaboratory getRbLaboratory() {
+        return rbLaboratory;
     }
 
     public Integer getTestId() {

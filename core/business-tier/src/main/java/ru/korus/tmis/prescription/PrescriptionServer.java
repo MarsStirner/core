@@ -9,9 +9,15 @@ import org.apache.thrift.transport.TTransportException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.common.DbActionBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyTypeBeanLocal;
+import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.pharmacy.DbDrugChartBeanLocal;
+import ru.korus.tmis.core.pharmacy.DbDrugComponentBeanLocal;
 import ru.korus.tmis.prescription.thservice.*;
 import ru.korus.tmis.prescription.thservice.DrugComponent;
 

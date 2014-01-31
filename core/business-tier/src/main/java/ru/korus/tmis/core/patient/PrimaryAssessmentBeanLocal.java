@@ -3,7 +3,7 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.JSONCommonData;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.util.StringId;
+import ru.korus.tmis.scala.util.StringId;
 import scala.Function2;
 
 import javax.ejb.Local;

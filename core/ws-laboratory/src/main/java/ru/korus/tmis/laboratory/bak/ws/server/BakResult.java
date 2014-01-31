@@ -5,10 +5,10 @@ import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.DbActionBeanLocal;
-import ru.korus.tmis.core.database.DbActionPropertyBeanLocal;
-import ru.korus.tmis.core.database.DbActionPropertyTypeBeanLocal;
-import ru.korus.tmis.core.database.DbCustomQueryLocal;
+import ru.korus.tmis.core.database.common.DbActionBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyTypeBeanLocal;
+import ru.korus.tmis.core.database.common.DbCustomQueryLocal;
 import ru.korus.tmis.core.database.bak.*;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
@@ -360,7 +360,7 @@ public class BakResult implements BakResultService {
                 final BbtResultOrganism resultOrganism = new BbtResultOrganism();
                 resultOrganism.setActionId(bakPosev.getActionId());
                 resultOrganism.setConcentration(microorganism.getComment());
-                resultOrganism.setOrganismId(mic.getId());
+                resultOrganism.setOrganism(mic);
                 dbBbtResultOrganismBean.add(resultOrganism);
 
                 if (!"".equals(microorganism.getComment())) {
@@ -378,8 +378,8 @@ public class BakResult implements BakResultService {
 
                     final BbtOrganismSensValues bbtOrganismSens = new BbtOrganismSensValues();
                     bbtOrganismSens.setActivity(antibiotic.getSensitivity());
-                    bbtOrganismSens.setAntibioticId(rbAntibiotic.getId());
-                    bbtOrganismSens.setBbtResultOrganismId(bbtResultOrganism.getId());
+                    bbtOrganismSens.setAntibioticId(rbAntibiotic);
+                    bbtOrganismSens.setBbtResultOrganism(bbtResultOrganism);
                     bbtOrganismSens.setMic(antibiotic.getConcentration());
                     dbBbtOrganismSensValuesBean.add(bbtOrganismSens);
 

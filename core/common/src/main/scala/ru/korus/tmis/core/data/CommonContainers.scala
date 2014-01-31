@@ -4,10 +4,10 @@ import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import reflect.BeanProperty
 import java.util.Date
 
-import ru.korus.tmis.util.ConfigManager
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import org.codehaus.jackson.annotate.JsonIgnoreProperties._
 import ru.korus.tmis.core.entity.model.OrgStructure
+import ru.korus.tmis.scala.util.ConfigManager
 
 @XmlType(name = "idNameContainer")
 @XmlRootElement(name = "idNameContainer")

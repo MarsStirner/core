@@ -14,7 +14,7 @@ import java.io.Serializable;
  * Since: 1.0.1.10
  */
 @Entity
-@Table(name = "LayoutAttribute", catalog = "", schema = "")
+@Table(name = "LayoutAttribute")
 @NamedQueries({
         @NamedQuery(name = "LayoutAttribute.findAll", query = "SELECT lo FROM LayoutAttribute lo"),
         @NamedQuery(name = "LayoutAttribute.findById", query = "SELECT lo FROM LayoutAttribute lo WHERE lo.id = :id")})

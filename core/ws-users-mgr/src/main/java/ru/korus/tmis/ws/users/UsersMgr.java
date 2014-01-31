@@ -24,7 +24,7 @@ import ru.korus.tmis.core.entity.model.Role;
 import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.UUID;
-import ru.korus.tmis.util.ConfigManager;
+import ru.korus.tmis.scala.util.ConfigManager;
 import scala.actors.threadpool.Arrays;
 
 /**

@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.database
 
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.I18nable
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import javax.interceptor.Interceptors
@@ -9,6 +8,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.filter.ListDataFilter
+import ru.korus.tmis.scala.util.I18nable
 
 /**
  * Методы для работы с таблицей s11r64.rbTissueType.

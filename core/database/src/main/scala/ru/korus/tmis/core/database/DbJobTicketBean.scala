@@ -1,10 +1,10 @@
 package ru.korus.tmis.core.database
 
+import common.DbManagerBeanLocal
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, CAPids, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
@@ -16,6 +16,7 @@ import ru.korus.tmis.util.reflect.LoggingManager
 import java.util.Date
 import java.text.SimpleDateFormat
 import java.util
+import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 
 /**
  * Методы для работы с JobTicket
@@ -368,7 +369,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     AND
       a.deleted = 0
     AND
-      a.actionType.mnemonic = 'LAB'
+      (a.actionType.mnemonic = 'LAB' OR a.actionType.mnemonic = 'BAK_LAB')
     AND
       e.deleted = 0
     AND
@@ -391,7 +392,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       WHERE
         a.event.id = :eventId
       AND
-        a.actionType.mnemonic = 'LAB'
+        (a.actionType.mnemonic = 'LAB' OR a.actionType.mnemonic = 'BAK_LAB')
       AND
         a.isUrgent = :urgent
       AND

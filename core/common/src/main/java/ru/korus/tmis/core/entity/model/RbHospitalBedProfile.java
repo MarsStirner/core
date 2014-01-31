@@ -7,7 +7,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "rbHospitalBedProfile", catalog = "", schema = "")
+@Table(name = "rbHospitalBedProfile")
 @NamedQueries(
         {
                 @NamedQuery(name = "RbHospitalBedProfile.findAll", query = "SELECT hbp FROM RbHospitalBedProfile hbp")

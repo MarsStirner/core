@@ -6,7 +6,7 @@ import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
 @Entity
-@Table(name = "FDFieldValue", catalog = "", schema = "")
+@Table(name = "FDFieldValue")
 @AssociationOverrides({
         @AssociationOverride(name = "pk.fdRecord",
                 joinColumns = @JoinColumn(name = "fdRecord_id")),

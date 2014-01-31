@@ -11,13 +11,12 @@ import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.reflections.Reflections;
-import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthStorageBean;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.database.*;
+import ru.korus.tmis.core.database.common.*;
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.core.pharmacy.DbUUIDBean;
-import ru.korus.tmis.core.pharmacy.DbUUIDBeanLocal;
+import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 
 import static org.junit.Assert.assertTrue;
 import javax.ejb.EJB;
@@ -48,8 +47,8 @@ public class PatientTestCase {
         //Тестируемые классы и зависимости
         Class<?>[] classes = new Class<?>[] {
                 ru.korus.tmis.core.logging.LoggingInterceptor.class,
-                ru.korus.tmis.core.database.InternalLoggerBeanLocal.class,
-                ru.korus.tmis.core.database.InternalLoggerBean.class,
+                InternalLoggerBeanLocal.class,
+                InternalLoggerBean.class,
 
                 DbPatientBeanLocal.class, DbPatientBean.class,
                 DbManagerBeanLocal.class, DbManagerBean.class,
@@ -88,7 +87,7 @@ public class PatientTestCase {
                 ru.korus.tmis.core.entity.model.Event.class,                    ru.korus.tmis.core.entity.model.EventType.class,
                 ru.korus.tmis.core.entity.model.TempInvalid.class,              ru.korus.tmis.core.entity.model.RbTempInvalidDocument.class,
                 ru.korus.tmis.core.entity.model.RbTempInvalidReason.class,      ru.korus.tmis.core.entity.model.fd.FDFieldValue.class,
-                ru.korus.tmis.core.entity.model.ClientSocStatus.class,          ru.korus.tmis.core.entity.model.RbSocStatusType.class,
+                ClientSocStatus.class,          ru.korus.tmis.core.entity.model.RbSocStatusType.class,
                 ru.korus.tmis.core.entity.model.RbSocStatusClass.class,         ru.korus.tmis.core.entity.model.RbSocStatusClassTypeAssoc.class,
                 ru.korus.tmis.core.entity.model.ClientPolicy.class,             ru.korus.tmis.core.entity.model.ClientWork.class,
                 ru.korus.tmis.core.entity.model.ClientContact.class,            ru.korus.tmis.core.entity.model.RbContactType.class,

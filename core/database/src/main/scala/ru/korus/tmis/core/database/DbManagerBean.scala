@@ -1,8 +1,7 @@
-package ru.korus.tmis.core.database
+package ru.korus.tmis.core.database.common
 
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 
 import grizzled.slf4j.Logging
 import java.util.Collection
@@ -14,6 +13,7 @@ import scala.collection.JavaConversions._
 import org.eclipse.persistence.jpa.JpaEntityManager
 import javax.ejb.{SessionContext, TransactionAttributeType, Stateless, TransactionAttribute}
 import javax.annotation.Resource
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

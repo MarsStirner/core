@@ -7,12 +7,12 @@ import java.lang.Iterable
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.ejb.{EJB, Stateless}
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.NoSuchClientAddressException
 import java.util.Date
 import ru.korus.tmis.core.data.AddressEntryContainer
 import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

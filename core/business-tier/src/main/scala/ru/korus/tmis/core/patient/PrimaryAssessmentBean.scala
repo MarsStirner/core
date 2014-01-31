@@ -8,13 +8,13 @@ import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.util.ConfigManager.APWI
+import ru.korus.tmis.scala.util.{StringId, I18nable, ConfigManager}
+import ConfigManager.APWI
 import java.util.{Calendar, LinkedList, HashSet, Date}
 import ru.korus.tmis.core.database._
+import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.data._
 import collection.immutable.HashMap
-import ru.korus.tmis.util.{StringId, ConfigManager, ActionPropertyWrapperInfo, I18nable}
-import ru.korus.tmis.util.StringId
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

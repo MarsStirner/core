@@ -5,13 +5,13 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.{EntityManager, PersistenceContext}
 import grizzled.slf4j.Logging
 import java.lang.Iterable
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import ru.korus.tmis.core.exception.NoSuchClientDocumentException
 import java.util.Date
 import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientDocument}
 import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
 import java.util
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

@@ -3,9 +3,9 @@ package ru.korus.tmis.core.data
 import scala.beans.BeanProperty
 import java.util.{Date, LinkedList}
 import javax.xml.bind.annotation.{XmlAttribute, XmlRootElement, XmlType}
-import ru.korus.tmis.util.ConfigManager
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.scala.util.ConfigManager
 
 @XmlType(name = "appealSimplifiedDataList")
 @XmlRootElement(name = "appealSimplifiedDataList")

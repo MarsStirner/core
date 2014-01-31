@@ -20,7 +20,7 @@ import java.util.UUID;
 public class DbPrescriptionSendingResBean implements DbPrescriptionSendingResBeanLocal {
 
     @PersistenceContext(unitName = "s11r64")
-    private EntityManager em = null;
+    private EntityManager em;
 
     @Override
     public PrescriptionSendingRes getPrescriptionSendingRes(DrugChart drugChart, DrugComponent drugComponent) {

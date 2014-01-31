@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.entity.model
 
 import ru.korus.tmis.core.data.CommonAttribute
-import ru.korus.tmis.util.{StringId, ConfigManager}
 
 import grizzled.slf4j.Logging
 import java.lang.Boolean
@@ -10,6 +9,7 @@ import java.text.ParseException
 import java.util.{Calendar, GregorianCalendar}
 
 import scala.collection.JavaConversions._
+import ru.korus.tmis.scala.util.{StringId, ConfigManager}
 
 class ActionWrapper(a: Action)
   extends Logging {

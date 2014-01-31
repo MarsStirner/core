@@ -4,11 +4,11 @@ import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
-import ru.korus.tmis.util.{ConfigManager, I18nable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbDiagnosisType
 import ru.korus.tmis.core.exception.NoSuchRbDiagnosisTypeException
 import scala.collection.JavaConversions._
+import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 /**
  * Методы для работы с таблицей Diagnostic

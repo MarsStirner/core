@@ -10,7 +10,7 @@ import javax.persistence.Table;
 import ru.korus.tmis.core.exception.CoreException;
 
 @Entity
-@Table(name = "ActionProperty_rbBloodComponentType", catalog = "", schema = "")
+@Table(name = "ActionProperty_rbBloodComponentType")
 public class APValueRbBloodComponentType extends AbstractAPValue implements Serializable, APValue {
 
     private static final long serialVersionUID = 1L;

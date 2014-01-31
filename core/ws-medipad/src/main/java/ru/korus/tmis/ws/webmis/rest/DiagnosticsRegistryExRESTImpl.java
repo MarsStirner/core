@@ -7,6 +7,8 @@ import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Список REST-сервисов для работы с данными о диагностиках
@@ -80,7 +82,14 @@ public class DiagnosticsRegistryExRESTImpl {
                                                                      @QueryParam("filter[urgent]")Boolean  urgent,
                                                                      @QueryParam("filter[class]")Short  clazz) {
 
-        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("laboratory");
+
+        DirectoryInfoRESTImpl.ActionTypesSubType atst_lab = DirectoryInfoRESTImpl.ActionTypesSubType.getType("laboratory");
+        DirectoryInfoRESTImpl.ActionTypesSubType atst_bak = DirectoryInfoRESTImpl.ActionTypesSubType.getType("bak_lab");
+
+        List mnemonics = new ArrayList<String>();
+        mnemonics.add(atst_lab.getMnemonic());
+        mnemonics.add(atst_bak.getMnemonic());
+
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
                 this.eventId,
                 //diagnosticDate,
@@ -92,8 +101,8 @@ public class DiagnosticsRegistryExRESTImpl {
                 office,
                 statusId,
                 (urgent==null) ? -1 : (urgent) ? 1 : 0,
-                atst.getSubType(),
-                atst.getMnemonic(),
+                atst_lab.getSubType(),
+                mnemonics,
                 (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
@@ -150,7 +159,7 @@ public class DiagnosticsRegistryExRESTImpl {
                                                              @QueryParam("filter[urgent]")Boolean  urgent,
                                                              @QueryParam("filter[class]")Short  clazz) {
 
-        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("instrumental");
+        final DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("instrumental");
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
                 this.eventId,
                 //diagnosticDate,
@@ -163,7 +172,7 @@ public class DiagnosticsRegistryExRESTImpl {
                 statusId,
                 (urgent==null) ? -1 : (urgent) ? 1 : 0,
                 atst.getSubType(),
-                atst.getMnemonic(),
+                new ArrayList<String>(){{this.add(atst.getMnemonic());}},
                 (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
@@ -220,7 +229,7 @@ public class DiagnosticsRegistryExRESTImpl {
                                                                @QueryParam("filter[urgent]")Boolean  urgent,
                                                                @QueryParam("filter[class]")Short  clazz) {
 
-        DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("consultations");
+        final DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("consultations");
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
                 this.eventId,
                 //diagnosticDate,
@@ -233,7 +242,7 @@ public class DiagnosticsRegistryExRESTImpl {
                 statusId,
                 (urgent==null) ? -1 : (urgent) ? 1 : 0,
                 atst.getSubType(),
-                atst.getMnemonic(),
+                new ArrayList<String>(){{this.add(atst.getMnemonic());}},
                 (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
@@ -530,4 +539,5 @@ public class DiagnosticsRegistryExRESTImpl {
     public Object getInfoAboutConsultationDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
         return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId, this.auth), this.callback);
     }
+
 }

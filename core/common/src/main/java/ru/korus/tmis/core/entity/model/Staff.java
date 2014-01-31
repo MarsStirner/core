@@ -28,7 +28,7 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 
 @Entity
-@Table(name = "Person", catalog = "", schema = "")
+@Table(name = "Person")
 @NamedQueries(
 {
         @NamedQuery(name = "Staff.findAll", query = "SELECT s FROM Staff s"),
