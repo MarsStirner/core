@@ -1315,6 +1315,9 @@ class WebMisRESTImpl  extends WebMisREST
     r
   }
 
+  def getBuildVersion: String = {
+    i18n("build.jenkins.number")
+  }
 
   //__________________________________________________________________________________________________
   //***************  AUTHDATA  *******************

@@ -372,4 +372,9 @@ public interface WebMisREST extends Serializable {
      */
     BakLabResultDataContainer getBakResult(int actionId, AuthData authData) throws CoreException;
 
+    /**
+     * Получение версии сборки jenkins
+     * @return Нет фиксированного формата возвращаемой версии - следует выводить пользователю как plain text.
+     */
+    String getBuildVersion();
 }
