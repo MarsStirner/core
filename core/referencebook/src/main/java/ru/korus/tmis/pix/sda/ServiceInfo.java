@@ -107,12 +107,9 @@ public class ServiceInfo {
 
             }
         }
-
-        final CodeNamePair diag = new CodeNamePair("1.2.643.5.1.13.2.1.1.641", "");
-
-        this.diagnosis = null; //TODO;  419
-        this.servType = null; //TODO; 444
-        this.serviceProfile = null;//TODO 448: event.getEventType().getMedicalAidTypeId();
+        this.diagnosis = new CodeNamePair("1.2.643.5.1.13.2.1.1.641", ""); // 419
+        this.servType = new CodeNamePair(String.valueOf(action.getEvent().getEventType().getMedicalAidTypeId()), ""); // 444
+        this.serviceProfile = new CodeNamePair(String.valueOf(action.getEvent().getEventType().getMedicalAidTypeId()), ""); // 448  event.getEventType().getMedicalAidTypeId();
     }
 
     /**
