@@ -2,9 +2,8 @@ package ru.korus.tmis.pix.sda;
 
 import com.google.common.collect.Multimap;
 import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
 import org.joda.time.Years;
-import ru.korus.tmis.core.database.DbCustomQueryBeanLocal;
+import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -78,7 +77,7 @@ public class ServiceInfo {
      */
     private final String bedProfile;
 
-    public ServiceInfo(final Action action, final Multimap<String, Action> actionsByTypeCode, final DbCustomQueryBeanLocal dbCustomQueryBean) {
+    public ServiceInfo(final Action action, final Multimap<String, Action> actionsByTypeCode, final DbQueryBeanLocal dbCustomQueryBean) {
         this.id = String.valueOf(action.getId());
         this.createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
         this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());

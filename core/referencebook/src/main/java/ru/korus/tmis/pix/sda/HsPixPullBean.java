@@ -3,7 +3,7 @@ package ru.korus.tmis.pix.sda;
 import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.DbCustomQueryBeanLocal;
+import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
@@ -57,7 +57,7 @@ public class HsPixPullBean implements  HsPixPullBeanLocal {
     DbEventBeanLocal dbEventBeanLocal;
 
     @EJB
-    private DbCustomQueryBeanLocal dbCustomQueryBean;
+    private DbQueryBeanLocal dbCustomQueryBean;
 
 
     public void pullDb() {

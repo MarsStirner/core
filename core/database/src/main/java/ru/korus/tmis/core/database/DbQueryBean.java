@@ -15,7 +15,7 @@ import java.util.List;
  * Description:  <br>
  */
 @Stateless
-public class DbCustomQueryBean implements DbCustomQueryBeanLocal {
+public class DbQueryBean implements DbQueryBeanLocal {
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;

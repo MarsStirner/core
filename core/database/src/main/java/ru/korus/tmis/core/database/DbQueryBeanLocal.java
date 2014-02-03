@@ -11,7 +11,7 @@ import javax.ejb.Local;
  * Description:  <br>
  */
 @Local
-public interface DbCustomQueryBeanLocal {
+public interface DbQueryBeanLocal {
 
     /**
      * Получить название профиля койки
