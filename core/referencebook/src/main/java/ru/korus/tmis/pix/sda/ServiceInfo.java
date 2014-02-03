@@ -102,7 +102,7 @@ public class ServiceInfo {
 
         final List<Diagnostic> diagnostics = action.getEvent().getDiagnostics();
         for (Diagnostic d : diagnostics) {
-            if (d.getStage().getId() == 1 || d.getStage().getId() == 2) {
+            if (d.getStage() != null && (d.getStage().getId() == 1 || d.getStage().getId() == 2)) {
 
             }
         }

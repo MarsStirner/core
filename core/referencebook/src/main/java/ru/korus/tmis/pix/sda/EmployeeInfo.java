@@ -32,10 +32,23 @@ public class EmployeeInfo {
         spesialty = speciality == null ? null : new CodeNamePair(speciality.getCode(), speciality.getName());
         final RbPost post = createPerson.getPost();
         role = post == null ? null : new CodeNamePair(post.getCode(), post.getName());
-        snils = createPerson.getSnils();
+        String snils = initSnils(createPerson);
+        this.snils = snils;
         family = createPerson.getLastName();
         given = createPerson.getFirstName();
         middleName = createPerson.getPatrName();
+    }
+
+    private String initSnils(Staff createPerson) {
+        String snils = createPerson.getSnils();
+        if(snils != null ) {
+            snils = snils.trim();
+            if(snils.length() == 11 ) {
+                snils = String.format("%s-%s-%s %s",
+                        snils.substring(0,3), snils.substring(3,6), snils.substring(6,9), snils.substring(9));
+            }
+        }
+        return snils;
     }
 
 
