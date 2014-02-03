@@ -60,8 +60,7 @@ public class HsPixPullBean implements  HsPixPullBeanLocal {
     private DbCustomQueryBeanLocal dbCustomQueryBean;
 
 
-    @Schedule(hour = "*", minute = "*", second = "30")
-    void pullDb() {
+    public void pullDb() {
         try {
             logger.info("HS integration entry...");
             if (ConfigManager.HealthShare().isSdaActive()) {
