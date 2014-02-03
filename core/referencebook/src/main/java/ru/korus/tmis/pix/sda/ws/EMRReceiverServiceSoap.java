@@ -6,6 +6,7 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.ws.soap.Addressing;
 
 
 /**
@@ -19,6 +20,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 @XmlSeeAlso({
     ObjectFactory.class
 })
+@Addressing(enabled=true, required=false)
 public interface EMRReceiverServiceSoap {
 
 

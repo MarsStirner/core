@@ -8,6 +8,7 @@ import java.net.URL;
 import java.util.Map;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
+import javax.xml.ws.soap.AddressingFeature;
 
 
 /**
@@ -16,7 +17,7 @@ import javax.xml.ws.*;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "EMRReceiverService", targetNamespace = "urn:wsdl", wsdlLocation =  "../../../../../../PIX/wsdl/sda.wsdl")
+@WebServiceClient(name = "EMRReceiverService", targetNamespace = "urn:S", wsdlLocation =  "../../../../../../PIX/wsdl/sda.wsdl")
 public class EMRReceiverService
     extends Service
 {
@@ -69,6 +70,8 @@ public class EMRReceiverService
      */
     @WebEndpoint(name = "EMRReceiverServiceSoap")
     public EMRReceiverServiceSoap getEMRReceiverServiceSoap() {
+        //WS Addressing
+        //EMRReceiverServiceSoap port = super.getPort(new QName("urn:wsdl", "EMRReceiverServiceSoap"), EMRReceiverServiceSoap.class, new AddressingFeature());
         EMRReceiverServiceSoap port = super.getPort(new QName("urn:wsdl", "EMRReceiverServiceSoap"), EMRReceiverServiceSoap.class);
         Map<String, Object> requestContext = ((BindingProvider) port).getRequestContext();
         requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, ConfigManager.HealthShare().ServiceUrlSda().toString());

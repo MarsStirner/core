@@ -91,12 +91,12 @@ public class AddrInfo {
                 Street street = null;
                 try {
                     kladr = dbSchemeKladrBean.getKladrByCode(kladrCode);
-                    logger.info("Found kladr {}", kladr.print());
+                    logger.info("Found kladr {}", street == null ? null : kladr.print());
                     // Регион пациента. Определяется по двум старшим цифрам кода КЛАДР
                     kladrState = dbSchemeKladrBean.getKladrByCode(kladrCode.substring(0, 2) + "00000000000");
-                    logger.info("Found kladr state {}", kladrState.print());
+                    logger.info("Found kladr state {}", street == null ? null : kladrState.print());
                     street = dbSchemeKladrBean.getStreetByCode(addrHouse.getKLADRStreetCode());
-                    logger.info("Found street {}", street.print());
+                    logger.info("Found street {}", street == null ? null : street.print());
                 } catch (CoreException e) {
                     logger.error("CoreException: " + e, e);
                 }

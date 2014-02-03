@@ -1,6 +1,7 @@
 package ru.korus.tmis.pix.sda;
 
 import ru.korus.tmis.core.entity.model.Diagnostic;
+import ru.korus.tmis.core.entity.model.RbDispanser;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Arrays;
@@ -34,10 +35,11 @@ public class DispensaryInfo {
     private EmployeeInfo person;
 
     public DispensaryInfo(Diagnostic diagnostic) {
-        final String code = diagnostic.getDispanser().getCode();
+        final RbDispanser dispanser = diagnostic.getDispanser();
+        final String code = dispanser == null ? null : dispanser.getCode();
         final List<String> setCode = Arrays.asList("2", "6");
         final List<String> removeCode = Arrays.asList("3", "4", "5");
-        started = setCode.contains(code) ? true : (removeCode.contains(code) ? false : null);
+        started = code == null ? null : (setCode.contains(code) ? true : (removeCode.contains(code) ? false : null));
         date = ClientInfo.getXmlGregorianCalendar(diagnostic.getSetDate());
         person = EmployeeInfo.newInstance(diagnostic.getPerson());
     }

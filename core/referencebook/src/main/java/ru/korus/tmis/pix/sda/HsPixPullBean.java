@@ -15,7 +15,6 @@ import ru.korus.tmis.pix.sda.ws.EMRReceiverServiceSoap;
 import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.ejb.EJB;
-import javax.ejb.Schedule;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -35,7 +34,7 @@ import java.util.*;
  *
  */
 @Stateless
-public class HsPixPullBean {
+public class HsPixPullBean implements  HsPixPullBeanLocal {
 
     private static final Logger logger = LoggerFactory.getLogger(HsPixPullBean.class);
     private static final int MAX_RESULT = 100;
@@ -56,8 +55,7 @@ public class HsPixPullBean {
     @EJB
     DbEventBeanLocal dbEventBeanLocal;
 
-    @Schedule(hour = "*", minute = "*", second = "30")
-    void pullDb() {
+    public void pullDb() {
         try {
             logger.info("HS integration entry...");
             if (ConfigManager.HealthShare().isSdaActive()) {
@@ -156,7 +154,7 @@ public class HsPixPullBean {
                 logger.info("HS integration processing Event.Id = {}", event.getId());
                 sendNewEventToHS(event, dbSchemeKladrBeanLocal, port);
             } catch (Exception ex) {
-                logger.error("Sending event info. HS integration internal error.", ex);
+                logger.error("Sending event info. HS integration internal error. Event.Id = " + event.getId(), ex);
             }
         }
     }

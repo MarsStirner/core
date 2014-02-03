@@ -80,7 +80,7 @@ public class ClientInfo {
     final private boolean homeless;
     private static final String CITIZENSHIP_CODE = "35";
 
-    private Iterable<WorkInfo> workInfo;
+    private final Iterable<WorkInfo> workInfo;
 
     /**
      * Гражданство
@@ -281,9 +281,9 @@ public class ClientInfo {
         this.regAddr = regAddr;
         this.actualAddr = actualAddr;
 
-        this.familyName = client.getLastName();
-        this.givenName = client.getFirstName();
-        this.middleName = client.getPatrName();
+        this.familyName = notEmpty(client.getLastName());
+        this.givenName = notEmpty(client.getFirstName());
+        this.middleName = notEmpty(client.getPatrName());
 
         if (client.getSex() == 1) {
             this.gender = Gender.M;
@@ -296,7 +296,7 @@ public class ClientInfo {
         this.birthDate = getXmlGregorianCalendar(client.getBirthDate());
 
         this.tmisId = client.getId();
-        this.snils = client.getSnils();
+        this.snils = notEmpty(client.getSnils());
         ClientPolicy clientPolicyEnp = getEnp(client);
         this.enpNumber = clientPolicyEnp == null ? null : clientPolicyEnp.getNumber();
 
@@ -333,11 +333,24 @@ public class ClientInfo {
         citizenship = initCitizenship(client);
         final RbBloodType bloodType = client.getBloodType();
         final List<String> supportedBloodGroupCode = Arrays.asList("1", "2", "3", "4");
-        bloodGroup = bloodType == null ? null : (
+        String code = bloodType.getCode();
+        bloodGroup = (bloodType == null || code == null || code.length() != 2)  ? null : (
                  supportedBloodGroupCode.contains(bloodType.getCode().substring(0, 1)) ? bloodType.getCode().substring(0, 1) : null ) ;
         final List<String> supportedBloodRhesusCode = Arrays.asList("+", "-");
-        bloodRhesus = bloodType == null ? null : (
+        bloodRhesus = (bloodGroup == null || bloodType == null || code == null || code.length() != 2) ? null : (
                   supportedBloodRhesusCode.contains(bloodType.getCode().substring(1, 2)) ? "+".equals(bloodType.getCode().substring(1, 2)) : null) ;
+
+        workInfo =  initWorkInfo(client);
+    }
+
+    private String notEmpty(String lastName) {
+        return "".equals(lastName) ? null : lastName;
+    }
+
+    private Iterable<WorkInfo> initWorkInfo(Patient client) {
+        List<WorkInfo> res = new LinkedList<WorkInfo>();
+        //TODO;
+        return res;
     }
 
     private CodeNamePair initCitizenship(Patient client) {

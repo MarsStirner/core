@@ -58,31 +58,31 @@ public class AdmissionInfo {
 
     public AdmissionInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
         this.dbActionPropertyBeanLocal = dbActionPropertyBeanLocal;
-        final Action recieved = actions.get("recieved").iterator().next();
+        final Action recieved = actions.get("recieved").iterator().hasNext() ? actions.get("recieved").iterator().next() : null;
         final List<CodeNamePair> propsInfoMapRecieved = new LinkedList<CodeNamePair>() {{
             add(IS_URGENT_ADMISSION);
             add(TIME_AFTER_FALLING_ILL);
             add(TRANSPORT_TYPE);
         }};
-        APValue apValue = getActionPropertyByCodeOrName(recieved, IS_URGENT_ADMISSION);
-        urgent = apValue == null ? false : apValue.getValueAsString().equals("по экстренным показаниям");
+        APValue apValue = recieved == null ? null : getActionPropertyByCodeOrName(recieved, IS_URGENT_ADMISSION);
+        this.urgent = apValue == null ? false : apValue.getValueAsString().equals("по экстренным показаниям");
         apValue = getActionPropertyByCodeOrName(recieved, TIME_AFTER_FALLING_ILL);
-        timeAftreFalling = apValue == null ? null : new CodeNamePair(apValue.getValueAsString(), timeAfterFallingMap.get(apValue.getValueAsString()));
+        this.timeAftreFalling = apValue == null ? null : new CodeNamePair(apValue.getValueAsString(), timeAfterFallingMap.get(apValue.getValueAsString()));
         apValue = getActionPropertyByCodeOrName(recieved, TRANSPORT_TYPE);
-        transportType = apValue == null ? null : new CodeNamePair(null, apValue.getValueAsString());
+        this.transportType = apValue == null ? null : new CodeNamePair(null, apValue.getValueAsString());
         apValue = getActionPropertyByCodeOrName(recieved, ADMISSION_REFERRAL);
-        admissionReferral = apValue == null ? null : new CodeNamePair(apValue.getValueAsString(), admissionReferralMap.get(apValue.getValueAsString()));
+        this.admissionReferral = apValue == null ? null : new CodeNamePair(apValue.getValueAsString(), admissionReferralMap.get(apValue.getValueAsString()));
         apValue = getActionPropertyByCodeOrName(recieved, ADMISSION_THIS_YEAR);
-        admissionsThisYear = apValue == null ? null : new CodeNamePair(apValue.getValueAsString(), admissionsThisYearMap.get(apValue.getValueAsString()));
+        this.admissionsThisYear = apValue == null ? null : new CodeNamePair(apValue.getValueAsString(), admissionsThisYearMap.get(apValue.getValueAsString()));
 
         Action moving = getLastMoving(actions);
         APValueOrgStructure apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(moving, FINAL_DEPARTMENT);
-        finalDepartment = (apValueOrgStructure == null && apValueOrgStructure.getValue() == null) ?
+        this.finalDepartment = (apValueOrgStructure == null || apValueOrgStructure.getValue() == null) ?
                 null : new CodeNamePair(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
 
         moving = getFirstMoving(actions);
         apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(moving, FINAL_DEPARTMENT);
-        department = (apValueOrgStructure == null && apValueOrgStructure.getValue() == null) ?
+        this.department = (apValueOrgStructure == null || apValueOrgStructure.getValue() == null) ?
                 null : new CodeNamePair(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
 
         apValue = getActionPropertyByCodeOrName(moving, WARD);
@@ -114,20 +114,24 @@ public class AdmissionInfo {
         return res;
     }
 
-    private APValue getActionPropertyByCodeOrName(Action recieved, CodeNamePair prop) {
+    private APValue getActionPropertyByCodeOrName(Action action, CodeNamePair prop) {
+        if (action == null) {
+            return null;
+        }
         try {
-            for (ActionProperty actionProperty : recieved.getActionProperties()) {
+            for (ActionProperty actionProperty : action.getActionProperties()) {
                 if (prop.getCode().equals(actionProperty.getType().getCode())) {
-                    final APValue value;
-                    value = dbActionPropertyBeanLocal.getActionPropertyValue(actionProperty).iterator().next();
+                    final List<APValue> valueList = dbActionPropertyBeanLocal.getActionPropertyValue(actionProperty);
+                    final APValue value = valueList.iterator().hasNext() ? valueList.iterator().next() : null;
                     if (value != null) {
                         return value;
                     }
                 }
             }
-            for (ActionProperty actionProperty : recieved.getActionProperties()) {
+            for (ActionProperty actionProperty : action.getActionProperties()) {
                 if (prop.getName().equals(actionProperty.getType().getName())) {
-                    final APValue value = dbActionPropertyBeanLocal.getActionPropertyValue(actionProperty).iterator().next();
+                    final List<APValue> valueList = dbActionPropertyBeanLocal.getActionPropertyValue(actionProperty);
+                    final APValue value = valueList.iterator().hasNext() ? valueList.iterator().next() : null;
                     if (value != null) {
                         return value;
                     }

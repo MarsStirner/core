@@ -39,7 +39,7 @@ public class SdaBuilder {
         Container res = new Container();
 
         // Уникальный идентификатор пациента в МИС и краткое наименование ЛПУ
-        res.setFacilityCode(eventInfo.getOrgOid());
+        res.setFacilityCode(eventInfo.getOrgOid() == null ? "unknown_org_oid" : eventInfo.getOrgOid());
         res.setPatientMRN(clientInfo.getTmisId().toString());
 
         final Patient patient = createPatientWithOrgInfo(eventInfo);
@@ -81,6 +81,9 @@ public class SdaBuilder {
 
     private static void addEncouter(EventInfo eventInfo, Container res) {
         Encounter encounter = SDAFactory.createEncounter();
+        if(eventInfo.getEventId() == null) {
+            return;
+        }
         //Идентификатор в МИС
         encounter.setExtId(eventInfo.getEventId());
 

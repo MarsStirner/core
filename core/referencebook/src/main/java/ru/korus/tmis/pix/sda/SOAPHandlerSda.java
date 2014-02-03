@@ -1,14 +1,9 @@
 package ru.korus.tmis.pix.sda;
 
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.Vector;
+import java.util.*;
 
 import javax.xml.namespace.QName;
-import javax.xml.soap.SOAPBody;
-import javax.xml.soap.SOAPEnvelope;
-import javax.xml.soap.SOAPMessage;
+import javax.xml.soap.*;
 import javax.xml.ws.handler.MessageContext;
 import javax.xml.ws.handler.soap.SOAPHandler;
 import javax.xml.ws.handler.soap.SOAPMessageContext;
@@ -42,25 +37,8 @@ public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
             try {
 
                 SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
-                SOAPBody body = envelope.getBody(); // Теле сообщения
-
-                Element nodeWithNameSpace = (Element) body.getFirstChild(); // элемент в пространстве имен ns2:wsdl
-                tmp2 = nodeWithNameSpace;
-                tmp3 = (Element)nodeWithNameSpace.cloneNode(true);
-                NodeList nodeList = nodeWithNameSpace.getChildNodes();
-                tmp = nodeList;
-                // Создаем новый элемент с пустым пространством имен
-                Element cont = body.getOwnerDocument().createElement("Container");
-
-                tmp1= cont;
-                // копируем в новый элемент узлы из SOAP сообщения
-                for (Node el : getChildsSda(nodeWithNameSpace)) {
-                    cont.appendChild(el);
-                }
-
-                // Заменяем элемент из SOAP сообщения на элемент с пустым пространством имен
-                body.replaceChild(cont, nodeWithNameSpace);
-
+                removeNamespace(envelope);
+                addWsAddressing(envelope);
                 message.saveChanges();
 
             } catch (Exception e) {
@@ -70,18 +48,97 @@ public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
         return outboundProperty;
     }
 
+    /*************************************************************
+     Заголовок JAX-WS
+     <To xmlns="http://www.w3.org/2005/08/addressing">http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.emr.EMRReceiverService.cls</To>
+     <Action xmlns="http://www.w3.org/2005/08/addressing">urn:wsdl:EMRReceiverServiceSoap:containerRequest</Action>
+     <ReplyTo xmlns="http://www.w3.org/2005/08/addressing">
+        <Address>http://www.w3.org/2005/08/addressing/anonymous</Address>
+     </ReplyTo>
+     <FaultTo xmlns="http://www.w3.org/2005/08/addressing">
+        <Address>http://www.w3.org/2005/08/addressing/anonymous</Address>
+     </FaultTo>
+     <MessageID xmlns="http://www.w3.org/2005/08/addressing">uuid:45e85752-559f-4723-9f05-f205e5a6ab24</MessageID>     *************************************************************/
+
+    /*************************************************************
+      Пример SOAP-заголовка запроса:
+        <s:Envelope xmlns:s="http://www.w3.org/2003/05/soap-envelope" xmlns:wsa="http://www.w3.org/2005/08/addressing">
+            <s:Header>
+                <wsa:MessageID>urn:uuid:6d296e90-e5dc-43d0-b455-7c1f3e111111</wsa:MessageID>
+                <wsa:ReplyTo>
+                   <wsa:Address>http://1.1.1.1:57772/csp/iemk/isc.emr.IEMKCallbackService.cls</wsa:Address>
+                </wsa:ReplyTo>
+            </s:Header>
+        <s:Body>...</s:Body>
+     </s:Envelope>
+     ************************************************************/
+
+    private void addWsAddressing(SOAPEnvelope envelope) throws SOAPException {
+        SOAPHeader header = envelope.getHeader();
+        final String uriWsa = "http://www.w3.org/2005/08/addressing";//"http://www.w3.org/2006/03/addressing/ws-addr.xsd";
+        SOAPElement messageId = header.addChildElement("MessageID", "wsa", uriWsa);  //<wsa:MessageID>
+        messageId.addTextNode("urn:uuid:" + UUID.randomUUID());
+        SOAPElement replayTo = header.addChildElement("ReplyTo", "wsa", uriWsa);
+        SOAPElement address = replayTo.addChildElement("Address", "wsa");
+        address.addTextNode("http://www.w3.org/2005/08/addressing/anonymous");
+    }
+
+    private void removeNamespace(SOAPEnvelope envelope) throws SOAPException {
+        SOAPBody body = envelope.getBody();
+        Element nodeWithNameSpace = (Element) body.getFirstChild(); // элемент в пространстве имен ns2:wsdl
+        tmp2 = nodeWithNameSpace;
+        tmp3 = (Element)nodeWithNameSpace.cloneNode(true);
+        NodeList nodeList = nodeWithNameSpace.getChildNodes();
+        tmp = nodeList;
+        // Создаем новый элемент с пустым пространством имен
+        Element cont = body.getOwnerDocument().createElement("container");
+        cont.setAttribute("facilityCode", nodeWithNameSpace.getAttribute("facilityCode"));
+        cont.setAttribute("patientMRN", nodeWithNameSpace.getAttribute("patientMRN"));
+        tmp1= cont;
+        // копируем в новый элемент узлы из SOAP сообщения
+        for (Node el : getChildsSda(nodeWithNameSpace)) {
+            cont.appendChild(el);
+        }
+
+        // Заменяем элемент из SOAP сообщения на элемент с пустым пространством имен
+        body.replaceChild(cont, nodeWithNameSpace);
+    }
+
     private List<Node> getChildsSda(Element nodeWithNameSpace) {
         List<Node> res = new Vector<Node>();
-        final String[] sdaNodes = {"Patient", "Encounters", "Allergies", "Diagnoses", "Documents", "SendingFacility"};
+        final String[] sdaNodes = {"patient", "encounters", "allergies", "diagnoses", "documents", "disabilities", "allergies", "SendingFacility", "services"};
         for(String nodeName : sdaNodes) {
             NodeList el = nodeWithNameSpace.getElementsByTagName(nodeName);
             if (el.getLength() > 0) {
+                removeEmptyNodes(el.item(0));
                 res.add(el.item(0));
             }
         }
         return res;
     }
 
+    public  void removeEmptyNodes(Node node) {
+        NodeList list = node.getChildNodes();
+        for (int i = 0; i < list.getLength(); i++) {
+            final Node item = list.item(i);
+            if(item instanceof Element) {
+                tmp1 = (Element) list.item(i);
+                final String textContent =  item == null ? null : item.getTextContent();
+                if (textContent != null && textContent.trim().isEmpty()) {
+                    item.getParentNode().removeChild(item);
+                } else {
+                    removeEmptyNodes(item);
+                }
+            }
+        }
+        boolean emptyElement = node.getNodeType() == Node.ELEMENT_NODE
+                && node.getChildNodes().getLength() == 0;
+        boolean emptyText = node.getNodeType() == Node.TEXT_NODE
+                && node.getNodeValue().trim().isEmpty();
+        if (emptyElement || emptyText) {
+            node.getParentNode().removeChild(node);
+        }
+    }
     /**
      * Called at the conclusion of a message exchange pattern just prior to the JAX-WS runtime disptaching a message, fault or exception. Refer to the
      * description of the handler framework in the JAX-WS specification for full details.
