@@ -1,12 +1,15 @@
 package ru.korus.tmis.pix.sda;
 
+import com.google.common.collect.Multimap;
 import org.joda.time.DateTime;
 import org.joda.time.DateTimeZone;
 import org.joda.time.Years;
+import ru.korus.tmis.core.database.DbCustomQueryBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -75,29 +78,51 @@ public class ServiceInfo {
      */
     private final String bedProfile;
 
-    public ServiceInfo(Action action) {
-        id = String.valueOf(action.getId());
-        createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
-        createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
+    public ServiceInfo(final Action action, final Multimap<String, Action> actionsByTypeCode, final DbCustomQueryBeanLocal dbCustomQueryBean) {
+        this.id = String.valueOf(action.getId());
+        this.createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
+        this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
         final RbService service = action.getActionType().getService();
-        serviceCode = service == null ? null : new CodeNamePair(service.getCode(), service.getName());
-        amount = action.getAmount();
-        person = EmployeeInfo.newInstance(action.getExecutor());
+        this.serviceCode = service != null ? new CodeNamePair(service.getCode(), service.getName()) : null;
+        this.amount = action.getAmount();
+        this.person = EmployeeInfo.newInstance(action.getExecutor());
         final Event event = action.getEvent();
-        final Staff executor = event == null ? null : event.getExecutor();
-        final OrgStructure orgStructure = executor == null ? null : executor.getOrgStructure();
-        orgStruct = orgStructure == null ? null : new CodeNamePair(orgStructure.getCode(), orgStructure.getName());
-        Date birthDate = event.getPatient().getBirthDate();
-        Date setDate =  event.getSetDate();
+        final Staff executor = event != null ? event.getExecutor() : null;
+        final OrgStructure orgStructure = executor != null ? executor.getOrgStructure() : null;
+        this.orgStruct = orgStructure != null ? new CodeNamePair(orgStructure.getCode(), orgStructure.getName()) : null;
+        Date birthDate = event != null ? event.getPatient().getBirthDate() : null;
+        Date setDate = event != null ? event.getSetDate() : null;
         Boolean isChild = null;
         if (birthDate != null && setDate != null) {
             isChild = Years.yearsBetween(new DateTime(birthDate), new DateTime(setDate)).getYears() < 18; //
         }
-        isChildProfile =isChild;
-        bedProfile = null; //TODO:
-        diagnosis = null; //TODO;
-        servType = null; //TODO;
-        serviceProfile = null;//TODO: event.getEventType().getMedicalAidTypeId();
+        this.isChildProfile = isChild;
+
+        final Action moving = getLastMoving(actionsByTypeCode);
+        this.bedProfile = dbCustomQueryBean.getBedProfileName(moving); // 450
+
+        final List<Diagnostic> diagnostics = action.getEvent().getDiagnostics();
+        for (Diagnostic d : diagnostics) {
+            if (d.getStage().getId() == 1 || d.getStage().getId() == 2) {
+
+            }
+        }
+        this.diagnosis = new CodeNamePair("1.2.643.5.1.13.2.1.1.641", ""); // 419
+        this.servType = new CodeNamePair(String.valueOf(action.getEvent().getEventType().getMedicalAidTypeId()), ""); // 444
+        this.serviceProfile = new CodeNamePair(String.valueOf(action.getEvent().getEventType().getMedicalAidTypeId()), ""); // 448  event.getEventType().getMedicalAidTypeId();
+    }
+
+    /**
+     * Поиск последнего движения
+     */
+    private Action getLastMoving(Multimap<String, Action> actions) {
+        Action res = null;
+        for (Action action : actions.get("moving")) {
+            if (res == null || action.getCreateDatetime().compareTo(res.getCreateDatetime()) > 0) {
+                res = action;
+            }
+        }
+        return res;
     }
 
     public String getId() {
