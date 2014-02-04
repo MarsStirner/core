@@ -4,6 +4,8 @@ import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbQueryBeanLocal;
+import ru.korus.tmis.core.database.RbMedicalAidProfileBeanLocal;
+import ru.korus.tmis.core.database.RbMedicalAidTypeBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
@@ -35,7 +37,7 @@ import java.util.*;
  *
  */
 @Stateless
-public class HsPixPullBean implements  HsPixPullBeanLocal {
+public class HsPixPullBean implements HsPixPullBeanLocal {
 
     private static final Logger logger = LoggerFactory.getLogger(HsPixPullBean.class);
     private static final int MAX_RESULT = 100;
@@ -58,6 +60,12 @@ public class HsPixPullBean implements  HsPixPullBeanLocal {
 
     @EJB
     private DbQueryBeanLocal dbCustomQueryBean;
+
+    @EJB
+    private RbMedicalAidProfileBeanLocal dbRbMedicalAidProfileBean;
+
+    @EJB
+    private RbMedicalAidTypeBeanLocal dbRbMedicalAidTypeBeanLocal;
 
 
     public void pullDb() {
@@ -129,7 +137,7 @@ public class HsPixPullBean implements  HsPixPullBeanLocal {
                             emptyDiag,
                             new LinkedList<DisabilitiesInfo>(),
                             emptyEpi,
-                            new LinkedList<ServiceInfo>() ));
+                            new LinkedList<ServiceInfo>()));
             em.remove(patientToHs);
         } catch (SOAPFaultException ex) {
             patientToHs.setInfo(ex.getMessage());
@@ -171,7 +179,7 @@ public class HsPixPullBean implements  HsPixPullBeanLocal {
             final ClientInfo clientInfo = new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal);
 
             final HashSet<String> flatCodes = new HashSet<String>(Arrays.asList("recieved", "moving"));
-            final Multimap<String,Action> actionsByTypeCode = dbEventBeanLocal.getActionsByTypeCode(event, flatCodes);
+            final Multimap<String, Action> actionsByTypeCode = dbEventBeanLocal.getActionsByTypeCode(event, flatCodes);
             final EventInfo eventInfo = new EventInfo(event, actionsByTypeCode, dbActionPropertyBeanLocal);
             port.container(SdaBuilder.toSda(
                     clientInfo,
@@ -200,13 +208,13 @@ public class HsPixPullBean implements  HsPixPullBeanLocal {
         }
     }
 
-    private List<ServiceInfo> getServices(final Event event, final Multimap<String,Action> actionsByTypeCode) {
+    private List<ServiceInfo> getServices(final Event event, final Multimap<String, Action> actionsByTypeCode) {
         //TODO move to DbAtionBean!
         List<Action> services = em.createQuery("SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0 AND a.actionType IS NOT NULL", Action.class)
                 .setParameter("eventId", event.getId()).getResultList();
         List<ServiceInfo> res = new LinkedList<ServiceInfo>();
-        for(Action action : services) {
-            res.add(new ServiceInfo(action, actionsByTypeCode, dbCustomQueryBean));
+        for (Action action : services) {
+            res.add(new ServiceInfo(action, actionsByTypeCode, dbCustomQueryBean, dbRbMedicalAidProfileBean, dbRbMedicalAidTypeBeanLocal));
         }
         return res;
     }
@@ -214,12 +222,12 @@ public class HsPixPullBean implements  HsPixPullBeanLocal {
     private List<DisabilitiesInfo> getDisabilities(Patient patient) {
         List<DisabilitiesInfo> res = new LinkedList<DisabilitiesInfo>();
         for (ClientSocStatus clientSocStatus : patient.getClientSocStatuses()) {
-            if( ClientSocStatus.DISABILITY_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
+            if (ClientSocStatus.DISABILITY_CODE.equals(clientSocStatus.getSocStatusClass().getCode())) {
                 final DisabilitiesInfo disability = new DisabilitiesInfo(clientSocStatus);
                 res.add(disability);
             }
         }
-       return res;
+        return res;
     }
 
     /**
