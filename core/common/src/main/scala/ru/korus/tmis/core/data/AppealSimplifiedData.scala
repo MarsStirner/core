@@ -43,7 +43,7 @@ class AppealSimplifiedDataList {
 @XmlRootElement(name = "appealSimplifiedRequestData")
 class AppealSimplifiedRequestData {
   @BeanProperty
-  var filter:  AnyRef = _
+  var filter:  AppealSimplifiedRequestDataFilter = _
   @BeanProperty
   var sortingField: String = _
   @BeanProperty
@@ -63,14 +63,14 @@ class AppealSimplifiedRequestData {
            sortingMethod: String,
            limit: Int,
            page: Int,
-           filter: AnyRef) = {
+           filter: AppealSimplifiedRequestDataFilter) = {
     this()
     this.filter = if(filter!=null) {filter} else {null}
     this.sortingField = sortingField match {
       case null => {"id"}
       case _ => {sortingField}
     }
-    this.sortingFieldInternal = this.filter.asInstanceOf[AppealSimplifiedRequestDataFilter].toSortingString(this.sortingField)
+    this.sortingFieldInternal = this.filter.toSortingString(this.sortingField)
 
     this.sortingMethod = sortingMethod match {
       case null => {"asc"}

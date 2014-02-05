@@ -77,7 +77,7 @@ public class AppealRegistryRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/x-javascript", "application/xml"})
     public Object getAllAppealsForPatient(@QueryParam("limit")int limit,
                                           @QueryParam("page")int  page,
                                           @QueryParam("sortingField")String sortingField,  //сортировки вкл.
