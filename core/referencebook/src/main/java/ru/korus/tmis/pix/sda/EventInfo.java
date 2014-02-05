@@ -23,6 +23,8 @@ import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 public class EventInfo {
     private static final int MAX_ORG_NAME_LENGHT = 50;
     private static final String ORG_UNKNOWN = "unknown";
+    public static final CodeNameSystem UNKNOWN_ORG = CodeNameSystem.newInstance("???", ORG_UNKNOWN, "1.2.643.5.1.13.2.1.1.178");
+    private static final ru.korus.tmis.pix.sda.CodeNameSystem CODE_NAME_SYSTEM = CodeNameSystem.newInstance("???", ORG_UNKNOWN, "1.2.643.5.1.13.2.1.1.178");
     /**
      * UUID события
      */
@@ -30,11 +32,11 @@ public class EventInfo {
     /**
      * Краткое наименование ЛПУ
      */
-    final private String orgName;
+    //final private String orgName;
     /**
      * Код ЛПУ из справочника 1.2.643.5.1.13.2.1.1.178 (MDR308)
      */
-    final private String orgOid;
+    final private CodeNameSystem orgOid;
     /**
      * Код типа обращения (rbRequestType.code)
      */
@@ -56,11 +58,11 @@ public class EventInfo {
 
     private final EmployeeInfo autorInfo;
 
-    private final CodeNamePair financeType;
+    private final CodeNameSystem financeType;
     private final boolean atHome;
-    private final CodeNamePair orgStructure;
+    private final CodeNameSystem orgStructure;
     private final AdmissionInfo admissionInfo;
-    private final CodeNamePair encounterResult;
+    private final CodeNameSystem encounterResult;
 
     /**
      * Идентификатор текущего обращения
@@ -82,21 +84,23 @@ public class EventInfo {
 
         this.begDate = begDate;
         this.endDate = endDate;
-        this.orgName = getOrgShortName(event);
+        //this.orgName = getOrgShortName(event);
         this.orgOid = getOrgOid(event);
         this.type = event.getEventType().getId();
 
         autorInfo = EmployeeInfo.newInstance(event.getCreatePerson());
         final RbFinance finance = event.getEventType().getFinance();
-        financeType = finance == null ? null : new CodeNamePair(finance.getCode(), finance.getName());
+        financeType = finance == null ? null : RbManager.get(RbManager.RbType.rbFinance,
+                CodeNameSystem.newInstance(finance.getCode(), finance.getName(), "1.2.643.5.1.13.2.1.1.528"));
         atHome = initAtHome(event.getEventType());//TODO: Impl:  rbScene.name<=rbScene.id<=EventType.scene_id<=EventType.id<=Event.id (если значение содержит "дом" то передаем "true", иначе "false")
         orgStructure = initOrgStructByPerson(event.getExecutor());
         admissionInfo = new AdmissionInfo(event, actions, dbActionPropertyBeanLocal);
-        encounterResult = event.getResult() == null ? null : new CodeNamePair(event.getResult().getCode(), event.getResult().getName());
+        encounterResult = event.getResult() == null ? null : RbManager.get(RbManager.RbType.rbResult,
+                CodeNameSystem.newInstance(event.getResult().getCode(), event.getResult().getName(), "1.2.643.5.1.13.2.1.1.123"));
         eventId = String.valueOf(event.getId());
     }
 
-    private CodeNamePair initOrgStructByPerson(Staff executor) {
+    private CodeNameSystem initOrgStructByPerson(Staff executor) {
         if(executor == null) {
             return null;
         }
@@ -104,7 +108,7 @@ public class EventInfo {
         if(orgStructure == null) {
             return null;
         }
-        return  new CodeNamePair(orgStructure.getCode(), orgStructure.getName());
+        return  new CodeNameSystem(orgStructure.getCode(), orgStructure.getName());
     }
 
     private boolean initAtHome(EventType event) {
@@ -112,14 +116,14 @@ public class EventInfo {
         return false;
     }
 
-    public EventInfo(String defaultOrgShortName ) {
-        this.orgName = isEmptyString(defaultOrgShortName) ? ORG_UNKNOWN : defaultOrgShortName;
+    public EventInfo(CodeNameSystem defaultOrgShortName ) {
+       // this.orgName = isEmptyString(defaultOrgShortName) ? ORG_UNKNOWN : defaultOrgShortName;
         eventUuid = null;
         requestType = null;
         begDate = null;
         endDate = null;
         type = null;
-        orgOid = null;
+        orgOid = defaultOrgShortName;
         autorInfo = null;
         financeType = null;
         atHome = false;
@@ -133,24 +137,33 @@ public class EventInfo {
      * @param event
      * @return
      */
-    public static String getOrgShortName(Event event) {
+   /* public static String getOrgShortName(Event event) {
         if (event.getOrganisation() == null || isEmptyString(event.getOrganisation().getShortName())) {
             return ORG_UNKNOWN;
         } else {
             String res = event.getOrganisation().getShortName();
             return res.substring(0, Math.min(MAX_ORG_NAME_LENGHT, res.length()));
         }
-    }
+    }*/
 
     private static boolean isEmptyString(String shortName) {
         return shortName == null || "".equals(shortName);
     }
 
-    private static String getOrgOid(Event event) {
-        if ( event.getOrganisation() == null || isEmptyString(event.getOrganisation().getOid())) {
-            return ORG_UNKNOWN;
+    private static CodeNameSystem getOrgOid(Event event) {
+        final Organisation organisation = event.getOrganisation();
+        return getOrgCodeName(organisation);
+    }
+
+    public static CodeNameSystem getOrgCodeName(Organisation organisation) {
+        if ( organisation == null || isEmptyString(organisation.getInfisCode())) {
+            return UNKNOWN_ORG;
         } else {
-            return event.getOrganisation().getOid();
+            CodeNameSystem res = RbManager.get(RbManager.RbType.Organisation, CodeNameSystem.newInstance(organisation.getInfisCode(), organisation.getShortName(), null));
+            if(res.getName() == null || res.getName().isEmpty()) {
+                return UNKNOWN_ORG;
+            }
+            return res;
         }
     }
 
@@ -164,9 +177,9 @@ public class EventInfo {
     /**
      * @return the orgName
      */
-    public String getOrgName() {
+   /* public String getOrgName() {
         return orgName;
-    }
+    }*/
 
     /**
      * @return the begDate
@@ -203,7 +216,7 @@ public class EventInfo {
         return Arrays.asList(inpatient).indexOf(requestType) >= 0;
     }
 
-    public String getOrgOid() {
+    public CodeNameSystem getOrgOid() {
         return orgOid;
     }
 
@@ -211,7 +224,7 @@ public class EventInfo {
         return autorInfo;
     }
 
-    public CodeNamePair getFinanceType() {
+    public CodeNameSystem getFinanceType() {
         return financeType;
     }
 
@@ -219,7 +232,7 @@ public class EventInfo {
         return atHome;
     }
 
-    public CodeNamePair getOrgStructure() {
+    public CodeNameSystem getOrgStructure() {
         return orgStructure;
     }
 
@@ -227,7 +240,7 @@ public class EventInfo {
         return admissionInfo;
     }
 
-    public CodeNamePair getEncounterResult() {
+    public CodeNameSystem getEncounterResult() {
         return encounterResult;
     }
 

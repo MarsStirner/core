@@ -19,12 +19,6 @@ import ru.korus.tmis.core.entity.model.Staff;
 public class AllergyInfo {
 
     /**
-     * Краткое наименование ЛПУ
-     */
-    // TODO Совпадает с SendingFacility и EventInfo.irgName
-    final private String orgName;
-
-    /**
      * Дата/время фиксации данных
      */
     final private XMLGregorianCalendar createDate;
@@ -61,13 +55,6 @@ public class AllergyInfo {
     private final String note;
 
     /**
-     * @return the orgName
-     */
-    public String getOrgName() {
-        return orgName;
-    }
-
-    /**
      * @return the createDate
      */
     public XMLGregorianCalendar getCreateDate() {
@@ -95,8 +82,7 @@ public class AllergyInfo {
         return severityDescription;
     }
 
-    public AllergyInfo(ClientAllergy clientAllergy, String orgName) {
-        this.orgName = orgName;
+    public AllergyInfo(ClientAllergy clientAllergy) {
         XMLGregorianCalendar createDate = null;
         try {
             createDate = Database.toGregorianCalendar(clientAllergy.getCreateDate());

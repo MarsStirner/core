@@ -14,9 +14,9 @@ public class EmployeeInfo {
     //Код врача
     private final String code;
     //Специальность
-    private final CodeNamePair spesialty;
+    private final CodeNameSystem spesialty;
     //Должность
-    private final CodeNamePair role;
+    private final CodeNameSystem role;
     //Снилс
     private final String snils;
     //Фамилия
@@ -29,9 +29,11 @@ public class EmployeeInfo {
     private EmployeeInfo(Staff createPerson) {
         code = createPerson.getCode();
         final Speciality speciality = createPerson.getSpeciality();
-        spesialty = speciality == null ? null : new CodeNamePair(speciality.getCode(), speciality.getName());
+        spesialty = speciality == null ? null : RbManager.get(RbManager.RbType.rbSpeciality,
+                CodeNameSystem.newInstance(speciality.getCode(), speciality.getName(), "1.2.643.5.1.13.2.1.1.181"));
         final RbPost post = createPerson.getPost();
-        role = post == null ? null : new CodeNamePair(post.getCode(), post.getName());
+        role = post == null ? null : RbManager.get(RbManager.RbType.rbPost,
+                CodeNameSystem.newInstance(post.getCode(), post.getName(), "1.2.643.5.1.13.2.1.1.607"));
         String snils = initSnils(createPerson);
         this.snils = snils;
         family = createPerson.getLastName();
@@ -60,11 +62,11 @@ public class EmployeeInfo {
         return code;
     }
 
-    public CodeNamePair getSpesialty() {
+    public CodeNameSystem getSpesialty() {
         return spesialty;
     }
 
-    public CodeNamePair getRole() {
+    public CodeNameSystem getRole() {
         return role;
     }
 

@@ -1,10 +1,5 @@
 package ru.korus.tmis.pix.sda;
 
-import java.text.SimpleDateFormat;
-import java.util.List;
-import java.util.Map;
-
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.joda.time.DateTime;
@@ -15,14 +10,7 @@ import org.joda.time.Years;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
-import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.APValue;
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionProperty;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.Staff;
-import ru.korus.tmis.core.entity.model.UUID;
-import ru.korus.tmis.core.exception.CoreException;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -71,22 +59,22 @@ public class EpicrisisInfo {
     /**
      * Тип документа
      */
-    private final CodeNamePair docType;
+    private final CodeNameSystem docType;
 
-    public EpicrisisInfo(Action action, ClientInfo clientInfo, String orgName, DbActionPropertyBeanLocal apBean) {
+    public EpicrisisInfo(Action action, ClientInfo clientInfo, DbActionPropertyBeanLocal apBean) {
         this.code = action.getActionType().getMnemonic();
         this.docName = action.getActionType().getName();
         this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
         this.id = String.valueOf(action.getId());
         this.createdPerson =  EmployeeInfo.newInstance(action.getCreatePerson());
         this.endDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
-        CodeNamePair docType = null;
+        CodeNameSystem docType = null;
         if( "EPI".equals(action.getActionType().getMnemonic())) {
-            docType = new CodeNamePair("1", "Эпикриз стационара");
+            docType = new CodeNameSystem("1", "Эпикриз стационара");
         } else if ("EPIAMB".equals(action.getActionType().getMnemonic())) {
-            docType = new CodeNamePair("2", "Амбулаторный эпикриз");
+            docType = new CodeNameSystem("2", "Амбулаторный эпикриз");
         }  else if ("DIR".equals(action.getActionType().getMnemonic())) {
-            docType = new CodeNamePair("3", "Направление");
+            docType = new CodeNameSystem("3", "Направление");
         }
         this.docType = docType;
     }
@@ -143,7 +131,7 @@ public class EpicrisisInfo {
         return endDate;
     }
 
-    public CodeNamePair getDocType() {
+    public CodeNameSystem getDocType() {
         return docType;
     }
 

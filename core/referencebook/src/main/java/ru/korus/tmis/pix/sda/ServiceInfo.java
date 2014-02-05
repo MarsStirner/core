@@ -35,12 +35,12 @@ public class ServiceInfo {
     /**
      * Код и название услуги
      */
-    private final CodeNamePair serviceCode;
+    private final CodeNameSystem serviceCode;
 
     /**
      * Диагноз (код МКБ-10 и расшифровка)
      */
-    private final CodeNamePair diagnosis;
+    private final CodeNameSystem diagnosis;
 
     /**
      * Кол-во оказанных услуг
@@ -55,17 +55,17 @@ public class ServiceInfo {
     /**
      * Вид медицинской помощи
      */
-    private final CodeNamePair servType;
+    private final CodeNameSystem servType;
 
     /**
      * Отделение МО лечения из регионального справочник
      */
-    private final CodeNamePair orgStruct;
+    private final CodeNameSystem orgStruct;
 
     /**
      * Профиль оказанной медицинской помощи
      */
-    private final CodeNamePair serviceProfile;
+    private final CodeNameSystem serviceProfile;
 
     /**
      * Признак детского профиля
@@ -82,13 +82,14 @@ public class ServiceInfo {
         this.createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
         this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
         final RbService service = action.getActionType().getService();
-        this.serviceCode = service != null ? new CodeNamePair(service.getCode(), service.getName()) : null;
+        this.serviceCode = service == null ? null : RbManager.get(RbManager.RbType.SST365,
+                CodeNameSystem.newInstance(service.getCode(), service.getName(), "1.2.643.5.1.13.2.1.1.473"));
         this.amount = action.getAmount();
         this.person = EmployeeInfo.newInstance(action.getExecutor());
         final Event event = action.getEvent();
         final Staff executor = event != null ? event.getExecutor() : null;
         final OrgStructure orgStructure = executor != null ? executor.getOrgStructure() : null;
-        this.orgStruct = orgStructure != null ? new CodeNamePair(orgStructure.getCode(), orgStructure.getName()) : null;
+        this.orgStruct = orgStructure != null ? new CodeNameSystem(orgStructure.getCode(), orgStructure.getName()) : null;
         Date birthDate = event != null ? event.getPatient().getBirthDate() : null;
         Date setDate = event != null ? event.getSetDate() : null;
         Boolean isChild = null;
@@ -106,9 +107,9 @@ public class ServiceInfo {
 
             }
         }
-        this.diagnosis = new CodeNamePair("1.2.643.5.1.13.2.1.1.641", ""); // 419
-        this.servType = new CodeNamePair(String.valueOf(action.getEvent().getEventType().getMedicalAidTypeId()), ""); // 444
-        this.serviceProfile = new CodeNamePair(String.valueOf(action.getEvent().getEventType().getMedicalAidTypeId()), ""); // 448  event.getEventType().getMedicalAidTypeId();
+        this.diagnosis = new CodeNameSystem("1.2.643.5.1.13.2.1.1.641", ""); // 419
+        this.servType = new CodeNameSystem(String.valueOf(action.getEvent().getEventType().getMedicalAidTypeId()), ""); // 444
+        this.serviceProfile = new CodeNameSystem(String.valueOf(action.getEvent().getEventType().getMedicalAidTypeId()), ""); // 448  event.getEventType().getMedicalAidTypeId();
     }
 
     /**
@@ -136,11 +137,11 @@ public class ServiceInfo {
         return createDate;
     }
 
-    public CodeNamePair getServiceCode() {
+    public CodeNameSystem getServiceCode() {
         return serviceCode;
     }
 
-    public CodeNamePair getDiagnosis() {
+    public CodeNameSystem getDiagnosis() {
         return diagnosis;
     }
 
@@ -152,15 +153,15 @@ public class ServiceInfo {
         return person;
     }
 
-    public CodeNamePair getServType() {
+    public CodeNameSystem getServType() {
         return servType;
     }
 
-    public CodeNamePair getOrgStruct() {
+    public CodeNameSystem getOrgStruct() {
         return orgStruct;
     }
 
-    public CodeNamePair getServiceProfile() {
+    public CodeNameSystem getServiceProfile() {
         return serviceProfile;
     }
 

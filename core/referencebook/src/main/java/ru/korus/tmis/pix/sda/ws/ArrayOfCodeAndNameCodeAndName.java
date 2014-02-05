@@ -49,7 +49,7 @@ public class ArrayOfCodeAndNameCodeAndName {
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getCodeAndName().add(newItem);
+     *    getCategory().add(newItem);
      * </pre>
      * 
      * 

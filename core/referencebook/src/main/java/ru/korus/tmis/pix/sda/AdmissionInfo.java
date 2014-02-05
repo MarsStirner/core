@@ -19,17 +19,17 @@ import java.util.Map;
  * Description:  <br>
  */
 public class AdmissionInfo {
-    private static final CodeNamePair IS_URGENT_ADMISSION = new CodeNamePair("isUrgentAdmission", "Экстренность");
-    private static final CodeNamePair TIME_AFTER_FALLING_ILL = new CodeNamePair("timeAfterFallingIll", "Доставлен в стационар от начала заболевания");
-    private static final CodeNamePair TRANSPORT_TYPE = new CodeNamePair("transportType", "Вид транспортировки");
-    private static final CodeNamePair WARD = new CodeNamePair("ward", "койка");
-    private static final CodeNamePair FINAL_DEPARTMENT = new CodeNamePair("finalDepartment", "Отделение поступления");
-    private static final CodeNamePair ADMISSION_REFERRAL = new CodeNamePair("admissionReferral", "Кем доставлен");
-    private static final CodeNamePair ADMISSION_THIS_YEAR = new CodeNamePair("admissionsThisYear", "Госпитализирован по поводу данного заболевания в текущем году");
+    private static final CodeNameSystem IS_URGENT_ADMISSION = new CodeNameSystem("isUrgentAdmission", "Экстренность");
+    private static final CodeNameSystem TIME_AFTER_FALLING_ILL = new CodeNameSystem("timeAfterFallingIll", "Доставлен в стационар от начала заболевания");
+    private static final CodeNameSystem TRANSPORT_TYPE = new CodeNameSystem("transportType", "Вид транспортировки");
+    private static final CodeNameSystem WARD = new CodeNameSystem("ward", "койка");
+    private static final CodeNameSystem FINAL_DEPARTMENT = new CodeNameSystem("finalDepartment", "Отделение поступления");
+    private static final CodeNameSystem ADMISSION_REFERRAL = new CodeNameSystem("admissionReferral", "Кем доставлен");
+    private static final CodeNameSystem ADMISSION_THIS_YEAR = new CodeNameSystem("admissionsThisYear", "Госпитализирован по поводу данного заболевания в текущем году");
     private final boolean urgent;
-    private final CodeNamePair timeAftreFalling;
-    private final CodeNamePair transportType;
-    private final CodeNamePair finalDepartment;
+    private final CodeNameSystem timeAftreFalling;
+    private final CodeNameSystem transportType;
+    private final CodeNameSystem finalDepartment;
     private final String ward;
     private final Long bedDayCount;
     private final EmployeeInfo attendingDoctor;
@@ -49,17 +49,18 @@ public class AdmissionInfo {
         put("повторно", "2");
     }};
 
-    private final CodeNamePair department;
+    private final CodeNameSystem department;
 
     private final EmployeeInfo admittingDoctor;
 
-    private final CodeNamePair admissionReferral;
-    private final CodeNamePair admissionsThisYear;
+    private final CodeNameSystem admissionReferral;
+
+    private final CodeNameSystem admissionsThisYear;
 
     public AdmissionInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
         this.dbActionPropertyBeanLocal = dbActionPropertyBeanLocal;
         final Action recieved = actions.get("recieved").iterator().hasNext() ? actions.get("recieved").iterator().next() : null;
-        final List<CodeNamePair> propsInfoMapRecieved = new LinkedList<CodeNamePair>() {{
+        final List<CodeNameSystem> propsInfoMapRecieved = new LinkedList<CodeNameSystem>() {{
             add(IS_URGENT_ADMISSION);
             add(TIME_AFTER_FALLING_ILL);
             add(TRANSPORT_TYPE);
@@ -67,23 +68,26 @@ public class AdmissionInfo {
         APValue apValue = recieved == null ? null : getActionPropertyByCodeOrName(recieved, IS_URGENT_ADMISSION);
         this.urgent = apValue == null ? false : apValue.getValueAsString().equals("по экстренным показаниям");
         apValue = getActionPropertyByCodeOrName(recieved, TIME_AFTER_FALLING_ILL);
-        this.timeAftreFalling = apValue == null ? null : new CodeNamePair(apValue.getValueAsString(), timeAfterFallingMap.get(apValue.getValueAsString()));
+        this.timeAftreFalling = apValue == null ? null : RbManager.get(RbManager.RbType.PRK371,
+                CodeNameSystem.newInstance(timeAfterFallingMap.get(timeAfterFallingMap.get(apValue.getValueAsString())), apValue.getValueAsString(), "1.2.643.5.1.13.2.1.1.537"));
         apValue = getActionPropertyByCodeOrName(recieved, TRANSPORT_TYPE);
-        this.transportType = apValue == null ? null : new CodeNamePair(null, apValue.getValueAsString());
+        this.transportType = apValue == null ? null : new CodeNameSystem(null, apValue.getValueAsString());
         apValue = getActionPropertyByCodeOrName(recieved, ADMISSION_REFERRAL);
-        this.admissionReferral = apValue == null ? null : new CodeNamePair(apValue.getValueAsString(), admissionReferralMap.get(apValue.getValueAsString()));
+        this.admissionReferral = apValue == null ? null : RbManager.get(RbManager.RbType.STR464,
+                CodeNameSystem.newInstance(admissionReferralMap.get(admissionReferralMap.get(apValue.getValueAsString())), apValue.getValueAsString(), "1.2.643.5.1.13.2.1.1.281"));
         apValue = getActionPropertyByCodeOrName(recieved, ADMISSION_THIS_YEAR);
-        this.admissionsThisYear = apValue == null ? null : new CodeNamePair(apValue.getValueAsString(), admissionsThisYearMap.get(apValue.getValueAsString()));
+        this.admissionsThisYear = apValue == null ? null : RbManager.get(RbManager.RbType.C42007,
+                CodeNameSystem.newInstance(admissionsThisYearMap.get(apValue.getValueAsString()), apValue.getValueAsString(), "1.2.643.5.1.13.2.1.1.109"));
 
         Action moving = getLastMoving(actions);
         APValueOrgStructure apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(moving, FINAL_DEPARTMENT);
         this.finalDepartment = (apValueOrgStructure == null || apValueOrgStructure.getValue() == null) ?
-                null : new CodeNamePair(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
+                null : new CodeNameSystem(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
 
         moving = getFirstMoving(actions);
         apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(moving, FINAL_DEPARTMENT);
         this.department = (apValueOrgStructure == null || apValueOrgStructure.getValue() == null) ?
-                null : new CodeNamePair(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
+                null : new CodeNameSystem(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
 
         apValue = getActionPropertyByCodeOrName(moving, WARD);
         ward = apValue == null ? null : apValue.getValueAsString();
@@ -114,7 +118,7 @@ public class AdmissionInfo {
         return res;
     }
 
-    private APValue getActionPropertyByCodeOrName(Action action, CodeNamePair prop) {
+    private APValue getActionPropertyByCodeOrName(Action action, CodeNameSystem prop) {
         if (action == null) {
             return null;
         }
@@ -149,19 +153,19 @@ public class AdmissionInfo {
         return urgent;
     }
 
-    public CodeNamePair getTimeAftreFalling() {
+    public CodeNameSystem getTimeAftreFalling() {
         return timeAftreFalling;
     }
 
-    public CodeNamePair getTransportType() {
+    public CodeNameSystem getTransportType() {
         return transportType;
     }
 
-    public CodeNamePair getDepartment() {
+    public CodeNameSystem getDepartment() {
         return department;
     }
 
-    public CodeNamePair getFinalDepartment() {
+    public CodeNameSystem getFinalDepartment() {
         return finalDepartment;
     }
 
@@ -181,12 +185,12 @@ public class AdmissionInfo {
         return admittingDoctor;
     }
 
-    public CodeNamePair getAdmissionReferral() {
+    public CodeNameSystem getAdmissionReferral() {
         return admissionReferral;
     }
 
 
-    public CodeNamePair getAdmissionsThisYear() {
+    public CodeNameSystem getAdmissionsThisYear() {
         return admissionsThisYear;
     }
 }

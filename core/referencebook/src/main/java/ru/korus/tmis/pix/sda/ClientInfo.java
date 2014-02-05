@@ -85,7 +85,7 @@ public class ClientInfo {
     /**
      * Гражданство
      */
-    final private CodeNamePair citizenship;
+    final private CodeNameSystem citizenship;
 
     final private DocInfo passport;
     final private InsuranceInfo omsInfo;
@@ -135,7 +135,7 @@ public class ClientInfo {
         return workInfo;
     }
 
-    public CodeNamePair getCitizenship() {
+    public CodeNameSystem getCitizenship() {
         return citizenship;
     }
 
@@ -163,18 +163,31 @@ public class ClientInfo {
         M;
     }
 
+    /**
+     * Данные о льготах
+     */
     public static class Privilege {
-        public CodeNamePair getCodeAndName() {
-            return codeAndName;
-        }
 
-        private final CodeNamePair codeAndName;
+        /**
+         * Категория льготы
+         */
+        private final CodeNameSystem category;
+
+        /**
+         * Дата начала действия льготы
+         */
         private final XMLGregorianCalendar docBegDate;
+
+        /**
+         * Дата истечения срока действия льготы
+         */
         private final XMLGregorianCalendar expirationDate;
 
         public Privilege(ru.korus.tmis.core.entity.model.fd.ClientSocStatus clientSocStatus) {
             RbSocStatusType socStatusType = clientSocStatus.getSocStatusType();
-            codeAndName = new CodeNamePair(socStatusType.getCode(), socStatusType.getName());
+
+            category = RbManager.get(RbManager.RbType.rbSocStatusType, CodeNameSystem.newInstance(socStatusType.getCode(), socStatusType.getName(), null));
+
             docBegDate = getXmlGregorianCalendar(clientSocStatus.getBegDate());
             expirationDate =getXmlGregorianCalendar(clientSocStatus.getEndDate());
         }
@@ -186,18 +199,24 @@ public class ClientInfo {
         public XMLGregorianCalendar getExpirationDate() {
             return expirationDate;
         }
+
+        public CodeNameSystem getCategory() {
+            return category;
+        }
+
     }
 
     public static class SocialStatus {
-        private final CodeNamePair codeAndName;
+        private final CodeNameSystem codeAndName;
 
-        public CodeNamePair getCodeAndName() {
+        public CodeNameSystem getCodeAndName() {
             return codeAndName;
         }
 
         public SocialStatus(ru.korus.tmis.core.entity.model.fd.ClientSocStatus clientSocStatus) {
             RbSocStatusType socStatusType = clientSocStatus.getSocStatusType();
-            codeAndName = new CodeNamePair(socStatusType.getCode(), socStatusType.getName());
+            codeAndName = RbManager.get(RbManager.RbType.rbSocStatusType,
+                    CodeNameSystem.newInstance(socStatusType.getCode(), socStatusType.getName(), "1.2.643.5.1.13.2.1.1.366"));
         }
     }
 
@@ -273,7 +292,7 @@ public class ClientInfo {
         for (ClientAddress clientAddress : addresses) {
             if (clientAddress.getAddressType() == 0) { // елси адрес регистрации (0-регистрации, 1-проживания)
                 regAddr = new AddrInfo(clientAddress, dbSchemeKladrBeanLocal);
-                dwellingType = clientAddress.getLocalityType().toString();
+                dwellingType = clientAddress.getLocalityType().equals(1) ? "1" : "2";
             } else if (clientAddress.getAddressType() == 1) { // елси адрес проживания (0-регистрации, 1-проживания)
                 actualAddr = new AddrInfo(clientAddress, dbSchemeKladrBeanLocal);
             }
@@ -353,12 +372,12 @@ public class ClientInfo {
         return res;
     }
 
-    private CodeNamePair initCitizenship(Patient client) {
-        CodeNamePair res = null;
+    private CodeNameSystem initCitizenship(Patient client) {
+        CodeNameSystem res = null;
         for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
             if( CITIZENSHIP_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
                 RbSocStatusType socStatusType = clientSocStatus.getSocStatusType();
-                res = new CodeNamePair(null, socStatusType.getName());
+                res = new CodeNameSystem(null, socStatusType.getName());
             }
         }
         return res;
@@ -568,7 +587,7 @@ public class ClientInfo {
     public class WorkInfo {
         final private String name;
         final private String pos;
-        final private CodeNamePair okved;
+        final private CodeNameSystem okved;
         final private String harmful;
 
         public WorkInfo(ClientWork clientWork) {
@@ -576,7 +595,8 @@ public class ClientInfo {
             //TODO: Implements: Organisation.shortName<=Organisation.id<=ClientWork.org_id/ClientWork.freeInput
             this.name = name;
             this.pos = clientWork.getPost();
-            this.okved = new CodeNamePair(null, clientWork.getOkved());
+            //TODO: replace  ClientWork.class to rbOKVED ?
+            this.okved = RbManager.get(RbManager.RbType.rbOKVED, CodeNameSystem.newInstance(clientWork.getOkved(), null, "1.2.643.5.1.13.2.1.1.62"));
             this.harmful = null; //TODO: Implements: rbHurtType.name<=rbHurtType.id<=ClientWork_Hurt.hurtType_id
         }
 
@@ -588,7 +608,7 @@ public class ClientInfo {
             return pos;
         }
 
-        public CodeNamePair getOkved() {
+        public CodeNameSystem getOkved() {
             return okved;
         }
 
@@ -604,6 +624,7 @@ public class ClientInfo {
         private final String issued;
         private final XMLGregorianCalendar createDate;
         private final XMLGregorianCalendar expirationDate;
+        private final CodeNameSystem docType;
 
         public DocInfo(ClientDocument passport) {
             serial = passport.getSerial();
@@ -611,6 +632,10 @@ public class ClientInfo {
             issued = passport.getIssued();
             createDate = getXmlGregorianCalendar(passport.getDate());
             expirationDate =getXmlGregorianCalendar(passport.getEndDate());
+            final RbDocumentType documentType = passport.getDocumentType();
+            docType = documentType == null ? null :
+                    RbManager.get(RbManager.RbType.rbDocumentType,
+                            CodeNameSystem.newInstance(documentType.getCode(), documentType.getName(), "1.2.643.5.1.13.2.1.1.498"));
         }
 
         public String getSerial() {
@@ -632,33 +657,38 @@ public class ClientInfo {
         public XMLGregorianCalendar getExpirationDate() {
             return expirationDate;
         }
+
+        public CodeNameSystem getDocType() {
+            return docType;
+        }
     }
 
     public static class InsuranceInfo {
-        private final CodeNamePair organization;
+        private final CodeNameSystem organization;
         private final String serial;
         private final String number;
         private final XMLGregorianCalendar begDate;
         private final XMLGregorianCalendar endDate;
-        private final CodeNamePair area;
+        private final CodeNameSystem area;
         private final String okato;
-        private final CodeNamePair policyTypeName;
+        private final CodeNameSystem policyTypeName;
 
         public InsuranceInfo(ClientPolicy clientPolicy) {
             final Organisation insurer = clientPolicy.getInsurer();
-            organization = new CodeNamePair(insurer.getInfisCode(), insurer.getShortName());
+            organization = RbManager.get(RbManager.RbType.Organisation,
+                    CodeNameSystem.newInstance(insurer.getInfisCode(), insurer.getShortName(), "1.2.643.5.1.13.2.1.1.635"));
             serial = clientPolicy.getSerial();
             number = clientPolicy.getNumber();
             begDate = getXmlGregorianCalendar(clientPolicy.getBegDate());
             endDate = getXmlGregorianCalendar(clientPolicy.getEndDate());
             String regName = null;//TODO: вычислить по КЛАДР территории страхования insurer.getArea()
-            area = new CodeNamePair(insurer.getArea(), regName);
+            area = RbManager.get(RbManager.RbType.KLD116, CodeNameSystem.newInstance(insurer.getArea(), regName, "1.2.643.5.1.13.2.1.1.196"));
             okato = insurer.getOkato();
             final RbPolicyType policyType = clientPolicy.getPolicyType();
-            policyTypeName = policyType == null ? null : new CodeNamePair(null, policyType.getName());
+            policyTypeName = policyType == null ? null : new CodeNameSystem(null, policyType.getName());
         }
 
-        public CodeNamePair getOrganization() {
+        public CodeNameSystem getOrganization() {
             return organization;
         }
 
@@ -678,7 +708,7 @@ public class ClientInfo {
             return endDate;
         }
 
-        public CodeNamePair getArea() {
+        public CodeNameSystem getArea() {
             return area;
         }
 
@@ -686,7 +716,7 @@ public class ClientInfo {
             return okato;
         }
 
-        public CodeNamePair getPolicyTypeName() {
+        public CodeNameSystem getPolicyTypeName() {
             return policyTypeName;
         }
     }

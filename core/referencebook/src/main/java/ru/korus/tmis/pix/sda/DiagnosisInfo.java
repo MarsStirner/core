@@ -27,7 +27,7 @@ public class DiagnosisInfo {
     /**
      * Код МКБ
      */
-    private final CodeNamePair mkb;
+    private final CodeNameSystem mkb;
 
     /**
      * Код типа диагноза
@@ -52,7 +52,7 @@ public class DiagnosisInfo {
     /**
      * Тип диагноза
      */
-    private final CodeNamePair diagType;
+    private final CodeNameSystem diagType;
 
     /**
      * Острое или хроническое заболевание
@@ -67,7 +67,7 @@ public class DiagnosisInfo {
     /**
      * Вид травмы
      */
-    private final CodeNamePair traumaType;
+    private final CodeNameSystem traumaType;
 
     /**
      * Кол-во госпитализаций в текущем году с данным диагнозом
@@ -87,7 +87,7 @@ public class DiagnosisInfo {
         final Mkb mkb = diagnosis.getMkb();
         final String mkbCode = mkb != null ? mkb.getDiagID() : null;
         final String diagName = (mkb != null ? mkb.getDiagName() : "").trim() + "(" + (diagnosisType != null ? diagnosisType.getName() : "") + ")";
-        this.mkb = new CodeNamePair(mkbCode, diagName);
+        this.mkb = RbManager.get(RbManager.RbType.MKB308, CodeNameSystem.newInstance(mkbCode, diagName, "1.2.643.5.1.13.2.1.1.643"));
         RbDiagnosisType dt = diagnosis.getDiagnosisType();
         String diagTypeName = null;
         String diagTypeCode = null;
@@ -95,7 +95,7 @@ public class DiagnosisInfo {
             diagTypeCode = "".equals(dt.getCode())? null : dt.getCode();
             diagTypeName = "".equals(dt.getName())? null : dt.getName();
         }
-        diagType = new CodeNamePair(diagTypeCode, diagTypeName);
+        diagType = new CodeNameSystem(diagTypeCode, diagTypeName);
         this.diagTypeName = diagTypeName;
         this.diagTypeCode = diagTypeCode;
         this.diagId = String.valueOf(diagnosis.getId());
@@ -104,7 +104,8 @@ public class DiagnosisInfo {
         this.acuteOrChronic = diagnosis.getCharacterId() == 1; //TODO: add entity for rbDiseaseCharacter!
         dispensarySuperVision = new DispensaryInfo(diagnostic);
         final RbTraumaType traumaTypeDb = diagnostic.getTraumaType();
-        traumaType = traumaTypeDb == null ? null : new CodeNamePair(traumaTypeDb.getCode(), traumaTypeDb.getName());
+        traumaType = traumaTypeDb == null ? null : RbManager.get(RbManager.RbType.rbTraumaType,
+                CodeNameSystem.newInstance(traumaTypeDb.getCode(), traumaTypeDb.getName(), "1.2.643.5.1.13.2.1.1.105"));
 
         //diagnostic.getEvent().getEventType().getRequestType().getCode()
         countAdmissionsThisYear = null;//TODO;
@@ -122,7 +123,7 @@ public class DiagnosisInfo {
     /**
      * @return the mkb
      */
-    public CodeNamePair getMkb() {
+    public CodeNameSystem getMkb() {
         return mkb;
     }
 
@@ -144,7 +145,7 @@ public class DiagnosisInfo {
         return enteredPerson;
     }
 
-    public CodeNamePair getDiagType() {
+    public CodeNameSystem getDiagType() {
         return diagType;
     }
 
@@ -156,7 +157,7 @@ public class DiagnosisInfo {
         return dispensarySuperVision;
     }
 
-    public CodeNamePair getTraumaType() {
+    public CodeNameSystem getTraumaType() {
         return traumaType;
     }
 

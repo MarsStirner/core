@@ -17,6 +17,7 @@ object ConfigManager extends Configuration {
    */
   var DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
+
   /**
    * Общие параметры работы ядра
    */
@@ -26,6 +27,22 @@ object ConfigManager extends Configuration {
     var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
   }
 
+  var RbManagerSetting = new RbManagerClass;
+
+  class RbManagerClass extends Configuration {
+    /**
+     * URL сервиса управления справочниками
+     */
+    var ServiceUrl = "http://192.168.1.123:5005";
+
+    /**
+     * Отладочный режим
+     */
+    var DebugDemoMode = "off";
+
+    def isDebugDemoMode = "on".equals(DebugDemoMode)
+
+  }
   /**
    *
    *

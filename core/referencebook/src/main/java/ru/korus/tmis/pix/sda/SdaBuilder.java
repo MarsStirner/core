@@ -18,8 +18,6 @@ import java.util.List;
  */
 public class SdaBuilder {
 
-    private static final String MDR308 = "1.2.643.5.1.13.2.1.1.178";
-
     static public enum EventType {
         I, // стационар
         O, // амбулаторный прием
@@ -39,7 +37,7 @@ public class SdaBuilder {
         Container res = new Container();
 
         // Уникальный идентификатор пациента в МИС и краткое наименование ЛПУ
-        res.setFacilityCode(eventInfo.getOrgOid() == null ? "unknown_org_oid" : eventInfo.getOrgOid());
+        res.setFacilityCode(eventInfo.getOrgOid() == null ? "unknown_org_oid" : eventInfo.getOrgOid().getCode());
         res.setPatientMRN(clientInfo.getTmisId().toString());
 
         final Patient patient = createPatientWithOrgInfo(eventInfo);
@@ -111,7 +109,7 @@ public class SdaBuilder {
 
         //Вид оплаты (ОМС, бюджет, платные услуги, ДМС, ...)
         if (eventInfo.getFinanceType() != null) {
-            encounter.setPaymentType(getCodeAndName(eventInfo.getFinanceType(), "1.2.643.5.1.13.2.1.1.528"));
+            encounter.setPaymentType(getCodeAndName(eventInfo.getFinanceType()));
         }
 
         //Признак на дому
@@ -119,7 +117,7 @@ public class SdaBuilder {
 
         //Подразделение МО лечения из регионального справочника
         if (eventInfo.getOrgStructure() != null) {
-            encounter.setFacilityDept(getCodeAndName(eventInfo.getOrgStructure(), null));
+            encounter.setFacilityDept(getCodeAndName(eventInfo.getOrgStructure()));
         }
 
         //Данные о госпитализации
@@ -129,7 +127,7 @@ public class SdaBuilder {
 
         //Результат обращения/госпитализации
         if (eventInfo.getEncounterResult() != null) {
-            encounter.setEncounterResult(getCodeAndName(eventInfo.getEncounterResult(), "1.2.643.5.1.13.2.1.1.551"));
+            encounter.setEncounterResult(getCodeAndName(eventInfo.getEncounterResult()));
         }
 
         res.setEncounters(SDAFactory.createArrayOfencounterEncounter());
@@ -142,19 +140,19 @@ public class SdaBuilder {
         res.setIsUrgentAdmission(admissionInfo.isUrgent());
         //Время, прошедшее c начала заболевания (получения травмы) до госпитализации
         if (admissionInfo.getTimeAftreFalling() != null) {
-            res.setTimeAfterFallingIll(getCodeAndName(admissionInfo.getTimeAftreFalling(), "1.2.643.5.1.13.2.1.1.537"));
+            res.setTimeAfterFallingIll(getCodeAndName(admissionInfo.getTimeAftreFalling()));
         }
         //Виды транспортировки (на каталке, на кресле, может идти)
         if (admissionInfo.getTransportType() != null) {
-            res.setTransportType(getCodeAndName(admissionInfo.getTransportType(), null));
+            res.setTransportType(getCodeAndName(admissionInfo.getTransportType()));
         }
         //Отделение
         if (admissionInfo.getDepartment() != null) {
-            res.setDepartment(getCodeAndName(admissionInfo.getDepartment(), null));
+            res.setDepartment(getCodeAndName(admissionInfo.getDepartment()));
         }
         //Переведен в отделение
         if (admissionInfo.getFinalDepartment() != null) {
-            res.setFinalDepartment(getCodeAndName(admissionInfo.getFinalDepartment(), null));
+            res.setFinalDepartment(getCodeAndName(admissionInfo.getFinalDepartment()));
         }
         //Палата
         if (admissionInfo.getWard() != null) {
@@ -174,11 +172,11 @@ public class SdaBuilder {
         }
         //Кем доставлен
         if (admissionInfo.getAdmissionReferral() != null) {
-            res.setAdmissionReferral(getCodeAndName(admissionInfo.getAdmissionReferral(), "1.2.643.5.1.13.2.1.1.281"));
+            res.setAdmissionReferral(getCodeAndName(admissionInfo.getAdmissionReferral()));
         }
         //Кол-во госпитализации в текущем году
         if (admissionInfo.getAdmissionsThisYear() != null) {
-            res.setAdmissionsThisYear(getCodeAndName(admissionInfo.getAdmissionsThisYear(), "1.2.643.5.1.13.2.1.1.109"));
+            res.setAdmissionsThisYear(getCodeAndName(admissionInfo.getAdmissionsThisYear()));
         }
 
         return res;
@@ -194,12 +192,12 @@ public class SdaBuilder {
         //Специальность
         if (autorInfo.getSpesialty() != null) {
             res = res == null ? SDAFactory.createEmployee() : res;
-            res.setSpecialty(getCodeAndName(autorInfo.getSpesialty(), "1.2.643.5.1.13.2.1.1.181"));
+            res.setSpecialty(getCodeAndName(autorInfo.getSpesialty()));
         }
         //Должность
         if (autorInfo.getRole() != null) {
             res = res == null ? SDAFactory.createEmployee() : res;
-            res.setRole(getCodeAndName(autorInfo.getRole(), "1.2.643.5.1.13.2.1.1.607"));
+            res.setRole(getCodeAndName(autorInfo.getRole()));
         }
         //Снилс
         if (autorInfo.getSnils() != null) {
@@ -281,8 +279,7 @@ public class SdaBuilder {
 
         //Социальный статус
         for (ClientInfo.SocialStatus socialStatus : clientInfo.getSocialStatus()) {
-            String codeSystem = "1.2.643.5.1.13.2.1.1.366";
-            final CodeAndName codeAndName = getCodeAndName(socialStatus.getCodeAndName(), codeSystem);
+            final CodeAndName codeAndName = getCodeAndName(socialStatus.getCodeAndName());
             if (codeAndName != null) {
                 patient.getSocialStatus().add(codeAndName);
             }
@@ -304,7 +301,7 @@ public class SdaBuilder {
 
         //Гражданство
         if (clientInfo.getCitizenship() != null) {
-            final CodeAndName codeAndName = getCodeAndName(clientInfo.getCitizenship(), null);
+            final CodeAndName codeAndName = getCodeAndName(clientInfo.getCitizenship());
             if (codeAndName != null) {
                 patient.setCitizenship(codeAndName);
             }
@@ -338,7 +335,7 @@ public class SdaBuilder {
         if (clientInfo.getDmsInfo() != null) {
             final Insurance insurance = toSdaInsurance(clientInfo.getDmsInfo());
             if (insurance != null) {
-                patient.setOmsInsurance(insurance);
+                patient.getDmsInsurance().add(insurance);
             }
         }
 
@@ -380,7 +377,7 @@ public class SdaBuilder {
         Insurance res = null;
         if (insuranceInfo.getOrganization() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
-            res.setInsuranceCompany(getCodeAndName(insuranceInfo.getOrganization(), "1.2.643.5.1.13.2.1.1.635"));
+            res.setInsuranceCompany(getCodeAndName(insuranceInfo.getOrganization()));
         }
         if (insuranceInfo.getOkato() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
@@ -388,7 +385,7 @@ public class SdaBuilder {
         }
         if (insuranceInfo.getPolicyTypeName() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
-            res.setPolicyType(getCodeAndName(insuranceInfo.getPolicyTypeName(), null));
+            res.setPolicyType(getCodeAndName(insuranceInfo.getPolicyTypeName()));
         }
         if (insuranceInfo.getSerial() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
@@ -408,7 +405,7 @@ public class SdaBuilder {
         }
         if (insuranceInfo.getArea() != null) {
             res = res == null ? SDAFactory.createInsurance() : res;
-            res.setInsuranceCompanyKladr(getCodeAndName(insuranceInfo.getArea(), "1.2.643.5.1.13.2.1.1.196"));
+            res.setInsuranceCompanyKladr(getCodeAndName(insuranceInfo.getArea()));
         }
 
         return res;
@@ -416,7 +413,7 @@ public class SdaBuilder {
 
     private static IdentityDocument toSdaIdentityDoc(ClientInfo.DocInfo passport) {
         IdentityDocument res = null;
-        res.setDocType(getCodeAndName(new CodeNamePair("21", "Паспорт гражданина РФ"), "1.2.643.5.1.13.2.1.1.498"));
+        res.setDocType(getCodeAndName(passport.getDocType()));
         if (passport.getNumber() != null) {
             res = res == null ? SDAFactory.createIdentityDocument() : res;
             res.setDocNum(passport.getNumber());
@@ -462,7 +459,7 @@ public class SdaBuilder {
         //ОКВЭД
         if (workInfo.getOkved() != null) {
             res = res == null ? SDAFactory.createOccupation() : res;
-            res.setOkved(getCodeAndName(workInfo.getOkved(), "1.2.643.5.1.13.2.1.1.62"));
+            res.setOkved(getCodeAndName(workInfo.getOkved()));
         }
 
         //Профессиональная вредность
@@ -476,8 +473,7 @@ public class SdaBuilder {
 
     private static Privilege toSdaPrivilege(ClientInfo.Privilege privilege) {
         Privilege res = null;
-        final String codeSystem = "1.2.643.5.1.13.2.1.1.358";
-        final CodeAndName codeAndName = getCodeAndName(privilege.getCodeAndName(), codeSystem);
+        final CodeAndName codeAndName = getCodeAndName(privilege.getCategory());
         if (codeAndName != null) {
             res = res == null ? SDAFactory.createPrivilege() : res;
             res.setCategory(codeAndName);
@@ -498,7 +494,7 @@ public class SdaBuilder {
         return res;
     }
 
-    private static CodeAndName getCodeAndName(CodeNamePair codeAndName, String codeSystem) {
+    private static CodeAndName getCodeAndName(CodeNameSystem codeAndName) {
         final String code = codeAndName.getCode();
         final CodeAndName res = SDAFactory.createCodeAndName();
         if (code != null) {
@@ -508,8 +504,8 @@ public class SdaBuilder {
         if (name != null) {
             res.setName(name);
         }
-        if (codeSystem != null) {
-            res.setCodingSystem(codeSystem);
+        if (codeAndName.getCodingSystem() != null) {
+            res.setCodingSystem(codeAndName.getCodingSystem());
         }
         return (code == null && name == null) ? null : res;
     }
@@ -595,11 +591,9 @@ public class SdaBuilder {
 
     private static Patient createPatientWithOrgInfo(EventInfo eventInfo) {
         final Patient patient = new Patient();
-        CodeAndName baseClinic = SDAFactory.createCodeAndName();
-        baseClinic.setCode(eventInfo.getOrgOid());
-        baseClinic.setCodingSystem(MDR308);
-        baseClinic.setName(eventInfo.getOrgOid());
-        patient.setBaseClinic(baseClinic);
+        final CodeNameSystem codeNameSystem = eventInfo.getOrgOid();
+        final CodeAndName codeName = getCodeAndName(codeNameSystem);
+        patient.setBaseClinic(codeName);
         return patient;
     }
 
@@ -640,7 +634,7 @@ public class SdaBuilder {
             //Тип документа
             if(epInfo.getDocType() != null) {
                 doc = doc == null ? SDAFactory.createDocument() : doc;
-                doc.setDocType(getCodeAndName(epInfo.getDocType(), "1.2.643.5.1.13.2.1.1.646"));
+                doc.setDocType(getCodeAndName(epInfo.getDocType()));
             }
 
             //Название документа
@@ -757,12 +751,12 @@ public class SdaBuilder {
         // Диагноз (код МКБ-10 и расшифровка)
         if (diagInfo.getMkb() != null) {
             diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-            diagnosis.setDiagnosis(getCodeAndName(diagInfo.getMkb(), "1.2.643.5.1.13.2.1.1.641"));
+            diagnosis.setDiagnosis(getCodeAndName(diagInfo.getMkb()));
         }
         // Тип диагноза
         if (diagInfo.getDiagType() != null) {
             diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-            diagnosis.setDiagnosisType(getCodeAndName(diagInfo.getDiagType(), null));
+            diagnosis.setDiagnosisType(getCodeAndName(diagInfo.getDiagType()));
         }
 
         //Вид диагноза
@@ -783,7 +777,7 @@ public class SdaBuilder {
         //Вид травмы
         if(diagInfo.getTraumaType() != null) {
             diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
-            diagnosis.setTraumaType(getCodeAndName(diagInfo.getTraumaType(), "1.2.643.5.1.13.2.1.1.105"));
+            diagnosis.setTraumaType(getCodeAndName(diagInfo.getTraumaType()));
         }
 
         //Кол-во госпитализаций в текущем году с данным диагнозом
@@ -871,7 +865,7 @@ public class SdaBuilder {
         //Аллергия/непереносимость (название препарата, шерсть животных, продукт питания, пыль, ...)
         if(allergyInfo.getNameSubstance() != null) {
             allergy = allergy == null ? SDAFactory.createAllergy() : allergy;
-            allergy.setAllergy(getCodeAndName(new CodeNamePair(null, allergyInfo.getNameSubstance()), null));
+            allergy.setAllergy(getCodeAndName(CodeNameSystem.newInstance(null, allergyInfo.getNameSubstance(), null)));
         }
 
         //Дополнительная информация
@@ -930,13 +924,13 @@ public class SdaBuilder {
         //Код и название услуги
         if(serviceInfo.getServiceCode() != null) {
             res = res == null ? SDAFactory.createMedService() : res;
-            res.setService(getCodeAndName(serviceInfo.getServiceCode(), "1.2.643.5.1.13.2.1.1.473"));
+            res.setService(getCodeAndName(serviceInfo.getServiceCode()));
         }
 
         //Диагноз (код МКБ-10 и расшифровка)
         if(serviceInfo.getDiagnosis() != null) {
             res = res == null ? SDAFactory.createMedService() : res;
-            res.setDiagnosis(getCodeAndName(serviceInfo.getDiagnosis(), "1.2.643.5.1.13.2.1.1.641"));
+            res.setDiagnosis(getCodeAndName(serviceInfo.getDiagnosis()));
         }
 
         //Кол-во оказанных услуг
@@ -954,19 +948,19 @@ public class SdaBuilder {
         //Вид медицинской помощи
         if(serviceInfo.getServType() != null) {
             res = res == null ? SDAFactory.createMedService() : res;
-            res.setServCareType(getCodeAndName(serviceInfo.getServType(), null));
+            res.setServCareType(getCodeAndName(serviceInfo.getServType()));
         }
 
         //Отделение МО лечения из регионального справочник
         if(serviceInfo.getOrgStruct() != null) {
             res = res == null ? SDAFactory.createMedService() : res;
-            res.setFacilityDept(getCodeAndName(serviceInfo.getOrgStruct(), null));
+            res.setFacilityDept(getCodeAndName(serviceInfo.getOrgStruct()));
         }
 
         //Профиль оказанной медицинской помощи
         if(serviceInfo.getServiceProfile() != null) {
             res = res == null ? SDAFactory.createMedService() : res;
-            res.setCareProfile(getCodeAndName(serviceInfo.getServiceProfile(), null));
+            res.setCareProfile(getCodeAndName(serviceInfo.getServiceProfile()));
         }
 
         //Признак детского профиля
@@ -978,13 +972,13 @@ public class SdaBuilder {
         //Профиль койки
         if(serviceInfo.getBedProfile() != null) {
             res = res == null ? SDAFactory.createMedService() : res;
-            res.setBedProfile(getCodeAndName(new CodeNamePair(null, serviceInfo.getBedProfile()), null));
+            res.setBedProfile(getCodeAndName(new CodeNameSystem(null, serviceInfo.getBedProfile())));
         }
 
         //Способ оплаты медицинской помощи
         if(eventInfo.getFinanceType() != null) {
             res = res == null ? SDAFactory.createMedService() : res;
-            res.setServPaymentType(getCodeAndName(eventInfo.getFinanceType(), "1.2.643.5.1.13.2.1.1.528"));
+            res.setServPaymentType(getCodeAndName(eventInfo.getFinanceType()));
         }
         return res;
     }

@@ -235,7 +235,7 @@ public class HsPixPullBean implements  HsPixPullBeanLocal {
                     .setParameter("groupId", a.getActionType().getGroupId()).getResultList();
             if (!actionTypes.isEmpty()) {
                 if (actionTypes.get(0).getFlatCode().equals("epicrisis")) {
-                    res.add(new EpicrisisInfo(a, clientInfo, EventInfo.getOrgShortName(event), dbActionPropertyBeanLocal));
+                    res.add(new EpicrisisInfo(a, clientInfo, dbActionPropertyBeanLocal));
                 }
             }
         }
@@ -264,7 +264,7 @@ public class HsPixPullBean implements  HsPixPullBeanLocal {
     private List<AllergyInfo> getAllergies(Event event) {
         List<AllergyInfo> res = new LinkedList<AllergyInfo>();
         for (ClientAllergy allergy : event.getPatient().getClientAllergies()) {
-            res.add(new AllergyInfo(allergy, EventInfo.getOrgShortName(event)));
+            res.add(new AllergyInfo(allergy));
         }
         return res;
     }
@@ -282,16 +282,12 @@ public class HsPixPullBean implements  HsPixPullBeanLocal {
         }
     }
 
-    public String getDefOrgName() {
+    public CodeNameSystem getDefOrgName() {
         Organisation organization = null;
         try {
             organization = organizationBeanLocal.getOrganizationById(ConfigManager.Common().OrgId());
         } catch (CoreException e) {
         }
-        if (organization == null) {
-            return "Не задано";
-        } else {
-            return organization.getShortName();
-        }
+        return  EventInfo.getOrgCodeName(organization);
     }
 }
