@@ -87,6 +87,9 @@ class AppealBean extends AppealBeanLocal
   @EJB
   private var dbRbResultBean: DbRbResultBeanLocal = _
 
+  @EJB
+  private var dbContractBean: DbContractBean = _
+
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
@@ -572,7 +575,9 @@ class AppealBean extends AppealBeanLocal
       if(appealData.data.contract == null || appealData.data.contract.getId < 1)
         throw new CoreException(i18n("error.appeal.create.InvalidContractData"))
 
-      if(appealData.data.contract.begDate.getTime < new Date().getTime)
+      val contract = dbContractBean.getContractById(appealData.data.contract.getId)
+
+      if(contract.getBegDate.getTime < new Date().getTime)
         throw new CoreException(i18n("error.appeal.create.ContractIsExpired"))
 
       event = dbEventBean.createEvent(id,
