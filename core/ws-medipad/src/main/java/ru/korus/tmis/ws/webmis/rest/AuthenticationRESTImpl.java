@@ -101,8 +101,8 @@ public class AuthenticationRESTImpl   {
      */
     @POST
     @Path("/auth")
-    @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Consumes({"application/json", "application/xml"})
+    @Produces({"application/x-javascript","application/xml"})
     public Object authenticate2(AuthEntry request,
                                @QueryParam("callback") String callback) {
         JSONWithPadding returnValue = new JSONWithPadding(wsImpl.authenticate(request.login(), request.password(), request.roleId()), callback);
