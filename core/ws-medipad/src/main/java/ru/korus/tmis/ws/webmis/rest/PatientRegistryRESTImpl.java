@@ -75,7 +75,7 @@ public class PatientRegistryRESTImpl {
      * Получение списка пациентов.
      */
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/x-javascript", "application/xml"})
     public Object getAllPatientsP(@QueryParam("limit")int limit,
                                   @QueryParam("page")int  page,
                                   @QueryParam("sortingField")String sortingField,
