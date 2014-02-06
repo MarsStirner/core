@@ -7,9 +7,12 @@ package ru.korus.tmis.pix.sda;
  * Description:  <br>
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.korus.tmis.pix.sda.ws.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -17,6 +20,8 @@ import java.util.List;
  *
  */
 public class SdaBuilder {
+
+    static final Logger logger = LoggerFactory.getLogger(SdaBuilder.class);
 
     static public enum EventType {
         I, // стационар
@@ -576,13 +581,13 @@ public class SdaBuilder {
         //Номер квартиры
         if (regAddr.getAppartment() != null) {
             addr = getAddrInstance(addr);
-            addr.setHouse(regAddr.getAppartment());
+            addr.setApartment(regAddr.getAppartment());
         }
 
         //ОКАТО
         if (regAddr.getOkato() != null) {
             addr = getAddrInstance(addr);
-            addr.setHouse(regAddr.getOkato());
+            addr.setOkato(regAddr.getOkato());
         }
 
         return addr;
@@ -641,6 +646,18 @@ public class SdaBuilder {
             if(epInfo.getDocName() != null) {
                 doc = doc == null ? SDAFactory.createDocument() : doc;
                 doc.setDocName(epInfo.getDocName());
+            }
+
+            if(epInfo.getText() != null ) {
+                doc = doc == null ? SDAFactory.createDocument() : doc;
+                final String charsetName = "UTF-8";
+                try {
+                    logger.info("Epicrisis id: " + epInfo.getId() + "  Epicrisis text: " + epInfo.getText());
+                    doc.setStream(epInfo.getText().getBytes(charsetName));
+                    doc.setFileType("text/html");
+                } catch (UnsupportedEncodingException e) {
+                    logger.error("Unsupported encoding: '" + charsetName + "' :", e);  //To change body of catch statement use File | Settings | File Templates.
+                }
             }
 
             if (doc != null) {

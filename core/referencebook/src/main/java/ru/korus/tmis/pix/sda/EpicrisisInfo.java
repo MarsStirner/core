@@ -1,16 +1,23 @@
 package ru.korus.tmis.pix.sda;
 
-import javax.xml.datatype.XMLGregorianCalendar;
-
 import org.joda.time.DateTime;
 import org.joda.time.Days;
 import org.joda.time.Months;
 import org.joda.time.Years;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.entity.model.APValue;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionProperty;
+import ru.korus.tmis.core.entity.model.ActionPropertyType;
+import ru.korus.tmis.core.exception.CoreException;
+
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.io.ByteArrayOutputStream;
+import java.io.PrintStream;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -20,7 +27,7 @@ import ru.korus.tmis.core.entity.model.Action;
  */
 
 /**
- * 
+ *
  */
 public class EpicrisisInfo {
 
@@ -60,26 +67,61 @@ public class EpicrisisInfo {
      * Тип документа
      */
     private final CodeNameSystem docType;
+    private final String text;
 
     public EpicrisisInfo(Action action, ClientInfo clientInfo, DbActionPropertyBeanLocal apBean) {
         this.code = action.getActionType().getMnemonic();
         this.docName = action.getActionType().getName();
         this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
         this.id = String.valueOf(action.getId());
-        this.createdPerson =  EmployeeInfo.newInstance(action.getCreatePerson());
+        this.createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
         this.endDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
         CodeNameSystem docType = null;
-        if( "EPI".equals(action.getActionType().getMnemonic())) {
+        if ("EPI".equals(action.getActionType().getMnemonic())) {
             docType = new CodeNameSystem("1", "Эпикриз стационара");
         } else if ("EPIAMB".equals(action.getActionType().getMnemonic())) {
             docType = new CodeNameSystem("2", "Амбулаторный эпикриз");
-        }  else if ("DIR".equals(action.getActionType().getMnemonic())) {
+        } else if ("DIR".equals(action.getActionType().getMnemonic())) {
             docType = new CodeNameSystem("3", "Направление");
         }
         this.docType = docType;
+        this.text = initText(action, apBean);
     }
 
-     private String getAge(XMLGregorianCalendar createDate, XMLGregorianCalendar birthDate) {
+    private String initText(Action action, DbActionPropertyBeanLocal apBean) {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        PrintStream printStream = new PrintStream(outputStream);
+        printStream.println("<table style=\"text-align: left;\" 2=\"\" cellspacing=\"2\">");
+        printStream.println(" <tbody>");
+        try {
+            Map<ActionProperty, List<APValue>> propertyMap = apBean.getActionPropertiesByActionId(action.getId());
+            for (Map.Entry<ActionProperty, List<APValue>> entry : propertyMap.entrySet()) {
+                final ActionPropertyType type = entry.getKey().getType();
+                if (!entry.getValue().isEmpty() && type != null && type.getName() != null && !"".equals(type.getName())) {
+                    printStream.println("  <tr>");
+                    printStream.print("   <td>");
+                    printStream.print(type.getName());
+                    printStream.println("   </td>");
+                    for (APValue apValue : entry.getValue()) {
+                        if (apValue != null && apValue.toString() != null && !"".equals(apValue.toString())) {
+                            printStream.print("   <td>");
+                            printStream.print(apValue.getValueAsString());
+                            printStream.println("   </td>");
+                        }
+                    }
+                    printStream.print("  </tr>");
+                }
+            }
+            printStream.println(" </tbody>");
+            printStream.print("</table>");
+            return outputStream.toString();
+        } catch (CoreException ex) {
+            return null;
+        }
+
+    }
+
+    private String getAge(XMLGregorianCalendar createDate, XMLGregorianCalendar birthDate) {
         DateTime birth = new DateTime(birthDate.toGregorianCalendar());
         DateTime create = new DateTime(createDate.toGregorianCalendar());
         Integer years = Years.yearsBetween(birth, create).getYears();
@@ -137,5 +179,10 @@ public class EpicrisisInfo {
 
     public String getId() {
         return id;
+    }
+
+
+    public String getText() {
+        return text;
     }
 }

@@ -13,8 +13,7 @@ public interface DbActionPropertyBeanLocal {
     ActionProperty getActionPropertyById(int id)
             throws CoreException;
 
-    Map<ActionProperty, List<APValue>>
-    getActionPropertiesByActionId(int actionId)
+    Map<ActionProperty, List<APValue>> getActionPropertiesByActionId(int actionId)
             throws CoreException;
 
     Map<ActionProperty, List<APValue>>

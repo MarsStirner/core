@@ -106,7 +106,7 @@ public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
 
     private List<Node> getChildsSda(Element nodeWithNameSpace) {
         List<Node> res = new Vector<Node>();
-        final String[] sdaNodes = {"patient", "encounters", "allergies", "diagnoses", "documents", "disabilities", "allergies", "SendingFacility", "services"};
+        final String[] sdaNodes = {"patient","sourceDocument","encounters","diagnoses","disabilities","sickLeaveDocuments","allergies","documents","services"};
         for(String nodeName : sdaNodes) {
             NodeList el = nodeWithNameSpace.getElementsByTagName(nodeName);
             if (el.getLength() > 0) {

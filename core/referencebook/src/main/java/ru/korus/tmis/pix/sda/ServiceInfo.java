@@ -87,17 +87,18 @@ public class ServiceInfo {
         this.id = String.valueOf(action.getId());
         this.createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
         this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
-        final RbService service = action.getActionType().getService();
+        final ActionType actionType = action.getActionType();
+        final RbService service = actionType.getService();
         this.serviceCode = service == null ? null : RbManager.get(RbManager.RbType.SST365,
                 CodeNameSystem.newInstance(service.getCode(), service.getName(), "1.2.643.5.1.13.2.1.1.473"));
         this.amount = action.getAmount();
         this.person = EmployeeInfo.newInstance(action.getExecutor());
         final Event event = action.getEvent();
-        final Staff executor = event != null ? event.getExecutor() : null;
-        final OrgStructure orgStructure = executor != null ? executor.getOrgStructure() : null;
-        this.orgStruct = orgStructure != null ? new CodeNameSystem(orgStructure.getCode(), orgStructure.getName()) : null;
-        Date birthDate = event != null ? event.getPatient().getBirthDate() : null;
-        Date setDate = event != null ? event.getSetDate() : null;
+        final Staff executor = event == null ? null : event.getExecutor() ;
+        final OrgStructure orgStructure = executor == null ? null :executor.getOrgStructure();
+        this.orgStruct = orgStructure == null ? null : new CodeNameSystem(orgStructure.getCode(), orgStructure.getName());
+        Date birthDate = event == null ? null : event.getPatient().getBirthDate();
+        Date setDate = event == null ? null : event.getSetDate();
         Boolean isChild = null;
         if (birthDate != null && setDate != null) {
             isChild = Years.yearsBetween(new DateTime(birthDate), new DateTime(setDate)).getYears() < 18; //
@@ -135,18 +136,18 @@ public class ServiceInfo {
 
             }
         }
-        this.diagnosis = new CodeNamePair("1.2.643.5.1.13.2.1.1.641", diag); // 419
+        this.diagnosis = new CodeNameSystem("1.2.643.5.1.13.2.1.1.641", diag); // 419
 
         final Integer medicalAidTypeId = action.getEvent().getEventType().getMedicalAidTypeId();
         final RbMedicalAidType type = rbMedicalAidTypeBeanLocal.getProfileById(medicalAidTypeId);
-        this.servType = new CodeNamePair(String.valueOf(medicalAidTypeId), type.getName()); // 444
+        this.servType = new CodeNameSystem(String.valueOf(medicalAidTypeId), type.getName()); // 444
 
            /*
         rbMedicalAidProfile.id <= rbService.medicalAidProfile_id<=rbService.id <=ActionType.service_id<=ActionType.id<=Action.id
          */
-        final Integer medicalAidProfileId = action.getActionType().getService().getMedicalAidProfileId();
-        final RbMedicalAidProfile profile = rbMedicalAidProfileBean.getProfileById(medicalAidProfileId);
-        this.serviceProfile = new CodeNamePair(String.valueOf(medicalAidProfileId), profile.getName()); // 448  event.getEventType().getMedicalAidTypeId();
+        final Integer medicalAidProfileId = service == null ? null : service.getMedicalAidProfileId();
+        final RbMedicalAidProfile profile = medicalAidProfileId == null ? null : rbMedicalAidProfileBean.getProfileById(medicalAidProfileId);
+        this.serviceProfile = (profile == null || medicalAidProfileId == null) ? null : new CodeNameSystem(String.valueOf(medicalAidProfileId), profile.getName()); // 448  event.getEventType().getMedicalAidTypeId();
     }
 
     /**

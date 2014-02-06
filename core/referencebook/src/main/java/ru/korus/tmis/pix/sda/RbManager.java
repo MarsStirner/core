@@ -70,7 +70,7 @@ public class RbManager {
         put(RbType.C42007, new ReferenceProp("C42007", "code"));
         put(RbType.rbResult, new ReferenceProp("rbResult", "code"));
         put(RbType.rbAcheResult, new ReferenceProp("rbAcheResult", "code"));
-        put(RbType.MKB308, new ReferenceProp("MKB308", "mkb"));
+        put(RbType.MKB308, new ReferenceProp("MKB308", "mkb_code"));
         put(RbType.rbTraumaType, new ReferenceProp("rbTraumaType", "code"));
         put(RbType.SST365, new ReferenceProp("SST365", "code"));
     }};
