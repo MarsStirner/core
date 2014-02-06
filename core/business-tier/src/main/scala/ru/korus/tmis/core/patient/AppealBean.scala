@@ -88,7 +88,7 @@ class AppealBean extends AppealBeanLocal
   private var dbRbResultBean: DbRbResultBeanLocal = _
 
   @EJB
-  private var dbContractBean: DbContractBean = _
+  private var dbContractBean: DbContractBeanLocal = _
 
   @Inject
   @Any
