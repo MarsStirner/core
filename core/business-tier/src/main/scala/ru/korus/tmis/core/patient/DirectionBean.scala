@@ -152,7 +152,7 @@ with I18nable {
       List(summary _, detailsWithAge _))
 
     val isTrueDoctor = authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue() ||
-      authData.getUser.getId.intValue() == action.getAssigner.getId.intValue()
+      (action.getAssigner != null && authData.getUser.getId.intValue() == action.getAssigner.getId.intValue())
     val jt = dbJobTicketBean.getJobTicketForAction(action.getId.intValue())
     com_data.getEntity.get(0).setIsEditable(action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
 
