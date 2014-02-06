@@ -140,7 +140,7 @@ public class ExaminationsRegistryRESTImpl {
      */
     @GET
     @Path("/{actionId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/x-javascript", "application/xml"})
     public Object getPrimaryMedExamById(@PathParam("actionId")int actionId) {
         return new JSONWithPadding(wsImpl.getPrimaryAssessmentById(actionId, this.auth), this.callback);
     }
