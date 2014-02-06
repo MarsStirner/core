@@ -3,6 +3,7 @@ package ru.korus.tmis.pix.sda;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
 
@@ -15,7 +16,7 @@ import ru.korus.tmis.core.entity.model.*;
  */
 
 /**
- * 
+ *
  */
 public class DiagnosisInfo {
 
@@ -75,7 +76,7 @@ public class DiagnosisInfo {
     private final Long countAdmissionsThisYear;
 
 
-    public DiagnosisInfo(Diagnostic diagnostic) {
+    public DiagnosisInfo(final Event event, final Diagnostic diagnostic, final DbQueryBeanLocal dbQueryBean) {
         final Diagnosis diagnosis = diagnostic.getDiagnosis();
         final RbDiagnosisType diagnosisType = diagnostic.getDiagnosisType();
         XMLGregorianCalendar createDate = null;
@@ -92,8 +93,8 @@ public class DiagnosisInfo {
         String diagTypeName = null;
         String diagTypeCode = null;
         if (dt != null) {
-            diagTypeCode = "".equals(dt.getCode())? null : dt.getCode();
-            diagTypeName = "".equals(dt.getName())? null : dt.getName();
+            diagTypeCode = "".equals(dt.getCode()) ? null : dt.getCode();
+            diagTypeName = "".equals(dt.getName()) ? null : dt.getName();
         }
         diagType = new CodeNameSystem(diagTypeCode, diagTypeName);
         this.diagTypeName = diagTypeName;
@@ -108,9 +109,8 @@ public class DiagnosisInfo {
                 CodeNameSystem.newInstance(traumaTypeDb.getCode(), traumaTypeDb.getName(), "1.2.643.5.1.13.2.1.1.105"));
 
         //diagnostic.getEvent().getEventType().getRequestType().getCode()
-        countAdmissionsThisYear = null;// 311 Рассчитать кол-во стационарных Event'ов,  с одинаковым значением Diagnosis.MKB
+        countAdmissionsThisYear = dbQueryBean.countAdmissionsThisYear(event, diagnosis); // 311 Рассчитать кол-во стационарных Event'ов,  с одинаковым значением Diagnosis.MKB
     }
-
 
 
     /**

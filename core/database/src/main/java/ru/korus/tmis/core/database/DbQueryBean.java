@@ -1,6 +1,9 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.Diagnosis;
+import ru.korus.tmis.core.entity.model.Diagnostic;
+import ru.korus.tmis.core.entity.model.Event;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -34,4 +37,22 @@ public class DbQueryBean implements DbQueryBeanLocal {
                 "WHERE a.id = ? AND apt.code = 'hospitalBedProfile'").setParameter(1, action.getId()).getResultList();
         return !nameList.isEmpty() ? nameList.get(0) : "";
     }
+
+    /**
+     * Кол-во госпитализаций в текущем году с данным диагнозом
+     */
+    @Override
+    public long countAdmissionsThisYear(final Event event, final Diagnosis diagnosis) {
+        final String diagName = diagnosis.getMkb().getDiagName();
+
+               /*
+        em.createNativeQuery("SELECT * FROM Event e JOIN EventType et ON et.id = e.id JOIN rbRequestType rrt ON et.requestType_id = rrt.id " +
+                " JOIN WHERE  client_id = ? " +
+                "   AND rrt.code IN ( 'clinic', 'hospital', 'stationary' ) " +
+                "   AND (e.setDate BETWEEN '2013-01-01 00:00:00' AND NOW()) ");
+                 */
+        return 0;
+    }
+
+
 }

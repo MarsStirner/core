@@ -67,6 +67,9 @@ public class HsPixPullBean implements HsPixPullBeanLocal {
     @EJB
     private RbMedicalAidTypeBeanLocal dbRbMedicalAidTypeBeanLocal;
 
+    @EJB
+    private DbQueryBeanLocal dbQueryBean;
+
 
     public void pullDb() {
         try {
@@ -260,7 +263,7 @@ public class HsPixPullBean implements HsPixPullBeanLocal {
                 em.createQuery("SELECT d FROM Diagnostic d WHERE d.event.id = :eventId AND d.deleted = 0 AND d.diagnosis IS NOT NULL", Diagnostic.class)
                         .setParameter("eventId", event.getId()).getResultList();
         for (Diagnostic diagnostic : diagnostics) {
-            res.add(new DiagnosisInfo(diagnostic));
+            res.add(new DiagnosisInfo(event, diagnostic, dbQueryBean));
         }
         return res;
     }
