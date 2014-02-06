@@ -108,7 +108,7 @@ public class DiagnosisInfo {
                 CodeNameSystem.newInstance(traumaTypeDb.getCode(), traumaTypeDb.getName(), "1.2.643.5.1.13.2.1.1.105"));
 
         //diagnostic.getEvent().getEventType().getRequestType().getCode()
-        countAdmissionsThisYear = null;//TODO;
+        countAdmissionsThisYear = null;// 311 Рассчитать кол-во стационарных Event'ов,  с одинаковым значением Diagnosis.MKB
     }
 
 

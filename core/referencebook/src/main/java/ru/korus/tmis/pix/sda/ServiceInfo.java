@@ -4,6 +4,8 @@ import com.google.common.collect.Multimap;
 import org.joda.time.DateTime;
 import org.joda.time.Years;
 import ru.korus.tmis.core.database.DbQueryBeanLocal;
+import ru.korus.tmis.core.database.RbMedicalAidProfileBeanLocal;
+import ru.korus.tmis.core.database.RbMedicalAidTypeBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -77,7 +79,11 @@ public class ServiceInfo {
      */
     private final String bedProfile;
 
-    public ServiceInfo(final Action action, final Multimap<String, Action> actionsByTypeCode, final DbQueryBeanLocal dbCustomQueryBean) {
+    public ServiceInfo(final Action action,
+                       final Multimap<String, Action> actionsByTypeCode,
+                       final DbQueryBeanLocal dbCustomQueryBean,
+                       final RbMedicalAidProfileBeanLocal rbMedicalAidProfileBean,
+                       final RbMedicalAidTypeBeanLocal rbMedicalAidTypeBeanLocal) {
         this.id = String.valueOf(action.getId());
         this.createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
         this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
@@ -101,15 +107,46 @@ public class ServiceInfo {
         final Action moving = getLastMoving(actionsByTypeCode);
         this.bedProfile = dbCustomQueryBean.getBedProfileName(moving); // 450
 
+        String diag = null;
         final List<Diagnostic> diagnostics = action.getEvent().getDiagnostics();
         for (Diagnostic d : diagnostics) {
-            if (d.getStage() != null && (d.getStage().getId() == 1 || d.getStage().getId() == 2)) {
+            if (d.getStage() != null) {
+
+                if (d.getStage().getId() == 1 || d.getStage().getId() == 4) {
+              /*
+              Из переписки с Александром Мартыновым:
+                В записи о диагнозе Diagnostic есть поле stage_id – ссылка на идентификатор id записи таблицы rbDiseaseStage с данными о типах диагнозах.
+                Если stage_id не заполнен, нужно анализировать поле Diagnostic.diagnosisType_id – ссылку на rbDiagnosisType.id. Если diagnosisType_id = 2,
+                то диагноз основной, если diagnosisType_id = 1, то диагноз заключительный
+
+                получаю список Diagnostic для нужного Event,
+                проверяю stage_id = 1, тогда использую этот Diagnostic, иначе
+                анализирую  поле Diagnostic.diagnosisType_id – ссылку на rbDiagnosisType.id.
+                Если diagnosisType_id = 2, то диагноз основной, если diagnosisType_id = 1, то диагноз заключительный
+              */
+                    diag = d.getDiagnosis().getMkb().getDiagName();
+
+                }
+            } else {
+
+                if (d.getDiagnosisType().getId() == 1 || d.getDiagnosisType().getId() == 2) {
+                    diag = d.getDiagnosis().getMkb().getDiagName();
+                }
 
             }
         }
-        this.diagnosis = new CodeNameSystem("1.2.643.5.1.13.2.1.1.641", ""); // 419
-        this.servType = new CodeNameSystem(String.valueOf(action.getEvent().getEventType().getMedicalAidTypeId()), ""); // 444
-        this.serviceProfile = new CodeNameSystem(String.valueOf(action.getEvent().getEventType().getMedicalAidTypeId()), ""); // 448  event.getEventType().getMedicalAidTypeId();
+        this.diagnosis = new CodeNamePair("1.2.643.5.1.13.2.1.1.641", diag); // 419
+
+        final Integer medicalAidTypeId = action.getEvent().getEventType().getMedicalAidTypeId();
+        final RbMedicalAidType type = rbMedicalAidTypeBeanLocal.getProfileById(medicalAidTypeId);
+        this.servType = new CodeNamePair(String.valueOf(medicalAidTypeId), type.getName()); // 444
+
+           /*
+        rbMedicalAidProfile.id <= rbService.medicalAidProfile_id<=rbService.id <=ActionType.service_id<=ActionType.id<=Action.id
+         */
+        final Integer medicalAidProfileId = action.getActionType().getService().getMedicalAidProfileId();
+        final RbMedicalAidProfile profile = rbMedicalAidProfileBean.getProfileById(medicalAidProfileId);
+        this.serviceProfile = new CodeNamePair(String.valueOf(medicalAidProfileId), profile.getName()); // 448  event.getEventType().getMedicalAidTypeId();
     }
 
     /**
