@@ -78,17 +78,13 @@ public class DiagnosisInfo {
 
     public DiagnosisInfo(final Event event, final Diagnostic diagnostic, final DbQueryBeanLocal dbQueryBean) {
         final Diagnosis diagnosis = diagnostic.getDiagnosis();
-        final RbDiagnosisType diagnosisType = diagnostic.getDiagnosisType();
         XMLGregorianCalendar createDate = null;
         try {
             createDate = Database.toGregorianCalendar(diagnosis.getCreateDatetime());
         } catch (DatatypeConfigurationException e) {
         }
         this.createDate = createDate;
-        final Mkb mkb = diagnosis.getMkb();
-        final String mkbCode = mkb != null ? mkb.getDiagID() : null;
-        final String diagName = (mkb != null ? mkb.getDiagName() : "").trim() + "(" + (diagnosisType != null ? diagnosisType.getName() : "") + ")";
-        this.mkb = RbManager.get(RbManager.RbType.MKB308, CodeNameSystem.newInstance(mkbCode, diagName, "1.2.643.5.1.13.2.1.1.643"));
+        this.mkb = toMKB308Diagnosis(diagnostic);
         RbDiagnosisType dt = diagnosis.getDiagnosisType();
         String diagTypeName = null;
         String diagTypeCode = null;
@@ -110,6 +106,15 @@ public class DiagnosisInfo {
 
         //diagnostic.getEvent().getEventType().getRequestType().getCode()
         countAdmissionsThisYear = dbQueryBean.countAdmissionsThisYear(event, diagnosis); // 311 Рассчитать кол-во стационарных Event'ов,  с одинаковым значением Diagnosis.MKB
+    }
+
+    static public CodeNameSystem toMKB308Diagnosis(Diagnostic diagnostic) {
+        final Diagnosis diagnosis = diagnostic.getDiagnosis();
+        final RbDiagnosisType diagnosisType = diagnostic.getDiagnosisType();
+        final Mkb mkb = diagnosis.getMkb();
+        final String mkbCode = mkb != null ? mkb.getDiagID() : null;
+        final String diagName = (mkb != null ? mkb.getDiagName() : "").trim() + "(" + (diagnosisType != null ? diagnosisType.getName() : "") + ")";
+        return RbManager.get(RbManager.RbType.MKB308, CodeNameSystem.newInstance(mkbCode, diagName, "1.2.643.5.1.13.2.1.1.643"));
     }
 
 

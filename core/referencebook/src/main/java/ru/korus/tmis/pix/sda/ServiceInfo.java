@@ -94,8 +94,8 @@ public class ServiceInfo {
         this.amount = action.getAmount();
         this.person = EmployeeInfo.newInstance(action.getExecutor());
         final Event event = action.getEvent();
-        final Staff executor = event == null ? null : event.getExecutor() ;
-        final OrgStructure orgStructure = executor == null ? null :executor.getOrgStructure();
+        final Staff executor = event == null ? null : event.getExecutor();
+        final OrgStructure orgStructure = executor == null ? null : executor.getOrgStructure();
         this.orgStruct = orgStructure == null ? null : new CodeNameSystem(orgStructure.getCode(), orgStructure.getName());
         Date birthDate = event == null ? null : event.getPatient().getBirthDate();
         Date setDate = event == null ? null : event.getSetDate();
@@ -108,11 +108,10 @@ public class ServiceInfo {
         final Action moving = getLastMoving(actionsByTypeCode);
         this.bedProfile = dbCustomQueryBean.getBedProfileName(moving); // 450
 
-        String diag = null;
+        CodeNameSystem diag = null;
         final List<Diagnostic> diagnostics = action.getEvent().getDiagnostics();
         for (Diagnostic d : diagnostics) {
             if (d.getStage() != null) {
-
                 if (d.getStage().getId() == 1 || d.getStage().getId() == 4) {
               /*
               Из переписки с Александром Мартыновым:
@@ -125,18 +124,15 @@ public class ServiceInfo {
                 анализирую  поле Diagnostic.diagnosisType_id – ссылку на rbDiagnosisType.id.
                 Если diagnosisType_id = 2, то диагноз основной, если diagnosisType_id = 1, то диагноз заключительный
               */
-                    diag = d.getDiagnosis().getMkb().getDiagName();
-
+                    diag = DiagnosisInfo.toMKB308Diagnosis(d);
                 }
             } else {
-
                 if (d.getDiagnosisType().getId() == 1 || d.getDiagnosisType().getId() == 2) {
-                    diag = d.getDiagnosis().getMkb().getDiagName();
+                    diag = DiagnosisInfo.toMKB308Diagnosis(d);
                 }
-
             }
         }
-        this.diagnosis = new CodeNameSystem("1.2.643.5.1.13.2.1.1.641", diag); // 419
+        this.diagnosis = diag;
 
         final Integer medicalAidTypeId = action.getEvent().getEventType().getMedicalAidTypeId();
         final RbMedicalAidType type = rbMedicalAidTypeBeanLocal.getProfileById(medicalAidTypeId);

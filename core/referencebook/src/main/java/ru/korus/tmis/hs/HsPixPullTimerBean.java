@@ -1,4 +1,4 @@
-package ru.korus.tmis.pix.sda;
+package ru.korus.tmis.hs;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
@@ -11,10 +11,10 @@ import javax.ejb.Stateless;
  * Description:  <br>
  */
 @Stateless
-public class HsPixPullTimerBeanBean {
+public class HsPixPullTimerBean {
 
     @EJB
-    HsPixPullBeanLocal hsPixPullBeanLocal;
+    HsPixPullTimerBeanLocal hsPixPullBeanLocal;
 
     @Schedule(hour = "*", minute = "*", second = "30")
     void  pull() {

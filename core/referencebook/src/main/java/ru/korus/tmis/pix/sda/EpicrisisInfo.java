@@ -77,12 +77,13 @@ public class EpicrisisInfo {
         this.createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
         this.endDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
         CodeNameSystem docType = null;
+        //TODO: использовать ПУС!
         if ("EPI".equals(action.getActionType().getMnemonic())) {
-            docType = new CodeNameSystem("1", "Эпикриз стационара");
+            docType = new CodeNameSystem("1.2.643.5.1.13.2.7.5.1.1", "Эпикриз стационара");
         } else if ("EPIAMB".equals(action.getActionType().getMnemonic())) {
-            docType = new CodeNameSystem("2", "Амбулаторный эпикриз");
+            docType = new CodeNameSystem("1.2.643.5.1.13.2.7.5.1.2", "Амбулаторный эпикриз");
         } else if ("DIR".equals(action.getActionType().getMnemonic())) {
-            docType = new CodeNameSystem("3", "Направление");
+            docType = new CodeNameSystem("1.2.643.5.1.13.2.7.5.1.3", "Направление");
         }
         this.docType = docType;
         this.text = initText(action, apBean);

@@ -13,6 +13,7 @@ import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.hs.HsPixPullTimerBeanLocal;
 import ru.korus.tmis.pix.sda.ws.EMRReceiverService;
 import ru.korus.tmis.pix.sda.ws.EMRReceiverServiceSoap;
 import ru.korus.tmis.scala.util.ConfigManager;
@@ -37,7 +38,7 @@ import java.util.*;
  *
  */
 @Stateless
-public class HsPixPullBean implements HsPixPullBeanLocal {
+public class HsPixPullBean implements HsPixPullTimerBeanLocal {
 
     private static final Logger logger = LoggerFactory.getLogger(HsPixPullBean.class);
     private static final int MAX_RESULT = 100;
@@ -213,7 +214,7 @@ public class HsPixPullBean implements HsPixPullBeanLocal {
 
     private List<ServiceInfo> getServices(final Event event, final Multimap<String, Action> actionsByTypeCode) {
         //TODO move to DbAtionBean!
-        List<Action> services = em.createQuery("SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0 AND a.actionType IS NOT NULL", Action.class)
+        List<Action> services = em.createQuery("SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0 AND a.actionType.service IS NOT NULL", Action.class)
                 .setParameter("eventId", event.getId()).getResultList();
         List<ServiceInfo> res = new LinkedList<ServiceInfo>();
         for (Action action : services) {

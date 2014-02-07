@@ -29,6 +29,12 @@
             <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.config</groupId>
+            <artifactId>config</artifactId>
+            <version>${version.tmis.core}</version>
+        </dependency>
     </dependencies>
 
     <build>

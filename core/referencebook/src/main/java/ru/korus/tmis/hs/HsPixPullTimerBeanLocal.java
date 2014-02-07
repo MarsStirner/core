@@ -1,4 +1,6 @@
-package ru.korus.tmis.pix.sda;
+package ru.korus.tmis.hs;
+
+import javax.ejb.Local;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -6,6 +8,7 @@ package ru.korus.tmis.pix.sda;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-public interface HsPixPullBeanLocal {
+@Local
+public interface HsPixPullTimerBeanLocal {
     public void pullDb();
 }
