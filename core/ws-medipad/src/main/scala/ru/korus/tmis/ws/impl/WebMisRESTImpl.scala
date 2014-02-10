@@ -421,7 +421,7 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   //запрос на структуру первичного мед. осмотра
-  def getStructOfPrimaryMedExam(actionTypeId: Int, authData: AuthData) = {
+  def getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData) = {
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //primaryAssessmentBean.getPrimaryAssessmentEmptyStruct("1_1_01", "PrimaryAssesment", null)
     var listForConverter = new java.util.ArrayList[String]
@@ -462,12 +462,14 @@ class WebMisRESTImpl  extends WebMisREST
     }
     //listForSummary.add(ActionWrapperInfo.toOrder)
 
+    val event = if(eventId > 0)dbEventBean.getEventById(eventId) else null
+
     primaryAssessmentBean.getEmptyStructure(actionTypeId,
                                             "Document",
                                             listForConverter,
                                             listForSummary,
                                             authData,
-                                            postProcessing() _,
+                                            postProcessing(event) _,
                                             null)
   }
 
@@ -479,7 +481,7 @@ class WebMisRESTImpl  extends WebMisREST
     }
     catch {
       case e: Exception => {
-        getStructOfPrimaryMedExam(actionTypeId, authData)
+        getStructOfPrimaryMedExam(actionTypeId, -1, authData)
       }
     }
 
@@ -495,7 +497,7 @@ class WebMisRESTImpl  extends WebMisREST
       }
 
       // Вычисляем "подтягивающиеся" из прошлых документов значение
-      val aProp = try { actionPropertyBean.getActionPropertyById(ap.getId())} catch {
+      val aProp = try { actionPropertyTypeBean.getActionPropertyTypeById(ap.getId())} catch {
         case e: Throwable => null
       }
       val at = try {actionTypeBean.getActionTypeById(jData.getData.get(0).getId())} catch {
@@ -525,12 +527,21 @@ class WebMisRESTImpl  extends WebMisREST
   /**
    * Метод для вставки аттрибутов, которые должны подтягиваться при создании новых документов
    * (например диагноз из предыдущего документа)
+   * Так как данный метод "сам в себе" то и константы-идентификаторы я буду хранить рядом для лучшей ясности
    * @param event Экземпляр события, для которого создается документ
    * @param at Тип создаваемого документа
    * @param ap Свойство создаваемого документа
    */
-  private def calculateActionPropertyValue(event: Event, at: ActionType, ap: ActionProperty): String = {
-    ""
+  private def calculateActionPropertyValue(event: Event, at: ActionType, ap: ActionPropertyType): String = {
+    // ActionType.code эпикризов, может, оставить только заключительный эпикриз
+    val newDocumentCodes = Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511")
+    //val pattern = "45%"
+    //val filter: AssessmentsListRequestDataFilter = new AssessmentsListRequestDataFilter(event.getId, -1, pattern, -1, -1, -1, null, null, null, null, null, null)
+    if(newDocumentCodes.contains(at.getCode)) {
+      val pastActions = actionBean.getActionsByTypeCodeAndEventId(newDocumentCodes, event.getId, "", null)
+      ""
+    } else
+      ""
   }
 
   //создание первичного мед. осмотра
@@ -565,17 +576,15 @@ class WebMisRESTImpl  extends WebMisREST
     returnValue
   }
 
-  def getPrimaryAssessmentById (assessmentId: Int, eventId: Int, authData: AuthData) = {
+  def getPrimaryAssessmentById (assessmentId: Int, authData: AuthData) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //val authData:AuthData = null
 
-    val event = if(eventId < 1) null else dbEventBean.getEventById(eventId)
-
     val json_data = primaryAssessmentBean.getPrimaryAssessmentById(assessmentId,
       "Assessment",
       authData,
-      postProcessing(event) _, false)
+      postProcessing() _, false)
 
     json_data
   }

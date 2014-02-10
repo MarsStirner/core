@@ -473,8 +473,8 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/actionTypes/{id}")
     @Produces("application/x-javascript")
-    public Object getStructOfPrimaryMedExam(@PathParam("id") int actionTypeId) {
-        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, this.auth), this.callback);
+    public Object getStructOfPrimaryMedExam(@PathParam("id") int actionTypeId, @QueryParam("eventId") int eventId) {
+        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, eventId, this.auth), this.callback);
     }
 
     /**
