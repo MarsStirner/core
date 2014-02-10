@@ -147,7 +147,7 @@ class DbContractBean
     )
 
     if(!showDeleted) queryConditions :+= cb.equal(root.get("deleted"), false)
-    if(!showExpired) queryConditions :+= cb.greaterThan(root.get("endDate"), new Date())
+    if(!showExpired) queryConditions :+= cb.lessThan(root.get("endDate"), new Date())
 
     q.
       where(List(cb.and(queryConditions:_*)):_*)
