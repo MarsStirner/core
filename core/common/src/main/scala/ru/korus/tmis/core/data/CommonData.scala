@@ -423,6 +423,9 @@ trait AbstractCommonAttribute {
 
 class CommonAttribute  extends AbstractCommonAttribute{
 
+  @BeanProperty
+  var calculatedValue:String = _
+
   private def this(id: Integer,
                    name: String,
                    aType: String,

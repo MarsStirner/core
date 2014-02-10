@@ -467,7 +467,7 @@ class WebMisRESTImpl  extends WebMisREST
                                             listForConverter,
                                             listForSummary,
                                             authData,
-                                            postProcessing _,
+                                            postProcessing() _,
                                             null)
   }
 
@@ -475,7 +475,7 @@ class WebMisRESTImpl  extends WebMisREST
   def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int) = {
     var lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
     try {
-      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Document", authData, postProcessing _, false) //postProcessingWithCopy _, true)
+      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Document", authData, postProcessing() _, false) //postProcessingWithCopy _, true)
     }
     catch {
       case e: Exception => {
@@ -485,7 +485,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   }
 
-  private def postProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+  private def postProcessing (event: Event = null)(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
     jData.data.get(0).group.get(1).attribute.foreach(ap => {
       if(ap.typeId==null || ap.typeId.intValue()<=0) {
         if(reWriteId.booleanValue)  //в id -> apt.id
@@ -493,7 +493,21 @@ class WebMisRESTImpl  extends WebMisREST
         else
           ap.typeId = actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
       }
+
+      // Вычисляем "подтягивающиеся" из прошлых документов значение
+      val aProp = try { actionPropertyBean.getActionPropertyById(ap.getId())} catch {
+        case e: Throwable => null
+      }
+      val at = try {actionTypeBean.getActionTypeById(jData.getData.get(0).getId())} catch {
+        case e: Throwable => null
+      }
+
+      if(event != null && aProp != null && at != null)
+        ap setCalculatedValue calculateActionPropertyValue(event, at, aProp)
     })
+
+
+
     jData
   }
 
@@ -508,6 +522,17 @@ class WebMisRESTImpl  extends WebMisREST
     jData
   }
 
+  /**
+   * Метод для вставки аттрибутов, которые должны подтягиваться при создании новых документов
+   * (например диагноз из предыдущего документа)
+   * @param event Экземпляр события, для которого создается документ
+   * @param at Тип создаваемого документа
+   * @param ap Свойство создаваемого документа
+   */
+  private def calculateActionPropertyValue(event: Event, at: ActionType, ap: ActionProperty): String = {
+    ""
+  }
+
   //создание первичного мед. осмотра
   def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
     val isPrimary = (data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
@@ -520,7 +545,7 @@ class WebMisRESTImpl  extends WebMisREST
       "Document",
       authData,
       /*preProcessing _*/null,
-      postProcessing _)
+      postProcessing() _)
     returnValue
   }
 
@@ -536,19 +561,21 @@ class WebMisRESTImpl  extends WebMisREST
       "Document",
       authData,
       /*preProcessing _*/null,
-      postProcessing _)
+      postProcessing() _)
     returnValue
   }
 
-  def getPrimaryAssessmentById (assessmentId: Int, authData: AuthData) = {
+  def getPrimaryAssessmentById (assessmentId: Int, eventId: Int, authData: AuthData) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //val authData:AuthData = null
 
+    val event = if(eventId < 1) null else dbEventBean.getEventById(eventId)
+
     val json_data = primaryAssessmentBean.getPrimaryAssessmentById(assessmentId,
       "Assessment",
       authData,
-      postProcessing _, false)
+      postProcessing(event) _, false)
 
     json_data
   }
