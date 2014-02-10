@@ -8,10 +8,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
+import java.net.*;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -94,8 +91,8 @@ public class RbManager {
     private static CodeNameSystem get(String tableName, String fieldName, String value) {
         try {
             String baseUrl = ConfigManager.RbManagerSetting().ServiceUrl();
-            final String requestUrl = baseUrl + "/api/hs/" + tableName + "/" + fieldName + "/" + value;
-            logger.info("RBM request: " + requestUrl);
+            final String requestUrl = baseUrl + "/api/hs/" + tableName + "/" + fieldName + "/" + URLEncoder.encode(value, "UTF-8");
+            logger.info("Send to RNM. tableName: '" + tableName + "' fieldName: '" + fieldName  + "' value: '" + value + "' RBM request:" + requestUrl);
             URL url = new URL(requestUrl);
             HttpURLConnection conn = openConnection(url);
             conn.setDoOutput(true);

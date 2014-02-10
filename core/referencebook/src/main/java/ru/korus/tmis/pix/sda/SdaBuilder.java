@@ -500,6 +500,9 @@ public class SdaBuilder {
     }
 
     private static CodeAndName getCodeAndName(CodeNameSystem codeAndName) {
+        if(codeAndName == null) {
+            return null;
+        }
         final String code = codeAndName.getCode();
         final CodeAndName res = SDAFactory.createCodeAndName();
         if (code != null) {

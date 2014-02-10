@@ -399,7 +399,9 @@ public class ClientInfo {
         for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
             if( ClientSocStatus.PRIVILEGE_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
                 final Privilege privelege = new Privilege(clientSocStatus);
-                res.add(privelege);
+                if(privelege.getCategory() != null) {
+                    res.add(privelege);
+                }
             }
         }
         return res;

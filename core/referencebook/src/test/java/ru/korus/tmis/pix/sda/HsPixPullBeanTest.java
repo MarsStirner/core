@@ -79,6 +79,8 @@ public class HsPixPullBeanTest extends Arquillian {
         return wa;
     }
 
+    //Чтобы тест работал при запуске через IDEA необходимо поставить в зависимость Maven: org.glassfish.extras:glassfish-embedded-all:3.2-b06 выше других библиотек
+    //File->Project Structure...->Modules - <cur module> - dependencies - поставить org.glassfish.extras:glassfish-embedded выше всех других либ с slf4j
     @Test
     //@Cleanup(phase = TestExecutionPhase.NONE)
     public void hello() {
