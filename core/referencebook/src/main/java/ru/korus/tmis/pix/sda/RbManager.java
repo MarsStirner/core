@@ -10,6 +10,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.*;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -91,8 +92,12 @@ public class RbManager {
     private static CodeNameSystem get(String tableName, String fieldName, String value) {
         try {
             String baseUrl = ConfigManager.RbManagerSetting().ServiceUrl();
+            logger.info("Send to RNM. tableName: '" + tableName + "' fieldName: '" + fieldName  + "' value: '" + value);
+            if(value == null) {
+                return null;
+            }
             final String requestUrl = baseUrl + "/api/hs/" + tableName + "/" + fieldName + "/" + URLEncoder.encode(value, "UTF-8");
-            logger.info("Send to RNM. tableName: '" + tableName + "' fieldName: '" + fieldName  + "' value: '" + value + "' RBM request:" + requestUrl);
+            logger.info("RBM request:" + requestUrl);
             URL url = new URL(requestUrl);
             HttpURLConnection conn = openConnection(url);
             conn.setDoOutput(true);

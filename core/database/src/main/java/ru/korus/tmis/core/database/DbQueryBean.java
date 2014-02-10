@@ -1,9 +1,6 @@
 package ru.korus.tmis.core.database;
 
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.Diagnosis;
-import ru.korus.tmis.core.entity.model.Diagnostic;
-import ru.korus.tmis.core.entity.model.Event;
+import ru.korus.tmis.core.entity.model.*;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -43,7 +40,8 @@ public class DbQueryBean implements DbQueryBeanLocal {
      */
     @Override
     public long countAdmissionsThisYear(final Event event, final Diagnosis diagnosis) {
-        final String diagName = diagnosis.getMkb().getDiagName();
+        final Mkb mkb = diagnosis.getMkb();
+        final String diagName = mkb == null ? null : mkb.getDiagName();
 
                /*
         em.createNativeQuery("SELECT * FROM Event e JOIN EventType et ON et.id = e.id JOIN rbRequestType rrt ON et.requestType_id = rrt.id " +
