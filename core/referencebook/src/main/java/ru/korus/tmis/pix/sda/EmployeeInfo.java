@@ -43,12 +43,17 @@ public class EmployeeInfo {
 
     private String initSnils(Staff createPerson) {
         String snils = createPerson.getSnils();
-        if(snils != null ) {
-            snils = snils.trim();
-            if(snils.length() == 11 ) {
-                snils = String.format("%s-%s-%s %s",
-                        snils.substring(0,3), snils.substring(3,6), snils.substring(6,9), snils.substring(9));
-            }
+        return toHsSnils(snils);
+    }
+
+    public static String toHsSnils(String snils) {
+        if(snils == null) {
+            return null;
+        }
+        snils = snils.trim();
+        if(snils.length() == 11 ) {
+            snils = String.format("%s-%s-%s %s",
+                    snils.substring(0,3), snils.substring(3,6), snils.substring(6,9), snils.substring(9));
         }
         return snils;
     }

@@ -315,7 +315,7 @@ public class ClientInfo {
         this.birthDate = getXmlGregorianCalendar(client.getBirthDate());
 
         this.tmisId = client.getId();
-        this.snils = notEmpty(client.getSnils());
+        this.snils = EmployeeInfo.toHsSnils(notEmpty(client.getSnils()));
         ClientPolicy clientPolicyEnp = getEnp(client);
         this.enpNumber = clientPolicyEnp == null ? null : clientPolicyEnp.getNumber();
 
