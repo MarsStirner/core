@@ -464,8 +464,8 @@ public class ClientInfo {
     private ClientPolicy getClientPolicyByCode(Patient client, String code) {
         List<ClientPolicy> policies = client.getClientPolicies();
         for (ClientPolicy policy : policies) {
-            if (policy.isDeleted() && policy.getPolicyType() != null &&
-                    policy.getPolicyType().getCode().equals(code))
+            if (!policy.isDeleted() && policy.getPolicyType() != null &&
+                    code.equals(policy.getPolicyType().getCode()))
                 return policy;
         }
         return null;
@@ -481,7 +481,7 @@ public class ClientInfo {
         for (ClientPolicy policy : policies) {
             //[12:06:57] Сергей Загребельный: т.е. все что не ДМС - это ОМС?
             //[12:07:09] Александр Мартынов: ага
-            if (policy.isDeleted() && !policy.getPolicyType().getCode().equals(DMS) )
+            if (!policy.isDeleted() && policy.getPolicyType() != null && !DMS.equals(policy.getPolicyType().getCode()) )
                 return policy;
         }
         return null;
@@ -677,7 +677,7 @@ public class ClientInfo {
 
         public InsuranceInfo(ClientPolicy clientPolicy) {
             final Organisation insurer = clientPolicy.getInsurer();
-            organization = RbManager.get(RbManager.RbType.Organisation,
+            organization = RbManager.get(RbManager.RbType.MDN366,
                     CodeNameSystem.newInstance(insurer.getInfisCode(), insurer.getShortName(), "1.2.643.5.1.13.2.1.1.635"));
             serial = clientPolicy.getSerial();
             number = clientPolicy.getNumber();

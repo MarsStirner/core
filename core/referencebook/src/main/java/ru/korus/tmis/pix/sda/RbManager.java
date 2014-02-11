@@ -51,7 +51,8 @@ public class RbManager {
         rbAcheResult,
         MKB308,
         rbTraumaType,
-        SST365;
+        SST365,
+        MDN366;
     };
 
     static Map<RbType, ReferenceProp> referenceMap = new HashMap() {{
@@ -71,6 +72,7 @@ public class RbManager {
         put(RbType.MKB308, new ReferenceProp("MKB308", "mkb_code"));
         put(RbType.rbTraumaType, new ReferenceProp("rbTraumaType", "code"));
         put(RbType.SST365, new ReferenceProp("SST365", "code"));
+        put(RbType.MDN366, new ReferenceProp("MDN366", "code"));
     }};
 
     public static CodeNameSystem get(RbType rbType, CodeNameSystem code) {
