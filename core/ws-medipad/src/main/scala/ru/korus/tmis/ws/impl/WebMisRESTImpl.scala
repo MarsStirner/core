@@ -505,7 +505,7 @@ class WebMisRESTImpl  extends WebMisREST
       }
 
       if(event != null && aProp != null && at != null)
-        ap setCalculatedValue calculateActionPropertyValue(event, at, aProp)
+        ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp))
     })
 
 
@@ -527,21 +527,38 @@ class WebMisRESTImpl  extends WebMisREST
   /**
    * Метод для вставки аттрибутов, которые должны подтягиваться при создании новых документов
    * (например диагноз из предыдущего документа)
-   * Так как данный метод "сам в себе" то и константы-идентификаторы я буду хранить рядом для лучшей ясности
+   * Так как данный метод "сам в себе" то и константы-идентификаторы я буду хранить рядом для лучшей ясности.
+   * Метод костылен по своей природе, т.к. костыльна сама поставленная задача.
    * @param event Экземпляр события, для которого создается документ
    * @param at Тип создаваемого документа
    * @param ap Свойство создаваемого документа
    */
-  private def calculateActionPropertyValue(event: Event, at: ActionType, ap: ActionPropertyType): String = {
-    // ActionType.code эпикризов, может, оставить только заключительный эпикриз
-    val newDocumentCodes = Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511")
-    //val pattern = "45%"
-    //val filter: AssessmentsListRequestDataFilter = new AssessmentsListRequestDataFilter(event.getId, -1, pattern, -1, -1, -1, null, null, null, null, null, null)
-    if(newDocumentCodes.contains(at.getCode)) {
-      val pastActions = actionBean.getActionsByTypeCodeAndEventId(newDocumentCodes, event.getId, "", null)
-      ""
-    } else
-      ""
+  private def calculateActionPropertyValue(event: Event, at: ActionType, ap: ActionPropertyType): APValue = {
+    if(at.getCode.equals("4504")) { // Заключительный эпикриз
+      // ActionType.code эпикризов, может, оставить только заключительный эпикриз
+      val oldDocumentCodes = Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511")
+      if(oldDocumentCodes.contains(at.getCode)) {
+        val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
+        if(!pastActions.isEmpty)
+           pastActions.head.getActionProperties.foreach(e => {
+             if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
+               val values = actionPropertyBean.getActionPropertyValue(e)
+               // Основной клинический диагноз
+               if(e.getType.getCode.equals("mainDiag")) {
+                 if(values.size() > 0)
+                   return values.head
+             }
+               // Основной клинический диагноз по МКБ
+               else if (e.getType.getCode.equals("mainDiagMkb")) {
+                 if(values.size() > 0)
+                   return values.head
+               }
+             }
+           })
+        null
+      }
+    }
+      null
   }
 
   //создание первичного мед. осмотра

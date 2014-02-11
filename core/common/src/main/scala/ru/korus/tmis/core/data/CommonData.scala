@@ -11,6 +11,7 @@ import java.util
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
 import javax.management.remote.rmi._RMIConnectionImpl_Tie
 import ru.korus.tmis.scala.util.ConfigManager
+import ru.korus.tmis.core.entity.model.APValue
 
 @XmlType(name = "entities")
 @XmlRootElement(name = "entities")
@@ -424,7 +425,7 @@ trait AbstractCommonAttribute {
 class CommonAttribute  extends AbstractCommonAttribute{
 
   @BeanProperty
-  var calculatedValue:String = _
+  var calculatedValue:APValueContainer = _
 
   private def this(id: Integer,
                    name: String,
