@@ -42,7 +42,7 @@ public class ClientInfo {
     /**
      *   Код типа полис медицинского страхования - "ДМС"
      */
-    private static final String DMS = "4";
+    private static final String DMS = "vmi";
 
     /**
      * Номер полиса единого образца
@@ -479,9 +479,9 @@ public class ClientInfo {
         //TODO: use getClientPolicyByCode !
         List<ClientPolicy> policies = client.getClientPolicies();
         for (ClientPolicy policy : policies) {
-            if (policy.isDeleted() &&
-                    (policy.getPolicyType().getCode().equals(OMS_LOC) ||
-                            policy.getPolicyType().getCode().equals(OMS_WORK)))
+            //[12:06:57] Сергей Загребельный: т.е. все что не ДМС - это ОМС?
+            //[12:07:09] Александр Мартынов: ага
+            if (policy.isDeleted() && !policy.getPolicyType().getCode().equals(DMS) )
                 return policy;
         }
         return null;

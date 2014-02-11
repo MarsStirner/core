@@ -135,6 +135,11 @@ public class SdaBuilder {
             encounter.setEncounterResult(getCodeAndName(eventInfo.getEncounterResult()));
         }
 
+        //Исход заболевания
+        if (eventInfo.getEncounterOutcome() != null) {
+            encounter.setEncounterOutcome(getCodeAndName(eventInfo.getEncounterOutcome()));
+        }
+
         res.setEncounters(SDAFactory.createArrayOfencounterEncounter());
         res.getEncounters().getEncounter().add(encounter);
     }
@@ -585,6 +590,12 @@ public class SdaBuilder {
         if (regAddr.getAppartment() != null) {
             addr = getAddrInstance(addr);
             addr.setApartment(regAddr.getAppartment());
+        }
+
+        //Корпус
+        if (regAddr.getBlock() != null) {
+            addr = getAddrInstance(addr);
+            addr.setBlock(regAddr.getBlock());
         }
 
         //ОКАТО

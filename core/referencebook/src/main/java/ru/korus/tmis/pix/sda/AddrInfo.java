@@ -67,6 +67,11 @@ public class AddrInfo {
 
     private static final Logger logger = LoggerFactory.getLogger(AddrInfo.class);
 
+    /**
+     * Корпус
+     */
+    private final String block;
+
     public AddrInfo(final ClientAddress homeAddr, final DbSchemeKladrBeanLocal dbSchemeKladrBean) {
         String addrCity = null;
         String addrState = null;
@@ -80,6 +85,7 @@ public class AddrInfo {
         String house = null;
         String appartment = null;
         String okato = null;
+        String block = null;
 
 
         if (homeAddr.getAddress() != null && homeAddr.getAddress().getHouse() != null) {
@@ -110,8 +116,7 @@ public class AddrInfo {
                     }
                     if (street != null) {
                         addrStreet =
-                                street.getSocr() + "." + street.getName() + ("".equals(addrHouse.getNumber()) ? "" : (" д." + addrHouse.getNumber()))
-                                        + ("".equals(addrHouse.getCorpus()) ? "" : (" корп." + addrHouse.getCorpus()));
+                                street.getSocr() + "." + street.getName();
                         addrZip = street.getIndex();
                     }
                     // Район
@@ -124,6 +129,8 @@ public class AddrInfo {
                     addrCityKladr = homeAddr.getAddress().getHouse().getKLADRCode();
                     // Номер дома
                     house = homeAddr.getAddress().getHouse().getNumber();
+                    //Корпус
+                    block = homeAddr.getAddress().getHouse().getCorpus();
                     // Номер квартиры
                     appartment = homeAddr.getAddress().getFlat();
                     // ОКАТО
@@ -144,6 +151,7 @@ public class AddrInfo {
         this.house = house;
         this.appartment = appartment;
         this.okato = okato;
+        this.block = block;
     }
 
 
@@ -193,5 +201,9 @@ public class AddrInfo {
 
     public String getOkato() {
         return okato;
+    }
+
+    public String getBlock() {
+        return block;
     }
 }

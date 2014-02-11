@@ -79,11 +79,11 @@ public class EpicrisisInfo {
         CodeNameSystem docType = null;
         //TODO: использовать ПУС!
         if ("EPI".equals(action.getActionType().getMnemonic())) {
-            docType = new CodeNameSystem("1.2.643.5.1.13.2.7.5.1.1", "Эпикриз стационара");
+            docType = CodeNameSystem.newInstance("1", "Эпикриз стационара", "1.2.643.5.1.13.2.1.1.646");
         } else if ("EPIAMB".equals(action.getActionType().getMnemonic())) {
-            docType = new CodeNameSystem("1.2.643.5.1.13.2.7.5.1.2", "Амбулаторный эпикриз");
+            docType = CodeNameSystem.newInstance("2", "Амбулаторный эпикриз", "1.2.643.5.1.13.2.1.1.646");
         } else if ("DIR".equals(action.getActionType().getMnemonic())) {
-            docType = new CodeNameSystem("1.2.643.5.1.13.2.7.5.1.3", "Направление");
+            docType = CodeNameSystem.newInstance("3", "Направление", "1.2.643.5.1.13.2.1.1.646");
         }
         this.docType = docType;
         this.text = initText(action, apBean);
@@ -92,7 +92,10 @@ public class EpicrisisInfo {
     private String initText(Action action, DbActionPropertyBeanLocal apBean) {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         PrintStream printStream = new PrintStream(outputStream);
-        printStream.println("<table style=\"text-align: left;\" 2=\"\" cellspacing=\"2\">");
+        printStream.println("<html>\n" +
+                "<head><meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\"></head>\n" +
+                "<body>" +
+                "<table style=\"text-align: left;\" 2=\"\" cellspacing=\"2\">");
         printStream.println(" <tbody>");
         try {
             Map<ActionProperty, List<APValue>> propertyMap = apBean.getActionPropertiesByActionId(action.getId());
@@ -114,7 +117,8 @@ public class EpicrisisInfo {
                 }
             }
             printStream.println(" </tbody>");
-            printStream.print("</table>");
+            printStream.println("</table></body>\n" +
+                    "</html>");
             return outputStream.toString();
         } catch (CoreException ex) {
             return null;

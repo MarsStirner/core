@@ -69,6 +69,11 @@ public class EventInfo {
      */
     private final String eventId;
 
+    /**
+     * Исход заболевания
+     */
+    private final CodeNameSystem encounterOutcome;
+
     public EventInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
         final ru.korus.tmis.core.entity.model.UUID uuid = event.getUuid();
         this.eventUuid = uuid != null ? uuid.getUuid() : null;
@@ -98,6 +103,8 @@ public class EventInfo {
         encounterResult = event.getResult() == null ? null : RbManager.get(RbManager.RbType.rbResult,
                 CodeNameSystem.newInstance(event.getResult().getCode(), event.getResult().getName(), "1.2.643.5.1.13.2.1.1.123"));
         eventId = String.valueOf(event.getId());
+        //TODO: необходимо реализовать!!!!!!!!!!!!!!
+        encounterOutcome = CodeNameSystem.newInstance("1", "выздоровление", "1.2.643.5.1.13.2.1.1.357");
     }
 
     private CodeNameSystem initOrgStructByPerson(Staff executor) {
@@ -131,6 +138,7 @@ public class EventInfo {
         admissionInfo = null;
         encounterResult = null;
         eventId = null;
+        encounterOutcome = null;
     }
 
     /**
@@ -246,5 +254,9 @@ public class EventInfo {
 
     public String getEventId() {
         return eventId;
+    }
+
+    public CodeNameSystem getEncounterOutcome() {
+        return encounterOutcome;
     }
 }
