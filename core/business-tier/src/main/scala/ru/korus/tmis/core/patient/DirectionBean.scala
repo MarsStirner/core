@@ -122,7 +122,7 @@ with I18nable {
         if (commonDataProcessor.checkActionPropertyTypeForPatientAge(age, ap.getType)) {
           apvs.size match {
             case 0 => {
-                group add apw.get(null, List(APWI.Unit, APWI.Norm, APWI.IsAssigned))
+                group add apw.get(null, List(APWI.Unit, APWI.Norm, APWI.IsAssignable, APWI.IsAssigned))
             }
             case _ => {
               apvs.foreach((apv) => {
