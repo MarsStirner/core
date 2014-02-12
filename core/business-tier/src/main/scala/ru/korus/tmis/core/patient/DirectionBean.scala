@@ -116,14 +116,13 @@ with I18nable {
     //val (year, month, week, date) = age.asInstanceOf[(Int, Int, Int, Int)]
 
     propertiesMap.foreach(
-      (p) => {
+      p => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap)
         if (commonDataProcessor.checkActionPropertyTypeForPatientAge(age, ap.getType)) {
           apvs.size match {
             case 0 => {
-              group add apw.get(null, List(APWI.Unit,
-                APWI.Norm))
+                group add apw.get(null, List(APWI.Unit, APWI.Norm, APWI.IsAssigned))
             }
             case _ => {
               apvs.foreach((apv) => {
