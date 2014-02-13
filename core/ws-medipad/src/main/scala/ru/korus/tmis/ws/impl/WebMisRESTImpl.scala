@@ -374,7 +374,7 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def getAllAppealsByPatient(requestData: AppealSimplifiedRequestData, auth: AuthData): AppealSimplifiedDataList = {
-    val set = appealBean.getAppealTypeCodesWithFlatDirectoryId(i18n("db.flatDirectory.eventType.hospitalization").toInt) //справочник госпитализаций
+    val set = appealBean.getSupportedAppealTypeCodes //справочник госпитализаций
     requestData.filter.asInstanceOf[AppealSimplifiedRequestDataFilter].code = set.asInstanceOf[ju.Collection[String]]
     appealBean.getAllAppealsByPatient(requestData, auth)
   }

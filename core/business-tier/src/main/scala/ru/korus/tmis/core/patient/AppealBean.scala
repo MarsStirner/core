@@ -886,6 +886,13 @@ class AppealBean extends AppealBeanLocal
     rbResult
   }
 
+  def getSupportedAppealTypeCodes = {
+    val rbResult = em.createQuery(eventSupportedTypeCodesQuery,classOf[String])
+      .setParameter("supportedRequestTypes", asJavaCollection(i18n("webmis.supportedEventTypes").split(",")))
+      .getResultList
+    rbResult
+  }
+
   def insertOrUpdateClientQuoting(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
     var lockId: Int = -1
     var oldQuota : ClientQuoting = null
@@ -1075,6 +1082,14 @@ class AppealBean extends AppealBeanLocal
     AND
       et.code = fdfv.value
                                              """
+
+  val eventSupportedTypeCodesQuery =  """
+     SELECT et.code
+      FROM
+        EventType et
+      WHERE
+        et.requestType.code IN :supportedRequestTypes
+                                      """
 
   val DiagnosisTypeByIdQuery = """
     SELECT dt
