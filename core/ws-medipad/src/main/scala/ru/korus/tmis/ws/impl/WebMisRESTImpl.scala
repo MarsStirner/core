@@ -497,16 +497,19 @@ class WebMisRESTImpl  extends WebMisREST
       }
 
       // Вычисляем "подтягивающиеся" из прошлых документов значение
-      val aProp = try { actionPropertyTypeBean.getActionPropertyTypeById(ap.getId())} catch {
-        case e: Throwable => null
-      }
-      val at = try {actionTypeBean.getActionTypeById(jData.getData.get(0).getId())} catch {
-        case e: Throwable => null
-      }
+      if(event != null) {
+        val aProp = try { actionPropertyTypeBean.getActionPropertyTypeById(ap.getId())} catch {
+          case e: Throwable => null
+        }
+        val at = try {actionTypeBean.getActionTypeById(jData.getData.get(0).getId())} catch {
+          case e: Throwable => null
+        }
 
-      if(event != null && aProp != null && at != null)
-        ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp))
-    })
+        if(aProp != null && at != null)
+          ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp))
+      }
+    }
+    )
 
 
 
