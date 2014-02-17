@@ -285,7 +285,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     AND
       labTest.testId = rbTest.id
     AND
-      labTest.masterId = lab.id
+      labTest.rbLaboratory.id = lab.id
     AND
       at.id = a.actionType.id
     AND
@@ -369,7 +369,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     AND
       a.deleted = 0
     AND
-      a.actionType.mnemonic = 'LAB'
+      (a.actionType.mnemonic = 'LAB' OR a.actionType.mnemonic = 'BAK_LAB')
     AND
       e.deleted = 0
     AND
@@ -392,7 +392,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       WHERE
         a.event.id = :eventId
       AND
-        a.actionType.mnemonic = 'LAB'
+        (a.actionType.mnemonic = 'LAB' OR a.actionType.mnemonic = 'BAK_LAB')
       AND
         a.isUrgent = :urgent
       AND

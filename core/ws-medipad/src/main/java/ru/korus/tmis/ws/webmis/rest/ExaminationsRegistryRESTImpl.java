@@ -99,7 +99,7 @@ public class ExaminationsRegistryRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/x-javascript", "application/xml"})
     public Object getListOfAssessmentsForPatientByEvent(@Context UriInfo info,
                                                         @QueryParam("limit")int limit,
                                                         @QueryParam("page")int  page,
@@ -140,9 +140,9 @@ public class ExaminationsRegistryRESTImpl {
      */
     @GET
     @Path("/{actionId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/x-javascript", "application/xml"})
     public Object getPrimaryMedExamById(@PathParam("actionId")int actionId) {
-        return new JSONWithPadding(wsImpl.getPrimaryAssessmentById(actionId, this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.getPrimaryAssessmentById(actionId,this.auth), this.callback);
     }
 
     /**

@@ -63,7 +63,7 @@ class BakLabResultOrganism {
   var id: Int = _
 
   @BeanProperty
-  var organismId: Int = _
+  var organism: OrganismDataContainer = _
 
   @BeanProperty
   var concentration: String = _
@@ -74,7 +74,7 @@ class BakLabResultOrganism {
   def this(organismResult: BbtResultOrganism, sensValues: java.lang.Iterable[BbtOrganismSensValues]) = {
     this
     id = organismResult.getId
-    organismId = organismResult.getOrganismId
+    organism = new OrganismDataContainer(organismResult.getOrganism)
     concentration = organismResult.getConcentration
     val i = sensValues.iterator()
     while(i.hasNext) this.sensValues.add(new OrganismSensValue(i.next()))
@@ -122,6 +122,29 @@ class AntibioticDataContainer {
   var name: String = _
 
   def this(e: RbAntibiotic) {
+    this
+    id = e.getId
+    code = e.getCode
+    name = e.getName
+  }
+
+}
+
+
+@XmlType(name = "antibioticDataContainer")
+@XmlRootElement(name = "antibioticDataContainer")
+class OrganismDataContainer {
+
+  @BeanProperty
+  var id: Int = _
+
+  @BeanProperty
+  var code: String = _
+
+  @BeanProperty
+  var name: String = _
+
+  def this(e: RbMicroorganism) {
     this
     id = e.getId
     code = e.getCode

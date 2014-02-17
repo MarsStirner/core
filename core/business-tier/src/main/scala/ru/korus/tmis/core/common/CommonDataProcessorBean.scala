@@ -23,6 +23,9 @@ import java.util
 import ru.korus.tmis.core.patient.DiagnosisBeanLocal
 import scala.Some
 import ru.korus.tmis.scala.util.{StringId, I18nable, ConfigManager}
+import org.joda.time._
+import ru.korus.tmis.scala.util.StringId
+import scala.Some
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -619,7 +622,8 @@ class CommonDataProcessorBean
         at.getGroupId,
         null,
         at.getCode,
-        at.getFlatCode)
+        at.getFlatCode,
+        at.getMnemonic)
       val group = new CommonGroup
       dbActionType.getActionTypePropertiesById(at.getId.intValue).foreach(
         (apt) => group add converter(apt)
@@ -647,7 +651,8 @@ class CommonDataProcessorBean
         at.getId.intValue(),
         null,
         at.getCode,
-        at.getFlatCode)
+        at.getFlatCode,
+        at.getMnemonic)
       //***
       val group0 = new CommonGroup(0, "Summary")
       var a = new Action()
@@ -736,7 +741,8 @@ class CommonDataProcessorBean
           action.getActionType.getId,
           action.getStatus,
           action.getActionType.getCode,
-          action.getActionType.getFlatCode)
+          action.getActionType.getFlatCode,
+          action.getActionType.getMnemonic)
       )((entity, converter) => entity add converter(action))
     })
   }
@@ -756,14 +762,16 @@ class CommonDataProcessorBean
       val birth = Calendar.getInstance()
       birth.setTime(if (patient != null) patient.getBirthDate else new Date())
 
-      var age = Calendar.getInstance()
-      val year = now.get(Calendar.YEAR) - birth.get(Calendar.YEAR)
-      val month = now.get(Calendar.MONTH) - birth.get(Calendar.MONTH)
-      val week = now.get(Calendar.WEEK_OF_YEAR) - birth.get(Calendar.WEEK_OF_YEAR)
-      val date = now.get(Calendar.DATE) - birth.get(Calendar.DATE)
-      age.set(year, month, date, 0, 0)
 
-      new CustomCalendar(year, month, week, date)
+      val age = Calendar.getInstance()
+      val year = Years.yearsBetween(new DateTime(patient.getBirthDate), new DateTime(new Date())).getYears
+      val month = Months.monthsBetween(new DateTime(patient.getBirthDate), new DateTime(new Date())).getMonths
+      val week = Weeks.weeksBetween(new DateTime(patient.getBirthDate), new DateTime(new Date())).getWeeks
+      val day = Days.daysBetween(new DateTime(patient.getBirthDate), new DateTime(new Date())).getDays
+
+      age.set(year, month, day, 0, 0)
+
+      new CustomCalendar(year, month, week, day)
       //(year, month, week, date)
     } else {
       null

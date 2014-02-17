@@ -1149,6 +1149,9 @@ class IdNameDateContainer {
 class ContractContainer {
 
   @BeanProperty
+  var id: Int = _
+
+  @BeanProperty
   var number : String = _    //Номер контракта
 
   @BeanProperty
@@ -1159,6 +1162,7 @@ class ContractContainer {
 
   def this(contract: Contract) = {
     this()
+    this.id = contract.getId
     this.number = contract.getNumber
     this.begDate = contract.getBegDate
     this.finance = new IdNameContainer(contract.getFinance.getId.intValue(), contract.getFinance.getName)

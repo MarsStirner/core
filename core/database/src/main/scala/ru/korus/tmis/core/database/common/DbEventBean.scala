@@ -112,13 +112,13 @@ class DbEventBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def createEvent(patientId: Int, appealTypeId: Int, begDate: Date, endDate: Date, authData: AuthData): Event = {
+  def createEvent(patientId: Int, appealTypeId: Int, begDate: Date, endDate: Date, contractId:Int, authData: AuthData): Event = {
 
     val patient = patientBean.getPatientById(patientId)
     val eventType = this.getEventTypeById(appealTypeId)
 
     val now = new Date
-    var newEvent = new Event
+    val newEvent = new Event
     //1. Инсертим /Инициализируем структуру Event по пациенту
     try {
       //Анализ и инкремент счетчика
@@ -148,9 +148,7 @@ class DbEventBean
       newEvent.setDeleted(false)
       newEvent.setPayStatus(0)
       //val contract = contractBean.getContractForEventType(eventType)
-      if (eventType.getFinance != null) {
-        newEvent.setContract(contractBean.getContractForEventType(eventType))
-      }
+      newEvent.setContract(contractBean.getContractById(contractId))
       newEvent.setUuid(dbUUIDBeanLocal.createUUID())
       //newEvent.setExecDate(endDate)
     }

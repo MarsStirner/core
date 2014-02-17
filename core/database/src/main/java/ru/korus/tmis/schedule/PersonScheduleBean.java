@@ -628,12 +628,15 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
         try {
             //Получение ActionProperty_Action соответствующего записи пациента к врачу (queue)
             APValueAction ambActionPropertyAction = actionPropertyBean.getActionProperty_ActionByValue(queueAction);
+            logger.debug("Founded AP_A: {}", ambActionPropertyAction);
             switch (queueAction.getPacientInQueueType()) {
                 //Обыкновенная запись на прием к врачу
                 case 0: {
                     //Обнуление поля = отмена очереди
+                    logger.debug("Action.pacientInQueueType = 0");
                     ambActionPropertyAction.setValue(null);
                     em.merge(ambActionPropertyAction);
+                    logger.debug("AP_A.value set to NULL");
                     break;
                 }
                 //запись сверх очереди / экстренно
@@ -660,16 +663,22 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
                     break;
                 }
             }
+            // Связанное с записью на прием обращение пациента
+            final Event queueEvent = queueAction.getEvent();
             //Выставляем флаг удаления у соответствующего действия пользователя
+            logger.debug("Deleting Action[{}]", queueAction.getId());
             queueAction.setDeleted(true);
             queueAction.setModifyDatetime(new Date());
             em.merge(queueAction);
+            em.flush();
             //Выставляем флаг удаления у соответствующего события пользователя
-            final Event queueEvent = queueAction.getEvent();
+            logger.debug("Action deleted.");
+            logger.debug("Deleting Event[{}]", queueEvent.getId());
             queueEvent.setDeleted(true);
             queueEvent.setModifyDatetime(new Date());
             em.merge(queueEvent);
             em.flush();
+            logger.debug("Event deleted");
             return true;
         } catch (CoreException e) {
             logger.error("Error while getting ActionProperty_Action for Action[{}]", queueAction.getId());

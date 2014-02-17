@@ -43,7 +43,7 @@ public interface DbEventBeanLocal {
 
     OrgStructure getOrgStructureForEvent(int eventId) throws CoreException;
 
-    Event createEvent(int patientId, int appealTypeId, Date begDate, Date endDate, AuthData authData) throws CoreException;
+    Event createEvent(int patientId, int appealTypeId, Date begDate, Date endDate, int contractId, AuthData authData) throws CoreException;
 
     Event createEvent(Patient patient, EventType eventType, Staff person, Date begDate, Date endDate) throws CoreException;
 

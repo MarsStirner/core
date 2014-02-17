@@ -159,6 +159,7 @@ public class PrescriptionTest extends Arquillian {
         comp.setNomen(em.find(RlsNomen.class, 148048));
         comp.setName("Амоксиклав");
         comp.setCreateDateTime(new Date());
+        comp.setUnit(comp.getNomen().getUnit());
         em.persist(comp);
     }
 

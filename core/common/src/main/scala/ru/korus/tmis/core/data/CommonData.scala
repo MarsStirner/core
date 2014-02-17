@@ -11,6 +11,7 @@ import java.util
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
 import javax.management.remote.rmi._RMIConnectionImpl_Tie
 import ru.korus.tmis.scala.util.ConfigManager
+import ru.korus.tmis.core.entity.model.APValue
 
 @XmlType(name = "entities")
 @XmlRootElement(name = "entities")
@@ -160,6 +161,13 @@ class CommonEntity {
     this.flatCode = flatCode
   }
 
+  var mnem: String = _
+
+  @XmlAttribute(name = "mnem")
+  def getMnem():String = mnem
+
+  def setMnem(mnem: String) = this.mnem = mnem
+
   private def this(id: Integer,
                    name: String,
                    eType: String,
@@ -208,9 +216,11 @@ class CommonEntity {
            eTypeId: Integer,
            status: Integer,
            code: String,
-           flatCode: String) = {
+           flatCode: String,
+           mnem: String) = {
     this(id, version, name, eType, eTypeId, status, code)
     this.flatCode = flatCode
+    this.mnem = mnem
   }
 
   @BeanProperty
@@ -413,6 +423,9 @@ trait AbstractCommonAttribute {
 }
 
 class CommonAttribute  extends AbstractCommonAttribute{
+
+  @BeanProperty
+  var calculatedValue:APValueContainer = _
 
   private def this(id: Integer,
                    name: String,

@@ -39,6 +39,10 @@ public class RbTest implements Serializable {
     @Column(name = "name")
     private String name;
 
+    @OneToOne
+    @PrimaryKeyJoinColumn(name="id", referencedColumnName="test_id")
+    private RbLaboratoryTest rbLaboratoryTest;
+
     public RbTest() {
     }
 
@@ -70,6 +74,10 @@ public class RbTest implements Serializable {
         this.name = name;
     }
 
+    public RbLaboratoryTest getRbLaboratoryTest() {
+        return rbLaboratoryTest;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -94,4 +102,5 @@ public class RbTest implements Serializable {
     public String toString() {
         return "ru.korus.tmis.core.entity.model.RbTest[id=" + id + "]";
     }
+
 }

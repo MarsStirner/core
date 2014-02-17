@@ -31,9 +31,9 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.5.13-HS</version.tmis.core>
+        <version.tmis.core>2.5.13-SNAPSHOT</version.tmis.core>
 
-        <version.joda.time>2.1</version.joda.time>
+        <version.joda.time>2.3</version.joda.time>
         <version.apache.thrift>0.9.0</version.apache.thrift>
         <version.testng>6.8</version.testng>
         <version.mokito>1.9.5</version.mokito>
@@ -697,6 +697,12 @@
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
             <version>${version.joda.time}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.joda</groupId>
+            <artifactId>joda-convert</artifactId>
+            <version>1.2</version>
         </dependency>
 
         <dependency>
