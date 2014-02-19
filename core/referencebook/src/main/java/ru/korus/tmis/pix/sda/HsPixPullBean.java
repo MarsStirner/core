@@ -72,10 +72,10 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
     private DbQueryBeanLocal dbQueryBean;
 
 
-    public void pullDb() {
+    public void pullDb(boolean ignoreSetting) {
         try {
             logger.info("HS integration entry...");
-            if (ConfigManager.HealthShare().isSdaActive()) {
+            if (ignoreSetting || ConfigManager.HealthShare().isSdaActive()) {
                 logger.info("HS integration is active...");
                 EMRReceiverService service = new EMRReceiverService();
                 service.setHandlerResolver(new SdaHandlerResolver());

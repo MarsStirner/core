@@ -12,7 +12,7 @@ public class IndexedId implements Serializable {
     @Column(name = "id")
     private int id;
 
-    @Column(name = "index")
+    @Column(name = "`index`")
     private int index;
 
     public IndexedId() {

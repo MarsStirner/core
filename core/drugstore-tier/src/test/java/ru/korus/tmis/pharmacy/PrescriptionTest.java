@@ -41,7 +41,7 @@ import java.util.List;
 //@RunWith(Arquillian.class)
 @PersistenceTest
 //@Transactional(value = TransactionMode.DISABLED)
-//@Transactional(value = TransactionMode.ROLLBACK)
+@Transactional(value = TransactionMode.ROLLBACK)
 @DataSource(value = "s11r64")
 public class PrescriptionTest extends Arquillian {
 

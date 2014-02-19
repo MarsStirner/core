@@ -18,6 +18,6 @@ public class HsPixPullTimerBean {
 
     @Schedule(hour = "*", minute = "*", second = "30")
     void  pull() {
-        hsPixPullBeanLocal.pullDb();
+        hsPixPullBeanLocal.pullDb(false);
     }
 }

@@ -10,5 +10,5 @@ import javax.ejb.Local;
  */
 @Local
 public interface HsPixPullTimerBeanLocal {
-    public void pullDb();
+    public void pullDb(boolean ignoreSetting);
 }
