@@ -14,6 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Список REST-сервисов для работы с осмотрами
@@ -108,7 +109,7 @@ public class ExaminationsRegistryRESTImpl {
                                                         @QueryParam("filter[actionTypeId]")int actionTypeId,
                                                         @QueryParam("filter[begDate]")long begDate,
                                                         @QueryParam("filter[endDate]")long endDate,
-                                                        @QueryParam("filter[actionTypeCode]")String assessmentTypeCode,
+                                                        @QueryParam("filter[actionTypeCode]")Set<String> assessmentTypeCode,
                                                         @QueryParam("filter[doctorId]") int doctorId,
                                                         @QueryParam("filter[doctorName]") String doctorName,
                                                         @QueryParam("filter[speciality]") String speciality,

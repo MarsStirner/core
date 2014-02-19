@@ -78,7 +78,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
 
   //   =>Фильтрация по коду типа действия<=
   @BeanProperty
-  var code: String = _
+  var codes: ju.Set[String] = new ju.HashSet[String]()
   @BeanProperty
   var actionTypeId: Int = _
   @BeanProperty
@@ -98,13 +98,13 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
   @BeanProperty
   var eventId: Int = _
   @BeanProperty
-  var mnemonics: ju.List[String] = new ju.LinkedList[String]
+  var mnemonics: ju.List[String] = new ju.ArrayList[String]
   @BeanProperty
-  var flatCodes: ju.List[String] = new ju.LinkedList[String]
+  var flatCodes: ju.List[String] = new ju.ArrayList[String]
 
   def this(eventId: Int,
            actionTypeId: Int,
-           code_x: String,
+           code_x: ju.Set[String],
            begDate: Long,
            endDate: Long,
            doctorId: Int,
@@ -117,11 +117,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
     this()
     this.eventId = eventId
     this.actionTypeId = actionTypeId
-    this.code = if (code_x != null && code_x != "") {
-      code_x
-    } else {
-      ""   //Изменили спеку, теперь ищем акшены по мнемонике, а не по коду. было "1_"
-    }
+    this.codes = code_x.filter(p=> p != null && !p.isEmpty)
     this.begDate = if (begDate == 0) null else new Date(begDate)
     this.endDate = if (endDate == 0) null else new Date(endDate)
     this.doctorId= doctorId
@@ -134,7 +130,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
   }
 
   def toQueryStructure = {
-    var qs = new QueryDataStructure()
+    val qs = new QueryDataStructure()
     if(this.eventId>0){
       qs.query += "AND a.event.id = :eventId\n"
       qs.add("eventId",this.eventId:java.lang.Integer)
@@ -143,9 +139,9 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
       qs.query += "AND a.actionType.id = :actionTypeId\n"
       qs.add("actionTypeId", this.actionTypeId:java.lang.Integer)
     }
-    if (this.code != null && !this.code.isEmpty) {
-      qs.query += "AND a.actionType.code LIKE :code\n"
-      qs.add("code", this.code + "%")
+    if (this.codes != null && !this.codes.isEmpty) {
+      qs.query += "AND a.actionType.code IN  :code\n"
+      qs.add("code",asJavaCollection(this.codes))
     }
     if (this.doctorId > 0) {
       qs.query += "AND a.createPerson.id = :doctorId\n"
@@ -221,7 +217,7 @@ class AssessmentsListEntry {
   var closeDate: Date = _ //дата закрытия
 
   @BeanProperty
-  var assessmentName: IdNameContainer = _ //Наименование
+  var assessmentName: IdNameAndCodeContainer = _ //Наименование
 
   @BeanProperty
   var doctor: DoctorSpecsContainer = new DoctorSpecsContainer() //Врач
@@ -239,7 +235,7 @@ class AssessmentsListEntry {
     assessmentDate = action.getCreateDatetime
     beginDate = action.getBegDate
     closeDate = action.getEndDate
-    assessmentName = new IdNameContainer(action.getActionType.getId.intValue(), action.getActionType.getName)
+    assessmentName = new IdNameAndCodeContainer(action.getActionType.getId.intValue(), action.getActionType.getName, action.getActionType.getCode)
     doctor = new DoctorSpecsContainer(action.getCreatePerson)
     flatCode = action.getActionType.getFlatCode
     mnemonic = action.getActionType.getMnemonic
