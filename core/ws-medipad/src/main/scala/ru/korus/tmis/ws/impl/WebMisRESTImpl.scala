@@ -542,7 +542,7 @@ class WebMisRESTImpl  extends WebMisREST
       val oldDocumentCodes = Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511")
       if(oldDocumentCodes.contains(at.getCode)) {
         val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
-        if(!pastActions.isEmpty)
+        if(pastActions != null && !pastActions.isEmpty)
            pastActions.head.getActionProperties.foreach(e => {
              if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
                val values = actionPropertyBean.getActionPropertyValue(e)
