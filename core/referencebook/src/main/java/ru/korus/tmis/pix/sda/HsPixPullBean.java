@@ -163,6 +163,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
                         "hsi.event.eventType.requestType.code = 'clinic' OR " +
                         "hsi.event.eventType.requestType.code = 'hospital' OR " +
                         "hsi.event.eventType.requestType.code = 'stationary' OR " +
+                        "hsi.event.eventType.requestType.code = 'policlinic' OR " +
                         "hsi.event.eventType.requestType.code = '4' OR " +
                         "hsi.event.eventType.requestType.code = '6' )", Event.class).setParameter("newEvent", HSIntegration.Status.NEW).getResultList();
 
@@ -245,13 +246,31 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
         for (Action a : actions) {
             List<ActionType> actionTypes = em.createQuery("SELECT at FROM ActionType at WHERE at.id = :groupId AND at.deleted = 0", ActionType.class)
                     .setParameter("groupId", a.getActionType().getGroupId()).getResultList();
-            if (!actionTypes.isEmpty()) {
-                if (actionTypes.get(0).getFlatCode().equals("epicrisis")) {
+            if ( (!actionTypes.isEmpty() && actionTypes.iterator().next().getFlatCode().equals("epicrisis")) ||
+                  isMedicalDocument(a.getActionType().getMnemonic()) ) {
                     res.add(new EpicrisisInfo(a, clientInfo, dbActionPropertyBeanLocal));
                 }
             }
-        }
         return res;
+    }
+
+    private boolean isMedicalDocument(String mnemonic) {
+        //TODO Add javadoc for mnemonics!
+        final Set<String> mnemonicSet = new HashSet<String>() {{
+            add("EXAM");
+            add("EPI");
+            add("ORD");
+            add("JOUR");
+            add("NOT");
+            add("CONS");
+            add("THER");
+            add("DIR");
+            add("EPIAMB");
+        }};
+        if(mnemonic == null) {
+            return false;
+        }
+        return mnemonicSet.contains(mnemonic);
     }
 
     /**
