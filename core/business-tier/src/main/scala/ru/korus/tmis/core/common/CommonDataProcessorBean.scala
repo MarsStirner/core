@@ -623,7 +623,8 @@ class CommonDataProcessorBean
         null,
         at.getCode,
         at.getFlatCode,
-        at.getMnemonic)
+        at.getMnemonic,
+        at.getContext)
       val group = new CommonGroup
       dbActionType.getActionTypePropertiesById(at.getId.intValue).foreach(
         (apt) => group add converter(apt)
@@ -652,7 +653,8 @@ class CommonDataProcessorBean
         null,
         at.getCode,
         at.getFlatCode,
-        at.getMnemonic)
+        at.getMnemonic,
+        at.getContext)
       //***
       val group0 = new CommonGroup(0, "Summary")
       var a = new Action()
@@ -742,7 +744,8 @@ class CommonDataProcessorBean
           action.getStatus,
           action.getActionType.getCode,
           action.getActionType.getFlatCode,
-          action.getActionType.getMnemonic)
+          action.getActionType.getMnemonic,
+          action.getActionType.getContext)
       )((entity, converter) => entity add converter(action))
     })
   }
