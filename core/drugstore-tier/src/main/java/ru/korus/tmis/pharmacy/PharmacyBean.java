@@ -114,7 +114,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     }
                 }
                 // повторная отправка неотправленных сообщений
-                resendMessages();
+              //todo Специально для Даши на время теста resendMessages();
                 //Отправка назначений ЛС
                 //logger.info("sending prescription start...");
                 sendPrescriptionTo1C();

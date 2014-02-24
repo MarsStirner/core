@@ -102,6 +102,33 @@
                                 </observationEvent>
                             </component1>
                         </observationBattery>
+                        <observationBattery classCode="BATTERY" moodCode="EVN">
+                            <code displayName="{название исследования}"/>
+
+                            <inFulfillmentOf typeCode="FLFS">
+                                <placerOrder classCode="ACT" moodCode="RQO">
+                                    <id extension="{идентификатор направления на анализы id=orderMisId}"/>
+                                </placerOrder>
+                            </inFulfillmentOf>
+
+
+                            <component1 typeCode="COMP" contextControlCode="ON">
+
+                                <observationEvent classCode="OBS" moodCode="EVN">
+                                    <code code="{код исследования}" displayName="{название исследования}" codeSystemName="{общий комментарий}"/>
+                                    <effectiveTime value="{дата исследования}"/>
+                                    <confidentialityCode code="{числовое значение}" displayName="{результат}"/>
+
+                                    <!-- 0 или несколько-->
+                                    <component1 typeCode="COMP" contextControlCode="ON">
+                                        <observationEvent classCode="OBS" moodCode="EVN">
+                                            <code code="{код микроорганизма}" displayName="{название микроорганизма}" codeSystem="{чувствительность}"/>
+                                        </observationEvent>
+                                    </component1>
+
+                                </observationEvent>
+                            </component1>
+                        </observationBattery>
                     </subject>
 
 
