@@ -11,8 +11,8 @@ import ru.korus.tmis.core.entity.model.RbPrintTemplate
 @Local
 trait DbRbPrintTemplateBeanLocal {
 
-  def getRbPrintTemplateById(id : Int): RbPrintTemplate
+  def getRbPrintTemplateByIds(id : Array[Int]): List[RbPrintTemplate]
 
-  def getRbPrintTemplatesByContext(context: String): List[RbPrintTemplate]
+  def getRbPrintTemplatesByContexts(contexts: Array[String]): List[RbPrintTemplate]
 
 }
