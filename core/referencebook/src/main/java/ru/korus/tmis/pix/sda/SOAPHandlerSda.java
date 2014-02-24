@@ -19,10 +19,13 @@ import org.w3c.dom.NodeList;
  * Description: <br>
  */
 public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
-    NodeList tmp;
-    Element tmp1;
-    Element tmp2;
-    Element tmp3;
+
+    final private String messageUuid;
+
+    public SOAPHandlerSda(final String messageUuid) {
+        this.messageUuid = messageUuid;
+    }
+
     /**
      * Обработчик входных/выходных сообщений SOAP. Переоперделен с целью удаления пространства имен ns2:wsdl
      * 
@@ -77,7 +80,8 @@ public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
         SOAPHeader header = envelope.getHeader();
         final String uriWsa = "http://www.w3.org/2005/08/addressing";//"http://www.w3.org/2006/03/addressing/ws-addr.xsd";
         SOAPElement messageId = header.addChildElement("MessageID", "wsa", uriWsa);  //<wsa:MessageID>
-        messageId.addTextNode("urn:uuid:" + UUID.randomUUID());
+        final String uuid = messageUuid == null ? UUID.randomUUID().toString() : messageUuid;
+        messageId.addTextNode("urn:uuid:" + uuid);
         SOAPElement replayTo = header.addChildElement("ReplyTo", "wsa", uriWsa);
         SOAPElement address = replayTo.addChildElement("Address", "wsa");
         address.addTextNode("http://www.w3.org/2005/08/addressing/anonymous");
@@ -86,22 +90,22 @@ public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
     private void removeNamespace(SOAPEnvelope envelope) throws SOAPException {
         SOAPBody body = envelope.getBody();
         Element nodeWithNameSpace = (Element) body.getFirstChild(); // элемент в пространстве имен ns2:wsdl
-        tmp2 = nodeWithNameSpace;
-        tmp3 = (Element)nodeWithNameSpace.cloneNode(true);
-        NodeList nodeList = nodeWithNameSpace.getChildNodes();
-        tmp = nodeList;
+        body.getOwnerDocument().renameNode(nodeWithNameSpace, null, nodeWithNameSpace.getLocalName() );
+        nodeWithNameSpace = (Element) body.getFirstChild(); // элемент в пространстве имен ns2:wsdl
+        removeEmptyNodes(nodeWithNameSpace);
+
+        /*NodeList nodeList = nodeWithNameSpace.getChildNodes();
         // Создаем новый элемент с пустым пространством имен
         Element cont = body.getOwnerDocument().createElement("container");
         cont.setAttribute("facilityCode", nodeWithNameSpace.getAttribute("facilityCode"));
         cont.setAttribute("patientMRN", nodeWithNameSpace.getAttribute("patientMRN"));
-        tmp1= cont;
         // копируем в новый элемент узлы из SOAP сообщения
         for (Node el : getChildsSda(nodeWithNameSpace)) {
             cont.appendChild(el);
         }
 
         // Заменяем элемент из SOAP сообщения на элемент с пустым пространством имен
-        body.replaceChild(cont, nodeWithNameSpace);
+        body.replaceChild(cont, nodeWithNameSpace);*/
     }
 
     private List<Node> getChildsSda(Element nodeWithNameSpace) {
@@ -122,10 +126,10 @@ public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
         for (int i = 0; i < list.getLength(); i++) {
             final Node item = list.item(i);
             if(item instanceof Element) {
-                tmp1 = (Element) list.item(i);
                 final String textContent =  item == null ? null : item.getTextContent();
                 if (textContent != null && textContent.trim().isEmpty()) {
                     item.getParentNode().removeChild(item);
+                    --i;
                 } else {
                     removeEmptyNodes(item);
                 }

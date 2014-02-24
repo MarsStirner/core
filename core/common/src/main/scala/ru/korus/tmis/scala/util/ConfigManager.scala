@@ -148,6 +148,13 @@ object ConfigManager extends Configuration {
      * URL сервиса по обмену информацией об пациентах
      */
     var ServiceUrlSda = new URL("http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls")
+
+    /**
+     * URL сервиса по обмену информацией об пациентах
+     */
+    var ServiceUrlEhr = new URL("http://http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.emr.EMRReceiverService.cls")
+
+
     /**
      * Передача карточки пациента по SDA
      * on - включен

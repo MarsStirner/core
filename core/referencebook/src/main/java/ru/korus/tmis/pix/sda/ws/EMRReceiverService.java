@@ -17,7 +17,7 @@ import javax.xml.ws.soap.AddressingFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "EMRReceiverService", targetNamespace = "urn:S", wsdlLocation =  "../../../../../../PIX/wsdl/sda.wsdl")
+@WebServiceClient(name = "EMRReceiverService", targetNamespace = "urn:S", wsdlLocation =  "classes/PIX/wsdl/sda.wsdl"/*"../../../../../../PIX/wsdl/sda.wsdl"*/)
 public class EMRReceiverService
     extends Service
 {
@@ -30,8 +30,9 @@ public class EMRReceiverService
         URL url = null;
         WebServiceException e = null;
         try {
-            final URL baseUrl = EMRReceiverService.class.getResource(".");
+            final URL baseUrl = EMRReceiverService.class.getResource("");
             url = new URL(baseUrl, "../../../../../../PIX/wsdl/sda.wsdl");
+           // url = new URL("file://sda.wsdl"/*"../../../../../../PIX/wsdl/sda.wsdl"*/);
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

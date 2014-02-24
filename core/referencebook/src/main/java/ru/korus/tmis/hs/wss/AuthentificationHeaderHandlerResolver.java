@@ -15,9 +15,20 @@ import java.util.List;
  */
 public class AuthentificationHeaderHandlerResolver implements HandlerResolver {
 
+
+    private final String binaryToken;
+
+    public AuthentificationHeaderHandlerResolver() {
+         this(null);
+    }
+
+    public AuthentificationHeaderHandlerResolver(String binaryToken) {
+        this.binaryToken =  binaryToken;
+    }
+
     public List<Handler> getHandlerChain(final PortInfo portInfo) {
         final List<Handler> handlerChain = new ArrayList<Handler>();
-        handlerChain.add(new AuthentificationHeaderHandler());
+        handlerChain.add(new AuthentificationHeaderHandler(binaryToken));
         return handlerChain;
     }
 }

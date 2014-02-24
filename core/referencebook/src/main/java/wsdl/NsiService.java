@@ -29,7 +29,7 @@ public class NsiService
         URL url = null;
         WebServiceException e = null;
         try {
-            final URL baseUrl = NsiService.class.getResource(".");
+            final URL baseUrl = NsiService.class.getResource("");
             url = new URL(baseUrl, "../korus.NsiService.cls.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);

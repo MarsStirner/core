@@ -115,7 +115,7 @@
             <groupId>ru.korus.tmis.referencebook</groupId>
             <artifactId>referencebook</artifactId>
             <version>${version.tmis.core}</version>
-            <type>ejb</type>
+            <type>war</type>
         </dependency>
 
         <dependency>

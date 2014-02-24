@@ -17,7 +17,7 @@ import javax.xml.ws.WebServiceFeature;
  * Generated source version: 2.2
  * 
  */
-@WebServiceClient(name = "PIXManager_Service", targetNamespace = "urn:ihe:iti:pixv3:2007", wsdlLocation = "file:/C:/Project/tmis-core/core/referencebook/src/main/resources/PIX/wsdl/PIXManager.wsdl")
+@WebServiceClient(name = "PIXManager_Service", targetNamespace = "urn:ihe:iti:pixv3:2007", wsdlLocation = "file://PIXManager.wsdl")
 public class PIXManagerService
     extends Service
 {
@@ -30,7 +30,8 @@ public class PIXManagerService
         URL url = null;
         WebServiceException e = null;
         try {
-            url = new URL("file:/C:/Project/tmis-core/core/referencebook/src/main/resources/PIX/wsdl/PIXManager.wsdl");
+            final URL baseUrl = PIXManagerService.class.getResource("");
+            url = new URL(baseUrl,  "../../../../../../classes/PIX/wsdl/PIXManager.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }
