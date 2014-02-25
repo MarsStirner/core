@@ -10,7 +10,11 @@ import scala.beans.BeanProperty
  */
 @Entity
 @Table(name = "rbPrintTemplate")
-@NamedQueries(Array(new NamedQuery(name = "RbPrintTemplate.findAll", query = "SELECT p FROM RbPrintTemplate p")))
+@NamedQueries(Array(
+  new NamedQuery(name = "RbPrintTemplate.findAll", query = "SELECT p FROM RbPrintTemplate p"),
+  new NamedQuery(name = "RbPrintTemplate.findByIds", query = "SELECT p FROM RbPrintTemplate p WHERE p.id IN :values"),
+  new NamedQuery(name = "RbPrintTemplate.findByContexts", query="SELECT p FROM RbPrintTemplate p WHERE p.context IN :values")
+))
 class RbPrintTemplate {
 
   @Id
