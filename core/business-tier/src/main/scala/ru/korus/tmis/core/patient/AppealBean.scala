@@ -577,7 +577,8 @@ class AppealBean extends AppealBeanLocal
 
       val contract = dbContractBean.getContractById(appealData.data.contract.getId)
 
-      if(contract.getEndDate.getTime < new Date().getTime)
+      val now = new Date()
+      if(contract.getEndDate.getTime < now.getTime)
         throw new CoreException(i18n("error.appeal.create.ContractIsExpired"))
 
       event = dbEventBean.createEvent(id,
@@ -604,7 +605,7 @@ class AppealBean extends AppealBeanLocal
  //       return null
  //     }
 
-      val now = new Date()
+
       event.setModifyDatetime(now)
       event.setModifyPerson(authData.user)
       event.setSetDate(appealData.data.rangeAppealDateTime.getStart())
