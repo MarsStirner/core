@@ -19,7 +19,7 @@ import ru.korus.tmis.core.database.DbStaffBeanLocal
  * @since 1.0.0.55
  * @see DbEventPersonBeanLocal
  */
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbEventPersonBean
   extends DbEventPersonBeanLocal

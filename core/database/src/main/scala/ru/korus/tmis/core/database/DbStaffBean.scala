@@ -22,7 +22,6 @@ import org.eclipse.persistence.queries.DatabaseQuery
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbStaffBean
   extends DbStaffBeanLocal

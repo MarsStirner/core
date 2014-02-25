@@ -82,6 +82,8 @@ public class PrescriptionTest extends Arquillian {
         wa.addClass(InternalLoggerBeanLocal.class);
         wa.addClass(InternalLoggerBean.class);
         wa.addClass(LoggingInterceptor.class);
+        wa.addClass(DbStaffBean.class);
+        wa.addClass(DbStaffBeanLocal.class);
 //-------------------------------------------------------------------
 
 //--- prescription --------------------------------------------------
