@@ -11,6 +11,7 @@ import javax.xml.ws.handler.soap.SOAPMessageContext;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -84,7 +85,7 @@ public class SOAPHandlerSda implements SOAPHandler<SOAPMessageContext> {
         messageId.addTextNode("urn:uuid:" + uuid);
         SOAPElement replayTo = header.addChildElement("ReplyTo", "wsa", uriWsa);
         SOAPElement address = replayTo.addChildElement("Address", "wsa");
-        address.addTextNode("http://www.w3.org/2005/08/addressing/anonymous");
+        address.addTextNode( ConfigManager.HealthShare().ServiceUrlEhrReplayTo().toString());
     }
 
     private void removeNamespace(SOAPEnvelope envelope) throws SOAPException {
