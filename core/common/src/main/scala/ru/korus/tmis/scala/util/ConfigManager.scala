@@ -152,7 +152,12 @@ object ConfigManager extends Configuration {
     /**
      * URL сервиса по обмену информацией об пациентах
      */
-    var ServiceUrlEhr = new URL("http://http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.emr.EMRReceiverService.cls")
+    var ServiceUrlEhr = new URL("http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.emr.EMRReceiverService.cls")
+
+    /**
+     *
+     */
+    var ServiceUrlEhrReplayTo = new URL("http://www.w3.org/2005/08/addressing/anonymous")
 
 
     /**

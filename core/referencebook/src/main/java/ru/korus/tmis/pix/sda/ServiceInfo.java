@@ -106,7 +106,7 @@ public class ServiceInfo {
         this.isChildProfile = isChild;
 
         final Action moving = getLastMoving(actionsByTypeCode);
-        this.bedProfile = dbCustomQueryBean.getBedProfileName(moving); // 450
+        this.bedProfile = moving == null ? null : dbCustomQueryBean.getBedProfileName(moving); // 450
 
         CodeNameSystem diag = null;
         final List<Diagnostic> diagnostics = action.getEvent().getDiagnostics();
