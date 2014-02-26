@@ -18,6 +18,7 @@ import ru.korus.tmis.core.event.Notification
 import javax.inject.Inject
 import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
+import org.joda.time.{DateTime, Years, Days}
 ;
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -553,6 +554,19 @@ class AppealBean extends AppealBeanLocal
 
   //Внутренние методы
 
+
+  @throws(classOf[CoreException])
+  def checkAppealBegEndDate(datePeriod: DatePeriodContainer) {
+    /*if (datePeriod.getStart.getTime() > datePeriod.getEnd.getTime()) {
+      throw new CoreException(i18n("error.appeal.create.InvalidPeriod"))
+    }*/
+    val maxDiffYears: Int = 3
+    val years : Int = Years.yearsBetween(new DateTime(datePeriod.getStart), new DateTime()).getYears;
+    if (Math.abs(years) > maxDiffYears - 1 ) {
+      throw new CoreException(i18n("error.appeal.create.InvalidPeriod.StartDate", maxDiffYears))
+    }
+  }
+
   @throws(classOf[CoreException])
   def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {   //для создания ид пациента, для редактирование ид обращения
 
@@ -561,6 +575,7 @@ class AppealBean extends AppealBeanLocal
 
 
     var event: Event = null
+    val now: Date = new Date;
     if (flgCreate) {            //Создаем новое
       if (id <= 0) {
         throw new CoreException(i18n("error.appeal.create.InvalidPatientData").format(id))
@@ -577,8 +592,10 @@ class AppealBean extends AppealBeanLocal
 
       val contract = dbContractBean.getContractById(appealData.data.contract.getId)
 
-      if(contract.getEndDate.getTime < new Date().getTime)
+      if(contract.getEndDate.getTime < now.getTime)
         throw new CoreException(i18n("error.appeal.create.ContractIsExpired"))
+
+      checkAppealBegEndDate(appealData.getData.rangeAppealDateTime)
 
       event = dbEventBean.createEvent(id,
                                     //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
@@ -596,19 +613,9 @@ class AppealBean extends AppealBeanLocal
         return null
       }
 
- //   Закомментировано согласно пожеланиям Александра
- //   Мотивация - хотят редактировать эвент тайп и финанс айди! (как бы потом не было бо-бо от этого)
- //     val eventTypeId = appealData.data.appealType.eventType.getId//dbEventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId())
- //     if(event.getEventType.getId.intValue()!=eventTypeId) {
- //       throw new CoreException("Тип найденного обращения не соответствует типу в полученному в запросе (requestType = %s, finance = %s)".format(appealData.data.appealType.requestType.getId().toString, appealData.data.appealType.finance.getId().toString))
- //       return null
- //     }
-
-      val now = new Date()
       event.setModifyDatetime(now)
       event.setModifyPerson(authData.user)
       event.setSetDate(appealData.data.rangeAppealDateTime.getStart())
-      //event.setExecDate(appealData.data.rangeAppealDateTime.getEnd())
       event.setEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId))
       event.setVersion(appealData.getData().getVersion())
     }

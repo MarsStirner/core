@@ -6,7 +6,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Diagnosis, Diagnostic}
+import ru.korus.tmis.core.entity.model.{Speciality, Diagnosis, Diagnostic}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.AuthData
 import java.util.Date
@@ -115,7 +115,13 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       if (diseaseStageId > 0) {
         diagnostic.setStage(dbRbDiseaseStageBean.getDiseaseStageById(diseaseStageId))
       }
-      diagnostic.setSpeciality(userData.getUser.getSpeciality)
+      val speciality: Speciality = if (userData.getUser.getSpeciality == null) {
+        em.find(classOf[Speciality], 1);
+      } else {
+        userData.getUser.getSpeciality
+      }
+
+      diagnostic.setSpeciality(speciality)
       diagnostic.setPerson(userData.getUser)
       diagnostic.setSetDate(now)
       diagnostic.setNotes(note)
