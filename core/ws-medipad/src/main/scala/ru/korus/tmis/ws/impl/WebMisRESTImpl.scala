@@ -186,6 +186,9 @@ class WebMisRESTImpl  extends WebMisREST
   @EJB
   var dbBbtResultOrganismBean: DbBbtResultOrganismBeanLocal = _
 
+  @EJB
+  var dbRBPrintTemplateBan: DbRbPrintTemplateBeanLocal = _
+
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
       val patients = patientBean.getAllPatients(requestData)
@@ -1385,6 +1388,14 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getBuildVersion: String = {
     i18n("build.jenkins.number").format()
+  }
+
+  def getRbPrintTemplatesByIds(ids: ju.List[Integer], authData: AuthData): ju.List[RbPrintTemplate] = {
+    dbRBPrintTemplateBan getRbPrintTemplateByIds ids.asScala.toArray.map(_.toInt)
+  }
+
+  def getRbPrintTemplatesByContexts(contexts: ju.List[String], authData: AuthData): ju.List[RbPrintTemplate] = {
+    dbRBPrintTemplateBan getRbPrintTemplatesByContexts contexts.asScala.toArray
   }
 
   //__________________________________________________________________________________________________

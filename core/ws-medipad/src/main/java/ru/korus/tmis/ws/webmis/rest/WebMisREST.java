@@ -3,10 +3,12 @@ package ru.korus.tmis.ws.webmis.rest;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.entity.model.APValueAction;
+import ru.korus.tmis.core.entity.model.RbPrintTemplate;
 import ru.korus.tmis.core.exception.CoreException;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * User: idmitriev
@@ -377,4 +379,10 @@ public interface WebMisREST extends Serializable {
      * @return Нет фиксированного формата возвращаемой версии - следует выводить пользователю как plain text.
      */
     String getBuildVersion();
+
+    List<RbPrintTemplate> getRbPrintTemplatesByIds(List<Integer> ids, AuthData authData) throws CoreException;
+
+    List<RbPrintTemplate> getRbPrintTemplatesByContexts(List<String> contexts, AuthData authData) throws CoreException;
+
+
 }
