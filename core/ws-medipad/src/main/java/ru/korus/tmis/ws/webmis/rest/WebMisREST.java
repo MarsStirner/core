@@ -47,7 +47,7 @@ public interface WebMisREST extends Serializable {
 
     TrueFalseContainer checkExistanceNumber(String name, int typeId, String number, String serial) throws CoreException;
 
-    JSONCommonData getStructOfPrimaryMedExam(int actionTypeId, AuthData authData) throws CoreException;
+    JSONCommonData getStructOfPrimaryMedExam(int actionTypeId, int eventId, AuthData authData) throws CoreException;
 
     JSONCommonData getStructOfPrimaryMedExamWithCopy(int actionTypeId, AuthData authData, int eventId) throws CoreException;
 
@@ -372,4 +372,9 @@ public interface WebMisREST extends Serializable {
      */
     BakLabResultDataContainer getBakResult(int actionId, AuthData authData) throws CoreException;
 
+    /**
+     * Получение версии сборки jenkins
+     * @return Нет фиксированного формата возвращаемой версии - следует выводить пользователю как plain text.
+     */
+    String getBuildVersion();
 }

@@ -1,12 +1,11 @@
 package ru.korus.tmis.ws.impl
 
-import _root_.ru.korus.tmis.core.patient.SeventhFormBeanLocal
+import scala.collection.JavaConverters._
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
 import org.codehaus.jackson.map.ObjectMapper
 import ru.korus.tmis.core.exception.CoreException
-import java.util
-import ru.korus.tmis.util._
+import java.{util => ju}
 import ru.korus.tmis.core.entity.model._
 import collection.mutable
 import java.util.{Date, LinkedList}
@@ -375,8 +374,8 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def getAllAppealsByPatient(requestData: AppealSimplifiedRequestData, auth: AuthData): AppealSimplifiedDataList = {
-    val set = appealBean.getAppealTypeCodesWithFlatDirectoryId(i18n("db.flatDirectory.eventType.hospitalization").toInt) //справочник госпитализаций
-    requestData.filter.asInstanceOf[AppealSimplifiedRequestDataFilter].code = set.asInstanceOf[util.Collection[String]]
+    val set = appealBean.getSupportedAppealTypeCodes //справочник госпитализаций
+    requestData.filter.asInstanceOf[AppealSimplifiedRequestDataFilter].code = set.asInstanceOf[ju.Collection[String]]
     appealBean.getAllAppealsByPatient(requestData, auth)
   }
 
@@ -422,7 +421,7 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   //запрос на структуру первичного мед. осмотра
-  def getStructOfPrimaryMedExam(actionTypeId: Int, authData: AuthData) = {
+  def getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData) = {
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //primaryAssessmentBean.getPrimaryAssessmentEmptyStruct("1_1_01", "PrimaryAssesment", null)
     var listForConverter = new java.util.ArrayList[String]
@@ -463,12 +462,14 @@ class WebMisRESTImpl  extends WebMisREST
     }
     //listForSummary.add(ActionWrapperInfo.toOrder)
 
+    val event = if(eventId > 0)dbEventBean.getEventById(eventId) else null
+
     primaryAssessmentBean.getEmptyStructure(actionTypeId,
                                             "Document",
                                             listForConverter,
                                             listForSummary,
                                             authData,
-                                            postProcessing _,
+                                            postProcessing(event) _,
                                             null)
   }
 
@@ -476,17 +477,17 @@ class WebMisRESTImpl  extends WebMisREST
   def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int) = {
     var lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
     try {
-      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Document", authData, postProcessing _, false) //postProcessingWithCopy _, true)
+      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Document", authData, postProcessing() _, false) //postProcessingWithCopy _, true)
     }
     catch {
       case e: Exception => {
-        getStructOfPrimaryMedExam(actionTypeId, authData)
+        getStructOfPrimaryMedExam(actionTypeId, -1, authData)
       }
     }
 
   }
 
-  private def postProcessing (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+  private def postProcessing (event: Event = null)(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
     jData.data.get(0).group.get(1).attribute.foreach(ap => {
       if(ap.typeId==null || ap.typeId.intValue()<=0) {
         if(reWriteId.booleanValue)  //в id -> apt.id
@@ -494,7 +495,24 @@ class WebMisRESTImpl  extends WebMisREST
         else
           ap.typeId = actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
       }
-    })
+
+      // Вычисляем "подтягивающиеся" из прошлых документов значение
+      if(event != null) {
+        val aProp = try { actionPropertyTypeBean.getActionPropertyTypeById(ap.getId())} catch {
+          case e: Throwable => null
+        }
+        val at = try {actionTypeBean.getActionTypeById(jData.getData.get(0).getId())} catch {
+          case e: Throwable => null
+        }
+
+        if(aProp != null && at != null)
+          ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp))
+      }
+    }
+    )
+
+
+
     jData
   }
 
@@ -509,6 +527,43 @@ class WebMisRESTImpl  extends WebMisREST
     jData
   }
 
+  /**
+   * Метод для вставки аттрибутов, которые должны подтягиваться при создании новых документов
+   * (например диагноз из предыдущего документа)
+   * Так как данный метод "сам в себе" то и константы-идентификаторы я буду хранить рядом для лучшей ясности.
+   * Метод костылен по своей природе, т.к. костыльна сама поставленная задача.
+   * @param event Экземпляр события, для которого создается документ
+   * @param at Тип создаваемого документа
+   * @param ap Свойство создаваемого документа
+   */
+  private def calculateActionPropertyValue(event: Event, at: ActionType, ap: ActionPropertyType): APValue = {
+    if(at.getCode.equals("4504")) { // Заключительный эпикриз
+      // ActionType.code эпикризов, может, оставить только заключительный эпикриз
+      val oldDocumentCodes = Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511")
+      if(oldDocumentCodes.contains(at.getCode)) {
+        val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
+        if(pastActions != null && !pastActions.isEmpty)
+           pastActions.head.getActionProperties.foreach(e => {
+             if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
+               val values = actionPropertyBean.getActionPropertyValue(e)
+               // Основной клинический диагноз
+               if(e.getType.getCode.equals("mainDiag")) {
+                 if(values.size() > 0)
+                   return values.head
+             }
+               // Основной клинический диагноз по МКБ
+               else if (e.getType.getCode.equals("mainDiagMkb")) {
+                 if(values.size() > 0)
+                   return values.head
+               }
+             }
+           })
+        null
+      }
+    }
+      null
+  }
+
   //создание первичного мед. осмотра
   def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
     val isPrimary = (data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
@@ -521,7 +576,7 @@ class WebMisRESTImpl  extends WebMisREST
       "Document",
       authData,
       /*preProcessing _*/null,
-      postProcessing _)
+      postProcessing() _)
     returnValue
   }
 
@@ -537,7 +592,7 @@ class WebMisRESTImpl  extends WebMisREST
       "Document",
       authData,
       /*preProcessing _*/null,
-      postProcessing _)
+      postProcessing() _)
     returnValue
   }
 
@@ -549,7 +604,7 @@ class WebMisRESTImpl  extends WebMisREST
     val json_data = primaryAssessmentBean.getPrimaryAssessmentById(assessmentId,
       "Assessment",
       authData,
-      postProcessing _, false)
+      postProcessing() _, false)
 
     json_data
   }
@@ -783,7 +838,7 @@ class WebMisRESTImpl  extends WebMisREST
                                                               requestData.sortingFieldInternal,
                                                               requestData.filter.unwrap())
     }
-    var ajtList = new util.LinkedList[(Action, JobTicket)]()
+    var ajtList = new ju.LinkedList[(Action, JobTicket)]()
     if (actions != null && actions.size() > 0) {
       actions.foreach(a => {
         ajtList.add((a, dbJobTicketBean.getJobTicketForAction(a.getId.intValue())))
@@ -1238,6 +1293,19 @@ class WebMisRESTImpl  extends WebMisREST
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
 
+  def getContracts(eventTypeId: Int, showDeleted: Boolean, showExpired: Boolean) = {
+    if(eventTypeId < 1)
+      throw new CoreException("Идентификатор типа события не может быть меньше 1")
+
+    val e = dbEventTypeBean.getEventTypeById(eventTypeId)
+    val result = dbContractBean.getContractsByEventTypeId(eventTypeId, e.getFinance.getId, showDeleted, showExpired)
+    if (result == null)
+      new ju.ArrayList[Contract]()
+    else
+      result.map(x => new ContractContainer(x)).asJava
+
+  }
+
   def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
     patientBean.getCurrentPatientsByDepartmentId(departmentId)
   }
@@ -1315,6 +1383,9 @@ class WebMisRESTImpl  extends WebMisREST
     r
   }
 
+  def getBuildVersion: String = {
+    i18n("build.jenkins.number").format()
+  }
 
   //__________________________________________________________________________________________________
   //***************  AUTHDATA  *******************

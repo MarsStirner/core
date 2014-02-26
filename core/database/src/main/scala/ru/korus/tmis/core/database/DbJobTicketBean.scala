@@ -285,7 +285,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     AND
       labTest.testId = rbTest.id
     AND
-      labTest.masterId = lab.id
+      labTest.rbLaboratory.id = lab.id
     AND
       at.id = a.actionType.id
     AND

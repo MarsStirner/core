@@ -79,11 +79,21 @@ public interface AppealBeanLocal {
 
     /**
      * Возвращает список кодов типов обращений (s11r64.EventType.code) по идентификатору плоского справочника (s11r64.FlatDirectory.id).
+     * На данный момент возможно удаление данного метода из системы. Сделать это требуется одновременно удалив соответствующий справочник из FlatDirectory.
+     * @deprecated используйте вместо этого {@link #getSupportedAppealTypeCodes()}.
      * @param id Идентификатору плоского справочника (s11r64.FlatDirectory.id).
      * @return Несортированный список кодов типов обращений.
      * @throws CoreException
      */
-    List<String> getAppealTypeCodesWithFlatDirectoryId (int id) throws CoreException;
+    @Deprecated
+    List<String> getAppealTypeCodesWithFlatDirectoryId(int id) throws CoreException;
+
+    /**
+     * Возвращает коды типов событий, поддерживаемых webmis.
+     * @return Список кодов типов событий.
+     * @throws CoreException
+     */
+    List<String> getSupportedAppealTypeCodes() throws CoreException;
 
     /**
      * Возвращает список диагнозов МКВ из Action: 'поступление' для данного обращения на госпитализацию.

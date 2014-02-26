@@ -210,4 +210,16 @@ public class CustomInfoRESTImpl {
                                                                             page);
         return new JSONWithPadding(wsImpl.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, this.auth),this.callback);
     }
+
+
+    /**
+     * Получение версии сборки jenkins
+     * @return Нет фиксированного формата возвращаемой версии - следует выводить пользователю как plain text.
+     */
+    @GET
+    @Path("/build")
+    @Produces("text/plain")
+    public Object getBuildVersion() {
+        return wsImpl.getBuildVersion();
+    }
 }

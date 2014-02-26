@@ -8,9 +8,10 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{QuotaTypesListRequestDataFilter, DictionaryListRequestDataFilter, QueryDataStructure}
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import javax.ejb.Stateless
+import javax.ejb.{EJB, Stateless}
 import java.util.Date
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import ru.korus.tmis.core.database.DbStaffBeanLocal
 
 /**
  * Класс с методами для работы с таблицей s11r64.Event_Persons
@@ -28,25 +29,28 @@ class DbEventPersonBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
+  @EJB
+  var dbStaff: DbStaffBeanLocal = _
+
   def insertOrUpdateEventPerson(id: Int,
                                 event: Event,
                                 sessionUser: Staff,
                                 withFlash: Boolean): EventPerson = {
-    //var ep: EventPerson = null
+
     val now = new Date
     if (id > 0) {
-      var ep2 = getEventPersonById(id)
+      val ep2 = getEventPersonById(id)
       ep2.setEndDate(now)
       em.merge(ep2)
     }
-    var ep = new EventPerson
-    ep.setPerson(sessionUser)
+    val ep = new EventPerson
+    ep.setPerson(dbStaff.getStaffByIdWithoutDetach(sessionUser.getId))
     if (event != null) {
       ep.setEvent(event)
     }
     ep.setBegDate(now)
-    //ep.setDeleted(false)
     em.persist(ep)
+
     if (withFlash) {
       em.flush()
     }

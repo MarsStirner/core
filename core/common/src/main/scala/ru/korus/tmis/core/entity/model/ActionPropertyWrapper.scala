@@ -59,7 +59,7 @@ class ActionPropertyWrapper(ap: ActionProperty)
           case Unit => {
             this.ap.getUnit match {
               case null => map
-              case unit => map + (xmlName -> unit.getName)
+              case unit => map + (xmlName -> unit.getCode)
             }
           }
           case IsAssignable => {
