@@ -1390,12 +1390,12 @@ class WebMisRESTImpl  extends WebMisREST
     i18n("build.jenkins.number").format()
   }
 
-  def getRbPrintTemplatesByIds(ids: Array[Int], authData: AuthData): ju.List[RbPrintTemplate] = {
-    dbRBPrintTemplateBan getRbPrintTemplateByIds ids
+  def getRbPrintTemplatesByIds(ids: ju.List[Integer], authData: AuthData): ju.List[RbPrintTemplate] = {
+    dbRBPrintTemplateBan getRbPrintTemplateByIds ids.asScala.toArray.map(_.toInt)
   }
 
-  def getPrintContextsByContexts(contexts: Array[String]) {
-
+  def getRbPrintTemplatesByContexts(contexts: ju.List[String], authData: AuthData): ju.List[RbPrintTemplate] = {
+    dbRBPrintTemplateBan getRbPrintTemplatesByContexts contexts.asScala.toArray
   }
 
   //__________________________________________________________________________________________________

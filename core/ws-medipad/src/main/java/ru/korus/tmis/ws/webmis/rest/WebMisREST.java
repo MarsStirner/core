@@ -380,7 +380,9 @@ public interface WebMisREST extends Serializable {
      */
     String getBuildVersion();
 
-    List<RbPrintTemplate> getRbPrintTemplatesByIds(int[] ids, AuthData authData) throws CoreException;
+    List<RbPrintTemplate> getRbPrintTemplatesByIds(List<Integer> ids, AuthData authData) throws CoreException;
+
+    List<RbPrintTemplate> getRbPrintTemplatesByContexts(List<String> contexts, AuthData authData) throws CoreException;
 
 
 }
