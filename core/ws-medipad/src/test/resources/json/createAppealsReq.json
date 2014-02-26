@@ -1,0 +1,362 @@
+{"requestData": {}, "data": {
+    "version": "",
+    "number": "",
+    "urgent": false,
+    "ambulanceNumber": "",
+    "rangeAppealDateTime": {
+        "start": 1393411484614,
+        "end": 1393411516098
+    },
+    "refuseAppealReason": "",
+    "appealWithDeseaseThisYear": "повторно",
+    "patient": {
+        "version": 1,
+        "sex": "male",
+        "patientCode": 3,
+        "birthDate": 160866000000,
+        "birthPlace": "",
+        "snils": "",
+        "name": {
+            "first": "Иван",
+            "last": "Иванов",
+            "middle": "",
+            "raw": "Иванов Иван ",
+            "fio": "",
+            "full": "Иванов Иван "
+        },
+        "address": {
+            "registered": {
+                "localityType": 0,
+                "kladr": false,
+                "house": "",
+                "building": "",
+                "flat": "",
+                "fullAddress": "",
+                "district": {
+                    "code": "",
+                    "name": "",
+                    "socr": "",
+                    "index": ""
+                },
+                "locality": {
+                    "code": "",
+                    "name": "",
+                    "socr": "",
+                    "index": ""
+                },
+                "street": {
+                    "code": "",
+                    "name": "",
+                    "socr": "",
+                    "index": ""
+                },
+                "city": {
+                    "code": "",
+                    "name": "",
+                    "socr": "",
+                    "index": ""
+                },
+                "republic": {
+                    "code": "",
+                    "name": "",
+                    "socr": "",
+                    "index": ""
+                }
+            },
+            "residential": {
+                "localityType": 0,
+                "kladr": false,
+                "house": "",
+                "building": "",
+                "flat": "",
+                "fullAddress": "",
+                "district": {
+                    "code": "",
+                    "name": "",
+                    "socr": "",
+                    "index": ""
+                },
+                "locality": {
+                    "code": "",
+                    "name": "",
+                    "socr": "",
+                    "index": ""
+                },
+                "street": {
+                    "code": "",
+                    "name": "",
+                    "socr": "",
+                    "index": ""
+                },
+                "city": {
+                    "code": "",
+                    "name": "",
+                    "socr": "",
+                    "index": ""
+                },
+                "republic": {
+                    "code": "",
+                    "name": "",
+                    "socr": "",
+                    "index": ""
+                }
+            }
+        },
+        "phones": [],
+        "payments": [
+            {
+                "policyType": {
+                    "id": null
+                },
+                "series": "",
+                "number": null,
+                "comment": "",
+                "issued": "",
+                "smo": {},
+                "rangePolicyDate": {
+                    "start": "",
+                    "end": ""
+                }
+            }
+        ],
+        "relations": [
+            {
+                "name": {
+                    "first": "",
+                    "last": "",
+                    "middle": "",
+                    "raw": "",
+                    "fio": "",
+                    "full": "  "
+                },
+                "phones": [
+                    {
+                        "number": "",
+                        "typeId": "",
+                        "typeName": "",
+                        "comment": ""
+                    }
+                ],
+                "relationType": {
+                    "id": "",
+                    "name": ""
+                }
+            }
+        ],
+        "idCards": [
+            {
+                "series": "",
+                "number": null,
+                "issued": "",
+                "rangeDocumentDate": {
+                    "start": "",
+                    "end": ""
+                },
+                "docType": {
+                    "name": ""
+                }
+            }
+        ],
+        "disabilities": [
+            {
+                "disabilityType": {
+                    "name": ""
+                },
+                "document": {
+                    "series": "",
+                    "number": "",
+                    "date": "",
+                    "comment": ""
+                },
+                "benefitsCategory": {
+                    "category": ""
+                },
+                "rangeDisabilityDate": {
+                    "start": "",
+                    "end": ""
+                }
+            }
+        ],
+        "occupations": [
+            {
+                "comment": "",
+                "socialStatus": {
+                    "status": ""
+                },
+                "works": []
+            }
+        ],
+        "medicalInfo": {
+            "blood": {
+                "group": "",
+                "checkingDate": "",
+                "id": -1
+            },
+            "allergies": [
+                {
+                    "substance": "",
+                    "degree": "",
+                    "checkingDate": "",
+                    "comment": ""
+                }
+            ],
+            "drugIntolerances": [
+                {
+                    "substance": "",
+                    "degree": "",
+                    "checkingDate": "",
+                    "comment": ""
+                }
+            ]
+        },
+        "citizenship": {
+            "first": {
+                "comment": "",
+                "socStatusType": {
+                    "name": ""
+                }
+            },
+            "second": {
+                "comment": "",
+                "socStatusType": {
+                    "name": ""
+                }
+            }
+        },
+        "id": 3,
+        "idCardsShortString": ""
+    },
+    "appealType": {
+        "eventType": {
+            "id": "53",
+            "name": "",
+            "value": "Дневной стационар(бюджет)"
+        },
+        "requestType": {
+            "id": "1",
+            "name": ""
+        },
+        "finance": {
+            "id": "1",
+            "name": ""
+        }
+    },
+    "assignment": {
+        "directed": "",
+        "doctor": "",
+        "assignmentDate": "",
+        "number": ""
+    },
+    "hospitalizationType": {
+        "id": "220",
+        "name": ""
+    },
+    "hospitalizationPointType": {
+        "id": "134",
+        "name": ""
+    },
+    "deliveredType": "",
+    "deliveredAfterType": "",
+    "movingType": "может идти",
+    "stateType": "",
+    "physicalParameters": {
+        "bloodPressure": {
+            "left": {
+                "syst": "",
+                "diast": ""
+            },
+            "right": {
+                "syst": "",
+                "diast": ""
+            }
+        },
+        "temperature": "",
+        "weight": "",
+        "height": ""
+    },
+    "branchType": {
+        "id": -1,
+        "name": ""
+    },
+    "placeType": {
+        "id": -1,
+        "name": ""
+    },
+    "diagnoses": [
+        {
+            "diagnosticId": "",
+            "diagnosisKind": "diagReceivedMkb",
+            "description": "",
+            "mkb": {
+                "code": "",
+                "diagnosis": "",
+                "parent": null
+            }
+        },
+        {
+            "diagnosticId": "",
+            "diagnosisKind": "aftereffectMkb",
+            "description": "",
+            "mkb": {
+                "code": "",
+                "diagnosis": "",
+                "parent": null
+            }
+        },
+        {
+            "diagnosticId": "",
+            "diagnosisKind": "attendantMkb",
+            "description": "",
+            "mkb": {
+                "code": "",
+                "diagnosis": "",
+                "parent": null
+            }
+        }
+    ],
+    "agreedDoctor": "",
+    "agreedType": {
+        "id": ""
+    },
+    "injury": "",
+    "hospitalizationWith": [],
+    "havePrimary": false,
+    "setPerson": {
+        "doctor": {
+            "name": {
+                "first": "",
+                "last": "",
+                "middle": "",
+                "raw": "",
+                "fio": "",
+                "full": "  "
+            },
+            "specs": {
+                "name": {}
+            },
+            "department": {
+                "name": ""
+            }
+        },
+        "department": {
+            "name": ""
+        }
+    },
+    "contract": {
+        "number": "2009/5",
+        "begDate": 1262293200000,
+        "finance": {
+            "id": 1,
+            "name": "Бюджет"
+        },
+        "id": 61
+    },
+    "leaved": {
+        "nextHospDate": null,
+        "nextHospDepartment": null,
+        "nextHospFinanceType": null
+    },
+    "orgStructStay": "28",
+    "orgStructDirectedFrom": "",
+    "reopening": "Нет"
+}}

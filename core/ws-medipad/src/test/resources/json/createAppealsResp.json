@@ -1,0 +1,154 @@
+{"requestData": null, "data": {
+    "id": 319,
+    "version": 2,
+    "number": "2014/27",
+    "urgent": false,
+    "setPerson": {
+        "doctor": {
+            "id": 1,
+            "name": {
+                "first": "",
+                "last": "Админ",
+                "middle": "",
+                "raw": "Админ  "
+            }
+        },
+        "department": {
+            "id": 0,
+            "name": null
+        }
+    },
+    "execPerson": {
+        "id": 1,
+        "name": {
+            "first": "",
+            "last": "Админ",
+            "middle": "",
+            "raw": "Админ  "
+        }
+    },
+    "ambulanceNumber": "",
+    "rangeAppealDateTime": {
+        "start": 1393411484000,
+        "end": 1393411516000
+    },
+    "patient": {
+        "id": "3"
+    },
+    "appealType": {
+        "eventType": {
+            "id": 53,
+            "name": "Дневной стационар(бюджет)"
+        },
+        "requestType": {
+            "id": 1,
+            "name": "Дневной стационар"
+        },
+        "finance": {
+            "id": 1,
+            "name": "Бюджет"
+        }
+    },
+    "agreedType": null,
+    "agreedDoctor": "",
+    "assignment": {
+        "assignmentDate": null,
+        "number": "",
+        "directed": "",
+        "doctor": ""
+    },
+    "hospitalizationType": {
+        "id": 220,
+        "name": ""
+    },
+    "hospitalizationPointType": {
+        "id": 134,
+        "name": ""
+    },
+    "hospitalizationChannelType": {
+        "id": -1,
+        "name": null
+    },
+    "hospitalizationWith": [],
+    "deliveredType": "",
+    "deliveredAfterType": "",
+    "movingType": "может идти",
+    "stateType": "",
+    "physicalParameters": {
+        "height": 0.0,
+        "weight": 0.0,
+        "temperature": 0.0,
+        "bloodPressure": {
+            "left": {
+                "diast": 0.0,
+                "syst": 0.0
+            },
+            "right": {
+                "diast": 0.0,
+                "syst": 0.0
+            }
+        }
+    },
+    "diagnoses": [
+        {
+            "diagnosticId": 63,
+            "diagnosisKind": "diagReceivedMkb",
+            "description": "",
+            "injury": "",
+            "mkb": {
+                "id": 11439,
+                "code": "",
+                "diagnosis": ""
+            }
+        },
+        {
+            "diagnosticId": 64,
+            "diagnosisKind": "aftereffectMkb",
+            "description": "",
+            "injury": "",
+            "mkb": {
+                "id": 11439,
+                "code": "",
+                "diagnosis": ""
+            }
+        },
+        {
+            "diagnosticId": 62,
+            "diagnosisKind": "attendantMkb",
+            "description": "",
+            "injury": "",
+            "mkb": {
+                "id": 11439,
+                "code": "",
+                "diagnosis": ""
+            }
+        }
+    ],
+    "injury": "",
+    "refuseAppealReason": "",
+    "appealWithDeseaseThisYear": "повторно",
+    "havePrimary": false,
+    "contract": null,
+    "currentDepartment": {
+        "id": 28,
+        "name": "Приемное отделение"
+    },
+    "leaved": {
+        "nextHospDate": null,
+        "nextHospDepartment": null,
+        "nextHospFinanceType": null,
+        "hospOutcome": null,
+        "hospLength": null,
+        "outcomeDate": null,
+        "leavedDoctor": null
+    },
+    "result": null,
+    "tempInvalid": null,
+    "laboratory": null,
+    "preHospitalDefects": null,
+    "closed": false,
+    "closeDateTime": null,
+    "orgStructStay": 28,
+    "orgStructDirectedFrom": 0,
+    "reopening": "null"
+}}
