@@ -1,11 +1,9 @@
 package ru.korus.tmis.core.database.common
 
-import javax.interceptor.Interceptors
-import javax.ejb.{TransactionAttributeType, TransactionAttribute, Stateless}
-import ru.korus.tmis.core.logging.LoggingInterceptor
+import javax.ejb.Stateless
 import javax.persistence.{EntityManager, PersistenceContext}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.entity.model.{EventType, Contract}
+import ru.korus.tmis.core.entity.model.{ContractSpecification, EventType, Contract}
 import ru.korus.tmis.core.exception.NoSuchEntityException
 import scala.collection.JavaConversions._
 import java.util.Date
@@ -63,6 +61,8 @@ class DbContractBean
           cs.deleted = 0)
                                   """
 
+
+
   def getContractById(id: Int) = {
     val result = em.createQuery(FindByIdQuery,
       classOf[Contract])
@@ -85,7 +85,14 @@ class DbContractBean
     }
   }
 
-  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+
+  /**
+   * Поведение данного метода неверно - контрактов для одного типа событий
+   * может быть несколько. Используйте {@link #getContractsByEventTypeId(int, int, boolean, boolean) getContractsByEventTypeId}
+   * @param eventType Тип события
+   * @return Первый контракт из списка или null, если таковых не нашлось
+   */
+  @Deprecated
   def getContractForEventType(eventType: EventType) = {
     val result = em.createQuery(FindContractForEventQuery,
       classOf[Contract])
@@ -98,12 +105,6 @@ class DbContractBean
       case 0 => {
         logTmis.warning(i18n("error.ContractNotFound").format(eventType.getId.intValue()))
         null
-        /*
-        throw new NoSuchEntityException(
-          ConfigManager.ErrorCodes.ContractNotFound,
-          eventType.getId.intValue(),
-          i18n("error.ContractNotFound"))
-        */
       }
       case size => {
         result.foreach((r) => {
@@ -113,4 +114,59 @@ class DbContractBean
       }
     }
   }
+
+  /**
+   * Реализация метода получения доступных контрактов
+   * @param eventTypeId Идентификатор типа события, для которого ищются договора
+   * @param financeId Идентификатор типа финансирования (в 99.999% соответствует EventType-у)
+   * @param showDeleted Если задан как true - запрос отрабатывает не обращая внимание на поле deleted
+   * @param showExpired Если задан как true - то не проверяется дата окончания договора относительно текущего момента
+   * @return Список доступных договоров или null, если таких не имеется
+   */
+  def getContractsByEventTypeId(eventTypeId: Int, financeId: Int, showDeleted: Boolean, showExpired: Boolean) = {
+    val cb = em.getCriteriaBuilder
+
+    val q = cb.createQuery(classOf[Contract])
+    val root = q.from(classOf[Contract])
+
+    val sq = q.subquery(classOf[ContractSpecification])
+    val subRoot = q.from(classOf[ContractSpecification])
+
+    var subQueryConditions = List(
+      cb.equal(subRoot.get("master"), root),
+      cb.equal(subRoot.get("eventType").get("id"), eventTypeId)
+    )
+
+    if(!showDeleted) subQueryConditions :+= cb.equal(subRoot.get("deleted"), false)
+
+    sq.where(List(cb.and(subQueryConditions:_*)):_*)
+
+    var queryConditions = List(
+      cb.equal(root.get("finance").get("id"), financeId),
+      cb.exists(sq)
+    )
+
+    if(!showDeleted) queryConditions :+= cb.equal(root.get("deleted"), false)
+    if(!showExpired) queryConditions :+= cb.greaterThan(root.get("endDate"), new Date())
+
+    q.
+      where(List(cb.and(queryConditions:_*)):_*)
+
+    val query = em.createQuery(q)
+    val result = query.getResultList()
+
+    result.size match {
+      case 0 => {
+        logTmis.warning(i18n("error.ContractNotFound").format(eventTypeId.intValue()))
+        null
+      }
+      case size => {
+        result.foreach((r) => {
+          em.detach(r)
+        })
+        result
+      }
+    }
+  }
+
 }

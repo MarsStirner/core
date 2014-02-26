@@ -14,6 +14,7 @@ import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 
 /**
  * Список REST-сервисов для работы с осмотрами
@@ -99,7 +100,7 @@ public class ExaminationsRegistryRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/x-javascript", "application/xml"})
     public Object getListOfAssessmentsForPatientByEvent(@Context UriInfo info,
                                                         @QueryParam("limit")int limit,
                                                         @QueryParam("page")int  page,
@@ -108,7 +109,7 @@ public class ExaminationsRegistryRESTImpl {
                                                         @QueryParam("filter[actionTypeId]")int actionTypeId,
                                                         @QueryParam("filter[begDate]")long begDate,
                                                         @QueryParam("filter[endDate]")long endDate,
-                                                        @QueryParam("filter[actionTypeCode]")String assessmentTypeCode,
+                                                        @QueryParam("filter[actionTypeCode]")Set<String> assessmentTypeCode,
                                                         @QueryParam("filter[doctorId]") int doctorId,
                                                         @QueryParam("filter[doctorName]") String doctorName,
                                                         @QueryParam("filter[speciality]") String speciality,
@@ -140,9 +141,9 @@ public class ExaminationsRegistryRESTImpl {
      */
     @GET
     @Path("/{actionId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/x-javascript", "application/xml"})
     public Object getPrimaryMedExamById(@PathParam("actionId")int actionId) {
-        return new JSONWithPadding(wsImpl.getPrimaryAssessmentById(actionId, this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.getPrimaryAssessmentById(actionId,this.auth), this.callback);
     }
 
     /**

@@ -7,22 +7,16 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.database._
-import ru.korus.tmis.core.database.common._
 import common._
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.AuthData
 import javax.persistence.{PersistenceContext, EntityManager}
-import collection.mutable.{HashMap, HashSet}
 import java.util.{ArrayList, Date, LinkedList}
-import java.text.{DateFormat, SimpleDateFormat}
 import ru.korus.tmis.core.exception.CoreException
-import java.{util, sql}
-import collection.{mutable, JavaConversions}
-import java.sql.{Connection, DriverManager, ResultSet}
-import ru.korus.tmis.core.event.{Notification, ModifyActionNotification}
+import collection.JavaConversions
+import ru.korus.tmis.core.event.Notification
 import javax.inject.Inject
 import javax.enterprise.inject.Any
-import java.lang.Iterable
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 ;
 
@@ -70,9 +64,6 @@ class AppealBean extends AppealBeanLocal
   private var dbMkbBean: DbMkbBeanLocal = _
 
   @EJB
-  private var dbFDRecordBean: DbFDRecordBeanLocal = _
-
-  @EJB
   var dbPatientBean: DbPatientBeanLocal = _
 
   @EJB
@@ -95,6 +86,9 @@ class AppealBean extends AppealBeanLocal
 
   @EJB
   private var dbRbResultBean: DbRbResultBeanLocal = _
+
+  @EJB
+  private var dbContractBean: DbContractBeanLocal = _
 
   @Inject
   @Any
@@ -416,7 +410,7 @@ class AppealBean extends AppealBeanLocal
                                           ).toList
     dbManager.mergeAll(mergedItems)
     dbManager.persistAll(persistedItems)
-    //
+
     newEvent.getId.intValue()
   }
 
@@ -513,11 +507,11 @@ class AppealBean extends AppealBeanLocal
     val event = dbEventBean.getEventById(eventId)
     val execDate = event.getExecDate
 
-    var setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
+    var setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
     val hospId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
     if(hospId>0) { //Есть экшн - поступление
-      val lstSentToIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
-      val lstCancelIds = JavaConversions.asJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
+      val lstSentToIds = JavaConversions.seqAsJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
+      val lstCancelIds = JavaConversions.seqAsJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
       val apSentToWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstSentToIds)
       val apCancelWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstCancelIds)
       if (execDate!= null){
@@ -533,7 +527,7 @@ class AppealBean extends AppealBeanLocal
           apSentToWithValues.size()>0 &&
           apSentToWithValues.filter(element => element._2.size()>0).size>0){
           //Проверяем наличие экшна - Движение
-          setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.moving").toInt :java.lang.Integer))
+          setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.moving").toInt :java.lang.Integer))
           val movingId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
           status = if (movingId>0)
             if (actionBean.getActionById(movingId).getEndDate == null) i18n("patient.status.regToBed").toString else i18n("patient.status.sentTo").toString
@@ -542,7 +536,7 @@ class AppealBean extends AppealBeanLocal
           if (execDate!= null)
             status = i18n("patient.status.discharged").toString
           else {
-            setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
+            setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
                                                      i18n("db.actionType.secondary").toInt :java.lang.Integer))
             val primaryId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
             status = if(primaryId>0) i18n("patient.status.hospitalized").toString
@@ -562,29 +556,37 @@ class AppealBean extends AppealBeanLocal
   @throws(classOf[CoreException])
   def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {   //для создания ид пациента, для редактирование ид обращения
 
-    if (authData==null){
-      throw new CoreException("Mетод для изменения обращения по госпитализации не доступен для неавторизованного пользователя.")
-      return null
-    }
+    if (authData==null)
+      throw new CoreException(i18n("error.appeal.create.NoAuthData"))
+
 
     var event: Event = null
     if (flgCreate) {            //Создаем новое
       if (id <= 0) {
-        throw new CoreException("Невозможно создать госпитализацию. Пациент не установлен.")
-        return null
+        throw new CoreException(i18n("error.appeal.create.InvalidPatientData").format(id))
       }
+
       if (appealData.data.appealType==null ||
         appealData.data.appealType.eventType==null ||
         appealData.data.appealType.eventType.getId<=0){
-        throw new CoreException("Невозможно создать госпитализацию. Не задан тип обращения.")
-        return null
+        throw new CoreException(i18n("error.appeal.create.NoAppealType"))
       }
+
+      if(appealData.data.contract == null || appealData.data.contract.getId < 1)
+        throw new CoreException(i18n("error.appeal.create.InvalidContractData"))
+
+      val contract = dbContractBean.getContractById(appealData.data.contract.getId)
+
+      if(contract.getEndDate.getTime < new Date().getTime)
+        throw new CoreException(i18n("error.appeal.create.ContractIsExpired"))
+
       event = dbEventBean.createEvent(id,
                                     //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
                                     appealData.data.appealType.eventType.getId,
                                     //dbEventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
                                     appealData.data.rangeAppealDateTime.getStart(),
                                     /*appealData.data.rangeAppealDateTime.getEnd()*/null,
+                                    appealData.getData.getContract.getId,
                                     authData)
     }
     else {                      //Редактирование
@@ -884,6 +886,13 @@ class AppealBean extends AppealBeanLocal
     rbResult
   }
 
+  def getSupportedAppealTypeCodes = {
+    val rbResult = em.createQuery(eventSupportedTypeCodesQuery,classOf[String])
+      .setParameter("supportedRequestTypes", asJavaCollection(i18n("webmis.supportedEventTypes").split(",")))
+      .getResultList
+    rbResult
+  }
+
   def insertOrUpdateClientQuoting(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
     var lockId: Int = -1
     var oldQuota : ClientQuoting = null
@@ -1073,6 +1082,14 @@ class AppealBean extends AppealBeanLocal
     AND
       et.code = fdfv.value
                                              """
+
+  val eventSupportedTypeCodesQuery =  """
+     SELECT et.code
+      FROM
+        EventType et
+      WHERE
+        et.requestType.code IN :supportedRequestTypes
+                                      """
 
   val DiagnosisTypeByIdQuery = """
     SELECT dt

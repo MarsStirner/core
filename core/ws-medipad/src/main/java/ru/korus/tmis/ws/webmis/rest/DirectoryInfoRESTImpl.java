@@ -397,6 +397,23 @@ public class DirectoryInfoRESTImpl {
     }
 
     /**
+     * Сервис получения данных о договорах, доступных в системе
+     * @param eventTypeId Если задан данный параметр, то будут возвращены доступные договора для данного типа событий
+     * @param showDeleted Если если данный параметр задан как true, то в список будут включены и ранее удаленные договора
+     * @param showExpired Если если данный параметр задан как true, то в список будут включены просроченные договора договора
+     * @return
+     */
+    @GET
+    @Path("/contracts")
+    @Produces("application/x-javascript")
+    public Object getContracts(
+                                @QueryParam("eventTypeId")   int eventTypeId,
+    @DefaultValue("false")      @QueryParam("showDeleted")   boolean showDeleted,
+    @DefaultValue("false")      @QueryParam("showExpired")   boolean showExpired) {
+        return new JSONWithPadding(wsImpl.getContracts(eventTypeId, showDeleted, showExpired), this.callback);
+    }
+
+    /**
      * Получение списка типа действий (ActionType's) по коду и/или идентификатору группы<br>
      * @param patientId Идентификатор пациента
      * <pre>
@@ -456,8 +473,8 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/actionTypes/{id}")
     @Produces("application/x-javascript")
-    public Object getStructOfPrimaryMedExam(@PathParam("id") int actionTypeId) {
-        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, this.auth), this.callback);
+    public Object getStructOfPrimaryMedExam(@PathParam("id") int actionTypeId, @QueryParam("eventId") int eventId) {
+        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, eventId, this.auth), this.callback);
     }
 
     /**

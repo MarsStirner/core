@@ -1,6 +1,7 @@
 package ru.korus.tmis.pharmacy;
 
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.entity.model.Event;
@@ -94,7 +95,8 @@ public class PrescriptionInfo {
         public ComponentInfo(DrugChart interval, DrugComponent drugComponent, DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
             code = drugComponent.getNomen().getId();
             dose = drugComponent.getDose();
-            unitCode = drugComponent.getNomen().getUnit().getCode();
+            final RbUnit unit = drugComponent.getUnit();
+            unitCode = unit == null ? null : unit.getCode();
             localName = drugComponent.getNomen().getRlsTradeName().getLocalName();
             uuid = dbPrescriptionSendingResBeanLocal.getIntervalUUID(interval, drugComponent);
         }

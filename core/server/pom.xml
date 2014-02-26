@@ -157,6 +157,14 @@
                     <include>**/*.jar</include>
                 </includes>
             </resource>
+            <resource>
+                <directory>src/main/resources/</directory>
+                <targetPath>../</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>build-number.properties</include>
+                </includes>
+            </resource>
         </resources>
 
         <plugins>

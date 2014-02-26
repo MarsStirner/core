@@ -1,42 +1,26 @@
 package ru.korus.tmis.core.data
 
 
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.lang.Integer
 import java.util.{Date, LinkedList}
 import javax.xml.bind.annotation._
 import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
-import java.util
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
-import javax.management.remote.rmi._RMIConnectionImpl_Tie
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.beans.BooleanBeanProperty
 
 @XmlType(name = "entities")
 @XmlRootElement(name = "entities")
 @JsonIgnoreProperties(ignoreUnknown = true)
 class CommonData {
-  var id: Integer = _
 
-  @XmlAttribute
-  def getId() = {
-    id
-  }
+  @BeanProperty var id: Integer = _
 
-  def setId(id: Integer) = {
-    this.id = id
-  }
+  @BeanProperty var version: String = _
 
-  var version: String = _
-
-  @XmlAttribute
-  def getVersion() = {
-    version
-  }
-
-  def setVersion(version: String) = {
-    this.version = version
-  }
+  @BeanProperty var entity = new LinkedList[CommonEntity]
 
   def this(id: Integer) = {
     this()
@@ -48,124 +32,41 @@ class CommonData {
     this.version = version
   }
 
-  @BeanProperty
-  var entity = new LinkedList[CommonEntity]
-
   def add(that: CommonEntity) = {
     entity.add(that)
     this
   }
+
 }
 
 @XmlType(name = "entity")
 @XmlRootElement(name = "entity")
 @JsonIgnoreProperties(ignoreUnknown = true)
 class CommonEntity {
-  var id: Integer = _
 
-  @XmlAttribute
-  def getId() = {
-    id
-  }
+  @BeanProperty var id: Integer = _
 
-  def setId(id: Integer) = {
-    this.id = id
-  }
+  @BeanProperty var version: Integer = _
 
-  var version: Integer = _
+  @BeanProperty var name: String = _
 
-  @XmlAttribute
-  def getVersion() = {
-    version
-  }
+  @BeanProperty var `type`: String = _
 
-  def setVersion(version: Integer) = {
-    this.version = version
-  }
+  @BeanProperty var typeId: Integer = _
 
-  var name: String = _
+  @BeanProperty var status: Integer = _
 
-  @XmlAttribute
-  def getName() = {
-    name
-  }
+  @BeanProperty var code: String = _
 
-  def setName(name: String) = {
-    this.name = name
-  }
+  @BooleanBeanProperty var isEditable: Boolean = true
 
-  var eType: String = _
+  @BeanProperty var flatCode: String = _
 
-  @XmlAttribute(name = "type")
-  def getType() = {
-    eType
-  }
+  @BeanProperty var mnem: String = _
 
-  def setType(eType: String) = {
-    this.eType = eType
-  }
+  @BeanProperty var context: String = _
 
-  var eTypeId: Integer = _
-
-  @XmlAttribute(name = "typeId")
-  def getTypeId() = {
-    eTypeId
-  }
-
-  def setTypeId(eTypeId: Integer) = {
-    this.eTypeId = eTypeId
-  }
-
-  var status: Integer = _
-
-  @XmlAttribute(name = "status")
-  def getStatus() = {
-    status
-  }
-
-  def setStatus(status: Integer) = {
-    this.status = status
-  }
-
-  var code: String = _
-
-  @XmlAttribute(name = "code")
-  def getCode() = {
-    code
-  }
-
-  def setCode(code: String) = {
-    this.code = code
-  }
-
-  var isEditable: Boolean = true
-
-  @XmlAttribute(name = "isEditable")
-  def getIsEditable() = {
-    isEditable
-  }
-
-  def setIsEditable(isEditable: Boolean) = {
-    this.isEditable = isEditable
-  }
-
-  var flatCode: String = _
-
-  @XmlAttribute(name = "flatCode")
-  def getFlatCode() = {
-    flatCode
-  }
-
-  def setFlatCode(flatCode: String) = {
-    this.flatCode = flatCode
-  }
-
-  var mnem: String = _
-
-  @XmlAttribute(name = "mnem")
-  def getMnem():String = mnem
-
-  def setMnem(mnem: String) = this.mnem = mnem
+  @BeanProperty var group = new LinkedList[CommonGroup]
 
   private def this(id: Integer,
                    name: String,
@@ -174,8 +75,8 @@ class CommonEntity {
     this()
     this.id = id
     this.name = name
-    this.eType = eType
-    this.eTypeId = eTypeId
+    this.`type` = eType
+    this.typeId = eTypeId
   }
 
   private def this(id: Integer,
@@ -216,14 +117,13 @@ class CommonEntity {
            status: Integer,
            code: String,
            flatCode: String,
-           mnem: String) = {
+           mnem: String,
+           context: String) = {
     this(id, version, name, eType, eTypeId, status, code)
     this.flatCode = flatCode
     this.mnem = mnem
+    this.context = context
   }
-
-  @BeanProperty
-  var group = new LinkedList[CommonGroup]
 
   def add(that: CommonGroup) = {
     group.add(that)
@@ -235,38 +135,14 @@ class CommonEntity {
 @XmlRootElement(name = "group")
 @JsonIgnoreProperties(ignoreUnknown = true)
 class CommonGroup {
-  var id: Integer = _
 
-  @XmlAttribute
-  def getId() = {
-    id
-  }
+  @BeanProperty var id: Integer = _
 
-  def setId(id: Integer) = {
-    this.id = id
-  }
+  @BeanProperty var version: Integer = _
 
-  var version: Integer = _
+  @BeanProperty var name: String = _
 
-  @XmlAttribute
-  def getVersion() = {
-    version
-  }
-
-  def setVersion(version: Integer) = {
-    this.version = version
-  }
-
-  var name: String = _
-
-  @XmlAttribute
-  def getName() = {
-    name
-  }
-
-  def setName(name: String) = {
-    this.name = name
-  }
+  @BeanProperty var attribute = new LinkedList[CommonAttribute]
 
   def this(id: Integer, name: String) = {
     this()
@@ -278,9 +154,6 @@ class CommonGroup {
     this(id, name)
     this.version = version
   }
-
-  @BeanProperty
-  var attribute = new LinkedList[CommonAttribute]
 
   def add(that: CommonAttribute): CommonGroup = {
     that match {
@@ -304,104 +177,23 @@ trait AbstractCommonAttribute {
   @XmlTransient
   var dateFormatter = ConfigManager.DateFormatter
 
-  var id: Integer = _
+  @BeanProperty var id: Integer = _
 
-  @XmlAttribute
-  def getId() = {
-    id
-  }
+  @BeanProperty var version: Integer = _
 
-  def setId(id: Integer) = {
-    this.id = id
-  }
+  @BeanProperty var name: String = _
 
-  var version: Integer = _
+  @BeanProperty var code: String = _
 
-  @XmlAttribute
-  def getVersion() = {
-    version
-  }
+  @BeanProperty var `type`: String = _
 
-  def setVersion(version: Integer) = {
-    this.version = version
-  }
+  @BeanProperty var scope: String = _
 
-  var name: String = _
+  @BeanProperty var typeId: Integer = _
 
-  @XmlAttribute
-  def getName() = {
-    name
-  }
+  @BeanProperty var mandatory: String = _
 
-  def setName(name: String) = {
-    this.name = name
-  }
-
-  var code: String = _
-
-  @XmlAttribute(name = "code")
-  def getCode() = {
-    code
-  }
-
-  def setCode(code: String) = {
-    this.code = code
-  }
-
-  var aType: String = _
-
-  @XmlAttribute(name = "type")
-  def getType() = {
-    aType
-  }
-
-  def setType(aType: String) = {
-    this.aType = aType
-  }
-
-  var scope: String = _
-
-  @XmlAttribute
-  def getScope() = {
-    scope
-  }
-
-  def setScope(scope: String) = {
-    this.scope = scope
-  }
-
-  var typeId: Integer = _
-
-  @XmlAttribute(name = "typeId")
-  def getTypeId() = {
-    typeId
-  }
-
-  def setTypeId(eTypeId: Integer) = {
-    this.typeId = eTypeId
-  }
-
-  var mandatory: String = _
-
-  @XmlAttribute(name = "mandatory")
-  def getMandatory() = {
-    mandatory
-  }
-
-  def setMandatory(mandatory: String) = {
-    this.mandatory = mandatory
-  }
-
-  var readOnly: String = _
-
-  @XmlAttribute(name = "readOnly")
-  def getReadOnly() = {
-    readOnly
-  }
-
-  def setReadOnly(readOnly: String) = {
-    this.readOnly = readOnly
-  }
+  @BeanProperty var readOnly: String = _
 
   @XmlJavaTypeAdapter(value = classOf[PropertyMapAdapter])
   var properties: Map[String, String] = Map.empty[String, String]
@@ -423,6 +215,8 @@ trait AbstractCommonAttribute {
 
 class CommonAttribute  extends AbstractCommonAttribute{
 
+  @BeanProperty var calculatedValue:APValueContainer = _
+
   private def this(id: Integer,
                    name: String,
                    aType: String,
@@ -430,7 +224,7 @@ class CommonAttribute  extends AbstractCommonAttribute{
     this()
     this.id = id
     this.name = name
-    this.aType = aType
+    this.`type` = aType
     this.scope = scope
   }
 
@@ -551,7 +345,7 @@ class CommonAttributeWithLayout(id: Integer,
 
   def this (ca: CommonAttribute,
             layout: List[LayoutAttributeValue] ) = {
-    this(ca.id, ca.version, ca.name, ca.code, ca.aType, ca.mandatory, ca.readOnly, ca.scope, ca.properties)
+    this(ca.id, ca.version, ca.name, ca.code, ca.`type`, ca.mandatory, ca.readOnly, ca.scope, ca.properties)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 }
@@ -585,27 +379,10 @@ class PropertyMapAdapter
 @XmlRootElement(name = "property")
 @XmlElement(name = "property")
 class PropertyPair {
-  var name: String = _
 
-  @XmlAttribute
-  def getName() = {
-    name
-  }
+  @BeanProperty var name: String = _
 
-  def setName(name: String) = {
-    this.name = name
-  }
-
-  var value: String = _
-
-  @XmlValue
-  def getValue() = {
-    value
-  }
-
-  def setValue(value: String) = {
-    this.value = value
-  }
+  @BeanProperty var value: String = _
 
   def this(name: String, value: String) = {
     this()

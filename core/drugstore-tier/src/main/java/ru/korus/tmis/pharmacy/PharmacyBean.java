@@ -114,7 +114,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     }
                 }
                 // повторная отправка неотправленных сообщений
-                resendMessages();
+              //todo Специально для Даши на время теста resendMessages();
                 //Отправка назначений ЛС
                 //logger.info("sending prescription start...");
                 sendPrescriptionTo1C();
@@ -139,7 +139,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             ToLog toLog = new ToLog("Resend old message....");
             for (Pharmacy pharmacy : nonCompletedItems) {
                 try {
-                    final Action action = dbAction.getActionById(pharmacy.getActionId());
+                    final Action action = dbAction.getActionByIdWithIgnoreDeleted(pharmacy.getActionId());
                     send(action, toLog);
                 } catch (Exception e) {
                     logger.error("Resend old Exception e: " + e, e);

@@ -11,8 +11,6 @@ import javax.xml.bind.annotation.XmlType;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.exception.AuthenticationException;
 
-import javax.servlet.ServletException;
-
 
 @XmlType(name = "error")
 @XmlRootElement(name = "error")
@@ -47,8 +45,7 @@ public class ExceptionJSONMessage implements Serializable {
             if (rootException instanceof AuthenticationException) {
                 this.errorCode = ((AuthenticationException) rootException).getId();
             } else if (rootException instanceof CoreException) {//instanceof CoreException
-                int faultId = ((CoreException) rootException).getId();
-                this.errorCode = faultId;
+                this.errorCode = ((CoreException) rootException).getId();
             }
             this.errorMessage = rootException.getMessage();
         }
@@ -57,7 +54,7 @@ public class ExceptionJSONMessage implements Serializable {
         StackTraceElement[] stack = e.getStackTrace();
         String stackString = "";
         for (int i = 0; i < stack.length; i++) {
-            stackString = String.format("%s %d: %s\n", stackString, i, stack[i].toString());
+            stackString = String.format("%s %d: %s%n", stackString, i, stack[i].toString());
         }
         this.callStack = stackString;
     }
