@@ -432,7 +432,7 @@ public final class HL7PacketBuilder {
         //uuid в 1С. Если новый интервал то должен быть равен null
         //final String uuid = prescriptionSendingRes.getUuid();
         //Врач, назначивший ЛС
-        final Staff executorStaff = action.getExecutor();
+        final Staff executorStaff = action.getExecutor() == null ? action.getCreatePerson() : action.getExecutor();
 
         final POCDMT000040ClinicalDocument clinicalDocument =
                 getClinicalDocument(prescriptionInfo, client, organisation, executorStaff,  version);
@@ -545,7 +545,7 @@ public final class HL7PacketBuilder {
         author.setTime(createTS(new Date(), DATE_FORMAT));
         final POCDMT000040AssignedAuthor assignedAuthor = FACTORY_HL7.createPOCDMT000040AssignedAuthor();
         // UUID автора медицинского документа
-        final ru.korus.tmis.core.entity.model.UUID uuidStaff = executorStaff.getUuid();
+        final ru.korus.tmis.core.entity.model.UUID uuidStaff = executorStaff == null ? null : executorStaff.getUuid();
         if(uuidStaff != null) {
             assignedAuthor.getId().add(createII(uuidStaff.getUuid()));
         }

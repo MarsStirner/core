@@ -46,7 +46,6 @@ public class PatientTestCase {
 
         //Тестируемые классы и зависимости
         Class<?>[] classes = new Class<?>[] {
-                ru.korus.tmis.core.logging.LoggingInterceptor.class,
                 InternalLoggerBeanLocal.class,
                 InternalLoggerBean.class,
 

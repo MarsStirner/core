@@ -21,7 +21,6 @@ import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import org.joda.time.{DateTime, Years, Days}
 ;
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class AppealBean extends AppealBeanLocal
                     with Logging

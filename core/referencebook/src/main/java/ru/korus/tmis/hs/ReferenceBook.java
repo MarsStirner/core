@@ -6,7 +6,6 @@ import nsi.KladrStreet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.referencebook.*;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.dao.*;
 import ru.korus.tmis.hs.wss.AuthentificationHeaderHandlerResolver;
 import ru.korus.tmis.scala.util.ConfigManager;
@@ -26,7 +25,6 @@ import java.lang.reflect.Field;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-@Interceptors(LoggingInterceptor.class)
 @Stateless
 public class ReferenceBook implements ReferenceBookLocal {
     private static final Logger logger = LoggerFactory.getLogger(ReferenceBook.class);
