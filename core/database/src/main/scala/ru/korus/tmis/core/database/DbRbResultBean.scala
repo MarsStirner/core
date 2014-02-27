@@ -17,7 +17,6 @@ import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
  * Time: 16:36
  * To change this template use File | Settings | File Templates.
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbRbResultBean
   extends DbRbResultBeanLocal

@@ -35,7 +35,6 @@ class DbEnumBean
     )
 
   @PostConstruct
-  @Schedule(second = "0", minute = "0", hour = "4")
   def init() = {
     syncEnums_s11r64()
     syncEnums_rls()

@@ -23,9 +23,7 @@ import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionsTo1C;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.core.pharmacy.*;
-import ru.korus.tmis.core.pharmacy.DbDrugComponentBean;
-import ru.korus.tmis.core.pharmacy.DbDrugComponentBeanLocal;
-import ru.korus.tmis.util.TestUtil;
+import ru.korus.tmis.util.TestUtilCommon;
 
 import javax.ejb.EJB;
 import javax.persistence.EntityManager;
@@ -77,7 +75,7 @@ public class PrescriptionTest extends Arquillian {
         wa.addClass(JpaExampleBean.class);
 //        wa.addClass(RbFinance.class);
 
-        wa.addPackages(false, TestUtil.addBaseEntities());
+        wa.addPackages(false, (new TestUtilCommon()).getPackagesForTest());
          wa.addPackage(DbEventBeanLocal.class.getPackage());
         wa.addClass(InternalLoggerBeanLocal.class);
         wa.addClass(InternalLoggerBean.class);

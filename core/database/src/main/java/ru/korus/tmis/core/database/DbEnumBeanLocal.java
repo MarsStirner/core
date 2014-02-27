@@ -7,7 +7,5 @@ import javax.ejb.Local;
 @Local
 public interface DbEnumBeanLocal {
 
-    @Deprecated
-    void init()
-            throws CoreException;
+    void init();
 }

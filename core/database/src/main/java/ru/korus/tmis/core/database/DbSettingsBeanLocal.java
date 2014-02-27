@@ -8,8 +8,8 @@ import java.util.List;
 
 @Local
 public interface DbSettingsBeanLocal {
-    @Deprecated
-    void init() throws CoreException;
+
+    void init();
 
     Setting getSettingByPath(String path);
 
