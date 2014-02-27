@@ -16,6 +16,8 @@ import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.testng.Assert;
 import org.testng.annotations.Test;
+import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.common.CommonDataProcessorBean;
 import ru.korus.tmis.core.data.AppealData;
 import ru.korus.tmis.core.database.DbRbResultBeanLocal;
@@ -47,6 +49,9 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @EJB
     private AppealBeanLocal appealBean = null;
 
+    //@EJB
+    //private AuthStorageBeanLocal authStorageBeanLocal = null;
+
     @Deployment
     public static Archive createTestArchive() {
         final WebArchive wa = ShrinkWrap.create(WebArchive.class, "test.war");
@@ -65,6 +70,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     public void hello() {
         System.out.println("**************************** hello medipad test test");
         Assert.assertNotNull(appealBean);
+      //  Assert.assertNotNull(authStorageBeanLocal);
     }
 
     @Test
@@ -72,7 +78,8 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         AppealData appealData = new AppealData();
         int patientId = 3;
         try {
-            appealBean.insertAppealForPatient(appealData, patientId, null);
+            AuthData authData =  null;//authStorageBeanLocal.createToken("админ", "123", 29);
+            appealBean.insertAppealForPatient(appealData, patientId, authData);
         } catch (CoreException e) {
             e.printStackTrace();
             //TODO

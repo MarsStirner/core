@@ -26,7 +26,7 @@ public class TestUtilBusiness implements TestUtil {
                 CommonDataProcessorBean.class.getPackage(),   // ru.korus.tmis.core.common
                 AcrossBusinessBeanLocal.class.getPackage(),   // ru.korus.tmis.laboratory.across.business
                 PersonScheduleBeanLocal.class.getPackage(),   // ru.korus.tmis.schedule
-                AuthStorageBeanLocal.class.getPackage(),      // ru.korus.tmis.core.auth
+               // AuthStorageBeanLocal.class.getPackage(),      // ru.korus.tmis.core.auth
         };
         return res;
     }
