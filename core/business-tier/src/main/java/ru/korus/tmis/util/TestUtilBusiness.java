@@ -1,5 +1,6 @@
 package ru.korus.tmis.util;
 
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.common.CommonDataProcessorBean;
 import ru.korus.tmis.core.database.DbRbResultBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
@@ -25,6 +26,7 @@ public class TestUtilBusiness implements TestUtil {
                 CommonDataProcessorBean.class.getPackage(),   // ru.korus.tmis.core.common
                 AcrossBusinessBeanLocal.class.getPackage(),   // ru.korus.tmis.laboratory.across.business
                 PersonScheduleBeanLocal.class.getPackage(),   // ru.korus.tmis.schedule
+                AuthStorageBeanLocal.class.getPackage(),      // ru.korus.tmis.core.auth
         };
         return res;
     }
