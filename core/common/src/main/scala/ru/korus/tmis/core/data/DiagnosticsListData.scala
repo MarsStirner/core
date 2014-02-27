@@ -411,7 +411,7 @@ class LaboratoryDiagnosticsListEntry {
         None
     }).flatten
 
-    val names = labs.groupBy(_.getLabName)
+    val names = labs.groupBy(_.getName)
     if(names.size == 1)
       names.head._1
     else
