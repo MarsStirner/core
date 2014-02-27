@@ -5,9 +5,11 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AssessmentsListRequestData;
 import ru.korus.tmis.core.data.AssessmentsListRequestDataFilter;
 import ru.korus.tmis.core.data.JSONCommonData;
+import ru.korus.tmis.core.data.QueryDataStructure;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
+import scala.collection.convert.WrapAsJava;
 
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
@@ -166,5 +168,109 @@ public class ExaminationsRegistryRESTImpl {
             throw new CoreException("This service cannot be used without Event id");
 
         return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExamWithCopy(actionTypeId, this.auth, this.eventId), this.callback);
+    }
+
+    /**
+     * Кастомный веб-сервис для решения задачи http://helpdesk.korusconsulting.ru/browse/WEBMIS-367
+     * Не стоит его нигде описывать и использовать. Следует удалить, если он больше не используется webmis-ом.
+     * Отличается от обычного поиска документов соединением параметров mnem и assessmentTypeCode через OR
+     */
+    @GET
+    @Path("/custom1")
+    @Produces({"application/x-javascript", "application/xml"})
+    public Object custom1(@Context UriInfo info,
+                          @QueryParam("limit")int limit,
+                          @QueryParam("page")int  page,
+                          @QueryParam("sortingField")String sortingField,    //сортировки вкл.
+                          @QueryParam("sortingMethod")String sortingMethod,
+                          @QueryParam("filter[actionTypeId]")int actionTypeId,
+                          @QueryParam("filter[begDate]")long begDate,
+                          @QueryParam("filter[endDate]")long endDate,
+                          @QueryParam("filter[actionTypeCode]")Set<String> assessmentTypeCode,
+                          @QueryParam("filter[doctorId]") int doctorId,
+                          @QueryParam("filter[doctorName]") String doctorName,
+                          @QueryParam("filter[speciality]") String speciality,
+                          @QueryParam("filter[assessmentName]") String assessmentName,
+                          @QueryParam("filter[departmentName]") String departmentName) {
+
+        List<String> mnems = info.getQueryParameters().get("filter[mnem]");
+        List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
+        if(flatCodes == null) flatCodes = new LinkedList<String>();
+        List<String> mnemonics = new LinkedList<String>();
+        if(mnems!=null && mnems.size()>0) {
+            for(String mnem: mnems) {
+                DirectoryInfoRESTImpl.ActionTypesSubType atst = (mnem!=null && !mnem.isEmpty()) ? DirectoryInfoRESTImpl.ActionTypesSubType.getType(mnem.toLowerCase())
+                        : DirectoryInfoRESTImpl.ActionTypesSubType.getType("");
+                mnemonics.add(atst.getMnemonic());
+            }
+        }
+        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, patientId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics, flatCodes){
+            @Override
+            public QueryDataStructure toQueryStructure() {
+                QueryDataStructure qs = new QueryDataStructure();
+                if(this.eventId()>0) {
+                    qs.query_$eq(qs.query() + "AND a.event.id = :eventId\n");
+                    qs.add("eventId", this.eventId());
+                }
+                if(this.patientId() > 0) {
+                    qs.query_$eq(qs.query() + "AND a.event.patient.id = :patientId\n");
+                    qs.add("patientId", this.patientId());
+                }
+                if (this.actionTypeId() > 0) {
+                    qs.query_$eq(qs.query() + "AND a.actionType.id = :actionTypeId\n");
+                    qs.add("actionTypeId", this.actionTypeId());
+                }
+                // Если заданы и коды и мнемоники - то соединяем по OR
+                if((this.codes() != null && !this.codes().isEmpty()) && (this.mnemonics()!=null && !this.mnemonics().isEmpty())) {
+                    qs.query_$eq(qs.query() + "AND (a.actionType.code IN  :code OR a.actionType.mnemonic IN  :mnemonic)\n");
+                    qs.add("code", this.codes());
+                    qs.add("mnemonic", this.mnemonics());
+
+                } else if (this.mnemonics()!=null && !this.mnemonics().isEmpty()) {
+                    qs.query_$eq(qs.query() + "AND a.actionType.mnemonic IN  :mnemonic\n");
+                    qs.add("mnemonic",this.mnemonics());
+
+                } else if (this.codes() != null && !this.codes().isEmpty()) {
+                    qs.query_$eq(qs.query() + "AND a.actionType.code IN  :code\n");
+                    qs.add("code",this.codes());
+                }
+
+                if (this.doctorId() > 0) {
+                    qs.query_$eq(qs.query() + "AND a.createPerson.id = :doctorId\n");
+                    qs.add("doctorId", this.doctorId());
+                }
+                if (this.doctorName() != null && !this.doctorName().isEmpty()) {
+                    qs.query_$eq(qs.query() + "AND upper(a.createPerson.lastName) LIKE upper(:doctorName)\n");
+                    qs.add("doctorName", "%" + this.doctorName() + "%");
+                }
+                if (this.begDate() != null) {
+                    qs.query_$eq(qs.query() + "AND a.createDatetime >= :begDate\n");
+                    qs.add("begDate", this.begDate());
+                }
+                if (this.endDate() != null) {
+                    qs.query_$eq(qs.query() + "AND a.createDatetime <= :endDate\n");
+                    qs.add("endDate", this.endDate());
+                }
+                if (this.speciality() != null && !this.speciality().isEmpty()) {
+                    qs.query_$eq(qs.query() + "AND upper(a.createPerson.speciality.name) LIKE upper(:speciality)\n");
+                    qs.add("speciality", "%" + this.speciality() + "%");
+                }
+                if (this.assessmentName() != null && !this.assessmentName().isEmpty()) {
+                    qs.query_$eq(qs.query() + "AND upper(a.actionType.name) LIKE upper(:assessmentName)\n");
+                    qs.add("assessmentName", "%" + this.assessmentName() + "%");
+                }
+                if (this.departmentName() != null && !this.departmentName().isEmpty()) {
+                    qs.query_$eq(qs.query() + "AND upper(a.createPerson.orgStructure.name) LIKE upper(:departmentName)\n");
+                    qs.add("departmentName", "%" + this.departmentName() + "%");
+                }
+                if (this.flatCodes()!=null && this.flatCodes().size() > 0) {
+                    qs.query_$eq(qs.query() + "AND a.actionType.flatCode IN  :flatCodes\n");
+                    qs.add("flatCodes",this.flatCodes());
+                }
+                return qs;
+            }
+        };
+        AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
     }
 }
