@@ -25,7 +25,6 @@ with I18nable {
   var tmis_core: EntityManager = _
 
   @PostConstruct
-  @Schedule(second = "0", minute = "0", hour = "4")
   def init() = {
     load_settings
   }
