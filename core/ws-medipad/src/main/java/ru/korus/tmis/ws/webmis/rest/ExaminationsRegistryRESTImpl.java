@@ -5,6 +5,7 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AssessmentsListRequestData;
 import ru.korus.tmis.core.data.AssessmentsListRequestDataFilter;
 import ru.korus.tmis.core.data.JSONCommonData;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 
@@ -28,11 +29,13 @@ public class ExaminationsRegistryRESTImpl {
     //protected static final String PATH = AppealsInfoRESTImpl.PATH + "{eventId}/examinations/";
     private WebMisRESTImpl wsImpl;
     private int eventId;
+    private int patientId;
     private AuthData auth;
     private String callback;
 
-    public ExaminationsRegistryRESTImpl(WebMisRESTImpl wsImpl, int eventId, String callback, AuthData auth) {
+    public ExaminationsRegistryRESTImpl(WebMisRESTImpl wsImpl, int eventId, int patientId, String callback, AuthData auth) {
         this.eventId = eventId;
+        this.patientId = patientId;
         this.auth = auth;
         this.wsImpl = wsImpl;
         this.callback = callback;
@@ -49,7 +52,10 @@ public class ExaminationsRegistryRESTImpl {
     @POST
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public  Object insertPrimaryMedExamForPatient(JSONCommonData data) {
+    public  Object insertPrimaryMedExamForPatient(JSONCommonData data) throws CoreException {
+        if(eventId < 1)
+            throw new CoreException("This service cannot be used without Event id");
+
         return new JSONWithPadding(wsImpl.insertPrimaryMedExamForPatient(this.eventId, data, this.auth), this.callback);
     }
 
@@ -127,7 +133,7 @@ public class ExaminationsRegistryRESTImpl {
                 mnemonics.add(atst.getMnemonic());
             }
         }
-        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics, flatCodes);
+        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, patientId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics, flatCodes);
         AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
     }
@@ -155,7 +161,10 @@ public class ExaminationsRegistryRESTImpl {
     @GET
     @Path("/lastByType/{actionTypeId}")
     @Produces("application/x-javascript")
-    public Object getStructOfPrimaryMedExamWithCopy(@PathParam("actionTypeId") int actionTypeId) {
+    public Object getStructOfPrimaryMedExamWithCopy(@PathParam("actionTypeId") int actionTypeId) throws CoreException {
+        if(eventId < 1)
+            throw new CoreException("This service cannot be used without Event id");
+
         return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExamWithCopy(actionTypeId, this.auth, this.eventId), this.callback);
     }
 }

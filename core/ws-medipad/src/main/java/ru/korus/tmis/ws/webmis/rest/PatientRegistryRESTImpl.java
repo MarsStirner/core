@@ -34,10 +34,12 @@ public class PatientRegistryRESTImpl {
         this.callback = callback;
     }
 
+
     @Path("/{patientId}/appeals/")
     public AppealRegistryRESTImpl getAppealRegistryRESTImpl(@PathParam("patientId") int patientId){
         return new AppealRegistryRESTImpl(wsImpl, patientId, callback, this.auth);
     }
+
 
     /**
      * Запись данных о новом пациенте.
@@ -53,6 +55,7 @@ public class PatientRegistryRESTImpl {
     public Object insertPatient(PatientCardData patientData) {
         return new JSONWithPadding(wsImpl.insertPatient(patientData,  this.auth), this.callback);
     }
+
 
     /**
      * Редактирование данных о пациенте.
@@ -70,6 +73,7 @@ public class PatientRegistryRESTImpl {
                                 @PathParam("patientId")int patientId) {
         return new JSONWithPadding(wsImpl.updatePatient(patientId, patientData, this.auth), this.callback);
     }
+
 
     /**
      * Получение списка пациентов.
@@ -90,6 +94,7 @@ public class PatientRegistryRESTImpl {
         return new JSONWithPadding(wsImpl.getAllPatients(requestData, this.auth), this.callback);
     }
 
+
     /**
      * Получение данных о пациенте по идентификатору.
      * @param patientId Идентификатор пациента, данные о котором запрашиваются.
@@ -104,6 +109,7 @@ public class PatientRegistryRESTImpl {
     public Object getPatientById(@PathParam("patientId")int patientId) {
         return new JSONWithPadding(wsImpl.getPatientById(patientId, this.auth), this.callback);
     }
+
 
     /**
      * Получение списка талонов СПО для пациента.
@@ -138,29 +144,6 @@ public class PatientRegistryRESTImpl {
         return new JSONWithPadding(wsImpl.getAllTalonsForPatient(request), this.callback);
     }
 
-    /*
-    @DELETE
-    @Path("/{patientId}/delete")
-    @Produces("application/x-javascript")
-    public Object deletePatientInfo(@PathParam("patientId") int id,
-                                    @QueryParam("callback") String callback,
-                                    @Context HttpServletRequest servRequest)   {
-        Object oip = wsImpl.deletePatientInfo(id);
-        JSONWithPadding returnValue = new JSONWithPadding(oip, callback);
-        return returnValue;
-    }
-    */
-
-    /*@POST
-    @Path("/{patientId}/talon")
-    @Consumes("application/json")
-    @Produces("application/x-javascript")
-    public Object insertTalonSPOForPatient(Object data,
-                                           @QueryParam("callback") String callback) {
-
-       JSONWithPadding returnValue = new JSONWithPadding(wsImpl.insertTalonSPOForPatient(data), callback);
-       return returnValue;
-    } */
 
     /**
      * Добавить запись о группе крови
@@ -177,6 +160,7 @@ public class PatientRegistryRESTImpl {
         return new JSONWithPadding(wsImpl.insertBloodTypeForPatient(patientId, data, this.auth), callback);
     }
 
+
     /**
      * Запрос на историю изменений групп крови
      * @param patientId Идентификатор пациента
@@ -188,4 +172,10 @@ public class PatientRegistryRESTImpl {
     public Object getBloodTypesHistory(@PathParam("patientId") int patientId)   {
         return new JSONWithPadding(wsImpl.getBloodTypesHistory(patientId, this.auth), callback);
     }
+
+    @Path("/{patientId}/documents")
+    public ExaminationsRegistryRESTImpl getExaminationsRegistryRESTImpl(@PathParam("patientId") int patientId) {
+        return new ExaminationsRegistryRESTImpl(wsImpl, 0, patientId, callback, auth);
+    }
+
 }

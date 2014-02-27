@@ -98,11 +98,14 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
   @BeanProperty
   var eventId: Int = _
   @BeanProperty
+  var patientId: Int = _
+  @BeanProperty
   var mnemonics: ju.List[String] = new ju.ArrayList[String]
   @BeanProperty
   var flatCodes: ju.List[String] = new ju.ArrayList[String]
 
   def this(eventId: Int,
+           patientId: Int,
            actionTypeId: Int,
            code_x: ju.Set[String],
            begDate: Long,
@@ -116,6 +119,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
            flatCodes: ju.List[String]) {
     this()
     this.eventId = eventId
+    this.patientId = patientId
     this.actionTypeId = actionTypeId
     this.codes = code_x.filter(p=> p != null && !p.isEmpty)
     this.begDate = if (begDate == 0) null else new Date(begDate)
@@ -131,9 +135,13 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
 
   def toQueryStructure = {
     val qs = new QueryDataStructure()
-    if(this.eventId>0){
+    if(this.eventId>0) {
       qs.query += "AND a.event.id = :eventId\n"
       qs.add("eventId",this.eventId:java.lang.Integer)
+    }
+    if(this.patientId > 0) {
+      qs.query += "AND a.event.patient.id = :patientId\n"
+      qs.add("patientId",this.patientId:java.lang.Integer)
     }
     if (this.actionTypeId > 0) {
       qs.query += "AND a.actionType.id = :actionTypeId\n"
