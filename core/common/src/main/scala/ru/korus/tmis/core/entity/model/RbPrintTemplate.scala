@@ -2,6 +2,8 @@ package ru.korus.tmis.core.entity.model
 
 import javax.persistence._
 import scala.beans.BeanProperty
+import javax.xml.bind.annotation.{XmlElement, XmlRootElement, XmlType}
+import org.codehaus.jackson.annotate.JsonIgnoreProperties
 
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
@@ -15,6 +17,9 @@ import scala.beans.BeanProperty
   new NamedQuery(name = "RbPrintTemplate.findByIds", query = "SELECT p FROM RbPrintTemplate p WHERE p.id IN :values"),
   new NamedQuery(name = "RbPrintTemplate.findByContexts", query="SELECT p FROM RbPrintTemplate p WHERE p.context IN :values")
 ))
+@XmlType(name = "RbPrintTemplate")
+@XmlRootElement(name = "RbPrintTemplate")
+@JsonIgnoreProperties(ignoreUnknown = true)
 class RbPrintTemplate {
 
   @Id
@@ -53,11 +58,11 @@ class RbPrintTemplate {
   @Column(name = "dpdAgreement")
   @Basic(optional = false)
   @BeanProperty
-  var dpdAgreement: Int = _
+  var dpdAgreement: Integer = _
 
   @Column(name = "render")
   @Basic(optional = false)
   @BeanProperty
-  var render: Int = _
+  var render: Integer = _
 
 }
