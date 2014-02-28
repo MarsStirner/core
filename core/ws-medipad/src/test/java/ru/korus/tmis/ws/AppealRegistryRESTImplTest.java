@@ -40,11 +40,9 @@ import java.util.Date;
 /**
  * @author SZagrebelny
  */
-//@RunWith(Arquillian.class)
 @PersistenceTest
 //@Transactional(value = TransactionMode.DISABLED)
 @Transactional(value = TransactionMode.ROLLBACK)
-//@DataSource(value = "s11r64")
 public class AppealRegistryRESTImplTest extends Arquillian {
 
     @EJB
@@ -71,7 +69,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
         wa.addClass(AuthStorageBeanLocal.class);
         wa.addClass(AuthStorageBean.class);
-        //wa.add(UsersMgr.class);
 
         wa.addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
         System.out.println("**************************** createTestArchive medipad");
@@ -79,7 +76,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
     @Test
-    //@Cleanup(phase = TestExecutionPhase.NONE)
     public void hello() {
         System.out.println("**************************** hello medipad test test");
         Assert.assertNotNull(appealBean);
@@ -88,62 +84,73 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         Assert.assertNotNull(eventBeanLocal);
     }
 
+    /**
+     *
+     * Проверка создания обращения на госпитализацию
+     * REST API: <server>/tmis-ws-medipad/rest/tms-registry/patients/{patientId}/appeals/
+     */
     @Test
     public void testInsertAppealForPatient() {
-        AppealData appealData = new AppealData();
-        int patientId = 2;
         try {
-            int countEvent = eventBeanLocal.getEventsForPatient(patientId).size();
-            createTestUser();
-            AppealEntry data = appealData.getData();
-            data.setUrgent(false);
+            AppealData appealData = new AppealData();
+            final int patientId = 2; // id пациента, для которого создается госпитализация
 
-            DatePeriodContainer dateTimeInfo = new DatePeriodContainer();
-            dateTimeInfo.setStart(new Date());
-            data.setRangeAppealDateTime(dateTimeInfo);
-            data.setAppealWithDeseaseThisYear("повторно");
-            AppealTypeContainer appealTypeContainer = new AppealTypeContainer();
-            IdNameContainer idNameContainerEventType = new IdNameContainer();
-            idNameContainerEventType.setId(2);
-            appealTypeContainer.setEventType(idNameContainerEventType);
-            data.setAppealType(appealTypeContainer);
-            IdNameContainer idNameContainerHospType = new IdNameContainer();
-            idNameContainerHospType.setId(220);
-            data.setHospitalizationType(idNameContainerHospType);
-            final IdNameContainer hospitalizationPointType = new IdNameContainer();
-            hospitalizationPointType.setId(134);
-            data.setHospitalizationPointType(hospitalizationPointType);
-            final ContractContainer contractContainer = new ContractContainer();
-            contractContainer.setNumber("2009/5");
-            contractContainer.setId(61);
-            contractContainer.setBegDate(new Date(1262293200000L));
-            final IdNameContainer finance = new IdNameContainer();
-            finance.setId(1);
-            contractContainer.setFinance(finance);
-            data.setContract(contractContainer);
+            int countEvent = eventBeanLocal.getEventsForPatient(patientId).size();  // количетово обращений пациента ДО
 
-            AppealAssignmentContainer assignment = new AppealAssignmentContainer();
-            data.setAssignment(assignment);
-
-
-            final PhysicalParametersContainer physicalParametersContainer = new PhysicalParametersContainer();
-            final RangeLeftRightContainer rangeLeftRightContainer = new RangeLeftRightContainer();
-            physicalParametersContainer.setBloodPressure(rangeLeftRightContainer);
-            final HandPreassureContainer handPreassureContainerRight = new HandPreassureContainer();
-            rangeLeftRightContainer.setRight(handPreassureContainerRight);
-            HandPreassureContainer handPreassureContainerLeft = new HandPreassureContainer();
-            rangeLeftRightContainer.setLeft(handPreassureContainerLeft);
-            data.setPhysicalParameters(physicalParametersContainer);
-
+            createTestUser(); // создание тестового пользователя с ролью "медсестра приемного отделения”. Login: 'test'
+            initAppealData(appealData); // инициализация параметров госпитализации
+            // авторизация пользователм  'test' с ролью "медсестра приемного отделения”
             AuthData authData =  authStorageBeanLocal.createToken("test", "098f6bcd4621d373cade4e832627b4f6" /*MD5 for 'test'*/, 29);
-            appealBean.insertAppealForPatient(appealData, patientId, authData);
-            int countEventNew = eventBeanLocal.getEventsForPatient(patientId).size();
-            Assert.assertEquals(countEventNew, countEvent + 1);
+            appealBean.insertAppealForPatient(appealData, patientId, authData); // создание обращения на госпитализацию.
+            int countEventNew = eventBeanLocal.getEventsForPatient(patientId).size(); // количетово обращений пациента ПОСЛЕ
+            Assert.assertEquals(countEventNew, countEvent + 1); // количетово обращений пациента ПОСЛЕ должно быть на один больше
             //TODO  add more assertion!
         } catch (CoreException e) {
             e.printStackTrace();
             Assert.fail();
         }
+    }
+
+    private void initAppealData(AppealData appealData) {
+        AppealEntry data = appealData.getData();
+        data.setUrgent(false);
+
+        DatePeriodContainer dateTimeInfo = new DatePeriodContainer();
+        dateTimeInfo.setStart(new Date());
+        data.setRangeAppealDateTime(dateTimeInfo);
+        data.setAppealWithDeseaseThisYear("повторно");
+        AppealTypeContainer appealTypeContainer = new AppealTypeContainer();
+        IdNameContainer idNameContainerEventType = new IdNameContainer();
+        idNameContainerEventType.setId(2);
+        appealTypeContainer.setEventType(idNameContainerEventType);
+        data.setAppealType(appealTypeContainer);
+        IdNameContainer idNameContainerHospType = new IdNameContainer();
+        idNameContainerHospType.setId(220);
+        data.setHospitalizationType(idNameContainerHospType);
+        final IdNameContainer hospitalizationPointType = new IdNameContainer();
+        hospitalizationPointType.setId(134);
+        data.setHospitalizationPointType(hospitalizationPointType);
+        final ContractContainer contractContainer = new ContractContainer();
+        contractContainer.setNumber("2009/5");
+        contractContainer.setId(61);
+        contractContainer.setBegDate(new Date(1262293200000L));
+        final IdNameContainer finance = new IdNameContainer();
+        finance.setId(1);
+        contractContainer.setFinance(finance);
+        data.setContract(contractContainer);
+
+        AppealAssignmentContainer assignment = new AppealAssignmentContainer();
+        data.setAssignment(assignment);
+
+
+        final PhysicalParametersContainer physicalParametersContainer = new PhysicalParametersContainer();
+        final RangeLeftRightContainer rangeLeftRightContainer = new RangeLeftRightContainer();
+        physicalParametersContainer.setBloodPressure(rangeLeftRightContainer);
+        final HandPreassureContainer handPreassureContainerRight = new HandPreassureContainer();
+        rangeLeftRightContainer.setRight(handPreassureContainerRight);
+        HandPreassureContainer handPreassureContainerLeft = new HandPreassureContainer();
+        rangeLeftRightContainer.setLeft(handPreassureContainerLeft);
+        data.setPhysicalParameters(physicalParametersContainer);
     }
 
     private void createTestUser() {
