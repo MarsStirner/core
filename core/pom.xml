@@ -1034,7 +1034,8 @@
                         wsdl/,
                         ru/korus/tmis/hs/,
                         ru/korus/tmis/dao/,
-                        nsi/
+                        nsi/,
+                        ru/korus/tmis/pix/
                     </excludes>
                 </configuration>
                 <executions>
