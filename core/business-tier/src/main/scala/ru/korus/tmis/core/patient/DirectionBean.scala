@@ -567,6 +567,8 @@ with I18nable {
             try {
               //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
               lisBean.sendAnalysisRequestToAcross(a.getId.intValue())
+              // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
+              actionBean.updateActionStatusWithFlush(a.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
             }
             catch {
               case e: Exception => {
