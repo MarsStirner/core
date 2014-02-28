@@ -1,4 +1,4 @@
-package ru.korus.tmis.ws.users;
+package ru.korus.tmis.core.auth;
 
 import java.util.LinkedList;
 import java.util.List;

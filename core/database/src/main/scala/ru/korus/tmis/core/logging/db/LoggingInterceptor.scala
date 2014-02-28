@@ -5,12 +5,9 @@ import javax.ejb.EJB
 import javax.interceptor.{AroundInvoke, InvocationContext}
 
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.database.common.InternalLoggerBeanLocal
 
 class LoggingInterceptor extends Logging {
 
-  @EJB
-  var internalLogger: InternalLoggerBeanLocal = _
 
   @AroundInvoke
   def logMethodCall(ctx: InvocationContext): Object = {
@@ -38,12 +35,6 @@ class LoggingInterceptor extends Logging {
       trace("Called: " + className + "." + methodName +
         " -> " + ((endTime - startTime) / 1000000000.0).toString)
 
-      internalLogger.logMethodCall(sessionId,
-        nestedLevel,
-        number,
-        endTime - startTime,
-        className,
-        methodName)
 
       SharedContext.popNestedLevel()
 

@@ -7,13 +7,9 @@ import javax.interceptor.{AroundInvoke, InvocationContext}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.database.common.InternalLoggerBeanLocal
 
 @Stateless
 class LoggingInterceptor extends Logging with TmisLogging {
-
-  @EJB
-  var internalLogger: InternalLoggerBeanLocal = _
 
   @AroundInvoke
   def logMethodCall(ctx: InvocationContext): Object = {
@@ -72,14 +68,6 @@ class LoggingInterceptor extends Logging with TmisLogging {
       else
         logTmis.error(message)//(logTmis.getLogStringByValues(needAllParams))
       //logTmis.clearLog()
-
-
-      internalLogger.logMethodCall(sessionId,
-        nestedLevel,
-        number,
-        endTime - startTime,
-        className,
-        methodName)
 
       SharedContext.popNestedLevel()
 

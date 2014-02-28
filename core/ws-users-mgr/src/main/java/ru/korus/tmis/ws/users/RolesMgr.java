@@ -7,6 +7,9 @@ import java.util.NoSuchElementException;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
+import ru.korus.tmis.core.auth.JsonPerson;
+import ru.korus.tmis.core.auth.UsersMgr;
+import ru.korus.tmis.core.auth.UsersMgrLocal;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.PersonProfile;
 import ru.korus.tmis.core.entity.model.Role;
@@ -64,10 +67,6 @@ public class RolesMgr {
         return UsersMgr.ok();
     }
 
-    /**
-     * @param jsonRole
-     * @return
-     */
     private List<Role> getRoleByName(final String name) {
         return database.getEntityMgr().createQuery("SELECT r FROM Role r WHERE r.name = :name", Role.class).
                 setParameter("name", name).getResultList();
@@ -165,7 +164,7 @@ public class RolesMgr {
      * @return
      */
     public String deleteRole(String code) {
-        if (UsersMgr.ROLE_GUEST.equals(code)) {
+        if (UsersMgrLocal.ROLE_GUEST.equals(code)) {
             return UsersMgr.error("The role 'guest' cannot be deleted");
         }
         final Role role;
@@ -177,7 +176,7 @@ public class RolesMgr {
 
         final Role guest;
         try {
-            guest = getRoleByCode(UsersMgr.ROLE_GUEST).iterator().next();
+            guest = getRoleByCode(UsersMgrLocal.ROLE_GUEST).iterator().next();
         } catch (NoSuchElementException ex) {
             return UsersMgr.error("The role 'guest' is not set");
         }
@@ -319,7 +318,7 @@ public class RolesMgr {
     public Object removeRolesForUser(String token, String code) {
         final Role guest;
         try {
-            guest = getRoleByCode(UsersMgr.ROLE_GUEST).iterator().next();
+            guest = getRoleByCode(UsersMgrLocal.ROLE_GUEST).iterator().next();
         } catch (NoSuchElementException ex) {
             return UsersMgr.error("The role 'guest' is not set");
         }

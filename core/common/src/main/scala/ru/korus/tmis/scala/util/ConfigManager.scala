@@ -323,7 +323,9 @@ object ConfigManager extends Configuration {
   /**
    * todo
    */
-  val TmisAuth = new Configuration {
+  val TmisAuth = new TmisAuthClass
+
+  class TmisAuthClass extends Configuration {
     var RealmName = "TMIS-Core-Server"
 
     var Namespace = "http://korus.ru/tmis/auth"

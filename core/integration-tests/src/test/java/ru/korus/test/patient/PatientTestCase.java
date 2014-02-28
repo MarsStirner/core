@@ -46,8 +46,6 @@ public class PatientTestCase {
 
         //Тестируемые классы и зависимости
         Class<?>[] classes = new Class<?>[] {
-                InternalLoggerBeanLocal.class,
-                InternalLoggerBean.class,
 
                 DbPatientBeanLocal.class, DbPatientBean.class,
                 DbManagerBeanLocal.class, DbManagerBean.class,

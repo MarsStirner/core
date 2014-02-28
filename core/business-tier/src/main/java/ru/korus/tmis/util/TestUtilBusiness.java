@@ -4,6 +4,7 @@ import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.common.CommonDataProcessorBean;
 import ru.korus.tmis.core.database.DbRbResultBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
+import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.database.kladr.DbSchemeKladrBean;
 import ru.korus.tmis.core.patient.AppealBean;
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal;
@@ -22,11 +23,12 @@ public class TestUtilBusiness implements TestUtil {
                 DbRbResultBeanLocal.class.getPackage(),       // ru.korus.tmis.core.database
                 DbEventBeanLocal.class.getPackage(),          // ru.korus.tmis.core.database.common
                 DbSchemeKladrBean.class.getPackage(),         // ru.korus.tmis.core.database.kladr
+                Database.class.getPackage(),                  // ru.korus.tmis.core.database.dbutil
                 AppealBean.class.getPackage(),                // ru.korus.tmis.core.patient
                 CommonDataProcessorBean.class.getPackage(),   // ru.korus.tmis.core.common
                 AcrossBusinessBeanLocal.class.getPackage(),   // ru.korus.tmis.laboratory.across.business
                 PersonScheduleBeanLocal.class.getPackage(),   // ru.korus.tmis.schedule
-               // AuthStorageBeanLocal.class.getPackage(),      // ru.korus.tmis.core.auth
+                AuthStorageBeanLocal.class.getPackage(),      // ru.korus.tmis.core.auth
         };
         return res;
     }

@@ -11,6 +11,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Response;
 
+import ru.korus.tmis.core.auth.JsonPerson;
+import ru.korus.tmis.core.auth.UsersMgr;
+import ru.korus.tmis.core.auth.UsersMgrLocal;
 import ru.korus.tmis.core.entity.model.Staff;
 
 import com.google.gson.Gson;
@@ -27,7 +30,7 @@ public class RestUsersMgr {
      * CRUD-операции для управления пользователями
      */
     @EJB
-    private UsersMgr usersMgr;
+    private UsersMgrLocal usersMgrLocal;
 
     /**
      * CRUD-операции для управления ролями пользователей
@@ -51,7 +54,7 @@ public class RestUsersMgr {
         if (jsonAuthPerson.getLogin() == null || jsonAuthPerson.getPassword() == null) {
             return Response.status(Response.Status.BAD_REQUEST).entity(UsersMgr.error(errMsg)).build();
         }
-        String res = usersMgr.auth(jsonAuthPerson.getLogin(), jsonAuthPerson.getPassword());
+        String res = usersMgrLocal.auth(jsonAuthPerson.getLogin(), jsonAuthPerson.getPassword());
         Response.Status status = Response.Status.OK;
         if (res == null) {
             res = UsersMgr.error(errMsg);
@@ -81,7 +84,7 @@ public class RestUsersMgr {
             return errorParamMissing();
         }
 
-        String res = usersMgr.create(jsonNewPerson);
+        String res = usersMgrLocal.create(jsonNewPerson);
         Response.Status status = Response.Status.OK;
         if (res == null) {
             res = "unable to create the new person";
@@ -99,7 +102,7 @@ public class RestUsersMgr {
     @Path("/users")
     public Response getAll() {
         Gson gson = new Gson();
-        String res = gson.toJson(usersMgr.getAll());
+        String res = gson.toJson(usersMgrLocal.getAll());
         return Response.status(Response.Status.OK).entity(res).build();
     }
 
@@ -113,7 +116,7 @@ public class RestUsersMgr {
     @Path("/users/{token}")
     public Response get(@PathParam(value = "token") String token) {
         Gson gson = new Gson();
-        final JsonPerson userData = usersMgr.getByUUID(token);
+        final JsonPerson userData = usersMgrLocal.getByUUID(token);
         String res = userData == null ? UsersMgr.error("User with selected UUID does not exist or disconnected") : gson.toJson(userData);
         return Response.status(Response.Status.OK).entity(res).build();
     }
@@ -142,16 +145,16 @@ public class RestUsersMgr {
             return Response.status(Response.Status.OK).entity(UsersMgr.error("At least 1 param required")).build();
         }
 
-        if (usersMgr.isLoginUsed(jsonNewPerson.getLogin())) {
+        if (usersMgrLocal.isLoginUsed(jsonNewPerson.getLogin())) {
             return Response.status(Response.Status.OK).entity(UsersMgr.error("The user's login already exists")).build();
         }
 
-        final Staff user = usersMgr.getStaffByUUID(token);
+        final Staff user = usersMgrLocal.getStaffByUUID(token);
         if (user == null) {
             return Response.status(Response.Status.OK).entity(UsersMgr.error("User with selected UUID does not exist or disconnected")).build();
         }
 
-        return Response.status(Response.Status.OK).entity(usersMgr.updateStaff(user, jsonNewPerson)).build();
+        return Response.status(Response.Status.OK).entity(usersMgrLocal.updateStaff(user, jsonNewPerson)).build();
     }
 
     /**
@@ -163,12 +166,12 @@ public class RestUsersMgr {
     @DELETE
     @Path("/users/{token}")
     public Response delete(@PathParam(value = "token") String token) {
-        final Staff user = usersMgr.getStaffByUUID(token);
+        final Staff user = usersMgrLocal.getStaffByUUID(token);
         if (user == null) {
             return Response.status(Response.Status.OK).entity(UsersMgr.error("User with selected UUID does not exist or disconnected")).build();
         }
 
-        usersMgr.deleteStaff(user, token);
+        usersMgrLocal.deleteStaff(user, token);
 
         return Response.status(Response.Status.OK).entity(UsersMgr.ok()).build();
     }

@@ -1,4 +1,4 @@
-package ru.korus.tmis.ws.users;
+package ru.korus.tmis.core.auth;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
@@ -35,9 +35,7 @@ import scala.actors.threadpool.Arrays;
  */
 
 @Stateless
-public class UsersMgr {
-
-    public static final String ROLE_GUEST = "guest";
+public class UsersMgr implements UsersMgrLocal {
 
     private final int MAX_CONNECTIONS;
     private final int KEEPALIVE_DAYS;
@@ -62,6 +60,7 @@ public class UsersMgr {
         }
     }
 
+    @Override
     public String auth(final String login, final String password) {
         String res = null;
 
@@ -88,14 +87,11 @@ public class UsersMgr {
         return res;
     }
 
-    /**
-     * @param login
-     * @return
-     */
     static public String errorUserNotFound() {
         return error("User does not exists");
     }
 
+    @Override
     public List<JsonPerson> getAll() {
         List<Staff> users = database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.deleted = 0", Staff.class)
                 .getResultList();
@@ -106,6 +102,7 @@ public class UsersMgr {
         return res;
     }
 
+    @Override
     public JsonPerson getByUUID(String token) {
         JsonPerson res = null;
         Staff user = getStaffByUUID(token);
@@ -115,6 +112,7 @@ public class UsersMgr {
         return res;
     }
 
+    @Override
     public Staff getStaffByUUID(String token) {
         Integer id = connections.get(token);
         if (id != null) {
@@ -136,6 +134,7 @@ public class UsersMgr {
         return uuid;
     }
 
+    @Override
     public String create(JsonPerson jsonNewPerson) {
         String res = null;
         final boolean isUsed = isLoginUsed(jsonNewPerson.getLogin());
@@ -206,12 +205,14 @@ public class UsersMgr {
      * @param login
      * @return
      */
+    @Override
     public boolean isLoginUsed(final String login) {
         final List<Staff> users = database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.login = :login", Staff.class)
                 .setParameter("login", login).getResultList();
         return users != null && !users.isEmpty();
     }
 
+    @Override
     public String updateStaff(Staff newStaff, JsonPerson jsonNewPerson) {
 
         OrgStructure orgStruct = null;
@@ -269,6 +270,7 @@ public class UsersMgr {
         return UsersMgr.ok();
     }
 
+    @Override
     public void deleteStaff(Staff staff, String token) {
         staff.setDeleted(true);
         database.getEntityMgr().flush();

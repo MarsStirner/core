@@ -31,21 +31,10 @@ class AuthStorageBean
   @EJB
   var dbStaff: DbStaffBeanLocal = _
 
-  @Resource
-  var timerService: TimerService = _
-
   // Отображение токена в кортеж из данных аутентификации и даты окончания
   // срока действия токена
   val authMap: Map[AuthToken, Tuple2[AuthData, Date]] = new LinkedHashMap()
 
-  @PostConstruct
-  def init() = {
-    // Таймер для удаления токенов с истекшим сроком действия
-    val timer = timerService.createIntervalTimer(
-      ConfigManager.TmisAuth.AuthTokenPeriod,
-      ConfigManager.TmisAuth.AuthTokenPeriod,
-      null)
-  }
 
   @Lock(LockType.WRITE)
   def createToken(login: String, password: String, roleId: Int): AuthData = {
@@ -151,7 +140,6 @@ class AuthStorageBean
     tokenStr.hashCode.toHexString
   }
 
-  @Timeout
   @Lock(LockType.WRITE)
   def timeoutHandler() = {
     val now = new Date()

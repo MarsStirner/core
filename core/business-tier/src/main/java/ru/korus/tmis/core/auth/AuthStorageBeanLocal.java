@@ -61,4 +61,6 @@ public interface AuthStorageBeanLocal {
 
     AuthData checkTokenCookies(HttpServletRequest srvletRequest)
            throws CoreException;//AuthenticationException
+
+    void timeoutHandler();
 }

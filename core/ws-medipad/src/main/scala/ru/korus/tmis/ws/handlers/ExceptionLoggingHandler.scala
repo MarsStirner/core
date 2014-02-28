@@ -9,7 +9,6 @@ import javax.xml.ws.handler.soap.{SOAPHandler, SOAPMessageContext}
 
 import grizzled.slf4j.Logging
 import ru.korus.tmis.scala.util.I18nable
-import ru.korus.tmis.core.database.common.InternalLoggerBeanLocal
 
 class ExceptionLoggingHandler
   extends SOAPHandler[SOAPMessageContext]
@@ -17,9 +16,6 @@ class ExceptionLoggingHandler
   with I18nable {
 
   var msg: SOAPMessage = _
-
-  @EJB
-  var internalLogger: InternalLoggerBeanLocal = _
 
   def getHeaders() = {
     null
@@ -49,10 +45,8 @@ class ExceptionLoggingHandler
       if (msg != null) {
         msg.writeTo(req)
         context.getMessage.writeTo(res)
-        internalLogger.logFault(req.toString, res.toString)
       } else if (isOutbound) {
         context.getMessage.writeTo(res)
-        internalLogger.logFault("NULL", res.toString)
       }
     }
 

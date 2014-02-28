@@ -85,8 +85,6 @@ public class CommonTestCase {
                 ClientFlatDirectory.class, ClientFDProperty.class,
 
                 ru.korus.tmis.core.logging.LoggingInterceptor.class,
-                InternalLoggerBeanLocal.class,
-                InternalLoggerBean.class
         };
 
         /*

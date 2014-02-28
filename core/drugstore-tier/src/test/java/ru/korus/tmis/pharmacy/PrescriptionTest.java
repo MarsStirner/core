@@ -77,8 +77,6 @@ public class PrescriptionTest extends Arquillian {
 
         wa.addPackages(false, (new TestUtilCommon()).getPackagesForTest());
          wa.addPackage(DbEventBeanLocal.class.getPackage());
-        wa.addClass(InternalLoggerBeanLocal.class);
-        wa.addClass(InternalLoggerBean.class);
         wa.addClass(LoggingInterceptor.class);
         wa.addClass(DbStaffBean.class);
         wa.addClass(DbStaffBeanLocal.class);

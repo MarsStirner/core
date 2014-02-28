@@ -10,6 +10,10 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
+            <property name="eclipselink.descriptor.customizer.RbPost" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.Event" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.EventType" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.RbCounter" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.logging.level" value="WARNING"/>
             <property name="eclipselink.logging.level.sql" value="OFF"/>
             <property name="eclipselink.logging.parameters" value="false"/>
