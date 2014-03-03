@@ -11,57 +11,79 @@ import scala.beans.BeanProperty
  */
 @XmlType(name = "OrganizationContainer")
 @XmlRootElement(name = "OrganizationContainer")
-class OrganizationContainer(org: Organisation) {
+class OrganizationContainer {
 
   @BeanProperty
-  var id: Integer = org.getId
+  var id: Integer = _
 
   @BeanProperty
-  var fullName: String = org.getFullName
+  var fullName: String = _
 
   @BeanProperty
-  var shortName: String = org.getShortName
+  var shortName: String = _
 
   @BeanProperty
-  var title: String = org.getTitle
+  var title: String = _
 
   @BeanProperty
-  var infisCode: String = org.getInfisCode
+  var infisCode: String = _
 
   @BeanProperty
-  var obsoleteInfisCOde: String = org.getObsoleteInfisCode
+  var obsoleteInfisCOde: String = _
 
   @BeanProperty
-  var OKVED: String = org.getOkved
+  var OKVED: String = _
 
   @BeanProperty
-  var INN: String = org.getInn
+  var INN: String = _
 
   @BeanProperty
-  var KPP: String = org.getKpp
+  var KPP: String = _
 
   @BeanProperty
-  var OGRN: String = org.getOgrn
+  var OGRN: String = _
 
   @BeanProperty
-  var OKATO: String = org.getOkato
+  var OKATO: String = _
 
   @BeanProperty
-  var OKPO: String = org.getOkpo
+  var OKPO: String = _
 
   @BeanProperty
-  var FSS: String = org.getFss
+  var FSS: String = _
 
   @BeanProperty
-  var address: String = getAddress
+  var address: String = _
 
   @BeanProperty
-  var chief: String = getChief
+  var chief: String = _
 
   @BeanProperty
-  var phone: String = getPhone
+  var phone: String = _
 
   @BeanProperty
-  var accountant: String = getAccountant
+  var accountant: String = _
+
+  def this(org: Organisation) = {
+    this()
+    this.id = org.getId
+    this.fullName = org.getFullName
+    this.shortName = org.getShortName
+    this.title = org.getTitle
+    this.infisCode = org.getInfisCode
+    this.obsoleteInfisCOde = org.getObsoleteInfisCode
+    this.OKVED = org.getOkved
+    this.INN = org.getInn
+    this.KPP = org.getKpp
+    this.OGRN = org.getOgrn
+    this.OKATO = org.getOkato
+    this.OKPO = org.getOkpo
+    this.FSS = org.getFss
+    this.address = org.getAddress
+    this.chief = org.getChief
+    this.phone = org.getPhone
+    this.accountant = org.getAccountant
+  }
+
 
 }
