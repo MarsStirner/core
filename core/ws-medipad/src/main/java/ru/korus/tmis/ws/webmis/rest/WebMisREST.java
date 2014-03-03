@@ -382,7 +382,7 @@ public interface WebMisREST extends Serializable {
 
     List<RbPrintTemplate> getRbPrintTemplatesByIds(List<Integer> ids, AuthData authData) throws CoreException;
 
-    List<RbPrintTemplate> getRbPrintTemplatesByContexts(List<String> contexts, AuthData authData) throws CoreException;
+    List<RbPrintTemplate> getRbPrintTemplatesByContexts(List<String> contexts, AuthData authData, String[] fields) throws CoreException;
 
 
 }

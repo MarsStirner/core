@@ -17,17 +17,21 @@ class DbRbPrintTemplateBean extends DbRbPrintTemplateBeanLocal {
   var em: EntityManager = _
 
   def getRbPrintTemplateByIds(ids: Array[Int]): List[RbPrintTemplate] = {
-    em
+    val l = em
       .createNamedQuery("RbPrintTemplate.findByIds", classOf[RbPrintTemplate])
       .setParameter("values", asJavaCollection(ids))
       .getResultList.toList
+    l.foreach(em.detach(_))
+    l
   }
 
   def getRbPrintTemplatesByContexts(contexts: Array[String]): List[RbPrintTemplate] = {
-    em
+    val l = em
       .createNamedQuery("RbPrintTemplate.findByContexts", classOf[RbPrintTemplate])
       .setParameter("values", asJavaCollection(contexts))
       .getResultList.toList
+    l.foreach(em.detach(_))
+    l
   }
 
 }
