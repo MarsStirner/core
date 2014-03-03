@@ -19,6 +19,7 @@ import java.util.Arrays;
         })
 public class PrescriptionsTo1C implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final int MAX_INFO_LENTHG = 1024;
 
     @Id
     @Column(name = "interval_id", columnDefinition = "COMMENT 'Идентификатор события {Event.event_id}'")
@@ -36,7 +37,7 @@ public class PrescriptionsTo1C implements Serializable {
     @Column(columnDefinition = "INT(11) NOT NULL DEFAULT '0' COMMENT 'Количество неудачных попыток'")
     private int errCount;
 
-    @Column(columnDefinition = "VARCHAR(1024) NULL DEFAULT NULL COMMENT 'Сообщение об ошибке'")
+    @Column(columnDefinition = "VARCHAR(" + MAX_INFO_LENTHG + ") NULL DEFAULT NULL COMMENT 'Сообщение об ошибке'")
     private String info;
 
     @Column(columnDefinition = "TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT 'Время следующей отсылки в HealthShare'")
@@ -71,7 +72,7 @@ public class PrescriptionsTo1C implements Serializable {
     }
 
     public void setInfo(String info) {
-        this.info = info;
+        this.info = info.substring(0, Math.min(info.length(), MAX_INFO_LENTHG));
     }
 
     public Timestamp getSendTime() {
