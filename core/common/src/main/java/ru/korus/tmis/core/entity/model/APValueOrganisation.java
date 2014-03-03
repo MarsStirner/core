@@ -52,6 +52,11 @@ public class APValueOrganisation extends AbstractAPValue implements Serializable
     }
 
     @Override
+    public String getValueAsId() {
+        return value.getId().toString();
+    }
+
+    @Override
     public boolean setValueFromString(final String value) {
         return false;
     }
