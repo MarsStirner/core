@@ -114,7 +114,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     }
                 }
                 // повторная отправка неотправленных сообщений
-              //todo Специально для Даши на время теста resendMessages();
+                //todo Специально для Даши на время теста resendMessages();
                 //Отправка назначений ЛС
                 //logger.info("sending prescription start...");
                 sendPrescriptionTo1C();
@@ -254,7 +254,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
         if (FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             final OrgStructure structure = getReceivedOrgStructure(action);
             toLog.addN("receive orgStructure [#], [#]", structure.getId(), structure.getName());
-            return HL7PacketBuilder.processReceived(action, structure);
+            return HL7PacketBuilder.processReceived(action, structure, getFinaceType(action));
 
         } else if (FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // отмена поступления
@@ -572,6 +572,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
         return res;
     }
 
+    /**
+     * Получение источника финансирования в виде названий (для 1С)
+     */
     private String getFinaceType(Action action) {
         Integer id = action.getFinanceId();
         if (id == null) {

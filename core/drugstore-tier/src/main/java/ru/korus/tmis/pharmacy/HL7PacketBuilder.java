@@ -55,7 +55,7 @@ public final class HL7PacketBuilder {
     /**
      * Формирование и отправка сообщения о госпитализации PRPA_IN402001UV02
      */
-    public static Request processReceived(final Action action, final OrgStructure orgStructure) {
+    public static Request processReceived(final Action action, final OrgStructure orgStructure, final String financeId) {
 
         final Event event = action.getEvent();
         final Patient client = event.getPatient();
@@ -91,6 +91,7 @@ public final class HL7PacketBuilder {
         inpatientEncounterEvent.setMoodCode(ActMoodEventOccurrence.EVN);
 
         inpatientEncounterEvent.getId().add(createII(uuidExternalId, externalId));
+        inpatientEncounterEvent.getId().add(createIIEx(financeId));
         inpatientEncounterEvent.setCode(createCD("IMP", "2.16.840.1.113883.5.4", "actCode", "abc"));
         inpatientEncounterEvent.setStatusCode(createCS("completed"));
         inpatientEncounterEvent.setEffectiveTime(createIVLTS(action.getCreateDatetime(), DATE_FORMAT));
