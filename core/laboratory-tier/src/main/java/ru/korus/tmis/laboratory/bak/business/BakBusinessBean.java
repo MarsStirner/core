@@ -18,9 +18,9 @@ import ru.korus.tmis.laboratory.bak.model.DiagnosticRequestInfo;
 import ru.korus.tmis.laboratory.bak.model.IndicatorMetodic;
 import ru.korus.tmis.laboratory.bak.model.OrderInfo;
 import ru.korus.tmis.laboratory.bak.service.*;
+import ru.korus.tmis.laboratory.bak.utils.Utils;
 import ru.korus.tmis.laboratory.bak.ws.client.BakSend;
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver;
-import ru.korus.tmis.laboratory.bak.ws.server.Utils;
 import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
 
@@ -313,7 +313,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         return null;
     }
 
-    private static void createBody(final HL7Document document,
+    private  void createBody(final HL7Document document,
                                    final BiomaterialInfo biomaterialInfo,
                                    final OrderInfo orderInfo,
                                    final Patient patient,
@@ -390,7 +390,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
     }
 
 
-    private static void createComponentOf(final HL7Document document, final Patient patientInfo) {
+    private  void createComponentOf(final HL7Document document, final Patient patientInfo) {
         final ComponentOfInfo componentOf = new ComponentOfInfo();
         final EncompassingEncounterInfo encompassingEncounter = new EncompassingEncounterInfo();
         final EeIdInfo eeIdInfo = new EeIdInfo();
@@ -468,7 +468,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         document.setAuthor(author);
     }
 
-    private static void createRecordTarget(final HL7Document document, final Patient patientInfo, final Event event) {
+    private  void createRecordTarget(final HL7Document document, final Patient patientInfo, final Event event) {
         final RecordTargetInfo recordTarget = new RecordTargetInfo();
         recordTarget.setTypeCode("RCT");
 
@@ -524,39 +524,39 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
         document.setRecordTarget(recordTarget);
     }
 
-    private static void createOrderStatus(final HL7Document document, final Action action) {
+    private  void createOrderStatus(final HL7Document document, final Action action) {
         final HL7Document.VersionNumber versionNumber = new HL7Document.VersionNumber();
         versionNumber.setValue(String.valueOf(action.getStatus()));
         document.setVersionNumber(versionNumber);
     }
 
-    private static void createLanguageDoc(final HL7Document document, final String langCode) {
+    private  void createLanguageDoc(final HL7Document document, final String langCode) {
         final HL7Document.LanguageCode languageCode = new HL7Document.LanguageCode();
         languageCode.setCode(langCode);
         document.setLanguageCode(languageCode);
     }
 
-    private static void createConfLevel(final HL7Document document, final String levelCode) {
+    private  void createConfLevel(final HL7Document document, final String levelCode) {
         final HL7Document.ConfidentialityCode confidentialityCode = new HL7Document.ConfidentialityCode();
         confidentialityCode.setCode(levelCode);
         confidentialityCode.setCodeSystem("2.16.840.1.113883.5.25");
         document.setConfidentialityCode(confidentialityCode);
     }
 
-    private static void createEffectiveTimeRequest(final HL7Document document, final DiagnosticRequestInfo requestInfo) {
+    private  void createEffectiveTimeRequest(final HL7Document document, final DiagnosticRequestInfo requestInfo) {
         final HL7Document.EffectiveTime effectiveTime = new HL7Document.EffectiveTime();
         effectiveTime.setValue(requestInfo.getOrderMisDate().toString(DATE_FORMAT));
         document.setEffectiveTime(effectiveTime);
     }
 
-    private static void createMedDocId(final HL7Document document, final DiagnosticRequestInfo requestInfo) {
+    private  void createMedDocId(final HL7Document document, final DiagnosticRequestInfo requestInfo) {
         final HL7Document.Id id = new HL7Document.Id();
         id.setRoot(ROOT);
         id.setExtention(String.valueOf(requestInfo.getOrderMisId()));
         document.setId(id);
     }
 
-    private static void createTypeId(final HL7Document document) {
+    private  void createTypeId(final HL7Document document) {
         final HL7Document.TypeId typeId = new HL7Document.TypeId();
         typeId.setExtention("POCD_HD000040");
         typeId.setRoot(ROOT);

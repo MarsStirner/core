@@ -1,4 +1,4 @@
-package ru.korus.tmis.laboratory.bak.ws.server;
+package ru.korus.tmis.laboratory.bak.utils;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
