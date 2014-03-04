@@ -639,4 +639,10 @@ class DbActionBean
       .getResultList
   }
 
+  def getMovings(eventId: Int): util.List[Action] = {
+    em.createQuery("SELECT a FROM Action a " +
+      "WHERE a.deleted = 0 AND a.actionType.deleted = 0 AND a.actionType.flatCode = 'moving' AND a.status != 2 AND a.event.id = :eventId",
+      classOf[Action])
+      .setParameter("eventId", eventId).getResultList
+  }
 }

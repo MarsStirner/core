@@ -471,12 +471,14 @@
             Arquillian testing framework
         -->
 
-       <!--<dependency>
-             <groupId>org.jboss.arquillian.container</groupId>
-             <artifactId>arquillian-glassfish-managed-3.1</artifactId>
-             <version>1.0.0.CR4</version>
-             <scope>test</scope>
-       </dependency>-->
+
+
+        <!--<dependency>
+              <groupId>org.jboss.arquillian.container</groupId>
+              <artifactId>arquillian-glassfish-managed-3.1</artifactId>
+              <version>1.0.0.CR4</version>
+              <scope>test</scope>
+        </dependency>-->
 
         <dependency>
             <groupId>org.jboss.arquillian.container</groupId>
@@ -491,7 +493,6 @@
             <version>1.0.0.CR8</version>
             <scope>test</scope>
         </dependency>
-
 
         <dependency>
             <groupId>org.jboss.arquillian.testng</groupId>
@@ -526,6 +527,26 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>${version.mysql.connector}</version>
             <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jboss.arquillian.extension</groupId>
+            <artifactId>arquillian-rest-warp-bom</artifactId>
+            <version>1.0.0.Alpha2</version>
+            <type>pom</type>
+            <scope>import</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>1.18</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-core</artifactId>
+            <version>1.18</version>
         </dependency>
 
         <!--
@@ -814,7 +835,7 @@
                     <showWarnings>true</showWarnings>
                     <fork>true</fork>
                     <meminitial>128m</meminitial>
-                    <maxmem>768m</maxmem>
+                    <maxmem>1024m</maxmem>
                 </configuration>
             </plugin>
 
@@ -936,6 +957,7 @@
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>2.6</version>
                 <configuration>
+                    <argLine>-XX:MaxPermSize=512m</argLine>
                     <useFile>false</useFile>
                     <testNGArtifactName>org.testng:testng</testNGArtifactName>
                     <junitArtifactName>none:none</junitArtifactName>
@@ -955,6 +977,7 @@
                             <useFile>false</useFile>
                             <junitArtifactName>junit:junit</junitArtifactName>
                             <testNGArtifactName>none:none</testNGArtifactName>
+
                             <includes>
                                 <include>**/*Spec.groovy</include>
                             </includes>

@@ -291,6 +291,12 @@ with I18nable {
                                                mnem: String,
                                                userData: AuthData,
                                                postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+    if (actionBean.getMovings(eventId).isEmpty) {
+      throw new CoreException(ConfigManager.ErrorCodes.NoMoving,
+        i18n("error.lab.NoMoving"))
+
+    }
+
     var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
 
     //Для лабораторных исследований отработаем с JobTicket

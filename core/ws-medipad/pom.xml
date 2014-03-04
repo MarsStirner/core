@@ -30,11 +30,11 @@
             <type>jar</type>
         </dependency>
 
-        <dependency>
+      <!--  <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-servlet</artifactId>
             <version>1.14</version>
-        </dependency>
+        </dependency>-->
         <!--<dependency>-->
             <!--<groupId>ru.korus.tmis.laboratory</groupId>-->
             <!--<artifactId>tmis-laboratory-tier</artifactId>-->
@@ -44,18 +44,18 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>
-            <version>1.6</version>
+            <version>1.18</version>
         </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-grizzly</artifactId>
-            <version>1.6</version>
+            <version>1.18</version>
         </dependency>
-        <dependency>
+        <!--<dependency>
             <groupId>org.json</groupId>
             <artifactId>json</artifactId>
             <version>20070829</version>
-        </dependency>
+        </dependency>-->
     </dependencies>
 
     <build>

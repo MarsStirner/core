@@ -537,13 +537,17 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         prescriptionInfo.setAssignmentType(null);
                     }
 
-                    if (prescriptionInfo.getAssignmentType() != null) {
-                        request = HL7PacketBuilder.processPrescription(
-                                action,
-                                prescriptionInfo,
-                                organisation,
-                                prescriptionSendingRes,
-                                toLog);
+                    if (prescriptionInfo.getAssignmentType() != null ) {
+                        if (isSetExternalId(prescriptionInfo)) {
+                            request = HL7PacketBuilder.processPrescription(
+                                    action,
+                                    prescriptionInfo,
+                                    organisation,
+                                    prescriptionSendingRes,
+                                    toLog);
+                        } else {
+                            toLog.add("External Id is not set for Event #" + event.getId() + action.getEvent().getPatient().getInfoString());
+                        }
                     }
                     if (request != null) {
                         prescription.setErrCount(prescription.getErrCount() + 1);
@@ -570,6 +574,10 @@ public class PharmacyBean implements PharmacyBeanLocal {
             logger.error("sending prescription to 1C issue: ", e);
         }
         return res;
+    }
+
+    private boolean isSetExternalId(PrescriptionInfo prescriptionInfo) {
+        return prescriptionInfo.getExternalId() != null && !"".equals(prescriptionInfo.getExternalId());
     }
 
     private String getFinaceType(Action action) {

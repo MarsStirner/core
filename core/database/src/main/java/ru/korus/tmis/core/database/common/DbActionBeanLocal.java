@@ -212,4 +212,11 @@ public interface DbActionBeanLocal {
     List<Action> getActionsByTypeFlatCodeAndEventId(int eventId, String actionTypeFlatCode);
 
     Action createAction(ActionType queueActionType, Event queueEvent, Staff doctor, Date paramsDateTime, String hospitalUidFrom, String note);
+
+    /**
+     * Возвращает список движений пациента для данного обращения
+     * @param eventId идентификатор обращения
+     * @return Список движений
+     */
+    List<Action> getMovings(int eventId);
 }
