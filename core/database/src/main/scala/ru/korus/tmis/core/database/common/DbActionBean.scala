@@ -513,7 +513,7 @@ class DbActionBean
   val ActionsForSwitchPatientByEventQuery = """
     SELECT %s
     FROM
-      Action a
+      Action a left join a.createPerson.speciality s
     WHERE
       a.event.deleted = 0
     %s

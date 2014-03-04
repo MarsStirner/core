@@ -190,6 +190,22 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
     qs
   }
 
+  /**
+   * Бешеный спагетти-код совсем обезумел, совладаешь ли ты с ним?
+   * Весь запрос размазан по проекту.  В запросе делается отдельный left join на поле для сортировки.
+   * Ведь если speciality - null, то пропадет вся строка, т.к. таблицы соединяются по inner join.
+   * Тебе все мало, хочешь еще? Эта ситуация описана и на нее заведен баг EclipseLink #363798 - https://bugs.eclipse.org/bugs/show_bug.cgi?id=363798.
+   * Но не жди, что он когда-нибудь поправит положение - использование ORDER BY на параметрах, которые не отражены в SELECT - запрещено в соответствии
+   * со спецификацией Java TM Persistence API, Version 2.1. Запросы подобного рода (с сортировкой по тому, чего нет в SELECT) будут отваливаться через Exception.
+   *
+   *
+   * P.S. (подпись смотреть в коммите)
+   * Другие поля тоже нужно поправить, т.е. сделать отдельный LEFT JOIN. У department, doctor и assessmentName
+   *
+   * @param sortingField Поле для сортировки
+   * @param sortingMethod Метод сортировки
+   * @return Строка сортировки
+   */
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
@@ -197,7 +213,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
       case "assessmentName" | "name" => {"a.actionType.name %s".format(sortingMethod)}
       case "doctor" => {"a.createPerson.lastName %s, a.createPerson.firstName %s, a.createPerson.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)}
       case "department" => {"a.createPerson.orgStructure.name %s".format(sortingMethod)}
-      case "specs" => {"a.createPerson.speciality.name %s".format(sortingMethod)}
+      case "specs" => {"s.name %s".format(sortingMethod)}
       case _ => {"a.id %s".format(sortingMethod)}
     }
     sorting = "ORDER BY " + sorting
