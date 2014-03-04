@@ -42,7 +42,8 @@ public class CallbackService {
 
     public void patientQueryResponse(PatientResponse parameters) {
         logger.info("CallbackService.patientQueryResponse: parameters = " + (new Gson()).toJson(parameters) );
-
+        List<Element> list =
+                (List<Element>) context.getMessageContext().get(MessageContext.REFERENCE_PARAMETERS);
         if (restCallback != null) {
             restCallback.patientQueryResponse(parameters);
         }

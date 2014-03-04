@@ -606,7 +606,7 @@ class AppealBean extends AppealBeanLocal
  //     }
 
 
-      event.setModifyDatetime(now)
+      event.setModifyDatetime(new Date())
       event.setModifyPerson(authData.user)
       event.setSetDate(appealData.data.rangeAppealDateTime.getStart())
       //event.setExecDate(appealData.data.rangeAppealDateTime.getEnd())
