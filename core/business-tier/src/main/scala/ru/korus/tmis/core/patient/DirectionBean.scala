@@ -18,6 +18,7 @@ import java.{lang, util}
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
+import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal
 import ru.korus.tmis.schedule.{QueueActionParam, PersonScheduleBeanLocal, PersonScheduleBean, PacientInQueueType}
 import PersonScheduleBean.PersonSchedule
 
@@ -70,7 +71,10 @@ with I18nable {
 
   //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
   @EJB
-  var lisBean: AcrossBusinessBeanLocal = _
+  var lisAcross: AcrossBusinessBeanLocal = _
+
+  @EJB
+  var lisBak: BakBusinessBeanLocal = _
 
   def summary(direction: Action) = {
     val group = new CommonGroup(0, "Summary")
@@ -122,7 +126,7 @@ with I18nable {
         if (commonDataProcessor.checkActionPropertyTypeForPatientAge(age, ap.getType)) {
           apvs.size match {
             case 0 => {
-                group add apw.get(null, List(APWI.Unit, APWI.Norm, APWI.IsAssignable, APWI.IsAssigned))
+              group add apw.get(null, List(APWI.Unit, APWI.Norm, APWI.IsAssignable, APWI.IsAssigned))
             }
             case _ => {
               apvs.foreach((apv) => {
@@ -178,9 +182,9 @@ with I18nable {
         a.getIsUrgent)
 
       val tissueType = dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue())
-      if(tissueType == null)
+      if (tissueType == null)
         throw new CoreException(
-          ConfigManager.ErrorCodes.TakenTissueNotFound, i18n("error.TissueTypeNotFound").format(a.getActionType.getId.intValue()))    //TODO Код ошибки не соответствует ошибке, нет соответствующего кодя для данной ошибки
+          ConfigManager.ErrorCodes.TakenTissueNotFound, i18n("error.TissueTypeNotFound").format(a.getActionType.getId.intValue())) //TODO Код ошибки не соответствует ошибке, нет соответствующего кодя для данной ошибки
 
       if (jobAndTicket == null) {
         val fromList = list.find((p) => p._1.getId == null &&
@@ -301,7 +305,10 @@ with I18nable {
         // Если произошла ошибка в процессе проставления JobTickets -
         // то помечаем действие лабораторного исследования как удаленное
         case e: Throwable => {
-          actions.foreach(a => {em.find(classOf[Action], a.getId).setDeleted(true); em.flush()})
+          actions.foreach(a => {
+            em.find(classOf[Action], a.getId).setDeleted(true);
+            em.flush()
+          })
           throw e
         }
       }
@@ -376,7 +383,7 @@ with I18nable {
     json_data
   }
 
-  def createServiceForConsultation(request: ConsultationRequestData, plannedDate: Date, userData: AuthData) : Action = {
+  def createServiceForConsultation(request: ConsultationRequestData, plannedDate: Date, userData: AuthData): Action = {
     var action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData)
     action.setIsUrgent(request.urgent) //если постановка в очередь срочная, то и услуга срочная
     if (request.createPerson > 0 && dbStaffBean.getStaffById(request.createPerson) != null) {
@@ -434,6 +441,7 @@ with I18nable {
     em.flush()
     action
   }
+
   def createConsultation(request: ConsultationRequestData, userData: AuthData) = {
 
     val plannedDate = if (request.plannedTime != null && request.plannedTime.getTime != null) {
@@ -445,7 +453,7 @@ with I18nable {
     val action: Action = createServiceForConsultation(request, plannedDate, userData)
 
     // Записываем пациента в очередь на время
-    val personAction = dbStaffBean.getPersonActionsByDateAndType( request.getExecutorId, request.getPlannedEndDate, "amb")
+    val personAction = dbStaffBean.getPersonActionsByDateAndType(request.getExecutorId, request.getPlannedEndDate, "amb")
 
     val personSchedule: PersonSchedule = personScheduleBean.newInstanceOfPersonSchedule(personAction)
     personScheduleBean.formTickets(personSchedule)
@@ -456,7 +464,7 @@ with I18nable {
     } else {
       PacientInQueueType.QUEUE
     }
-    val queueActionParam : QueueActionParam = (new QueueActionParam()).setAppointmentType(AppointmentType.HOSPITAL).setPacientInQueueType(pacientInQueueType)
+    val queueActionParam: QueueActionParam = (new QueueActionParam()).setAppointmentType(AppointmentType.HOSPITAL).setPacientInQueueType(pacientInQueueType)
     val res = personScheduleBean.enqueuePatientToTime(personSchedule, plannedDate, patientBean.getPatientById(request.getPatientId), queueActionParam)
     if (!res.isSuccess) {
       throw new CoreException(res.getMessage)
@@ -564,9 +572,27 @@ with I18nable {
         dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {
           val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(a.getId.intValue())
           if (labCode != null && labCode.compareTo("0101") == 0) {
+            // Акросс
             try {
               //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
-              lisBean.sendAnalysisRequestToAcross(a.getId.intValue())
+              lisAcross.sendAnalysisRequestToAcross(a.getId.intValue())
+              // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
+              actionBean.updateActionStatusWithFlush(a.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+            }
+            catch {
+              case e: Exception => {
+                val jt = dbJobTicketBean.getJobTicketById(f.getId)
+                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString))
+                jt.setLabel("##Ошибка отправки в ЛИС##")
+                isAllActionSent = false
+                em.merge(jt)
+              }
+            }
+          } else if (labCode != null && labCode.compareTo("0102") == 0) {
+            // Bak CGM
+            try {
+              //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
+              lisBak.sendLisAnalysisRequest(a.getId.intValue())
               // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
               actionBean.updateActionStatusWithFlush(a.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
             }
@@ -598,7 +624,7 @@ with I18nable {
     if (jt != null) {
       try {
         //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
-        lisBean.sendAnalysisRequestToAcross(actionId)
+        lisAcross.sendAnalysisRequestToAcross(actionId)
       }
       catch {
         case e: Exception => {
