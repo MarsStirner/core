@@ -101,7 +101,7 @@ public class PharmacyHL7 {
 
     @Test(enabled = true, priority = 1)
     public void processReceived() {
-        send(HL7PacketBuilder.processReceived(action, orgStructure));
+        send(HL7PacketBuilder.processReceived(action, orgStructure, "OMC"));
     }
 
 
