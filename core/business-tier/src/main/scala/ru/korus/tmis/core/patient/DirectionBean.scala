@@ -18,7 +18,7 @@ import java.{lang, util}
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
-import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal
+import ru.korus.tmis.laboratory.bak.business.{LaboratoryProxy, BakBusinessBeanLocal}
 import ru.korus.tmis.schedule.{QueueActionParam, PersonScheduleBeanLocal, PersonScheduleBean, PacientInQueueType}
 import PersonScheduleBean.PersonSchedule
 
@@ -595,7 +595,7 @@ with I18nable {
               }
             }
           } else if (labCode != null && labCode.compareTo("0102") == 0) {
-            // Bak CGM
+            // Отправка назначения в Bak CGM
             try {
               //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
               lisBak.sendLisAnalysisRequest(a.getId.intValue())
@@ -625,6 +625,10 @@ with I18nable {
     isSuccess
   }
 
+  /**
+   * Отправка назначения в Акросс
+   * @param actionId
+   */
   def sendActionToLis(actionId: Int) {
     val jt = dbJobTicketBean.getJobTicketForAction(actionId)
     if (jt != null) {

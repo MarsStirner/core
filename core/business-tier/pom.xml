@@ -42,7 +42,7 @@
             <!--<groupId>ru.korus.tmis.laboratory</groupId>-->
             <!--<artifactId>tmis-ws-laboratory</artifactId>-->
             <!--<version>${version.tmis.core}</version>-->
-            <!--<type>war</type>-->
+            <!--<type>ejb-client</type>-->
         <!--</dependency>-->
 
 
