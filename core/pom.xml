@@ -52,7 +52,7 @@
         <version.spock>0.7-groovy-2.0</version.spock>
         <version.gmaven.runtime>1.4</version.gmaven.runtime>
         <version.mysql.connector>5.1.25</version.mysql.connector>
-        <version.eclipselink>2.5.0</version.eclipselink>
+        <version.eclipselink>2.5.1</version.eclipselink>
         <version.eclipse.persistence.jpa>2.5.1</version.eclipse.persistence.jpa>
         <version.findbug.annotation>2.0.1</version.findbug.annotation>
         <version.test.spock>0.7-groovy-2.0</version.test.spock>
