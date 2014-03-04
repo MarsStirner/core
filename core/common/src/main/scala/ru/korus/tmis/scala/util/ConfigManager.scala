@@ -503,6 +503,7 @@ object ConfigManager extends Configuration {
     var RbResultNotFound = 0x153
     var RbDiseaseStageNotFound = 0x154
     var RbDiseaseCharacterNotFound = 0x155
+    var NoMoving = 0x156
   }
 
 
