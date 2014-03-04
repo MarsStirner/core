@@ -1416,6 +1416,14 @@ class WebMisRESTImpl  extends WebMisREST
     seqAsJavaList(templates)
   }
 
+  def getOrganizationById(id: Int, authData: AuthData): OrganizationContainer = {
+    val org = dbOrganizationBean.getOrganizationById(id)
+    if(org != null)
+      new OrganizationContainer(org)
+    else
+      throw new CoreException("Cannot find Organization with id=" + id)
+  }
+
   //__________________________________________________________________________________________________
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________

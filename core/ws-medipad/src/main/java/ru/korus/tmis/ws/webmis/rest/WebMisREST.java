@@ -384,5 +384,5 @@ public interface WebMisREST extends Serializable {
 
     List<RbPrintTemplate> getRbPrintTemplatesByContexts(List<String> contexts, AuthData authData, String[] fields) throws CoreException;
 
-
+    OrganizationContainer getOrganizationById(int id, AuthData authData) throws CoreException;
 }

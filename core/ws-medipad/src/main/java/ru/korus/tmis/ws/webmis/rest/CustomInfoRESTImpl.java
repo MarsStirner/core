@@ -10,6 +10,7 @@ import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
+import webmis.rest.OrganizationImpl;
 import webmis.rest.PrintTemplateImpl;
 
 import javax.interceptor.Interceptors;
@@ -229,4 +230,11 @@ public class CustomInfoRESTImpl {
     public Object getPrintTemplate() {
         return new PrintTemplateImpl(wsImpl, auth, callback);
     }
+
+
+    @Path("/organization")
+    public Object getOrganizationById() {
+        return new OrganizationImpl(wsImpl, auth, callback);
+    }
+
 }

@@ -254,7 +254,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
         if (FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             final OrgStructure structure = getReceivedOrgStructure(action);
             toLog.addN("receive orgStructure [#], [#]", structure.getId(), structure.getName());
-            return HL7PacketBuilder.processReceived(action, structure);
+            return HL7PacketBuilder.processReceived(action, structure, getFinaceType(action));
 
         } else if (FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             // отмена поступления
