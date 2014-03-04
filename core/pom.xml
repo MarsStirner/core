@@ -1035,14 +1035,15 @@
                         ru/korus/tmis/hs/,
                         ru/korus/tmis/dao/,
                         nsi/,
-                        ru/korus/tmis/pix/
+                        ru/korus/tmis/pix/,
+                        ru/korus/tmis/laboratory/bak/ws/server/model/hl7/
                     </excludes>
                 </configuration>
                 <executions>
                     <execution>
                         <phase>package</phase>
                         <goals>
-                            <goal>check</goal>
+                            <!--<goal>check</goal>-->
                         </goals>
                     </execution>
                 </executions>
