@@ -69,10 +69,11 @@ with I18nable {
   private var patientBean: DbPatientBeanLocal = _
 
 
-  //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
+  //todo должен быть вызов веб-сервиса с передачей actionId
   @EJB
   var lisAcross: AcrossBusinessBeanLocal = _
 
+  //todo должен быть вызов веб-сервиса с передачей actionId
   @EJB
   var lisBak: BakBusinessBeanLocal = _
 
@@ -578,9 +579,9 @@ with I18nable {
         dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {
           val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(a.getId.intValue())
           if (labCode != null && labCode.compareTo("0101") == 0) {
-            // Акросс
+            // отправка назначения в Акросс
             try {
-              //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
+              //todo должен быть вызов веб-сервиса с передачей actionId
               lisAcross.sendAnalysisRequestToAcross(a.getId.intValue())
               // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
               actionBean.updateActionStatusWithFlush(a.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
@@ -597,7 +598,7 @@ with I18nable {
           } else if (labCode != null && labCode.compareTo("0102") == 0) {
             // Отправка назначения в Bak CGM
             try {
-              //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
+              //todo должен быть вызов веб-сервиса с передачей actionId
               lisBak.sendLisAnalysisRequest(a.getId.intValue())
               // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
               actionBean.updateActionStatusWithFlush(a.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
