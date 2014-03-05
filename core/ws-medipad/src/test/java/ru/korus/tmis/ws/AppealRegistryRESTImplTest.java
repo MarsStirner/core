@@ -227,7 +227,8 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             personInfo.setLogin("test");
             personInfo.setPassword("test");
             personInfo.setRoles(Arrays.asList(new String[]{"admNurse"}));
-            usersMgr.create(personInfo);
+            final String res = usersMgr.create(personInfo);
+            System.out.println("AppealRegistryRESTImplTest.createTestUser: " + res);
             isNeededCreateUser = false;
         }
     }
