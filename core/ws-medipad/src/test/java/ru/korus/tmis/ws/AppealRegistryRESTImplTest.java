@@ -112,11 +112,8 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     public void testAuth() {
         try {
             createTestUser();
-            //final String BASE_URL = "http://localhost:7713/tmis-ws-medipad/rest/tms-auth";
             final String BASE_URL = "http://localhost:7713/test/rest/tms-auth";
-
-            final URL url;
-            url = new URL(BASE_URL + "/roles/");
+            final URL url = new URL(BASE_URL + "/roles/");
             System.out.println("Send POST to..." + url.toString());
             HttpURLConnection conn = openConnection(url);
             conn.setDoOutput(true);
