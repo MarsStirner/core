@@ -1,5 +1,7 @@
 package ru.korus.tmis.schedule;
 
+import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -24,19 +26,17 @@ public final class DateConvertions {
             logger.warn("Date convert method get \"null\" as param. Return \"0\" (Type: java.util.long)");
             return 0l;
         } else {
-            //Возвращаем кол-во миллисекунд из даты (преобразованной к локальному часовому поясу)
-            // + смещение этой даты (В текущем часовом поясе машины) от UTC
-            return date.getTime() + TimeZone.getDefault().getOffset(date.getTime());
+            //Возвращаем кол-во UTC миллисекунд из даты (преобразованной к локальному часовому поясу)
+            return new LocalDateTime(date).toDateTime(DateTimeZone.UTC).getMillis();
         }
     }
 
     /**
      * Конвертация миллисекунд от начала эпохи в локальную дату
-     *
      * @param millisecondsCount Миллисекунды от полночи 1-го января 1970 года
      * @return
      */
     public static Date convertUTCMillisecondsToLocalDate(final long millisecondsCount) {
-        return new Date(millisecondsCount - TimeZone.getDefault().getOffset(millisecondsCount));
+        return new LocalDateTime(millisecondsCount, DateTimeZone.UTC).toDate();
     }
 }
