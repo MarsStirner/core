@@ -115,6 +115,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test
     public void testAuth() {
         try {
+            createTestUser();
             //final String BASE_URL = "http://localhost:7713/tmis-ws-medipad/rest/tms-auth";
             final String BASE_URL = "http://localhost:7713/test/rest/tms-auth";
 
