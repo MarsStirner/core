@@ -13,6 +13,7 @@ import ru.korus.tmis.core.patient.AppealBean;
 import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal;
 import ru.korus.tmis.core.treatment.TreatmentBeanLocal;
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal;
+import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal;
 import ru.korus.tmis.schedule.PersonScheduleBeanLocal;
 
 /**
@@ -39,6 +40,7 @@ public class TestUtilBusiness implements TestUtil {
                 ThesaurusBeanLocal.class.getPackage(),        // ru.korus.tmis.core.thesaurus
                 DbBbtResultTextBeanLocal.class.getPackage(),  // ru.korus.tmis.core.database.bak
                 TreatmentBeanLocal.class.getPackage(),        // ru.korus.tmis.core.treatment
+                BakBusinessBeanLocal.class.getPackage()       // ru.korus.tmis.laboratory.bak.business
         };
         return res;
     }
