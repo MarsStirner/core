@@ -6,8 +6,6 @@ package ru.korus.tmis.ws;
 
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.persistence.PersistenceTest;
-import org.jboss.arquillian.persistence.TransactionMode;
-import org.jboss.arquillian.persistence.Transactional;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePaths;
@@ -38,7 +36,7 @@ import java.util.Date;
  */
 @PersistenceTest
 //@Transactional(value = TransactionMode.DISABLED)
-@Transactional(value = TransactionMode.ROLLBACK)
+//@Transactional(value = TransactionMode.ROLLBACK)
 public class AppealRegistryRESTImplTest extends Arquillian {
 
     @EJB
@@ -52,8 +50,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     @EJB
     private DbEventBeanLocal eventBeanLocal = null;
-
-    private boolean isNeededCreateUser = true;
 
     @Deployment
     public static Archive createTestArchive() {
@@ -119,7 +115,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             //final String BASE_URL = "http://localhost:7713/tmis-ws-medipad/rest/tms-auth";
             final String BASE_URL = "http://localhost:7713/test/rest/tms-auth";
 
-            URL url;
+            final URL url;
             url = new URL(BASE_URL + "/roles/");
             System.out.println("Send POST to..." + url.toString());
             HttpURLConnection conn = openConnection(url);
@@ -220,18 +216,15 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
     private void createTestUser() {
-        if (isNeededCreateUser) {
-            JsonPerson personInfo = new JsonPerson();
-            personInfo.setFname("test");
-            personInfo.setLname("test");
-            personInfo.setPname("test");
-            personInfo.setLogin("test");
-            personInfo.setPassword("test");
-            personInfo.setRoles(Arrays.asList(new String[]{"admNurse"}));
-            final String res = usersMgr.create(personInfo);
-            System.out.println("AppealRegistryRESTImplTest.createTestUser: " + res);
-            isNeededCreateUser = false;
-        }
+        JsonPerson personInfo = new JsonPerson();
+        personInfo.setFname("test");
+        personInfo.setLname("test");
+        personInfo.setPname("test");
+        personInfo.setLogin("test");
+        personInfo.setPassword("test");
+        personInfo.setRoles(Arrays.asList(new String[]{"admNurse"}));
+        final String res = usersMgr.create(personInfo);
+        System.out.println("AppealRegistryRESTImplTest.createTestUser: " + res);
     }
 
 }
