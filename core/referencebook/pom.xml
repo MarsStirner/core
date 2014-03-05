@@ -35,6 +35,7 @@
             <artifactId>config</artifactId>
             <version>${version.tmis.core}</version>
         </dependency>
+
     </dependencies>
 
     <build>

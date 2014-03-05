@@ -43,6 +43,7 @@ public class EhrRest implements RestCallback {
 
     private final Object lockRetrieveDocumentResponse = new Object();
     private RetrieveDocumentResponse retrieveDocumentResponse = null;
+    private String messageUuid = null;
 
     private static class PatientQueryDoc {
         private String series = null;
@@ -136,7 +137,7 @@ public class EhrRest implements RestCallback {
 
         PatientQuery patientQuery = toEhrPatientQuery(input);
 
-        CallbackService.setRestCallback(this);
+        CallbackService.setRestCallback(this, messageUuid);
         port.patientQuery(patientQuery);
         synchronized(lockPatientResponse) {
             try {
@@ -156,7 +157,7 @@ public class EhrRest implements RestCallback {
         //final Map jsonMap = new Gson().fromJson(input, Map.class);
         final String secureToken = getBinarySecurityToken(input);
 
-        String messageUuid = UUID.randomUUID().toString();
+        messageUuid = UUID.randomUUID().toString().toLowerCase();
         QueryIEMKService service = new QueryIEMKService();
         service.setHandlerResolver(new SdaHandlerResolver(secureToken, messageUuid));
         return service.getQueryIEMKServiceSoap();
@@ -197,7 +198,7 @@ public class EhrRest implements RestCallback {
 
         DocumentQuery documentQuery  = toEhrDocumentQuery(input);
 
-        CallbackService.setRestCallback(this);
+        CallbackService.setRestCallback(this, messageUuid);
         port.documentQuery(documentQuery);
         synchronized(lockDocumentResponse) {
             try {
@@ -354,7 +355,7 @@ public class EhrRest implements RestCallback {
 
         RetrieveDocumentQuery retrieveDocumentQuery  = toEhrRetrieveDocumentQuery(input);
 
-        CallbackService.setRestCallback(this);
+        CallbackService.setRestCallback(this, messageUuid);
         port.retrieveDocumentQuery(retrieveDocumentQuery);
         synchronized(lockRetrieveDocumentResponse) {
             try {
@@ -384,7 +385,7 @@ public class EhrRest implements RestCallback {
 
     @Override
     public void patientQueryResponse(PatientResponse parameters) {
-        synchronized(this) {
+        synchronized(lockPatientResponse) {
             patientResponse = parameters;
             lockPatientResponse.notify();
         }
@@ -392,7 +393,7 @@ public class EhrRest implements RestCallback {
 
     @Override
     public void documentQueryResponse(DocumentResponse parameters) {
-        synchronized(this) {
+        synchronized(lockDocumentResponse) {
             documentResponse = parameters;
             lockDocumentResponse.notify();
         }
@@ -400,7 +401,7 @@ public class EhrRest implements RestCallback {
 
     @Override
     public void retrieveDocumentQueryResponse(RetrieveDocumentResponse parameters) {
-        synchronized(this) {
+        synchronized(lockRetrieveDocumentResponse) {
             retrieveDocumentResponse = parameters;
             lockRetrieveDocumentResponse.notify();
         }
