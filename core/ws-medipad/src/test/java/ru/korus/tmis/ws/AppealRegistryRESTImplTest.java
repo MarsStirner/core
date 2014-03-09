@@ -4,6 +4,8 @@
  */
 package ru.korus.tmis.ws;
 
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.persistence.PersistenceTest;
 import org.jboss.arquillian.testng.Arquillian;
@@ -12,9 +14,12 @@ import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
+import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 import org.testng.Assert;
 import org.testng.annotations.Test;
 import ru.korus.tmis.core.auth.*;
+import ru.korus.tmis.core.common.CommonDataProcessorBean;
+import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.exception.CoreException;
@@ -27,7 +32,10 @@ import scala.actors.threadpool.Arrays;
 import javax.ejb.EJB;
 import java.io.*;
 import java.net.HttpURLConnection;
+import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.Date;
 
 
@@ -38,6 +46,10 @@ import java.util.Date;
 //@Transactional(value = TransactionMode.DISABLED)
 //@Transactional(value = TransactionMode.ROLLBACK)
 public class AppealRegistryRESTImplTest extends Arquillian {
+
+    final String BASE_URL = "http://localhost:7713/test/rest";
+
+    final int TEST_PATIENT_ID = 2; // id пациента, для которого создается госпитализация
 
     @EJB
     private AppealBeanLocal appealBean = null;
@@ -65,6 +77,9 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         wa.addClass(AuthStorageBeanLocal.class);
         wa.addClass(AuthStorageBean.class);
 
+        wa.addClass(CommonDataProcessorBeanLocal.class);
+        wa.addClass(CommonDataProcessorBean.class);
+
      /*   wa.addPackage(ru.korus.tmis.ws.webmis.rest.servlet.RestServlet.class.getPackage());
         wa.addPackage(ru.korus.tmis.ws.webmis.rest.WebMisREST.class.getPackage());
         wa.addPackage(ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage.class.getPackage());*/
@@ -91,15 +106,12 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test
     public void testInsertAppealForPatient() {
         try {
-            AppealData appealData = new AppealData();
-            final int patientId = 2; // id пациента, для которого создается госпитализация
-            int countEvent = eventBeanLocal.getEventsForPatient(patientId).size();  // количетово обращений пациента ДО
+            AppealData appealData =initAppealData(); // инициализация параметров госпитализации
+            int countEvent = eventBeanLocal.getEventsForPatient(TEST_PATIENT_ID).size();  // количетово обращений пациента ДО
             createTestUser(); // создание тестового пользователя с ролью "медсестра приемного отделения”. Login: 'test'
-            initAppealData(appealData); // инициализация параметров госпитализации
-            // авторизация пользователм  'test' с ролью "медсестра приемного отделения”
-            AuthData authData = authStorageBeanLocal.createToken("test", "098f6bcd4621d373cade4e832627b4f6" /*MD5 for 'test'*/, 29);
-            appealBean.insertAppealForPatient(appealData, patientId, authData); // создание обращения на госпитализацию.
-            int countEventNew = eventBeanLocal.getEventsForPatient(patientId).size(); // количетово обращений пациента ПОСЛЕ
+            AuthData authData = auth();
+            appealBean.insertAppealForPatient(appealData, TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
+            int countEventNew = eventBeanLocal.getEventsForPatient(TEST_PATIENT_ID).size(); // количетово обращений пациента ПОСЛЕ
             Assert.assertEquals(countEventNew, countEvent + 1); // количетово обращений пациента ПОСЛЕ должно быть на один больше
             //TODO  add more assertion!
         } catch (CoreException e) {
@@ -108,17 +120,18 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         }
     }
 
+    private AuthData auth() throws CoreException {
+        // авторизация пользователм  'test' с ролью "медсестра приемного отделения”
+        return authStorageBeanLocal.createToken("test", "098f6bcd4621d373cade4e832627b4f6" /*MD5 for 'test'*/, 29);
+    }
+
     @Test
     public void testAuth() {
         try {
             createTestUser();
-            final String BASE_URL = "http://localhost:7713/test/rest/tms-auth";
-            final URL url = new URL(BASE_URL + "/roles/");
+            final URL url = new URL(BASE_URL + "/tms-auth/roles/");
             System.out.println("Send POST to..." + url.toString());
-            HttpURLConnection conn = openConnection(url);
-            conn.setDoOutput(true);
-            conn.setRequestMethod("POST");
-            conn.setRequestProperty("Content-Type", "application/json");
+            HttpURLConnection conn = openConnectionPost(url);
             //TODO move to resource file!
             final String input = "{\"login\":\"test\",\"password\":\"098f6bcd4621d373cade4e832627b4f6\",\"roleId\":0}";
             OutputStream outputStream = conn.getOutputStream();
@@ -136,10 +149,66 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         }
     }
 
+    private HttpURLConnection openConnectionPost(URL url) throws IOException {
+        HttpURLConnection conn = openConnection(url);
+        conn.setRequestMethod("POST");
+        return conn;
+    }
+
+    private HttpURLConnection openConnectionGet(URL url, AuthData authData) throws IOException {
+        HttpURLConnection conn = openConnection(url);
+        conn.setRequestProperty("Cookie", "authToken=" + authData.getAuthToken().getId());
+        conn.setRequestMethod("GET");
+        return conn;
+    }
+
+    @Test
+    public void testCreateAction() {
+        try {
+            AuthData authData = auth();
+            //http://webmis/data/dir/actionTypes/3911?eventId=325&callback=jQuery18202118265349417925_1394181799283&_=1394182983004
+            final String transfusionTherapyActionId = "3911";
+            final Integer eventId = appealBean.insertAppealForPatient(initAppealData(), TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
+            URL url = new URL(BASE_URL + "/tms-registry/dir/actionTypes/" + transfusionTherapyActionId);
+            url = addGetParam(url, "eventId", String.valueOf(eventId));
+            final String tstCallback = "tstCallback";
+            url = addGetParam(url, "callback", tstCallback);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            System.out.println("Send GET to..." + url.toString());
+            HttpURLConnection conn = openConnectionGet(url, authData);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            res = removePatting(res, tstCallback);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionResp.json"))));
+            Assert.assertEquals(resJson, expected);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    private String removePatting(String res, String tstCallback) {
+        final String prefix = tstCallback + "(";
+        Assert.assertTrue(res.startsWith(prefix));
+        final String suffix = ")";
+        Assert.assertTrue(res.endsWith(suffix));
+        return res.substring(prefix.length()).substring(0, res.length() - suffix.length() - prefix.length());
+    }
+
+    private URL addGetParam(final URL url, final String name, String value) throws MalformedURLException {
+        final String beg = url.toString().indexOf('?') < 0 ? "?" : "&";
+        return new URL(url + beg + name + "=" + value);
+    }
+
 
     private HttpURLConnection openConnection(URL url) throws IOException {
         HttpURLConnection conn = (HttpURLConnection) url.openConnection();
         conn.setDoOutput(true);
+        conn.setRequestProperty("Content-Type", "application/json");
         return conn;
     }
 
@@ -174,7 +243,8 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
 
-    private void initAppealData(AppealData appealData) {
+    private AppealData initAppealData() {
+        AppealData appealData = new AppealData();
         AppealEntry data = appealData.getData();
         data.setUrgent(false);
         DatePeriodContainer dateTimeInfo = new DatePeriodContainer();
@@ -210,6 +280,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         HandPreassureContainer handPreassureContainerLeft = new HandPreassureContainer();
         rangeLeftRightContainer.setLeft(handPreassureContainerLeft);
         data.setPhysicalParameters(physicalParametersContainer);
+        return appealData;
     }
 
     private void createTestUser() {

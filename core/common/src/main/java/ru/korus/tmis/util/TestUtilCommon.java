@@ -2,6 +2,7 @@ package ru.korus.tmis.util;
 
 import ru.korus.tmis.core.entity.model.RbFinance;
 import ru.korus.tmis.core.entity.model.fd.FDRecord;
+import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.PublicClonable;
 
@@ -18,7 +19,8 @@ public class TestUtilCommon implements TestUtil {
         final Package[] res = { CoreException.class.getPackage(),
                 PublicClonable.class.getPackage(),
                 RbFinance.class.getPackage(),
-                FDRecord.class.getPackage(), };
+                FDRecord.class.getPackage(),
+                LayoutAttributeValue.class.getPackage()};
 
         return res;
     }
