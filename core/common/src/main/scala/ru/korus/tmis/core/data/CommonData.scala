@@ -172,7 +172,7 @@ class CommonGroup {
 @XmlType(name = "attribute")
 @XmlRootElement(name = "attribute")
 @JsonIgnoreProperties(ignoreUnknown = true)
-trait AbstractCommonAttribute {
+class CommonAttribute{
 
   @XmlTransient
   var dateFormatter = ConfigManager.DateFormatter
@@ -195,6 +195,8 @@ trait AbstractCommonAttribute {
 
   @BeanProperty var readOnly: String = _
 
+  @BeanProperty var calculatedValue:APValueContainer = _
+
   @XmlJavaTypeAdapter(value = classOf[PropertyMapAdapter])
   var properties: Map[String, String] = Map.empty[String, String]
 
@@ -211,11 +213,6 @@ trait AbstractCommonAttribute {
     })
     this
   }
-}
-
-class CommonAttribute  extends AbstractCommonAttribute{
-
-  @BeanProperty var calculatedValue:APValueContainer = _
 
   private def this(id: Integer,
                    name: String,

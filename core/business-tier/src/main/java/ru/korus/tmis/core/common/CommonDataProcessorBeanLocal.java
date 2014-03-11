@@ -36,11 +36,10 @@ public interface CommonDataProcessorBeanLocal {
             throws CoreException;
 
     CommonData fromActionTypesForWebClient(
-            Set<ActionType> types,
+            ActionType actionType,
             String typeName,
             List<StringId> listForSummary,
             List<String> listForConverter,
-            Function2<List<String>, ActionPropertyType, CommonAttribute> converter,
             Patient patient)
             throws CoreException;
 

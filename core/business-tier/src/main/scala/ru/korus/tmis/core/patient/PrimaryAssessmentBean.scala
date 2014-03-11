@@ -134,33 +134,6 @@ class PrimaryAssessmentBean
     group
   }
 
-  def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
-
-    val map = list.foldLeft(Map.empty[String,String])(
-      (str_key, el) => {
-        val key = el
-        val value  =   if(key == APWI.Value.toString){apt.getDefaultValue}
-        else if(key == APWI.ValueId.toString){apt.getDefaultValue}
-        else if(key == APWI.Unit.toString){apt.getUnit.getName}
-        else if(key == APWI.Norm.toString){apt.getNorm}
-        else if(key == APWI.IsAssignable.toString){apt.getIsAssignable.toString}
-        else if(key == APWI.IsAssigned.toString){""}
-        else {""}
-        str_key + (key -> value)
-      })
-
-    new CommonAttributeWithLayout(apt.getId,
-                                  0,
-                                  apt.getName,
-                                  apt.getCode,
-                                  apt.getTypeName,
-                                  apt.getValueDomain,//apt.getConstructorValueDomain,
-                                  map,
-                                  dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList,
-                                  apt.isMandatory.toString,
-                                  apt.isReadOnly.toString)
-  }
-
   def getEmptyStructure(atId: Int,
                         title: String,
                         listForConverter: java.util.List[String],
@@ -170,11 +143,10 @@ class PrimaryAssessmentBean
                         patient: Patient) = {
 
     var json_data = new JSONCommonData()
-    val cd = commonDataProcessor.fromActionTypesForWebClient(Set(actionTypeBean.getActionTypeById(atId)),
+    val cd = commonDataProcessor.fromActionTypesForWebClient(actionTypeBean.getActionTypeById(atId),
                                                              title,
                                                              listForSummary,
                                                              listForConverter,
-                                                             converterFromList,
                                                              patient)
     json_data.data = cd.entity
     if (postProcessing != null) {
