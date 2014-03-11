@@ -1406,8 +1406,7 @@ class WebMisRESTImpl  extends WebMisREST
     if(fields != null && !fields.isEmpty) {
       templates.foreach(template => {
         classOf[RbPrintTemplate].getDeclaredFields.foreach(f => {
-          val annotation = f.getAnnotation[javax.persistence.Column](classOf[javax.persistence.Column])
-          if(annotation != null && !fields.contains(f.getName)) {
+          if(!fields.contains(f.getName)) {
             f.getType match {
               case t if(t.equals(classOf[String])) => {f.setAccessible(true); f.set(template, null)}
               case t if(t.equals(classOf[Integer])) => {f.setAccessible(true); f.set(template, null)}
