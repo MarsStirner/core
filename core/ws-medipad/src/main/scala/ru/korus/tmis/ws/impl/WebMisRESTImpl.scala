@@ -1394,8 +1394,13 @@ class WebMisRESTImpl  extends WebMisREST
     dbRBPrintTemplateBan getRbPrintTemplateByIds ids.asScala.toArray.map(_.toInt)
   }
 
-  def getRbPrintTemplatesByContexts(contexts: ju.List[String], authData: AuthData, fields: Array[String]): ju.List[RbPrintTemplate] = {
-    val templates = dbRBPrintTemplateBan getRbPrintTemplatesByContexts contexts.asScala.toArray
+  def getRbPrintTemplatesByContexts(contexts: ju.List[String], authData: AuthData, fields: Array[String], fRender: Integer): ju.List[RbPrintTemplate] = {
+    var templates = dbRBPrintTemplateBan getRbPrintTemplatesByContexts contexts.asScala.toArray
+
+    // Проводим фильтрацию по заданным значениям
+    if(fRender != null)
+      templates = templates.filter(_.getRender == fRender)
+
 
     // Убираем значения не заданных полей, если задан параметр fields
     if(fields != null && !fields.isEmpty) {

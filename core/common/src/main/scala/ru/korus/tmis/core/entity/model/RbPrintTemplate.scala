@@ -2,7 +2,7 @@ package ru.korus.tmis.core.entity.model
 
 import javax.persistence._
 import scala.beans.BeanProperty
-import javax.xml.bind.annotation.{XmlElement, XmlRootElement, XmlType}
+import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 
 /**
@@ -25,44 +25,43 @@ class RbPrintTemplate {
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
   @Basic(optional = false)
-  @Column(name = "id")
   @BeanProperty
   var id: Integer = _
 
-  @Column(name = "code")
   @Basic(optional = false)
   @BeanProperty
   var code: String = _
 
-  @Column(name = "name")
   @Basic(optional = false)
   @BeanProperty
   var name: String = _
 
-  @Column(name = "context")
   @Basic(optional = false)
   @BeanProperty
   var context: String = _
 
-  @Column(name = "fileName")
   @Basic(optional = false)
   @BeanProperty
-  var filename: String = _
+  var fileName: String = _
 
-
-  @Column(name = "default")
   @Basic(optional = false)
   @BeanProperty
   var default: String = _
 
-  @Column(name = "dpdAgreement")
   @Basic(optional = false)
   @BeanProperty
   var dpdAgreement: Integer = _
 
-  @Column(name = "render")
   @Basic(optional = false)
   @BeanProperty
   var render: Integer = _
+
+  def getHasPopApp: Boolean = {
+    // Ищем в тексте шаблона определенные конструкции
+    if (default.matches("(.*dialogs\\.dial.*)|(.*SpecialVar_.*)|(.*SpecialVariable.*)"))
+      true
+    else
+      false
+  }
 
 }
