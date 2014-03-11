@@ -648,9 +648,9 @@ class CommonDataProcessorBean
     val resList: java.util.List[Array[Object]] = rbData.asInstanceOf[java.util.List[Array[Object]]]
     //преобразуем результат SQL запроса в CSV формат вида "<code> - <name>, <code> - <name>, ..." и при наличии в названии ',' заменяем на "(....)"
     resList.foldLeft("")((b,a) => {
-      val v = b + a(0).asInstanceOf[String] + " - " + a(1).asInstanceOf[String]
-      if (v.indexOf(", ") > 0) {v.replace(", ", " (") + ")"}
-      else v } )
+      var v = a(0).asInstanceOf[String] + " - " + a(1).asInstanceOf[String]
+      v = if (v.indexOf(", ") > 0) {v.replace(", ", " (") + ")"} else v
+      b + v + "," } )
   }
 
   def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
