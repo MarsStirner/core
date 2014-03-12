@@ -71,7 +71,8 @@ public class Document {
     protected XMLGregorianCalendar docDate;
     protected String docName;
     protected String fileType;
-    protected byte[] stream;
+    protected String stream;
+
 
     /**
      * Gets the value of the extId property.
@@ -320,7 +321,7 @@ public class Document {
      *     possible object is
      *     byte[]
      */
-    public byte[] getStream() {
+    public String getStream() {
         return stream;
     }
 
@@ -331,7 +332,7 @@ public class Document {
      *     allowed object is
      *     byte[]
      */
-    public void setStream(byte[] value) {
+    public void setStream(String value) {
         this.stream = value;
     }
 
