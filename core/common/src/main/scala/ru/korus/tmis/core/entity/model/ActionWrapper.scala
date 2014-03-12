@@ -10,6 +10,7 @@ import java.util.{Calendar, GregorianCalendar}
 
 import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.{StringId, ConfigManager}
+import scala.collection.JavaConverters._
 
 class ActionWrapper(a: Action)
   extends Logging {
@@ -314,7 +315,7 @@ class ActionWrapper(a: Action)
   def set(attribute: CommonAttribute): Unit = {
     val name = StringId(attribute.name)
 
-    val value = attribute.properties.get(APWI.Value.toString) match {
+    val value = attribute.getPropertiesMap.get(APWI.Value.toString) match {
       case None | Some("") => {
         error("Cannot set <" + name + "> to NONE")
         return
@@ -326,7 +327,7 @@ class ActionWrapper(a: Action)
 
     getter match {
       case AWI.Dates => {
-        val completed = attribute.properties.get(APWI.Completed.toString) match {
+        val completed = attribute.getPropertiesMap.get(APWI.Completed.toString) match {
           case None => "false"
           case Some(x) => x
         }

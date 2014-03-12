@@ -2,6 +2,7 @@ package ru.korus.tmis.util;
 
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.common.CommonDataProcessorBean;
+import ru.korus.tmis.core.data.PropertyMapAdapter;
 import ru.korus.tmis.core.database.DbRbResultBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.dbutil.Database;
@@ -26,7 +27,8 @@ public class TestUtilWsMedipad implements TestUtil {
                 ru.korus.tmis.ws.webmis.rest.servlet.RestServlet.class.getPackage(),
                 ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage.class.getPackage(),
                 ru.korus.tmis.ws.handlers.AuthenticatingHandler.class.getPackage(),
-                ru.korus.tmis.ws.impl.AuthenticationWSImpl.class.getPackage()
+                ru.korus.tmis.ws.impl.AuthenticationWSImpl.class.getPackage(),
+                ru.korus.tmis.core.data.PropertyMapAdapter.class.getPackage()
         };
         return res;
     }

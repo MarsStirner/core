@@ -21,6 +21,8 @@ import ru.korus.tmis.core.auth.*;
 import ru.korus.tmis.core.common.CommonDataProcessorBean;
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.database.common.DbActionBean;
+import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.patient.AppealBeanLocal;
@@ -37,6 +39,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Date;
+import java.util.HashSet;
 
 
 /**
@@ -53,6 +56,9 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     @EJB
     private AppealBeanLocal appealBean = null;
+
+    @EJB
+    private DbActionBeanLocal dbActionBean = null;
 
     @EJB
     private AuthStorageBeanLocal authStorageBeanLocal = null;
@@ -131,12 +137,10 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             createTestUser();
             final URL url = new URL(BASE_URL + "/tms-auth/roles/");
             System.out.println("Send POST to..." + url.toString());
-            HttpURLConnection conn = openConnectionPost(url);
             //TODO move to resource file!
             final String input = "{\"login\":\"test\",\"password\":\"098f6bcd4621d373cade4e832627b4f6\",\"roleId\":0}";
-            OutputStream outputStream = conn.getOutputStream();
-            outputStream.write(input.getBytes());
-            outputStream.flush();
+            HttpURLConnection conn = openConnectionPost(url);
+            toPostStream(input, conn);
             int code = getResponseCode(conn);
             String res = getResponseData(conn, code);
             Assert.assertTrue(code == 200);
@@ -148,6 +152,19 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             Assert.fail();
         }
     }
+
+    private void toPostStream(String input, HttpURLConnection conn) throws IOException {
+        OutputStream outputStream = conn.getOutputStream();
+        outputStream.write(input.getBytes());
+        outputStream.flush();
+    }
+
+    private HttpURLConnection openConnectionPost(URL url, AuthData authData) throws IOException {
+        HttpURLConnection conn = openConnectionPost(url);
+        conn.setRequestProperty("Cookie", "authToken=" + authData.getAuthToken().getId());
+        return conn;
+    }
+
 
     private HttpURLConnection openConnectionPost(URL url) throws IOException {
         HttpURLConnection conn = openConnection(url);
@@ -163,7 +180,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
     @Test
-    public void testCreateAction() {
+    public void testGetActionTypeInfo() {
         try {
             AuthData authData = auth();
             //http://webmis/data/dir/actionTypes/3911?eventId=325&callback=jQuery18202118265349417925_1394181799283&_=1394182983004
@@ -180,16 +197,50 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             String res = getResponseData(conn, code);
             Assert.assertTrue(code == 200);
             res = removePatting(res, tstCallback);
-            JsonParser parser = new JsonParser();
+            /*JsonParser parser = new JsonParser();
             JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionResp.json"))));
-            Assert.assertEquals(resJson, expected);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getActionTypeInfoResp.json"))));
+            Assert.assertEquals(resJson, expected);*/
 
         } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();
         }
     }
+
+    @Test
+    public void testCreateAction() {
+        try {
+            AuthData authData = auth();
+            //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
+            final Integer transfusionTherapyActionId = 3911;
+            final Integer eventId = appealBean.insertAppealForPatient(initAppealData(), TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
+            URL url = new URL(BASE_URL + String.format("/tms-registry/appeals/%s/documents/", eventId));
+            final int countAction = dbActionBean.getLastActionByActionTypeIdAndEventId(eventId, new HashSet<Integer>(){{add(transfusionTherapyActionId);}});
+            final String tstCallback = "tstCallback";
+            url = addGetParam(url, "callback", tstCallback);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            System.out.println("Send POST to..." + url.toString());
+            HttpURLConnection conn = openConnectionPost(url, authData);
+            toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionReq.json"))), conn);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            final int countActionNew = dbActionBean.getLastActionByActionTypeIdAndEventId(eventId, new HashSet<Integer>() {{
+                add(transfusionTherapyActionId);
+            }});
+            Assert.assertEquals(countActionNew, countAction + 1);
+            res = removePatting(res, tstCallback);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionResp.json"))));
+            Assert.assertEquals(resJson, expected);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        }
+    }
+
 
     private String removePatting(String res, String tstCallback) {
         final String prefix = tstCallback + "(";

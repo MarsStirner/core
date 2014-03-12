@@ -3,13 +3,16 @@ package ru.korus.tmis.core.data
 
 import scala.beans.BeanProperty
 import java.lang.Integer
-import java.util.{Date, LinkedList}
+import java.util.{Date, LinkedList, HashMap}
 import javax.xml.bind.annotation._
 import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
 import ru.korus.tmis.scala.util.ConfigManager
 import scala.beans.BooleanBeanProperty
+import java.util
+import scala.collection.JavaConverters._
+
 
 @XmlType(name = "entities")
 @XmlRootElement(name = "entities")
@@ -197,13 +200,17 @@ class CommonAttribute{
 
   @BeanProperty var calculatedValue:APValueContainer = _
 
-  @XmlJavaTypeAdapter(value = classOf[PropertyMapAdapter])
-  var properties: Map[String, String] = Map.empty[String, String]
+  var properties: java.util.List[PropertyPair] = new java.util.LinkedList[PropertyPair];
 
+  def getPropertiesMap() = {
+    val map =  new java.util.HashMap[String, String]()
+    properties.asScala.foreach((p) => map.put(p.name, p.value))
+    map.asScala.toMap
+  }
   def addProperty(key: String, value: String) = {
     value match {
       case null => {}
-      case _ => properties += (key -> value)
+      case _ => properties.add(new PropertyPair(key, value))
     }
   }
 
@@ -342,33 +349,8 @@ class CommonAttributeWithLayout(id: Integer,
 
   def this (ca: CommonAttribute,
             layout: List[LayoutAttributeValue] ) = {
-    this(ca.id, ca.version, ca.name, ca.code, ca.`type`, ca.mandatory, ca.readOnly, ca.scope, ca.properties)
+    this(ca.id, ca.version, ca.name, ca.code, ca.`type`, ca.mandatory, ca.readOnly, ca.scope, ca.getPropertiesMap)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
-  }
-}
-
-@XmlType(name = "propertyMapAdapter")
-@XmlRootElement(name = "propertyMapAdapter")
-@JsonIgnoreProperties(ignoreUnknown = true)
-class PropertyMapAdapter
-  extends XmlAdapter[Array[PropertyPair], Map[String, String]] {
-
-  def marshal(v: Map[String, String]) = {
-    val pairs = new Array[PropertyPair](v.size)
-    var i: Int = 0
-
-    v.foreach(
-      entry => {
-        pairs(i) = new PropertyPair(entry._1, entry._2)
-        i = i + 1
-      }
-    )
-    pairs
-  }
-
-  def unmarshal(v: Array[PropertyPair]) = {
-    v.foldLeft(Map.empty[String, String])(
-      (map, pp) => map + (pp.name -> pp.value))
   }
 }
 

@@ -5,6 +5,7 @@ import ru.korus.tmis.core.data.CommonAttribute
 import grizzled.slf4j.Logging
 import java.lang.Boolean
 import ru.korus.tmis.scala.util.{StringId, ConfigManager}
+import collection.JavaConverters._
 
 class ActionPropertyWrapper(ap: ActionProperty)
   extends Logging {
@@ -86,7 +87,7 @@ class ActionPropertyWrapper(ap: ActionProperty)
   }
 
   def set(value: CA) = {
-    value.properties.foreach(p => {
+    value.getPropertiesMap.foreach(p => {
       val (name, value) = p
 
       import APWI._
