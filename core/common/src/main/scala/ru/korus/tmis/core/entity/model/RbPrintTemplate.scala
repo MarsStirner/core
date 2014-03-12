@@ -3,8 +3,7 @@ package ru.korus.tmis.core.entity.model
 import javax.persistence._
 import scala.beans.BeanProperty
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
-import org.codehaus.jackson.annotate.JsonIgnoreProperties
-
+import org.codehaus.jackson.annotate.{JsonIgnoreProperties}
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
  * Date: 2/21/14
@@ -20,7 +19,8 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties
 @XmlType(name = "RbPrintTemplate")
 @XmlRootElement(name = "RbPrintTemplate")
 @JsonIgnoreProperties(ignoreUnknown = true)
-class RbPrintTemplate {
+@SerialVersionUID(1L)
+class RbPrintTemplate extends Serializable {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -56,12 +56,19 @@ class RbPrintTemplate {
   @BeanProperty
   var render: Integer = _
 
-  def getHasPopApp: Boolean = {
-    // Ищем в тексте шаблона определенные конструкции
-    if (default.matches("(.*dialogs\\.dial.*)|(.*SpecialVar_.*)|(.*SpecialVariable.*)"))
-      true
-    else
-      false
+  @Transient
+  @BeanProperty
+  var hasPopApp: java.lang.Boolean = _
+
+  @PostLoad
+  def constructHasPopApp = {
+      // Ищем в тексте шаблона определенные конструкции
+      val popApp = default.matches("(.*dialogs\\.dial.*)|(.*SpecialVar_.*)|(.*SpecialVariable.*)")
+      if (popApp) {
+        hasPopApp = true
+      }
+      else
+        hasPopApp = false
   }
 
 }
