@@ -28,7 +28,7 @@ public class ExceptionJSONMessage implements Serializable {
     private String validationErrors;
     private String callStack;
 
-    public ExceptionJSONMessage(Exception e, InvocationContext ctx) {
+    public ExceptionJSONMessage(Throwable e, InvocationContext ctx) {
         this(e);
         if (ctx.getParameters() != null) {
             for (Object obj : ctx.getParameters()) {
@@ -39,7 +39,7 @@ public class ExceptionJSONMessage implements Serializable {
         this.methodName = String.valueOf(ctx.getMethod());
     }
 
-    public ExceptionJSONMessage(Exception e) {
+    public ExceptionJSONMessage(Throwable e) {
         Throwable rootException = e.getCause(); //Достаем причинный ексепш
         if (rootException != null) {
             if (rootException instanceof AuthenticationException) {
