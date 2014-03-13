@@ -24,13 +24,14 @@ class PrintTemplateImpl(val wsImpl: WebMisRESTImpl, val authData: AuthData, val 
   @Path("/byContexts")
   @Produces(Array[String]("application/x-javascript"))
   def getPrintTemplateByContexts(@QueryParam("context") contexts: ju.List[String],
-                                 @QueryParam("fields") fields: String): Object = {
+                                 @QueryParam("fields") fields: String,
+                                 @QueryParam("filter[render]") render: Integer): Object = {
     val f =
       if(fields != null && !fields.isEmpty)
         fields.split(',')
       else
         Array[String]()
-    new JSONWithPadding(wsImpl.getRbPrintTemplatesByContexts(contexts, authData, f), callback)
+    new JSONWithPadding(wsImpl.getRbPrintTemplatesByContexts(contexts, authData, f, render), callback)
   }
 
 }

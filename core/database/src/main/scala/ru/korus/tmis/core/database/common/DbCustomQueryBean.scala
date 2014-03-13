@@ -386,18 +386,18 @@ class DbCustomQueryBean
     val queryStr: QueryDataStructure = filter match {
       case f: TalonSPODataListFilter => f.toQueryStructure
       case f: AppealSimplifiedRequestDataFilter => {
-        if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].diagnosis != null && !filter.asInstanceOf[AppealSimplifiedRequestDataFilter].diagnosis.isEmpty) {
+        if (f.diagnosis != null && !f.diagnosis.isEmpty) {
           diagnostic_filter = "AND upper(mkb.diagID) LIKE upper(:diagnosis)\n"
           ap_string_filter = "AND upper(apv.value) LIKE upper(:diagnosis)\n"
           ap_mkb_filter = "AND upper(apv.mkb.diagID) LIKE upper(:diagnosis)\n"
           flgDiagnosesSwitched = true
         }
-        if (filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId > 0 &&
-          filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId != default_org.getId.intValue()) {
+        if (f.departmentId > 0 &&
+          f.departmentId != default_org.getId.intValue()) {
           department_filter = " AND exists ( SELECT val.id FROM APValueOrgStructure val WHERE val.id.id = ap.id AND val.value.id = :departmentId)"
           flgDepartmentSwitched = true
         }
-        filter.asInstanceOf[AppealSimplifiedRequestDataFilter].toQueryStructure
+        f.toQueryStructure
       }
       case _ => new QueryDataStructure()
     }

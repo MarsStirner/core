@@ -1394,15 +1394,19 @@ class WebMisRESTImpl  extends WebMisREST
     dbRBPrintTemplateBan getRbPrintTemplateByIds ids.asScala.toArray.map(_.toInt)
   }
 
-  def getRbPrintTemplatesByContexts(contexts: ju.List[String], authData: AuthData, fields: Array[String]): ju.List[RbPrintTemplate] = {
-    val templates = dbRBPrintTemplateBan getRbPrintTemplatesByContexts contexts.asScala.toArray
+  def getRbPrintTemplatesByContexts(contexts: ju.List[String], authData: AuthData, fields: Array[String], fRender: Integer): ju.List[RbPrintTemplate] = {
+    var templates = dbRBPrintTemplateBan getRbPrintTemplatesByContexts contexts.asScala.toArray
+
+    // Проводим фильтрацию по заданным значениям
+    if(fRender != null)
+      templates = templates.filter(_.getRender == fRender)
+
 
     // Убираем значения не заданных полей, если задан параметр fields
     if(fields != null && !fields.isEmpty) {
       templates.foreach(template => {
         classOf[RbPrintTemplate].getDeclaredFields.foreach(f => {
-          val annotation = f.getAnnotation[javax.persistence.Column](classOf[javax.persistence.Column])
-          if(annotation != null && !fields.contains(f.getName)) {
+          if(!fields.contains(f.getName)) {
             f.getType match {
               case t if(t.equals(classOf[String])) => {f.setAccessible(true); f.set(template, null)}
               case t if(t.equals(classOf[Integer])) => {f.setAccessible(true); f.set(template, null)}

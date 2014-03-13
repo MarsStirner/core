@@ -380,9 +380,33 @@ public interface WebMisREST extends Serializable {
      */
     String getBuildVersion();
 
+    /**
+     * Получение объектов шаблонов печати по идентификаторам
+     * @param ids Идентификаторы запрашиваемых объектов
+     * @param authData Данные авторизации
+     * @return Список запрашиваемых шаблонов печати
+     * @throws CoreException
+     */
     List<RbPrintTemplate> getRbPrintTemplatesByIds(List<Integer> ids, AuthData authData) throws CoreException;
 
-    List<RbPrintTemplate> getRbPrintTemplatesByContexts(List<String> contexts, AuthData authData, String[] fields) throws CoreException;
+    /**
+     * Получение шаблонов печати по полю context и с применением фильтрации по другим полям
+     * @param contexts Запрашиваемые значения поля context
+     * @param authData Данные авторизации
+     * @param fields Запрашиваемые поля, если данный параметр задан - все остальные поля будут заполнены null,
+     *               применяется для экономии канала передачи данных - некоторые поля (например, default) содержат большие объемы данных
+     * @param fRender Фильтрация по значению поля render, фильтрация не производится, если передается null
+     * @return Список запрашиваемых шаблонов печати
+     * @throws CoreException
+     */
+    List<RbPrintTemplate> getRbPrintTemplatesByContexts(List<String> contexts, AuthData authData, String[] fields, Integer fRender) throws CoreException;
 
+    /**
+     * Получение данных об организации, хранящиеся в БД ФТМИС
+     * @param id Идентификатор организации
+     * @param authData Данные авторизации
+     * @return Объектное представление записи в БД об организации
+     * @throws CoreException
+     */
     OrganizationContainer getOrganizationById(int id, AuthData authData) throws CoreException;
 }
