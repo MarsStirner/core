@@ -161,19 +161,11 @@ public class ActionProperty
     @PostLoad
     private void onPostLoad() {
         updateValueClass();
-
         if (actionPropertyType == null) {
             idx = 0;
             return;
         }
-
         idx = actionPropertyType.getIdx();
-
-//        if (unit == null &&
-//                actionPropertyType.getUnit() != RbUnit.getEmptyUnit()) {
-//            unit = actionPropertyType.getUnit();
-//        }
-
         if (norm == null) {
             norm = actionPropertyType.getNorm();
         }
@@ -187,12 +179,15 @@ public class ActionProperty
 
         String propertyType = actionPropertyType.getTypeName();
 
-        if ("Reference".equals(propertyType)) {
+        final boolean isRef = "Reference".equals(propertyType);
+        if (isRef) {
             propertyType = actionPropertyType.getValueDomain();
         }
 
         if (valueTypeMap.containsKey(propertyType)) {
             valueClass = valueTypeMap.get(propertyType);
+        } else if (isRef) {
+            valueClass = valueTypeMap.get("Integer");
         } else {
             valueClass = null;
         }

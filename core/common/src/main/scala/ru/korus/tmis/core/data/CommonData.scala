@@ -200,7 +200,7 @@ class CommonAttribute{
 
   @BeanProperty var calculatedValue:APValueContainer = _
 
-  var properties: java.util.List[PropertyPair] = new java.util.LinkedList[PropertyPair];
+  @BeanProperty var properties: java.util.List[PropertyPair] = new java.util.LinkedList[PropertyPair];
 
   def getPropertiesMap() = {
     val map =  new java.util.HashMap[String, String]()

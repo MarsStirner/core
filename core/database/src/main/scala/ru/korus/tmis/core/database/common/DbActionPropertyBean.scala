@@ -162,9 +162,8 @@ class DbActionPropertyBean
     apvs.size match {
       case 0 => {
         // Если не нашли значение, то создаем новое, если не флатДиректори
-        if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) {
-          createActionPropertyValue(ap, value, index)
-        } else if (value != null && value.compareTo("") != 0) {
+        if ( (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) ||
+             (value != null && value.compareTo("") != 0)) {
           createActionPropertyValue(ap, value, index)
         }
         else null
@@ -185,16 +184,24 @@ class DbActionPropertyBean
     }
   }
 
+  def toRefValue(ap: ActionProperty, value: String): String = {
+    val code = value.split("-")(0).trim
+    val res = em.createNativeQuery("SELECT `id` FROM %s WHERE `code` = '%s'".format(ap.getType.getValueDomain, code)).getResultList
+    String.valueOf(res(0))
+  }
+
   def createActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
     val cls = ap.getValueClass
     if(cls == null)
         throw new CoreException(i18n("error.actionPropertyTypeClassNotFound").format(ap.getId))
+
     if(value != null) {
       val apv = cls.newInstance.asInstanceOf[APValue]
       // Устанваливаем id, index
       apv.linkToActionProperty(ap, index)
+      var v =if ("Reference".equals(ap.getType.getTypeName)) { toRefValue(ap, value) } else { value }
       // Записываем значение
-      if (apv.setValueFromString(value)) apv else null
+      if (apv.setValueFromString(v)) apv else null
     } else
       null
   }
