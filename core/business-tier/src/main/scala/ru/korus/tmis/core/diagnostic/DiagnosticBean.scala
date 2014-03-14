@@ -137,7 +137,7 @@ class DiagnosticBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue)
 
         apvs.size match {
           case 0 => {

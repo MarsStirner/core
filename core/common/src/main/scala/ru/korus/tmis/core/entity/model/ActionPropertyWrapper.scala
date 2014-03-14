@@ -7,10 +7,8 @@ import java.lang.Boolean
 import ru.korus.tmis.scala.util.{StringId, ConfigManager}
 import collection.JavaConverters._
 
-class ActionPropertyWrapper(ap: ActionProperty)
+class ActionPropertyWrapper(ap: ActionProperty, refConverter: (ActionPropertyType, String) => String)
   extends Logging {
-
-  type CA = CommonAttribute
 
   val a = ap.getAction
   val apt = ap.getType
@@ -33,6 +31,8 @@ class ActionPropertyWrapper(ap: ActionProperty)
               case _ => {
                 if (this.apt.getTypeName.compareTo("Html")==0 || this.apt.getTypeName.compareTo("Text")==0 || this.apt.getTypeName.compareTo("Constructor")==0) {
                   map + (xmlName -> apv.getValue.toString)
+                } else if("Reference".equals(apt.getTypeName)) {
+                  map + (xmlName -> refConverter(apt, apv.getValueAsString))
                 } else {
                   map + (xmlName -> apv.getValueAsString)
                 }
@@ -75,7 +75,7 @@ class ActionPropertyWrapper(ap: ActionProperty)
         }
       })
 
-    new CA(ap.getId,
+    new CommonAttribute(ap.getId,
       ap.getVersion.intValue,
       apt.getName,
       apt.getCode,
@@ -86,7 +86,7 @@ class ActionPropertyWrapper(ap: ActionProperty)
       map)
   }
 
-  def set(value: CA) = {
+  def set(value: CommonAttribute) = {
     value.getPropertiesMap.foreach(p => {
       val (name, value) = p
 

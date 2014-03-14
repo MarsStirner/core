@@ -49,6 +49,9 @@ class PrimaryAssessmentBean
   @EJB
   var diagnosisBean: DiagnosisBeanLocal = _
 
+  @EJB
+  private var dbActionProperty: DbActionPropertyBeanLocal = _
+
   def summary(assessment: Action) = {
     val group = new CommonGroup(0, "Summary")
 
@@ -85,7 +88,7 @@ class PrimaryAssessmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue)
 
         apvs.size match {
           case 0 => {
@@ -115,7 +118,7 @@ class PrimaryAssessmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue)
 
         apvs.size match {
           case 0 => {
@@ -188,22 +191,6 @@ class PrimaryAssessmentBean
     if (postProcessing != null) {
       json_data =  postProcessing(json_data, false)
     }
-    /*
-    //Если первичный осмотр, то записать диагноз при поступлении
-    val primaries = json_data.data.filter(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0)
-    primaries.foreach(ce => {
-      val attr = ce.group.get(1).attribute.find(p=>p.getType().compareTo("MKB")==0).getOrElse(null)
-      if (attr!=null) {
-        val mkbId = attr.properties.get("valueId").getOrElse(null)
-        if(mkbId!=null && (!mkbId.isEmpty)){
-          var map = Map.empty[String, java.util.Set[AnyRef]]
-          map += ("admission" -> Set[AnyRef]((-1, "", Integer.valueOf(mkbId.toString))))
-          val diag = diagnosisBean.insertDiagnoses(eventId, asJavaMap(map), userData)
-          dbManager.persistAll(diag)
-        }
-      }
-    })
-    */
     json_data
   }
 

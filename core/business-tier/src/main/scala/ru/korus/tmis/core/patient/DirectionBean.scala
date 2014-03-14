@@ -67,6 +67,8 @@ with I18nable {
   private var personScheduleBean: PersonScheduleBeanLocal = _
   @EJB
   private var patientBean: DbPatientBeanLocal = _
+  @EJB
+  private var dbActionProperty: DbActionPropertyBeanLocal = _
 
 
   //todo должен быть вызов веб-сервиса с передачей actionId
@@ -123,7 +125,7 @@ with I18nable {
     propertiesMap.foreach(
       p => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue)
         if (commonDataProcessor.checkActionPropertyTypeForPatientAge(age, ap.getType)) {
           apvs.size match {
             case 0 => {

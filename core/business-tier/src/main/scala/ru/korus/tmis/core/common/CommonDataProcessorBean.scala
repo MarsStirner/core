@@ -205,7 +205,7 @@ class CommonDataProcessorBean
                 attribute.id.intValue,
                 userData,
                 now)
-              new ActionPropertyWrapper(ap).set(attribute)
+              new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue).set(attribute)
               (ap, attribute) :: list
             }
           })
@@ -440,7 +440,7 @@ class CommonDataProcessorBean
               case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
-                new ActionPropertyWrapper(ap).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue).set(attribute)
 
                 //Удаление значений свойств, если они присутствуют
                 dbManager.removeAll(dbActionProperty.getActionPropertyValue(ap))
@@ -464,7 +464,7 @@ class CommonDataProcessorBean
                   apv = dbActionProperty.setActionPropertyValue(ap, value, 0)
                 }
 
-                new ActionPropertyWrapper(ap).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue).set(attribute)
                 if (apv != null) {
                   entities = entities + ap + apv.unwrap
                 } else {
@@ -481,7 +481,7 @@ class CommonDataProcessorBean
                   ap,
                   valueId,
                   0)
-                new ActionPropertyWrapper(ap).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue).set(attribute)
                 entities = entities + ap + apv.unwrap
               }
 
@@ -650,15 +650,7 @@ class CommonDataProcessorBean
     })
   }
 
-  def getScopeForReference(propertyType: ActionPropertyType) = {
-    val rbData = em.createNativeQuery("SELECT `code`, `name` FROM %s".format(propertyType.getValueDomain)).getResultList
-    val resList: java.util.List[Array[Object]] = rbData.asInstanceOf[java.util.List[Array[Object]]]
-    //преобразуем результат SQL запроса в CSV формат вида "<code> - <name>, <code> - <name>, ..." и при наличии в названии ',' заменяем на "(....)"
-    resList.foldLeft("")((b,a) => {
-      var v = a(0).asInstanceOf[String] + " - " + a(1).asInstanceOf[String]
-      v = if (v.indexOf(", ") > 0) {v.replace(", ", " (") + ")"} else v
-      b + v + "," } )
-  }
+
 
   def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
 
@@ -687,7 +679,7 @@ class CommonDataProcessorBean
       })
 
     val (typeName, valueDomain) = if ("Reference".equals(apt.getTypeName)) {
-      ("String", getScopeForReference(apt))
+      ("String", dbActionProperty.getScopeForReference(apt))
     } else {
       (apt.getTypeName, apt.getValueDomain)
     }

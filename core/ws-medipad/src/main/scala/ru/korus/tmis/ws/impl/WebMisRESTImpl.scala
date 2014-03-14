@@ -568,7 +568,7 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   //создание первичного мед. осмотра
-  def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
+  def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData): JSONCommonData  = {
     val isPrimary = (data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
     if(isPrimary)
       appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)

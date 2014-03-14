@@ -3,17 +3,14 @@ package ru.korus.tmis.core.database.common
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import java.util.{List, Date}
-import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
-import javax.interceptor.Interceptors
+import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
 
 import grizzled.slf4j.Logging
 import scala.collection.JavaConversions._
 import scala.collection.mutable.LinkedHashMap
-import java.util
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
@@ -162,8 +159,8 @@ class DbActionPropertyBean
     apvs.size match {
       case 0 => {
         // Если не нашли значение, то создаем новое, если не флатДиректори
-        if ( (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) ||
-             (value != null && value.compareTo("") != 0)) {
+        if ((ap.getType.getTypeName.compareTo("FlatDirectory") != 0 && ap.getType.getTypeName.compareTo("FlatDictionary") != 0) ||
+          (value != null && value.compareTo("") != 0)) {
           createActionPropertyValue(ap, value, index)
         }
         else null
@@ -173,7 +170,7 @@ class DbActionPropertyBean
           createActionPropertyValue(ap, value, index)
         } else {
           val apv = apvs.get(0)
-          if(value != null)
+          if (value != null)
             if (apv.unwrap.setValueFromString(value)) apv else null
           else {
             em remove apv
@@ -190,16 +187,50 @@ class DbActionPropertyBean
     String.valueOf(res(0))
   }
 
+  def fromRefValue(apt: ActionPropertyType, value: String): String = {
+    val code = value.split("-")(0).trim
+    val data = em.createNativeQuery("SELECT `code`, `name` FROM %s WHERE `id` = %s".format(apt.getValueDomain, value)).getResultList
+    var res = if (data.isEmpty) {
+      value
+    } else  {
+      toCodeAndName(data(0).asInstanceOf[Array[Object]])
+    }
+    res
+  }
+
+  def getScopeForReference(propertyType: ActionPropertyType) = {
+    val rbData = em.createNativeQuery("SELECT `code`, `name` FROM %s".format(propertyType.getValueDomain)).getResultList
+    val resList: java.util.List[Array[Object]] = rbData.asInstanceOf[java.util.List[Array[Object]]]
+    //преобразуем результат SQL запроса в CSV формат вида "<code> - <name>, <code> - <name>, ..." и при наличии в названии ',' заменяем на "(....)"
+    resList.foldLeft("")((b, a) => {
+      var v: String = toCodeAndName(a)
+      b + v + ","
+    })
+  }
+
+
+  def toCodeAndName(a: Array[Object]): String = {
+    var v = a(0).asInstanceOf[String] + " - " + a(1).asInstanceOf[String]
+    v = if (v.indexOf(", ") > 0) {
+      v.replace(", ", " (") + ")"
+    } else v
+    v
+  }
+
   def createActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
     val cls = ap.getValueClass
-    if(cls == null)
-        throw new CoreException(i18n("error.actionPropertyTypeClassNotFound").format(ap.getId))
+    if (cls == null)
+      throw new CoreException(i18n("error.actionPropertyTypeClassNotFound").format(ap.getId))
 
-    if(value != null) {
+    if (value != null) {
       val apv = cls.newInstance.asInstanceOf[APValue]
       // Устанваливаем id, index
       apv.linkToActionProperty(ap, index)
-      var v =if ("Reference".equals(ap.getType.getTypeName)) { toRefValue(ap, value) } else { value }
+      var v = if ("Reference".equals(ap.getType.getTypeName)) {
+        toRefValue(ap, value)
+      } else {
+        value
+      }
       // Записываем значение
       if (apv.setValueFromString(v)) apv else null
     } else
@@ -334,15 +365,15 @@ class DbActionPropertyBean
       status = "AND a.status = 2"
     }
     val result = em.createNativeQuery(ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx.format(sqlEventIds, sqlCodes, status))
-                   //.setParameter(1, new java.util.LinkedList(eventIds map(f => f.toString)))
-                   //.setParameter(2, sqlCodes)
-                   .setParameter(3, cntRead)
-                   .getResultList
+      //.setParameter(1, new java.util.LinkedList(eventIds map(f => f.toString)))
+      //.setParameter(2, sqlCodes)
+      .setParameter(3, cntRead)
+      .getResultList
     val resulted = result.foldLeft(new java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]])(
       (map, ap) => {
         val eventId = ap.asInstanceOf[Array[Object]](0).asInstanceOf[java.lang.Integer]
 
-        if(!map.contains(eventId))
+        if (!map.contains(eventId))
           map.put(eventId, new java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]])
 
         val apId = ap.asInstanceOf[Array[Object]](1).asInstanceOf[java.lang.Integer]
@@ -350,7 +381,7 @@ class DbActionPropertyBean
         val values = getActionPropertyValue(app)
 
         val apvMap = map.get(eventId)
-        if(values!=null && values.size()>0)
+        if (values != null && values.size() > 0)
           apvMap.put(app, values)
         map
       })
@@ -359,20 +390,20 @@ class DbActionPropertyBean
 
   private def convertCollectionToSqlString(collection: java.util.Collection[_]) = {
     var sqlStr: String = ""
-    collection.foreach(el => sqlStr = if(sqlStr.isEmpty) "'" + el.toString + "'" else sqlStr + ",'" + el.toString + "'")
+    collection.foreach(el => sqlStr = if (sqlStr.isEmpty) "'" + el.toString + "'" else sqlStr + ",'" + el.toString + "'")
     sqlStr
   }
 
-  private def getActionPropertiesByActionIdAndCustomParameters (actionId: Int, parameters: java.util.List[String], filterMode: Int) = {
+  private def getActionPropertiesByActionIdAndCustomParameters(actionId: Int, parameters: java.util.List[String], filterMode: Int) = {
     val result = em.createQuery(
       ActionPropertiesByActionIdAndNamesQuery.format(filterMode match {
         case FILTER_ID => "id"
-        case FILTER_NAME =>  "name"
-        case FILTER_CODE =>  "code"
+        case FILTER_NAME => "name"
+        case FILTER_CODE => "code"
         case FILTER_TYPENAME => "typeName"
         case _ => "id"
       }
-    ), classOf[ActionProperty])
+      ), classOf[ActionProperty])
       .setParameter("actionId", actionId)
       .setParameter("names", asJavaCollection(parameters))
       .getResultList
@@ -416,7 +447,7 @@ class DbActionPropertyBean
       a.appointmentType = :appointmentType
     ORDER BY
       v.id.index ASC
-                     """
+                                        """
 
   val ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx =
     """
@@ -495,7 +526,7 @@ class DbActionPropertyBean
       ) counted
       WHERE rown <= ?3
     """
-                        //ORDER BY ap.id DESC
+  //ORDER BY ap.id DESC
   val ActionPropertyFindQuery = """
     SELECT ap
     FROM
@@ -564,7 +595,7 @@ class DbActionPropertyBean
       ap.actionPropertyType.code IN :codes
     AND
       ap.deleted = 0
-                                                 """
+                                                    """
 
   val ActionPropertiesByActionIdAndTypeCodesQuery2 = """
     SELECT ap
@@ -574,7 +605,7 @@ class DbActionPropertyBean
       ap.action.id = :actionId
     AND
       ap.actionPropertyType.code IN :codes
-                                                 """
+                                                     """
 
   val ActionPropertiesByActionIdAndRbCoreActionPropertyIds =
     """

@@ -145,4 +145,8 @@ public interface DbActionPropertyBeanLocal {
      * @return
      */
     APValueAction getActionProperty_ActionByValue(Action action) throws CoreException;
+
+    String getScopeForReference(ActionPropertyType apt);
+
+    String fromRefValue(ActionPropertyType apt, String value);
 }
