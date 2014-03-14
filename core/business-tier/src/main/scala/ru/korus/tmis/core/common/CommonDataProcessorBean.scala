@@ -205,7 +205,7 @@ class CommonDataProcessorBean
                 attribute.id.intValue,
                 userData,
                 now)
-              new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue).set(attribute)
+              new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference).set(attribute)
               (ap, attribute) :: list
             }
           })
@@ -440,7 +440,7 @@ class CommonDataProcessorBean
               case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
-                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference).set(attribute)
 
                 //Удаление значений свойств, если они присутствуют
                 dbManager.removeAll(dbActionProperty.getActionPropertyValue(ap))
@@ -464,7 +464,7 @@ class CommonDataProcessorBean
                   apv = dbActionProperty.setActionPropertyValue(ap, value, 0)
                 }
 
-                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference).set(attribute)
                 if (apv != null) {
                   entities = entities + ap + apv.unwrap
                 } else {
@@ -481,7 +481,7 @@ class CommonDataProcessorBean
                   ap,
                   valueId,
                   0)
-                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference).set(attribute)
                 entities = entities + ap + apv.unwrap
               }
 

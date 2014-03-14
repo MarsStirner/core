@@ -7,7 +7,7 @@ import java.lang.Boolean
 import ru.korus.tmis.scala.util.{StringId, ConfigManager}
 import collection.JavaConverters._
 
-class ActionPropertyWrapper(ap: ActionProperty, refConverter: (ActionPropertyType, String) => String)
+class ActionPropertyWrapper(ap: ActionProperty, refConverter: (ActionPropertyType, String) => String, refScopeConverter: ActionPropertyType => String)
   extends Logging {
 
   val a = ap.getAction
@@ -75,14 +75,15 @@ class ActionPropertyWrapper(ap: ActionProperty, refConverter: (ActionPropertyTyp
         }
       })
 
+    val (typeName, scope) = if ("Reference".equals(apt.getTypeName)) ("String", refScopeConverter(apt)) else (apt.getTypeName, apt.getValueDomain)
     new CommonAttribute(ap.getId,
       ap.getVersion.intValue,
       apt.getName,
       apt.getCode,
-      apt.getTypeName,
+      typeName,
       apt.isMandatory.toString,
       apt.isReadOnly.toString,
-      apt.getValueDomain,//apt.getConstructorValueDomain,
+      scope,
       map)
   }
 

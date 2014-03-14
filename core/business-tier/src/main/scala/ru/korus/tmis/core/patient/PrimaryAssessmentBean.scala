@@ -88,7 +88,7 @@ class PrimaryAssessmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference)
 
         apvs.size match {
           case 0 => {
@@ -118,7 +118,7 @@ class PrimaryAssessmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference)
 
         apvs.size match {
           case 0 => {

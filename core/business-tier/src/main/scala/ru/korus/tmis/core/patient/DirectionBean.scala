@@ -125,7 +125,7 @@ with I18nable {
     propertiesMap.foreach(
       p => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference)
         if (commonDataProcessor.checkActionPropertyTypeForPatientAge(age, ap.getType)) {
           apvs.size match {
             case 0 => {
