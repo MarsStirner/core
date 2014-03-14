@@ -198,7 +198,7 @@ class TreatmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference)
 
         apvs.size match {
           case 0 => {
