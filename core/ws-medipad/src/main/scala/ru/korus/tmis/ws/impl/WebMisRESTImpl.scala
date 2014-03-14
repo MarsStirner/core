@@ -22,6 +22,7 @@ import scala.Predef._
 
 import ru.korus.tmis.scala.util._
 import ru.korus.tmis.core.database.bak.{DbBbtResultOrganismBeanLocal, DbBbtResponseBeanLocal, DbBbtResultTextBeanLocal}
+import org.joda.time.DateTime
 
 /**
  * User: idmitriev
@@ -188,6 +189,9 @@ class WebMisRESTImpl  extends WebMisREST
 
   @EJB
   var dbRBPrintTemplateBan: DbRbPrintTemplateBeanLocal = _
+
+  @EJB
+  var dbSettingsBean: DbSettingsBeanLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -568,7 +572,10 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   //создание первичного мед. осмотра
-  def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData): JSONCommonData  = {
+  def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
+
+    validateDocumentsAvailability(eventId)
+
     val isPrimary = (data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
     if(isPrimary)
       appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
@@ -585,6 +592,9 @@ class WebMisRESTImpl  extends WebMisREST
 
   //редактирование первичного мед. осмотра
   def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData)  = {
+
+    validateDocumentsAvailability(actionBean.getActionById(actionId).getEvent.getId)
+
     //создаем ответственного, если до этого был другой
     if(data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
       appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
@@ -598,6 +608,32 @@ class WebMisRESTImpl  extends WebMisREST
       postProcessing() _)
     returnValue
   }
+
+  private def validateDocumentsAvailability(eventId: Int) = {
+    val event = dbEventBean.getEventById(eventId)
+    if(event == null)
+      throw new CoreException(i18n("settings.path.eventBlockTime").format(eventId));
+
+    //, Нельзя создавать документы для закрытой госпитализации,
+    // если прошло больше дней, чем указанно в конфигурации
+    val closeDate = event.getExecDate
+    if(closeDate != null) {
+      val availableDays =  dbSettingsBean.getSettingByPath(i18n("settings.path.eventBlockTime")).getValue
+      try {
+        if(new DateTime(closeDate).plusDays(Integer.parseInt(availableDays)).getMillis < new DateTime().getMillis) {
+          throw new CoreException("Редактирование документов разрешено только в течении " + Integer.parseInt(availableDays) + " после закрытия истории болезни")
+        }
+      } catch {
+        case e: NumberFormatException => {
+          throw new CoreException("Невозможно обработать значение свойства " + i18n("settings.path.eventBlockTime") + " - " + availableDays)
+        }
+        case e: Throwable => {
+          throw new CoreException(i18n("error.unknownError"))
+        }
+      }
+    }
+  }
+
 
   def getPrimaryAssessmentById (assessmentId: Int, authData: AuthData) = {
 

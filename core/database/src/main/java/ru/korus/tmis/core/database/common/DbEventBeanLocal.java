@@ -5,6 +5,7 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function1;
 
+import javax.annotation.Nullable;
 import javax.ejb.Local;
 import java.util.Date;
 import java.util.List;
@@ -20,10 +21,11 @@ public interface DbEventBeanLocal {
      * Получение данных о обращении по идентификатору
      *
      * @param id Идентификатор обращения.
-     * @return Данные о обращении как Event entity
+     * @return Данные о обращении как Event entity, null, если обращения с данным id нет в БД
      * @throws CoreException
      * @see Event
      */
+    @Nullable
     Event getEventById(int id) throws CoreException;
 
     void setExecPersonForEventWithId(int eventId, Staff execPerson) throws CoreException;
