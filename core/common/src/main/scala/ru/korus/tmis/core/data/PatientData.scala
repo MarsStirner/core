@@ -6,12 +6,9 @@ import ru.korus.tmis.core.entity.model._
 import fd.ClientSocStatus
 import kladr.{Street, Kladr}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
-import javax.xml.bind.annotation.XmlRootElement._
 import java.util.{Date, LinkedList}
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import scala.Predef._
-import org.codehaus.jackson.annotate.JsonIgnoreProperties._
-import org.codehaus.jackson.map.annotate.JsonView
 import java.util
 import ru.korus.tmis.core.filter.AbstractListDataFilter
 import ru.korus.tmis.scala.util.ConfigManager
@@ -468,8 +465,6 @@ class AddressEntryContainer {
   var flat: String = _                    //квартира
   @BeanProperty
   var fullAddress: String = _             //полный адрес
-  //@BeanProperty
-  //var area: IdValueContainer = _        //Не используется
 
 
   def this(clientAddress: ClientAddress, map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]], street: java.util.LinkedHashMap[java.lang.Integer, Street]) {
