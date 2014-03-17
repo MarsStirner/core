@@ -48,6 +48,7 @@ public class DbUtil {
         initConnection();
         System.out.println("Database connection established");
         saveState();
+        close();
     }
 
     public void saveState() {
@@ -59,6 +60,7 @@ public class DbUtil {
                 final ResultSet rs = s.getResultSet();
                 if (rs.next()) {
                     maxIndexMap.put(tableName, rs.getInt("max(`id`)"));
+                    System.out.println("Table: " + tableName + " max index: " + maxIndexMap.get(tableName) );
                 } else {
                     throw new SQLException(String.format("Cannot init max index. SQL: %s", sql));
                 }
@@ -69,13 +71,17 @@ public class DbUtil {
     }
 
     public void restore() {
+        initConnection();
         try {
             final Statement s = conn.createStatement();
             for (String tableName : tables) {
                 s.executeUpdate("DELETE FROM " + tableName + " WHERE `id` >= " + maxIndexMap.get(tableName));
+                System.out.println("A rows with has been removed. Table: " + tableName + " max index: " + maxIndexMap.get(tableName) );
             }
         } catch (final Exception e) {
             e.printStackTrace();
+        } finally {
+            close();
         }
     }
 

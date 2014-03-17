@@ -104,15 +104,16 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
 
-    @BeforeTest
+    //@BeforeTest
     public void save() {
-        dbUtil = new DbUtil();
+      //  dbUtil = new DbUtil();
     }
 
-    @AfterTest
+    //TODO: выяснить, почему не выполняется после каждого теста
+    //@AfterTest
     public void restore() {
-        dbUtil.restore();
-        dbUtil.close();
+        //dbUtil.restore();
+      //  dbUtil.close();
     }
 
     @Test
@@ -201,6 +202,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test
     public void testGetActionTypeInfo() {
         try {
+            save();
             AuthData authData = auth();
             //http://webmis/data/dir/actionTypes/3911?eventId=325&callback=jQuery18202118265349417925_1394181799283&_=1394182983004
             final String transfusionTherapyActionId = "3911";
@@ -225,17 +227,19 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();
+        } finally {
+            restore();
         }
     }
 
     @Test
     public void testCreateAction() {
         try {
-
+            save();
             AuthData authData = auth();
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
             final Integer transfusionTherapyActionId = 3911;
-            final Integer eventId = appealBean.insertAppealForPatient(initAppealData(), TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
+            final Integer eventId = 841695;//appealBean.insertAppealForPatient(initAppealData(), TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
             URL url = new URL(BASE_URL + String.format("/tms-registry/appeals/%s/documents/", eventId));
             final int countAction = dbActionBean.getLastActionByActionTypeIdAndEventId(eventId, new HashSet<Integer>(){{add(transfusionTherapyActionId);}});
             final String tstCallback = "tstCallback";
@@ -258,9 +262,12 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             //TODO remove id  from json or clear DB
             //Assert.assertEquals(resJson, expected);
             Assert.assertTrue(res.contains(",\"name\":\"Гемотрансфузионная терапия\""));
+
         } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();
+        } finally {
+           restore();
         }
     }
 
