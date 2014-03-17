@@ -91,7 +91,7 @@ public class AdmissionInfo {
 
         apValue = getActionPropertyByCodeOrName(moving, WARD);
         ward = apValue == null ? null : apValue.getValueAsString();
-        bedDayCount = new Long(Days.daysBetween(new DateTime(event.getSetDate()), new DateTime(event.getExecDate())).getDays());
+        bedDayCount = new Long(Days.daysBetween(new DateTime(event.getSetDate()), new DateTime(event.getExecDate())).getDays() + 1);
         //Лечащий врач
         attendingDoctor = EmployeeInfo.newInstance(event.getExecutor());
         //Врач приемного отделения
