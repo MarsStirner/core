@@ -431,10 +431,19 @@ class AddressContainer {
   
   def this(patient: Patient, map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]], street: java.util.LinkedHashMap[java.lang.Integer, Street]) {
     this()
-    patient.getClientAddresses().foreach(a => a.getAddressType() match {
-      case 0 => {if(!a.isDeleted)this.registered = new AddressEntryContainer(a, map, street)}
-      case 1 => {if(!a.isDeleted)this.residential = new AddressEntryContainer(a, map, street)}
-    })
+    this.registered =
+      new AddressEntryContainer(
+        patient.getClientAddresses
+          .filter(p => !p.isDeleted && p.getAddressType == 0)
+          .sortBy(_.getModifyDatetime).last,
+        map, street)
+
+    this.residential =
+      new AddressEntryContainer(
+        patient.getClientAddresses
+          .filter(p => !p.isDeleted && p.getAddressType == 1)
+          .sortBy(_.getModifyDatetime).last,
+      map, street)
   }
 }
 
