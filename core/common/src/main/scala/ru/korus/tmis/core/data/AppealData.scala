@@ -309,7 +309,9 @@ class AppealEntry extends I18nable {
   @BeanProperty
   var orgStructDirectedFrom: Int = _                //Направлен из
   @BeanProperty
-  var reopening: String = _                   //Повторное обращение
+  var reopening: String = _                         //Повторное обращение
+  @BeanProperty
+  var context: String = _                           //Контекст печати
 
   /**
    * Конструктор класса AppealEntry
@@ -358,6 +360,7 @@ class AppealEntry extends I18nable {
     this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
     this.execPerson = new DoctorContainer(event.getExecutor)
     this.urgent = action.getIsUrgent
+    this.context = event.getEventType.getContext
 
 
     val getOrgStructPropByCode: String => Integer = (code: String) => {
