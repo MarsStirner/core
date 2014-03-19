@@ -5,9 +5,9 @@ import ru.korus.tmis.core.data.CommonAttribute
 import grizzled.slf4j.Logging
 import java.lang.Boolean
 import ru.korus.tmis.scala.util.{StringId, ConfigManager}
-import collection.JavaConverters._
+import java.util
 
-class ActionPropertyWrapper(ap: ActionProperty, refConverter: (ActionPropertyType, String) => String, refScopeConverter: ActionPropertyType => String)
+class ActionPropertyWrapper(ap: ActionProperty, apValueConverter: (ActionPropertyType, String) => java.util.LinkedList[java.util.LinkedList[String]], apScopeConverter: ActionPropertyType => String)
   extends Logging {
 
   val a = ap.getAction
@@ -29,10 +29,10 @@ class ActionPropertyWrapper(ap: ActionProperty, refConverter: (ActionPropertyTyp
             apv match {
               case null => map
               case _ => {
-                if (this.apt.getTypeName.compareTo("Html")==0 || this.apt.getTypeName.compareTo("Text")==0 || this.apt.getTypeName.compareTo("Constructor")==0) {
+                if (this.apt.getTypeName.compareTo("Html") == 0 || this.apt.getTypeName.compareTo("Text") == 0 || this.apt.getTypeName.compareTo("Constructor") == 0) {
                   map + (xmlName -> apv.getValue.toString)
-                } else if("Reference".equals(apt.getTypeName)) {
-                  map + (xmlName -> refConverter(apt, apv.getValueAsString))
+                } else if ("Reference".equals(apt.getTypeName)) {
+                  map + (xmlName -> apValueConverter(apt, apv.getValueAsString).get(0).get(0))
                 } else {
                   map + (xmlName -> apv.getValueAsString)
                 }
@@ -75,7 +75,14 @@ class ActionPropertyWrapper(ap: ActionProperty, refConverter: (ActionPropertyTyp
         }
       })
 
-    val (typeName, scope) = if ("Reference".equals(apt.getTypeName)) ("String", refScopeConverter(apt)) else (apt.getTypeName, apt.getValueDomain)
+    val typeName = if ("Reference".equals(apt.getTypeName)) "String" else apt.getTypeName
+    val scope = apScopeConverter(apt)
+    val tableValue: util.LinkedList[util.LinkedList[String]] =
+      if ("Table".equals(typeName) && apv != null && apv.getValueAsString != null && !"".equals(apv.getValueAsString)) {
+        apValueConverter(apt, apv.getValueAsString)
+      } else {
+        null
+      }
     new CommonAttribute(ap.getId,
       ap.getVersion.intValue,
       apt.getName,
@@ -84,6 +91,7 @@ class ActionPropertyWrapper(ap: ActionProperty, refConverter: (ActionPropertyTyp
       apt.isMandatory.toString,
       apt.isReadOnly.toString,
       scope,
+      tableValue,
       map)
   }
 

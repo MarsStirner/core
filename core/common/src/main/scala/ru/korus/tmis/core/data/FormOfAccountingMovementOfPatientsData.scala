@@ -199,7 +199,7 @@ class SeventhFormReversePage {
     that.foreach(f => {
       f._1 match {
         case F007QS_RECEIVED_ALL => f._2.foreach(e => this.received.add(new PatientInfoContainer(e)))
-        case F007QS_MOVING_FROM => f._2.foreach(e => this.receivedFromHourHospital.add(new PatientInfoContainer(e)))
+        case F007QS_RECEIVED_DAY_HOSPITAL => f._2.foreach(e => this.receivedFromHourHospital.add(new PatientInfoContainer(e)))
         case F007QS_LEAVED_ALL => f._2.foreach(e => this.leaved.add(new PatientInfoContainer(e)))
         case F007QS_MOVING_IN => f._2.foreach(e => this.moving.add(e, 0))
         case F007QS_LEAVED_ANOTHER_HOSPITAL => f._2.foreach(e => this.moving.add(e, 1))

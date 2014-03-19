@@ -15,6 +15,7 @@
             <property name="eclipselink.descriptor.customizer.EventType" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.descriptor.customizer.RbCounter" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.descriptor.customizer.DbVersions" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.FDRecord" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.logging.level" value="WARNING"/>
             <property name="eclipselink.logging.level.sql" value="OFF"/>
             <property name="eclipselink.logging.parameters" value="false"/>

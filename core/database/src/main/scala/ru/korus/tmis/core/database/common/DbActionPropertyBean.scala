@@ -12,6 +12,7 @@ import grizzled.slf4j.Logging
 import scala.collection.JavaConversions._
 import scala.collection.mutable.LinkedHashMap
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import java.util
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -192,10 +193,54 @@ class DbActionPropertyBean
     val data = em.createNativeQuery("SELECT `code`, `name` FROM %s WHERE `id` = %s".format(apt.getValueDomain, value)).getResultList
     var res = if (data.isEmpty) {
       value
-    } else  {
+    } else {
       toCodeAndName(data(0).asInstanceOf[Array[Object]])
     }
     res
+  }
+
+  def convertTableValue(apt: ActionPropertyType, value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
+    val res = new java.util.LinkedList[java.util.LinkedList[String]]
+    res.add(new util.LinkedList[String])
+    val rbAPTableFieldList = em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", apt.getValueDomain).getResultList
+    val rbAPTable = rbAPTableFieldList.get(0).getRbAptable
+    val prmList = rbAPTableFieldList.foldLeft("")( (b,a) => {
+      val s = if (b.isEmpty) "" else ","
+      val name = if (a.getReferenceTable == null) a.getRbAptable.getTableName +  "." + a.getFieldName else a.getReferenceTable + ".name"
+      b + s + name
+    })
+    val tblList =  rbAPTableFieldList.foldLeft(rbAPTable.getTableName)( (b,a) => {
+      if (a.getReferenceTable == null) {
+        b
+      } else {
+           b + " INNER JOIN " + a.getReferenceTable + " ON " + a.getReferenceTable + ".id=" + rbAPTable.getTableName + "." + a.getFieldName
+      }
+    })
+    val data = em.createNativeQuery("SELECT %s FROM %s WHERE %s.%s=%s".format(prmList, tblList, rbAPTable.getTableName, rbAPTable.getMasterField, value ))
+    res
+  }
+
+
+  def convertValue(apt: ActionPropertyType, value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
+    if ("Table".equals(apt.getTypeName)) {
+      return convertTableValue(apt, value)
+    }
+    val res = new java.util.LinkedList[java.util.LinkedList[String]]
+    res.add(new util.LinkedList[String])
+    if ("Reference".equals(apt.getTypeName)) {
+      res.get(0).add(fromRefValue(apt, value));
+    } else {
+      res.get(0).add(value);
+    }
+    res
+  }
+
+  def convertScope(propertyType: ActionPropertyType) = {
+    propertyType.getTypeName match {
+      case "Reference" => getScopeForReference(propertyType)
+      case "Table" => getScopeForTable(propertyType)
+      case _ => propertyType.getValueDomain
+    }
   }
 
   def getScopeForReference(propertyType: ActionPropertyType) = {
@@ -205,6 +250,14 @@ class DbActionPropertyBean
     resList.foldLeft("")((b, a) => {
       var v: String = toCodeAndName(a)
       b + v + ","
+    })
+  }
+
+  def getScopeForTable(propertyType: ActionPropertyType) = {
+    val rbAPTableFieldList = em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", propertyType.getValueDomain).getResultList
+    //преобразуем результат SQL запроса в CSV формат вида "<code> - <name>, <code> - <name>, ..." и при наличии в названии ',' заменяем на "(....)"
+    rbAPTableFieldList.foldLeft("")((b, a) => {
+      b + a.getName + ","
     })
   }
 

@@ -1,7 +1,5 @@
 package ru.korus.tmis.core.patient
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
-import javax.interceptor.Interceptors
 import grizzled.slf4j.Logging
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.data._
@@ -18,14 +16,14 @@ import ru.korus.tmis.core.event.Notification
 import javax.inject.Inject
 import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
-import org.joda.time.{DateTime, Years, Days}
+import org.joda.time.{DateTime, Years}
 ;
 
 @Stateless
 class AppealBean extends AppealBeanLocal
-                    with Logging
-                    with I18nable
-                    with CAPids{
+with Logging
+with I18nable
+with CAPids {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -94,50 +92,50 @@ class AppealBean extends AppealBeanLocal
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
 
-  private class IndexOf[T] (seq: Seq[T]) {
+  private class IndexOf[T](seq: Seq[T]) {
     def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
   }
 
-  val list = List(  iCapIds("db.rbCAP.hosp.primary.id.directed").toInt,                          //Кем направлен
-                    iCapIds("db.rbCAP.hosp.primary.id.number").toInt,                            //№ направления
-                    iCapIds("db.rbCAP.hosp.primary.id.deliveredType").toInt,                     //Кем доставлен
-                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt,          //Диагноз направившего учреждения
-                    iCapIds("db.rbCAP.hosp.primary.id.deliveredAfterType").toInt,                //Доставлен в стационар от начала заболевания
-                    iCapIds("db.rbCAP.hosp.primary.id.sentTo").toInt,                            //Направлен в отделение
-                    iCapIds("db.rbCAP.hosp.primary.id.cancel").toInt,                            //Причина отказа в госпитализации
-                    iCapIds("db.rbCAP.hosp.primary.id.appealWithDeseaseThisYear").toInt,         //Госпитализирован по поводу данного заболевания в текущем году
-                    iCapIds("db.rbCAP.hosp.primary.id.transportationType").toInt,                //Вид транспортировки
-                    iCapIds("db.rbCAP.hosp.primary.id.placeType").toInt,                         //Профиль койки
-                    iCapIds("db.rbCAP.hosp.primary.id.drugsType").toInt,                         //Доставлен в состоянии опьянения
-                    iCapIds("db.rbCAP.hosp.primary.id.injury").toInt,                            //Травма
-                    iCapIds("db.rbCAP.hosp.primary.id.assignmentDate").toInt,                    //Дата направления
-                    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationChannelType").toInt,        //Канал госпитализации
-                    iCapIds("db.rbCAP.hosp.primary.id.doctor").toInt,                            //Направивший врач
-                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt,  //Клиническое описание
-                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt,        //Диагноз направившего учреждения (осложнения)
-                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt, //Клиническое описание (осложнения)
-                    iCapIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt,                   //№ наряда СП
-                    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.left.ADdiast").toInt,        //Левая рука: АД диаст.
-                    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.left.ADsyst").toInt,         //Левая рука: АД сист.
-                    iCapIds("db.rbCAP.hosp.primary.id.temperature").toInt,                       //t
-                    iCapIds("db.rbCAP.hosp.primary.id.weight").toInt,                            //Вес при поступлении
-                    iCapIds("db.rbCAP.hosp.primary.id.height").toInt,                            //Рост
-                    iCapIds("db.rbCAP.hosp.primary.id.agreedType").toInt,                        //Тип согласования
-                    iCapIds("db.rbCAP.hosp.primary.id.agreedDoctor").toInt,                      //Комментарий к согласованию
-                    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationWith").toInt,               //Законный представитель
-                    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationType").toInt,               //Тип госпитализации
-                    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationPointType").toInt,          //Цель госпитализации
-                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt,          //Диагноз направившего учреждения (сопутствующий)
-                    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt,   //Клиническое описание (сопутствующий)
-                    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADdiast").toInt,       //Правая рука: АД диаст.
-                    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADsyst").toInt,        //Правая рука: АД сист.
-                    iCapIds("db.rbCAP.hosp.primary.id.note").toInt,                              //Примечание
-                    iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt,                     //Отделение поступления
-                    iCapIds("db.rbCap.host.primary.id.orgStructDirectedFrom").toInt,             //Направлен из
-                    iCapIds("db.rbCap.host.primary.id.reopening").toInt)                         //Переоткрытие ИБ
+  val list = List(iCapIds("db.rbCAP.hosp.primary.id.directed").toInt, //Кем направлен
+    iCapIds("db.rbCAP.hosp.primary.id.number").toInt, //№ направления
+    iCapIds("db.rbCAP.hosp.primary.id.deliveredType").toInt, //Кем доставлен
+    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt, //Диагноз направившего учреждения
+    iCapIds("db.rbCAP.hosp.primary.id.deliveredAfterType").toInt, //Доставлен в стационар от начала заболевания
+    iCapIds("db.rbCAP.hosp.primary.id.sentTo").toInt, //Направлен в отделение
+    iCapIds("db.rbCAP.hosp.primary.id.cancel").toInt, //Причина отказа в госпитализации
+    iCapIds("db.rbCAP.hosp.primary.id.appealWithDeseaseThisYear").toInt, //Госпитализирован по поводу данного заболевания в текущем году
+    iCapIds("db.rbCAP.hosp.primary.id.transportationType").toInt, //Вид транспортировки
+    iCapIds("db.rbCAP.hosp.primary.id.placeType").toInt, //Профиль койки
+    iCapIds("db.rbCAP.hosp.primary.id.drugsType").toInt, //Доставлен в состоянии опьянения
+    iCapIds("db.rbCAP.hosp.primary.id.injury").toInt, //Травма
+    iCapIds("db.rbCAP.hosp.primary.id.assignmentDate").toInt, //Дата направления
+    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationChannelType").toInt, //Канал госпитализации
+    iCapIds("db.rbCAP.hosp.primary.id.doctor").toInt, //Направивший врач
+    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt, //Клиническое описание
+    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt, //Диагноз направившего учреждения (осложнения)
+    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt, //Клиническое описание (осложнения)
+    iCapIds("db.rbCAP.hosp.primary.id.ambulanceNumber").toInt, //№ наряда СП
+    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.left.ADdiast").toInt, //Левая рука: АД диаст.
+    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.left.ADsyst").toInt, //Левая рука: АД сист.
+    iCapIds("db.rbCAP.hosp.primary.id.temperature").toInt, //t
+    iCapIds("db.rbCAP.hosp.primary.id.weight").toInt, //Вес при поступлении
+    iCapIds("db.rbCAP.hosp.primary.id.height").toInt, //Рост
+    iCapIds("db.rbCAP.hosp.primary.id.agreedType").toInt, //Тип согласования
+    iCapIds("db.rbCAP.hosp.primary.id.agreedDoctor").toInt, //Комментарий к согласованию
+    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationWith").toInt, //Законный представитель
+    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationType").toInt, //Тип госпитализации
+    iCapIds("db.rbCAP.hosp.primary.id.hospitalizationPointType").toInt, //Цель госпитализации
+    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt, //Диагноз направившего учреждения (сопутствующий)
+    iCapIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt, //Клиническое описание (сопутствующий)
+    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADdiast").toInt, //Правая рука: АД диаст.
+    iCapIds("db.rbCAP.hosp.primary.id.bloodPressure.right.ADsyst").toInt, //Правая рука: АД сист.
+    iCapIds("db.rbCAP.hosp.primary.id.note").toInt, //Примечание
+    iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt, //Отделение поступления
+    iCapIds("db.rbCap.host.primary.id.orgStructDirectedFrom").toInt, //Направлен из
+    iCapIds("db.rbCap.host.primary.id.reopening").toInt) //Переоткрытие ИБ
 
   //Insert or modify appeal
-  def insertAppealForPatient(appealData : AppealData, patientId: Int, authData: AuthData) = {
+  def insertAppealForPatient(appealData: AppealData, patientId: Int, authData: AuthData) = {
 
     //1. Event и проверка данных на валидность
     val newEvent = this.verificationData(patientId, authData, appealData, true)
@@ -146,27 +144,27 @@ class AppealBean extends AppealBeanLocal
     insertOrModifyAppeal(appealData, newEvent, true, authData)
   }
 
-  def updateAppeal(appealData : AppealData, eventId: Int, authData: AuthData) = {
+  def updateAppeal(appealData: AppealData, eventId: Int, authData: AuthData) = {
     val newEvent = this.verificationData(eventId, authData, appealData, false)
     insertOrModifyAppeal(appealData, newEvent, false, authData)
   }
 
-  def insertOrModifyAppeal(appealData : AppealData, event: Event, flgCreate: Boolean, authData: AuthData) = {
+  def insertOrModifyAppeal(appealData: AppealData, event: Event, flgCreate: Boolean, authData: AuthData) = {
 
     var entities = Set.empty[AnyRef]
     val now = new Date()
     var newEvent = event
     //2. Action
 
-    var oldAction: Action = null// Action.clone(temp)
+    var oldAction: Action = null // Action.clone(temp)
     var oldValues = Map.empty[ActionProperty, java.util.List[APValue]] //actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue)
-    var lockId: Int = -1//appLock.acquireLock("Action", temp.getId.intValue(), oldAction.getIdx, authData)
+    var lockId: Int = -1 //appLock.acquireLock("Action", temp.getId.intValue(), oldAction.getIdx, authData)
 
     val temp = actionBean.getAppealActionByEventId(newEvent.getId.intValue(), i18n("db.actionType.hospitalization.primary").toInt)
     var action: Action = null
-    var list =  List.empty[AnyRef]
+    var list = List.empty[AnyRef]
 
-    if(flgCreate) {
+    if (flgCreate) {
       //Обновим контейнер новыми данными
       appealData.data.setId(newEvent.getId.intValue())
       appealData.data.setNumber(newEvent.getExternalId)
@@ -178,27 +176,28 @@ class AppealBean extends AppealBeanLocal
 
     try {
 
-      if (temp==null){
+      if (temp == null) {
         action = actionBean.createAction(newEvent.getId.intValue(),
-                                          actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(),
-                                          authData)
+          actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(),
+          authData)
         action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
         dbManager.persist(action)
         list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
       }
       else {
         action = actionBean.updateAction(temp.getId.intValue(),
-                                         temp.getVersion.intValue,
-                                         authData)
+          temp.getVersion.intValue,
+          authData)
         list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
 
         val list2 = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt)
-                                          .toList
-                                          .filter(p => {
+          .toList
+          .filter(p => {
           val filtred = list.filter(pp => pp.asInstanceOf[ActionProperty].getType.getId == p.getId)
           if (filtred == null || filtred.size == 0) true else false
         })
-        list2.foreach(ff => { //создание недостающих акшен пропертей
+        list2.foreach(ff => {
+          //создание недостающих акшен пропертей
           val res = actionPropertyBean.createActionProperty(action, ff.getId.intValue(), authData)
           em.persist(res)
         })
@@ -207,8 +206,8 @@ class AppealBean extends AppealBeanLocal
       }
 
       action.setIsUrgent(appealData.data.getUrgent)
-      if(appealData.data.rangeAppealDateTime!=null) {
-        if(appealData.data.rangeAppealDateTime.getStart!=null)
+      if (appealData.data.rangeAppealDateTime != null) {
+        if (appealData.data.rangeAppealDateTime.getStart != null)
           action.setBegDate(appealData.data.rangeAppealDateTime.getStart)
         action.setEndDate(appealData.data.rangeAppealDateTime.getEnd)
       }
@@ -220,35 +219,36 @@ class AppealBean extends AppealBeanLocal
 
       list.foreach(f => {
         val ap: ActionProperty =
-          if(flgCreate){
+          if (flgCreate) {
             val res = actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), authData)
             em.persist(res)
             res
           }
           else {
             actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
-                                                    f.asInstanceOf[ActionProperty].getVersion.intValue,
-                                                    authData)
+              f.asInstanceOf[ActionProperty].getVersion.intValue,
+              authData)
           }
         if (!flgCreate)
           entities = entities + ap
 
         var values = this.getValueByCase(ap.getType.getId.intValue(), appealData, authData)
-        if (values!=null){
+        if (values != null) {
           values.size match {
             case 0 => {
               if (flgCreate) {
                 //В случае, если не приходит значение для ActionProperty, то записываем значение по умолчанию.
                 val defValue = ap.getType.getDefaultValue
-                if (defValue!=null && !defValue.trim.isEmpty) {
+                if (defValue != null && !defValue.trim.isEmpty) {
                   val apv = actionPropertyBean.setActionPropertyValue(ap, defValue, 0)
-                  if (apv!=null)
+                  if (apv != null)
                     entities = entities + apv.unwrap
                 }
-              } else { //Если пришел пустой список, а старые значения есть, то зачистим их
+              } else {
+                //Если пришел пустой список, а старые значения есть, то зачистим их
                 val apvs = actionPropertyBean.getActionPropertyValue(ap)
-                if (apvs!=null && apvs.size()>0) {
-                  for(i <- 0 until apvs.size){
+                if (apvs != null && apvs.size() > 0) {
+                  for (i <- 0 until apvs.size) {
                     var apv = apvs(i).unwrap()
                     apv = em.merge(apv)
                     em.remove(apv)
@@ -257,10 +257,12 @@ class AppealBean extends AppealBeanLocal
               }
             }
             case _ => {
-              if(ap.getType.getIsVector) { //Если вектор, то сперва зачищаем старый список
-              val apvs = actionPropertyBean.getActionPropertyValue(ap)
-                if (apvs!=null && apvs.size()>values.size){
-                  for(i <- values.size to apvs.size-1) { //если новых значений меньше тем старых, то хвост зачистим
+              if (ap.getType.getIsVector) {
+                //Если вектор, то сперва зачищаем старый список
+                val apvs = actionPropertyBean.getActionPropertyValue(ap)
+                if (apvs != null && apvs.size() > values.size) {
+                  for (i <- values.size to apvs.size - 1) {
+                    //если новых значений меньше тем старых, то хвост зачистим
                     var apv = apvs(i).unwrap()
                     apv = em.merge(apv)
                     em.remove(apv)
@@ -271,12 +273,12 @@ class AppealBean extends AppealBeanLocal
               // Если не пришло отделение поступления - проставляем приемное отделение
               val pTypeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(ap.getType.getId.intValue()).getId.toInt
               val storedpTypeId = iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt
-              if(pTypeId.equals(storedpTypeId) && values.head.equals("0"))
+              if (pTypeId.equals(storedpTypeId) && values.head.equals("0"))
                 values = Set(i18n("db.dayHospital.id"))
 
               values.foreach(value => {
                 val apv = actionPropertyBean.setActionPropertyValue(ap, value, it)
-                if (apv!=null)
+                if (apv != null)
                   entities = entities + apv.unwrap
                 it = it + 1
               })
@@ -287,29 +289,29 @@ class AppealBean extends AppealBeanLocal
 
       if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
       dbManager.detach(action)
-       /*
-      if (!flgCreate) {
-        val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
-        actionEvent.fire(new ModifyActionNotification(oldAction,
-          oldValues,
-          action,
-          newValues))
-      }
-      */
+      /*
+     if (!flgCreate) {
+       val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
+       actionEvent.fire(new ModifyActionNotification(oldAction,
+         oldValues,
+         action,
+         newValues))
+     }
+     */
     }
     finally {
-      if (lockId>0) appLock.releaseLock(lockId)
+      if (lockId > 0) appLock.releaseLock(lockId)
     }
 
-    if (!flgCreate){
+    if (!flgCreate) {
       //Редактирование обращения (В случае если изменен НИБ)
       var flgEventRewrite = true
-      if(appealData.data.number!=null &&
+      if (appealData.data.number != null &&
         !appealData.data.number.isEmpty &&
-        newEvent.getExternalId.compareTo(appealData.data.number)!=0) {
+        newEvent.getExternalId.compareTo(appealData.data.number) != 0) {
 
         //проверка НИБ на уникальность
-        if (this.checkAppealNumber(appealData.data.number)==false)
+        if (this.checkAppealNumber(appealData.data.number) == false)
           throw new CoreException("Номер истории болезни в запросе (НИБ = %s) отличается от текущего (НИБ = %s) и не является уникальным".format(appealData.data.number, newEvent.getExternalId))
 
         newEvent.setExternalId(appealData.data.number)
@@ -319,7 +321,7 @@ class AppealBean extends AppealBeanLocal
 
         flgEventRewrite = true
       }
-      if(appealData.data.refuseAppealReason!=null && !appealData.data.refuseAppealReason.isEmpty) {
+      if (appealData.data.refuseAppealReason != null && !appealData.data.refuseAppealReason.isEmpty) {
         newEvent = this.revokeAppealById(newEvent, 15, authData)
         //this.insertCompleteDiagnoses(appealData.data.id, authData)   //Старый вариант (заменено кодом ниже)
         //final диагноз
@@ -328,7 +330,7 @@ class AppealBean extends AppealBeanLocal
           var map = Map.empty[String, java.util.Set[AnyRef]]
           map += ("finalMkb" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue), 0, 0)))
           val diag = diagnosisBean.insertDiagnoses(appealData.data.id, asJavaMap(map), authData)
-          diag.filter(p=>p.isInstanceOf[Diagnostic]).toList.foreach(f=>f.asInstanceOf[Diagnostic].setResult(this.getRbResultById(15)))
+          diag.filter(p => p.isInstanceOf[Diagnostic]).toList.foreach(f => f.asInstanceOf[Diagnostic].setResult(this.getRbResultById(15)))
           dbManager.persistAll(diag)
         }
 
@@ -343,71 +345,72 @@ class AppealBean extends AppealBeanLocal
     //Создание/Редактирование записей для законных представителей
     val clientRelations = appealData.data.getHospitalizationWith
     var setRel = Set.empty[ClientRelation]
-    if (clientRelations!=null && clientRelations.size()>0) { //Если законные представители заполнены
+    if (clientRelations != null && clientRelations.size() > 0) {
+      //Если законные представители заполнены
       val patient = newEvent.getPatient
       val serverRelations = patient.getActiveClientRelatives()
 
       clientRelations.foreach(f => {
         val serverRelation = serverRelations.find(element => ((element.getRelative.getId.intValue() == f.getRelative.getId) &&
-                                                              (element.getRelativeType.getId.intValue()==f.getRelativeType.getId)))
-                                            .getOrElse(null)
-        if (serverRelation==null){
+          (element.getRelativeType.getId.intValue() == f.getRelativeType.getId)))
+          .getOrElse(null)
+        if (serverRelation == null) {
           val updateRelation = serverRelations.find(element => element.getRelative.getId.intValue() == f.getRelative.getId).getOrElse(null)
-          val relationId = if(updateRelation==null) -1 else updateRelation.getId.intValue()
+          val relationId = if (updateRelation == null) -1 else updateRelation.getId.intValue()
           val parent = dbPatientBean.getPatientById(f.getRelative.getId)
           val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson(relationId,
-                                                                                    f.getRelativeType.getId,
-                                                                                    parent,
-                                                                                    patient,
-                                                                                    authData.user)
+            f.getRelativeType.getId,
+            parent,
+            patient,
+            authData.user)
           setRel += tempServerRelation
         }
       })
     }
-    if (setRel!=null && setRel.size>0) dbManager.mergeAll(setRel)
+    if (setRel != null && setRel.size > 0) dbManager.mergeAll(setRel)
     //*****
     //Создание/редактирование записи для Event_Persons
     if (flgCreate)
       setExecPersonForAppeal(newEvent.getId.intValue(), 0, authData, ExecPersonSetType.EP_CREATE_APPEAL)
-      //dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
+    //dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
 
     //Создание/редактирование диагнозов (отд. записи)
     var map = Map.empty[String, java.util.Set[AnyRef]]
     Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
-        i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
-        i18n("appeal.diagnosis.diagnosisKind.attendantMkb")).foreach(flatCode=>{
-      val values = appealData.data.diagnoses.filter(p=>p.getDiagnosisKind.compareTo(flatCode)==0)
-                                            .map(f=>{
-                                                      var mkb :Mkb = null
-                                                      try {
-                                                        mkb = dbMkbBean.getMkbByCode(f.getMkb.getCode)
-                                                      } catch {
-                                                        case e: Exception => mkb = null
-                                                      }
-                                                      (Integer.valueOf(f.getDiagnosticId),
-                                                      f.getDescription,
-                                                      if(mkb!=null) Integer.valueOf(mkb.getId.intValue) else -1,
-                                                      0, // characterId
-                                                      0) // stageId
-                                                    })
-                                            .toSet[AnyRef]
+      i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
+      i18n("appeal.diagnosis.diagnosisKind.attendantMkb")).foreach(flatCode => {
+      val values = appealData.data.diagnoses.filter(p => p.getDiagnosisKind.compareTo(flatCode) == 0)
+        .map(f => {
+        var mkb: Mkb = null
+        try {
+          mkb = dbMkbBean.getMkbByCode(f.getMkb.getCode)
+        } catch {
+          case e: Exception => mkb = null
+        }
+        (Integer.valueOf(f.getDiagnosticId),
+          f.getDescription,
+          if (mkb != null) Integer.valueOf(mkb.getId.intValue) else -1,
+          0, // characterId
+          0) // stageId
+      })
+        .toSet[AnyRef]
       map += (flatCode -> values)
     })
     val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), asJavaMap(map), authData)
-    val mergedItems = diagnoses.filter(p=> (p.isInstanceOf[Diagnosis] &&
-                                              p.asInstanceOf[Diagnosis].getId!=null &&
-                                              p.asInstanceOf[Diagnosis].getId.intValue()>0) ||
-                                             (p.isInstanceOf[Diagnostic] &&
-                                              p.asInstanceOf[Diagnostic].getId!=null &&
-                                              p.asInstanceOf[Diagnostic].getId.intValue()>0)
-                                        ).toList
-    val persistedItems = diagnoses.filter(p=> (p.isInstanceOf[Diagnosis] &&
-                                                (p.asInstanceOf[Diagnosis].getId==null ||
-                                                 p.asInstanceOf[Diagnosis].getId.intValue()<=0))||
-                                              (p.isInstanceOf[Diagnostic] &&
-                                                (p.asInstanceOf[Diagnostic].getId==null ||
-                                                 p.asInstanceOf[Diagnostic].getId.intValue()<=0))
-                                          ).toList
+    val mergedItems = diagnoses.filter(p => (p.isInstanceOf[Diagnosis] &&
+      p.asInstanceOf[Diagnosis].getId != null &&
+      p.asInstanceOf[Diagnosis].getId.intValue() > 0) ||
+      (p.isInstanceOf[Diagnostic] &&
+        p.asInstanceOf[Diagnostic].getId != null &&
+        p.asInstanceOf[Diagnostic].getId.intValue() > 0)
+    ).toList
+    val persistedItems = diagnoses.filter(p => (p.isInstanceOf[Diagnosis] &&
+      (p.asInstanceOf[Diagnosis].getId == null ||
+        p.asInstanceOf[Diagnosis].getId.intValue() <= 0)) ||
+      (p.isInstanceOf[Diagnostic] &&
+        (p.asInstanceOf[Diagnostic].getId == null ||
+          p.asInstanceOf[Diagnostic].getId.intValue() <= 0))
+    ).toList
     dbManager.mergeAll(mergedItems)
     dbManager.persistAll(persistedItems)
 
@@ -417,12 +420,12 @@ class AppealBean extends AppealBeanLocal
   def getAppealById(id: Int) = {
     //запрос  данных из Эвента
     val event = dbEventBean.getEventById(id)
-    if(event==null){
+    if (event == null) {
       throw new CoreException("Обращение с id=%d не найдено в БД".format(id))
     }
     //запрос данных из Action
-    val action = actionBean.getAppealActionByEventId(event.getId.intValue(),i18n("db.actionType.hospitalization.primary").toInt)
-    if(action==null){
+    val action = actionBean.getAppealActionByEventId(event.getId.intValue(), i18n("db.actionType.hospitalization.primary").toInt)
+    if (action == null) {
       throw new CoreException("Первичный осмотр для обращения с id=%d не найден в БД".format(id))
     }
     //Запрос данных из ActionProperty
@@ -430,23 +433,23 @@ class AppealBean extends AppealBeanLocal
 
     val values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]] = findMapActionProperty.foldLeft(new java.util.HashMap[(java.lang.Integer, ActionProperty), java.util.List[Object]])(
       (str_key, el) => {
-        val (ap,  apvs) = el
+        val (ap, apvs) = el
         val aptId = ap.getType.getId.intValue()
         val rbCap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(aptId)
-        if (rbCap!=null) {
+        if (rbCap != null) {
           val key = (rbCap.getId, ap)
           val list: java.util.List[Object] = new ArrayList[Object]
-          if(apvs!=null && apvs.size>0) {
-            apvs.foreach(apv=>list += (apv.getValue))
+          if (apvs != null && apvs.size > 0) {
+            apvs.foreach(apv => list += (apv.getValue))
           }
           else
             list += null
 
-          if(str_key.containsKey(key)){
+          if (str_key.containsKey(key)) {
             list.addAll(str_key.get(key))
             str_key.remove(key)
           }
-          str_key.put(key,list)
+          str_key.put(key, list)
         } else {
           //Ворнинг! Нету такого типа экшн проперти в кореэкшнпропертитайп
         }
@@ -462,27 +465,27 @@ class AppealBean extends AppealBeanLocal
     eventsMap
   }
 
-  def getAllAppealsByPatient( requestData: AppealSimplifiedRequestData,
-                              authData: AuthData) = {
+  def getAllAppealsByPatient(requestData: AppealSimplifiedRequestData,
+                             authData: AuthData) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //requestData.setRecordsCount(dbCustomQueryBean.getCountOfAppealsWithFilter(requestData.filter))
-    val map = dbCustomQueryBean.getAllAppealsWithFilter(requestData.page-1, requestData.limit, requestData.sortingFieldInternal, requestData.sortingMethod, requestData.filter, requestData.rewriteRecordsCount _)
+    val map = dbCustomQueryBean.getAllAppealsWithFilter(requestData.page - 1, requestData.limit, requestData.sortingFieldInternal, requestData.sortingMethod, requestData.filter, requestData.rewriteRecordsCount _)
     new AppealSimplifiedDataList(map, requestData)
   }
 
-  def checkAppealNumber(number : String) = {
-    val result = dbEventBean.getAllAppealsForReceivedPatientByPeriod(0,1,"id","desc", new ReceivedRequestDataFilter(number))
+  def checkAppealNumber(number: String) = {
+    val result = dbEventBean.getAllAppealsForReceivedPatientByPeriod(0, 1, "id", "desc", new ReceivedRequestDataFilter(number))
     val isNumberFree = (result == null || result.length < 1)
     isNumberFree
   }
 
 
-  def revokeAppealById(event : Event, resultId: Int, authData: AuthData) = {
+  def revokeAppealById(event: Event, resultId: Int, authData: AuthData) = {
 
     //Закрываем госпитализацию с причиной отказа
     val now = new Date()
-    if(event == null){
+    if (event == null) {
       throw new CoreException("Не указано редактируемое обращение")
     }
     //TODO: Возможно надо прикрутить блокировку
@@ -507,46 +510,47 @@ class AppealBean extends AppealBeanLocal
     val event = dbEventBean.getEventById(eventId)
     val execDate = event.getExecDate
 
-    var setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
-    val hospId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
-    if(hospId>0) { //Есть экшн - поступление
-      val lstSentToIds = JavaConversions.seqAsJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
-      val lstCancelIds = JavaConversions.seqAsJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
+    var setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt: java.lang.Integer))
+    val hospId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
+    if (hospId > 0) {
+      //Есть экшн - поступление
+      val lstSentToIds = JavaConversions.seqAsJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.sentTo").toInt: java.lang.Integer))
+      val lstCancelIds = JavaConversions.seqAsJavaList(scala.List(i18n("db.rbCAP.hosp.primary.id.cancel").toInt: java.lang.Integer))
       val apSentToWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstSentToIds)
       val apCancelWithValues = actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(hospId, lstCancelIds)
-      if (execDate!= null){
-        if (apCancelWithValues!=null &&
-          apCancelWithValues.size()>0 &&
-          apCancelWithValues.filter(element => element._2.size()>0).size>0){
+      if (execDate != null) {
+        if (apCancelWithValues != null &&
+          apCancelWithValues.size() > 0 &&
+          apCancelWithValues.filter(element => element._2.size() > 0).size > 0) {
           status = i18n("patient.status.canceled").toString + ": " + apCancelWithValues.iterator.next()._2.get(0).getValueAsString
         } else {
           status = i18n("patient.status.discharged").toString + ": " + ConfigManager.DateFormatter.format(execDate)
         }
       } else {
-        if (apSentToWithValues!=null &&
-          apSentToWithValues.size()>0 &&
-          apSentToWithValues.filter(element => element._2.size()>0).size>0){
+        if (apSentToWithValues != null &&
+          apSentToWithValues.size() > 0 &&
+          apSentToWithValues.filter(element => element._2.size() > 0).size > 0) {
           //Проверяем наличие экшна - Движение
-          setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.moving").toInt :java.lang.Integer))
+          setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.moving").toInt: java.lang.Integer))
           val movingId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
-          status = if (movingId>0)
+          status = if (movingId > 0)
             if (actionBean.getActionById(movingId).getEndDate == null) i18n("patient.status.regToBed").toString else i18n("patient.status.sentTo").toString
           else i18n("patient.status.sentTo").toString
         } else {
-          if (execDate!= null)
+          if (execDate != null)
             status = i18n("patient.status.discharged").toString
           else {
-            setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.primary").toInt :java.lang.Integer,
-                                                     i18n("db.actionType.secondary").toInt :java.lang.Integer))
-            val primaryId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
-            status = if(primaryId>0) i18n("patient.status.hospitalized").toString
-                     else i18n("patient.status.require").toString
+            setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.primary").toInt: java.lang.Integer,
+              i18n("db.actionType.secondary").toInt: java.lang.Integer))
+            val primaryId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
+            status = if (primaryId > 0) i18n("patient.status.hospitalized").toString
+            else i18n("patient.status.require").toString
           }
         }
       }
     } else {
-      status = if (execDate!= null) i18n("patient.status.discharged").toString
-               else i18n("patient.status.require").toString
+      status = if (execDate != null) i18n("patient.status.discharged").toString
+      else i18n("patient.status.require").toString
     }
     status
   }
@@ -560,54 +564,57 @@ class AppealBean extends AppealBeanLocal
       throw new CoreException(i18n("error.appeal.create.InvalidPeriod"))
     }*/
     val maxDiffYears: Int = 3
-    val years : Int = Years.yearsBetween(new DateTime(datePeriod.getStart), new DateTime()).getYears;
-    if (Math.abs(years) > maxDiffYears - 1 ) {
+    val years: Int = Years.yearsBetween(new DateTime(datePeriod.getStart), new DateTime()).getYears;
+    if (Math.abs(years) > maxDiffYears - 1) {
       throw new CoreException(i18n("error.appeal.create.InvalidPeriod.StartDate", maxDiffYears))
     }
   }
 
   @throws(classOf[CoreException])
-  def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {   //для создания ид пациента, для редактирование ид обращения
+  def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {
+    //для создания ид пациента, для редактирование ид обращения
 
-    if (authData==null)
+    if (authData == null)
       throw new CoreException(i18n("error.appeal.create.NoAuthData"))
 
 
     var event: Event = null
     val now: Date = new Date;
-    if (flgCreate) {            //Создаем новое
+    if (flgCreate) {
+      //Создаем новое
       if (id <= 0) {
         throw new CoreException(i18n("error.appeal.create.InvalidPatientData").format(id))
       }
 
-      if (appealData.data.appealType==null ||
-        appealData.data.appealType.eventType==null ||
-        appealData.data.appealType.eventType.getId<=0){
+      if (appealData.data.appealType == null ||
+        appealData.data.appealType.eventType == null ||
+        appealData.data.appealType.eventType.getId <= 0) {
         throw new CoreException(i18n("error.appeal.create.NoAppealType"))
       }
 
-      if(appealData.data.contract == null || appealData.data.contract.getId < 1)
+      if (appealData.data.contract == null || appealData.data.contract.getId < 1)
         throw new CoreException(i18n("error.appeal.create.InvalidContractData"))
 
       val contract = dbContractBean.getContractById(appealData.data.contract.getId)
 
-      if(contract.getEndDate.getTime < now.getTime)
+      if (contract.getEndDate.getTime < now.getTime)
         throw new CoreException(i18n("error.appeal.create.ContractIsExpired"))
 
       checkAppealBegEndDate(appealData.getData.rangeAppealDateTime)
 
       event = dbEventBean.createEvent(id,
-                                    //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
-                                    appealData.data.appealType.eventType.getId,
-                                    //dbEventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
-                                    appealData.data.rangeAppealDateTime.getStart(),
-                                    /*appealData.data.rangeAppealDateTime.getEnd()*/null,
-                                    appealData.getData.getContract.getId,
-                                    authData)
+        //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
+        appealData.data.appealType.eventType.getId,
+        //dbEventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
+        appealData.data.rangeAppealDateTime.getStart(),
+        /*appealData.data.rangeAppealDateTime.getEnd()*/ null,
+        appealData.getData.getContract.getId,
+        authData)
     }
-    else {                      //Редактирование
+    else {
+      //Редактирование
       event = dbEventBean.getEventById(id)
-      if (event==null) {
+      if (event == null) {
         throw new CoreException("Обращение с id = %s не найдено в БД".format(appealData.data.id.toString))
         return null
       }
@@ -619,22 +626,22 @@ class AppealBean extends AppealBeanLocal
       event.setVersion(appealData.getData().getVersion())
     }
 
-    val hosptype = if(appealData.data.hospitalizationType!=null) appealData.data.hospitalizationType.getId else 0
-    if(hosptype>0) {
+    val hosptype = if (appealData.data.hospitalizationType != null) appealData.data.hospitalizationType.getId else 0
+    if (hosptype > 0) {
       //val value = dbFDRecordBean.getFDRecordById(hosptype)
       //if (value!=null) {            //TODO: ! Материть Сашу
-        val order = if(/*value.getId.intValue()*/hosptype==220) 1
-        else if (/*value.getId.intValue()*/hosptype==221) 2
-        else if (/*value.getId.intValue()*/hosptype==222) 3
-        else if (/*value.getId.intValue()*/hosptype==223) 4
-        else 0
-        event.setOrder(order)
+      val order = if ( /*value.getId.intValue()*/ hosptype == 220) 1
+      else if ( /*value.getId.intValue()*/ hosptype == 221) 2
+      else if ( /*value.getId.intValue()*/ hosptype == 222) 3
+      else if ( /*value.getId.intValue()*/ hosptype == 223) 4
+      else 0
+      event.setOrder(order)
       //}
     } else event.setOrder(0)
 
-    if (appealData.data.appealWithDeseaseThisYear!=null && !appealData.data.appealWithDeseaseThisYear.isEmpty) {
+    if (appealData.data.appealWithDeseaseThisYear != null && !appealData.data.appealWithDeseaseThisYear.isEmpty) {
       val value = appealData.data.appealWithDeseaseThisYear
-      val isPrim = if(value.contains("первично")) 1 else if (value.contains("повторно")) 2 else 0   //TODO: ! Материть Сашу
+      val isPrim = if (value.contains("первично")) 1 else if (value.contains("повторно")) 2 else 0 //TODO: ! Материть Сашу
       event.setIsPrimary(isPrim)
     } else event.setIsPrimary(0)
 
@@ -644,16 +651,16 @@ class AppealBean extends AppealBeanLocal
   }
 
   private def AnyToSetOfString(that: AnyRef, sec: String): Set[String] = {
-    if(that==null)
+    if (that == null)
       return null //Set.empty[String]     //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
 
     if (that.isInstanceOf[Date]) {
       return Set(ConfigManager.DateFormatter.format(that))
     }
-    else if (that.isInstanceOf[LinkedList[/*IdValueContainer*/LegalRepresentativeContainer]]) {
+    else if (that.isInstanceOf[LinkedList[ /*IdValueContainer*/ LegalRepresentativeContainer]]) {
       var hospWith = Set.empty[String]
       that.asInstanceOf[LinkedList[LegalRepresentativeContainer]].foreach(e => {
-        if(e.getRelative.getId>0) {
+        if (e.getRelative.getId > 0) {
           sec match {
             case "relative" => hospWith += e.getRelative.getId.toString
             case "note" => hospWith += e.getNote.toString
@@ -665,9 +672,9 @@ class AppealBean extends AppealBeanLocal
     }
     else if (that.isInstanceOf[IdNameContainer]) {
 
-      return if(that.asInstanceOf[IdNameContainer].getId>0)
-                Set(that.asInstanceOf[IdNameContainer].getId.toString)
-             else Set.empty[String]
+      return if (that.asInstanceOf[IdNameContainer].getId > 0)
+        Set(that.asInstanceOf[IdNameContainer].getId.toString)
+      else Set.empty[String]
     }
     else {
       try {
@@ -681,50 +688,53 @@ class AppealBean extends AppealBeanLocal
     }
   }
 
-  private def getValueByCase(aptId: Int, appealData : AppealData, authData: AuthData) = {
+  private def getValueByCase(aptId: Int, appealData: AppealData, authData: AuthData) = {
 
     val listNdx = new IndexOf(list)
     val cap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(aptId)
-
-    cap.getId.intValue() match {
-      case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed, "")                                                     //Кем направлен
-      case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number, "")                                                       //Номер направления
-      case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType, "")                                                           //Кем доставлен
-      case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", false)                          //Диагноз направившего учреждения
-      case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType, "")                                                      //Доставлен в стационар от начала заболевания
-      case listNdx(5) => this.AnyToSetOfString(null, "")                                                                                    //Направлен в отделение
-      case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason, "")                                                      //Причина отказа в госпитализации
-      case listNdx(7) => this.AnyToSetOfString(appealData.data.appealWithDeseaseThisYear, "")                                               //Госпитализирован по поводу данного заболевания в текущем году
-      case listNdx(8) => this.AnyToSetOfString(appealData.data.movingType, "")                                                              //Вид транспортировки
-      case listNdx(9) => this.AnyToSetOfString(null, "")                                                                                    //Профиль койки
-      case listNdx(10) => this.AnyToSetOfString(appealData.data.stateType, "")                                                              //Доставлен в состоянии опьянения
-      case listNdx(11) => this.AnyToSetOfString(appealData.data.injury, "")                                                                 //Травма
-      case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate, "")                                              //Дата направления
-      case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType, "")                                             //Канал госпитализации
-      case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor, "")                                                      //Направивший врач
-      case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", true)                          //Клиническое описание
-      case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", false)                          //Диагноз направившего учреждения (осложнения)
-      case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", true)                           //Клиническое описание (осложнения)
-      case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber, "")                                                        //Номер наряда СП
-      case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast), "")  //Артериальное давление (левая рука Диаст)
-      case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst), "")   //Артериальное давление (левая рука Сист)
-      case listNdx(21) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.temperature), "")               //t температура тела
-      case listNdx(22) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.weight), "")                    //Вес при поступлении
-      case listNdx(23) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.height), "")                    //Рост
-      case listNdx(24) => this.AnyToSetOfString(appealData.data.agreedType, "")                                                             //Тип согласования
-      case listNdx(25) => this.AnyToSetOfString(appealData.data.agreedDoctor, "")                                                           //Комментарий к согласованию
-      case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "relative")                                            //Законный представитель
-      case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType, "")                                                    //Тип госпитализации
-      case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType, "")                                               //Цель госпитализации
-      case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", false)                            //Диагноз направившего учреждения (сопутствующий)
-      case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", true)                             //Клиническое описание (сопутствующий)
-      case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast), "") //Артериальное давление (правая рука)
-      case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst), "")
-      case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note")                                                //Примечание
-      case listNdx(34) => this.AnyToSetOfString(appealData.data.orgStructStay.toString, "orgStructStay")                                    //Отделение поступления
-      case listNdx(35) => this.AnyToSetOfString(appealData.data.orgStructDirectedFrom.toString, "orgStructDirectedFrom")                    //Напрвлен из
-      case listNdx(36) => this.AnyToSetOfString(appealData.data.reopening, "reopening")                                                     //Переоткрытие ИБ
-      case _ => this.AnyToSetOfString(null, "")
+    if (cap == null) {
+      this.AnyToSetOfString(null, "")
+    } else {
+      cap.getId.intValue() match {
+        case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed, "") //Кем направлен
+        case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number, "") //Номер направления
+        case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType, "") //Кем доставлен
+        case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", false) //Диагноз направившего учреждения
+        case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType, "") //Доставлен в стационар от начала заболевания
+        case listNdx(5) => this.AnyToSetOfString(null, "") //Направлен в отделение
+        case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason, "") //Причина отказа в госпитализации
+        case listNdx(7) => this.AnyToSetOfString(appealData.data.appealWithDeseaseThisYear, "") //Госпитализирован по поводу данного заболевания в текущем году
+        case listNdx(8) => this.AnyToSetOfString(appealData.data.movingType, "") //Вид транспортировки
+        case listNdx(9) => this.AnyToSetOfString(null, "") //Профиль койки
+        case listNdx(10) => this.AnyToSetOfString(appealData.data.stateType, "") //Доставлен в состоянии опьянения
+        case listNdx(11) => this.AnyToSetOfString(appealData.data.injury, "") //Травма
+        case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate, "") //Дата направления
+        case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType, "") //Канал госпитализации
+        case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor, "") //Направивший врач
+        case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", true) //Клиническое описание
+        case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", false) //Диагноз направившего учреждения (осложнения)
+        case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", true) //Клиническое описание (осложнения)
+        case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber, "") //Номер наряда СП
+        case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast), "") //Артериальное давление (левая рука Диаст)
+        case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst), "") //Артериальное давление (левая рука Сист)
+        case listNdx(21) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.temperature), "") //t температура тела
+        case listNdx(22) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.weight), "") //Вес при поступлении
+        case listNdx(23) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.height), "") //Рост
+        case listNdx(24) => this.AnyToSetOfString(appealData.data.agreedType, "") //Тип согласования
+        case listNdx(25) => this.AnyToSetOfString(appealData.data.agreedDoctor, "") //Комментарий к согласованию
+        case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "relative") //Законный представитель
+        case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType, "") //Тип госпитализации
+        case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType, "") //Цель госпитализации
+        case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", false) //Диагноз направившего учреждения (сопутствующий)
+        case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", true) //Клиническое описание (сопутствующий)
+        case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast), "") //Артериальное давление (правая рука)
+        case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst), "")
+        case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note") //Примечание
+        case listNdx(34) => this.AnyToSetOfString(appealData.data.orgStructStay.toString, "orgStructStay") //Отделение поступления
+        case listNdx(35) => this.AnyToSetOfString(appealData.data.orgStructDirectedFrom.toString, "orgStructDirectedFrom") //Напрвлен из
+        case listNdx(36) => this.AnyToSetOfString(appealData.data.reopening, "reopening") //Переоткрытие ИБ
+        case _ => this.AnyToSetOfString(null, "")
+      }
     }
   }
 
@@ -733,10 +743,10 @@ class AppealBean extends AppealBeanLocal
    * @author Ivan Dmitriev
    * @param list_dia Сортированный лист структур с данными о диагнозах (DiagnosisContainer из структуры AppealData).
    * @param cell  Метка типа выводимого списка (фильтр данных из DiagnosisContainer по полю diagnosisKind).<pre>
-   * &#15; Возможные значения:
-   * &#15; "assignment" - Диагноз/Клиническое описание направившего учреждения
-   * &#15; "attendant" - Диагноз/Клиническое описание направившего учреждения (сопутствующий)
-   * &#15; "aftereffect" - Диагноз/Клиническое описание направившего учреждения (осложнения)</pre>
+   *              &#15; Возможные значения:
+   *              &#15; "assignment" - Диагноз/Клиническое описание направившего учреждения
+   *              &#15; "attendant" - Диагноз/Клиническое описание направившего учреждения (сопутствующий)
+   *              &#15; "aftereffect" - Диагноз/Клиническое описание направившего учреждения (осложнения)</pre>
    * @param isDesc Флаг типа выводимого списка (true - список клинических описаний, false - список идентификаторов МКВ).
    * @return scala.collection.immutable.Set[String] Список значений для записи в ActionProperty.
    * @throws CoreException
@@ -748,22 +758,23 @@ class AppealBean extends AppealBeanLocal
   private def writeMKBDiagnosesFromAppealData(list_dia: LinkedList[DiagnosisContainer], cell: String, isDesc: Boolean): Set[String] = {
 
     var valueSet = Set.empty[String]
-    if(list_dia == null)
+    if (list_dia == null)
       return valueSet
 
-    list_dia.filter(element => element.diagnosisKind.compare(cell)==0).toList.foreach(dc=>{
-      if(isDesc) {  //Получаем набор описаний
+    list_dia.filter(element => element.diagnosisKind.compare(cell) == 0).toList.foreach(dc => {
+      if (isDesc) {
+        //Получаем набор описаний
         valueSet += dc.description.toString
       } else {
         try {
           if (dc.mkb.getCode() != null) {
-            var mkb :Mkb = null
+            var mkb: Mkb = null
             try {
               mkb = dbMkbBean.getMkbByCode(dc.mkb.getCode().toString)
             } catch {
               case e: Exception => mkb = null
             }
-            if(mkb!=null && mkb.getId.intValue()>0)
+            if (mkb != null && mkb.getId.intValue() > 0)
               valueSet += mkb.getId.toString
           }
         } catch {
@@ -778,23 +789,23 @@ class AppealBean extends AppealBeanLocal
   def getDiagnosisListByAppealId(eventId: Int, filter: String) = {
     val map = new java.util.HashMap[String, java.util.List[Mkb]]
     val constPartToName = "Диагноз направившего учреждения"
-    val diagnosisPropertyList = Map( "assignment" -> i18n("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString,
+    val diagnosisPropertyList = Map("assignment" -> i18n("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString,
       "attendant" -> i18n("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString,
-      "aftereffect"-> i18n("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString)
+      "aftereffect" -> i18n("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString)
 
-    val setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
-    val actionId = actionBean.getLastActionByActionTypeIdAndEventId (eventId, setATIds)
-    if(actionId>0) {
+    val setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt: java.lang.Integer))
+    val actionId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
+    if (actionId > 0) {
       var actionProperties = actionPropertyBean.getActionPropertiesByActionId(actionId)
-                                               .filter(element => element._1.getType.getName.contains(constPartToName))
-      if(filter!=null && !filter.isEmpty){
+        .filter(element => element._1.getType.getName.contains(constPartToName))
+      if (filter != null && !filter.isEmpty) {
         actionProperties = actionProperties.filter(element => element._2.filter(value => (value.getValue.asInstanceOf[Mkb].getDiagID.contains(filter) ||
-                                                                         value.getValue.asInstanceOf[Mkb].getDiagName.contains(filter))).size>0)
+          value.getValue.asInstanceOf[Mkb].getDiagName.contains(filter))).size > 0)
       }
       diagnosisPropertyList.foreach(name => {
-        val values = actionProperties.find(element => element._1.getType.getName.compareTo(name._2)==0).getOrElse(null)
-        val mkbs = if (values!=null){
-            values._2.foldLeft(new java.util.LinkedList[Mkb])(
+        val values = actionProperties.find(element => element._1.getType.getName.compareTo(name._2) == 0).getOrElse(null)
+        val mkbs = if (values != null) {
+          values._2.foldLeft(new java.util.LinkedList[Mkb])(
             (mkbList, value) => {
               mkbList.add(value.getValue.asInstanceOf[Mkb])
               mkbList
@@ -860,40 +871,44 @@ class AppealBean extends AppealBeanLocal
   }*/
 
   private def getRbDiagnosisTypeById(id: Int): RbDiagnosisType = {
-    val diagType = em.createQuery(DiagnosisTypeByIdQuery,classOf[RbDiagnosisType])
-                      .setParameter("id", id)
-                      .getResultList
+    val diagType = em.createQuery(DiagnosisTypeByIdQuery, classOf[RbDiagnosisType])
+      .setParameter("id", id)
+      .getResultList
     diagType.size match {
-      case 0 => {null}
+      case 0 => {
+        null
+      }
       case size => {
-        diagType.foreach(dt=>em.detach(dt))
+        diagType.foreach(dt => em.detach(dt))
         diagType(0)
       }
     }
   }
 
   private def getRbResultById(id: Int): RbResult = {
-    val rbResult = em.createQuery(RbResultByIdQuery,classOf[RbResult])
-                      .setParameter("id", id)
-                      .getResultList
+    val rbResult = em.createQuery(RbResultByIdQuery, classOf[RbResult])
+      .setParameter("id", id)
+      .getResultList
     rbResult.size match {
-      case 0 => {null}
+      case 0 => {
+        null
+      }
       case size => {
-        rbResult.foreach(res=>em.detach(res))
+        rbResult.foreach(res => em.detach(res))
         rbResult(0)
       }
     }
   }
 
-  def getAppealTypeCodesWithFlatDirectoryId (id: Int) = {
-    val rbResult = em.createQuery(eventTypeCodesByFlatDirectoryIdQuery,classOf[String])
+  def getAppealTypeCodesWithFlatDirectoryId(id: Int) = {
+    val rbResult = em.createQuery(eventTypeCodesByFlatDirectoryIdQuery, classOf[String])
       .setParameter("id", id)
       .getResultList
     rbResult
   }
 
   def getSupportedAppealTypeCodes = {
-    val rbResult = em.createQuery(eventSupportedTypeCodesQuery,classOf[String])
+    val rbResult = em.createQuery(eventSupportedTypeCodesQuery, classOf[String])
       .setParameter("supportedRequestTypes", asJavaCollection(i18n("webmis.supportedEventTypes").split(",")))
       .getResultList
     rbResult
@@ -901,9 +916,9 @@ class AppealBean extends AppealBeanLocal
 
   def insertOrUpdateClientQuoting(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
     var lockId: Int = -1
-    var oldQuota : ClientQuoting = null
-    var clientQuoting : ClientQuoting = null
-    var quotaVersion : Int = 0
+    var oldQuota: ClientQuoting = null
+    var clientQuoting: ClientQuoting = null
+    var quotaVersion: Int = 0
     if (dataEntry.getId() > 0) {
       quotaVersion = dataEntry.getVersion
       oldQuota = ClientQuoting.clone(dbClientQuoting.getClientQuotingById(dataEntry.getId))
@@ -911,7 +926,7 @@ class AppealBean extends AppealBeanLocal
     }
     try {
       val patient = dbEventBean.getEventById(eventId).getPatient
-      var mkb :Mkb = null
+      var mkb: Mkb = null
       try {
         mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
       } catch {
@@ -922,17 +937,17 @@ class AppealBean extends AppealBeanLocal
         isPersist = false
       }
       clientQuoting = dbClientQuoting.insertOrUpdateClientQuoting(dataEntry.getId,
-                                                                      dataEntry.getVersion,
-                                                                      dataEntry.getQuotaType.getId,
-                                                                      dataEntry.getStatus.getId,
-                                                                      dataEntry.getDepartment.getId,
-                                                                      dataEntry.getAppealNumber,
-                                                                      dataEntry.getTalonNumber,
-                                                                      dataEntry.getStage.getId,
-                                                                      dataEntry.getRequest.getId,
-                                                                      mkb,
-                                                                      patient,
-                                                                      auth.getUser)
+        dataEntry.getVersion,
+        dataEntry.getQuotaType.getId,
+        dataEntry.getStatus.getId,
+        dataEntry.getDepartment.getId,
+        dataEntry.getAppealNumber,
+        dataEntry.getTalonNumber,
+        dataEntry.getStage.getId,
+        dataEntry.getRequest.getId,
+        mkb,
+        patient,
+        auth.getUser)
       if (isPersist) dbManager.persist(clientQuoting) else dbManager.merge(clientQuoting)
     } finally {
       if (lockId > 0) appLock.releaseLock(lockId)
@@ -940,32 +955,32 @@ class AppealBean extends AppealBeanLocal
     clientQuoting
   }
 
-  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData)  = {
+  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData) = {
     val codes = asJavaSet(condition match {
       case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
       case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB", "WBC", "GRAN", "NEUT", "HGB", "PLT")
-      case _ => Set("TEMPERATURE", "BPRAS","BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
+      case _ => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
     })
     val map = actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(List(Integer.valueOf(eventId)), codes, 5, false)
-    if (map!=null && map.contains(Integer.valueOf(eventId)))
+    if (map != null && map.contains(Integer.valueOf(eventId)))
       new MonitoringInfoListData(map.get(Integer.valueOf(eventId)))
     else
       new MonitoringInfoListData()
   }
 
-  def getSurgicalOperations(eventId: Int, authData: AuthData)  = {
+  def getSurgicalOperations(eventId: Int, authData: AuthData) = {
     val codes = asJavaSet(Set("operationName", "complicationName", "methodAnesthesia"))
     val map = actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(List(Integer.valueOf(eventId)), codes, Int.MaxValue, true)
-    if (map!=null && map.contains(Integer.valueOf(eventId)))
+    if (map != null && map.contains(Integer.valueOf(eventId)))
       new SurgicalOperationsListData(map.get(Integer.valueOf(eventId)),
-                                     actionPropertyBean.getActionPropertiesByActionIdAndTypeTypeNames _)
+        actionPropertyBean.getActionPropertiesByActionIdAndTypeTypeNames _)
     else
       new SurgicalOperationsListData()
   }
 
   def setExecPersonForAppeal(id: Int, personId: Int, authData: AuthData, epst: ExecPersonSetType) = {
 
-    var eventPerson : EventPerson = null
+    var eventPerson: EventPerson = null
     var execPerson: Staff = authData.getUser
     var isCreate: Boolean = true
 
@@ -976,15 +991,15 @@ class AppealBean extends AppealBeanLocal
 
     if (epst.isFindLast) {
       eventPerson = dbEventPerson.getLastEventPersonForEventId(event.getId.intValue())
-      if(personId>0) execPerson = dbStaff.getStaffById(personId)
-      isCreate = (eventPerson==null || eventPerson.getPerson != execPerson)
+      if (personId > 0) execPerson = dbStaff.getStaffById(personId)
+      isCreate = (eventPerson == null || eventPerson.getPerson != execPerson)
     }
 
-    if(isCreate){
+    if (isCreate) {
       dbEventPerson.insertOrUpdateEventPerson(epst.getEventPersonId(eventPerson),
-                                              event,
-                                              execPerson,
-                                              epst.getFlushFlag)
+        event,
+        execPerson,
+        epst.getFlushFlag)
 
       //Изменим запись о назначевшем враче в ивенте
       event.setExecutor(execPerson)
@@ -1089,13 +1104,13 @@ class AppealBean extends AppealBeanLocal
       et.code = fdfv.value
                                              """
 
-  val eventSupportedTypeCodesQuery =  """
+  val eventSupportedTypeCodesQuery = """
      SELECT et.code
       FROM
         EventType et
       WHERE
         et.requestType.code IN :supportedRequestTypes
-                                      """
+                                     """
 
   val DiagnosisTypeByIdQuery = """
     SELECT dt
@@ -1103,7 +1118,7 @@ class AppealBean extends AppealBeanLocal
       RbDiagnosisType dt
     WHERE
       dt.id = :id
-  """
+                               """
 
   val RbResultByIdQuery = """
     SELECT r
@@ -1111,5 +1126,5 @@ class AppealBean extends AppealBeanLocal
       RbResult r
     WHERE
       r.id = :id
-  """
+                          """
 }

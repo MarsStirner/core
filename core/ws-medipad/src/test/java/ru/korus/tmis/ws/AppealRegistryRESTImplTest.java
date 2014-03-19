@@ -219,10 +219,10 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             String res = getResponseData(conn, code);
             Assert.assertTrue(code == 200);
             res = removePatting(res, tstCallback);
-            /*JsonParser parser = new JsonParser();
+            JsonParser parser = new JsonParser();
             JsonElement resJson = parser.parse(res);
             JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getActionTypeInfoResp.json"))));
-            Assert.assertEquals(resJson, expected);*/
+            Assert.assertEquals(resJson, expected);
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -261,7 +261,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionResp.json"))));
             //TODO remove id  from json or clear DB
             //Assert.assertEquals(resJson, expected);
-            Assert.assertTrue(res.contains(",\"name\":\"Гемотрансфузионная терапия\""));
+            Assert.assertTrue(res.contains("\"name\":\"Гемотрансфузионная терапия\""));
 
         } catch (Exception ex) {
             ex.printStackTrace();

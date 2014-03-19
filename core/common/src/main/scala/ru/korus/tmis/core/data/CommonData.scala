@@ -200,6 +200,8 @@ class CommonAttribute{
 
   @BeanProperty var calculatedValue:APValueContainer = _
 
+  @BeanProperty var tableValues : java.util.LinkedList[java.util.LinkedList[String]] = _
+
   @BeanProperty var properties: java.util.List[PropertyPair] = new java.util.LinkedList[PropertyPair];
 
   def getPropertiesMap() = {
@@ -312,11 +314,13 @@ class CommonAttribute{
            mandatory: String,
            readOnly: String,
            scope: String,
+           tableValues: java.util.LinkedList[java.util.LinkedList[String]],
            props: Map[String, String]) = {
     this(id, version, name, aType, scope, props)
     this.mandatory = mandatory
     this.readOnly = readOnly
     this.code = code
+    this.tableValues = tableValues
   }
 }
 
@@ -328,7 +332,7 @@ class CommonAttributeWithLayout(id: Integer,
                                 mandatory: String,
                                 readOnly: String,
                                 scope: String,
-                                props: Map[String, String]) extends CommonAttribute (id, version, name, code, aType, mandatory, readOnly, scope, props){
+                                props: Map[String, String]) extends CommonAttribute (id, version, name, code, aType, mandatory, readOnly, scope, null, props){
 
   @BeanProperty
   var layoutAttributeValues = new LinkedList[LayoutAttributeSimplifyDataContainer]

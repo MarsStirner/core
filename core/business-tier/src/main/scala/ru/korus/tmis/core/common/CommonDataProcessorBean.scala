@@ -205,7 +205,7 @@ class CommonDataProcessorBean
                 attribute.id.intValue,
                 userData,
                 now)
-              new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference).set(attribute)
+              new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
               (ap, attribute) :: list
             }
           })
@@ -440,7 +440,7 @@ class CommonDataProcessorBean
               case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
-                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
 
                 //Удаление значений свойств, если они присутствуют
                 dbManager.removeAll(dbActionProperty.getActionPropertyValue(ap))
@@ -464,7 +464,7 @@ class CommonDataProcessorBean
                   apv = dbActionProperty.setActionPropertyValue(ap, value, 0)
                 }
 
-                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
                 if (apv != null) {
                   entities = entities + ap + apv.unwrap
                 } else {
@@ -481,7 +481,7 @@ class CommonDataProcessorBean
                   ap,
                   valueId,
                   0)
-                new ActionPropertyWrapper(ap, dbActionProperty.fromRefValue, dbActionProperty.getScopeForReference).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
                 entities = entities + ap + apv.unwrap
               }
 
@@ -678,17 +678,17 @@ class CommonDataProcessorBean
         str_key + (key -> value)
       })
 
-    val (typeName, valueDomain) = if ("Reference".equals(apt.getTypeName)) {
-      ("String", dbActionProperty.getScopeForReference(apt))
-    } else {
-      (apt.getTypeName, apt.getValueDomain)
+    val typeName =  apt.getTypeName match {
+      case "Reference" => "String"
+      case _           => apt.getTypeName
     }
+
     new CommonAttributeWithLayout(apt.getId,
       0,
       apt.getName,
       apt.getCode,
       typeName,
-      valueDomain, //apt.getConstructorValueDomain,
+      dbActionProperty.convertScope(apt), //apt.getConstructorValueDomain,
       map,
       dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList,
       apt.isMandatory.toString,
