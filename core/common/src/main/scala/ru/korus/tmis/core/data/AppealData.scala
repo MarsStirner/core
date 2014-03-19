@@ -360,7 +360,7 @@ class AppealEntry extends I18nable {
     this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
     this.execPerson = new DoctorContainer(event.getExecutor)
     this.urgent = action.getIsUrgent
-    this.context = event.getEventType.getContext
+    this.context = if (event.getEventType != null) event.getEventType.getContext else null
 
 
     val getOrgStructPropByCode: String => Integer = (code: String) => {
