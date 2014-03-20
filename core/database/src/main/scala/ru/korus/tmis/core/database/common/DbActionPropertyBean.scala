@@ -201,7 +201,6 @@ class DbActionPropertyBean
 
   def convertTableValue(apt: ActionPropertyType, value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
     val res = new java.util.LinkedList[java.util.LinkedList[String]]
-    res.add(new util.LinkedList[String])
     val rbAPTableFieldList = em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", apt.getValueDomain).getResultList
     val rbAPTable = rbAPTableFieldList.get(0).getRbAptable
     val prmList = rbAPTableFieldList.foldLeft("")( (b,a) => {
@@ -216,7 +215,16 @@ class DbActionPropertyBean
            b + " INNER JOIN " + a.getReferenceTable + " ON " + a.getReferenceTable + ".id=" + rbAPTable.getTableName + "." + a.getFieldName
       }
     })
-    val data = em.createNativeQuery("SELECT %s FROM %s WHERE %s.%s=%s".format(prmList, tblList, rbAPTable.getTableName, rbAPTable.getMasterField, value ))
+    val query: String = "SELECT %s FROM %s WHERE %s.%s=%s".format(prmList, tblList, rbAPTable.getTableName, rbAPTable.getMasterField, value)
+    val data = em.createNativeQuery(query).getResultList
+    if (data.isEmpty) {
+      res.add(new util.LinkedList[String])
+    }
+
+    data.foreach(d => {
+      res.add(new util.LinkedList[String])
+      d.asInstanceOf[Array[Object]].foreach(v => {res.getLast.add("" + v)})
+    })
     res
   }
 
