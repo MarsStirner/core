@@ -132,6 +132,7 @@ public class ActionProperty
         valueTypeMap.put("FlatDirectory", APValueFlatDirectory.class);
         valueTypeMap.put("Legal_representative_id", APValueInteger.class);//че за тип такой?
         valueTypeMap.put("rbReasonOfAbsence", APValueRbReasonOfAbsence.class); //Причина отсутствия
+        valueTypeMap.put("Table", APValueInteger.class);
     }
 
     @SuppressWarnings("rawtypes")

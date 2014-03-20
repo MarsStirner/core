@@ -353,7 +353,8 @@ class CommonAttributeWithLayout(id: Integer,
 
   def this (ca: CommonAttribute,
             layout: List[LayoutAttributeValue] ) = {
-    this(ca.id, ca.version, ca.name, ca.code, ca.`type`, ca.mandatory, ca.readOnly, ca.scope, ca.getPropertiesMap)
+    this(ca.id, ca.version, ca.name, ca.code, ca.`type`, ca.mandatory, ca.readOnly, ca.scope,  ca.getPropertiesMap)
+    this.tableValues = ca.tableValues
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 }
