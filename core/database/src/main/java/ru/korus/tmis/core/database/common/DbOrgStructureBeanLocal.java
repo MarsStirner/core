@@ -115,4 +115,15 @@ public interface DbOrgStructureBeanLocal {
      * @return Список адресов оргструктуры
      */
     List<OrgStructureAddress> getOrgStructureAddressByOrgStructure(OrgStructure currentOrgStructure);
+
+    /**
+     * Запрос на получение под-отделений начиная с указаного parentId. Без учета признака AvailableForExternal
+     *
+     * @param parentId  Идентификатор отделения для которго выводим все подотделения
+     * @param recursive рекурсивно (выбираем все под-отделения, входящие в одно из выбраных под-отделений)
+     * @param infisCode Принадлежащие одной структуре
+     * @return Список под-отделений
+     * @throws CoreException Если не найдено ни одной оргструктуры
+     */
+    List<OrgStructure> getRecursiveOrgStructuresWithoutAvailableForExternal(int parentId, boolean recursive, String infisCode) throws CoreException;
 }

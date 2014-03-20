@@ -40,6 +40,7 @@ import org.slf4j.LoggerFactory;
  * @param address				5) Адрес подразделения
  * @param sexFilter				6) Половой фильтр
  * @param ageFilter				7) Возрастной фильтр
+ * @param availableForExternal  8) Признак досутпности подразделения для внешних подсистем
  */
 public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgStructure._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("OrgStructure");
@@ -51,6 +52,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
   private static final org.apache.thrift.protocol.TField ADDRESS_FIELD_DESC = new org.apache.thrift.protocol.TField("address", org.apache.thrift.protocol.TType.STRING, (short)5);
   private static final org.apache.thrift.protocol.TField SEX_FILTER_FIELD_DESC = new org.apache.thrift.protocol.TField("sexFilter", org.apache.thrift.protocol.TType.STRING, (short)6);
   private static final org.apache.thrift.protocol.TField AGE_FILTER_FIELD_DESC = new org.apache.thrift.protocol.TField("ageFilter", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField AVAILABLE_FOR_EXTERNAL_FIELD_DESC = new org.apache.thrift.protocol.TField("availableForExternal", org.apache.thrift.protocol.TType.BOOL, (short)8);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -65,6 +67,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
   public String address; // optional
   public String sexFilter; // optional
   public String ageFilter; // optional
+  public boolean availableForExternal; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -74,7 +77,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
     NAME((short)4, "name"),
     ADDRESS((short)5, "address"),
     SEX_FILTER((short)6, "sexFilter"),
-    AGE_FILTER((short)7, "ageFilter");
+    AGE_FILTER((short)7, "ageFilter"),
+    AVAILABLE_FOR_EXTERNAL((short)8, "availableForExternal");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -103,6 +107,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
           return SEX_FILTER;
         case 7: // AGE_FILTER
           return AGE_FILTER;
+        case 8: // AVAILABLE_FOR_EXTERNAL
+          return AVAILABLE_FOR_EXTERNAL;
         default:
           return null;
       }
@@ -145,8 +151,9 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
   // isset id assignments
   private static final int __ID_ISSET_ID = 0;
   private static final int __PARENT_ID_ISSET_ID = 1;
+  private static final int __AVAILABLEFOREXTERNAL_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.PARENT_ID,_Fields.ADDRESS,_Fields.SEX_FILTER,_Fields.AGE_FILTER};
+  private _Fields optionals[] = {_Fields.PARENT_ID,_Fields.ADDRESS,_Fields.SEX_FILTER,_Fields.AGE_FILTER,_Fields.AVAILABLE_FOR_EXTERNAL};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -164,6 +171,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.AGE_FILTER, new org.apache.thrift.meta_data.FieldMetaData("ageFilter", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.AVAILABLE_FOR_EXTERNAL, new org.apache.thrift.meta_data.FieldMetaData("availableForExternal", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.BOOL)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(OrgStructure.class, metaDataMap);
   }
@@ -215,6 +224,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
     if (other.isSetAgeFilter()) {
       this.ageFilter = other.ageFilter;
     }
+    this.availableForExternal = other.availableForExternal;
   }
 
   public OrgStructure deepCopy() {
@@ -236,6 +246,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
 
     this.ageFilter = "";
 
+    setAvailableForExternalIsSet(false);
+    this.availableForExternal = false;
   }
 
   public int getId() {
@@ -404,6 +416,29 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
     }
   }
 
+  public boolean isAvailableForExternal() {
+    return this.availableForExternal;
+  }
+
+  public OrgStructure setAvailableForExternal(boolean availableForExternal) {
+    this.availableForExternal = availableForExternal;
+    setAvailableForExternalIsSet(true);
+    return this;
+  }
+
+  public void unsetAvailableForExternal() {
+    __isset_bitfield = EncodingUtils.clearBit(__isset_bitfield, __AVAILABLEFOREXTERNAL_ISSET_ID);
+  }
+
+  /** Returns true if field availableForExternal is set (has been assigned a value) and false otherwise */
+  public boolean isSetAvailableForExternal() {
+    return EncodingUtils.testBit(__isset_bitfield, __AVAILABLEFOREXTERNAL_ISSET_ID);
+  }
+
+  public void setAvailableForExternalIsSet(boolean value) {
+    __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __AVAILABLEFOREXTERNAL_ISSET_ID, value);
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ID:
@@ -462,6 +497,14 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
       }
       break;
 
+    case AVAILABLE_FOR_EXTERNAL:
+      if (value == null) {
+        unsetAvailableForExternal();
+      } else {
+        setAvailableForExternal((Boolean)value);
+      }
+      break;
+
     }
   }
 
@@ -488,6 +531,9 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
     case AGE_FILTER:
       return getAgeFilter();
 
+    case AVAILABLE_FOR_EXTERNAL:
+      return Boolean.valueOf(isAvailableForExternal());
+
     }
     throw new IllegalStateException();
   }
@@ -513,6 +559,8 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
       return isSetSexFilter();
     case AGE_FILTER:
       return isSetAgeFilter();
+    case AVAILABLE_FOR_EXTERNAL:
+      return isSetAvailableForExternal();
     }
     throw new IllegalStateException();
   }
@@ -590,6 +638,15 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
       if (!(this_present_ageFilter && that_present_ageFilter))
         return false;
       if (!this.ageFilter.equals(that.ageFilter))
+        return false;
+    }
+
+    boolean this_present_availableForExternal = true && this.isSetAvailableForExternal();
+    boolean that_present_availableForExternal = true && that.isSetAvailableForExternal();
+    if (this_present_availableForExternal || that_present_availableForExternal) {
+      if (!(this_present_availableForExternal && that_present_availableForExternal))
+        return false;
+      if (this.availableForExternal != that.availableForExternal)
         return false;
     }
 
@@ -679,6 +736,16 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetAvailableForExternal()).compareTo(typedOther.isSetAvailableForExternal());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetAvailableForExternal()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.availableForExternal, typedOther.availableForExternal);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -752,6 +819,12 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
       } else {
         sb.append(this.ageFilter);
       }
+      first = false;
+    }
+    if (isSetAvailableForExternal()) {
+      if (!first) sb.append(", ");
+      sb.append("availableForExternal:");
+      sb.append(this.availableForExternal);
       first = false;
     }
     sb.append(")");
@@ -862,6 +935,14 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 8: // AVAILABLE_FOR_EXTERNAL
+            if (schemeField.type == org.apache.thrift.protocol.TType.BOOL) {
+              struct.availableForExternal = iprot.readBool();
+              struct.setAvailableForExternalIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -919,6 +1000,11 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
           oprot.writeFieldEnd();
         }
       }
+      if (struct.isSetAvailableForExternal()) {
+        oprot.writeFieldBegin(AVAILABLE_FOR_EXTERNAL_FIELD_DESC);
+        oprot.writeBool(struct.availableForExternal);
+        oprot.writeFieldEnd();
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -952,7 +1038,10 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
       if (struct.isSetAgeFilter()) {
         optionals.set(3);
       }
-      oprot.writeBitSet(optionals, 4);
+      if (struct.isSetAvailableForExternal()) {
+        optionals.set(4);
+      }
+      oprot.writeBitSet(optionals, 5);
       if (struct.isSetParent_id()) {
         oprot.writeI32(struct.parent_id);
       }
@@ -965,6 +1054,9 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
       if (struct.isSetAgeFilter()) {
         oprot.writeString(struct.ageFilter);
       }
+      if (struct.isSetAvailableForExternal()) {
+        oprot.writeBool(struct.availableForExternal);
+      }
     }
 
     @Override
@@ -976,7 +1068,7 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
       struct.setCodeIsSet(true);
       struct.name = iprot.readString();
       struct.setNameIsSet(true);
-      BitSet incoming = iprot.readBitSet(4);
+      BitSet incoming = iprot.readBitSet(5);
       if (incoming.get(0)) {
         struct.parent_id = iprot.readI32();
         struct.setParent_idIsSet(true);
@@ -992,6 +1084,10 @@ public class OrgStructure implements org.apache.thrift.TBase<OrgStructure, OrgSt
       if (incoming.get(3)) {
         struct.ageFilter = iprot.readString();
         struct.setAgeFilterIsSet(true);
+      }
+      if (incoming.get(4)) {
+        struct.availableForExternal = iprot.readBool();
+        struct.setAvailableForExternalIsSet(true);
       }
     }
   }
