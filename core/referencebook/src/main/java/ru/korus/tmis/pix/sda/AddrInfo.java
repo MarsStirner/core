@@ -86,59 +86,89 @@ public class AddrInfo {
         String appartment = null;
         String okato = null;
         String block = null;
-
-
-        if (homeAddr.getAddress() != null && homeAddr.getAddress().getHouse() != null) {
-            AddressHouse addrHouse = homeAddr.getAddress().getHouse();
-            final String kladrCode = addrHouse.getKLADRCode();
-            if (kladrCode != null && kladrCode.length() > 1) { // если задан код КЛАДР
-                Kladr kladr = null;
-                Kladr kladrState = null;
-                Street street = null;
-                try {
-                    kladr = dbSchemeKladrBean.getKladrByCode(kladrCode);
-                    logger.info("Found kladr {}", street == null ? null : kladr.print());
-                    // Регион пациента. Определяется по двум старшим цифрам кода КЛАДР
-                    kladrState = dbSchemeKladrBean.getKladrByCode(kladrCode.substring(0, 2) + "00000000000");
-                    logger.info("Found kladr state {}", street == null ? null : kladrState.print());
-                    street = dbSchemeKladrBean.getStreetByCode(addrHouse.getKLADRStreetCode());
-                    logger.info("Found street {}", street == null ? null : street.print());
-                } catch (CoreException e) {
-                    logger.error("CoreException: " + e, e);
-                }
-
-                if (kladr != null) {
-                    // Населенный пункт. Формируется как сокращенное наименования тип населённого пункта (г.) и названия
-                    addrCity = kladr.getSocr() + "." + kladr.getName();
-                    if (kladrState != null) {
-                        addrState = kladrState.getSocr() + "." + kladrState.getName();
-                        addrStateKladrCode = kladr.getCode();
+        /**
+         * [20.03.14 17:49:15] Александр Мартынов:
+         * при занесении адреса в ClientAddress.freeInput формировать его в тег <street>...</street>
+         * ...........
+         * только street, остальных не должно быть
+         * короче, если ClentAddress.address_id=NULL и ClentAddress.freeInput не пустой
+         */
+        if (homeAddr.getAddress() == null && homeAddr.getFreeInput() != null && !homeAddr.getFreeInput().isEmpty()) {
+            addrStreet = homeAddr.getFreeInput();
+        } else {
+            if (homeAddr.getAddress() != null && homeAddr.getAddress().getHouse() != null) {
+                AddressHouse addrHouse = homeAddr.getAddress().getHouse();
+                final String kladrCode = addrHouse.getKLADRCode();
+                if (kladrCode != null && kladrCode.length() > 1) { // если задан код КЛАДР
+                    Kladr kladr = null;
+                    Kladr kladrState = null;
+                    Street street = null;
+                    try {
+                        kladr = dbSchemeKladrBean.getKladrByCode(kladrCode);
+                        logger.info("Found kladr {}", street == null ? null : kladr.print());
+                        // Регион пациента. Определяется по двум старшим цифрам кода КЛАДР
+                        kladrState = dbSchemeKladrBean.getKladrByCode(kladrCode.substring(0, 2) + "00000000000");
+                        logger.info("Found kladr state {}", street == null ? null : kladrState.print());
+                        street = dbSchemeKladrBean.getStreetByCode(addrHouse.getKLADRStreetCode());
+                        logger.info("Found street {}", street == null ? null : street.print());
+                    } catch (CoreException e) {
+                        logger.error("CoreException: " + e, e);
                     }
-                    if (street != null) {
-                        addrStreet =
-                                street.getSocr() + "." + street.getName();
-                        addrZip = street.getIndex();
+
+                    if (kladr != null) {
+                        // Населенный пункт. Формируется как сокращенное наименования тип населённого пункта (г.) и названия
+                        addrCity = kladr.getSocr() + "." + kladr.getName();
+                        if (kladrState != null) {
+                            addrState = kladrState.getSocr() + "." + kladrState.getName();
+                            addrStateKladrCode = kladrState.getCode();
+                        }
+                        if (street != null) {
+                            addrStreet =
+                                    street.getSocr() + "." + street.getName();
+                            addrZip = street.getIndex();
+                        }
+                        /**
+                         * [20.03.14 16:58:12] Александр Мартынов:
+                         * Структура кодового обозначения в блоке "Код":
+                         СС РРР ГГГ ППП АА, где
+                         СС – код субъекта Российской Федерации (региона), коды регионов представлены в Приложении 2 к Описанию классификатора адресов Российской Федерации (КЛАДР);
+                         РРР – код района;
+                         ГГГ – код города;
+                         ППП – код населенного пункта,
+                         АА – признак актуальности наименования адресного объекта.
+                         т.е. если PPP не нули, то это район
+                         */
+                        //Для "районных" населенных пунктов в элементах <district>...</district> и <districtKladr>...</districtKladr> нужно указывать район.
+                        if (kladr.getCode() != null && !kladr.getCode().matches("^[0-9]{2}000.*")) {
+                            final String districtCode = kladr.getCode().substring(0, 5).concat("00000000");
+                            logger.debug("### DISTRICT CODE: {}", districtCode);
+                            Kladr districtKladrObject = kladr;
+                            try {
+                                districtKladrObject = dbSchemeKladrBean.getKladrByCode(districtCode);
+                            } catch (CoreException e) {
+                                logger.warn("Cannot find district kladr[{}].", districtCode);
+                            }
+                            // Район
+                            district = districtKladrObject.getName();
+                            // Код района (или города субъектного подчинения) согласно КЛАДР
+                            districtKladr = districtCode;
+                        }
+                        // Код населенного пункта согласно КЛАДР
+                        addrStreetKladr = homeAddr.getAddress().getHouse().getKLADRStreetCode();
+                        // Код населенного пункта согласно КЛАДР
+                        addrCityKladr = homeAddr.getAddress().getHouse().getKLADRCode();
+                        // Номер дома
+                        house = homeAddr.getAddress().getHouse().getNumber();
+                        //Корпус
+                        block = homeAddr.getAddress().getHouse().getCorpus();
+                        // Номер квартиры
+                        appartment = homeAddr.getAddress().getFlat();
+                        // ОКАТО
+                        okato = kladr.getOcatd();
                     }
-                    // Район
-                    district = kladr.getName();
-                    // Код района (или города субъектного подчинения) согласно КЛАДР
-                    districtKladr = kladr.getCode();
-                    // Код населенного пункта согласно КЛАДР
-                    addrStreetKladr = homeAddr.getAddress().getHouse().getKLADRStreetCode();
-                    // Код населенного пункта согласно КЛАДР
-                    addrCityKladr = homeAddr.getAddress().getHouse().getKLADRCode();
-                    // Номер дома
-                    house = homeAddr.getAddress().getHouse().getNumber();
-                    //Корпус
-                    block = homeAddr.getAddress().getHouse().getCorpus();
-                    // Номер квартиры
-                    appartment = homeAddr.getAddress().getFlat();
-                    // ОКАТО
-                    okato = kladr.getOcatd();
                 }
             }
         }
-
         this.addrCity = addrCity;
         this.addrState = addrState;
         this.addrStreet = addrStreet;
