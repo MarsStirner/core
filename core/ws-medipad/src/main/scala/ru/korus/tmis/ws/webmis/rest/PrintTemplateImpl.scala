@@ -1,4 +1,4 @@
-package webmis.rest
+package ru.korus.tmis.ws.webmis.rest
 
 import javax.ws.rs._
 import com.sun.jersey.api.json.JSONWithPadding
