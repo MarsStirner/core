@@ -467,9 +467,7 @@
     <dependencies>
 
 
-        <!--
-            Arquillian testing framework
-        -->
+        <!--Arquillian testing framework-->
 
 
 
