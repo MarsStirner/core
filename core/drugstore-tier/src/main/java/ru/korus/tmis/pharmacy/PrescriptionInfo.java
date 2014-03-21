@@ -6,6 +6,7 @@ import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionStatus;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.pharmacy.DbPrescriptionSendingResBeanLocal;
 
 import java.util.Date;
@@ -35,7 +36,7 @@ public class PrescriptionInfo {
 
         private final boolean isPrescription;
 
-        public IntervalInfo(Map.Entry<DrugChart, List<DrugComponent>> intervalWithComp, DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
+        public IntervalInfo(Map.Entry<DrugChart, List<DrugComponent>> intervalWithComp, DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) throws CoreException {
             final DrugChart interval = intervalWithComp.getKey();
             begDateTime = interval.getBegDateTime();
             endDateTime = interval.getEndDateTime();
@@ -46,7 +47,7 @@ public class PrescriptionInfo {
         }
 
         private List<ComponentInfo> initComponentInfoList(DrugChart interval, Iterable<DrugComponent> drugComponents,
-                                                          DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
+                                                          DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) throws CoreException {
             final List<ComponentInfo> res = new LinkedList<ComponentInfo>();
             for(DrugComponent drugComponent : drugComponents) {
                 res.add(new ComponentInfo(interval, drugComponent, dbPrescriptionSendingResBeanLocal));
@@ -92,7 +93,12 @@ public class PrescriptionInfo {
 
         private final String uuid;
 
-        public ComponentInfo(DrugChart interval, DrugComponent drugComponent, DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
+        public ComponentInfo(DrugChart interval, DrugComponent drugComponent, DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) throws CoreException {
+            if(drugComponent == null)
+                throw new IllegalArgumentException("DrugComponent cannot be null");
+            if(drugComponent.getNomen() == null)
+                throw new CoreException("DrugComponent with id=" + drugComponent.getId() + " has no entry in rlsNomen");
+
             code = drugComponent.getNomen().getId();
             dose = drugComponent.getDose();
             final RbUnit unit = drugComponent.getUnit();
@@ -156,7 +162,7 @@ public class PrescriptionInfo {
             List<DrugComponent>> intervalsWithDrugComp,
                             String routeOfAdministration,
                             String financeType,
-                            DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
+                            DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) throws CoreException {
         this.routeOfAdministration = routeOfAdministration;
         this.financeType = financeType;
         this.uuidDocument = event.getUuid().getUuid();
@@ -165,7 +171,7 @@ public class PrescriptionInfo {
         this.intervalInfoList = initPrescriptionIntervals(intervalsWithDrugComp, dbPrescriptionSendingResBeanLocal);
     }
 
-    private List<IntervalInfo> initPrescriptionIntervals(Map<DrugChart, List<DrugComponent>> intervalsWithDrugComp, DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) {
+    private List<IntervalInfo> initPrescriptionIntervals(Map<DrugChart, List<DrugComponent>> intervalsWithDrugComp, DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) throws CoreException {
         LinkedList<IntervalInfo> res = new LinkedList<IntervalInfo>();
         for (Map.Entry<DrugChart, List<DrugComponent>> intervalWithDrugComp : intervalsWithDrugComp.entrySet()) {
             res.add(new IntervalInfo(intervalWithDrugComp, dbPrescriptionSendingResBeanLocal));

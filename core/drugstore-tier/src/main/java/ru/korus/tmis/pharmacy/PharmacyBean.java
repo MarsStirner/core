@@ -539,7 +539,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
                     if (prescriptionInfo.getAssignmentType() != null ) {
                         if (isSetExternalId(prescriptionInfo)) {
-                            request = HL7PacketBuilder.processPrescription(
+                            request = HL7PacketBuilder.processPrescription(                                       0
                                     action,
                                     prescriptionInfo,
                                     organisation,
@@ -571,6 +571,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
         } catch (Exception e) {
             final String errorString = e.toString();
             prescription.setInfo(errorString);
+            e.printStackTrace();
             logger.error("sending prescription to 1C issue: ", e);
         }
         return res;
