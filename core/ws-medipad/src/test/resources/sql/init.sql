@@ -21,3 +21,7 @@ INSERT INTO `rbBloodComponentType` (`code`, `name`) VALUES ('02.03.001', 'Аут
 INSERT INTO `rbBloodComponentType` (`code`, `name`) VALUES ('01.01.014', 'Эритроцитарная взвесь, лейкофильтрованная, полученная автоматическим аферезом');
 INSERT INTO `rbBloodComponentType` (`code`, `name`) VALUES ('03.01.006', 'Лейкоцитный концентрат');
 
+INSERT INTO `Event`
+(`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `externalId`, `eventType_id`, `org_id`, `client_id`, `contract_id`, `prevEventDate`, `setDate`, `setPerson_id`, `execDate`, `execPerson_id`, `isPrimary`, `order`, `result_id`, `nextEventDate`, `payStatus`, `typeAsset_id`, `note`, `curator_id`, `assistant_id`, `pregnancyWeek`, `MES_id`, `mesSpecification_id`, `rbAcheResult_id`, `version`, `privilege`, `urgent`, `orgStructure_id`, `uuid_id`, `lpu_transfer`)
+VALUES
+(841695, '2014-03-05 15:44:43', 37, '2014-03-05 15:44:44', 37, 0, '2014/474', 2, NULL, 2, 61, NULL, '2014-03-05 15:44:43', 37, NULL, 37, 2, 1, NULL, NULL, 0, NULL, ' ', NULL, NULL, 0, NULL, NULL, NULL, 2, 0, 0, NULL, 984138, NULL);
