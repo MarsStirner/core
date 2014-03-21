@@ -1,4 +1,4 @@
-package webmis.rest
+package ru.korus.tmis.ws.webmis.rest
 
 import ru.korus.tmis.ws.impl.WebMisRESTImpl
 import ru.korus.tmis.core.auth.AuthData

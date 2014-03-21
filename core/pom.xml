@@ -467,9 +467,7 @@
     <dependencies>
 
 
-        <!--
-            Arquillian testing framework
-        -->
+        <!--Arquillian testing framework-->
 
 
 
@@ -549,9 +547,7 @@
             <version>1.18</version>
         </dependency>
 
-        <!--
-        Logging
-        -->
+        <!--Logging-->
         <dependency>
             <groupId>org.clapper</groupId>
             <artifactId>grizzled-slf4j_2.10</artifactId>

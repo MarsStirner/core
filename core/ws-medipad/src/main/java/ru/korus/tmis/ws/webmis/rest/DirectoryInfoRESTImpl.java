@@ -444,19 +444,13 @@ public class DirectoryInfoRESTImpl {
         java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
         java.util.List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
 
-        //java.util.List<String> subTypes = new LinkedList<String>();
         java.util.List<String> mnemonics = new LinkedList<String>();
 
-        if(mnems!=null && mnems.size()>0) {
-            for(String mnem: mnems) {
-                ActionTypesSubType atst = (mnem!=null && !mnem.isEmpty()) ? ActionTypesSubType.getType(mnem.toLowerCase())
-                                                                          : ActionTypesSubType.getType("");
-                //subTypes.add(atst.getSubType());
-                mnemonics.add(atst.getMnemonic());
-            }
-        }
+        if(mnems!=null)
+            for(String mnem: mnems)
+                if(mnem != null && mnem != "") mnemonics.add(mnem);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, /*subTypes,*/ mnemonics, view);
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, mnemonics, view);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding((view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
                                                                                  : wsImpl.getListOfActionTypeIdNames(request, patientId), this.callback);
@@ -518,6 +512,13 @@ public class DirectoryInfoRESTImpl {
     //***********************************   ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ   ***********************************
     //__________________________________________________________________________________________________________________
 
+    /**
+     * Функциональность данного класса под сомнением, мнемоники должны быть оторваны от ядра
+     * (за исключением редких случаев и в этих случаях имена мнемоник должны храниться в файлах *.properties)
+     * Настоятельно нерекомендую пользоваться этим классом. По мере исправления исходного кода, его использующего,
+     * он будет удален.
+     */
+    @Deprecated
     public enum ActionTypesSubType  {
 
         ALL(""){

@@ -10,8 +10,8 @@ import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
-import webmis.rest.OrganizationImpl;
-import webmis.rest.PrintTemplateImpl;
+import ru.korus.tmis.ws.webmis.rest.OrganizationImpl;
+import ru.korus.tmis.ws.webmis.rest.PrintTemplateImpl;
 
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;

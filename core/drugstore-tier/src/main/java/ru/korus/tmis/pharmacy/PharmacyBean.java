@@ -571,6 +571,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
         } catch (Exception e) {
             final String errorString = e.toString();
             prescription.setInfo(errorString);
+            e.printStackTrace();
             logger.error("sending prescription to 1C issue: ", e);
         }
         return res;
