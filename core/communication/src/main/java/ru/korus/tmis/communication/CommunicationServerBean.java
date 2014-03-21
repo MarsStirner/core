@@ -37,8 +37,6 @@ public class CommunicationServerBean {
     private DbOrganizationBeanLocal dbOrganizationBeanLocal = null;
     @EJB(beanName = "DbActionPropertyBean")
     private DbActionPropertyBeanLocal dbActionPropertyBeanLocal = null;
-    @EJB(beanName = "DbManagerBean")
-    private DbManagerBeanLocal dbManagerBeanLocal = null;
     @EJB(beanName = "DbActionBean")
     private DbActionBeanLocal dbActionBeanLocal = null;
 
@@ -74,7 +72,6 @@ public class CommunicationServerBean {
             CommServer.setSpecialityBean(dbQuotingBySpecialityBeanLocal);
             CommServer.setOrganisationBean(dbOrganizationBeanLocal);
             CommServer.setActionPropertyBean(dbActionPropertyBeanLocal);
-            CommServer.setManagerBean(dbManagerBeanLocal);
             CommServer.setPatientQueueBean(patientQueueBeanLocal);
             CommServer.setActionBean(dbActionBeanLocal);
             ////////////////////////////////////////////////////////////

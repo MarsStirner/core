@@ -837,51 +837,39 @@ class CommonDataProcessorBean
       age.set(year, month, day, 0, 0)
 
       new CustomCalendar(year, month, week, day)
-      //(year, month, week, date)
     } else {
       null
     }
   }
 
+  /**
+   * Извращенный метод определения соответствия возраста пациента и action property type
+   * @param age Возраст поциента, заданный как CustomCalendar, важно, чтобы значения дней, недель,
+   *            месяцев и лет были абсолютны, т.е. если пациенту 2 мес. и 10 дней, тогда значения будут 70 дней, 10 нед., 2 мес. и 0 лет
+   * @param apt Тип свойства, для которого проводится проверка соответствия
+   * @return true - если свойство соответствует возрасту пациента и false, если не соответствует
+   */
   def checkActionPropertyTypeForPatientAge(age: CustomCalendar, apt: ActionPropertyType): Boolean = {
-    var needProp: Boolean = false
-    if (age == null || age.getYear.intValue() == 0 || (apt.getAge_bc == 0 && apt.getAge_ec == 0 && apt.getAge_bu == 0 && apt.getAge_eu == 0)) {
-      apt.getAge_eu match {
-        case 1 => {
-          //дней
-          if ((age.getDay.intValue() >= apt.getAge_bc || apt.getAge_bc == 0) &&
-            (age.getDay.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
-            needProp = true
-          }
-        }
-        case 2 => {
-          //недель
-          if ((age.getWeek.intValue() >= apt.getAge_bc || apt.getAge_bc == 0) &&
-            (age.getWeek.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
-            needProp = true
-          }
-        }
-        case 3 => {
-          //месяцев
-          if ((age.getMonth.intValue() >= apt.getAge_bc || apt.getAge_bc == 0) &&
-            (age.getMonth.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
-            needProp = true
-          }
-        }
-        case 4 => needProp = false //лет
-        case _ => {
-          needProp = true
-        }
-      }
-    } else {
-      //лет
-      if (apt.getAge_eu == 4 &&
-        (age.getYear.intValue() >= apt.getAge_bc || apt.getAge_bc == 0) &&
-        (age.getYear.intValue() < apt.getAge_ec || apt.getAge_ec == 0)) {
-        needProp = true
-      }
+    // Проверяем формат, в котором задана нижняя граница (днях, неделях, месяцах или годах)
+    // и сверяем возраст пациента с заданной границей
+    val lowLimit = apt.getAge_bu match {
+      case 1 => age.getDay   > apt.getAge_bc   // Дни
+      case 2 => age.getWeek  > apt.getAge_bc   // Недели
+      case 3 => age.getMonth > apt.getAge_bc   // Месяцы
+      case 4 => age.getWeek  > apt.getAge_bc   // Года
+      case _ => true //Если значение не задано - то будем считать, что возраст пациента удовлетворяет
     }
-    needProp
+
+    // Аналогично, но в обратную сторону проверяем соответствие возраста верхней границе
+    val topLimit = apt.getAge_eu match {
+      case 1 => age.getDay   < apt.getAge_ec
+      case 2 => age.getWeek  < apt.getAge_ec
+      case 3 => age.getMonth < apt.getAge_ec
+      case 4 => age.getYear  < apt.getAge_ec
+      case _ => true
+    }
+
+    lowLimit && topLimit
   }
 
 }

@@ -240,4 +240,45 @@ class DbOrgStructureBean
     em.createNamedQuery("OrgStructureAddress.findByOrgStructure", classOf[OrgStructureAddress])
       .setParameter("orgStructure", orgStructure).getResultList
   }
+
+  override def getRecursiveOrgStructuresWithoutAvailableForExternal(parentId: Int, recursive: Boolean, infisCode: String): util.List[OrgStructure] = {
+    val allEntitiesList = getAllOrgStructures()
+    var parentIdsSet = Set[java.lang.Integer](parentId)
+    var result = Set[OrgStructure]()
+
+    val infisCodeIsDefined: Boolean = infisCode.length > 0
+    val parentIdIsDefined: Boolean = parentId.intValue() > 0
+
+    allEntitiesList.map((current: OrgStructure) => {
+      if (!current.getDeleted &&
+        (current.getParentId == parentId || (!parentIdIsDefined && current.getParentId == null)) &&
+        (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))) {
+        result += current
+        if (recursive.booleanValue()) parentIdsSet += current.getId
+      }
+    })
+
+    if (recursive.booleanValue()) {
+      var previousSize: Int = 0
+      val MAX_DEEP: Int = 7
+      var currentDeep = 0
+      while (parentIdsSet.size > previousSize && currentDeep < MAX_DEEP) {
+        //Get childrens from parentIdsSet
+        previousSize = parentIdsSet.size
+        allEntitiesList.map((current: OrgStructure) => {
+          if (!current.getDeleted  && parentIdsSet(current.getParentId)
+            && (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))
+          ) {
+            result += current
+            parentIdsSet += current.getId
+          }
+        }) //End of First-Level childrens
+        currentDeep += 1
+      }
+    }
+    if (result.size == 0) {
+      throw new CoreException("Not Found OrgStructures");
+    }
+    result.toList
+  }
 }

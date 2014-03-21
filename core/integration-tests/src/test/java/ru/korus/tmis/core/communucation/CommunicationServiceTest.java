@@ -107,9 +107,8 @@ public class CommunicationServiceTest {
             fileReader.close();
         } catch (FileNotFoundException e) {
             logger.error("File {} not found", paramsFile.getAbsolutePath());
-            fail("No params file founded");
         } catch (IOException e) {
-            fail("ERROR: I/O exception while reading file.");
+            logger.error("I\\O exception {}", paramsFile.getAbsolutePath());
         }
         Short i = -1;
         for (FindPatientByPolicyAndDocumentParameters currentParams : params) {
@@ -122,17 +121,17 @@ public class CommunicationServiceTest {
                     logger.info("{}\t|\t{}", i, "skip");
                 }
             } catch (NotFoundException e) {
-                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getError_msg());
+                logger.info(i + "\t|\t{}:{}", e.getClass().getName(), e.getError_msg());
             } catch (InvalidPersonalInfoException e) {
-                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getMessage());
+                logger.info(i + "\t|\t{}:{}", e.getClass().getName(), e.getMessage());
             } catch (InvalidDocumentException e) {
-                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getMessage());
+                logger.info(i + "\t|\t{}:{}", e.getClass().getName(), e.getMessage());
             } catch (AnotherPolicyException e) {
-                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getMessage());
+                logger.info(i + "\t|\t{}:{}", e.getClass().getName(), e.getMessage());
             } catch (NotUniqueException e) {
-                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getMessage());
+                logger.info(i + "\t|\t{}:{}", e.getClass().getName(), e.getMessage());
             } catch (TException e) {
-                logger.info(i+"\t|\t{}:{}", e.getClass().getName(), e.getMessage());
+                logger.info(i + "\t|\t{}:{}", e.getClass().getName(), e.getMessage());
             }
         }
     }
@@ -834,12 +833,11 @@ public class CommunicationServiceTest {
     }
 
 
-
     @Test(enabled = true)
     public void getFirstFreeTicket() {
         logger.info("Start of getFirstFreeTicket test:");
-       try {
-           TTicket result = client.getFirstFreeTicket(new ScheduleParameters().setPersonId(303).setBeginDateTime(0).setHospitalUidFrom("").setQuotingType(QuotingType.FROM_PORTAL));
+        try {
+            TTicket result = client.getFirstFreeTicket(new ScheduleParameters().setPersonId(303).setBeginDateTime(0).setHospitalUidFrom("").setQuotingType(QuotingType.FROM_PORTAL));
             logger.info("Send and recieve is successfully done.");
             assertTrue(result != null);
             logger.info("Received = {}", result.toString());
@@ -851,10 +849,10 @@ public class CommunicationServiceTest {
 
 
     @Test(enabled = true)
-    public void checkForNewQueueCoupons(){
+    public void checkForNewQueueCoupons() {
         try {
             final List<QueueCoupon> result = client.checkForNewQueueCoupons();
-            for(QueueCoupon current : result){
+            for (QueueCoupon current : result) {
                 logger.info(current.toString());
             }
         } catch (TException e) {

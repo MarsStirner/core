@@ -59,6 +59,7 @@ public final class ParserToThriftStruct {
         if (item.getParentId() != null) {
             result.setParent_id(item.getParentId());
         }
+        result.setAvailableForExternal(item.getAvailableForExternal() != 0);
         return result;
     }
 

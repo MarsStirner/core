@@ -48,7 +48,6 @@ public class CommServer implements Communications.Iface {
     private static DbOrganizationBeanLocal organisationBean = null;
     private static DbActionPropertyBeanLocal actionPropertyBean = null;
     private static DbActionBeanLocal actionBean = null;
-    private static DbManagerBeanLocal managerBean = null;
     //////////////////////////////////////////////////////////
     private static DbClientDocumentBeanLocal documentBean = null;
     private static DbRbDocumentTypeBeanLocal documentTypeBean = null;
@@ -115,6 +114,54 @@ public class CommServer implements Communications.Iface {
                 currentRequestNum, resultList.size(), resultList);
         return resultList;
     }
+
+    /**
+     * Получение списка всех подразделений, относящихся к запрошенному ЛПУ
+     *
+     * @param parentId 1) идентификатор подразделения, для которого нужно найти дочернии подразделения
+     * @param recursive 2) Флаг рекурсии (выбрать также подразделения, входяшие во все дочерние подразделения)
+     * @param infisCode 3) Инфис-код
+     * @return Список структур, содержащих информацию о дочерних подразделениях
+     * @throws ru.korus.tmis.communication.thriftgen.NotFoundException когда не было найдено ни одного подразделения, удовлетворяющего заданным параметрам
+     * @throws ru.korus.tmis.communication.thriftgen.SQLException      когда произошла внутренняя ошибка при запросах к БД ЛПУ
+     */
+    @Override
+    public List<OrgStructure> getAllOrgStructures(int parentId, boolean recursive, String infisCode) throws NotFoundException, SQLException, TException {
+        final int currentRequestNum = ++requestNum;
+        logger.info("#{} Call method -> CommServer.getAllOrgStructures(id={}, recursive={}, infisCode={})",
+                currentRequestNum, parentId, recursive, infisCode);
+        //Список для хранения сущностей из БД
+        final List<ru.korus.tmis.core.entity.model.OrgStructure> orgStructureList;
+        try {
+            //Получение нужных сущностей из бина
+            orgStructureList = orgStructureBean.getRecursiveOrgStructuresWithoutAvailableForExternal(parentId, recursive, infisCode);
+        } catch (CoreException e) {
+            logger.error("#" + currentRequestNum + " CoreException while getRecursive from bean.", e);
+            throw new NotFoundException().setError_msg("None of the OrgStructure contain any such parent =" + parentId);
+        } catch (Exception e) {
+            logger.error("#" + currentRequestNum + " Exception. Message=" + e.getMessage(), e);
+            throw new TException("Error while getRecursive from bean (Unknown exception)", e);
+        }
+        //Список который будет возвращен
+        final List<OrgStructure> resultList = new ArrayList<OrgStructure>(orgStructureList.size());
+        //Конвертация сущностей в возвращаемые структуры
+        for (final ru.korus.tmis.core.entity.model.OrgStructure current : orgStructureList) {
+            resultList.add(ParserToThriftStruct.parseOrgStructure(current));
+        }
+        logger.info("End of #{} getAllOrgStructures. Return (size={} DATA=({})) as result.",
+                currentRequestNum, resultList.size(), resultList);
+        return resultList;
+    }
+
+    /**
+     * Получение списка всех подразделений, относящихся к запрошенному ЛПУ
+     *
+     * @param infisCode 1) Инфис-код ЛПУ
+     * @return Список структур, содержащих информацию о дочерних подразделениях
+     * @throws ru.korus.tmis.communication.thriftgen.NotFoundException когда не было найдено ни одного подразделения, удовлетворяющего заданным параметрам
+     * @throws ru.korus.tmis.communication.thriftgen.SQLException      когда произошла внутренняя ошибка при запросах к БД ЛПУ
+     */
+
 
     /**
      * Получение ID подразделений, находящихся по заданному адресу.
@@ -1378,10 +1425,6 @@ public class CommServer implements Communications.Iface {
 
     public static void setActionBean(final DbActionBeanLocal actionBean) {
         CommServer.actionBean = actionBean;
-    }
-
-    public static void setManagerBean(final DbManagerBeanLocal managerBean) {
-        CommServer.managerBean = managerBean;
     }
 
     public static void setDocumentBean(DbClientDocumentBeanLocal documentBean) {
