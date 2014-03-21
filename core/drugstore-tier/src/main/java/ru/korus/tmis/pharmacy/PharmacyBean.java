@@ -539,7 +539,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
                     if (prescriptionInfo.getAssignmentType() != null ) {
                         if (isSetExternalId(prescriptionInfo)) {
-                            request = HL7PacketBuilder.processPrescription(                                       0
+                            request = HL7PacketBuilder.processPrescription(
                                     action,
                                     prescriptionInfo,
                                     organisation,
