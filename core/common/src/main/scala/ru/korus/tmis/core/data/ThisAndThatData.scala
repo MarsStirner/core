@@ -358,7 +358,7 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
 
   @Override
   def toQueryStructure() = {
-    var qs = new QueryDataStructure()
+    val qs = new QueryDataStructure()
     if(this.groupId>0){
       qs.query += ("AND at.groupId = :groupId\n")
       qs.add("groupId", this.groupId:java.lang.Integer)
@@ -366,12 +366,11 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
     else if(this.code!=null && !this.code.isEmpty){
       qs.query += ("AND at.groupId IN (SELECT at2.id FROM ActionType at2 WHERE at2.code = :code)\n")
       qs.add("code",this.code)
-    } else if (this.flatCodes!=null && this.flatCodes.size() > 0) {
+    }
+    else if (this.flatCodes!=null && this.flatCodes.size() > 0) {
       qs.query += ("AND at.flatCode IN :flatCodes\n")
       qs.add("flatCodes", asJavaCollection(this.flatCodes))
-    }   //else if(this.view.compareTo("tree")==0){
-      //qs.query += ("AND (at.groupId IS NULL OR at.groupId<=0)")
-    //}
+    }
     if (this.mnemonics!=null && this.mnemonics.size() > 0) {
       qs.query += ("AND at.mnemonic IN :mnemonic\n")
       qs.add("mnemonic",asJavaCollection(this.mnemonics))

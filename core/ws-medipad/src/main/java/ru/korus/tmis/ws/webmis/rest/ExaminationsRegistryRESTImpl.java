@@ -196,14 +196,12 @@ public class ExaminationsRegistryRESTImpl {
         List<String> mnems = info.getQueryParameters().get("filter[mnem]");
         List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
         if(flatCodes == null) flatCodes = new LinkedList<String>();
+
         List<String> mnemonics = new LinkedList<String>();
-        if(mnems!=null && mnems.size()>0) {
-            for(String mnem: mnems) {
-                DirectoryInfoRESTImpl.ActionTypesSubType atst = (mnem!=null && !mnem.isEmpty()) ? DirectoryInfoRESTImpl.ActionTypesSubType.getType(mnem.toLowerCase())
-                        : DirectoryInfoRESTImpl.ActionTypesSubType.getType("");
-                mnemonics.add(atst.getMnemonic());
-            }
-        }
+        if(mnems!=null)
+            for(String mnem: mnems)
+                if(mnem != null && mnem != "") mnemonics.add(mnem);
+
         AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, patientId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics, flatCodes){
             @Override
             public QueryDataStructure toQueryStructure() {
