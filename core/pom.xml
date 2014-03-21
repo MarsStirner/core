@@ -572,17 +572,7 @@
             <version>${version.logging.jcl}</version>
         </dependency>
 
-
-        <!-- Spring framework ${spring.version} -->
-        <!--<dependency>-->
-        <!--<groupId>org.springframework</groupId>-->
-        <!--<artifactId>spring-context</artifactId>-->
-        <!--<version>3.2.3.RELEASE</version>-->
-        <!--</dependency>-->
-
-        <!--
-            Java EE
-        -->
+        <!--Java EE-->
         <dependency>
             <groupId>javax.mail</groupId>
             <artifactId>mail</artifactId>
@@ -597,9 +587,7 @@
             <scope>provided</scope>
         </dependency>
 
-        <!--
-            Scala
-        -->
+        <!--Scala-->
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
@@ -618,9 +606,7 @@
             <version>${version.scala}</version>
         </dependency>
 
-        <!--
-            Groovy
-        -->
+        <!--Groovy-->
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy-all</artifactId>
@@ -655,9 +641,7 @@
         <!--<version>${version.logging.logback.janino}</version>-->
         <!--</dependency>-->
 
-        <!--
-            JUnit
-        -->
+        <!--JUnit-->
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
@@ -672,27 +656,21 @@
             <!--<classifier>jdk15</classifier>-->
         </dependency>
 
-        <!--
-        Mockito JUnit
-        -->
+        <!--Mockito JUnit-->
         <dependency>
             <groupId>org.mockito</groupId>
             <artifactId>mockito-all</artifactId>
             <version>1.8.5</version>
         </dependency>
 
-        <!--
-            Javax inject
-        -->
+        <!--Javax inject-->
         <dependency>
             <groupId>javax.inject</groupId>
             <artifactId>javax.inject</artifactId>
             <version>${version.javax.inject}</version>
         </dependency>
 
-        <!--
-        Apache Thrift
-        -->
+        <!--Apache Thrift-->
         <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
@@ -707,9 +685,7 @@
         <!--<scope>test</scope>-->
         <!--</dependency>-->
 
-        <!--
-        Joda Time
-        -->
+        <!--Joda Time-->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
