@@ -239,7 +239,8 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             AuthData authData = auth();
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
             final Integer transfusionTherapyActionId = 3911;
-            final Integer eventId = 841695;//appealBean.insertAppealForPatient(initAppealData(), TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
+            final Integer eventId = 841695;
+            //appealBean.insertAppealForPatient(initAppealData(), TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
             URL url = new URL(BASE_URL + String.format("/tms-registry/appeals/%s/documents/", eventId));
             final int countAction = dbActionBean.getLastActionByActionTypeIdAndEventId(eventId, new HashSet<Integer>(){{add(transfusionTherapyActionId);}});
             final String tstCallback = "tstCallback";
