@@ -192,7 +192,7 @@ class AppealSimplifiedData {
   var number: String = _                                //Номер истории болезни
 
   @BeanProperty
-  var rangeAppealDateTime: DatePeriodContainer = _            //Даты открытия и закрытия талона
+  var rangeAppealDateTime: DatePeriodContainer = _      //Даты открытия и закрытия талона
 
   @BeanProperty
   var execPerson: ComplexPersonContainer = _            //Данные о враче и отделении
@@ -201,13 +201,19 @@ class AppealSimplifiedData {
   var department: IdNameContainer = _                   //Отделение где находился пациент
 
   @BeanProperty
-  var diagnoses: java.util.List[DiagnosisContainer] = new LinkedList[DiagnosisContainer]// Диагнозы
+  var diagnoses: java.util.List[DiagnosisContainer] = new LinkedList[DiagnosisContainer] // Диагнозы
+
+  @BeanProperty
+  var finance: IdNameAndCodeContainer = _               //Источник финансирования
 
   def this(event: Event, diagnoses: java.util.Map[Object,  Object]) {
     this()
     this.id = event.getId.intValue()
     this.number = event.getExternalId
     this.rangeAppealDateTime = new DatePeriodContainer(event.getSetDate, event.getExecDate)
+    val fin = event.getEventType.getFinance
+    this.finance = new IdNameAndCodeContainer(fin.getId, fin.getName, fin.getCode)
+
     this.execPerson = if (event.getExecutor != null) {new ComplexPersonContainer(event.getExecutor)} else {new ComplexPersonContainer}
     if(diagnoses!=null || diagnoses.size()>0){
       diagnoses.foreach(d=> {
