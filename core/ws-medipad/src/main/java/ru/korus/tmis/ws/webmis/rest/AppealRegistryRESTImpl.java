@@ -21,7 +21,6 @@ import java.util.Set;
 @Interceptors(ServicesLoggingInterceptor.class)
 public class AppealRegistryRESTImpl {
 
-    //protected static final String PATH = PatientRegistryRESTImpl.PATH + "{patientId}/appeals/";
     private WebMisRESTImpl wsImpl;
     private int patientId;
     private AuthData auth;
