@@ -74,13 +74,16 @@ class ThesaurusContainer {
   var code: String = _
   @BeanProperty
   var groupId: java.lang.Integer = _
+  @BeanProperty
+  var template: String = _
 
-  def this(id: java.lang.Integer, name: String, code: String, groupId: java.lang.Integer) {
+  def this(id: java.lang.Integer, name: String, code: String, groupId: java.lang.Integer, template: String) {
     this()
     this.id = id
     this.name = name
     this.code = code
     this.groupId = groupId
+    this.template = template
   }
 
   def this(thesaurus: Thesaurus) {
@@ -89,6 +92,7 @@ class ThesaurusContainer {
     this.name = thesaurus.getName
     this.code = thesaurus.getCode
     this.groupId = thesaurus.getGroupId
+    this.template = thesaurus.getTemplate
   }
 
   def toMap = {
