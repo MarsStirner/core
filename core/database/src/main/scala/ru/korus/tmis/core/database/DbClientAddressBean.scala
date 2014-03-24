@@ -91,7 +91,7 @@ class DbClientAddressBean
     }
   }
 
-  def insertOrUpdateClientAddress(addressTypeId: Int,
+  def insertClientAddress(addressTypeId: Int,
                                   addressEntry: AddressEntryContainer,
                                   patient: Patient,
                                   sessionUser: Staff): ClientAddress = {
@@ -100,9 +100,6 @@ class DbClientAddressBean
     var d: ClientAddress = new ClientAddress()
     var d1: Address = new Address()
     var d2: AddressHouse = new AddressHouse()
-    if (patient.getId != null) {
-      d = getClientAddressByClientIdAddressType(patient.getId.intValue(), addressTypeId)
-    }
 
     if (d == null || d.getId == null) {
       d = new ClientAddress
@@ -119,23 +116,6 @@ class DbClientAddressBean
       d2.setCreatePerson(sessionUser)
       d2.setCreateDatetime(now)
 
-    }
-    else {
-      //  d.setPatient(patient)
-      //  d.setCreatePerson(sessionUser)
-      //  d.setCreateDatetime(now)
-      d1 = d.getAddress()
-      if (d1 == null) {
-        d1 = new Address()
-        d1.setCreatePerson(sessionUser)
-        d1.setCreateDatetime(now)
-      }
-      d2 = d1.getHouse()
-      if (d2 == null) {
-        d2 = new AddressHouse()
-        d2.setCreatePerson(sessionUser)
-        d2.setCreateDatetime(now)
-      }
     }
 
     //если поля КЛАДР заполнены:

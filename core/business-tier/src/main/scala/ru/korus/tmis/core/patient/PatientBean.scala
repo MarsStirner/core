@@ -664,7 +664,7 @@ class PatientBean
           }
         }
         case addressEntry: AddressEntryContainer => {
-          registeredAddres = dbClientAddress.insertOrUpdateClientAddress(
+          registeredAddres = dbClientAddress.insertClientAddress(
             0,//TODO: вынести в настройки идентификатор типа адреса
             addressEntry,
             patient,
@@ -679,7 +679,7 @@ class PatientBean
           }
         }
         case addressEntry: AddressEntryContainer => {
-          residentialAddres = dbClientAddress.insertOrUpdateClientAddress(
+          residentialAddres = dbClientAddress.insertClientAddress(
             1,//TODO: вынести в настройки идентификатор типа адреса
             addressEntry,
             patient,

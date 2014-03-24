@@ -17,7 +17,7 @@ public interface DbClientAddressBeanLocal {
     ClientAddress getClientAddressByClientIdAddressType(int patientId, int addressType)
             throws CoreException;
 
-    ClientAddress insertOrUpdateClientAddress(int addressTypeId,
+    ClientAddress insertClientAddress(int addressTypeId,
                                               AddressEntryContainer address,
                                               Patient patient,
                                               Staff sessionUser)

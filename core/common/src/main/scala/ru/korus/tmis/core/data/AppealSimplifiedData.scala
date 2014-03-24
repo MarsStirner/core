@@ -176,7 +176,7 @@ class AppealSimplifiedRequestDataFilter {
       case "doctor" => {"e.executor.lastName %s, e.executor.firstName %s, e.executor.patrName %s"}
       case "department" => {"department"}         //Для ручной сортировки
       case "number" => {"e.externalId"}
-      //case "diagnosis" => {"ds.mkbCode"}
+      case "finance" => {"e.eventType.finance.name"}
       case _ => {"e.id"}
     }
   }
