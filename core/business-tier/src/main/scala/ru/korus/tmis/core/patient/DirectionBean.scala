@@ -315,7 +315,7 @@ with I18nable {
         // то помечаем действие лабораторного исследования как удаленное
         case e: Throwable => {
           actions.foreach(a => {
-            em.find(classOf[Action], a.getId).setDeleted(true);
+            em.find(classOf[Action], a.getId).setDeleted(true)
             em.flush()
           })
           throw e
@@ -346,7 +346,7 @@ with I18nable {
     directions.getEntity.foreach((action) => {
       //Проверка прав у пользователя на редактирование направления
       var oldJT = 0
-      val a = actionBean.getActionById(action.getId().intValue())
+      val a = actionBean.getActionById(action.getId.intValue())
       if (flgLab) {
         a.getActionProperties.foreach((ap) => {
           if (ap.getType.getTypeName.equals("JobTicket") && !actionPropertyBean.getActionPropertyValue(ap).isEmpty) {
@@ -360,7 +360,7 @@ with I18nable {
         (a.getAssigner != null && a.getAssigner.getId.compareTo(userId) == 0) /*||
          (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
          userRole.compareTo("strHead")==0*/ ) {
-        actions = commonDataProcessor.modifyActionFromCommonData(action.getId().intValue(), directions, userData)
+        actions = commonDataProcessor.modifyActionFromCommonData(action.getId.intValue(), directions, userData)
         if (flgLab) {
           actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue())
           //редактирование или удаление старого жобТикета
@@ -473,7 +473,7 @@ with I18nable {
     } else {
       PacientInQueueType.QUEUE
     }
-    val queueActionParam: QueueActionParam = (new QueueActionParam()).setAppointmentType(AppointmentType.HOSPITAL).setPacientInQueueType(pacientInQueueType)
+    val queueActionParam: QueueActionParam = new QueueActionParam().setAppointmentType(AppointmentType.HOSPITAL).setPacientInQueueType(pacientInQueueType)
     val res = personScheduleBean.enqueuePatientToTime(personSchedule, plannedDate, patientBean.getPatientById(request.getPatientId), queueActionParam)
     if (!res.isSuccess) {
       throw new CoreException(res.getMessage)
@@ -616,6 +616,15 @@ with I18nable {
             }
           }
         })
+        // Устанавливаем исполнителя для TakenTissueJournal
+      } else if (f.getStatus == 1) {
+        dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {
+          val tt = a.getTakenTissue
+          if (tt != null) {
+            tt.setPerson(authData.getUser)
+            em.merge(tt)
+          }
+        })
       }
       var res: Boolean = true
       if (isAllActionSent) {
@@ -630,7 +639,7 @@ with I18nable {
 
   /**
    * Отправка назначения в Акросс
-   * @param actionId
+   * @param actionId Идентификатор действия
    */
   def sendActionToLis(actionId: Int) {
     val jt = dbJobTicketBean.getJobTicketForAction(actionId)
