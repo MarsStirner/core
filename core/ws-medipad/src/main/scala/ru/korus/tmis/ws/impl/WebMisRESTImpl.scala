@@ -618,7 +618,7 @@ class WebMisRESTImpl  extends WebMisREST
     // если прошло больше дней, чем указанно в конфигурации
     val closeDate = event.getExecDate
     if(closeDate != null) {
-      val availableDays =  dbSettingsBean.getSettingByPath(i18n("settings.path.eventBlockTime")).getValue
+      val availableDays =  dbSettingsBean.getSettingByPathInMainSettings(i18n("settings.path.eventBlockTime")).getValue
       try {
         if(new DateTime(closeDate).plusDays(Integer.parseInt(availableDays)).getMillis < new DateTime().getMillis) {
           throw new CoreException("Редактирование документов разрешено только в течении " + Integer.parseInt(availableDays) + " после закрытия истории болезни")

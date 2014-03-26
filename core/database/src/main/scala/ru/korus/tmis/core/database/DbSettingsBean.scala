@@ -24,6 +24,10 @@ with I18nable {
   @PersistenceContext(unitName = "tmis_core")
   var tmis_core: EntityManager = _
 
+  @PersistenceContext(unitName = "s11r64")
+  var s11r64: EntityManager = _
+
+
   @PostConstruct
   def init() = {
     load_settings
@@ -45,8 +49,12 @@ with I18nable {
     }
   }
 
-  def getSettingByPath(path: String): Setting = {
-    val result: Setting = tmis_core.createQuery("SELECT s FROM Setting s WHERE s.path = :path", classOf[Setting]).setParameter("path", path).getSingleResult
+  def getSettingByPath(path: String): Setting  = getSetting(tmis_core, path)
+
+  def getSettingByPathInMainSettings(path: String): Setting = getSetting(s11r64, path)
+
+  private def getSetting(em: EntityManager, path: String ): Setting = {
+    val result: Setting = em.createQuery("SELECT s FROM Setting s WHERE s.path = :path", classOf[Setting]).setParameter("path", path).getSingleResult
     if (result == null) {
       new Setting
     }
