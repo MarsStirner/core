@@ -3,9 +3,7 @@
     <display-name>Finance Info</display-name>
 	<servlet>
 		<servlet-name>finance-serlvet</servlet-name>
-		<servlet-class>
-                     com.sun.jersey.spi.container.servlet.ServletContainer
-                </servlet-class>
+		<servlet-class>${version.jersey.servlet}</servlet-class>
 		<init-param>
 		     <param-name>com.sun.jersey.config.property.packages</param-name>
 		     <param-value>ru.korus.tmis.ws.finance</param-value>

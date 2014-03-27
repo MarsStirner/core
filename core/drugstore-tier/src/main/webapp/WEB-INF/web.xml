@@ -3,9 +3,7 @@
     <display-name>RLS update</display-name>
 	<servlet>
 		<servlet-name>rlsupdate-serlvet</servlet-name>
-		<servlet-class>
-                     com.sun.jersey.spi.container.servlet.ServletContainer
-                </servlet-class>
+		<servlet-class>${version.jersey.servlet}</servlet-class>
 		<init-param>
 		     <param-name>com.sun.jersey.config.property.packages</param-name>
 		     <param-value>ru.korus.tmis.pharmacy.rlsupdate</param-value>

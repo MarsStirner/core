@@ -3,7 +3,7 @@
   <javaee:display-name>UsersMgr Info</javaee:display-name>
   <servlet>
     <servlet-name>usersmgr-serlvet</servlet-name>
-    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <servlet-class>${version.jersey.servlet}</servlet-class>
     <init-param>
       <javaee:param-name>com.sun.jersey.config.property.packages</javaee:param-name>
       <javaee:param-value>ru.korus.tmis.ws.users</javaee:param-value>

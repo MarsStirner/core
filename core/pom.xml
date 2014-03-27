@@ -123,8 +123,6 @@
         <glassfish.master.password>admin1234</glassfish.master.password>
         <!-- Название приложения, которое будет отображаться в интерфейсе -->
         <glassfish.application.name>${project.build.finalName}</glassfish.application.name>
-        <!-- Путь к директории домена, с названием (нужен для того, чтобы валидировался pom.xml) -->
-        <!--<com.sun.aas.instanceRoot>${glassfish.domain.dir}${separate}${glassfish.domain}${separate}</com.sun.aas.instanceRoot>-->
         <!-- Название приложения, которое будет отображаться в интерфейсе -->
         <ear.name>tmis-server-${version.tmis.core}</ear.name>
         <!-- Название ресурса JNDI к которому подсоединяется ядро (жестко прописаны в коде, всегда должны быть такими) -->
@@ -174,7 +172,7 @@
             </properties>
         </profile>
 
-        <!-- Профиль для установки на стандартный Linux-сервер -->
+        <!-- Профиль для установки на стандартный Linux-сервер  glassfish 3.x  -->
         <profile>
             <id>production-standart</id>
             <properties>
@@ -186,6 +184,21 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+        </profile>
+
+        <!-- Профиль для установки на стандартный Linux-сервер glassfish 4.x -->
+        <profile>
+            <id>production-standart-glassfish4</id>
+            <properties>
+                <!-- Выключить дебаг -->
+                <project.build.debug>false</project.build.debug>
+                <!-- Название домена -->
+                <glassfish.domain>fccho-moscow</glassfish.domain>
+                <!-- В следующей версии Glassfish меняется имя пакетов -->
+                <version.jersey.servlet>org.glassfish.jersey.servlet.ServletContainer</version.jersey.servlet>
+                <project.build.jdk>1.7</project.build.jdk>
+                <version.javaee.api>7.0</version.javaee.api>
+            </properties>
         </profile>
 
         <!-- Профиль для установки на стандартный Linux-сервер -->
@@ -535,18 +548,6 @@
             <scope>import</scope>
         </dependency>
 
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>1.18</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-core</artifactId>
-            <version>1.18</version>
-        </dependency>
-
         <!--Logging-->
         <dependency>
             <groupId>org.clapper</groupId>
@@ -676,14 +677,6 @@
             <artifactId>libthrift</artifactId>
             <version>${version.apache.thrift}</version>
         </dependency>
-
-        <!-- Jersey server for WebMis-->
-        <!--<dependency>-->
-        <!--<groupId>com.sun.jersey</groupId>-->
-        <!--<artifactId>jersey-server</artifactId>-->
-        <!--<version>1.16</version>-->
-        <!--<scope>test</scope>-->
-        <!--</dependency>-->
 
         <!--Joda Time-->
         <dependency>

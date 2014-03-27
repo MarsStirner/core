@@ -75,6 +75,15 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <attachClasses>true</attachClasses>
                     <classesClassifier>classes</classesClassifier>
+                    <webResources>
+                        <resource>
+                            <filtering>true</filtering>
+                            <directory>src/main/webapp</directory>
+                            <includes>
+                                <include>**/web.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
                 </configuration>
             </plugin>
 

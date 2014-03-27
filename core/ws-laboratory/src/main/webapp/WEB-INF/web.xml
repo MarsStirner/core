@@ -5,7 +5,7 @@
 
     <servlet>
         <servlet-name>settings-serlvet</servlet-name>
-        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <servlet-class>${version.jersey.servlet}</servlet-class>
         <init-param>
             <javaee:param-name>com.sun.jersey.config.property.packages</javaee:param-name>
             <javaee:param-value>ru.korus.tmis.settings</javaee:param-value>
