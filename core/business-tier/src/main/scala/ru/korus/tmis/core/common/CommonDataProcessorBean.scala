@@ -291,6 +291,12 @@ class CommonDataProcessorBean
   }
 
 
+  /**
+   * Метод получения APValue из входных данных в виде [[ru.korus.tmis.core.data.CommonAttribute]]
+   * @param entry Пара свойство и его представление как [[ru.korus.tmis.core.data.CommonAttribute]]
+   * @param list Список значений, к которому будут добавлены новые полученные значения
+   * @return Список на входе включая вновь полученные элементы
+   */
   def toActionPropertyValue(entry: (ActionProperty, CommonAttribute), list: List[APValue]): List[APValue] = {
     val (ap, attribute) = entry
     (attribute.getPropertiesMap.get("valueId"), attribute.getPropertiesMap.get("value")) match {
@@ -311,11 +317,15 @@ class CommonDataProcessorBean
         } else list
       }
       case (None | Some(null) | Some(""), Some(value)) => {
+        if(ap.getType.getTypeName.equals("Date") && attribute.getPropertiesMap().get("value").getOrElse("").equals("0000-00-00 00:00:00"))
+          list
+        else {
         val apv = dbActionProperty.setActionPropertyValue(
           ap,
           value,
           0)
         apv :: list
+        }
       }
       case (Some(valueId), _) => {
         val apv = dbActionProperty.setActionPropertyValue(
