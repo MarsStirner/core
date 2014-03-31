@@ -98,7 +98,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         wa.addPackage(ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage.class.getPackage());*/
 
         wa.addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
-        wa.addAsWebInfResource(new File("./src/main/webapp/WEB-INF/web.xml"), "web.xml");
+        wa.addAsWebInfResource(new File("./target/test-classes/WEB-INF/web.xml"), "web.xml");
         System.out.println("**************************** createTestArchive medipad");
         return wa;
     }
@@ -131,6 +131,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
      */
     @Test
     public void testInsertAppealForPatient() {
+        System.out.println("**************************** testInsertAppealForPatient() started...");
         try {
             AppealData appealData =initAppealData(); // инициализация параметров госпитализации
             int countEvent = eventBeanLocal.getEventsForPatient(TEST_PATIENT_ID).size();  // количетово обращений пациента ДО
@@ -153,6 +154,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     @Test
     public void testAuth() {
+        System.out.println("**************************** testAuth() started...");
         try {
             createTestUser();
             final URL url = new URL(BASE_URL + "/tms-auth/roles/");
@@ -201,6 +203,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     @Test
     public void testGetActionTypeInfo() {
+        System.out.println("**************************** testGetActionTypeInfo() started...");
         try {
             save();
             AuthData authData = auth();
@@ -234,6 +237,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     @Test
     public void testCreateAction() {
+        System.out.println("**************************** testCreateAction() started...");
         try {
             save();
             AuthData authData = auth();
@@ -262,7 +266,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionResp.json"))));
             //TODO remove id  from json or clear DB
             //Assert.assertEquals(resJson, expected);
-            Assert.assertTrue(res.contains("\"name\":\"Гемотрансфузионная терапия\""));
+            Assert.assertTrue(res.contains("\"typeId\":3911"));
 
         } catch (Exception ex) {
             ex.printStackTrace();

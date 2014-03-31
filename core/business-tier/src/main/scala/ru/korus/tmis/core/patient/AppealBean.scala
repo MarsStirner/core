@@ -219,7 +219,7 @@ with CAPids {
 
       list.foreach(f => {
         val ap: ActionProperty =
-          if (flgCreate) {
+          if (flgCreate && f.isInstanceOf[ActionPropertyType]) {
             val res = actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), authData)
             em.persist(res)
             res

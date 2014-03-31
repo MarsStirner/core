@@ -77,8 +77,8 @@
                     <classesClassifier>classes</classesClassifier>
                     <webResources>
                         <resource>
-                            <filtering>true</filtering>
                             <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
                             <includes>
                                 <include>**/web.xml</include>
                             </includes>
