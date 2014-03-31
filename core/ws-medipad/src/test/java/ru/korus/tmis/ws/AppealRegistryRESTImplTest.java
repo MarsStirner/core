@@ -52,7 +52,7 @@ import java.util.HashSet;
  */
 @PersistenceTest
 //@Transactional(value = TransactionMode.DISABLED)
-@Transactional(value = TransactionMode.ROLLBACK)
+//@Transactional(value = TransactionMode.ROLLBACK)
 public class AppealRegistryRESTImplTest extends Arquillian {
 
     final String BASE_URL = "http://localhost:7713/test/rest";
@@ -186,7 +186,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         conn.setRequestProperty("Cookie", "authToken=" + authData.getAuthToken().getId());
         return conn;
     }
-
 
     private HttpURLConnection openConnectionPost(URL url) throws IOException {
         HttpURLConnection conn = openConnection(url);
