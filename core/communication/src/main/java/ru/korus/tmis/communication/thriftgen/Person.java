@@ -45,6 +45,7 @@ import org.slf4j.LoggerFactory;
  * @param specialityRegionalCode 10) Региональный код специальности
  * @param post					11) Наименование должности
  * @param sexFilter				12) Пол работника
+ * @param snils                 13) СНИЛС врача
  */
 public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, java.io.Serializable, Cloneable {
   private static final org.apache.thrift.protocol.TStruct STRUCT_DESC = new org.apache.thrift.protocol.TStruct("Person");
@@ -61,6 +62,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
   private static final org.apache.thrift.protocol.TField SPECIALITY_REGIONAL_CODE_FIELD_DESC = new org.apache.thrift.protocol.TField("specialityRegionalCode", org.apache.thrift.protocol.TType.STRING, (short)10);
   private static final org.apache.thrift.protocol.TField POST_FIELD_DESC = new org.apache.thrift.protocol.TField("post", org.apache.thrift.protocol.TType.STRING, (short)11);
   private static final org.apache.thrift.protocol.TField SEX_FILTER_FIELD_DESC = new org.apache.thrift.protocol.TField("sexFilter", org.apache.thrift.protocol.TType.STRING, (short)12);
+  private static final org.apache.thrift.protocol.TField SNILS_FIELD_DESC = new org.apache.thrift.protocol.TField("snils", org.apache.thrift.protocol.TType.STRING, (short)13);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -80,6 +82,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
   public String specialityRegionalCode; // optional
   public String post; // optional
   public String sexFilter; // optional
+  public String snils; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -94,7 +97,8 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
     SPECIALITY_OKSOCODE((short)9, "specialityOKSOCode"),
     SPECIALITY_REGIONAL_CODE((short)10, "specialityRegionalCode"),
     POST((short)11, "post"),
-    SEX_FILTER((short)12, "sexFilter");
+    SEX_FILTER((short)12, "sexFilter"),
+    SNILS((short)13, "snils");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -133,6 +137,8 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
           return POST;
         case 12: // SEX_FILTER
           return SEX_FILTER;
+        case 13: // SNILS
+          return SNILS;
         default:
           return null;
       }
@@ -176,7 +182,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
   private static final int __ID_ISSET_ID = 0;
   private static final int __ORGSTRUCTUREID_ISSET_ID = 1;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.ORG_STRUCTURE_ID,_Fields.LAST_NAME,_Fields.FIRST_NAME,_Fields.PATR_NAME,_Fields.OFFICE,_Fields.SPECIALITY,_Fields.SPECIALITY_OKSOCODE,_Fields.SPECIALITY_REGIONAL_CODE,_Fields.POST,_Fields.SEX_FILTER};
+  private _Fields optionals[] = {_Fields.ORG_STRUCTURE_ID,_Fields.LAST_NAME,_Fields.FIRST_NAME,_Fields.PATR_NAME,_Fields.OFFICE,_Fields.SPECIALITY,_Fields.SPECIALITY_OKSOCODE,_Fields.SPECIALITY_REGIONAL_CODE,_Fields.POST,_Fields.SEX_FILTER,_Fields.SNILS};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -203,6 +209,8 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
     tmpMap.put(_Fields.POST, new org.apache.thrift.meta_data.FieldMetaData("post", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.SEX_FILTER, new org.apache.thrift.meta_data.FieldMetaData("sexFilter", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.SNILS, new org.apache.thrift.meta_data.FieldMetaData("snils", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Person.class, metaDataMap);
@@ -258,6 +266,9 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
     if (other.isSetSexFilter()) {
       this.sexFilter = other.sexFilter;
     }
+    if (other.isSetSnils()) {
+      this.snils = other.snils;
+    }
   }
 
   public Person deepCopy() {
@@ -280,6 +291,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
     this.specialityRegionalCode = null;
     this.post = null;
     this.sexFilter = null;
+    this.snils = null;
   }
 
   public int getId() {
@@ -568,6 +580,30 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
     }
   }
 
+  public String getSnils() {
+    return this.snils;
+  }
+
+  public Person setSnils(String snils) {
+    this.snils = snils;
+    return this;
+  }
+
+  public void unsetSnils() {
+    this.snils = null;
+  }
+
+  /** Returns true if field snils is set (has been assigned a value) and false otherwise */
+  public boolean isSetSnils() {
+    return this.snils != null;
+  }
+
+  public void setSnilsIsSet(boolean value) {
+    if (!value) {
+      this.snils = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ID:
@@ -666,6 +702,14 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
       }
       break;
 
+    case SNILS:
+      if (value == null) {
+        unsetSnils();
+      } else {
+        setSnils((String)value);
+      }
+      break;
+
     }
   }
 
@@ -707,6 +751,9 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
     case SEX_FILTER:
       return getSexFilter();
 
+    case SNILS:
+      return getSnils();
+
     }
     throw new IllegalStateException();
   }
@@ -742,6 +789,8 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
       return isSetPost();
     case SEX_FILTER:
       return isSetSexFilter();
+    case SNILS:
+      return isSetSnils();
     }
     throw new IllegalStateException();
   }
@@ -864,6 +913,15 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
       if (!(this_present_sexFilter && that_present_sexFilter))
         return false;
       if (!this.sexFilter.equals(that.sexFilter))
+        return false;
+    }
+
+    boolean this_present_snils = true && this.isSetSnils();
+    boolean that_present_snils = true && that.isSetSnils();
+    if (this_present_snils || that_present_snils) {
+      if (!(this_present_snils && that_present_snils))
+        return false;
+      if (!this.snils.equals(that.snils))
         return false;
     }
 
@@ -1003,6 +1061,16 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetSnils()).compareTo(typedOther.isSetSnils());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSnils()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.snils, typedOther.snils);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -1127,6 +1195,16 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
         sb.append("null");
       } else {
         sb.append(this.sexFilter);
+      }
+      first = false;
+    }
+    if (isSetSnils()) {
+      if (!first) sb.append(", ");
+      sb.append("snils:");
+      if (this.snils == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.snils);
       }
       first = false;
     }
@@ -1275,6 +1353,14 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 13: // SNILS
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.snils = iprot.readString();
+              struct.setSnilsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -1369,6 +1455,13 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
           oprot.writeFieldEnd();
         }
       }
+      if (struct.snils != null) {
+        if (struct.isSetSnils()) {
+          oprot.writeFieldBegin(SNILS_FIELD_DESC);
+          oprot.writeString(struct.snils);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -1419,7 +1512,10 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
       if (struct.isSetSexFilter()) {
         optionals.set(9);
       }
-      oprot.writeBitSet(optionals, 10);
+      if (struct.isSetSnils()) {
+        optionals.set(10);
+      }
+      oprot.writeBitSet(optionals, 11);
       if (struct.isSetOrgStructureId()) {
         oprot.writeI32(struct.orgStructureId);
       }
@@ -1450,6 +1546,9 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
       if (struct.isSetSexFilter()) {
         oprot.writeString(struct.sexFilter);
       }
+      if (struct.isSetSnils()) {
+        oprot.writeString(struct.snils);
+      }
     }
 
     @Override
@@ -1459,7 +1558,7 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
       struct.setIdIsSet(true);
       struct.code = iprot.readString();
       struct.setCodeIsSet(true);
-      BitSet incoming = iprot.readBitSet(10);
+      BitSet incoming = iprot.readBitSet(11);
       if (incoming.get(0)) {
         struct.orgStructureId = iprot.readI32();
         struct.setOrgStructureIdIsSet(true);
@@ -1499,6 +1598,10 @@ public class Person implements org.apache.thrift.TBase<Person, Person._Fields>, 
       if (incoming.get(9)) {
         struct.sexFilter = iprot.readString();
         struct.setSexFilterIsSet(true);
+      }
+      if (incoming.get(10)) {
+        struct.snils = iprot.readString();
+        struct.setSnilsIsSet(true);
       }
     }
   }

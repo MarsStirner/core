@@ -96,6 +96,9 @@ public final class ParserToThriftStruct {
         if (item.getPost() != null) {
             result.setPost(item.getPost().getName());
         }
+        if(item.getSnils() != null){
+            result.setSnils(item.getSnils());
+        }
         return result;
     }
 
