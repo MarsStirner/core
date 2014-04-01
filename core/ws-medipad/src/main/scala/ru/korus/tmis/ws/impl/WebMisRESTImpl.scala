@@ -5,7 +5,7 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
 import org.codehaus.jackson.map.ObjectMapper
 import ru.korus.tmis.core.exception.CoreException
-import java.{util => ju}
+import java.{util => ju, lang}
 import ru.korus.tmis.core.entity.model._
 import collection.mutable
 import java.util.{Date, LinkedList}
@@ -1474,5 +1474,9 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getStorageAuthData(token: AuthToken) = {
     authStorage.getAuthData(token)
+  }
+
+  def removeAction(actionId: Int): lang.Boolean = {
+    actionBean.removeAction(actionId)
   }
 }

@@ -409,4 +409,12 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     OrganizationContainer getOrganizationById(int id, AuthData authData) throws CoreException;
+
+    /**
+     * Пометить action как удаленный
+     *
+     * @param actionId
+     * @return
+     */
+    Boolean removeAction(int actionId);
 }

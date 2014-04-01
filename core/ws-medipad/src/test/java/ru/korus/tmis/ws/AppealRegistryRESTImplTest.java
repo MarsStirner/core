@@ -4,28 +4,21 @@
  */
 package ru.korus.tmis.ws;
 
-import com.google.gson.JsonElement;
-import com.google.gson.JsonParser;
+import com.google.gson.*;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.persistence.PersistenceTest;
-import org.jboss.arquillian.persistence.TransactionMode;
-import org.jboss.arquillian.persistence.Transactional;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
 import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.omg.CosNaming.NamingContextExtPackage.StringNameHelper;
 import org.testng.Assert;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import ru.korus.tmis.core.auth.*;
 import ru.korus.tmis.core.common.CommonDataProcessorBean;
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal;
 import ru.korus.tmis.core.data.*;
-import ru.korus.tmis.core.database.common.DbActionBean;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.exception.CoreException;
@@ -147,11 +140,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         }
     }
 
-    private AuthData auth() throws CoreException {
-        // авторизация пользователм  'test' с ролью "медсестра приемного отделения”
-        return authStorageBeanLocal.createToken("test", "098f6bcd4621d373cade4e832627b4f6" /*MD5 for 'test'*/, 29);
-    }
-
     @Test
     public void testAuth() {
         System.out.println("**************************** testAuth() started...");
@@ -161,7 +149,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             System.out.println("Send POST to..." + url.toString());
             //TODO move to resource file!
             final String input = "{\"login\":\"test\",\"password\":\"098f6bcd4621d373cade4e832627b4f6\",\"roleId\":0}";
-            HttpURLConnection conn = openConnectionPost(url);
+            HttpURLConnection conn = openConnectionPost(url, null);
             toPostStream(input, conn);
             int code = getResponseCode(conn);
             String res = getResponseData(conn, code);
@@ -173,31 +161,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             ex.printStackTrace();
             Assert.fail();
         }
-    }
-
-    private void toPostStream(String input, HttpURLConnection conn) throws IOException {
-        OutputStream outputStream = conn.getOutputStream();
-        outputStream.write(input.getBytes());
-        outputStream.flush();
-    }
-
-    private HttpURLConnection openConnectionPost(URL url, AuthData authData) throws IOException {
-        HttpURLConnection conn = openConnectionPost(url);
-        conn.setRequestProperty("Cookie", "authToken=" + authData.getAuthToken().getId());
-        return conn;
-    }
-
-    private HttpURLConnection openConnectionPost(URL url) throws IOException {
-        HttpURLConnection conn = openConnection(url);
-        conn.setRequestMethod("POST");
-        return conn;
-    }
-
-    private HttpURLConnection openConnectionGet(URL url, AuthData authData) throws IOException {
-        HttpURLConnection conn = openConnection(url);
-        conn.setRequestProperty("Cookie", "authToken=" + authData.getAuthToken().getId());
-        conn.setRequestMethod("GET");
-        return conn;
     }
 
     @Test
@@ -220,7 +183,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             int code = getResponseCode(conn);
             String res = getResponseData(conn, code);
             Assert.assertTrue(code == 200);
-            res = removePatting(res, tstCallback);
+            res = removePadding(res, tstCallback);
             JsonParser parser = new JsonParser();
             JsonElement resJson = parser.parse(res);
             JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getActionTypeInfoResp.json"))));
@@ -235,17 +198,15 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
     @Test
-    public void testCreateAction() {
-        System.out.println("**************************** testCreateAction() started...");
+    public void testCreateAndDeleteAction() {
+        System.out.println("**************************** testCreateAndDeleteAction() started...");
         try {
-            save();
             AuthData authData = auth();
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
             final Integer transfusionTherapyActionId = 3911;
             final Integer eventId = 841695;
             //appealBean.insertAppealForPatient(initAppealData(), TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
             URL url = new URL(BASE_URL + String.format("/tms-registry/appeals/%s/documents/", eventId));
-            final int countAction = dbActionBean.getLastActionByActionTypeIdAndEventId(eventId, new HashSet<Integer>(){{add(transfusionTherapyActionId);}});
             final String tstCallback = "tstCallback";
             url = addGetParam(url, "callback", tstCallback);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
@@ -255,28 +216,103 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             int code = getResponseCode(conn);
             String res = getResponseData(conn, code);
             Assert.assertTrue(code == 200);
-            final int countActionNew = dbActionBean.getLastActionByActionTypeIdAndEventId(eventId, new HashSet<Integer>() {{
-                add(transfusionTherapyActionId);
-            }});
-            //Assert.assertEquals(countActionNew, countAction + 1);
-            res = removePatting(res, tstCallback);
+            res = removePadding(res, tstCallback);
             JsonParser parser = new JsonParser();
             JsonElement resJson = parser.parse(res);
             JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionResp.json"))));
             //TODO remove id  from json or clear DB
             //Assert.assertEquals(resJson, expected);
             Assert.assertTrue(res.contains("\"typeId\":3911"));
+            final JsonElement jsonData = resJson.getAsJsonObject().get("data");
+            Assert.assertNotNull(jsonData);
+            final JsonArray jsonActionInfoArray = jsonData.getAsJsonArray();
+            Assert.assertNotNull(jsonActionInfoArray);
+            Assert.assertTrue(jsonActionInfoArray.size() > 0);
+            final JsonPrimitive jsonActionId = jsonActionInfoArray.get(0).getAsJsonObject().getAsJsonPrimitive("id");
+            Assert.assertNotNull(jsonActionId);
+            int actionId = jsonActionId.getAsInt();
+            deleteAction(actionId);
 
         } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();
         } finally {
-           restore();
+            restore();
         }
     }
 
+    private void deleteAction(int actionId) {
+        System.out.println("**************************** deleteAction(actionId) started...");
+        try {
+            AuthData authData = auth();
+            //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
+            final Integer transfusionTherapyActionId = 3911;
+            final Integer eventId = 841695;
+            URL url = new URL(BASE_URL + String.format("/tms-registry/appeals/%s/documents/%s/remove", eventId, actionId));
+            final String tstCallback = "tstCallback";
+            url = addGetParam(url, "callback", tstCallback);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            System.out.println("Send PUT to..." + url.toString());
+            HttpURLConnection conn = openConnectionPut(url, authData);
+            toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionReq.json"))), conn);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
 
-    private String removePatting(String res, String tstCallback) {
+            res = removePadding(res, tstCallback);
+            //Assert.assertEquals(resJson, expected);
+            Assert.assertEquals(res, "true");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        } finally {
+            restore();
+        }
+    }
+
+    private AuthData auth() throws CoreException {
+        // авторизация пользователм  'test' с ролью "медсестра приемного отделения”
+        return authStorageBeanLocal.createToken("test", "098f6bcd4621d373cade4e832627b4f6" /*MD5 for 'test'*/, 29);
+    }
+
+    private void toPostStream(String input, HttpURLConnection conn) throws IOException {
+        OutputStream outputStream = conn.getOutputStream();
+        outputStream.write(input.getBytes());
+        outputStream.flush();
+    }
+
+    private HttpURLConnection openConnectionPost(URL url, AuthData authData) throws IOException {
+        HttpURLConnection conn = openConnection(url, authData, "POST");
+        return conn;
+    }
+
+
+    private HttpURLConnection openConnectionGet(URL url, AuthData authData) throws IOException {
+        HttpURLConnection conn = openConnection(url, authData, "GET");
+        return conn;
+    }
+
+    private HttpURLConnection openConnectionPut(URL url, AuthData authData) throws IOException {
+        HttpURLConnection conn = openConnection(url, authData, "PUT");
+        return conn;
+    }
+
+    private HttpURLConnection openConnectionDel(URL url, AuthData authData) throws IOException {
+        HttpURLConnection conn = openConnection(url, authData, "DELETE");
+        return conn;
+    }
+
+    private HttpURLConnection openConnection(URL url, AuthData authData, String method) throws IOException {
+        HttpURLConnection conn = openConnection(url);
+        if(authData != null) {
+            conn.setRequestProperty("Cookie", "authToken=" + authData.getAuthToken().getId());
+        }
+        conn.setRequestMethod(method);
+        return conn;
+    }
+
+
+    private String removePadding(String res, String tstCallback) {
         final String prefix = tstCallback + "(";
         Assert.assertTrue(res.startsWith(prefix));
         final String suffix = ")";

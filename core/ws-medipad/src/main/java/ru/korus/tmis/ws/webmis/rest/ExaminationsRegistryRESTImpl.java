@@ -154,6 +154,15 @@ public class ExaminationsRegistryRESTImpl {
         return new JSONWithPadding(wsImpl.getPrimaryAssessmentById(actionId,this.auth), this.callback);
     }
 
+    @PUT
+    @Path("/{actionId}/remove")
+    @Consumes("application/json")
+    @Produces("application/x-javascript")
+    public Object removeAction(@PathParam("actionId")int actionId) {
+        return new JSONWithPadding(wsImpl.removeAction(actionId), this.callback);
+    }
+
+
     /**
      * Запрос на структуру для первичного осмотра с копированием данных из предыдущего первичного осмотра ПРЕДЫДУЩЕЙ госпитализации
      * @return com.sun.jersey.api.json.JSONWithPadding как Object

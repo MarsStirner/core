@@ -12,7 +12,7 @@ import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.QueryDataStructure
-import java.util
+import java.{lang, util}
 import ru.korus.tmis.core.filter.ListDataFilter
 import java.text.SimpleDateFormat
 import ru.korus.tmis.schedule.QueueActionParam
@@ -59,24 +59,30 @@ class DbActionBean
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionById(id: Int) = {
+    val res: Action = getActionIdWithoutDetach(id)
+    em.detach(res)
+    res
+  }
+
+
+  def getActionIdWithoutDetach(id: Int): Action = {
     info("Requested action id[" + id + "]")
     val result = em.createQuery(ActionFindQuery,
       classOf[Action])
       .setParameter("id", id)
       .getResultList
 
-    result.size match {
+    val res: Action = result.size match {
       case 0 => {
         throw new CoreException(
           ConfigManager.ErrorCodes.ActionNotFound,
           i18n("error.actionNotFound") + " id:[" + id + "]")
       }
       case size => {
-        val action = result.iterator.next()
-        em.detach(action)
-        action
+        result.iterator.next()
       }
     }
+    res
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -644,5 +650,19 @@ class DbActionBean
       "WHERE a.deleted = 0 AND a.actionType.deleted = 0 AND a.actionType.flatCode = 'moving' AND a.status != 2 AND a.event.id = :eventId",
       classOf[Action])
       .setParameter("eventId", eventId).getResultList
+  }
+
+  def isOpenDoc(action: Action): Boolean = {
+    action.getStatus == 0
+  }
+
+  def removeAction(actionId: Int): lang.Boolean = {
+    val action: Action = this.getActionIdWithoutDetach(actionId);
+    if (!isOpenDoc(action)) {
+      return false;
+    }
+    action.setDeleted(true);
+    em.merge(action);
+    true;
   }
 }

@@ -219,4 +219,12 @@ public interface DbActionBeanLocal {
      * @return Список движений
      */
     List<Action> getMovings(int eventId);
+
+    /**
+     * Пометить action как удаленный
+     *
+     * @param actionId
+     * @return
+     */
+    Boolean removeAction(int actionId);
 }
