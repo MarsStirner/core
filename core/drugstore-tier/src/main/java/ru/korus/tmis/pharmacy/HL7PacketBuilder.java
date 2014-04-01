@@ -565,7 +565,9 @@ public final class HL7PacketBuilder {
         final ON name = FACTORY_HL7.createON();
         name.getContent().add(organisation.getShortName());
         custodianOrganization.setName(name);
-        custodianOrganization.getId().add(createII(organisation.getUuid().getUuid()));
+        final ru.korus.tmis.core.entity.model.UUID uuidOrg = organisation.getUuid();
+
+        custodianOrganization.getId().add(createII(uuidOrg.getUuid()));
         assignedCustodian.setRepresentedCustodianOrganization(custodianOrganization);
         custodian.setAssignedCustodian(assignedCustodian);
         clinicalDocument.setCustodian(custodian);

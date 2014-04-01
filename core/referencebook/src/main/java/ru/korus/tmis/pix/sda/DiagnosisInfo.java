@@ -3,13 +3,10 @@ package ru.korus.tmis.pix.sda;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 
+import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.Diagnosis;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.Mkb;
-import ru.korus.tmis.core.entity.model.RbDiagnosisType;
-import ru.korus.tmis.core.entity.model.Staff;
-import ru.korus.tmis.core.entity.model.UUID;
+import ru.korus.tmis.core.entity.model.*;
+
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -19,23 +16,9 @@ import ru.korus.tmis.core.entity.model.UUID;
  */
 
 /**
- * 
+ *
  */
 public class DiagnosisInfo {
-    /**
-     * UUID события
-     */
-    private final String eventUuid;
-
-    /**
-     * Идентификатор врача, зафиксировавшего данные
-     */
-    private final Integer personCreatedId;
-
-    /**
-     * ФИО врача, зафиксировавшего данные (Фамилия + Имя + Отчество)
-     */
-    private final String personCreatedName;
 
     /**
      * Дата/время диагноза
@@ -45,12 +28,7 @@ public class DiagnosisInfo {
     /**
      * Код МКБ
      */
-    private final String mkb;
-
-    /**
-     * Диагноз
-     */
-    private final String diagName;
+    private final CodeNameSystem mkb;
 
     /**
      * Код типа диагноза
@@ -62,52 +40,83 @@ public class DiagnosisInfo {
      */
     private final String diagTypeName;
 
-    public DiagnosisInfo(Event event, Diagnosis diagnosis, RbDiagnosisType diagnosisType) {
-        final UUID uuid = event.getUuid();
-        this.eventUuid = uuid != null ? uuid.getUuid() : null;
-        final Staff person = diagnosis.getPerson();
-        this.personCreatedId = person != null ? person.getId() : null;
-        this.personCreatedName = person != null ? person.getFullName() : null;
+    /**
+     * Идентификатор в МИС
+     */
+    private final String diagId;
+
+    /**
+     * Врач
+     */
+    private final EmployeeInfo enteredPerson;
+
+    /**
+     * Тип диагноза
+     */
+    private final CodeNameSystem diagType;
+
+    /**
+     * Острое или хроническое заболевание
+     */
+    private final Boolean acuteOrChronic;
+
+    /**
+     * Диспансерное наблюдение
+     */
+    private final DispensaryInfo dispensarySuperVision;
+
+    /**
+     * Вид травмы
+     */
+    private final CodeNameSystem traumaType;
+
+    /**
+     * Кол-во госпитализаций в текущем году с данным диагнозом
+     */
+    private final Long countAdmissionsThisYear;
+
+
+    public DiagnosisInfo(final Event event, final Diagnostic diagnostic, final DbQueryBeanLocal dbQueryBean) {
+        final Diagnosis diagnosis = diagnostic.getDiagnosis();
         XMLGregorianCalendar createDate = null;
         try {
             createDate = Database.toGregorianCalendar(diagnosis.getCreateDatetime());
         } catch (DatatypeConfigurationException e) {
         }
         this.createDate = createDate;
-        final Mkb mkb = diagnosis.getMkb();
-        this.mkb = mkb != null ? mkb.getDiagID() : null;
-        this.diagName = (mkb != null ? mkb.getDiagName() : "").trim() + "(" + (diagnosisType != null ? diagnosisType.getName() : "") + ")";
+        this.mkb = toMKB308Diagnosis(diagnostic);
         RbDiagnosisType dt = diagnosis.getDiagnosisType();
         String diagTypeName = null;
         String diagTypeCode = null;
         if (dt != null) {
-            diagTypeCode = "".equals(dt.getCode())? null : dt.getCode();
-            diagTypeName = "".equals(dt.getName())? null : dt.getName();
+            diagTypeCode = "".equals(dt.getCode()) ? null : dt.getCode();
+            diagTypeName = "".equals(dt.getName()) ? null : dt.getName();
         }
+        diagType = new CodeNameSystem(diagTypeCode, diagTypeName);
         this.diagTypeName = diagTypeName;
         this.diagTypeCode = diagTypeCode;
+        this.diagId = String.valueOf(diagnosis.getId());
+        final Staff person = diagnosis.getPerson();
+        this.enteredPerson = EmployeeInfo.newInstance(person);
+        this.acuteOrChronic = diagnosis.getCharacterId() == 1; //TODO: add entity for rbDiseaseCharacter!
+        dispensarySuperVision = new DispensaryInfo(diagnostic);
+        final RbTraumaType traumaTypeDb = diagnostic.getTraumaType();
+        traumaType = traumaTypeDb == null ? null : RbManager.get(RbManager.RbType.rbTraumaType,
+                CodeNameSystem.newInstance(traumaTypeDb.getCode(), traumaTypeDb.getName(), "1.2.643.5.1.13.2.1.1.105"));
+
+        //diagnostic.getEvent().getEventType().getRequestType().getCode()
+        countAdmissionsThisYear = dbQueryBean.countAdmissionsThisYear(event, diagnosis); // 311 Рассчитать кол-во стационарных Event'ов,  с одинаковым значением Diagnosis.MKB
     }
 
-    /**
-     * @return the eventUuid
-     */
-    public String getEventUuid() {
-        return eventUuid;
+    static public CodeNameSystem toMKB308Diagnosis(Diagnostic diagnostic) {
+        final Diagnosis diagnosis = diagnostic.getDiagnosis();
+        final RbDiagnosisType diagnosisType = diagnostic.getDiagnosisType();
+        final Mkb mkb = diagnosis.getMkb();
+        final String mkbCode = mkb != null ? mkb.getDiagID() : null;
+        final String diagName = (mkb != null ? mkb.getDiagName() : "").trim() + "(" + (diagnosisType != null ? diagnosisType.getName() : "") + ")";
+        return RbManager.get(RbManager.RbType.MKB308, CodeNameSystem.newInstance(mkbCode, diagName, "1.2.643.5.1.13.2.1.1.643"));
     }
 
-    /**
-     * @return the personCreatedId
-     */
-    public Integer getPersonCreatedId() {
-        return personCreatedId;
-    }
-
-    /**
-     * @return the personCreatedName
-     */
-    public String getPersonCreatedName() {
-        return personCreatedName;
-    }
 
     /**
      * @return the createDate
@@ -119,16 +128,10 @@ public class DiagnosisInfo {
     /**
      * @return the mkb
      */
-    public String getMkb() {
+    public CodeNameSystem getMkb() {
         return mkb;
     }
 
-    /**
-     * @return the diagName
-     */
-    public String getDiagName() {
-        return diagName;
-    }
 
     public String getDiagTypeCode() {
         return diagTypeCode;
@@ -136,5 +139,34 @@ public class DiagnosisInfo {
 
     public String getDiagTypeName() {
         return diagTypeName;
+    }
+
+
+    public String getDiagId() {
+        return diagId;
+    }
+
+    public EmployeeInfo getEnteredPerson() {
+        return enteredPerson;
+    }
+
+    public CodeNameSystem getDiagType() {
+        return diagType;
+    }
+
+    public Boolean getAcuteOrChronic() {
+        return acuteOrChronic;
+    }
+
+    public DispensaryInfo getDispensarySuperVision() {
+        return dispensarySuperVision;
+    }
+
+    public CodeNameSystem getTraumaType() {
+        return traumaType;
+    }
+
+    public Long getCountAdmissionsThisYear() {
+        return countAdmissionsThisYear;
     }
 }

@@ -8,6 +8,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.ClientAllergy;
+import ru.korus.tmis.core.entity.model.Staff;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -18,18 +19,13 @@ import ru.korus.tmis.core.entity.model.ClientAllergy;
 public class AllergyInfo {
 
     /**
-     * Краткое наименование ЛПУ
-     */
-    // TODO Совпадает с SendingFacility и EventInfo.irgName
-    final private String orgName;
-
-    /**
      * Дата/время фиксации данных
      */
     final private XMLGregorianCalendar createDate;
 
     /**
      * Расшифровка вида аллергии по справочнику МИС
+     *  Аллергия/непереносимость (название препарата, шерсть животных, продукт питания, пыль, ...)
      */
     final private String nameSubstance;
 
@@ -44,11 +40,19 @@ public class AllergyInfo {
     final private String severityDescription;
 
     /**
-     * @return the orgName
+     * Идентификатор в МИС
      */
-    public String getOrgName() {
-        return orgName;
-    }
+    private final String id;
+
+    /**
+     * Автор записи (Врач)
+     */
+    private final EmployeeInfo createdPerson;
+
+    /**
+     * Дополнительная информация
+     */
+    private final String note;
 
     /**
      * @return the createDate
@@ -78,8 +82,7 @@ public class AllergyInfo {
         return severityDescription;
     }
 
-    public AllergyInfo(ClientAllergy clientAllergy, String orgName) {
-        this.orgName = orgName;
+    public AllergyInfo(ClientAllergy clientAllergy) {
         XMLGregorianCalendar createDate = null;
         try {
             createDate = Database.toGregorianCalendar(clientAllergy.getCreateDate());
@@ -96,5 +99,20 @@ public class AllergyInfo {
             }
         }
         this.severityDescription = severityDescription;
+        this.id = String.valueOf(clientAllergy.getId());
+        this.createdPerson = EmployeeInfo.newInstance(clientAllergy.getCreatePerson());
+        this.note = clientAllergy.getNotes();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public EmployeeInfo getCreatedPerson() {
+        return createdPerson;
+    }
+
+    public String getNote() {
+        return note;
     }
 }

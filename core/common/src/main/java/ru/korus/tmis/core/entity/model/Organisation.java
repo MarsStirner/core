@@ -8,10 +8,6 @@ import javax.xml.bind.annotation.XmlType;
 
 @Entity
 @Table(name = "Organisation")
-@NamedQueries(
-        {
-                @NamedQuery(name = "Organisation.findAll", query = "SELECT o FROM Organisation o")
-        })
 @XmlType(name = "organisation")
 @XmlRootElement(name = "organisation")
 public class Organisation implements Serializable {
@@ -166,6 +162,9 @@ public class Organisation implements Serializable {
     @JoinColumn(name = "uuid_id")
 //    @Transient
     private UUID uuid;
+
+    @Column(name = "OID")
+    private String oid;
 
 
     public Organisation() {
@@ -494,5 +493,9 @@ public class Organisation implements Serializable {
     @Override
     public String toString() {
         return "ru.korus.tmis.core.entity.model.Organisation[id=" + id + "]";
+    }
+
+    public String getOid() {
+        return oid;
     }
 }

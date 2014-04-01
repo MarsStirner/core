@@ -17,8 +17,9 @@ import java.util.List;
                         "e.eventType.requestType.code = 'clinic' OR " +
                         "e.eventType.requestType.code = 'hospital' OR " +
                         "e.eventType.requestType.code = 'stationary' OR " +
+                        "e.eventType.requestType.code = 'policlinic' OR " +
                         "e.eventType.requestType.code = '4' OR " +
-                        "e.eventType.requestType.code = '6' ) ORDER BY e.id")
+                        "e.eventType.requestType.code = '6' ) ORDER BY e.id"),
         }
 )
 @XmlType(name = "event")
@@ -156,6 +157,7 @@ public class Event implements Serializable {
     @ManyToOne
     @JoinColumn(name = "client_id")
     private Patient patient;
+
 
     public Patient getPatient() {
         return patient;

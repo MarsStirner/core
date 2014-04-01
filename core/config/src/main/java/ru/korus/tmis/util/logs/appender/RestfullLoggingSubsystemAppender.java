@@ -44,7 +44,7 @@ public class RestfullLoggingSubsystemAppender extends AppenderBase<ILoggingEvent
     private long checkInterval = 30000;
 
     //Указанная кодировка
-    private String charset = "UTF8";
+    private String charset = "UTF-8";
     //Заголовок с типом содержимого
     private String contentType = "application/json";
 

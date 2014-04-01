@@ -9,9 +9,6 @@ import java.util.List;
 
 @Local
 public interface DbOrganizationBeanLocal {
-    List<Organisation> getAllOrganizations()
-            throws CoreException;
-
     Organisation getOrganizationById(int id)
             throws CoreException;
 

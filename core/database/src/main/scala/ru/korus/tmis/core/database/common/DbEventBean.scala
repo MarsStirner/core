@@ -22,6 +22,8 @@ import scala.Some
 import ru.korus.tmis.scala.util.I18nable
 import ru.korus.tmis.core.database._
 import scala.Some
+import com.google.common.collect.{Multimap, HashMultimap}
+import java.util
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -64,6 +66,7 @@ class DbEventBean
     }
     em.createQuery(curentRequest.toString(), classOf[Long])
   }
+
 
   def setExecPersonForEventWithId(eventId: Int, execPerson: Staff) {
     val event = this.getEventById(eventId)
@@ -308,6 +311,17 @@ class DbEventBean
     val et = result(0)
     result.foreach(em.detach(_))
     et
+  }
+
+ /* def getActionsByTypeCode(event: Event, codes: java.util.Set[String]) {     */
+ def getActionsByTypeCode(event: Event, codes: util.Set[String]): Multimap[String, Action] =  {
+    val res : Multimap[String, Action] = HashMultimap.create()
+    val result = em.createNamedQuery("Action.ActionsByFlatCode", classOf[Action])
+      .setParameter("id", event.getId)
+      .setParameter("codes", codes)
+      .getResultList
+    result.foreach(action => res.put(action.getActionType.getFlatCode, action))
+    res
   }
 
   val EventGetCountRecords = """
@@ -605,4 +619,6 @@ class DbEventBean
     %s
     %s
   """
+
+
 }

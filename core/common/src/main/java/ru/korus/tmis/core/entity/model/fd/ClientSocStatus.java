@@ -27,6 +27,13 @@ import javax.persistence.*;
     })
 public class ClientSocStatus implements Serializable, Cloneable {
     private static final long serialVersionUID = 1L;
+
+    public static final String PRIVILEGE_CODE = "5";
+
+    public static final String SOCIAL_STATUS_CODE = "1";
+
+    public static final String DISABILITY_CODE = "2";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

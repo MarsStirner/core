@@ -3,7 +3,6 @@ package ru.korus.tmis.pix.sda.ws;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -15,36 +14,14 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="ContactInfo">
  *   &lt;complexContent>
- *     &lt;extension base="{}DataType">
+ *     &lt;extension base="{}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="HomePhoneNumber" minOccurs="0">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="80"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="WorkPhoneNumber" minOccurs="0">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="80"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="MobilePhoneNumber" minOccurs="0">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="80"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
- *         &lt;element name="EmailAddress" minOccurs="0">
- *           &lt;simpleType>
- *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;maxLength value="70"/>
- *             &lt;/restriction>
- *           &lt;/simpleType>
- *         &lt;/element>
+ *         &lt;element name="homePhone" type="{}String" minOccurs="0"/>
+ *         &lt;element name="cellPhone" type="{}String" minOccurs="0"/>
+ *         &lt;element name="workPhone" type="{}String" minOccurs="0"/>
+ *         &lt;element name="email" type="{}String" minOccurs="0"/>
+ *         &lt;element name="contactInfoString" type="{}String" minOccurs="0"/>
+ *         &lt;element name="fax" type="{}String" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -55,118 +32,166 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "ContactInfo", propOrder = {
-    "homePhoneNumber",
-    "workPhoneNumber",
-    "mobilePhoneNumber",
-    "emailAddress"
+    "homePhone",
+    "cellPhone",
+    "workPhone",
+    "email",
+    "contactInfoString",
+    "fax"
 })
 public class ContactInfo
-    extends DataType
+    extends BaseSerial
 {
 
-    @XmlElement(name = "HomePhoneNumber")
-    protected String homePhoneNumber;
-    @XmlElement(name = "WorkPhoneNumber")
-    protected String workPhoneNumber;
-    @XmlElement(name = "MobilePhoneNumber")
-    protected String mobilePhoneNumber;
-    @XmlElement(name = "EmailAddress")
-    protected String emailAddress;
+    protected String homePhone;
+    protected String cellPhone;
+    protected String workPhone;
+    protected String email;
+    protected String contactInfoString;
+    protected String fax;
 
     /**
-     * Gets the value of the homePhoneNumber property.
+     * Gets the value of the homePhone property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getHomePhoneNumber() {
-        return homePhoneNumber;
+    public String getHomePhone() {
+        return homePhone;
     }
 
     /**
-     * Sets the value of the homePhoneNumber property.
+     * Sets the value of the homePhone property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setHomePhoneNumber(String value) {
-        this.homePhoneNumber = value;
+    public void setHomePhone(String value) {
+        this.homePhone = value;
     }
 
     /**
-     * Gets the value of the workPhoneNumber property.
+     * Gets the value of the cellPhone property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getWorkPhoneNumber() {
-        return workPhoneNumber;
+    public String getCellPhone() {
+        return cellPhone;
     }
 
     /**
-     * Sets the value of the workPhoneNumber property.
+     * Sets the value of the cellPhone property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setWorkPhoneNumber(String value) {
-        this.workPhoneNumber = value;
+    public void setCellPhone(String value) {
+        this.cellPhone = value;
     }
 
     /**
-     * Gets the value of the mobilePhoneNumber property.
+     * Gets the value of the workPhone property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getMobilePhoneNumber() {
-        return mobilePhoneNumber;
+    public String getWorkPhone() {
+        return workPhone;
     }
 
     /**
-     * Sets the value of the mobilePhoneNumber property.
+     * Sets the value of the workPhone property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setMobilePhoneNumber(String value) {
-        this.mobilePhoneNumber = value;
+    public void setWorkPhone(String value) {
+        this.workPhone = value;
     }
 
     /**
-     * Gets the value of the emailAddress property.
+     * Gets the value of the email property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getEmailAddress() {
-        return emailAddress;
+    public String getEmail() {
+        return email;
     }
 
     /**
-     * Sets the value of the emailAddress property.
+     * Sets the value of the email property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setEmailAddress(String value) {
-        this.emailAddress = value;
+    public void setEmail(String value) {
+        this.email = value;
+    }
+
+    /**
+     * Gets the value of the contactInfoString property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getContactInfoString() {
+        return contactInfoString;
+    }
+
+    /**
+     * Sets the value of the contactInfoString property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setContactInfoString(String value) {
+        this.contactInfoString = value;
+    }
+
+    /**
+     * Gets the value of the fax property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getFax() {
+        return fax;
+    }
+
+    /**
+     * Sets the value of the fax property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setFax(String value) {
+        this.fax = value;
     }
 
 }

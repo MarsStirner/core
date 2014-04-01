@@ -17,6 +17,7 @@ object ConfigManager extends Configuration {
    */
   var DateFormatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
 
+
   /**
    * Общие параметры работы ядра
    */
@@ -26,6 +27,22 @@ object ConfigManager extends Configuration {
     var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
   }
 
+  var RbManagerSetting = new RbManagerClass;
+
+  class RbManagerClass extends Configuration {
+    /**
+     * URL сервиса управления справочниками
+     */
+    var ServiceUrl = "http://192.168.1.123:5005";
+
+    /**
+     * Отладочный режим
+     */
+    var DebugDemoMode = "off";
+
+    def isDebugDemoMode = "on".equals(DebugDemoMode)
+
+  }
   /**
    *
    *
@@ -131,6 +148,18 @@ object ConfigManager extends Configuration {
      * URL сервиса по обмену информацией об пациентах
      */
     var ServiceUrlSda = new URL("http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.SDASoapService.cls")
+
+    /**
+     * URL сервиса по обмену информацией об пациентах
+     */
+    var ServiceUrlEhr = new URL("http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.emr.EMRReceiverService.cls")
+
+    /**
+     *
+     */
+    var ServiceUrlEhrReplayTo = new URL("http://www.w3.org/2005/08/addressing/anonymous")
+
+
     /**
      * Передача карточки пациента по SDA
      * on - включен

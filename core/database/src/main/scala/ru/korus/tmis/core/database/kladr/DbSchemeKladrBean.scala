@@ -13,7 +13,6 @@ import ru.korus.tmis.scala.util.I18nable
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal
 
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbSchemeKladrBean
   extends DbSchemeKladrBeanLocal

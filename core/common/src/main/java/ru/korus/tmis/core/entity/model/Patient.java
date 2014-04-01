@@ -120,8 +120,11 @@ public class Patient implements Serializable, Cloneable {
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
-//    @Transient
     private UUID uuid;
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    private List<ClientSocStatus> clientSocStatuses = new LinkedList<ClientSocStatus>();
+
 
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
@@ -129,6 +132,12 @@ public class Patient implements Serializable, Cloneable {
 
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<Event> events = new LinkedList<Event>();
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    private List<TempInvalid> tempInvalids = new LinkedList<TempInvalid>();
+
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)//{CascadeType.PERSIST, CascadeType.REMOVE}
+    private List<ClientDocument> clientDocuments = new LinkedList<ClientDocument>();
 
     public List<Event> getEvents() {
         return events;
@@ -140,10 +149,6 @@ public class Patient implements Serializable, Cloneable {
             event.setPatient(this);
         }
     }
-
-
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)//{CascadeType.PERSIST, CascadeType.REMOVE}
-    private List<ClientDocument> clientDocuments = new LinkedList<ClientDocument>();
 
     public List<ClientDocument> getClientDocuments() {
         return this.clientDocuments;
@@ -348,10 +353,6 @@ public class Patient implements Serializable, Cloneable {
         }
     }
 
-
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
-    private List<ClientSocStatus> clientSocStatuses = new LinkedList<ClientSocStatus>();
-
     public List<ClientSocStatus> getClientSocStatuses() {
         return clientSocStatuses;
     }
@@ -372,10 +373,6 @@ public class Patient implements Serializable, Cloneable {
             socStatus.setPatient(this);
         }
     }
-
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
-    private List<TempInvalid> tempInvalids = new LinkedList<TempInvalid>();
-
 
     public List<TempInvalid> getTempInvalids() {
         return tempInvalids;

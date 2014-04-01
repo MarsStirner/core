@@ -1,22 +1,16 @@
 package ru.korus.tmis.pix.sda;
 
-import java.util.Date;
-import java.util.List;
+import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
+import ru.korus.tmis.core.database.dbutil.Database;
+import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
-import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.AddressHouse;
-import ru.korus.tmis.core.entity.model.ClientAddress;
-import ru.korus.tmis.core.entity.model.ClientContact;
-import ru.korus.tmis.core.entity.model.ClientDocument;
-import ru.korus.tmis.core.entity.model.ClientPolicy;
-import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.kladr.Kladr;
-import ru.korus.tmis.core.entity.model.kladr.Street;
-import ru.korus.tmis.core.exception.CoreException;
+import java.util.Arrays;
+import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -26,7 +20,7 @@ import ru.korus.tmis.core.exception.CoreException;
  */
 
 /**
- * 
+ *
  */
 public class ClientInfo {
     /**
@@ -46,6 +40,15 @@ public class ClientInfo {
      */
     private static final String OMS_LOC = "0";
     /**
+     *   Код типа полис медицинского страхования - "ДМС"
+     */
+    private static final String DMS = "vmi";
+
+    /**
+     * Номер полиса единого образца
+     */
+    private static final String CMI_COMMON_ELECTRON = "cmiCommonElectron";
+    /**
      * Код типа контакта "домашний телефон"
      */
     private static final String HOME_TEL = "01";
@@ -58,6 +61,100 @@ public class ClientInfo {
      */
     private static final String MOB_TEL = "03";
 
+
+    /**
+     * Признак городского/сельского жителя
+     */
+    final private String dwellingType;
+
+    /**
+     * Данные о льготах
+     */
+    final private Iterable<Privilege> privileges;
+
+    final private Iterable<SocialStatus> socialStatusList;
+
+    /**
+     * Признак лица без определенного места жительства
+     */
+    final private boolean homeless;
+    private static final String CITIZENSHIP_CODE = "35";
+
+    private final Iterable<WorkInfo> workInfo;
+
+    /**
+     * Гражданство
+     */
+    final private CodeNameSystem citizenship;
+
+    final private DocInfo passport;
+    final private InsuranceInfo omsInfo;
+
+    /**
+     * Группа крови
+     */
+    private final String bloodGroup;
+
+    /**
+     * Резус фактор
+     */
+    private final Boolean bloodRhesus;
+
+    public InsuranceInfo getDmsInfo() {
+        return dmsInfo;
+    }
+
+    private final InsuranceInfo dmsInfo;
+
+    public boolean isServicemanFamily() {
+        return servicemanFamily;
+    }
+
+    /**
+     * Признак лица без определенного места жительства
+     */
+    private final boolean servicemanFamily;
+
+    public String getDwellingType() {
+        return dwellingType;
+    }
+
+    public Iterable<Privilege> getPrivileges() {
+        return privileges;
+    }
+
+    public Iterable<? extends SocialStatus> getSocialStatus() {
+        return socialStatusList;
+    }
+
+    public boolean isHomeless() {
+        return homeless;
+    }
+
+    public Iterable<? extends WorkInfo> getWorkInfo() {
+        return workInfo;
+    }
+
+    public CodeNameSystem getCitizenship() {
+        return citizenship;
+    }
+
+    public DocInfo getPassport() {
+        return passport;
+    }
+
+    public InsuranceInfo getOmsInfo() {
+        return omsInfo;
+    }
+
+    public String getBloodGroup() {
+        return bloodGroup;
+    }
+
+    public Boolean getBloodRhesus() {
+        return bloodRhesus;
+    }
+
     /**
      * Пол пациента
      */
@@ -65,6 +162,64 @@ public class ClientInfo {
         F,
         M;
     }
+
+    /**
+     * Данные о льготах
+     */
+    public static class Privilege {
+
+        /**
+         * Категория льготы
+         */
+        private final CodeNameSystem category;
+
+        /**
+         * Дата начала действия льготы
+         */
+        private final XMLGregorianCalendar docBegDate;
+
+        /**
+         * Дата истечения срока действия льготы
+         */
+        private final XMLGregorianCalendar expirationDate;
+
+        public Privilege(ru.korus.tmis.core.entity.model.fd.ClientSocStatus clientSocStatus) {
+            RbSocStatusType socStatusType = clientSocStatus.getSocStatusType();
+
+            category = RbManager.get(RbManager.RbType.rbSocStatusType, CodeNameSystem.newInstance(socStatusType.getCode(), socStatusType.getName(), null));
+
+            docBegDate = getXmlGregorianCalendar(clientSocStatus.getBegDate());
+            expirationDate =getXmlGregorianCalendar(clientSocStatus.getEndDate());
+        }
+
+        public XMLGregorianCalendar getDocBegDate() {
+            return docBegDate;
+        }
+
+        public XMLGregorianCalendar getExpirationDate() {
+            return expirationDate;
+        }
+
+        public CodeNameSystem getCategory() {
+            return category;
+        }
+
+    }
+
+    public static class SocialStatus {
+        private final CodeNameSystem codeAndName;
+
+        public CodeNameSystem getCodeAndName() {
+            return codeAndName;
+        }
+
+        public SocialStatus(ru.korus.tmis.core.entity.model.fd.ClientSocStatus clientSocStatus) {
+            RbSocStatusType socStatusType = clientSocStatus.getSocStatusType();
+            codeAndName = RbManager.get(RbManager.RbType.rbSocStatusType,
+                    CodeNameSystem.newInstance(socStatusType.getCode(), socStatusType.getName(), "1.2.643.5.1.13.2.1.1.366"));
+        }
+    }
+
 
     /**
      * Фамилия
@@ -95,33 +250,13 @@ public class ClientInfo {
      */
     final private String snils;
     /**
-     * Номер полиса ОМС
+     * Номер полиса единого образца
      */
-    final private String policyNumber;
+    final private String enpNumber;
     /**
-     * Серия/номер паспорта в формате "NNNN NNNNNN"
+     * Cвидетельства о рождении (например "V-32 886888")
      */
-    final private String passNumber;
-    /**
-     * Серия/номер свидетельства о рождении (например "V-32 886888")
-     */
-    final private String birthCertificateNumber;
-    /**
-     * Улица и дом (например ул. Ленина, д.1)
-     */
-    final private String addrStreet;
-    /**
-     * Город
-     */
-    final private String addrCity;
-    /**
-     * Область
-     */
-    final private String addrState;
-    /**
-     * Почтовый индекс
-     */
-    final private String addrZip;
+    final private DocInfo birthCertificate;
     /**
      * Домашний телефон
      */
@@ -134,62 +269,40 @@ public class ClientInfo {
      * Мобильный телефон
      */
     final private String mobilePhoneNumber;
+    /**
+     * Место рождения
+     */
+    final private String birthPlace;
+    /**
+     * Адрес регистрации
+     */
+    final private AddrInfo regAddr;
+    /**
+     * Адрес проживания
+     */
+    private final AddrInfo actualAddr;
+
 
     public ClientInfo(Patient client, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal) {
-        String addrCity = null;
-        String addrState = null;
-        String addrStreet = null;
-        String addrZip = null;
+        AddrInfo regAddr = null;
+        AddrInfo actualAddr = null;
+        String dwellingType = null;
         // Список адресов пациента
         List<ClientAddress> addresses = client.getActiveClientAddresses();
-        if (!addresses.isEmpty()) {
-            ClientAddress homeAddr = addresses.get(0);
-            // Поиск адреса регистрации
-            for (ClientAddress clientAddress : addresses) {
-                if (clientAddress.getAddressType() == 0) { // елси адрес регистрации (0-регистрации, 1-проживания)
-                    homeAddr = clientAddress;
-                    break;
-                }
-            }
-            if (homeAddr.getAddress() != null && homeAddr.getAddress().getHouse() != null) {
-                AddressHouse addrHouse = homeAddr.getAddress().getHouse();
-                final String kladrCode = addrHouse.getKLADRCode();
-                if (kladrCode != null && kladrCode.length() > 1) { // если задан код КЛАДР
-                    Kladr kladr = null;
-                    Kladr kladrState = null;
-                    Street street = null;
-                    try {
-                        kladr = dbSchemeKladrBeanLocal.getKladrByCode(kladrCode);
-                        // Регион пациента. Определяется по двум старшим цифрам кода КЛАДР
-                        kladrState = dbSchemeKladrBeanLocal.getKladrByCode(kladrCode.substring(0, 2) + "00000000000");
-                        street = dbSchemeKladrBeanLocal.getStreetByCode(addrHouse.getKLADRStreetCode());
-                    } catch (CoreException e) {
-                    }
-                    if (kladr != null) {
-                        // Населенный пункт. Формируется как сокращенное наименования тип населённого пункта (г.) и названия
-                        addrCity = kladr.getSocr() + "." + kladr.getName();
-                        if (kladrState != null) {
-                            addrState = kladrState.getSocr() + "." + kladrState.getName();
-                        }
-                        if (street != null) {
-                            addrStreet =
-                                    street.getSocr() + "." + street.getName() + ("".equals(addrHouse.getNumber()) ? "" : (" д." + addrHouse.getNumber()))
-                                            + ("".equals(addrHouse.getCorpus()) ? "" : (" корп." + addrHouse.getCorpus()));
-                            addrZip = street.getIndex();
-                        }
-                    }
-
-                }
+        for (ClientAddress clientAddress : addresses) {
+            if (clientAddress.getAddressType() == 0) { // елси адрес регистрации (0-регистрации, 1-проживания)
+                regAddr = new AddrInfo(clientAddress, dbSchemeKladrBeanLocal);
+                dwellingType = clientAddress.getLocalityType().equals(1) ? "1" : "2";
+            } else if (clientAddress.getAddressType() == 1) { // елси адрес проживания (0-регистрации, 1-проживания)
+                actualAddr = new AddrInfo(clientAddress, dbSchemeKladrBeanLocal);
             }
         }
-        this.addrCity = addrCity;
-        this.addrState = addrState;
-        this.addrStreet = addrStreet;
-        this.addrZip = addrZip;
+        this.regAddr = regAddr;
+        this.actualAddr = actualAddr;
 
-        this.familyName = client.getLastName();
-        this.givenName = client.getFirstName();
-        this.middleName = client.getPatrName();
+        this.familyName = notEmpty(client.getLastName());
+        this.givenName = notEmpty(client.getFirstName());
+        this.middleName = notEmpty(client.getPatrName());
 
         if (client.getSex() == 1) {
             this.gender = Gender.M;
@@ -199,26 +312,25 @@ public class ClientInfo {
             this.gender = null;
         }
 
-        XMLGregorianCalendar birth = null;
-        Date birthDate = client.getBirthDate();
-        if (birthDate != null) {
-            try {
-                birth = Database.toGregorianCalendar(birthDate);
-            } catch (DatatypeConfigurationException e) {
-            }
-        }
-        this.birthDate = birth;
+        this.birthDate = getXmlGregorianCalendar(client.getBirthDate());
 
         this.tmisId = client.getId();
-        this.snils = client.getSnils();
-        ClientPolicy clientPolicy = getOMS(client);
-        this.policyNumber = clientPolicy == null ? null : (clientPolicy.getNumber() + " " + clientPolicy.getSerial());
+        this.snils = EmployeeInfo.toHsSnils(notEmpty(client.getSnils()));
+        ClientPolicy clientPolicyEnp = getEnp(client);
+        this.enpNumber = clientPolicyEnp == null ? null : clientPolicyEnp.getNumber();
+
+        ClientPolicy clientPolicyOms = getOMS(client);
+        this.omsInfo = clientPolicyOms == null ? null : new InsuranceInfo(clientPolicyOms);
+
+        ClientPolicy clientPolicyDms = getDms(client);
+        this.dmsInfo = clientPolicyDms == null ? null : new InsuranceInfo(clientPolicyDms);
+
 
         final ClientDocument passport = getDoc(client, PASSPORT);
-        this.passNumber = passport == null ? null : (passport.getSerial() + " " + passport.getNumber());
+        this.passport = passport == null ? null : new DocInfo(passport);
 
         final ClientDocument cbt = getDoc(client, CBT);
-        this.birthCertificateNumber = cbt == null ? null : (cbt.getSerial() + " " + cbt.getNumber());
+        this.birthCertificate = cbt == null ? null : new DocInfo(cbt);
 
         final ClientContact homeTel = getContact(client, HOME_TEL);
         this.homePhoneNumber = homeTel == null ? null : homeTel.getContact();
@@ -229,7 +341,92 @@ public class ClientInfo {
         final ClientContact mobTel = getContact(client, MOB_TEL);
         this.mobilePhoneNumber = mobTel == null ? null : mobTel.getContact();
 
+        this.birthPlace = client.getBirthPlace();
+
+        this.dwellingType = dwellingType;
+
+        privileges = initPriveleges(client);
+        socialStatusList = initSocialStatus(client);
+        homeless = initIsFromeSocGroup(client, "БОМЖ");
+        servicemanFamily = initIsFromeSocGroup(client, "Член семьи военнослужащего");
+        citizenship = initCitizenship(client);
+        final RbBloodType bloodType = client.getBloodType();
+        final List<String> supportedBloodGroupCode = Arrays.asList("1", "2", "3", "4");
+        String code = bloodType.getCode();
+        bloodGroup = (bloodType == null || code == null || code.length() != 2)  ? null : (
+                 supportedBloodGroupCode.contains(bloodType.getCode().substring(0, 1)) ? bloodType.getCode().substring(0, 1) : null ) ;
+        final List<String> supportedBloodRhesusCode = Arrays.asList("+", "-");
+        bloodRhesus = (bloodGroup == null || bloodType == null || code == null || code.length() != 2) ? null : (
+                  supportedBloodRhesusCode.contains(bloodType.getCode().substring(1, 2)) ? "+".equals(bloodType.getCode().substring(1, 2)) : null) ;
+
+        workInfo =  initWorkInfo(client);
     }
+
+    private String notEmpty(String lastName) {
+        return "".equals(lastName) ? null : lastName;
+    }
+
+    private Iterable<WorkInfo> initWorkInfo(Patient client) {
+        List<WorkInfo> res = new LinkedList<WorkInfo>();
+        //TODO;
+        return res;
+    }
+
+    private CodeNameSystem initCitizenship(Patient client) {
+        CodeNameSystem res = null;
+        for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
+            if( CITIZENSHIP_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
+                RbSocStatusType socStatusType = clientSocStatus.getSocStatusType();
+                res = new CodeNameSystem(null, socStatusType.getName());
+            }
+        }
+        return res;
+    }
+
+    protected static XMLGregorianCalendar getXmlGregorianCalendar(Date birthDate) {
+        XMLGregorianCalendar birth = null;
+        if (birthDate != null) {
+            try {
+                birth = Database.toGregorianCalendar(birthDate);
+            } catch (DatatypeConfigurationException e) {
+            }
+        }
+        return birth;
+    }
+
+    private Iterable<Privilege> initPriveleges(Patient client) {
+        List<Privilege> res = new LinkedList<Privilege>();
+        for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
+            if( ClientSocStatus.PRIVILEGE_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
+                final Privilege privelege = new Privilege(clientSocStatus);
+                if(privelege.getCategory() != null) {
+                    res.add(privelege);
+                }
+            }
+        }
+        return res;
+    }
+
+    private Iterable<SocialStatus> initSocialStatus(Patient client) {
+        List<SocialStatus> res = new LinkedList<SocialStatus>();
+        for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
+            if( ClientSocStatus.SOCIAL_STATUS_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
+                final SocialStatus socStatus = new SocialStatus(clientSocStatus);
+                res.add(socStatus);
+            }
+        }
+        return res;
+    }
+
+    private boolean initIsFromeSocGroup(Patient client, String name) {
+        for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
+            if(name.equals(clientSocStatus.getSocStatusType().getName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private ClientContact getContact(Patient client, String type) {
         List<ClientContact> docs = client.getClientContacts();
@@ -255,20 +452,41 @@ public class ClientInfo {
         return null;
     }
 
+    private ClientPolicy getDms(Patient client) {
+        return getClientPolicyByCode(client, DMS);
+    }
+
+
+    private ClientPolicy getEnp(Patient client) {
+        return getClientPolicyByCode(client, CMI_COMMON_ELECTRON);
+    }
+
+    private ClientPolicy getClientPolicyByCode(Patient client, String code) {
+        List<ClientPolicy> policies = client.getClientPolicies();
+        for (ClientPolicy policy : policies) {
+            if (!policy.isDeleted() && policy.getPolicyType() != null &&
+                    code.equals(policy.getPolicyType().getCode()))
+                return policy;
+        }
+        return null;
+    }
+
     /**
      * @param client
      * @return
      */
     private ClientPolicy getOMS(Patient client) {
+        //TODO: use getClientPolicyByCode !
         List<ClientPolicy> policies = client.getClientPolicies();
         for (ClientPolicy policy : policies) {
-            if (policy.isDeleted() && policy.getPolicyType() != null &&
-                    (policy.getPolicyType().getCode().equals(OMS_LOC) ||
-                    policy.getPolicyType().getCode().equals(OMS_WORK)))
+            //[12:06:57] Сергей Загребельный: т.е. все что не ДМС - это ОМС?
+            //[12:07:09] Александр Мартынов: ага
+            if (!policy.isDeleted() && policy.getPolicyType() != null && !DMS.equals(policy.getPolicyType().getCode()) )
                 return policy;
         }
         return null;
     }
+
 
     /**
      * @return the familyName
@@ -320,41 +538,15 @@ public class ClientInfo {
     }
 
     /**
-     * @return the policyNumber
+     * @return the enpNumber
      */
-    public String getPolicyNumber() {
-        return policyNumber;
+    public String getEnpNumber() {
+        return enpNumber;
     }
 
     /**
-     * @return the addrStreet
-     */
-    public String getAddrStreet() {
-        return addrStreet;
-    }
-
-    /**
-     * @return the addrCity
-     */
-    public String getAddrCity() {
-        return addrCity;
-    }
-
-    /**
-     * @return the addrState
-     */
-    public String getAddrState() {
-        return addrState;
-    }
-
-    /**
-     * @return the addrZip
-     */
-    public String getAddrZip() {
-        return addrZip;
-    }
-
-    /**
+     * /**
+     *
      * @return the homePhoneNumber
      */
     public String getHomePhoneNumber() {
@@ -376,16 +568,160 @@ public class ClientInfo {
     }
 
     /**
-     * @return the passNumber
-     */
-    public String getPassNumber() {
-        return passNumber;
-    }
-
-    /**
      * @return the birthCertificateNumber
      */
-    public String getBirthCertificateNumber() {
-        return birthCertificateNumber;
+    public DocInfo getBirthCertificate() {
+        return birthCertificate;
+    }
+
+    public String getBirthPlace() {
+        return birthPlace;
+    }
+
+    public AddrInfo getRegAddr() {
+        return regAddr;
+    }
+
+    public AddrInfo getActualAddr() {
+        return actualAddr;
+    }
+
+    public class WorkInfo {
+        final private String name;
+        final private String pos;
+        final private CodeNameSystem okved;
+        final private String harmful;
+
+        public WorkInfo(ClientWork clientWork) {
+            String name = clientWork.getFreeInput();
+            //TODO: Implements: Organisation.shortName<=Organisation.id<=ClientWork.org_id/ClientWork.freeInput
+            this.name = name;
+            this.pos = clientWork.getPost();
+            //TODO: replace  ClientWork.class to rbOKVED ?
+            this.okved = RbManager.get(RbManager.RbType.rbOKVED, CodeNameSystem.newInstance(clientWork.getOkved(), null, "1.2.643.5.1.13.2.1.1.62"));
+            this.harmful = null; //TODO: Implements: rbHurtType.name<=rbHurtType.id<=ClientWork_Hurt.hurtType_id
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getPos() {
+            return pos;
+        }
+
+        public CodeNameSystem getOkved() {
+            return okved;
+        }
+
+        public String getHarmful() {
+            return harmful;
+        }
+    }
+
+    public static class DocInfo {
+
+        private final String serial;
+        private final String number;
+        private final String issued;
+        private final XMLGregorianCalendar createDate;
+        private final XMLGregorianCalendar expirationDate;
+        private final CodeNameSystem docType;
+
+        public DocInfo(ClientDocument passport) {
+            serial = passport.getSerial();
+            number = passport.getNumber();
+            issued = passport.getIssued();
+            createDate = getXmlGregorianCalendar(passport.getDate());
+            expirationDate =getXmlGregorianCalendar(passport.getEndDate());
+            final RbDocumentType documentType = passport.getDocumentType();
+            docType = documentType == null ? null :
+                    RbManager.get(RbManager.RbType.rbDocumentType,
+                            CodeNameSystem.newInstance(documentType.getCode(), documentType.getName(), "1.2.643.5.1.13.2.1.1.498"));
+        }
+
+        public String getSerial() {
+            return serial;
+        }
+
+        public String getNumber() {
+            return number;
+        }
+
+        public String getIssued() {
+            return issued;
+        }
+
+        public XMLGregorianCalendar getCreateDate() {
+            return createDate;
+        }
+
+        public XMLGregorianCalendar getExpirationDate() {
+            return expirationDate;
+        }
+
+        public CodeNameSystem getDocType() {
+            return docType;
+        }
+    }
+
+    public static class InsuranceInfo {
+        private final CodeNameSystem organization;
+        private final String serial;
+        private final String number;
+        private final XMLGregorianCalendar begDate;
+        private final XMLGregorianCalendar endDate;
+        private final CodeNameSystem area;
+        private final String okato;
+        private final CodeNameSystem policyTypeName;
+
+        public InsuranceInfo(ClientPolicy clientPolicy) {
+            final Organisation insurer = clientPolicy.getInsurer();
+            organization = RbManager.get(RbManager.RbType.MDN366,
+                    CodeNameSystem.newInstance(insurer.getInfisCode(), insurer.getShortName(), "1.2.643.5.1.13.2.1.1.635"));
+            serial = clientPolicy.getSerial();
+            number = clientPolicy.getNumber();
+            begDate = getXmlGregorianCalendar(clientPolicy.getBegDate());
+            endDate = getXmlGregorianCalendar(clientPolicy.getEndDate());
+            String regName = null;//TODO: вычислить по КЛАДР территории страхования insurer.getArea()
+            area = RbManager.get(RbManager.RbType.KLD116, CodeNameSystem.newInstance(insurer.getArea(), regName, "1.2.643.5.1.13.2.1.1.196"));
+            okato = insurer.getOkato();
+            final RbPolicyType policyType = clientPolicy.getPolicyType();
+            policyTypeName = policyType == null ? null : new CodeNameSystem(null, policyType.getName());
+        }
+
+        public CodeNameSystem getOrganization() {
+            return organization;
+        }
+
+        public String getSerial() {
+            return serial;
+        }
+
+        public String getNumber() {
+            return number;
+        }
+
+        public XMLGregorianCalendar getBegDate() {
+            return begDate;
+        }
+
+        public XMLGregorianCalendar getEndDate() {
+            return endDate;
+        }
+
+        public CodeNameSystem getArea() {
+            return area;
+        }
+
+        public String getOkato() {
+            return okato;
+        }
+
+        public CodeNameSystem getPolicyTypeName() {
+            return policyTypeName;
+        }
     }
 }
+
+

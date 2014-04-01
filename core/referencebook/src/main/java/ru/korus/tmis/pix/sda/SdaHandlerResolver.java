@@ -15,10 +15,22 @@ import ru.korus.tmis.hs.wss.AuthentificationHeaderHandlerResolver;
  */
 public class SdaHandlerResolver extends AuthentificationHeaderHandlerResolver {
 
+    final private String messageUuid;
+
+    public SdaHandlerResolver() {
+        this(null, null);
+    }
+
+    public SdaHandlerResolver(String binaryToken, String messageUuid) {
+        super(binaryToken);
+        this.messageUuid = messageUuid;
+    }
+
+
     @SuppressWarnings("rawtypes")
     public List<Handler> getHandlerChain(final PortInfo portInfo) {
         final List<Handler> handlerChain = super.getHandlerChain(portInfo);
-        handlerChain.add(new SOAPHandlerSda());
+        handlerChain.add(new SOAPHandlerSda(messageUuid));
         return handlerChain;
     }
 }

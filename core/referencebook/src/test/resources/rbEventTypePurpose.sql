@@ -1,0 +1,10 @@
+INSERT IGNORE INTO `rbEventTypePurpose` (`id`, `code`, `name`, `codePlace`) VALUES (9, '7', 'Госпитализация: дневной стационар', '2');
+INSERT IGNORE INTO `rbEventTypePurpose` (`id`, `code`, `name`, `codePlace`) VALUES (10, '7', 'Госпитализация: скорая помощь', '4');
+INSERT IGNORE INTO `rbEventTypePurpose` (`id`, `code`, `name`, `codePlace`) VALUES (11, '2', 'Первый этап диспансеризации взрослых и инвалидов', '3');
+INSERT IGNORE INTO `rbEventTypePurpose` (`id`, `code`, `name`, `codePlace`) VALUES (12, '2', 'Второй этап диспансеризации взрослых и инвалидов', '3');
+INSERT IGNORE INTO `rbEventTypePurpose` (`id`, `code`, `name`, `codePlace`) VALUES (13, '2', 'Профилактические осмотры несовершеннолетних', '3');
+INSERT IGNORE INTO `rbEventTypePurpose` (`id`, `code`, `name`, `codePlace`) VALUES (14, '2', 'Предварительные осмотры несовершеннолетних', '3');
+INSERT IGNORE INTO `rbEventTypePurpose` (`id`, `code`, `name`, `codePlace`) VALUES (15, '2', 'Периодические осмотры несовершеннолетних', '3');
+INSERT IGNORE INTO `rbEventTypePurpose` (`id`, `code`, `name`, `codePlace`) VALUES (16, '2', 'Диспансеризация детей-сирот в стационарных учреждениях', '3');
+INSERT IGNORE INTO `rbEventTypePurpose` (`id`, `code`, `name`, `codePlace`) VALUES (17, '2', 'Диспансеризация детей-сирот из приемных семей', '3');
+INSERT IGNORE INTO `rbEventTypePurpose` (`id`, `code`, `name`, `codePlace`) VALUES (18, '2', 'Профилактические осмотры взрослых', '3');
