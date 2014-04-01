@@ -136,6 +136,7 @@ struct OrgStructure{
  * @param specialityRegionalCode 10) Региональный код специальности
  * @param post					11) Наименование должности
  * @param sexFilter				12) Пол работника
+ * @param snils                 13) СНИЛС врача
  */
 struct Person{
 1:required i32 id;
@@ -150,6 +151,7 @@ struct Person{
 10:optional string specialityRegionalCode;
 11:optional string post;
 12:optional string sexFilter;
+13:optional string snils;
 }
 
 //@deprecated
