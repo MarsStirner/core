@@ -8,7 +8,6 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.scala.util.StringId;
 import scala.Function1;
-import scala.Function2;
 
 import java.util.List;
 import java.util.Set;
@@ -56,5 +55,5 @@ public interface CommonDataProcessorBeanLocal {
 
     CustomCalendar defineAgeOfPatient(Patient patient) throws CoreException;
 
-    boolean checkActionPropertyTypeForPatientAge(CustomCalendar age, ActionPropertyType apt) throws CoreException;
+    boolean checkActionPropertyTypeForPatientAgeAndSex(Patient age, ActionPropertyType apt) throws CoreException;
 }

@@ -710,7 +710,6 @@ class CommonDataProcessorBean
                                   listForSummary: java.util.List[StringId],
                                   listForConverter: java.util.List[String],
                                   patient: Patient) = {
-    val age = defineAgeOfPatient(patient)
     //val (year, month, week, date2) = age.asInstanceOf[(Int, Int, Int, Int)]
     val data = new CommonData(0, dbVersion.getGlobalVersion)
     val entity = new CommonEntity(actionType.getId.intValue(),
@@ -739,7 +738,7 @@ class CommonDataProcessorBean
     val group = new CommonGroup(1, "Details")
     dbActionType.getActionTypePropertiesById(actionType.getId.intValue).foreach(
       (apt) => {
-        if (checkActionPropertyTypeForPatientAge(age, apt)) {
+        if (checkActionPropertyTypeForPatientAgeAndSex(patient, apt)) {
           group add converterFromList(listForConverter, apt)
         }
       }
@@ -853,13 +852,17 @@ class CommonDataProcessorBean
   }
 
   /**
-   * Извращенный метод определения соответствия возраста пациента и action property type
-   * @param age Возраст поциента, заданный как CustomCalendar, важно, чтобы значения дней, недель,
-   *            месяцев и лет были абсолютны, т.е. если пациенту 2 мес. и 10 дней, тогда значения будут 70 дней, 10 нед., 2 мес. и 0 лет
+   * Извращенный метод определения соответствия возраста и пола пациента и action property type
+   * @param patient Пациент, для которого проводится определение соответствия
    * @param apt Тип свойства, для которого проводится проверка соответствия
-   * @return true - если свойство соответствует возрасту пациента и false, если не соответствует
+   * @return true - если свойство соответствует возрасту и полу пациента и false, если не соответствует, в случае, если
+   *         пол у пациента или типа свойства не задан - возвращается true
    */
-  def checkActionPropertyTypeForPatientAge(age: CustomCalendar, apt: ActionPropertyType): Boolean = {
+  def checkActionPropertyTypeForPatientAgeAndSex(patient: Patient, apt: ActionPropertyType): Boolean = {
+    if(patient == null || apt == null)
+      throw new IllegalArgumentException("Входящие параметры не могут быть null")
+
+    val age = defineAgeOfPatient(patient)
     // Проверяем формат, в котором задана нижняя граница (днях, неделях, месяцах или годах)
     // и сверяем возраст пациента с заданной границей
     val lowLimit = apt.getAge_bu match {
@@ -879,7 +882,16 @@ class CommonDataProcessorBean
       case _ => true
     }
 
-    lowLimit && topLimit
+    // Проверяем соответствие пола пациента
+    val sex =
+      if (apt.getSex == 0 || patient.getSex == 0)
+        true
+      else
+        apt.getSex == patient.getSex
+
+
+    lowLimit && topLimit && sex
   }
+
 
 }

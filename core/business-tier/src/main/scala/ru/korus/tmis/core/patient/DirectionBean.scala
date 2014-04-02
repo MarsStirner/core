@@ -119,14 +119,11 @@ with I18nable {
     val propertiesMap = actionPropertyBean.getActionPropertiesByActionId(direction.getId.intValue)
     val group = new CommonGroup(1, "Details")
 
-    val age = commonDataProcessor.defineAgeOfPatient(direction.getEvent.getPatient)
-    //val (year, month, week, date) = age.asInstanceOf[(Int, Int, Int, Int)]
-
     propertiesMap.foreach(
       p => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-        if (commonDataProcessor.checkActionPropertyTypeForPatientAge(age, ap.getType)) {
+        if (commonDataProcessor.checkActionPropertyTypeForPatientAgeAndSex(direction.getEvent.getPatient, ap.getType)) {
           apvs.size match {
             case 0 => {
               group add apw.get(null, List(APWI.Unit, APWI.Norm, APWI.IsAssignable, APWI.IsAssigned))
