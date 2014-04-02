@@ -524,6 +524,11 @@ public class SdaBuilder {
     }
 
     private static Address toSdaAddr(AddrInfo regAddr) {
+
+        if(regAddr == null) {
+            return null;
+        }
+
         Address addr = null;
 
         // Область/край/республика/... (субъект РФ)

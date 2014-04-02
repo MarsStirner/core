@@ -18,7 +18,7 @@ import ru.korus.tmis.laboratory.bak.model.DiagnosticRequestInfo;
 import ru.korus.tmis.laboratory.bak.model.IndicatorMetodic;
 import ru.korus.tmis.laboratory.bak.model.OrderInfo;
 import ru.korus.tmis.laboratory.bak.service.*;
-import ru.korus.tmis.laboratory.bak.utils.Utils;
+import ru.korus.tmis.util.Utils;
 import ru.korus.tmis.laboratory.bak.ws.client.BakSend;
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver;
 import ru.korus.tmis.scala.util.ConfigManager;

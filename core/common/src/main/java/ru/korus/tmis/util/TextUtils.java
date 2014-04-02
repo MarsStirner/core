@@ -35,4 +35,5 @@ public class TextUtils {
     private static String processString(final String value) {
         return value != null && !"".equals(value) ? value.trim().replaceAll(",", ".") : "0";
     }
+
 }

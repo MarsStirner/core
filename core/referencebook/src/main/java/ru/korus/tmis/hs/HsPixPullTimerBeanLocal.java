@@ -1,5 +1,7 @@
 package ru.korus.tmis.hs;
 
+import ru.korus.tmis.pix.sda.ws.EMRReceiverServiceSoap;
+
 import javax.ejb.Local;
 
 /**
@@ -10,5 +12,8 @@ import javax.ejb.Local;
  */
 @Local
 public interface HsPixPullTimerBeanLocal {
-    public void pullDb(boolean ignoreSetting);
+
+    void setPort(EMRReceiverServiceSoap port);
+
+    void pullDb(boolean ignoreSetting);
 }

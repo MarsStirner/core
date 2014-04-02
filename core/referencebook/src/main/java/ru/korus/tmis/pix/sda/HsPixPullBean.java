@@ -4,12 +4,12 @@ import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbQueryBeanLocal;
+import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.database.RbMedicalAidProfileBeanLocal;
 import ru.korus.tmis.core.database.RbMedicalAidTypeBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
-import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 import ru.korus.tmis.core.exception.CoreException;
@@ -71,15 +71,18 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
     @EJB
     private DbQueryBeanLocal dbQueryBean;
 
+    private EMRReceiverServiceSoap port = null;
+
+    @Override
+    public void setPort(EMRReceiverServiceSoap port) {
+        this.port = port;
+    }
 
     public void pullDb(boolean ignoreSetting) {
         try {
             logger.info("HS integration entry...");
             if (ignoreSetting || ConfigManager.HealthShare().isSdaActive()) {
                 logger.info("HS integration is active...");
-                EMRReceiverService service = new EMRReceiverService();
-                service.setHandlerResolver(new SdaHandlerResolver());
-                EMRReceiverServiceSoap port = service.getEMRReceiverServiceSoap();
 
                 logger.info("HS integration ... SDASoapServiceServiceSoap is avalable");
                 Integer maxId = em.createQuery("SELECT max(hsi.eventId) FROM HSIntegration hsi", Integer.class).getSingleResult();
@@ -92,6 +95,8 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
 
                 addNewEvent(newEvents);
 
+                EMRReceiverServiceSoap port = getEmrReceiverServiceSoap();
+
                 // Отправка завершенных обращений
                 sendNewEventToHS(port);
                 // Отправка карточек новых/обновленных пациентов
@@ -103,6 +108,15 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
             logger.error("HS integration internal error.", ex);
         }
 
+    }
+
+    private EMRReceiverServiceSoap getEmrReceiverServiceSoap() {
+        if (port == null) {
+            EMRReceiverService service = new EMRReceiverService();
+            service.setHandlerResolver(new SdaHandlerResolver());
+            setPort(service.getEMRReceiverServiceSoap());
+        }
+        return port;
     }
 
     /**
@@ -246,11 +260,11 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
         for (Action a : actions) {
             List<ActionType> actionTypes = em.createQuery("SELECT at FROM ActionType at WHERE at.id = :groupId AND at.deleted = 0", ActionType.class)
                     .setParameter("groupId", a.getActionType().getGroupId()).getResultList();
-            if ( (!actionTypes.isEmpty() && actionTypes.iterator().next().getFlatCode().equals("epicrisis")) ||
-                  isMedicalDocument(a.getActionType().getMnemonic()) ) {
-                    res.add(new EpicrisisInfo(a, clientInfo, dbActionPropertyBeanLocal));
-                }
+            if ((!actionTypes.isEmpty() && actionTypes.iterator().next().getFlatCode().equals("epicrisis")) ||
+                    isMedicalDocument(a.getActionType().getMnemonic())) {
+                res.add(new EpicrisisInfo(a, clientInfo, dbActionPropertyBeanLocal));
             }
+        }
         return res;
     }
 
@@ -267,7 +281,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
             add("DIR");
             add("EPIAMB");
         }};
-        if(mnemonic == null) {
+        if (mnemonic == null) {
             return false;
         }
         return mnemonicSet.contains(mnemonic);
@@ -319,6 +333,6 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
             organization = organizationBeanLocal.getOrganizationById(ConfigManager.Common().OrgId());
         } catch (CoreException e) {
         }
-        return  EventInfo.getOrgCodeName(organization);
+        return EventInfo.getOrgCodeName(organization);
     }
 }

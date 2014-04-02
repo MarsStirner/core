@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<container facilityCode="???" patientMRN="347610">
+    <patient>
+        <baseClinic>
+            <code>???</code>
+            <name>unknown</name>
+            <codingSystem>1.2.643.5.1.13.2.1.1.178</codingSystem>
+        </baseClinic>
+        <familyName>КОЗИНА</familyName>
+        <givenName>АРИНА</givenName>
+        <middleName>ВЯЧЕСЛАВОВНА</middleName>
+        <dob>2009-03-03+03:00</dob>
+        <birthAddress>
+            <city></city>
+        </birthAddress>
+        <gender>F</gender>
+        <isHomeless>false</isHomeless>
+        <isServicemanFamily>false</isServicemanFamily>
+    </patient>
+</container>

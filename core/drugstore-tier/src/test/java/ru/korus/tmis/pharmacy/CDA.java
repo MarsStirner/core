@@ -170,11 +170,16 @@ public class CDA {
 
     }
 
-    private String marshalDocument(POCDMT000040ClinicalDocument document) {
+    private String marshalDocument(Object document) {
+        final String contextPath = "org.hl7.v3";
 
+        return toXmlString(document, contextPath);
+    }
+
+    static public String toXmlString(Object document, String contextPath) {
         final StringWriter writer = new StringWriter();
         try {
-            JAXBContext jaxbContext = JAXBContext.newInstance("org.hl7.v3");
+            JAXBContext jaxbContext = JAXBContext.newInstance(contextPath);
             final Marshaller marshaller = jaxbContext.createMarshaller();
             marshaller.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, true);
             marshaller.marshal(document, writer);

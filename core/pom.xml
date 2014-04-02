@@ -655,6 +655,13 @@
             <!--<classifier>jdk15</classifier>-->
         </dependency>
 
+        <dependency>
+            <groupId>xmlunit</groupId>
+            <artifactId>xmlunit</artifactId>
+            <version>1.4</version>
+            <scope>test</scope>
+        </dependency>
+
         <!--Mockito JUnit-->
         <dependency>
             <groupId>org.mockito</groupId>
