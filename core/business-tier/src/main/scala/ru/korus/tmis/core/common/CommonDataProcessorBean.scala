@@ -102,52 +102,52 @@ class CommonDataProcessorBean
         var endDate: Date = null
         var plannedEndDate: Date = null
         var finance: Int = -1
-        var now = new Date()
+        val now = new Date()
         var assignerId: Int = -1
         var executorId: Int = -1
         //var toOrder: Boolean = false
 
         aps.foreach(attribute => {
           if (attribute.name == AWI.Multiplicity.toString) {
-            multiplicity = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            multiplicity = attribute.getPropertiesMap().get(APWI.Value.toString) match {
               case None | Some("") => 1
               case Some(x) => x.toInt
             }
           }
           else if (attribute.name == AWI.assessmentBeginDate.toString) {
-            beginDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            beginDate = attribute.getPropertiesMap().get(APWI.Value.toString) match {
               case None | Some("") => null
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
           else if (attribute.name == AWI.assessmentEndDate.toString) {
-            endDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            endDate = attribute.getPropertiesMap().get(APWI.Value.toString) match {
               case None | Some("") => null
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
           else if (attribute.name == AWI.finance.toString) {
-            finance = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            finance = attribute.getPropertiesMap().get(APWI.Value.toString) match {
               case None | Some("") => 0
               case Some(x) => x.toInt
             }
           }
           else if (attribute.name == AWI.plannedEndDate.toString) {
-            plannedEndDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            plannedEndDate = attribute.getPropertiesMap().get(APWI.Value.toString) match {
               case None | Some("") => null
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
           else if (attribute.name == AWI.assignerId.toString) {
             //ид. направившего врача
-            assignerId = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            assignerId = attribute.getPropertiesMap().get(APWI.Value.toString) match {
               case None | Some("") => 0
               case Some(x) => x.toInt
             }
           }
           else if (attribute.name == AWI.executorId.toString) {
             //ид. исполнителя
-            executorId = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            executorId = attribute.getPropertiesMap().get(APWI.Value.toString) match {
               case None | Some("") => 0
               case Some(x) => x.toInt
             }
@@ -166,7 +166,7 @@ class CommonDataProcessorBean
           val action = dbAction.createAction(eventId,
             entity.id.intValue,
             userData)
-          val isPrimaryAction = (entity.id.intValue == 139 || entity.id.intValue == 112 || entity.id.intValue == 2456)
+          val isPrimaryAction = entity.id.intValue == 139 || entity.id.intValue == 112 || entity.id.intValue == 2456
           if (isPrimaryAction) {
             action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
           }
@@ -214,10 +214,10 @@ class CommonDataProcessorBean
           val emptyApts = actionType.getActionPropertyTypes
           emptyApts.removeAll(apList.map(_._1.getType))
 
-          var emptyApList = new java.util.LinkedList[ActionProperty]
+          val emptyApList = new java.util.LinkedList[ActionProperty]
           emptyApts.foreach(
             apt => {
-              if (apt.getIsAssignable == false) {
+              if (!apt.getIsAssignable) {
                 emptyApList.add(dbActionProperty.createActionPropertyWithDate(action,
                   apt.getId.intValue,
                   userData,
@@ -248,7 +248,7 @@ class CommonDataProcessorBean
 
           // Save empty AP values (set to default values)
           //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
-          val emptyApvList = emptyApList.filter(p => (p.getType.getTypeName.compareTo("FlatDictionary") != 0 && p.getType.getTypeName.compareTo("FlatDirectory") != 0)).map(
+          val emptyApvList = emptyApList.filter(p => p.getType.getTypeName.compareTo("FlatDictionary") != 0 && p.getType.getTypeName.compareTo("FlatDirectory") != 0).map(
             ap => {
               dbActionProperty.setActionPropertyValue(ap, ap.getType.getDefaultValue, 0)
             })
@@ -287,7 +287,7 @@ class CommonDataProcessorBean
       actionEvent.fire(new CreateActionNotification(a, values))
     })
     */
-    return r
+    r
   }
 
 
@@ -299,7 +299,7 @@ class CommonDataProcessorBean
    */
   def toActionPropertyValue(entry: (ActionProperty, CommonAttribute), list: List[APValue]): List[APValue] = {
     val (ap, attribute) = entry
-    (attribute.getPropertiesMap.get("valueId"), attribute.getPropertiesMap.get("value")) match {
+    (attribute.getPropertiesMap().get("valueId"), attribute.getPropertiesMap().get("value")) match {
       case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
         if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 &&
           ap.getType.getTypeName.compareTo("FlatDictionary") != 0 &&
@@ -350,7 +350,6 @@ class CommonDataProcessorBean
     var entities = Set[AnyRef]()
 
     val oldAction = Action.clone(dbAction.getActionById(actionId))
-    val oldValues = dbActionProperty.getActionPropertiesByActionId(oldAction.getId.intValue)
     val lockId = appLock.acquireLock("Action",
       actionId,
       oldAction.getIdx,
@@ -358,7 +357,7 @@ class CommonDataProcessorBean
     var eventId = 0
     try {
       data.entity.filter(_.id == actionId).foreach(entity => {
-        var a = dbAction.updateAction(entity.id.intValue,
+        val a = dbAction.updateAction(entity.id.intValue,
           entity.version.intValue,
           userData)
         val aw = new ActionWrapper(a)
@@ -380,42 +379,42 @@ class CommonDataProcessorBean
 
         var res = aps.find(p => p.name == AWI.assessmentBeginDate.toString).getOrElse(null)
         if (res != null) {
-          beginDate = res.getPropertiesMap.get(APWI.Value.toString) match {
+          beginDate = res.getPropertiesMap().get(APWI.Value.toString) match {
             case None | Some("") => null
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
         res = aps.find(p => p.name == AWI.assessmentEndDate.toString).getOrElse(null)
         if (res != null) {
-          endDate = res.getPropertiesMap.get(APWI.Value.toString) match {
+          endDate = res.getPropertiesMap().get(APWI.Value.toString) match {
             case None | Some("") => null
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
         res = aps.find(p => p.name == AWI.finance.toString).getOrElse(null)
         if (res != null) {
-          finance = res.getPropertiesMap.get(APWI.Value.toString) match {
+          finance = res.getPropertiesMap().get(APWI.Value.toString) match {
             case None | Some("") => 0
             case Some(x) => x.toInt
           }
         }
         res = aps.find(p => p.name == AWI.plannedEndDate.toString).getOrElse(null)
         if (res != null) {
-          plannedEndDate = res.getPropertiesMap.get(APWI.Value.toString) match {
+          plannedEndDate = res.getPropertiesMap().get(APWI.Value.toString) match {
             case None | Some("") => null
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
         res = aps.find(p => p.name == AWI.assignerId.toString).getOrElse(null)
         if (res != null) {
-          assignerId = res.getPropertiesMap.get(APWI.Value.toString) match {
+          assignerId = res.getPropertiesMap().get(APWI.Value.toString) match {
             case None | Some("") => 0
             case Some(x) => x.toInt
           }
         }
         res = aps.find(p => p.name == AWI.executorId.toString).getOrElse(null)
         if (res != null) {
-          executorId = res.getPropertiesMap.get(APWI.Value.toString) match {
+          executorId = res.getPropertiesMap().get(APWI.Value.toString) match {
             case None | Some("") => 0
             case Some(x) => x.toInt
           }
@@ -445,7 +444,7 @@ class CommonDataProcessorBean
           if (AWI.isSupported(attribute.name)) {
             aw.set(attribute)
           } else {
-            (attribute.getPropertiesMap.get("valueId"), attribute.getPropertiesMap.get("value")) match {
+            (attribute.getPropertiesMap().get("valueId"), attribute.getPropertiesMap().get("value")) match {
 
               case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
                 val ap = dbActionProperty.getActionPropertyById(
@@ -530,7 +529,7 @@ class CommonDataProcessorBean
           newValues))
       })
       */
-      return r
+      r
 
     } finally {
       appLock.releaseLock(lockId)
@@ -540,17 +539,17 @@ class CommonDataProcessorBean
   private def saveDiagnoses(eventId: Int, apList: java.util.List[ActionProperty], apValue: java.util.List[APValue], userData: AuthData): java.util.List[AnyRef] = {
 
     var map = Map.empty[String, java.util.Set[AnyRef]]
-    val characterAP = apList.find(p => p.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseCharacter")) == 0).getOrElse((null))
-    val stageAP = apList.find(p => p.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseStage")) == 0).getOrElse((null))
+    val characterAP = apList.find(p => p.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseCharacter")) == 0).getOrElse(null)
+    val stageAP = apList.find(p => p.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseStage")) == 0).getOrElse(null)
     var isStageSaved = false
     var preCharacterId = 0
     var preStageId = 0
 
     //val characterAPV =  if (characterAP!=null) dbActionProperty.getActionPropertyValue(characterAP) else null
     val characterAPV = if (characterAP != null) {
-      apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueString]) &&
-        (apv.unwrap().asInstanceOf[APValueString].getId.getId == characterAP.getId)
-        )
+      apValue.filter(apv =>
+        apv.unwrap().isInstanceOf[APValueString] &&
+        apv.unwrap().asInstanceOf[APValueString].getId.getId.equals(characterAP.getId)
       ).toList
     } else null
     if (characterAPV != null && characterAPV.size > 0 && characterAPV.get(0).getValueAsId.compareTo("") != 0) {
@@ -559,9 +558,8 @@ class CommonDataProcessorBean
 
     //val stageAPV = if (stageAP!=null) dbActionProperty.getActionPropertyValue(stageAP) else null
     val stageAPV = if (stageAP != null) {
-      apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueString]) &&
-        (apv.unwrap().asInstanceOf[APValueString].getId.getId == stageAP.getId)
-        )
+      apValue.filter(apv => apv.unwrap().isInstanceOf[APValueString] &&
+        apv.unwrap().asInstanceOf[APValueString].getId.getId.equals(stageAP.getId)
       ).toList
     } else null
     if (stageAPV != null && stageAPV.size > 0 && stageAPV.get(0).getValueAsId.compareTo("") != 0) {
@@ -572,14 +570,14 @@ class CommonDataProcessorBean
       var characterId = 0
       var stageId = 0
       if (ap.getType.getTypeName.compareTo("MKB") == 0) {
-        val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode != null && !ap.equals(p) && ap.getType.getCode.contains(p.getType.getCode) /*p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 3))==0*/).getOrElse((null))
+        val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode != null && !ap.equals(p) && ap.getType.getCode.contains(p.getType.getCode) /*p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 3))==0*/).getOrElse(null)
         if (ap.getType.getCode != null) {
           if (ap.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb")) == 0) {
             characterId = preCharacterId
             stageId = preStageId
             isStageSaved = true
           } else if (ap.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb")) == 0 && !isStageSaved) {
-            if (apList.find(p => ap.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb")) == 0).getOrElse((null)) == null) {
+            if (apList.find(p => ap.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb")) == 0).getOrElse(null) == null) {
               characterId = preCharacterId
               stageId = preStageId
             }
@@ -587,18 +585,16 @@ class CommonDataProcessorBean
 
           //val mkbAPV = dbActionProperty.getActionPropertyValue(ap)
           //val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
-          val mkbAPV = apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueMKB]) &&
-            (apv.unwrap().asInstanceOf[APValueMKB].getId.getId == ap.getId)
-            )
-          ).toList
-          val descAPV = apValue.filter(apv => ((apv.unwrap().isInstanceOf[APValueString]) &&
+          val mkbAPV = apValue.filter(apv => apv.unwrap().isInstanceOf[APValueMKB] &&
+            apv.unwrap().asInstanceOf[APValueMKB].getId.getId.equals(ap.getId)
+            ).toList
+          val descAPV = apValue.filter(apv => apv.unwrap().isInstanceOf[APValueString] &&
             descriptionAP != null &&
-            (apv.unwrap().asInstanceOf[APValueString].getId.getId == descriptionAP.getId)
-            )
+            apv.unwrap().asInstanceOf[APValueString].getId.getId.equals(descriptionAP.getId)
           ).toList
           if (mkbAPV != null && mkbAPV.size > 0 && mkbAPV.get(0).getValueAsId.compareTo("") != 0) {
             map += (ap.getType.getCode -> Set[AnyRef]((-1, //TODO: ???Всегда создавать новые записи в истории в т.ч. и при редактировании
-              if (descAPV != null && descAPV.size > 0) descAPV.get(0).getValueAsString() else "",
+              if (descAPV != null && descAPV.size > 0) descAPV.get(0).getValueAsString else "",
               Integer.valueOf(mkbAPV.get(0).getValueAsId),
               characterId,
               stageId)))
@@ -608,7 +604,7 @@ class CommonDataProcessorBean
         }
       }
     })
-    val diag = diagnosisBean.insertDiagnoses(eventId, asJavaMap(map), userData)
+    val diag = diagnosisBean.insertDiagnoses(eventId, mapAsJavaMap(map), userData)
     diag
   }
 
@@ -616,7 +612,7 @@ class CommonDataProcessorBean
                          actionId: Int,
                          status: Short) = {
     val action = dbAction.updateActionStatus(actionId, status)
-    val r = dbManager.mergeAll[Action](List(action))
+    dbManager.mergeAll[Action](List(action))
 
     val ActionStatus = ConfigManager.ActionStatus.immutable
 
@@ -710,7 +706,6 @@ class CommonDataProcessorBean
                                   listForSummary: java.util.List[StringId],
                                   listForConverter: java.util.List[String],
                                   patient: Patient) = {
-    //val (year, month, week, date2) = age.asInstanceOf[(Int, Int, Int, Int)]
     val data = new CommonData(0, dbVersion.getGlobalVersion)
     val entity = new CommonEntity(actionType.getId.intValue(),
       0,
@@ -724,7 +719,7 @@ class CommonDataProcessorBean
       actionType.getContext)
     //***
     val group0 = new CommonGroup(0, "Summary")
-    var a = new Action()
+    val a = new Action()
     a.setId(0)
     a.setActionType(actionType)
     initPlannedEndDate(actionType, a)
@@ -738,7 +733,9 @@ class CommonDataProcessorBean
     val group = new CommonGroup(1, "Details")
     dbActionType.getActionTypePropertiesById(actionType.getId.intValue).foreach(
       (apt) => {
-        if (checkActionPropertyTypeForPatientAgeAndSex(patient, apt)) {
+        if (patient == null)
+          group add converterFromList(listForConverter, apt)
+        else if (checkActionPropertyTypeForPatientAgeAndSex(patient, apt)) {
           group add converterFromList(listForConverter, apt)
         }
       }
@@ -759,23 +756,23 @@ class CommonDataProcessorBean
       }
       case 1 => {
         date.add(Calendar.DAY_OF_YEAR, 1)
-        date.set(Calendar.HOUR_OF_DAY, 7);
-        date.set(Calendar.MINUTE, 0);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
+        date.set(Calendar.HOUR_OF_DAY, 7)
+        date.set(Calendar.MINUTE, 0)
+        date.set(Calendar.SECOND, 0)
+        date.set(Calendar.MILLISECOND, 0)
         a.setPlannedEndDate(date.getTime)
       }
       case 2 => {
-        date.set(Calendar.HOUR_OF_DAY, 7);
-        date.set(Calendar.MINUTE, 0);
-        date.set(Calendar.SECOND, 0);
-        date.set(Calendar.MILLISECOND, 0);
+        date.set(Calendar.HOUR_OF_DAY, 7)
+        date.set(Calendar.MINUTE, 0)
+        date.set(Calendar.SECOND, 0)
+        date.set(Calendar.MILLISECOND, 0)
         var isOver = false
         while (!isOver) {
           date.add(Calendar.DAY_OF_YEAR, 1)
-          val isWeekDay = date.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && date.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY;
-          val isHoliday = (dbCalendarExceptionsBean.getHolideyByDate(date.getTime) != null)
-          val isPerenos = (dbCalendarExceptionsBean.getPerenosByDate(date.getTime) != null)
+          val isWeekDay = date.get(Calendar.DAY_OF_WEEK) != Calendar.SATURDAY && date.get(Calendar.DAY_OF_WEEK) != Calendar.SUNDAY
+          val isHoliday = dbCalendarExceptionsBean.getHolideyByDate(date.getTime) != null
+          val isPerenos = dbCalendarExceptionsBean.getPerenosByDate(date.getTime) != null
           if ((isWeekDay && ((isHoliday && isPerenos) || !isHoliday)) || (!isWeekDay && !isHoliday && isPerenos)) {
             isOver = true
           }
@@ -787,13 +784,13 @@ class CommonDataProcessorBean
           //if (date.get(Calendar.MINUTE) != 0) {
           date.add(Calendar.HOUR_OF_DAY, 1)
           //}
-          date.set(Calendar.MINUTE, 0);
-          date.set(Calendar.SECOND, 0);
-          date.set(Calendar.MILLISECOND, 0);
+          date.set(Calendar.MINUTE, 0)
+          date.set(Calendar.SECOND, 0)
+          date.set(Calendar.MILLISECOND, 0)
         } else {
-          date.set(Calendar.MINUTE, 59);
-          date.set(Calendar.SECOND, 0);
-          date.set(Calendar.MILLISECOND, 0);
+          date.set(Calendar.MINUTE, 59)
+          date.set(Calendar.SECOND, 0)
+          date.set(Calendar.MILLISECOND, 0)
         }
         a.setPlannedEndDate(date.getTime)
       }
