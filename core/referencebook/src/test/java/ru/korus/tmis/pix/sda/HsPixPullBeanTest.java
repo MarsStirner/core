@@ -36,6 +36,7 @@ import java.nio.file.Paths;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
+import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
 
@@ -117,8 +118,8 @@ public class HsPixPullBeanTest extends Arquillian {
         ArgumentCaptor<EMRReceiverServiceSoap> captor = ArgumentCaptor.forClass(EMRReceiverServiceSoap.class);
         hsPixPullBean.pullDb(true);
         ArgumentCaptor<Container> argument = ArgumentCaptor.forClass(Container.class);
-        verify(mockPort).container(argument.capture());
-        checkSendPatient(argument.getValue());
+        verify(mockPort, times(2)).container(argument.capture());
+        checkSendPatient(argument.getAllValues().get(0));
     }
 
     private void checkSendPatient(Container value) throws Exception {
@@ -135,11 +136,12 @@ public class HsPixPullBeanTest extends Arquillian {
         Assert.assertTrue(diff.identical());
     }
 
-    private void initDb() {
+    private void initDb() throws InterruptedException {
         executeQuery(getSqlFromFile("./src/test/resources/sql/rbEventTypePurpose.sql"));
         executeQuery(getSqlFromFile("./src/test/resources/sql/rbAcheResult.sql"));
         executeQuery(getSqlFromFile("./src/test/resources/sql/init.sql"));
         em.flush();
+        Thread.sleep(1000);// чтобы успел отработать триггер в БД ??
     }
 
     private void executeQuery(String[] sqlFromFile) {
