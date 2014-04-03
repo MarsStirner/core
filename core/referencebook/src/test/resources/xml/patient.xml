@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<container facilityCode="???" patientMRN="347610">
+<container facilityCode="500" patientMRN="347610">
     <patient>
         <baseClinic>
-            <code>???</code>
-            <name>unknown</name>
-            <codingSystem>1.2.643.5.1.13.2.1.1.178</codingSystem>
+            <code>500</code>
+            <name>ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России</name>
+            <codingSystem>Organisation</codingSystem>
         </baseClinic>
         <familyName>КОЗИНА</familyName>
         <givenName>АРИНА</givenName>

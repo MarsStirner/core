@@ -111,6 +111,7 @@ public class HsPixPullBeanTest extends Arquillian {
     @Test
     public void pullDb() throws Exception {
         ConfigManager.RbManagerSetting().DebugDemoMode_$eq("on");
+        ConfigManager.Common().OrgId_$eq(3479);
         System.out.println("**************************** pullDb from HsPixPullBeanTest");
         initDb();
         Assert.assertNotNull(hsPixPullBean);
