@@ -4,6 +4,7 @@
         <baseClinic>
             <code>500</code>
             <name>ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России</name>
+            <codingSystem>Organisation</codingSystem>
         </baseClinic>
         <familyName>КОЗИНА</familyName>
         <givenName>АРИНА</givenName>
@@ -16,4 +17,28 @@
         <isHomeless>false</isHomeless>
         <isServicemanFamily>false</isServicemanFamily>
     </patient>
+    <encounters>
+        <encounter>
+            <extId>841672</extId>
+            <enteredOn>2014-01-21T23:20:46.000+04:00</enteredOn>
+            <encType>I</encType>
+            <paymentType>
+                <code>1</code>
+                <name>Бюджет</name>
+                <codingSystem>rbFinance</codingSystem>
+            </paymentType>
+            <isAtHome>false</isAtHome>
+            <admissionInfo>
+                <isUrgentAdmission>false</isUrgentAdmission>
+                <bedDayCount>1</bedDayCount>
+            </admissionInfo>
+            <encounterOutcome>
+                <code>1</code>
+                <name>выздоровление</name>
+                <codingSystem>1.2.643.5.1.13.2.1.1.357</codingSystem>
+            </encounterOutcome>
+            <fromTime>2014-01-21T23:20:46.000+04:00</fromTime>
+            <toTime>2014-01-22T15:45:33.000+04:00</toTime>
+        </encounter>
+    </encounters>
 </container>

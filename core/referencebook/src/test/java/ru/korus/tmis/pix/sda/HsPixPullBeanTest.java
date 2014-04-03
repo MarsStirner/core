@@ -139,6 +139,7 @@ public class HsPixPullBeanTest extends Arquillian {
         executeQuery(getSqlFromFile("./src/test/resources/sql/rbEventTypePurpose.sql"));
         executeQuery(getSqlFromFile("./src/test/resources/sql/rbAcheResult.sql"));
         executeQuery(getSqlFromFile("./src/test/resources/sql/init.sql"));
+        em.flush();
     }
 
     private void executeQuery(String[] sqlFromFile) {

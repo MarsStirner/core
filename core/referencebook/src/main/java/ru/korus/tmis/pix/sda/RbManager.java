@@ -86,7 +86,7 @@ public class RbManager {
 
     private static CodeNameSystem get(String tableName, String fieldName, CodeNameSystem code) {
         if(ConfigManager.RbManagerSetting().isDebugDemoMode()) {
-            return code;
+            return CodeNameSystem.newInstance(code.getCode(), code.getName(), tableName);
         }
         return get(tableName, fieldName, code.getCode());
     }

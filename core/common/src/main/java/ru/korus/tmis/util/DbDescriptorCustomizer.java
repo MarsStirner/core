@@ -24,7 +24,7 @@ public class DbDescriptorCustomizer implements DescriptorCustomizer {
 
     @Override
     public void customize(ClassDescriptor classDescriptor) throws Exception {
-        System.out.println("**************************** DbDescriptorCustomizer.customize");
+        System.out.println("**************************** DbDescriptorCustomizer.customize: " + classDescriptor.getAlias());
        /*for ( DatabaseField primaryKeyFields : classDescriptor.getPrimaryKeyFields() ) {
             if ( !primaryKeyFields.getName().startsWith("`") && "index".equals(primaryKeyFields.getName())) {
                 primaryKeyFields.setName("`" + primaryKeyFields.getName() + "`");

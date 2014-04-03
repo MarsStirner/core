@@ -16,6 +16,7 @@
             <property name="eclipselink.descriptor.customizer.RbCounter" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.descriptor.customizer.DbVersions" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.descriptor.customizer.FDRecord" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.Kladr" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.logging.level" value="WARNING"/>
             <property name="eclipselink.logging.level.sql" value="OFF"/>
             <property name="eclipselink.logging.parameters" value="false"/>
@@ -25,6 +26,7 @@
             <property name="eclipselink.cache.size.default" value="0"/>
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
+            <property name="javax.persistence.validation.mode" value="NONE" />
             <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
         </properties>
     </persistence-unit>
@@ -40,6 +42,7 @@
             <property name="eclipselink.cache.size.default" value="0"/>
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
+            <property name="javax.persistence.validation.mode" value="NONE" />
             <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
         </properties>
     </persistence-unit>
@@ -55,6 +58,7 @@
             <property name="eclipselink.cache.size.default" value="0"/>
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
+            <property name="javax.persistence.validation.mode" value="NONE" />
             <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
         </properties>
     </persistence-unit>
@@ -64,7 +68,11 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
+            <property name="eclipselink.descriptor.customizer.Kladr" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.Street" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
+            <property name="eclipselink.descriptor.customizer.SocrBase" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.logging.level" value="WARNING"/>
+            <property name="javax.persistence.validation.mode" value="NONE" />
             <property name="eclipselink.cache.shared.default" value="false"/>
         </properties>
     </persistence-unit>
