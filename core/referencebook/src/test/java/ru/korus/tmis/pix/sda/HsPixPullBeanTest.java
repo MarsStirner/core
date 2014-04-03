@@ -119,18 +119,19 @@ public class HsPixPullBeanTest extends Arquillian {
         hsPixPullBean.pullDb(true);
         ArgumentCaptor<Container> argument = ArgumentCaptor.forClass(Container.class);
         verify(mockPort, times(2)).container(argument.capture());
-        checkSendPatient(argument.getAllValues().get(0));
+        checkArgument(argument.getAllValues().get(0), "./src/test/resources/xml/event.xml");
+        checkArgument(argument.getAllValues().get(1), "./src/test/resources/xml/patient.xml");
     }
 
-    private void checkSendPatient(Container value) throws Exception {
+    private void checkArgument(Container value, String pathExcept) throws Exception {
         String res = Utils.marshallMessage(value, "ru.korus.tmis.pix.sda.ws");
-        final String pathToExceptMessage = "./src/test/resources/xml/patient.xml";
+        final String pathToExceptMessage = pathExcept;
         String except = readAllBytes(pathToExceptMessage);
         Diff diff = new Diff(except, res);
         if( !diff.identical() ) {
-            System.out.println("SendPatient message:");
+            System.out.println("Argument:");
             System.out.println(res);
-            System.out.println("SendPatient message diff with " + pathToExceptMessage + " :");
+            System.out.println("Diff with " + pathToExceptMessage + " :");
             System.out.println(diff.toString());
         }
         Assert.assertTrue(diff.identical());
