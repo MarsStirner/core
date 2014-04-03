@@ -21,6 +21,7 @@ import ru.korus.tmis.core.database.kladr.DbSchemeKladrBean;
 import ru.korus.tmis.hs.HsPixPullTimerBeanLocal;
 import ru.korus.tmis.pix.sda.ws.Container;
 import ru.korus.tmis.pix.sda.ws.EMRReceiverServiceSoap;
+import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.util.TestUtilBusiness;
 import ru.korus.tmis.util.TestUtilCommon;
 import ru.korus.tmis.util.Utils;
@@ -108,6 +109,7 @@ public class HsPixPullBeanTest extends Arquillian {
 
     @Test
     public void pullDb() throws Exception {
+        ConfigManager.RbManagerSetting().DebugDemoMode_$eq("on");
         System.out.println("**************************** pullDb from HsPixPullBeanTest");
         initDb();
         Assert.assertNotNull(hsPixPullBean);
