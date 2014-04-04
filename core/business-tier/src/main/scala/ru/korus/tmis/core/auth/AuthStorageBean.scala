@@ -1,14 +1,10 @@
 package ru.korus.tmis.core.auth
 
 import ru.korus.tmis.core.database.DbStaffBeanLocal
-import ru.korus.tmis.core.exception.NoSuchUserException
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging
 import java.util.Date
-import java.util.LinkedHashMap
-import java.util.Map
-import javax.annotation.{PostConstruct, Resource}
 import javax.ejb._
 import javax.interceptor.Interceptors
 
@@ -18,6 +14,7 @@ import scala.None
 import ru.korus.tmis.core.exception.{AuthenticationException, NoSuchUserException}
 import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import java.util
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
@@ -33,7 +30,7 @@ class AuthStorageBean
 
   // Отображение токена в кортеж из данных аутентификации и даты окончания
   // срока действия токена
-  val authMap: Map[AuthToken, Tuple2[AuthData, Date]] = new LinkedHashMap()
+  val authMap: util.Map[AuthToken, (AuthData, Date)] = new util.LinkedHashMap()
 
 
   @Lock(LockType.WRITE)
