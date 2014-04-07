@@ -423,7 +423,10 @@ public class SdaBuilder {
 
     private static IdentityDocument toSdaIdentityDoc(ClientInfo.DocInfo passport) {
         IdentityDocument res = null;
-        res.setDocType(getCodeAndName(passport.getDocType()));
+        if(passport.getDocType() != null) {
+            res = res == null ? SDAFactory.createIdentityDocument() : res;
+            res.setDocType(getCodeAndName(passport.getDocType()));
+        }
         if (passport.getNumber() != null) {
             res = res == null ? SDAFactory.createIdentityDocument() : res;
             res.setDocNum(passport.getNumber());

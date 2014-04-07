@@ -8,6 +8,15 @@ INSERT IGNORE INTO `Address` (`id`, `createDatetime`, `createPerson_id`, `modify
 INSERT IGNORE INTO `AddressHouse` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `KLADRCode`, `KLADRStreetCode`, `number`, `corpus`) VALUES (30000, '2012-02-01 20:53:38', 170, '2012-02-01 20:53:38', 170, 0, '5801900011000', '58019000110000100', '12', '1');
 INSERT IGNORE INTO `ClientSocStatus` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `client_id`, `socStatusClass_id`, `socStatusType_id`, `begDate`, `endDate`, `document_id`, `version`, `note`, `benefitCategory_id`) VALUES (4, '2011-12-16 10:20:56', 311, '2012-06-25 16:08:08', 292, 0, 347610, 36, 316, '2011-05-01', '2013-04-29', NULL, 0, '', NULL);
 INSERT IGNORE INTO `ClientSocStatus` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `client_id`, `socStatusClass_id`, `socStatusType_id`, `begDate`, `endDate`, `document_id`, `version`, `note`, `benefitCategory_id`) VALUES (5, '2013-10-25 13:01:52', 292, '2013-10-25 13:01:52', 292, 0, 347610, 33, 311, '0000-00-00', NULL, NULL, 0, '', NULL);
+INSERT IGNORE INTO `ClientSocStatus` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `client_id`, `socStatusClass_id`, `socStatusType_id`, `begDate`, `endDate`, `document_id`, `version`, `note`, `benefitCategory_id`) VALUES (6, '2013-10-25 13:01:52', 292, '2013-10-25 13:01:52', 292, 0, 347610, 35, 166, '0000-00-00', NULL, NULL, 0, '', NULL);
+INSERT IGNORE INTO `ClientWork` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `client_id`, `org_id`, `freeInput`, `post`, `stage`, `OKVED`, `version`, `rank_id`, `arm_id`) VALUES (21136, '2013-03-20 09:31:42', 369, '2013-03-20 09:31:42', 369, 0, 347610, 3797, '', 'сторож', 0, '01114', 0, 0, 0);
+UPDATE `Organisation` SET `OGRN`='1234567890123' WHERE  `id`=3797 LIMIT 1;
+INSERT IGNORE INTO `ClientWork_Hurt` (`id`, `master_id`, `hurtType_id`, `stage`) VALUES (5, 21136, 1, 0);
+INSERT IGNORE INTO `ClientDocument` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `client_id`, `documentType_id`, `serial`, `number`, `date`, `origin`, `version`, `endDate`) VALUES (4, '2012-01-09 12:22:08', 170, '2012-01-09 12:22:08', 170, 0, 347610, 1, '56 02', '571655', '2000-04-01', '6 УФМС по району', 0, '2140-01-01');
+INSERT IGNORE INTO `ClientDocument` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `client_id`, `documentType_id`, `serial`, `number`, `date`, `origin`, `version`, `endDate`) VALUES (5, '2012-01-09 12:28:34', 170, '2012-01-09 12:28:34', 170, 0, 347610, 3, '1-ИЗ', '715169', '1913-04-05', 'ЗАГС', 0, '2174-03-03');
+
+
+
 
 
 

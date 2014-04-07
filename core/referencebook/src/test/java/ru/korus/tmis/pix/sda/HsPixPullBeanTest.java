@@ -139,6 +139,7 @@ public class HsPixPullBeanTest extends Arquillian {
     }
 
     private void initDb() throws InterruptedException {
+        executeQuery(getSqlFromFile("./src/test/resources/sql/rbDocumentType.sql"));
         executeQuery(getSqlFromFile("./src/test/resources/sql/rbEventTypePurpose.sql"));
         executeQuery(getSqlFromFile("./src/test/resources/sql/rbAcheResult.sql"));
         executeQuery(getSqlFromFile("./src/test/resources/sql/rbSocStatusClass.sql"));

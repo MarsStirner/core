@@ -53,6 +53,43 @@
         </socialStatus>
         <isHomeless>false</isHomeless>
         <isServicemanFamily>true</isServicemanFamily>
+        <occupation>
+            <organizationName>ТФОМС Алтайского края</organizationName>
+            <position>сторож</position>
+            <okved>
+                <code>01114</code>
+                <codingSystem>1.2.643.5.1.13.2.1.1.62</codingSystem>
+            </okved>
+            <harmfulConditions>Работы на высоте, верхолазные работы, крановщика (машиниста крана), лифтера скоростных лифтов </harmfulConditions>
+            <ogrn>1234567890123</ogrn>
+        </occupation>
+        <citizenship>
+            <name>Гондурас</name>
+        </citizenship>
+        <identityDocument>
+            <docType>
+                <code>14</code>
+                <name>ПАСПОРТ РФ</name>
+                <codingSystem>rbDocumentType</codingSystem>
+            </docType>
+            <docSer>56 02</docSer>
+            <docNum>571655</docNum>
+            <docDate>2000-04-01+04:00</docDate>
+            <docSource>6 УФМС по району</docSource>
+            <expirationDate>2140-01-01+04:00</expirationDate>
+        </identityDocument>
+        <birthCertificate>
+            <docType>
+                <code>03</code>
+                <name>СВИДЕТЕЛЬСТВО О РОЖДЕНИИ</name>
+                <codingSystem>rbDocumentType</codingSystem>
+            </docType>
+            <docSer>1-ИЗ</docSer>
+            <docNum>715169</docNum>
+            <docDate>1913-04-05+02:30</docDate>
+            <docSource>ЗАГС</docSource>
+            <expirationDate>2174-03-03+04:00</expirationDate>
+        </birthCertificate>
         <omsInsurance>
             <insuranceCompany>
                 <code></code>

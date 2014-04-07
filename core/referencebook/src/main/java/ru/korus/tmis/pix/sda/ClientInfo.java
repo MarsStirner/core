@@ -26,11 +26,11 @@ public class ClientInfo {
     /**
      * Код типа документа - "ПАСПОРТ РФ"
      */
-    private static final String PASSPORT = "1";
+    private static final String PASSPORT = "14";
     /**
      * Код типа документа - "СВИД О РОЖД"
      */
-    private static final String CBT = "1";
+    private static final String CBT = "03";
     /**
      * Код типа полис медицинского страхования - "ОМС Производственный"
      */
@@ -78,7 +78,7 @@ public class ClientInfo {
      * Признак лица без определенного места жительства
      */
     final private boolean homeless;
-    private static final String CITIZENSHIP_CODE = "35";
+    private static final String CITIZENSHIP_CODE = "4";
 
     private final Iterable<WorkInfo> workInfo;
 
@@ -445,10 +445,11 @@ public class ClientInfo {
      * @return
      */
     private ClientDocument getDoc(final Patient client, final String type) {
+        assert type != null;
         List<ClientDocument> docs = client.getClientDocuments();
         for (ClientDocument doc : docs) {
-            if (doc.isDeleted() && doc.getDocumentType() != null &&
-                    doc.getDocumentType().getCode().equals(type))
+            if (!doc.isDeleted() && doc.getDocumentType() != null &&
+                    type.equals(doc.getDocumentType().getCode()))
                 return doc;
         }
         return null;
@@ -648,7 +649,7 @@ public class ClientInfo {
         public DocInfo(ClientDocument passport) {
             serial = passport.getSerial();
             number = passport.getNumber();
-            issued = passport.getIssued();
+            issued = "".equals(passport.getIssued()) ? null : passport.getIssued();
             createDate = getXmlGregorianCalendar(passport.getDate());
             expirationDate =getXmlGregorianCalendar(passport.getEndDate());
             final RbDocumentType documentType = passport.getDocumentType();
