@@ -6,16 +6,71 @@
             <name>ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России</name>
             <codingSystem>Organisation</codingSystem>
         </baseClinic>
+        <snils>160-430-469 28</snils>
+        <enp>5801989121913368</enp>
         <familyName>КОЗИНА</familyName>
         <givenName>АРИНА</givenName>
         <middleName>ВЯЧЕСЛАВОВНА</middleName>
         <dob>2009-03-03+03:00</dob>
         <birthAddress>
-            <city></city>
+            <city>г. Урюпинск</city>
         </birthAddress>
         <gender>F</gender>
+        <legalAddress>
+            <region>обл.Пензенская</region>
+            <regionKladr>5800000000000</regionKladr>
+            <district>Мокшанский</district>
+            <districtKladr>5801900000000</districtKladr>
+            <city>с.Юровка</city>
+            <cityKladr>5801900011000</cityKladr>
+            <street>ул.Юровка</street>
+            <streetKladr>58019000110000100</streetKladr>
+            <house>12</house>
+            <block>1</block>
+            <apartment>60</apartment>
+            <postalCode>442370</postalCode>
+            <okato>56245831001</okato>
+        </legalAddress>
+        <actualAddress>
+            <street>Тестовый адрес строкой</street>
+        </actualAddress>
+        <dwellingType>1</dwellingType>
+        <privilege>
+            <category>
+                <code>008</code>
+                <name>Член семьи военнослужащего</name>
+                <codingSystem>rbSocStatusType</codingSystem>
+            </category>
+            <document>
+                <docDate>2011-05-01+04:00</docDate>
+                <expirationDate>2013-04-29+04:00</expirationDate>
+            </document>
+        </privilege>
+        <socialStatus>
+            <code>005</code>
+            <name>Неработающий</name>
+            <codingSystem>rbSocStatusType</codingSystem>
+        </socialStatus>
         <isHomeless>false</isHomeless>
-        <isServicemanFamily>false</isServicemanFamily>
+        <isServicemanFamily>true</isServicemanFamily>
+        <omsInsurance>
+            <insuranceCompany>
+                <code></code>
+                <name>СМК "ИКАР"</name>
+                <codingSystem>MDN366</codingSystem>
+            </insuranceCompany>
+            <insuranceCompanyOkato></insuranceCompanyOkato>
+            <policyType>
+                <name>ОМС Электронный полис единого образца</name>
+            </policyType>
+            <policySer></policySer>
+            <policyNum>5801989121913368</policyNum>
+            <effectiveDate>2009-11-25+03:00</effectiveDate>
+            <insuranceCompanyKladr>
+                <code>7700000000000</code>
+                <codingSystem>KLD116</codingSystem>
+            </insuranceCompanyKladr>
+        </omsInsurance>
     </patient>
     <encounters>
         <encounter>

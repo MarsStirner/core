@@ -368,7 +368,9 @@ public class ClientInfo {
 
     private Iterable<WorkInfo> initWorkInfo(Patient client) {
         List<WorkInfo> res = new LinkedList<WorkInfo>();
-        //TODO;
+        for(ClientWork clientWork : client.getClientWorks()) {
+            res.add(new WorkInfo(clientWork));
+        }
         return res;
     }
 
@@ -591,15 +593,25 @@ public class ClientInfo {
         final private String pos;
         final private CodeNameSystem okved;
         final private String harmful;
+        final private String ogrn;
 
         public WorkInfo(ClientWork clientWork) {
-            String name = clientWork.getFreeInput();
-            //TODO: Implements: Organisation.shortName<=Organisation.id<=ClientWork.org_id/ClientWork.freeInput
+            String name = "".equals(clientWork.getFreeInput()) ? null : clientWork.getFreeInput();
+            String ogrn = null;
+            final Organisation organisation = clientWork.getOrganisation();
+            if(organisation != null) {
+                name = organisation.getShortName();
+                ogrn = organisation.getOgrn();
+            }
             this.name = name;
             this.pos = clientWork.getPost();
-            //TODO: replace  ClientWork.class to rbOKVED ?
-            this.okved = RbManager.get(RbManager.RbType.rbOKVED, CodeNameSystem.newInstance(clientWork.getOkved(), null, "1.2.643.5.1.13.2.1.1.62"));
-            this.harmful = null; //TODO: Implements: rbHurtType.name<=rbHurtType.id<=ClientWork_Hurt.hurtType_id
+            this.ogrn = ogrn;
+            this.okved = CodeNameSystem.newInstance(clientWork.getOkved(), null, "1.2.643.5.1.13.2.1.1.62");
+            //TODO: skype:
+            //  [17:46:19] Сергей Загребельный: в БД может быть несколько
+            //  [17:47:47] Сергей Загребельный: как быть? какую вредность передавать?
+            //  [17:48:21] Александр Мартынов: любую... сомневаюсь что вообще кто то это заполняет
+            this.harmful = clientWork.getClientWorkHurts().isEmpty() ? null : clientWork.getClientWorkHurts().get(0).getHurtType().getName();
         }
 
         public String getName() {
@@ -617,6 +629,11 @@ public class ClientInfo {
         public String getHarmful() {
             return harmful;
         }
+
+        public String getOgrn() {
+            return ogrn;
+        }
+
     }
 
     public static class DocInfo {

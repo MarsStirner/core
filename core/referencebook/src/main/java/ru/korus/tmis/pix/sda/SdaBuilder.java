@@ -478,6 +478,12 @@ public class SdaBuilder {
             res.setHarmfulConditions(workInfo.getHarmful());
         }
 
+        //Код ОГРН работодателя
+        if (workInfo.getOgrn() != null) {
+            res = res == null ? SDAFactory.createOccupation() : res;
+            res.setOgrn(workInfo.getOgrn());
+        }
+
         return res;
     }
 

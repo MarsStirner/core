@@ -6,21 +6,10 @@ package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
+import javax.persistence.*;
 
 /**
  * @author s0
@@ -36,7 +25,7 @@ import javax.persistence.Version;
         @NamedQuery(name = "ClientWork.findByModifyPersonid", query = "SELECT c FROM ClientWork c WHERE c.modifyPersonid = :modifyPersonid"),
         @NamedQuery(name = "ClientWork.findByDeleted", query = "SELECT c FROM ClientWork c WHERE c.deleted = :deleted"),
         @NamedQuery(name = "ClientWork.findByClientId", query = "SELECT c FROM ClientWork c WHERE c.patient.id = :clientId"),
-        @NamedQuery(name = "ClientWork.findByOrgId", query = "SELECT c FROM ClientWork c WHERE c.orgId = :orgId"),
+        @NamedQuery(name = "ClientWork.findByOrgId", query = "SELECT c FROM ClientWork c WHERE c.organisation.id = :orgId"),
         @NamedQuery(name = "ClientWork.findByFreeInput", query = "SELECT c FROM ClientWork c WHERE c.freeInput = :freeInput"),
         @NamedQuery(name = "ClientWork.findByPost", query = "SELECT c FROM ClientWork c WHERE c.post = :post"),
         @NamedQuery(name = "ClientWork.findByStage", query = "SELECT c FROM ClientWork c WHERE c.stage = :stage"),
@@ -68,8 +57,9 @@ public class ClientWork implements Serializable, Cloneable {
     @JoinColumn(name = "client_id")
     private Patient patient;
 
-    @Column(name = "org_id")
-    private Integer orgId;
+    @ManyToOne
+    @JoinColumn(name = "org_id")
+    private Organisation organisation;
     @Basic(optional = false)
     @Column(name = "freeInput")
     private String freeInput;
@@ -99,6 +89,15 @@ public class ClientWork implements Serializable, Cloneable {
     @Basic(optional = false)
     @Column(name = "version")
     private int version;
+
+
+    @OneToMany(mappedBy = "clientWork", cascade = CascadeType.ALL)
+    private List<ClientWorkHurt> clientWorkHurts = new LinkedList<ClientWorkHurt>();
+
+    public List<ClientWorkHurt> getClientWorkHurts() {
+        return clientWorkHurts;
+    }
+
 
     public ClientWork() {
     }
@@ -178,12 +177,12 @@ public class ClientWork implements Serializable, Cloneable {
         }
     }
 
-    public Integer getOrgId() {
-        return orgId;
+    public Organisation getOrganisation() {
+        return organisation;
     }
 
-    public void setOrgId(Integer orgId) {
-        this.orgId = orgId;
+    public void setOrganisation(Organisation organisation) {
+        this.organisation = organisation;
     }
 
     public String getFreeInput() {
