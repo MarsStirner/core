@@ -97,7 +97,7 @@ public class EventInfo {
         final RbFinance finance = event.getEventType().getFinance();
         financeType = finance == null ? null : RbManager.get(RbManager.RbType.rbFinance,
                 CodeNameSystem.newInstance(finance.getCode(), finance.getName(), "1.2.643.5.1.13.2.1.1.528"));
-        atHome = initAtHome(event.getEventType());//TODO: Impl:  rbScene.name<=rbScene.id<=EventType.scene_id<=EventType.id<=Event.id (если значение содержит "дом" то передаем "true", иначе "false")
+        atHome = initAtHome(event.getEventType());
         orgStructure = initOrgStructByPerson(event.getExecutor());
         admissionInfo = new AdmissionInfo(event, actions, dbActionPropertyBeanLocal);
         encounterResult = event.getResult() == null ? null : RbManager.get(RbManager.RbType.rbResult,
@@ -119,8 +119,12 @@ public class EventInfo {
     }
 
     private boolean initAtHome(EventType event) {
-        //TODO: Impl:  rbScene.name<=rbScene.id<=EventType.scene_id<=EventType.id<=Event.id (если значение содержит "дом" то передаем "true", иначе "false")
-        return false;
+        final RbScene rbScene = event.getRbScene();
+        boolean res = false;
+        if(rbScene != null && rbScene.getName() != null) {
+            res = rbScene.getName().toLowerCase().contains("дом");
+        }
+        return res;
     }
 
     public EventInfo(CodeNameSystem defaultOrgShortName ) {

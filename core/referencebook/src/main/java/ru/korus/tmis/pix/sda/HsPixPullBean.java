@@ -197,7 +197,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
         try {
             final ClientInfo clientInfo = new ClientInfo(event.getPatient(), dbSchemeKladrBeanLocal);
 
-            final HashSet<String> flatCodes = new HashSet<String>(Arrays.asList("recieved", "moving"));
+            final HashSet<String> flatCodes = new HashSet<String>(Arrays.asList("received", "moving"));
             final Multimap<String, Action> actionsByTypeCode = dbEventBeanLocal.getActionsByTypeCode(event, flatCodes);
             final EventInfo eventInfo = new EventInfo(event, actionsByTypeCode, dbActionPropertyBeanLocal);
             port.container(SdaBuilder.toSda(

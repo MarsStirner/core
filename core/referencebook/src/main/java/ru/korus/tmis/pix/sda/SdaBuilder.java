@@ -174,11 +174,11 @@ public class SdaBuilder {
         }
         //Врач приемного отделения
         if (admissionInfo.getAdmittingDoctor() != null) {
-            res.setAttendingDoctor(toSdaEmployee(admissionInfo.getAttendingDoctor()));
+            res.setAttendingDoctor(toSdaEmployee(admissionInfo.getAdmittingDoctor()));
         }
         //Лечащий врач
         if (admissionInfo.getAttendingDoctor() != null) {
-            res.setAttendingDoctor(toSdaEmployee(admissionInfo.getAttendingDoctor()));
+            res.setAdmittingDoctor(toSdaEmployee(admissionInfo.getAttendingDoctor()));
         }
         //Кем доставлен
         if (admissionInfo.getAdmissionReferral() != null) {

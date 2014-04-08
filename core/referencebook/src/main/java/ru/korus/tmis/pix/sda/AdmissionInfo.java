@@ -23,7 +23,7 @@ public class AdmissionInfo {
     private static final CodeNameSystem TIME_AFTER_FALLING_ILL = new CodeNameSystem("timeAfterFallingIll", "Доставлен в стационар от начала заболевания");
     private static final CodeNameSystem TRANSPORT_TYPE = new CodeNameSystem("transportType", "Вид транспортировки");
     private static final CodeNameSystem WARD = new CodeNameSystem("ward", "койка");
-    private static final CodeNameSystem FINAL_DEPARTMENT = new CodeNameSystem("finalDepartment", "Отделение поступления");
+    private static final CodeNameSystem FINAL_DEPARTMENT = new CodeNameSystem("finalDepartment", "Отделение пребывания");
     private static final CodeNameSystem ADMISSION_REFERRAL = new CodeNameSystem("admissionReferral", "Кем доставлен");
     private static final CodeNameSystem ADMISSION_THIS_YEAR = new CodeNameSystem("admissionsThisYear", "Госпитализирован по поводу данного заболевания в текущем году");
     private final boolean urgent;
@@ -59,37 +59,37 @@ public class AdmissionInfo {
 
     public AdmissionInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
         this.dbActionPropertyBeanLocal = dbActionPropertyBeanLocal;
-        final Action recieved = actions.get("recieved").iterator().hasNext() ? actions.get("recieved").iterator().next() : null;
+        final Action received = actions.get("received").iterator().hasNext() ? actions.get("received").iterator().next() : null;
         final List<CodeNameSystem> propsInfoMapRecieved = new LinkedList<CodeNameSystem>() {{
             add(IS_URGENT_ADMISSION);
             add(TIME_AFTER_FALLING_ILL);
             add(TRANSPORT_TYPE);
         }};
-        APValue apValue = recieved == null ? null : getActionPropertyByCodeOrName(recieved, IS_URGENT_ADMISSION);
+        APValue apValue = received == null ? null : getActionPropertyByCodeOrName(received, IS_URGENT_ADMISSION);
         this.urgent = apValue == null ? false : apValue.getValueAsString().equals("по экстренным показаниям");
-        apValue = getActionPropertyByCodeOrName(recieved, TIME_AFTER_FALLING_ILL);
+        apValue = getActionPropertyByCodeOrName(received, TIME_AFTER_FALLING_ILL);
         this.timeAftreFalling = apValue == null ? null : RbManager.get(RbManager.RbType.PRK371,
                 CodeNameSystem.newInstance(timeAfterFallingMap.get(timeAfterFallingMap.get(apValue.getValueAsString())), apValue.getValueAsString(), "1.2.643.5.1.13.2.1.1.537"));
-        apValue = getActionPropertyByCodeOrName(recieved, TRANSPORT_TYPE);
+        apValue = getActionPropertyByCodeOrName(received, TRANSPORT_TYPE);
         this.transportType = apValue == null ? null : new CodeNameSystem(null, apValue.getValueAsString());
-        apValue = getActionPropertyByCodeOrName(recieved, ADMISSION_REFERRAL);
+        apValue = getActionPropertyByCodeOrName(received, ADMISSION_REFERRAL);
         this.admissionReferral = apValue == null ? null : RbManager.get(RbManager.RbType.STR464,
                 CodeNameSystem.newInstance(admissionReferralMap.get(admissionReferralMap.get(apValue.getValueAsString())), apValue.getValueAsString(), "1.2.643.5.1.13.2.1.1.281"));
-        apValue = getActionPropertyByCodeOrName(recieved, ADMISSION_THIS_YEAR);
+        apValue = getActionPropertyByCodeOrName(received, ADMISSION_THIS_YEAR);
         this.admissionsThisYear = apValue == null ? null : RbManager.get(RbManager.RbType.C42007,
                 CodeNameSystem.newInstance(admissionsThisYearMap.get(apValue.getValueAsString()), apValue.getValueAsString(), "1.2.643.5.1.13.2.1.1.109"));
 
-        Action moving = getLastMoving(actions);
-        APValueOrgStructure apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(moving, FINAL_DEPARTMENT);
+        final Action movingLast = getLastMoving(actions);
+        APValueOrgStructure apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(movingLast, FINAL_DEPARTMENT);
         this.finalDepartment = (apValueOrgStructure == null || apValueOrgStructure.getValue() == null) ?
                 null : new CodeNameSystem(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
 
-        moving = getFirstMoving(actions);
-        apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(moving, FINAL_DEPARTMENT);
+        final Action movingFirst = getFirstMoving(actions);
+        apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(movingFirst, FINAL_DEPARTMENT);
         this.department = (apValueOrgStructure == null || apValueOrgStructure.getValue() == null) ?
                 null : new CodeNameSystem(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
 
-        apValue = getActionPropertyByCodeOrName(moving, WARD);
+        apValue = getActionPropertyByCodeOrName(movingLast, WARD);
         ward = apValue == null ? null : apValue.getValueAsString();
         bedDayCount = new Long(Days.daysBetween(new DateTime(event.getSetDate()), new DateTime(event.getExecDate())).getDays() + 1);
         //Лечащий врач
@@ -124,7 +124,7 @@ public class AdmissionInfo {
         }
         try {
             for (ActionProperty actionProperty : action.getActionProperties()) {
-                if (prop.getCode().equals(actionProperty.getType().getCode())) {
+                if ( prop.getCode() != null && prop.getCode().equals(actionProperty.getType().getCode())) {
                     final List<APValue> valueList = dbActionPropertyBeanLocal.getActionPropertyValue(actionProperty);
                     final APValue value = valueList.iterator().hasNext() ? valueList.iterator().next() : null;
                     if (value != null) {
@@ -133,7 +133,7 @@ public class AdmissionInfo {
                 }
             }
             for (ActionProperty actionProperty : action.getActionProperties()) {
-                if (prop.getName().equals(actionProperty.getType().getName())) {
+                if (prop.getName() != null && prop.getName().equals(actionProperty.getType().getName())) {
                     final List<APValue> valueList = dbActionPropertyBeanLocal.getActionPropertyValue(actionProperty);
                     final APValue value = valueList.iterator().hasNext() ? valueList.iterator().next() : null;
                     if (value != null) {

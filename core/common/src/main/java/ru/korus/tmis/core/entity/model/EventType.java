@@ -62,8 +62,9 @@ public class EventType implements Serializable {
     @JoinColumn(name = "finance_id")
     private RbFinance finance;
 
-    @Column(name = "scene_id")
-    private Integer sceneId;
+    @ManyToOne
+    @JoinColumn(name = "scene_id")
+    private RbScene rbScene;
 
     @Basic(optional = false)
     @Column(name = "visitServiceModifier")
@@ -295,12 +296,12 @@ public class EventType implements Serializable {
         this.purposeId = purposeId;
     }
 
-    public Integer getSceneId() {
-        return sceneId;
+    public RbScene getRbScene() {
+        return rbScene;
     }
 
-    public void setSceneId(Integer sceneId) {
-        this.sceneId = sceneId;
+    public void setRbScene(RbScene rbScene) {
+        this.rbScene = rbScene;
     }
 
     public String getVisitServiceModifier() {

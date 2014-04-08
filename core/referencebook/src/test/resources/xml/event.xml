@@ -139,6 +139,23 @@
     <encounters>
         <encounter>
             <extId>841672</extId>
+            <enteredBy>
+                <code>1204</code>
+                <specialty>
+                    <code>26</code>
+                    <name>педиатр</name>
+                    <codingSystem>rbSpeciality</codingSystem>
+                </specialty>
+                <role>
+                    <code>3042</code>
+                    <name>Врач-педиатр</name>
+                    <codingSystem>rbPost</codingSystem>
+                </role>
+                <snils>036-746-442 73</snils>
+                <familyName>Власова</familyName>
+                <givenName>Светлана</givenName>
+                <middleName>Николаевна</middleName>
+            </enteredBy>
             <enteredOn>2014-01-21T23:20:46.000+04:00</enteredOn>
             <encType>I</encType>
             <paymentType>
@@ -146,10 +163,64 @@
                 <name>Бюджет</name>
                 <codingSystem>rbFinance</codingSystem>
             </paymentType>
-            <isAtHome>false</isAtHome>
+            <isAtHome>true</isAtHome>
+            <facilityDept>
+                <code>Лаборатория биофизики</code>
+                <name>Лаборатория биофизики</name>
+            </facilityDept>
             <admissionInfo>
-                <isUrgentAdmission>false</isUrgentAdmission>
+                <isUrgentAdmission>true</isUrgentAdmission>
+                <timeAfterFallingIll>
+                    <name>в течение 7-24 часов</name>
+                    <codingSystem>PRK371</codingSystem>
+                </timeAfterFallingIll>
+                <transportType>
+                    <name>на руках</name>
+                </transportType>
+                <department>
+                    <code>Отделение клинической психологии</code>
+                    <name>Отделение клинической психологии</name>
+                </department>
+                <finalDepartment>
+                    <code>Лаборатория биофизики</code>
+                    <name>Лаборатория биофизики</name>
+                </finalDepartment>
+                <ward>Пансионат койка 100</ward>
                 <bedDayCount>1</bedDayCount>
+                <admittingDoctor>
+                    <code>1204</code>
+                    <specialty>
+                        <code>26</code>
+                        <name>педиатр</name>
+                        <codingSystem>rbSpeciality</codingSystem>
+                    </specialty>
+                    <role>
+                        <code>3042</code>
+                        <name>Врач-педиатр</name>
+                        <codingSystem>rbPost</codingSystem>
+                    </role>
+                    <snils>036-746-442 73</snils>
+                    <familyName>Власова</familyName>
+                    <givenName>Светлана</givenName>
+                    <middleName>Николаевна</middleName>
+                </admittingDoctor>
+                <attendingDoctor>
+                    <code>1204</code>
+                    <specialty>
+                        <code>26</code>
+                        <name>педиатр</name>
+                        <codingSystem>rbSpeciality</codingSystem>
+                    </specialty>
+                    <role>
+                        <code>3042</code>
+                        <name>Врач-педиатр</name>
+                        <codingSystem>rbPost</codingSystem>
+                    </role>
+                    <snils>036-746-442 73</snils>
+                    <familyName>Власова</familyName>
+                    <givenName>Светлана</givenName>
+                    <middleName>Николаевна</middleName>
+                </attendingDoctor>
             </admissionInfo>
             <encounterOutcome>
                 <code>1</code>
@@ -160,4 +231,56 @@
             <toTime>2014-01-22T15:45:33.000+04:00</toTime>
         </encounter>
     </encounters>
+    <services>
+        <service>
+            <extId>793630</extId>
+            <encounterCode>841672</encounterCode>
+            <enteredBy>
+                <code>1204</code>
+                <specialty>
+                    <code>26</code>
+                    <name>педиатр</name>
+                    <codingSystem>rbSpeciality</codingSystem>
+                </specialty>
+                <role>
+                    <code>3042</code>
+                    <name>Врач-педиатр</name>
+                    <codingSystem>rbPost</codingSystem>
+                </role>
+                <snils>036-746-442 73</snils>
+                <familyName>Власова</familyName>
+                <givenName>Светлана</givenName>
+                <middleName>Николаевна</middleName>
+            </enteredBy>
+            <enteredOn>2014-01-21T23:39:40.000+04:00</enteredOn>
+            <service>
+                <code>уПрием</code>
+                <name>Услуги: в Приемном отделении</name>
+                <codingSystem>SST365</codingSystem>
+            </service>
+            <quantity>1</quantity>
+            <renderedOn>2014-01-21T23:39:40.000+04:00</renderedOn>
+            <servCareType>
+                <code>3</code>
+                <name>Стационарная специализированная</name>
+            </servCareType>
+            <facilityDept>
+                <code>Лаборатория биофизики</code>
+                <name>Лаборатория биофизики</name>
+            </facilityDept>
+            <careProfile>
+                <code>1</code>
+                <name> </name>
+            </careProfile>
+            <isChildProfile>true</isChildProfile>
+            <bedProfile>
+                <name></name>
+            </bedProfile>
+            <servPaymentType>
+                <code>1</code>
+                <name>Бюджет</name>
+                <codingSystem>rbFinance</codingSystem>
+            </servPaymentType>
+        </service>
+    </services>
 </container>
