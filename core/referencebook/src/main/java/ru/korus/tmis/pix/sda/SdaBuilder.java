@@ -364,6 +364,11 @@ public class SdaBuilder {
         if (clientInfo != null) {
             patient.setContactInfo(contactInfo);
         }
+
+        //Данные новорожденного
+        if(clientInfo.getBornIndex() != null) {
+            patient.setNewBornData(clientInfo.getBornIndex());
+        }
     }
 
     private static ContactInfo getContactInfo(ClientInfo clientInfo) {

@@ -51,15 +51,19 @@ public class ClientInfo {
     /**
      * Код типа контакта "домашний телефон"
      */
-    private static final String HOME_TEL = "01";
+    private static final String HOME_TEL_CODE = "1";
     /**
      * Код типа контакта "рабочий телефон"
      */
-    private static final String WORK_TEL = "02";
+    private static final String WORK_TEL_CODE = "2";
     /**
      * Код типа контакта "мобильный телефон"
      */
-    private static final String MOB_TEL = "03";
+    private static final String MOB_TEL_CODE = "3";
+    /**
+     * Код типа контакта "Номер ребенка при многоплодных родах"
+     */
+    private static final String BORN_INDEX_CODE = "9";
 
 
     /**
@@ -88,6 +92,7 @@ public class ClientInfo {
     final private CodeNameSystem citizenship;
 
     final private DocInfo passport;
+
     final private InsuranceInfo omsInfo;
 
     /**
@@ -99,6 +104,11 @@ public class ClientInfo {
      * Резус фактор
      */
     private final Boolean bloodRhesus;
+
+    /**
+     * Данные новорожденного
+     */
+    private final String bornIndex;
 
     public InsuranceInfo getDmsInfo() {
         return dmsInfo;
@@ -153,6 +163,10 @@ public class ClientInfo {
 
     public Boolean getBloodRhesus() {
         return bloodRhesus;
+    }
+
+    public String getBornIndex() {
+        return bornIndex;
     }
 
     /**
@@ -304,13 +318,14 @@ public class ClientInfo {
         this.givenName = notEmpty(client.getFirstName());
         this.middleName = notEmpty(client.getPatrName());
 
+        Gender gender = null;
         if (client.getSex() == 1) {
-            this.gender = Gender.M;
+            gender = Gender.M;
         } else if (client.getSex() == 2) {
-            this.gender = Gender.F;
-        } else {
-            this.gender = null;
+            gender = Gender.F;
         }
+
+        this.gender = gender;
 
         this.birthDate = getXmlGregorianCalendar(client.getBirthDate());
 
@@ -332,14 +347,18 @@ public class ClientInfo {
         final ClientDocument cbt = getDoc(client, CBT);
         this.birthCertificate = cbt == null ? null : new DocInfo(cbt);
 
-        final ClientContact homeTel = getContact(client, HOME_TEL);
+        final ClientContact homeTel = getContact(client, HOME_TEL_CODE);
         this.homePhoneNumber = homeTel == null ? null : homeTel.getContact();
 
-        final ClientContact workTel = getContact(client, WORK_TEL);
+        final ClientContact workTel = getContact(client, WORK_TEL_CODE);
         this.workPhoneNumber = workTel == null ? null : workTel.getContact();
 
-        final ClientContact mobTel = getContact(client, MOB_TEL);
+        final ClientContact mobTel = getContact(client, MOB_TEL_CODE);
         this.mobilePhoneNumber = mobTel == null ? null : mobTel.getContact();
+
+        final ClientContact bornIndexContact = getContact(client, BORN_INDEX_CODE);
+        this.bornIndex = bornIndexContact == null ? null : bornIndexContact.getContact();
+
 
         this.birthPlace = client.getBirthPlace();
 
@@ -433,7 +452,7 @@ public class ClientInfo {
     private ClientContact getContact(Patient client, String type) {
         List<ClientContact> docs = client.getClientContacts();
         for (ClientContact contact : docs) {
-            if (contact.isDeleted() && contact.getContactType() != null &&
+            if (!contact.isDeleted() && contact.getContactType() != null &&
                     type.equals(contact.getContactType().getCode()))
                 return contact;
         }
@@ -446,13 +465,16 @@ public class ClientInfo {
      */
     private ClientDocument getDoc(final Patient client, final String type) {
         assert type != null;
+        ClientDocument res = null;
         List<ClientDocument> docs = client.getClientDocuments();
         for (ClientDocument doc : docs) {
             if (!doc.isDeleted() && doc.getDocumentType() != null &&
-                    type.equals(doc.getDocumentType().getCode()))
-                return doc;
+                    type.equals(doc.getDocumentType().getCode())) {
+                res = doc;
+                break;
+            }
         }
-        return null;
+        return res;
     }
 
     private ClientPolicy getDms(Patient client) {
@@ -480,14 +502,17 @@ public class ClientInfo {
      */
     private ClientPolicy getOMS(Patient client) {
         //TODO: use getClientPolicyByCode !
+        ClientPolicy res = null;
         List<ClientPolicy> policies = client.getClientPolicies();
         for (ClientPolicy policy : policies) {
             //[12:06:57] Сергей Загребельный: т.е. все что не ДМС - это ОМС?
             //[12:07:09] Александр Мартынов: ага
-            if (!policy.isDeleted() && policy.getPolicyType() != null && !DMS.equals(policy.getPolicyType().getCode()) )
-                return policy;
+            if (!policy.isDeleted() && policy.getPolicyType() != null && !DMS.equals(policy.getPolicyType().getCode()) ) {
+                res = policy;
+                break;
+            }
         }
-        return null;
+        return res;
     }
 
 
@@ -701,8 +726,7 @@ public class ClientInfo {
             number = clientPolicy.getNumber();
             begDate = getXmlGregorianCalendar(clientPolicy.getBegDate());
             endDate = getXmlGregorianCalendar(clientPolicy.getEndDate());
-            String regName = null;//TODO: вычислить по КЛАДР территории страхования insurer.getArea()
-            area = RbManager.get(RbManager.RbType.KLD116, CodeNameSystem.newInstance(insurer.getArea(), regName, "1.2.643.5.1.13.2.1.1.196"));
+            area = RbManager.get(RbManager.RbType.KLD116, CodeNameSystem.newInstance(insurer.getArea(), null, "1.2.643.5.1.13.2.1.1.635"));
             okato = insurer.getOkato();
             final RbPolicyType policyType = clientPolicy.getPolicyType();
             policyTypeName = policyType == null ? null : new CodeNameSystem(null, policyType.getName());

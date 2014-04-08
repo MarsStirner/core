@@ -92,22 +92,49 @@
         </birthCertificate>
         <omsInsurance>
             <insuranceCompany>
-                <code></code>
+                <code>12345</code>
                 <name>СМК "ИКАР"</name>
                 <codingSystem>MDN366</codingSystem>
             </insuranceCompany>
-            <insuranceCompanyOkato></insuranceCompanyOkato>
+            <insuranceCompanyOkato>9875</insuranceCompanyOkato>
             <policyType>
                 <name>ОМС Электронный полис единого образца</name>
             </policyType>
-            <policySer></policySer>
+            <policySer>111</policySer>
             <policyNum>5801989121913368</policyNum>
             <effectiveDate>2009-11-25+03:00</effectiveDate>
+            <expirationDate>2019-11-25+04:00</expirationDate>
             <insuranceCompanyKladr>
                 <code>7700000000000</code>
                 <codingSystem>KLD116</codingSystem>
             </insuranceCompanyKladr>
         </omsInsurance>
+        <dmsInsurance>
+            <insuranceCompany>
+                <code>12345</code>
+                <name>СМК "ИКАР"</name>
+                <codingSystem>MDN366</codingSystem>
+            </insuranceCompany>
+            <insuranceCompanyOkato>9875</insuranceCompanyOkato>
+            <policyType>
+                <name>ДМС</name>
+            </policyType>
+            <policySer>222</policySer>
+            <policyNum>3333333333333333</policyNum>
+            <effectiveDate>2013-10-27+04:00</effectiveDate>
+            <insuranceCompanyKladr>
+                <code>7700000000000</code>
+                <codingSystem>KLD116</codingSystem>
+            </insuranceCompanyKladr>
+        </dmsInsurance>
+        <bloodGroup>2</bloodGroup>
+        <rhesusFactor>true</rhesusFactor>
+        <contactInfo>
+            <homePhone>485279</homePhone>
+            <cellPhone>+7-999-888-77-66</cellPhone>
+            <workPhone>567890</workPhone>
+        </contactInfo>
+        <newBornData>M010120141</newBornData>
     </patient>
     <encounters>
         <encounter>
