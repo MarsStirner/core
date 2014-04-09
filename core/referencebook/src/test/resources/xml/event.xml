@@ -489,6 +489,23 @@
             </diagnosis>
             <quantity>1</quantity>
             <renderedOn>2014-01-21T23:39:40.000+04:00</renderedOn>
+            <renderedBy>
+                <code>1204</code>
+                <specialty>
+                    <code>26</code>
+                    <name>педиатр</name>
+                    <codingSystem>rbSpeciality</codingSystem>
+                </specialty>
+                <role>
+                    <code>3042</code>
+                    <name>Врач-педиатр</name>
+                    <codingSystem>rbPost</codingSystem>
+                </role>
+                <snils>036-746-442 73</snils>
+                <familyName>Власова</familyName>
+                <givenName>Светлана</givenName>
+                <middleName>Николаевна</middleName>
+            </renderedBy>
             <servCareType>
                 <code>3</code>
                 <name>Стационарная специализированная</name>
