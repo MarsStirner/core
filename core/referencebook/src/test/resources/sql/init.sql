@@ -34,6 +34,9 @@ INSERT IGNORE INTO `ActionProperty` (`id`, `createDatetime`, `createPerson_id`, 
 INSERT IGNORE INTO `ActionProperty` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `action_id`, `type_id`, `unit_id`, `norm`, `isAssigned`, `evaluation`, `version`) VALUES (3790913, '2014-01-22 10:40:36', 458, '2014-01-22 10:44:56', 458, 0, 793630, 1614, NULL, '', 0, NULL, 1);
 INSERT IGNORE INTO `ActionProperty` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `action_id`, `type_id`, `unit_id`, `norm`, `isAssigned`, `evaluation`, `version`) VALUES (3790905, '2014-01-22 10:40:36', 458, '2014-01-22 10:44:56', 458, 0, 793630, 1601, NULL, '', 0, NULL, 1);
 INSERT IGNORE INTO `ActionProperty` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `action_id`, `type_id`, `unit_id`, `norm`, `isAssigned`, `evaluation`, `version`) VALUES (3790911, '2014-01-22 10:40:36', 458, '2014-01-22 10:44:56', 458, 0, 793630, 1612, NULL, '', 0, NULL, 1);
+INSERT INTO `ActionProperty` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `action_id`, `type_id`, `unit_id`, `norm`, `isAssigned`, `evaluation`, `version`) VALUES (3790958, '2014-01-22 10:41:11', 458, '2014-01-22 15:44:15', 311, 0, 793635, 3911996, NULL, '', 0, NULL, 1);
+INSERT IGNORE INTO `ActionProperty_HospitalBedProfile` (`id`, `index`, `value`) VALUES (3790958, 0, '9');
+
 INSERT IGNORE INTO `ActionProperty_String` (`id`, `index`, `value`) VALUES (3790912, 0, 'по экстренным показаниям');
 INSERT IGNORE INTO `ActionProperty_String` (`id`, `index`, `value`) VALUES (3790908, 0, 'в течение 7-24 часов');
 INSERT IGNORE INTO `ActionProperty_String` (`id`, `index`, `value`) VALUES (3790913, 0, 'на руках');

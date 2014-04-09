@@ -138,7 +138,7 @@ public class ServiceInfo {
 
         final Integer medicalAidProfileId = service == null ? null : service.getMedicalAidProfileId();
         final RbMedicalAidProfile profile = medicalAidProfileId == null ? null : rbMedicalAidProfileBean.getProfileById(medicalAidProfileId);
-        this.serviceProfile = (profile == null || medicalAidProfileId == null) ? null : new CodeNameSystem(String.valueOf(medicalAidProfileId), profile.getName()); // 448  event.getEventType().getRbMedicalAidType();
+        this.serviceProfile = (profile == null || medicalAidProfileId == null) ? null : new CodeNameSystem(profile.getCode(), profile.getName());
     }
 
     /**

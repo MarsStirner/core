@@ -185,7 +185,6 @@
                     <code>Лаборатория биофизики</code>
                     <name>Лаборатория биофизики</name>
                 </finalDepartment>
-                <ward>Пансионат койка 100</ward>
                 <bedDayCount>1</bedDayCount>
                 <admittingDoctor>
                     <code>1204</code>
@@ -520,7 +519,7 @@
             </careProfile>
             <isChildProfile>true</isChildProfile>
             <bedProfile>
-                <name></name>
+                <name>Онкологические</name>
             </bedProfile>
             <servPaymentType>
                 <code>1</code>

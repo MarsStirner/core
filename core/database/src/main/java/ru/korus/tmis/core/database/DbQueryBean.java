@@ -32,7 +32,7 @@ public class DbQueryBean implements DbQueryBeanLocal {
                 "JOIN ActionProperty_HospitalBedProfile aphbp ON ap.id = aphbp.id " +
                 "JOIN rbHospitalBedProfile rbhbp ON aphbp.value = rbhbp.id " +
                 "WHERE a.id = ? AND apt.code = 'hospitalBedProfile'").setParameter(1, action.getId()).getResultList();
-        return !nameList.isEmpty() ? nameList.get(0) : "";
+        return !nameList.isEmpty() ? nameList.get(0) : null;
     }
 
     /**
