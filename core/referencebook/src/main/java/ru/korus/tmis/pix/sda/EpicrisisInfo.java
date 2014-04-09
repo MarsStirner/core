@@ -74,7 +74,7 @@ public class EpicrisisInfo {
         this.docName = action.getActionType().getName();
         this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
         this.id = String.valueOf(action.getId());
-        this.createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
+        this.createdPerson = EmployeeInfo.newInstance(action.getExecutor());
         this.endDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
         CodeNameSystem docType = null;
         //TODO: использовать ПУС!
