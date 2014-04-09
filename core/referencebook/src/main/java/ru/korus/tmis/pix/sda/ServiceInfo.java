@@ -82,8 +82,7 @@ public class ServiceInfo {
     public ServiceInfo(final Action action,
                        final Multimap<String, Action> actionsByTypeCode,
                        final DbQueryBeanLocal dbCustomQueryBean,
-                       final RbMedicalAidProfileBeanLocal rbMedicalAidProfileBean,
-                       final RbMedicalAidTypeBeanLocal rbMedicalAidTypeBeanLocal) {
+                       final RbMedicalAidProfileBeanLocal rbMedicalAidProfileBean) {
         this.id = String.valueOf(action.getId());
         this.createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
         this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
@@ -134,16 +133,12 @@ public class ServiceInfo {
         }
         this.diagnosis = diag;
 
-        final Integer medicalAidTypeId = action.getEvent().getEventType().getMedicalAidTypeId();
-        final RbMedicalAidType type = rbMedicalAidTypeBeanLocal.getProfileById(medicalAidTypeId);
-        this.servType = new CodeNameSystem(String.valueOf(medicalAidTypeId), type.getName()); // 444
+        final RbMedicalAidType type = action.getEvent().getEventType().getRbMedicalAidType();
+        this.servType = type == null ? null : new CodeNameSystem(type.getCode(), type.getName());
 
-           /*
-        rbMedicalAidProfile.id <= rbService.medicalAidProfile_id<=rbService.id <=ActionType.service_id<=ActionType.id<=Action.id
-         */
         final Integer medicalAidProfileId = service == null ? null : service.getMedicalAidProfileId();
         final RbMedicalAidProfile profile = medicalAidProfileId == null ? null : rbMedicalAidProfileBean.getProfileById(medicalAidProfileId);
-        this.serviceProfile = (profile == null || medicalAidProfileId == null) ? null : new CodeNameSystem(String.valueOf(medicalAidProfileId), profile.getName()); // 448  event.getEventType().getMedicalAidTypeId();
+        this.serviceProfile = (profile == null || medicalAidProfileId == null) ? null : new CodeNameSystem(String.valueOf(medicalAidProfileId), profile.getName()); // 448  event.getEventType().getRbMedicalAidType();
     }
 
     /**

@@ -221,12 +221,31 @@
                     <givenName>Светлана</givenName>
                     <middleName>Николаевна</middleName>
                 </attendingDoctor>
+                <admissionReferral>
+                    <name>Самостоятельно</name>
+                    <codingSystem>STR464</codingSystem>
+                </admissionReferral>
+                <admissionsThisYear>
+                    <code>1</code>
+                    <name>первично</name>
+                    <codingSystem>C42007</codingSystem>
+                </admissionsThisYear>
             </admissionInfo>
-            <encounterOutcome>
+            <encounterResult>
                 <code>1</code>
-                <name>выздоровление</name>
-                <codingSystem>1.2.643.5.1.13.2.1.1.357</codingSystem>
+                <name>Выздоровление</name>
+                <codingSystem>rbResult</codingSystem>
+            </encounterResult>
+            <encounterOutcome>
+                <code>102</code>
+                <name>Улучшение</name>
+                <codingSystem>rbAcheResult</codingSystem>
             </encounterOutcome>
+            <careType>
+                <code>3</code>
+                <name>Стационарная специализированная</name>
+            </careType>
+            <recordNumber>1111/22</recordNumber>
             <fromTime>2014-01-21T23:20:46.000+04:00</fromTime>
             <toTime>2014-01-22T15:45:33.000+04:00</toTime>
         </encounter>

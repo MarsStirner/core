@@ -140,6 +140,15 @@ public class SdaBuilder {
             encounter.setEncounterOutcome(getCodeAndName(eventInfo.getEncounterOutcome()));
         }
 
+        //Вид помощи
+        if (eventInfo.getCareType() != null) {
+            encounter.setCareType(getCodeAndName(eventInfo.getCareType()));
+        }
+
+        //Номер истории болезни (номер медицинской карты)
+        if (eventInfo.getExternalId() != null)  {
+            encounter.setRecordNumber(eventInfo.getExternalId());
+        }
         res.setEncounters(SDAFactory.createArrayOfencounterEncounter());
         res.getEncounters().getEncounter().add(encounter);
     }

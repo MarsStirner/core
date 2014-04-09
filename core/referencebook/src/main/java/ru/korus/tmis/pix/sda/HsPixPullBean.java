@@ -66,9 +66,6 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
     private RbMedicalAidProfileBeanLocal dbRbMedicalAidProfileBean;
 
     @EJB
-    private RbMedicalAidTypeBeanLocal dbRbMedicalAidTypeBeanLocal;
-
-    @EJB
     private DbQueryBeanLocal dbQueryBean;
 
     private EMRReceiverServiceSoap port = null;
@@ -233,7 +230,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
                 .setParameter("eventId", event.getId()).getResultList();
         List<ServiceInfo> res = new LinkedList<ServiceInfo>();
         for (Action action : services) {
-            res.add(new ServiceInfo(action, actionsByTypeCode, dbCustomQueryBean, dbRbMedicalAidProfileBean, dbRbMedicalAidTypeBeanLocal));
+            res.add(new ServiceInfo(action, actionsByTypeCode, dbCustomQueryBean, dbRbMedicalAidProfileBean));
         }
         return res;
     }

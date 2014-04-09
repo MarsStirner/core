@@ -74,6 +74,16 @@ public class EventInfo {
      */
     private final CodeNameSystem encounterOutcome;
 
+    /**
+     * Вид помощи
+     */
+    private final CodeNameSystem careType;
+
+    /**
+     * Номер истории болезни (номер медицинской карты)
+     */
+    private final String externalId;
+
     public EventInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
         final ru.korus.tmis.core.entity.model.UUID uuid = event.getUuid();
         this.eventUuid = uuid != null ? uuid.getUuid() : null;
@@ -103,8 +113,12 @@ public class EventInfo {
         encounterResult = event.getResult() == null ? null : RbManager.get(RbManager.RbType.rbResult,
                 CodeNameSystem.newInstance(event.getResult().getCode(), event.getResult().getName(), "1.2.643.5.1.13.2.1.1.123"));
         eventId = String.valueOf(event.getId());
-        //TODO: необходимо реализовать!!!!!!!!!!!!!!
-        encounterOutcome = CodeNameSystem.newInstance("1", "выздоровление", "1.2.643.5.1.13.2.1.1.357");
+        encounterOutcome = event.getAcheResult() == null ? null : RbManager.get(RbManager.RbType.rbAcheResult,
+                CodeNameSystem.newInstance(event.getAcheResult().getCode(), event.getAcheResult().getName(), "1.2.643.5.1.13.2.1.1.357"));
+
+        final RbMedicalAidType type = event.getEventType().getRbMedicalAidType();
+        this.careType = type == null ? null : new CodeNameSystem(type.getCode(), type.getName());
+        this.externalId = event.getExternalId();
     }
 
     private CodeNameSystem initOrgStructByPerson(Staff executor) {
@@ -143,20 +157,9 @@ public class EventInfo {
         encounterResult = null;
         eventId = null;
         encounterOutcome = null;
+        careType = null;
+        externalId = null;
     }
-
-    /**
-     * @param event
-     * @return
-     */
-   /* public static String getOrgShortName(Event event) {
-        if (event.getOrganisation() == null || isEmptyString(event.getOrganisation().getShortName())) {
-            return ORG_UNKNOWN;
-        } else {
-            String res = event.getOrganisation().getShortName();
-            return res.substring(0, Math.min(MAX_ORG_NAME_LENGHT, res.length()));
-        }
-    }*/
 
     private static boolean isEmptyString(String shortName) {
         return shortName == null || "".equals(shortName);
@@ -262,5 +265,13 @@ public class EventInfo {
 
     public CodeNameSystem getEncounterOutcome() {
         return encounterOutcome;
+    }
+
+    public CodeNameSystem getCareType() {
+        return careType;
+    }
+
+    public String getExternalId() {
+        return externalId;
     }
 }

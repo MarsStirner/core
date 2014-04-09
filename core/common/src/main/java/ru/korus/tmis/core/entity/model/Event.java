@@ -138,6 +138,10 @@ public class Event implements Serializable {
     @Column(name = "mesSpecification_id")
     private Integer mesSpecificationId;
 
+    @ManyToOne
+    @JoinColumn(name = "rbAcheResult_id", nullable = true)
+    private RbAcheResult acheResult;
+
     // @Column(name = "refusal")
     // private Integer refusal;
 
@@ -426,6 +430,23 @@ public class Event implements Serializable {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+
+    public RbAcheResult getAcheResult() {
+        return acheResult;
+    }
+
+    public void setAcheResult(RbAcheResult acheResult) {
+        this.acheResult = acheResult;
+    }
+
+    public Integer getPrimary() {
+        return isPrimary;
+    }
+
+    public void setPrimary(Integer primary) {
+        isPrimary = primary;
     }
 
     @Override

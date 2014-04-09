@@ -153,8 +153,9 @@ public class EventType implements Serializable {
     @Column(name = "showTime")
     private boolean showTime;
 
-    @Column(name = "medicalAidType_id")
-    private Integer medicalAidTypeId;
+    @ManyToOne
+    @JoinColumn(name = "medicalAidType_id")
+    private RbMedicalAidType rbMedicalAidType;
 
     @Column(name = "eventProfile_id")
     private Integer eventProfileId;
@@ -480,12 +481,12 @@ public class EventType implements Serializable {
         this.showTime = showTime;
     }
 
-    public Integer getMedicalAidTypeId() {
-        return medicalAidTypeId;
+    public RbMedicalAidType getRbMedicalAidType() {
+        return rbMedicalAidType;
     }
 
-    public void setMedicalAidTypeId(Integer medicalAidTypeId) {
-        this.medicalAidTypeId = medicalAidTypeId;
+    public void setRbMedicalAidType(RbMedicalAidType rbMedicalAidType) {
+        this.rbMedicalAidType = rbMedicalAidType;
     }
 
     public Integer getEventProfileId() {
