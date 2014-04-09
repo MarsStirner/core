@@ -41,6 +41,9 @@ class DbDiagnosisBean  extends DbDiagnosisBeanLocal
   @EJB
   var dbMKBBean: DbMkbBeanLocal = _
 
+  @EJB
+  var dbRbDiseaseCharacterBeanLocal: DbRbDiseaseCharacterBeanLocal  = _
+
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getDiagnosisById (id: Int) = {
     val result =  em.createQuery(DiagnosisByIdQuery, classOf[Diagnosis])
@@ -104,7 +107,7 @@ class DbDiagnosisBean  extends DbDiagnosisBeanLocal
         diagnosis.setModifyPerson(userData.getUser)
         diagnosis.setPatient(client)
         diagnosis.setDiagnosisType(diagnosisType)
-        diagnosis.setCharacterId(diseaseCharacterId)
+        diagnosis.setCharacter(if(diseaseCharacterId > 0) dbRbDiseaseCharacterBeanLocal.getDiseaseCharacterById(diseaseCharacterId) else null)
         diagnosis.setMkb(mkb)
         diagnosis.setPerson(userData.getUser)
         diagnosis.setEndDate(now)

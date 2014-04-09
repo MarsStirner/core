@@ -779,7 +779,7 @@ public class SdaBuilder {
         //Действует по
         if(disability.getEndDate() != null) {
             res = res == null ? SDAFactory.createDisability() : res;
-            res.setFromTime(disability.getEndDate());
+            res.setToTime(disability.getEndDate());
         }
 
         return res;
@@ -818,8 +818,10 @@ public class SdaBuilder {
             diagnosis.setDiagnosisType(getCodeAndName(diagInfo.getDiagType()));
         }
 
-        //Вид диагноза
-        //TODO ????
+        if (diagInfo.getDiagKind() != null) {
+            diagnosis = diagnosis == null ? SDAFactory.createDiagnosis() : diagnosis;
+            diagnosis.setDiagnosisKind(getCodeAndName(diagInfo.getDiagKind()));
+        }
 
         //Острое или хроническое заболевание
         if (diagInfo.getAcuteOrChronic() != null) {

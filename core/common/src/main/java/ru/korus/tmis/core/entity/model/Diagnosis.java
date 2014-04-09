@@ -67,9 +67,9 @@ public class Diagnosis implements Serializable {
     @JoinColumn(name = "diagnosisType_id")
     private RbDiagnosisType diagnosisType;
 
-    @Basic(optional = false)
-    @Column(name = "character_id")
-    private Integer characterId;                //TODO: Новая Энтити
+    @ManyToOne
+    @JoinColumn(name = "character_id")
+    private RbDiseaseCharacter character;
 
     @ManyToOne
     @JoinColumn(name = "dispanser_id")
@@ -169,12 +169,12 @@ public class Diagnosis implements Serializable {
         this.diagnosisType = diagnosisType;
     }
 
-    public Integer getCharacterId() {
-        return characterId;
+    public RbDiseaseCharacter getCharacter() {
+        return character;
     }
 
-    public void setCharacterId(Integer characterId) {
-        this.characterId = characterId;
+    public void setCharacter(RbDiseaseCharacter character) {
+        this.character = character;
     }
 
     public Integer getModId() {

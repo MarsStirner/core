@@ -85,7 +85,7 @@ public class AllergyInfo {
     public AllergyInfo(ClientAllergy clientAllergy) {
         XMLGregorianCalendar createDate = null;
         try {
-            createDate = Database.toGregorianCalendar(clientAllergy.getCreateDate());
+            createDate = Database.toGregorianCalendar(clientAllergy.getCreateDatetime());
         } catch (DatatypeConfigurationException e) {
         }
         this.createDate = createDate;
@@ -101,7 +101,7 @@ public class AllergyInfo {
         this.severityDescription = severityDescription;
         this.id = String.valueOf(clientAllergy.getId());
         this.createdPerson = EmployeeInfo.newInstance(clientAllergy.getCreatePerson());
-        this.note = clientAllergy.getNotes();
+        this.note = "".equals(clientAllergy.getNotes().trim()) ? null : clientAllergy.getNotes().trim();
     }
 
     public String getId() {

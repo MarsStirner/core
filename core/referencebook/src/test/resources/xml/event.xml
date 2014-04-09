@@ -250,6 +250,177 @@
             <toTime>2014-01-22T15:45:33.000+04:00</toTime>
         </encounter>
     </encounters>
+    <diagnoses>
+        <diagnosis>
+            <extId>342569</extId>
+            <encounterCode>841672</encounterCode>
+            <enteredBy>
+                <code>1204</code>
+                <specialty>
+                    <code>26</code>
+                    <name>педиатр</name>
+                    <codingSystem>rbSpeciality</codingSystem>
+                </specialty>
+                <role>
+                    <code>3042</code>
+                    <name>Врач-педиатр</name>
+                    <codingSystem>rbPost</codingSystem>
+                </role>
+                <snils>036-746-442 73</snils>
+                <familyName>Власова</familyName>
+                <givenName>Светлана</givenName>
+                <middleName>Николаевна</middleName>
+            </enteredBy>
+            <enteredOn>2014-01-22T15:43:14.000+04:00</enteredOn>
+            <diagnosis>
+                <code>J06.9</code>
+                <name>Острая инфекция верхних дыхательных путей неуточненная(заключительный)</name>
+                <codingSystem>MKB308</codingSystem>
+            </diagnosis>
+            <diagnosisType>
+                <code>FINAL</code>
+                <name>заключительный</name>
+            </diagnosisType>
+            <acuteOrChronic>ACUTE</acuteOrChronic>
+            <dispensarySupervision>
+                <startDate>2014-01-21+04:00</startDate>
+                <startedBy>
+                    <code>1204</code>
+                    <specialty>
+                        <code>26</code>
+                        <name>педиатр</name>
+                        <codingSystem>rbSpeciality</codingSystem>
+                    </specialty>
+                    <role>
+                        <code>3042</code>
+                        <name>Врач-педиатр</name>
+                        <codingSystem>rbPost</codingSystem>
+                    </role>
+                    <snils>036-746-442 73</snils>
+                    <familyName>Власова</familyName>
+                    <givenName>Светлана</givenName>
+                    <middleName>Николаевна</middleName>
+                </startedBy>
+            </dispensarySupervision>
+            <traumaType>
+                <code>02</code>
+                <name>Произв. на строительстве</name>
+                <codingSystem>rbTraumaType</codingSystem>
+            </traumaType>
+        </diagnosis>
+        <diagnosis>
+            <extId>343841</extId>
+            <encounterCode>841672</encounterCode>
+            <enteredBy>
+                <code>1204</code>
+                <specialty>
+                    <code>26</code>
+                    <name>педиатр</name>
+                    <codingSystem>rbSpeciality</codingSystem>
+                </specialty>
+                <role>
+                    <code>3042</code>
+                    <name>Врач-педиатр</name>
+                    <codingSystem>rbPost</codingSystem>
+                </role>
+                <snils>036-746-442 73</snils>
+                <familyName>Власова</familyName>
+                <givenName>Светлана</givenName>
+                <middleName>Николаевна</middleName>
+            </enteredBy>
+            <enteredOn>2014-01-23T14:05:03.000+04:00</enteredOn>
+            <diagnosis>
+                <code>T45.0</code>
+                <name>Противоаллергическими и противорвотными средствами(сопутствующий)</name>
+                <codingSystem>MKB308</codingSystem>
+            </diagnosis>
+            <diagnosisKind>
+                <code>SEC</code>
+                <name>сопутствующий</name>
+            </diagnosisKind>
+            <acuteOrChronic>CHRONIC</acuteOrChronic>
+            <dispensarySupervision>
+                <stopDate>2014-01-21+04:00</stopDate>
+                <stoppedBy>
+                    <code>1204</code>
+                    <specialty>
+                        <code>26</code>
+                        <name>педиатр</name>
+                        <codingSystem>rbSpeciality</codingSystem>
+                    </specialty>
+                    <role>
+                        <code>3042</code>
+                        <name>Врач-педиатр</name>
+                        <codingSystem>rbPost</codingSystem>
+                    </role>
+                    <snils>036-746-442 73</snils>
+                    <familyName>Власова</familyName>
+                    <givenName>Светлана</givenName>
+                    <middleName>Николаевна</middleName>
+                </stoppedBy>
+            </dispensarySupervision>
+            <traumaType>
+                <code>03</code>
+                <name>Произв. дорожно-транспортная</name>
+                <codingSystem>rbTraumaType</codingSystem>
+            </traumaType>
+        </diagnosis>
+    </diagnoses>
+    <disabilities>
+        <disability>
+            <extId>60</extId>
+            <enteredOn>2013-02-01T14:51:12.000+04:00</enteredOn>
+            <disabilityGroup>2</disabilityGroup>
+            <isDisabledChild>false</isDisabledChild>
+            <isFirstTime>false</isFirstTime>
+            <fromTime>2000-01-25T00:00:00.000+03:00</fromTime>
+            <toTime>2014-01-13T00:00:00.000+04:00</toTime>
+        </disability>
+        <disability>
+            <extId>61</extId>
+            <enteredOn>2013-02-01T14:51:12.000+04:00</enteredOn>
+            <isDisabledChild>true</isDisabledChild>
+            <isFirstTime>false</isFirstTime>
+            <fromTime>2001-01-25T00:00:00.000+03:00</fromTime>
+            <toTime>2015-01-13T00:00:00.000+04:00</toTime>
+        </disability>
+        <disability>
+            <extId>62</extId>
+            <enteredOn>2013-02-01T14:51:12.000+04:00</enteredOn>
+            <isDisabledChild>false</isDisabledChild>
+            <isFirstTime>true</isFirstTime>
+            <fromTime>2002-01-25T00:00:00.000+03:00</fromTime>
+            <toTime>2016-01-13T00:00:00.000+04:00</toTime>
+        </disability>
+    </disabilities>
+    <allergies>
+        <allergy>
+            <extId>2</extId>
+            <encounterCode>841672</encounterCode>
+            <enteredBy>
+                <code>1204</code>
+                <specialty>
+                    <code>26</code>
+                    <name>педиатр</name>
+                    <codingSystem>rbSpeciality</codingSystem>
+                </specialty>
+                <role>
+                    <code>3042</code>
+                    <name>Врач-педиатр</name>
+                    <codingSystem>rbPost</codingSystem>
+                </role>
+                <snils>036-746-442 73</snils>
+                <familyName>Власова</familyName>
+                <givenName>Светлана</givenName>
+                <middleName>Николаевна</middleName>
+            </enteredBy>
+            <enteredOn>2012-12-05T10:47:12.000+04:00</enteredOn>
+            <allergy>
+                <name>цитрусовые</name>
+            </allergy>
+            <comments>test note</comments>
+        </allergy>
+    </allergies>
     <services>
         <service>
             <extId>793630</extId>
@@ -277,6 +448,11 @@
                 <name>Услуги: в Приемном отделении</name>
                 <codingSystem>SST365</codingSystem>
             </service>
+            <diagnosis>
+                <code>J06.9</code>
+                <name>Острая инфекция верхних дыхательных путей неуточненная(заключительный)</name>
+                <codingSystem>MKB308</codingSystem>
+            </diagnosis>
             <quantity>1</quantity>
             <renderedOn>2014-01-21T23:39:40.000+04:00</renderedOn>
             <servCareType>

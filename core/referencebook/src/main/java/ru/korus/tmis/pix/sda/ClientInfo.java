@@ -441,7 +441,8 @@ public class ClientInfo {
 
     private boolean initIsFromeSocGroup(Patient client, String name) {
         for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
-            if(name.equals(clientSocStatus.getSocStatusType().getName())) {
+            final RbSocStatusType socStatusType = clientSocStatus.getSocStatusType();
+            if(socStatusType != null && name.equals(socStatusType.getName())) {
                 return true;
             }
         }

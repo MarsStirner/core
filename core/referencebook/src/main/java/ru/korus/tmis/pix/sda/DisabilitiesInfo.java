@@ -3,6 +3,8 @@ package ru.korus.tmis.pix.sda;
 import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 
 import javax.xml.datatype.XMLGregorianCalendar;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -53,7 +55,12 @@ public class DisabilitiesInfo {
         endDate = ClientInfo.getXmlGregorianCalendar(clientSocStatus.getEndDate());
         final String code = clientSocStatus.getSocStatusType().getCode();
         if (code != null) {
-            group = code.equals("081") ? "1" : (code.equals("082") ? "2" : (code.equals("083") ? "3" : null));
+            Map<String, String> mapGroup = new HashMap<String, String>() {{
+                put("081","1");
+                put("082","2");
+                put("083","3");
+            }};
+            group = mapGroup.get(code);
             isChild = code.equals("084");
             isFirstTime = code.equals("088");
         } else {

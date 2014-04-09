@@ -7,6 +7,9 @@ import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
 
+import java.util.HashMap;
+import java.util.Map;
+
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -29,16 +32,6 @@ public class DiagnosisInfo {
      * Код МКБ
      */
     private final CodeNameSystem mkb;
-
-    /**
-     * Код типа диагноза
-     */
-    private final String diagTypeCode;
-
-    /**
-     * Наименование типа диагноза
-     */
-    private final String diagTypeName;
 
     /**
      * Идентификатор в МИС
@@ -75,6 +68,11 @@ public class DiagnosisInfo {
      */
     private final Long countAdmissionsThisYear;
 
+    /**
+     * Вид диагноза
+     */
+    private final CodeNameSystem diagKind;
+
 
     public DiagnosisInfo(final Event event, final Diagnostic diagnostic, final DbQueryBeanLocal dbQueryBean) {
         final Diagnosis diagnosis = diagnostic.getDiagnosis();
@@ -86,27 +84,41 @@ public class DiagnosisInfo {
         this.createDate = createDate;
         this.mkb = toMKB308Diagnosis(diagnostic);
         RbDiagnosisType dt = diagnosis.getDiagnosisType();
-        String diagTypeName = null;
-        String diagTypeCode = null;
-        if (dt != null) {
-            diagTypeCode = "".equals(dt.getCode()) ? null : dt.getCode();
-            diagTypeName = "".equals(dt.getName()) ? null : dt.getName();
-        }
-        diagType = new CodeNameSystem(diagTypeCode, diagTypeName);
-        this.diagTypeName = diagTypeName;
-        this.diagTypeCode = diagTypeCode;
+        diagType = (dt == null || dt.getFlatCode() == null) ? null : toHSDiagType(dt.getFlatCode());
+        diagKind = (dt == null || dt.getFlatCode() == null) ? null : toHSKindType(dt.getFlatCode());
         this.diagId = String.valueOf(diagnosis.getId());
         final Staff person = diagnosis.getPerson();
         this.enteredPerson = EmployeeInfo.newInstance(person);
-        this.acuteOrChronic = diagnosis.getCharacterId() == 1; //TODO: add entity for rbDiseaseCharacter!
+        final RbDiseaseCharacter character = diagnosis.getCharacter();
+        this.acuteOrChronic = character == null ? false : "1".equals(character.getCode());
         dispensarySuperVision = new DispensaryInfo(diagnostic);
         final RbTraumaType traumaTypeDb = diagnostic.getTraumaType();
         traumaType = traumaTypeDb == null ? null : RbManager.get(RbManager.RbType.rbTraumaType,
                 CodeNameSystem.newInstance(traumaTypeDb.getCode(), traumaTypeDb.getName(), "1.2.643.5.1.13.2.1.1.105"));
 
         //diagnostic.getEvent().getEventType().getRequestType().getCode()
-        countAdmissionsThisYear = dbQueryBean.countAdmissionsThisYear(event, diagnosis); // 311 Рассчитать кол-во стационарных Event'ов,  с одинаковым значением Diagnosis.MKB
+        countAdmissionsThisYear = null;//dbQueryBean.countAdmissionsThisYear(event, diagnosis); // 311 Рассчитать кол-во стационарных Event'ов,  с одинаковым значением Diagnosis.MKB
     }
+
+    private CodeNameSystem toHSDiagType(String diagTypeCode) {
+        Map<String, CodeNameSystem> mapFlatCode = new HashMap<String, CodeNameSystem>(){{
+            put("finalMkb", CodeNameSystem.newInstance("FINAL", "заключительный", null));
+            put("diagRecievedMkb", CodeNameSystem.newInstance("WAY", "направившего учреждения", null));
+            //put("mainDiagMkbPat", CodeNameSystem.newInstance("DEAD", "Непосредственная причина смерти", null));
+            //put("mainDiagMkbPat", CodeNameSystem.newInstance("IL", "Заболевание, вызвавшее смерть", null));
+            put("mainDiagMkbPat", CodeNameSystem.newInstance("DPA", "Патологоанатомический диагноз", null));
+        }};
+        return mapFlatCode.get(diagTypeCode);
+    }
+
+    private CodeNameSystem toHSKindType(String diagTypeCode) {
+        Map<String, CodeNameSystem> mapFlatCode = new HashMap<String, CodeNameSystem>(){{
+            put("diagComplMkb", CodeNameSystem.newInstance("DIFF", "осложнение основного", null));
+            put("assocDiagMkb", CodeNameSystem.newInstance("SEC", "сопутствующий", null));
+        }};
+        return mapFlatCode.get(diagTypeCode);
+    }
+
 
     static public CodeNameSystem toMKB308Diagnosis(Diagnostic diagnostic) {
         final Diagnosis diagnosis = diagnostic.getDiagnosis();
@@ -130,15 +142,6 @@ public class DiagnosisInfo {
      */
     public CodeNameSystem getMkb() {
         return mkb;
-    }
-
-
-    public String getDiagTypeCode() {
-        return diagTypeCode;
-    }
-
-    public String getDiagTypeName() {
-        return diagTypeName;
     }
 
 
@@ -168,5 +171,9 @@ public class DiagnosisInfo {
 
     public Long getCountAdmissionsThisYear() {
         return countAdmissionsThisYear;
+    }
+
+    public CodeNameSystem getDiagKind() {
+        return diagKind;
     }
 }
