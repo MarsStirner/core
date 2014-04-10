@@ -20,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="error" type="{}Error" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="container" type="{}Container" minOccurs="0"/>
+ *         &lt;element name="container" type="{}CDAContainer" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -38,7 +38,7 @@ public class RetrieveDocumentResponse {
 
     @XmlElement(nillable = true)
     protected List<Error> error;
-    protected Container container;
+    protected CDAContainer container;
 
     /**
      * Gets the value of the error property.
@@ -74,10 +74,10 @@ public class RetrieveDocumentResponse {
      * 
      * @return
      *     possible object is
-     *     {@link Container }
+     *     {@link CDAContainer }
      *     
      */
-    public Container getContainer() {
+    public CDAContainer getContainer() {
         return container;
     }
 
@@ -86,10 +86,10 @@ public class RetrieveDocumentResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link Container }
+     *     {@link CDAContainer }
      *     
      */
-    public void setContainer(Container value) {
+    public void setContainer(CDAContainer value) {
         this.container = value;
     }
 

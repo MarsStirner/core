@@ -36,6 +36,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="size" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
  *         &lt;element name="legalAuthenticator" type="{}Employee" minOccurs="0"/>
  *         &lt;element name="description" type="{}String" minOccurs="0"/>
+ *         &lt;element name="enteredAt" type="{}CodeAndName" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -61,7 +62,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "documentSignatureType",
     "size",
     "legalAuthenticator",
-    "description"
+    "description",
+    "enteredAt"
 })
 public class IEMKDocument {
 
@@ -84,6 +86,7 @@ public class IEMKDocument {
     protected Long size;
     protected Employee legalAuthenticator;
     protected String description;
+    protected CodeAndName enteredAt;
 
     /**
      * Gets the value of the facilityCode property.
@@ -467,6 +470,30 @@ public class IEMKDocument {
      */
     public void setDescription(String value) {
         this.description = value;
+    }
+
+    /**
+     * Gets the value of the enteredAt property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getEnteredAt() {
+        return enteredAt;
+    }
+
+    /**
+     * Sets the value of the enteredAt property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setEnteredAt(CodeAndName value) {
+        this.enteredAt = value;
     }
 
 }

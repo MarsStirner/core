@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ArrayOfdiagnosisDiagnosis complex type.
+ * <p>Java class for ArrayOfencounterCDAEncounter complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ArrayOfdiagnosisDiagnosis">
+ * &lt;complexType name="ArrayOfencounterCDAEncounter">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="diagnosis" type="{}Diagnosis" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="encounter" type="{}CDAEncounter" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,41 +29,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfdiagnosisDiagnosis", propOrder = {
-    "diagnosis"
+@XmlType(name = "ArrayOfencounterCDAEncounter", propOrder = {
+    "encounter"
 })
-public class ArrayOfdiagnosisDiagnosis {
+public class ArrayOfencounterCDAEncounter {
 
     @XmlElement(nillable = true)
-    protected List<Diagnosis> diagnosis;
+    protected List<CDAEncounter> encounter;
 
     /**
-     * Gets the value of the diagnosis property.
+     * Gets the value of the encounter property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the diagnosis property.
+     * This is why there is not a <CODE>set</CODE> method for the encounter property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getDiagnosis().add(newItem);
+     *    getEncounter().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link Diagnosis }
+     * {@link CDAEncounter }
      * 
      * 
      */
-    public List<Diagnosis> getDiagnosis() {
-        if (diagnosis == null) {
-            diagnosis = new ArrayList<Diagnosis>();
+    public List<CDAEncounter> getEncounter() {
+        if (encounter == null) {
+            encounter = new ArrayList<CDAEncounter>();
         }
-        return this.diagnosis;
+        return this.encounter;
     }
 
 }

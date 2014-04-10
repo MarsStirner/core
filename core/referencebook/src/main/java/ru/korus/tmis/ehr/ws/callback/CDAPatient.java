@@ -12,14 +12,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Пациент
+ * Данные пациента, полученные в рамках СЭМД от ИЭМК
  * 
- * <p>Java class for Patient complex type.
+ * <p>Java class for CDAPatient complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Patient">
+ * &lt;complexType name="CDAPatient">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -29,6 +29,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="familyName" type="{}String" minOccurs="0"/>
  *         &lt;element name="givenName" type="{}String" minOccurs="0"/>
  *         &lt;element name="middleName" type="{}String" minOccurs="0"/>
+ *         &lt;element name="prevNames" type="{}ArrayOfNameName" minOccurs="0"/>
  *         &lt;element name="dob" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
  *         &lt;element name="birthAddress" type="{}Address" minOccurs="0"/>
  *         &lt;element name="gender" minOccurs="0">
@@ -42,7 +43,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="legalAddress" type="{}Address" minOccurs="0"/>
  *         &lt;element name="actualAddress" type="{}Address" minOccurs="0"/>
  *         &lt;element name="postalAddress" type="{}Address" minOccurs="0"/>
- *         &lt;element name="prevAddresses" type="{}ArrayOfaddressHistoryEntry" minOccurs="0"/>
+ *         &lt;element name="prevAddresses" type="{}ArrayOfaddressAddress" minOccurs="0"/>
  *         &lt;element name="dwellingType" minOccurs="0">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -94,13 +95,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Patient", propOrder = {
+@XmlType(name = "CDAPatient", propOrder = {
     "baseClinic",
     "snils",
     "enp",
     "familyName",
     "givenName",
     "middleName",
+    "prevNames",
     "dob",
     "birthAddress",
     "gender",
@@ -135,7 +137,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "children",
     "levelOfEducation"
 })
-public class Patient {
+public class CDAPatient {
 
     protected CodeAndName baseClinic;
     protected String snils;
@@ -143,6 +145,7 @@ public class Patient {
     protected String familyName;
     protected String givenName;
     protected String middleName;
+    protected ArrayOfNameName prevNames;
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar dob;
     protected Address birthAddress;
@@ -150,7 +153,7 @@ public class Patient {
     protected Address legalAddress;
     protected Address actualAddress;
     protected Address postalAddress;
-    protected ArrayOfaddressHistoryEntry prevAddresses;
+    protected ArrayOfaddressAddress prevAddresses;
     protected String dwellingType;
     @XmlElement(nillable = true)
     protected List<Privilege> privilege;
@@ -327,6 +330,30 @@ public class Patient {
     }
 
     /**
+     * Gets the value of the prevNames property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ArrayOfNameName }
+     *     
+     */
+    public ArrayOfNameName getPrevNames() {
+        return prevNames;
+    }
+
+    /**
+     * Sets the value of the prevNames property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ArrayOfNameName }
+     *     
+     */
+    public void setPrevNames(ArrayOfNameName value) {
+        this.prevNames = value;
+    }
+
+    /**
      * Gets the value of the dob property.
      * 
      * @return
@@ -475,10 +502,10 @@ public class Patient {
      * 
      * @return
      *     possible object is
-     *     {@link ArrayOfaddressHistoryEntry }
+     *     {@link ArrayOfaddressAddress }
      *     
      */
-    public ArrayOfaddressHistoryEntry getPrevAddresses() {
+    public ArrayOfaddressAddress getPrevAddresses() {
         return prevAddresses;
     }
 
@@ -487,10 +514,10 @@ public class Patient {
      * 
      * @param value
      *     allowed object is
-     *     {@link ArrayOfaddressHistoryEntry }
+     *     {@link ArrayOfaddressAddress }
      *     
      */
-    public void setPrevAddresses(ArrayOfaddressHistoryEntry value) {
+    public void setPrevAddresses(ArrayOfaddressAddress value) {
         this.prevAddresses = value;
     }
 

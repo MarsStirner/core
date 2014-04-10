@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ArrayOfmesCodeString complex type.
+ * <p>Java class for ArrayOfNameName complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ArrayOfmesCodeString">
+ * &lt;complexType name="ArrayOfNameName">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="mesCode" type="{}String" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="Name" type="{}Name" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,41 +29,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfmesCodeString", propOrder = {
-    "mesCode"
+@XmlType(name = "ArrayOfNameName", propOrder = {
+    "name"
 })
-public class ArrayOfmesCodeString {
+public class ArrayOfNameName {
 
-    @XmlElement(nillable = true)
-    protected List<String> mesCode;
+    @XmlElement(name = "Name", nillable = true)
+    protected List<Name> name;
 
     /**
-     * Gets the value of the mesCode property.
+     * Gets the value of the name property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the mesCode property.
+     * This is why there is not a <CODE>set</CODE> method for the name property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getMesCode().add(newItem);
+     *    getName().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link String }
+     * {@link Name }
      * 
      * 
      */
-    public List<String> getMesCode() {
-        if (mesCode == null) {
-            mesCode = new ArrayList<String>();
+    public List<Name> getName() {
+        if (name == null) {
+            name = new ArrayList<Name>();
         }
-        return this.mesCode;
+        return this.name;
     }
 
 }

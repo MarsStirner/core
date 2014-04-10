@@ -26,19 +26,18 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "BaseSerial")
 @XmlSeeAlso({
-    CodeAndName.class,
-    IdentityDocument.class,
-    Trustee.class,
-    ContainerDocument.class,
-    PrivilegeDocument.class,
-    ContactInfo.class,
     Privilege.class,
     Occupation.class,
     HistoryEntry.class,
-    DispensarySupervision.class,
+    IdentityDocument.class,
+    Trustee.class,
     Admission.class,
     Insurance.class,
-    Address.class
+    Name.class,
+    CodeAndName.class,
+    PrivilegeDocument.class,
+    Address.class,
+    ContactInfo.class
 })
 public class BaseSerial {
 

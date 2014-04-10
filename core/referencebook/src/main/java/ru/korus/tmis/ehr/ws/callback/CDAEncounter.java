@@ -9,36 +9,34 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Документ временной нетрудоспособности
- * 
- * <p>Java class for SickLeaveDocument complex type.
+ * <p>Java class for CDAEncounter complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="SickLeaveDocument">
+ * &lt;complexType name="CDAEncounter">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="extId" type="{}String" minOccurs="0"/>
- *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
  *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="docSer" type="{}String" minOccurs="0"/>
- *         &lt;element name="docNum" type="{}String" minOccurs="0"/>
- *         &lt;element name="reason" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="diagnosis" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="attendantGender" minOccurs="0">
+ *         &lt;element name="enteredAt" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="encType" minOccurs="0">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
- *               &lt;enumeration value="M"/>
- *               &lt;enumeration value="F"/>
+ *               &lt;enumeration value="I"/>
+ *               &lt;enumeration value="O"/>
  *             &lt;/restriction>
  *           &lt;/simpleType>
  *         &lt;/element>
- *         &lt;element name="attendantAge" type="{}String" minOccurs="0"/>
+ *         &lt;element name="admissionInfo" type="{}Admission" minOccurs="0"/>
+ *         &lt;element name="encounterResult" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="encounterOutcome" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="recordNumber" type="{}String" minOccurs="0"/>
  *         &lt;element name="fromTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="toTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
+ *         &lt;element name="statusCode" type="{}String" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -48,37 +46,37 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "SickLeaveDocument", propOrder = {
+@XmlType(name = "CDAEncounter", propOrder = {
     "extId",
-    "encounterCode",
     "enteredBy",
     "enteredOn",
-    "docSer",
-    "docNum",
-    "reason",
-    "diagnosis",
-    "attendantGender",
-    "attendantAge",
+    "enteredAt",
+    "encType",
+    "admissionInfo",
+    "encounterResult",
+    "encounterOutcome",
+    "recordNumber",
     "fromTime",
-    "toTime"
+    "toTime",
+    "statusCode"
 })
-public class SickLeaveDocument {
+public class CDAEncounter {
 
     protected String extId;
-    protected String encounterCode;
     protected Employee enteredBy;
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar enteredOn;
-    protected String docSer;
-    protected String docNum;
-    protected CodeAndName reason;
-    protected CodeAndName diagnosis;
-    protected String attendantGender;
-    protected String attendantAge;
+    protected CodeAndName enteredAt;
+    protected String encType;
+    protected Admission admissionInfo;
+    protected CodeAndName encounterResult;
+    protected CodeAndName encounterOutcome;
+    protected String recordNumber;
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar fromTime;
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar toTime;
+    protected String statusCode;
 
     /**
      * Gets the value of the extId property.
@@ -102,30 +100,6 @@ public class SickLeaveDocument {
      */
     public void setExtId(String value) {
         this.extId = value;
-    }
-
-    /**
-     * Gets the value of the encounterCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getEncounterCode() {
-        return encounterCode;
-    }
-
-    /**
-     * Sets the value of the encounterCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setEncounterCode(String value) {
-        this.encounterCode = value;
     }
 
     /**
@@ -177,147 +151,147 @@ public class SickLeaveDocument {
     }
 
     /**
-     * Gets the value of the docSer property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDocSer() {
-        return docSer;
-    }
-
-    /**
-     * Sets the value of the docSer property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDocSer(String value) {
-        this.docSer = value;
-    }
-
-    /**
-     * Gets the value of the docNum property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDocNum() {
-        return docNum;
-    }
-
-    /**
-     * Sets the value of the docNum property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDocNum(String value) {
-        this.docNum = value;
-    }
-
-    /**
-     * Gets the value of the reason property.
+     * Gets the value of the enteredAt property.
      * 
      * @return
      *     possible object is
      *     {@link CodeAndName }
      *     
      */
-    public CodeAndName getReason() {
-        return reason;
+    public CodeAndName getEnteredAt() {
+        return enteredAt;
     }
 
     /**
-     * Sets the value of the reason property.
+     * Sets the value of the enteredAt property.
      * 
      * @param value
      *     allowed object is
      *     {@link CodeAndName }
      *     
      */
-    public void setReason(CodeAndName value) {
-        this.reason = value;
+    public void setEnteredAt(CodeAndName value) {
+        this.enteredAt = value;
     }
 
     /**
-     * Gets the value of the diagnosis property.
+     * Gets the value of the encType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getEncType() {
+        return encType;
+    }
+
+    /**
+     * Sets the value of the encType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setEncType(String value) {
+        this.encType = value;
+    }
+
+    /**
+     * Gets the value of the admissionInfo property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Admission }
+     *     
+     */
+    public Admission getAdmissionInfo() {
+        return admissionInfo;
+    }
+
+    /**
+     * Sets the value of the admissionInfo property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Admission }
+     *     
+     */
+    public void setAdmissionInfo(Admission value) {
+        this.admissionInfo = value;
+    }
+
+    /**
+     * Gets the value of the encounterResult property.
      * 
      * @return
      *     possible object is
      *     {@link CodeAndName }
      *     
      */
-    public CodeAndName getDiagnosis() {
-        return diagnosis;
+    public CodeAndName getEncounterResult() {
+        return encounterResult;
     }
 
     /**
-     * Sets the value of the diagnosis property.
+     * Sets the value of the encounterResult property.
      * 
      * @param value
      *     allowed object is
      *     {@link CodeAndName }
      *     
      */
-    public void setDiagnosis(CodeAndName value) {
-        this.diagnosis = value;
+    public void setEncounterResult(CodeAndName value) {
+        this.encounterResult = value;
     }
 
     /**
-     * Gets the value of the attendantGender property.
+     * Gets the value of the encounterOutcome property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public CodeAndName getEncounterOutcome() {
+        return encounterOutcome;
+    }
+
+    /**
+     * Sets the value of the encounterOutcome property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CodeAndName }
+     *     
+     */
+    public void setEncounterOutcome(CodeAndName value) {
+        this.encounterOutcome = value;
+    }
+
+    /**
+     * Gets the value of the recordNumber property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getAttendantGender() {
-        return attendantGender;
+    public String getRecordNumber() {
+        return recordNumber;
     }
 
     /**
-     * Sets the value of the attendantGender property.
+     * Sets the value of the recordNumber property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setAttendantGender(String value) {
-        this.attendantGender = value;
-    }
-
-    /**
-     * Gets the value of the attendantAge property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getAttendantAge() {
-        return attendantAge;
-    }
-
-    /**
-     * Sets the value of the attendantAge property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setAttendantAge(String value) {
-        this.attendantAge = value;
+    public void setRecordNumber(String value) {
+        this.recordNumber = value;
     }
 
     /**
@@ -366,6 +340,30 @@ public class SickLeaveDocument {
      */
     public void setToTime(XMLGregorianCalendar value) {
         this.toTime = value;
+    }
+
+    /**
+     * Gets the value of the statusCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getStatusCode() {
+        return statusCode;
+    }
+
+    /**
+     * Sets the value of the statusCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setStatusCode(String value) {
+        this.statusCode = value;
     }
 
 }

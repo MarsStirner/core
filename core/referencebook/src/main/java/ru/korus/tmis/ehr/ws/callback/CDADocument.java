@@ -9,14 +9,12 @@ import javax.xml.datatype.XMLGregorianCalendar;
 
 
 /**
- * Аллергия и лекарственная непереносимость
- * 
- * <p>Java class for Allergy complex type.
+ * <p>Java class for CDADocument complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="Allergy">
+ * &lt;complexType name="CDADocument">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
@@ -24,10 +22,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
  *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="allergy" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="reaction" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="comments" type="{}String" minOccurs="0"/>
- *         &lt;element name="onsetTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
+ *         &lt;element name="enteredAt" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="docType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="docNum" type="{}String" minOccurs="0"/>
+ *         &lt;element name="docDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
+ *         &lt;element name="docName" type="{}String" minOccurs="0"/>
+ *         &lt;element name="fileType" type="{}String" minOccurs="0"/>
+ *         &lt;element name="stream" type="{http://www.w3.org/2001/XMLSchema}base64Binary" minOccurs="0"/>
+ *         &lt;element name="versionNumber" type="{}String" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -37,28 +39,36 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "Allergy", propOrder = {
+@XmlType(name = "CDADocument", propOrder = {
     "extId",
     "encounterCode",
     "enteredBy",
     "enteredOn",
-    "allergy",
-    "reaction",
-    "comments",
-    "onsetTime"
+    "enteredAt",
+    "docType",
+    "docNum",
+    "docDate",
+    "docName",
+    "fileType",
+    "stream",
+    "versionNumber"
 })
-public class Allergy {
+public class CDADocument {
 
     protected String extId;
     protected String encounterCode;
     protected Employee enteredBy;
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar enteredOn;
-    protected CodeAndName allergy;
-    protected CodeAndName reaction;
-    protected String comments;
-    @XmlSchemaType(name = "dateTime")
-    protected XMLGregorianCalendar onsetTime;
+    protected CodeAndName enteredAt;
+    protected CodeAndName docType;
+    protected String docNum;
+    @XmlSchemaType(name = "date")
+    protected XMLGregorianCalendar docDate;
+    protected String docName;
+    protected String fileType;
+    protected byte[] stream;
+    protected String versionNumber;
 
     /**
      * Gets the value of the extId property.
@@ -157,99 +167,193 @@ public class Allergy {
     }
 
     /**
-     * Gets the value of the allergy property.
+     * Gets the value of the enteredAt property.
      * 
      * @return
      *     possible object is
      *     {@link CodeAndName }
      *     
      */
-    public CodeAndName getAllergy() {
-        return allergy;
+    public CodeAndName getEnteredAt() {
+        return enteredAt;
     }
 
     /**
-     * Sets the value of the allergy property.
+     * Sets the value of the enteredAt property.
      * 
      * @param value
      *     allowed object is
      *     {@link CodeAndName }
      *     
      */
-    public void setAllergy(CodeAndName value) {
-        this.allergy = value;
+    public void setEnteredAt(CodeAndName value) {
+        this.enteredAt = value;
     }
 
     /**
-     * Gets the value of the reaction property.
+     * Gets the value of the docType property.
      * 
      * @return
      *     possible object is
      *     {@link CodeAndName }
      *     
      */
-    public CodeAndName getReaction() {
-        return reaction;
+    public CodeAndName getDocType() {
+        return docType;
     }
 
     /**
-     * Sets the value of the reaction property.
+     * Sets the value of the docType property.
      * 
      * @param value
      *     allowed object is
      *     {@link CodeAndName }
      *     
      */
-    public void setReaction(CodeAndName value) {
-        this.reaction = value;
+    public void setDocType(CodeAndName value) {
+        this.docType = value;
     }
 
     /**
-     * Gets the value of the comments property.
+     * Gets the value of the docNum property.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getComments() {
-        return comments;
+    public String getDocNum() {
+        return docNum;
     }
 
     /**
-     * Sets the value of the comments property.
+     * Sets the value of the docNum property.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setComments(String value) {
-        this.comments = value;
+    public void setDocNum(String value) {
+        this.docNum = value;
     }
 
     /**
-     * Gets the value of the onsetTime property.
+     * Gets the value of the docDate property.
      * 
      * @return
      *     possible object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public XMLGregorianCalendar getOnsetTime() {
-        return onsetTime;
+    public XMLGregorianCalendar getDocDate() {
+        return docDate;
     }
 
     /**
-     * Sets the value of the onsetTime property.
+     * Sets the value of the docDate property.
      * 
      * @param value
      *     allowed object is
      *     {@link XMLGregorianCalendar }
      *     
      */
-    public void setOnsetTime(XMLGregorianCalendar value) {
-        this.onsetTime = value;
+    public void setDocDate(XMLGregorianCalendar value) {
+        this.docDate = value;
+    }
+
+    /**
+     * Gets the value of the docName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getDocName() {
+        return docName;
+    }
+
+    /**
+     * Sets the value of the docName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setDocName(String value) {
+        this.docName = value;
+    }
+
+    /**
+     * Gets the value of the fileType property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getFileType() {
+        return fileType;
+    }
+
+    /**
+     * Sets the value of the fileType property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setFileType(String value) {
+        this.fileType = value;
+    }
+
+    /**
+     * Gets the value of the stream property.
+     * 
+     * @return
+     *     possible object is
+     *     byte[]
+     */
+    public byte[] getStream() {
+        return stream;
+    }
+
+    /**
+     * Sets the value of the stream property.
+     * 
+     * @param value
+     *     allowed object is
+     *     byte[]
+     */
+    public void setStream(byte[] value) {
+        this.stream = value;
+    }
+
+    /**
+     * Gets the value of the versionNumber property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
+     */
+    public String getVersionNumber() {
+        return versionNumber;
+    }
+
+    /**
+     * Sets the value of the versionNumber property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
+     */
+    public void setVersionNumber(String value) {
+        this.versionNumber = value;
     }
 
 }

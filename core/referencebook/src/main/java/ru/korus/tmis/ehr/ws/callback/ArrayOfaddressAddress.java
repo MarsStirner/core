@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ArrayOfserviceMedService complex type.
+ * <p>Java class for ArrayOfaddressAddress complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ArrayOfserviceMedService">
+ * &lt;complexType name="ArrayOfaddressAddress">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="service" type="{}MedService" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="address" type="{}Address" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,41 +29,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfserviceMedService", propOrder = {
-    "service"
+@XmlType(name = "ArrayOfaddressAddress", propOrder = {
+    "address"
 })
-public class ArrayOfserviceMedService {
+public class ArrayOfaddressAddress {
 
     @XmlElement(nillable = true)
-    protected List<MedService> service;
+    protected List<Address> address;
 
     /**
-     * Gets the value of the service property.
+     * Gets the value of the address property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the service property.
+     * This is why there is not a <CODE>set</CODE> method for the address property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getService().add(newItem);
+     *    getAddress().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link MedService }
+     * {@link Address }
      * 
      * 
      */
-    public List<MedService> getService() {
-        if (service == null) {
-            service = new ArrayList<MedService>();
+    public List<Address> getAddress() {
+        if (address == null) {
+            address = new ArrayList<Address>();
         }
-        return this.service;
+        return this.address;
     }
 
 }

@@ -77,179 +77,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ArrayOfallergyAllergy }
+     * Create an instance of {@link CDAContainer }
      * 
      */
-    public ArrayOfallergyAllergy createArrayOfallergyAllergy() {
-        return new ArrayOfallergyAllergy();
+    public CDAContainer createCDAContainer() {
+        return new CDAContainer();
     }
 
     /**
-     * Create an instance of {@link ArrayOfencounterEncounter }
+     * Create an instance of {@link ArrayOfdocumentCDADocument }
      * 
      */
-    public ArrayOfencounterEncounter createArrayOfencounterEncounter() {
-        return new ArrayOfencounterEncounter();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfsickLeaveDocumentSickLeaveDocument }
-     * 
-     */
-    public ArrayOfsickLeaveDocumentSickLeaveDocument createArrayOfsickLeaveDocumentSickLeaveDocument() {
-        return new ArrayOfsickLeaveDocumentSickLeaveDocument();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfErrorError }
-     * 
-     */
-    public ArrayOfErrorError createArrayOfErrorError() {
-        return new ArrayOfErrorError();
-    }
-
-    /**
-     * Create an instance of {@link CodeAndName }
-     * 
-     */
-    public CodeAndName createCodeAndName() {
-        return new CodeAndName();
-    }
-
-    /**
-     * Create an instance of {@link Diagnosis }
-     * 
-     */
-    public Diagnosis createDiagnosis() {
-        return new Diagnosis();
-    }
-
-    /**
-     * Create an instance of {@link IdentityDocument }
-     * 
-     */
-    public IdentityDocument createIdentityDocument() {
-        return new IdentityDocument();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfPrivilegePrivilege }
-     * 
-     */
-    public ArrayOfPrivilegePrivilege createArrayOfPrivilegePrivilege() {
-        return new ArrayOfPrivilegePrivilege();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfidentityDocumentIdentityDocument }
-     * 
-     */
-    public ArrayOfidentityDocumentIdentityDocument createArrayOfidentityDocumentIdentityDocument() {
-        return new ArrayOfidentityDocumentIdentityDocument();
-    }
-
-    /**
-     * Create an instance of {@link Trustee }
-     * 
-     */
-    public Trustee createTrustee() {
-        return new Trustee();
-    }
-
-    /**
-     * Create an instance of {@link MedService }
-     * 
-     */
-    public MedService createMedService() {
-        return new MedService();
-    }
-
-    /**
-     * Create an instance of {@link IEMKPatient }
-     * 
-     */
-    public IEMKPatient createIEMKPatient() {
-        return new IEMKPatient();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfdocumentDocument }
-     * 
-     */
-    public ArrayOfdocumentDocument createArrayOfdocumentDocument() {
-        return new ArrayOfdocumentDocument();
-    }
-
-    /**
-     * Create an instance of {@link BaseSerial }
-     * 
-     */
-    public BaseSerial createBaseSerial() {
-        return new BaseSerial();
-    }
-
-    /**
-     * Create an instance of {@link Allergy }
-     * 
-     */
-    public Allergy createAllergy() {
-        return new Allergy();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfInsuranceInsurance }
-     * 
-     */
-    public ArrayOfInsuranceInsurance createArrayOfInsuranceInsurance() {
-        return new ArrayOfInsuranceInsurance();
-    }
-
-    /**
-     * Create an instance of {@link ContainerDocument }
-     * 
-     */
-    public ContainerDocument createContainerDocument() {
-        return new ContainerDocument();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfOccupationOccupation }
-     * 
-     */
-    public ArrayOfOccupationOccupation createArrayOfOccupationOccupation() {
-        return new ArrayOfOccupationOccupation();
-    }
-
-    /**
-     * Create an instance of {@link PrivilegeDocument }
-     * 
-     */
-    public PrivilegeDocument createPrivilegeDocument() {
-        return new PrivilegeDocument();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfoccupationHistoryEntry }
-     * 
-     */
-    public ArrayOfoccupationHistoryEntry createArrayOfoccupationHistoryEntry() {
-        return new ArrayOfoccupationHistoryEntry();
-    }
-
-    /**
-     * Create an instance of {@link ContactInfo }
-     * 
-     */
-    public ContactInfo createContactInfo() {
-        return new ContactInfo();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfdisabilityDisability }
-     * 
-     */
-    public ArrayOfdisabilityDisability createArrayOfdisabilityDisability() {
-        return new ArrayOfdisabilityDisability();
+    public ArrayOfdocumentCDADocument createArrayOfdocumentCDADocument() {
+        return new ArrayOfdocumentCDADocument();
     }
 
     /**
@@ -277,27 +117,59 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Disability }
+     * Create an instance of {@link CDADocument }
      * 
      */
-    public Disability createDisability() {
-        return new Disability();
+    public CDADocument createCDADocument() {
+        return new CDADocument();
     }
 
     /**
-     * Create an instance of {@link SickLeaveDocument }
+     * Create an instance of {@link ArrayOfNameName }
      * 
      */
-    public SickLeaveDocument createSickLeaveDocument() {
-        return new SickLeaveDocument();
+    public ArrayOfNameName createArrayOfNameName() {
+        return new ArrayOfNameName();
     }
 
     /**
-     * Create an instance of {@link ArrayOfmesCodeString }
+     * Create an instance of {@link ArrayOfaddressAddress }
      * 
      */
-    public ArrayOfmesCodeString createArrayOfmesCodeString() {
-        return new ArrayOfmesCodeString();
+    public ArrayOfaddressAddress createArrayOfaddressAddress() {
+        return new ArrayOfaddressAddress();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfErrorError }
+     * 
+     */
+    public ArrayOfErrorError createArrayOfErrorError() {
+        return new ArrayOfErrorError();
+    }
+
+    /**
+     * Create an instance of {@link CodeAndName }
+     * 
+     */
+    public CodeAndName createCodeAndName() {
+        return new CodeAndName();
+    }
+
+    /**
+     * Create an instance of {@link CDAPatient }
+     * 
+     */
+    public CDAPatient createCDAPatient() {
+        return new CDAPatient();
+    }
+
+    /**
+     * Create an instance of {@link CDAEncounter }
+     * 
+     */
+    public CDAEncounter createCDAEncounter() {
+        return new CDAEncounter();
     }
 
     /**
@@ -309,22 +181,6 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Encounter }
-     * 
-     */
-    public Encounter createEncounter() {
-        return new Encounter();
-    }
-
-    /**
-     * Create an instance of {@link ArrayOfserviceMedService }
-     * 
-     */
-    public ArrayOfserviceMedService createArrayOfserviceMedService() {
-        return new ArrayOfserviceMedService();
-    }
-
-    /**
      * Create an instance of {@link HistoryEntry }
      * 
      */
@@ -333,27 +189,51 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Container }
+     * Create an instance of {@link IdentityDocument }
      * 
      */
-    public Container createContainer() {
-        return new Container();
+    public IdentityDocument createIdentityDocument() {
+        return new IdentityDocument();
     }
 
     /**
-     * Create an instance of {@link Document }
+     * Create an instance of {@link ArrayOfidentityDocumentIdentityDocument }
      * 
      */
-    public Document createDocument() {
-        return new Document();
+    public ArrayOfidentityDocumentIdentityDocument createArrayOfidentityDocumentIdentityDocument() {
+        return new ArrayOfidentityDocumentIdentityDocument();
     }
 
     /**
-     * Create an instance of {@link DispensarySupervision }
+     * Create an instance of {@link ArrayOfPrivilegePrivilege }
      * 
      */
-    public DispensarySupervision createDispensarySupervision() {
-        return new DispensarySupervision();
+    public ArrayOfPrivilegePrivilege createArrayOfPrivilegePrivilege() {
+        return new ArrayOfPrivilegePrivilege();
+    }
+
+    /**
+     * Create an instance of {@link Trustee }
+     * 
+     */
+    public Trustee createTrustee() {
+        return new Trustee();
+    }
+
+    /**
+     * Create an instance of {@link IEMKPatient }
+     * 
+     */
+    public IEMKPatient createIEMKPatient() {
+        return new IEMKPatient();
+    }
+
+    /**
+     * Create an instance of {@link BaseSerial }
+     * 
+     */
+    public BaseSerial createBaseSerial() {
+        return new BaseSerial();
     }
 
     /**
@@ -373,11 +253,11 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Employee }
+     * Create an instance of {@link ArrayOfInsuranceInsurance }
      * 
      */
-    public Employee createEmployee() {
-        return new Employee();
+    public ArrayOfInsuranceInsurance createArrayOfInsuranceInsurance() {
+        return new ArrayOfInsuranceInsurance();
     }
 
     /**
@@ -389,6 +269,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link Employee }
+     * 
+     */
+    public Employee createEmployee() {
+        return new Employee();
+    }
+
+    /**
      * Create an instance of {@link Error }
      * 
      */
@@ -397,19 +285,35 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ArrayOfdiagnosisDiagnosis }
+     * Create an instance of {@link Name }
      * 
      */
-    public ArrayOfdiagnosisDiagnosis createArrayOfdiagnosisDiagnosis() {
-        return new ArrayOfdiagnosisDiagnosis();
+    public Name createName() {
+        return new Name();
     }
 
     /**
-     * Create an instance of {@link ArrayOfaddressHistoryEntry }
+     * Create an instance of {@link CDAFacility }
      * 
      */
-    public ArrayOfaddressHistoryEntry createArrayOfaddressHistoryEntry() {
-        return new ArrayOfaddressHistoryEntry();
+    public CDAFacility createCDAFacility() {
+        return new CDAFacility();
+    }
+
+    /**
+     * Create an instance of {@link PrivilegeDocument }
+     * 
+     */
+    public PrivilegeDocument createPrivilegeDocument() {
+        return new PrivilegeDocument();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfOccupationOccupation }
+     * 
+     */
+    public ArrayOfOccupationOccupation createArrayOfOccupationOccupation() {
+        return new ArrayOfOccupationOccupation();
     }
 
     /**
@@ -429,11 +333,27 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Patient }
+     * Create an instance of {@link ArrayOfoccupationHistoryEntry }
      * 
      */
-    public Patient createPatient() {
-        return new Patient();
+    public ArrayOfoccupationHistoryEntry createArrayOfoccupationHistoryEntry() {
+        return new ArrayOfoccupationHistoryEntry();
+    }
+
+    /**
+     * Create an instance of {@link ContactInfo }
+     * 
+     */
+    public ContactInfo createContactInfo() {
+        return new ContactInfo();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfencounterCDAEncounter }
+     * 
+     */
+    public ArrayOfencounterCDAEncounter createArrayOfencounterCDAEncounter() {
+        return new ArrayOfencounterCDAEncounter();
     }
 
     /**
