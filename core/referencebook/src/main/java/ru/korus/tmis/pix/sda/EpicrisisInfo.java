@@ -86,7 +86,7 @@ public class EpicrisisInfo {
             docType = CodeNameSystem.newInstance("3", "Направление", "1.2.643.5.1.13.2.1.1.646");
         }
         this.docType = docType;
-        this.text = initText(action, apBean);
+        this.text = initText(action, apBean).replace("\r", "");
     }
 
     private String initText(Action action, DbActionPropertyBeanLocal apBean) {
