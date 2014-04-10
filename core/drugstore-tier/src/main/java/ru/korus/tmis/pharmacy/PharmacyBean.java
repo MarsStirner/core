@@ -114,7 +114,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     }
                 }
                 // повторная отправка неотправленных сообщений
-              //todo Специально для Даши на время теста resendMessages();
+                resendMessages();
                 //Отправка назначений ЛС
                 //logger.info("sending prescription start...");
                 sendPrescriptionTo1C();
@@ -581,6 +581,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
         return prescriptionInfo.getExternalId() != null && !"".equals(prescriptionInfo.getExternalId());
     }
 
+    /**
+     * Получение источника финансирования в виде названий (для 1С)
+     */
     private String getFinaceType(Action action) {
         Integer id = action.getFinanceId();
         if (id == null) {
