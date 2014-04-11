@@ -93,7 +93,6 @@ public interface DbActionBeanLocal {
      *
      * @param id     Идентификатор действия (Action).
      * @param status Новый статус.
-     * @return Отредактированное действие  (Action).
      * @throws CoreException
      * @see Action
      */
@@ -223,8 +222,14 @@ public interface DbActionBeanLocal {
     /**
      * Пометить action как удаленный
      *
-     * @param actionId
-     * @return
+     * @param actionId Идентификатор помечаемого действия
+     * @return false если удаление не удалось и true  случае успеха
      */
     Boolean removeAction(int actionId);
+
+    /**
+     * Закрытие документов для закрытой истории болезни через определенный в
+     * конфигурации срок
+     */
+    void closeAppealsDocs();
 }

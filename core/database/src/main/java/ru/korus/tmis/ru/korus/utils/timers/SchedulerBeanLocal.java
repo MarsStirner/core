@@ -12,4 +12,6 @@ import javax.ejb.Local;
 public interface SchedulerBeanLocal {
 
     void  nightlyUpdate();
+
+    void closeAppealsDocs();
 }

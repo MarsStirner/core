@@ -3,12 +3,10 @@ package ru.korus.tmis.core.database.common
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging
 import java.util.Date
-import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
-import javax.interceptor.Interceptors
+import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.QueryDataStructure
@@ -17,7 +15,8 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import java.text.SimpleDateFormat
 import ru.korus.tmis.schedule.QueueActionParam
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import ru.korus.tmis.core.database.{DbActionTypeBeanLocal}
+import ru.korus.tmis.core.database.{DbSettingsBeanLocal, DbActionTypeBeanLocal}
+import org.joda.time.{DateTimeConstants, DateTime}
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -41,6 +40,9 @@ class DbActionBean
   @EJB
   private var dbEventPerson: DbEventPersonBeanLocal = _
 
+  @EJB
+  private var dbSetting: DbSettingsBeanLocal = _
+
   def getCountRecordsOrPagesQuery(enterPosition: String, filterQuery: String): TypedQuery[Long] = {
 
     val cntMacroStr = "count(a)"
@@ -54,7 +56,7 @@ class DbActionBean
     if (index > 0) {
       curentRequest = curentRequest.substring(0, index)
     }
-    em.createQuery(curentRequest.toString(), classOf[Long])
+    em.createQuery(curentRequest.toString, classOf[Long])
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
@@ -247,7 +249,7 @@ class DbActionBean
                            records: (java.lang.Long) => java.lang.Boolean,
                            userData: AuthData) = {
 
-    val queryStr: QueryDataStructure = filter.toQueryStructure()
+    val queryStr: QueryDataStructure = filter.toQueryStructure
 
     if (records != null) {
       val countTyped = em.createQuery(ActionsForSwitchPatientByEventQuery.format("count(a)", queryStr.query, ""), classOf[Long])
@@ -596,7 +598,7 @@ class DbActionBean
       newAction.setDeleted(false)
       newAction.setPayStatus(0)
       newAction.setExecutor(person)
-      newAction.setPacientInQueueType(queueActionParam.getPacientInQueueType().getValue)
+      newAction.setPacientInQueueType(queueActionParam.getPacientInQueueType.getValue)
       newAction.setAppointmentType(queueActionParam.getAppointmentType)
 
       //не менять на person, иначе нельзя будет отличить запись на прием к врачу с портала и других ЛПУ
@@ -608,7 +610,7 @@ class DbActionBean
       em.persist(newAction)
     }
     catch {
-      case ex: Exception => throw new CoreException("error while creating action ");
+      case ex: Exception => throw new CoreException("error while creating action ")
     }
     em.flush()
     newAction
@@ -657,12 +659,62 @@ class DbActionBean
   }
 
   def removeAction(actionId: Int): lang.Boolean = {
-    val action: Action = this.getActionIdWithoutDetach(actionId);
+    val action: Action = this.getActionIdWithoutDetach(actionId)
     if (!isOpenDoc(action)) {
-      return false;
+      return false
     }
-    action.setDeleted(true);
-    em.merge(action);
-    true;
+    action.setDeleted(true)
+    em.merge(action)
+    true
   }
+
+  def closeAppealsDocs() {
+    logger.info("Запущена задача закрытия документов в закрытых историях болезни")
+
+    val defaultDaysValue = 2
+    val docMnemonics = Seq("EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH")
+
+    val now = new DateTime()
+    now.getDayOfWeek match {
+      case  DateTimeConstants.SUNDAY | DateTimeConstants.SATURDAY => {
+        logger.info("Skip closing documents in closed events. It's weekend! Go party!")
+        return // Не следует запускать проверку в выходные дни
+      }
+      case _ => {}
+    }
+
+    val closeIntervalInDays: Int = try {
+      dbSetting.getSettingByPathInMainSettings(i18n("settings.path.eventBlockTime")).getValue.toInt
+    } catch {
+      case e: Throwable => {
+        logger.warn("Cannot receive value of " + i18n("settings.path.eventBlockTime") + " setting. Set as 2 days.")
+        defaultDaysValue
+      }
+    }
+
+    var i = closeIntervalInDays
+    var date = new DateTime()
+    // Отнимаем от даты нужное количество дней, пропуская выходные
+    while (i != 0) {
+      date = date.minusDays(1)
+      date.getDayOfWeek match {
+        case d if d != DateTimeConstants.SUNDAY | d != DateTimeConstants.SATURDAY => i -= 1
+      }
+    }
+
+    em.createQuery("SELECT a FROM Action a WHERE a.event.execDate < :date AND a.endDate IS NULL AND a.actionType.mnemonic IN :docMnemonics", classOf[Action])
+    .setParameter("date", date.toDate)
+    .setParameter("docMnemonics", asJavaCollection(docMnemonics))
+    .getResultList
+
+    // Закрываем документы датой закрытия истории болезни
+    .foreach( a => {
+      a setEndDate a.getEvent.getExecDate
+      a setStatus ActionStatus.FINISHED.getCode
+      a setModifyDatetime now.toDate
+    } )
+    em.flush()
+
+  }
+
 }
