@@ -20,17 +20,17 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="extId" type="{}String" minOccurs="0"/>
- *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
- *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
+ *         &lt;element name="extId" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="encounterCode" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="enteredBy" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="diagnosis" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="diagnosisType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="diagnosisKind" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="replacedExtId" type="{}String" minOccurs="0"/>
+ *         &lt;element name="diagnosis" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="diagnosisType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="diagnosisKind" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="replacedExtId" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *         &lt;element name="acuteOrChronic" minOccurs="0">
  *           &lt;simpleType>
- *             &lt;restriction base="{}String">
+ *             &lt;restriction base="{http://schemas.intersystems.ru/hs/ehr/v1}String">
  *               &lt;enumeration value="ACUTE"/>
  *               &lt;enumeration value="CHRONIC"/>
  *             &lt;/restriction>
@@ -38,8 +38,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;/element>
  *         &lt;element name="onsetTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="isFirstTime" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="dispensarySupervision" type="{}DispensarySupervision" minOccurs="0"/>
- *         &lt;element name="traumaType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="dispensarySupervision" type="{http://schemas.intersystems.ru/hs/ehr/v1}DispensarySupervision" minOccurs="0"/>
+ *         &lt;element name="traumaType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *         &lt;element name="admissionsThisYear" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>

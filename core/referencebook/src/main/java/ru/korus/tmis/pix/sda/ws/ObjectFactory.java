@@ -24,7 +24,7 @@ import javax.xml.namespace.QName;
 @XmlRegistry
 public class ObjectFactory {
 
-    private final static QName _Container_QNAME = new QName("", "container");
+    private final static QName _Container_QNAME = new QName("http://schemas.intersystems.ru/hs/ehr/v1", "container");
 
     /**
      * Create a new ObjectFactory that can be used to create new instances of schema derived classes for package: ru.korus.tmis.pix.sda.ws
@@ -95,6 +95,22 @@ public class ObjectFactory {
      */
     public SickLeaveDocument createSickLeaveDocument() {
         return new SickLeaveDocument();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfNameName }
+     * 
+     */
+    public ArrayOfNameName createArrayOfNameName() {
+        return new ArrayOfNameName();
+    }
+
+    /**
+     * Create an instance of {@link ArrayOfaddressAddress }
+     * 
+     */
+    public ArrayOfaddressAddress createArrayOfaddressAddress() {
+        return new ArrayOfaddressAddress();
     }
 
     /**
@@ -258,19 +274,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link Employee }
-     * 
-     */
-    public Employee createEmployee() {
-        return new Employee();
-    }
-
-    /**
      * Create an instance of {@link Insurance }
      * 
      */
     public Insurance createInsurance() {
         return new Insurance();
+    }
+
+    /**
+     * Create an instance of {@link Employee }
+     * 
+     */
+    public Employee createEmployee() {
+        return new Employee();
     }
 
     /**
@@ -290,11 +306,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link ArrayOfaddressHistoryEntry }
+     * Create an instance of {@link Name }
      * 
      */
-    public ArrayOfaddressHistoryEntry createArrayOfaddressHistoryEntry() {
-        return new ArrayOfaddressHistoryEntry();
+    public Name createName() {
+        return new Name();
+    }
+
+    /**
+     * Create an instance of {@link CDAFacility }
+     * 
+     */
+    public CDAFacility createCDAFacility() {
+        return new CDAFacility();
     }
 
     /**
@@ -357,7 +381,7 @@ public class ObjectFactory {
      * Create an instance of {@link JAXBElement }{@code <}{@link Container }{@code >}}
      * 
      */
-    @XmlElementDecl(namespace = "", name = "container")
+    @XmlElementDecl(namespace = "http://schemas.intersystems.ru/hs/ehr/v1", name = "container")
     public JAXBElement<Container> createContainer(Container value) {
         return new JAXBElement<Container>(_Container_QNAME, Container.class, null, value);
     }

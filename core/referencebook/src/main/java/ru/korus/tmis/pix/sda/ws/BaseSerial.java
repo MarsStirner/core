@@ -27,7 +27,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "BaseSerial")
 @XmlSeeAlso({
     Privilege.class,
-    CodeAndName.class,
     Occupation.class,
     HistoryEntry.class,
     IdentityDocument.class,
@@ -36,6 +35,8 @@ import javax.xml.bind.annotation.XmlType;
     Admission.class,
     Insurance.class,
     ContainerDocument.class,
+    Name.class,
+    CodeAndName.class,
     PrivilegeDocument.class,
     Address.class,
     ContactInfo.class

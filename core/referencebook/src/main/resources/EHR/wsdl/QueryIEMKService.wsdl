@@ -1,51 +1,410 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:wsdl" targetNamespace="urn:wsdl">
+<wsdl:definitions xmlns:wsdl="http://schemas.xmlsoap.org/wsdl/" xmlns:s="http://www.w3.org/2001/XMLSchema" xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/" xmlns:tns="urn:wsdl" targetNamespace="urn:wsdl" xmlns:ns="http://schemas.intersystems.ru/hs/ehr/v1">
 <wsdl:types>
-<s:schema elementFormDefault="qualified">
-<s:complexType name="PatientQuery">
+<s:schema xmlns:tns="http://schemas.intersystems.ru/hs/ehr/v1" xmlns:__tns="http://schemas.intersystems.ru/hs/ehr/v1" targetNamespace="http://schemas.intersystems.ru/hs/ehr/v1" elementFormDefault="qualified">
+  <s:complexType name="Container">
+    <s:annotation>
+      <s:documentation>Пакет данных, поступивший от МИС</s:documentation>
+    </s:annotation>
     <s:sequence>
-      <s:element name="facilityCode" type="String">
+      <s:element minOccurs="0" name="patient" type="tns:Patient">
         <s:annotation>
-          <s:documentation>Код ЛПУ по справочнику 1.2.643.5.1.13.2.1.1.178 (MDR308)</s:documentation>
+          <s:documentation>Пациент</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="initiatedBy" type="Employee">
+      <s:element minOccurs="0" name="sourceDocument" type="tns:ContainerDocument">
         <s:annotation>
-          <s:documentation>Инициатор запроса</s:documentation>
+          <s:documentation>Документ, в рамках которого поступили данные</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="params" type="PatientParams">
+      <s:element minOccurs="0" name="encounters" type="tns:ArrayOfencounterEncounter">
         <s:annotation>
-          <s:documentation>Параметры запроса</s:documentation>
+          <s:documentation>Эпизоды</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="diagnoses" type="tns:ArrayOfdiagnosisDiagnosis">
+        <s:annotation>
+          <s:documentation>Диагнозы</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="disabilities" type="tns:ArrayOfdisabilityDisability">
+        <s:annotation>
+          <s:documentation>Инвалидность</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="sickLeaveDocuments" type="tns:ArrayOfsickLeaveDocumentSickLeaveDocument">
+        <s:annotation>
+          <s:documentation>Документы временной нетрудоспособности</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="allergies" type="tns:ArrayOfallergyAllergy">
+        <s:annotation>
+          <s:documentation>Аллергические реакции и лекарственная непереносимость</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="documents" type="tns:ArrayOfdocumentDocument">
+        <s:annotation>
+          <s:documentation>Документы (в том числе эпикризы, дневниковые записи, ...)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="services" type="tns:ArrayOfserviceMedService">
+        <s:annotation>
+          <s:documentation>Мед. услуги</s:documentation>
         </s:annotation>
       </s:element>
     </s:sequence>
+    <s:attribute name="facilityCode" type="tns:String" use="required">
+      <s:annotation>
+        <s:documentation>Код ЛПУ
+ЕГИСЗ справочник 1.2.643.5.1.13.2.1.1.178 (MDR308)</s:documentation>
+      </s:annotation>
+    </s:attribute>
+    <s:attribute name="patientMRN" type="tns:String" use="required">
+      <s:annotation>
+        <s:documentation>Идентификатор пациента в МИС ЛПУ</s:documentation>
+      </s:annotation>
+    </s:attribute>
   </s:complexType>
-<s:simpleType name="String">
+  <s:simpleType name="String">
     <s:restriction base="s:string">
       <s:minLength value="1"/>
     </s:restriction>
   </s:simpleType>
-<s:complexType name="Employee">
+  <s:complexType name="Patient">
+    <s:annotation>
+      <s:documentation>Пациент</s:documentation>
+    </s:annotation>
     <s:sequence>
-      <s:element minOccurs="0" name="code" type="String">
+      <s:element minOccurs="0" name="baseClinic" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Поликлиника прикрепления
+ТФОМС: LPUBASE - из регионального справочника</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="snils" type="tns:Snils">
+        <s:annotation>
+          <s:documentation>СНИЛС
+ТФОМС: SNILS
+ЕГИСЗ "Пациент" поле №3
+СЭМД ext:asOtherIDs[classCode='IDENT']/ext:documentNumber/@number (ext:documentType code="3" codeSystem="1.2.643.5.1.13.2.7.1.62")</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enp" type="tns:Enp">
+        <s:annotation>
+          <s:documentation>ЕНП
+ТФОМС: ENP</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element name="familyName" type="tns:String">
+        <s:annotation>
+          <s:documentation>Фамилия
+ТФОМС: FAM
+ЕГИСЗ "Пациент" поле №5</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element name="givenName" type="tns:String">
+        <s:annotation>
+          <s:documentation>Имя
+ТФОМС: IM
+ЕГИСЗ "Пациент" поле №6</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="middleName" type="tns:String">
+        <s:annotation>
+          <s:documentation>Отчество
+ТФОМС: OT
+ЕГИСЗ "Пациент" поле №7</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="prevNames" type="tns:ArrayOfNameName">
+        <s:annotation>
+          <s:documentation>ФИО в прошлом</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element name="dob" type="s:date">
+        <s:annotation>
+          <s:documentation>Дата рождения
+ТФОМС: DR
+ЕГИСЗ "Пациент" поле №8</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="birthAddress" type="tns:Address">
+        <s:annotation>
+          <s:documentation>Место рождения
+ТФОМС: MR (записывается в city)
+ЕГИСЗ "Пациент" поле №9</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="gender">
+        <s:annotation>
+          <s:documentation>Пол
+ТФОМС: W (V005: 1=M, 2=F)
+deprecated: ЕГИСЗ codeSystem: 2.16.643.1.113883.5.1
+ЕГИСЗ "Пациент" поле №11
+СЭМД codeSystem: 1.2.643.5.1.13.2.1.1.156 /C51007  (1=M, 2=F, 3=Не определенный)</s:documentation>
+        </s:annotation>
+        <s:simpleType>
+          <s:restriction base="s:string">
+            <s:enumeration value="M"/>
+            <s:enumeration value="F"/>
+          </s:restriction>
+        </s:simpleType>
+      </s:element>
+      <s:element minOccurs="0" name="legalAddress" type="tns:Address">
+        <s:annotation>
+          <s:documentation>Адрес прописки (постоянного места жительства)
+ТФОМС: OKATOG
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поля №2-11 (тип адреса = 1)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="actualAddress" type="tns:Address">
+        <s:annotation>
+          <s:documentation>Адрес пребывания
+ТФОМС: OKATOP
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поля №2-11 (тип адреса = 2)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="postalAddress" type="tns:Address">
+        <s:annotation>
+          <s:documentation>Адрес почтовый
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поля №2-11 (тип адреса = 3)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="prevAddresses" type="tns:ArrayOfaddressAddress">
+        <s:annotation>
+          <s:documentation>Предыдущие адреса
+ф 025/у-04</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="dwellingType">
+        <s:annotation>
+          <s:documentation>Признак городского/сельского жителя
+ф 025-12/у, 003/у
+ЕГИСЗ Код: PRK438, OID: 1.2.643.5.1.13.2.1.1.573 (1=город, 2=село)
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №6
+СЭМД ext:asResidenceType codeSystem="1.2.643.5.1.13.2.1.1.573"</s:documentation>
+        </s:annotation>
+        <s:simpleType>
+          <s:restriction base="s:string">
+            <s:enumeration value="1"/>
+            <s:enumeration value="2"/>
+          </s:restriction>
+        </s:simpleType>
+      </s:element>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="privilege" nillable="true" type="tns:Privilege">
+        <s:annotation>
+          <s:documentation>Данные о льготах
+ф 025/у-04, 025-12/у
+СЭМД recordTarget/patientRole/patient/ext:patient/ext:code[@codeSystem='1.2.643.5.1.13.2.1.1.358']/@code</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="socialStatus" nillable="true" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Социальный статус
+ф 025-12/у
+ЕГИСЗ Код: SMP468, OID: 1.2.643.5.1.13.2.1.1.366
+СЭМД recordTarget/patientRole/patient/ext:patient/ext:code[@codeSystem='1.2.643.5.1.13.2.1.1.366']/@code</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="isHomeless" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Признак лица без определенного места жительства
+ф 025-12/у</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="isServicemanFamily" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Признак "член семьи военнослужащего"
+ф 025-12/у</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="occupation" nillable="true" type="tns:Occupation">
+        <s:annotation>
+          <s:documentation>Место работы/учебы, профессия, должность
+ф 027у, 025/у-04, 003/у
+ЕГИСЗ "Пациент" поля №№20-24</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="prevOccupations" type="tns:ArrayOfoccupationHistoryEntry">
+        <s:annotation>
+          <s:documentation>Предыдущие места работы/учебы/службы
+ф 025/у-04</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="citizenship" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Гражданство</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="identityDocument" type="tns:IdentityDocument">
+        <s:annotation>
+          <s:documentation>Документ, удостоверяющий личность
+ТФОМС: DOCTYPE (F011), DOCSER, DOCNUM
+ЕГИСЗ "Пациент" поля №№12-15
+СЭМД ext:asOtherIDs classCode="IDENT" (ext:documentType code="5" codeSystem="1.2.643.5.1.13.2.7.1.62")</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="prevIdentityDocuments" type="tns:ArrayOfidentityDocumentIdentityDocument">
+        <s:annotation>
+          <s:documentation>Устаревшие документы, удостоверяющие личность</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="birthCertificate" type="tns:IdentityDocument">
+        <s:annotation>
+          <s:documentation>Свидетельство о рождении
+В F011 тип документа = 3</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="omsInsurance" type="tns:Insurance">
+        <s:annotation>
+          <s:documentation>Данные полиса ОМС
+ТФОМС: VPOLIS (F008), SPOLIS, NPOLIS
+ЕГИСЗ "Пациент" поля №№26-30
+СЭМД ext:asOtherIDs classCode="HLD" (ext:documentType code="1" codeSystem="1.2.643.5.1.13.2.7.1.62")</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="dmsInsurance" nillable="true" type="tns:Insurance">
+        <s:annotation>
+          <s:documentation>Данные полиса ДМС
+ЕГИСЗ "Пациент" таблица сведений о ДМС
+СЭМД ext:asOtherIDs classCode="HLD" (ext:documentType code="2" codeSystem="1.2.643.5.1.13.2.7.1.62")</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="bloodGroup">
+        <s:annotation>
+          <s:documentation>Группа крови</s:documentation>
+        </s:annotation>
+        <s:simpleType>
+          <s:restriction base="s:string">
+            <s:enumeration value="1"/>
+            <s:enumeration value="2"/>
+            <s:enumeration value="3"/>
+            <s:enumeration value="4"/>
+          </s:restriction>
+        </s:simpleType>
+      </s:element>
+      <s:element minOccurs="0" name="rhesusFactor" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Резус-фактор</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="contactInfo" type="tns:ContactInfo">
+        <s:annotation>
+          <s:documentation>Контактная информация
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поля №№12-13</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="isTrustee" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Признак того, что данные не пациента, а его представителя (данные пациента пустые)
+ТФОМС: PDT (1=false/2=true)
+НЕ ИСПОЛЬЗУЕТСЯ</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="trusteeList" type="tns:ArrayOftrusteeTrustee">
+        <s:annotation>
+          <s:documentation>Представители/опекуны/родители/контактные лица пациента
+ЕГИСЗ "Представитель пациента"
+СЭМД participant - Контактные лица пациента
+СЭМД recordTarget/patientRole/patient/guardian - Опекун/родитель</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="newBornData" type="tns:String">
+        <s:annotation>
+          <s:documentation>Данные новорожденного
+ТФОМС: NOVOR: ПДДММГГН, где П – пол ребёнка в соответствии с классификатором V005; ДД – день рождения; ММ – месяц рождения; ГГ – последние две цифры года рождения;Н – порядковый номер ребёнка</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="isUnidentified" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Признак неидентифицированного
+ЕГИСЗ "Пациент" поле №2
+СЭМД ext:asUnidentified</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="isForeigner" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Признак: иностранный гражданин без регистрации на территории РФ
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №14</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="inn" type="tns:Inn">
+        <s:annotation>
+          <s:documentation>ИНН
+ЕГИСЗ "Пациент" поле №4
+СЭМД ext:asOtherIDs[classCode='IDENT']/ext:documentNumber/@number (ext:documentType code="4" codeSystem="1.2.643.5.1.13.2.7.1.62")</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="race" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Рассовая принадлежность
+ЕГИСЗ "Пациент" поле №16</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="maritalStatus" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Семейное положение
+ЕГИСЗ "Пациент" поле №17</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="children" type="s:long">
+        <s:annotation>
+          <s:documentation>Количество детей
+ЕГИСЗ "Пациент" поле №18</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="levelOfEducation" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Уровень образования
+ЕГИСЗ "Пациент" поле №19</s:documentation>
+        </s:annotation>
+      </s:element>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="CodeAndName">
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="code" type="tns:String">
+            <s:annotation>
+              <s:documentation>Код</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="name" type="tns:String">
+            <s:annotation>
+              <s:documentation>Расшифровка</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="codingSystem" type="tns:String">
+            <s:annotation>
+              <s:documentation>Система кодификации (используемый справочник)</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="BaseSerial"/>
+  <s:complexType name="Employee">
+    <s:sequence>
+      <s:element minOccurs="0" name="code" type="tns:String">
         <s:annotation>
           <s:documentation>Код
 ТФОМС: IDDOKT --&gt; CODE_MD - региональный справочник DOCTORS
 СЭМД author/assignedAuthor/id/@extension, legalAuthenticator/assignedEntity/id/@extension, authenticator/assignedEntity/id/@extension</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="name" type="String">
+      <s:element minOccurs="0" name="name" type="tns:String">
         <s:annotation>
           <s:documentation>Расшифровка (если известны ФИО сотрудника, то поле name не следует заполнять)</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="codingSystem" type="String">
+      <s:element minOccurs="0" name="codingSystem" type="tns:String">
         <s:annotation>
           <s:documentation>Система кодификации</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="specialty" type="CodeAndName">
+      <s:element minOccurs="0" name="specialty" type="tns:CodeAndName">
         <s:annotation>
           <s:documentation>Специальность
 ТФОМС: PRVS (V004 - Классификатор медицинских специальностей)
@@ -53,38 +412,38 @@ PnR (Секция описания автора документа) - authorSpec
 СЭМД author/assignedAuthor/ext:asLicencedEntity/ext:code codeSystem="1.2.643.5.1.13.2.1.1.181"</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="role" type="CodeAndName">
+      <s:element minOccurs="0" name="role" type="tns:CodeAndName">
         <s:annotation>
           <s:documentation>Должность
 PnR (Секция описания автора документа) - authorRole
 СЭМД: author/assignedAuthor/code  Справочник MDP365, OID: 1.2.643.5.1.13.2.1.1.607</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="snils" type="Snils">
+      <s:element minOccurs="0" name="snils" type="tns:Snils">
         <s:annotation>
           <s:documentation>СНИЛС
 PnR (Секция описания автора документа) - authorPerson, legalAuthenticator (пример: 00000000003^Привалов^Александр^Иванович)</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="familyName" type="String">
+      <s:element minOccurs="0" name="familyName" type="tns:String">
         <s:annotation>
           <s:documentation>Фамилия
 СЭМД author/assignedAuthor/assignedPerson/name/family, legalAuthenticator/assignedEntity/assignedPerson/name/family, authenticator/assignedEntity/assignedPerson/name/family</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="givenName" type="String">
+      <s:element minOccurs="0" name="givenName" type="tns:String">
         <s:annotation>
           <s:documentation>Имя
 СЭМД author/assignedAuthor/assignedPerson/name/given, legalAuthenticator/assignedEntity/assignedPerson/name/given, authenticator/assignedEntity/assignedPerson/name/given</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="middleName" type="String">
+      <s:element minOccurs="0" name="middleName" type="tns:String">
         <s:annotation>
           <s:documentation>Отчество
 СЭМД author/assignedAuthor/assignedPerson/name/given, legalAuthenticator/assignedEntity/assignedPerson/name/given, authenticator/assignedEntity/assignedPerson/name/given</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="contactInfo" type="ContactInfo">
+      <s:element minOccurs="0" name="contactInfo" type="tns:ContactInfo">
         <s:annotation>
           <s:documentation>Контактная информация
 СЭМД author/assignedAuthor/telecom/@value, legalAuthenticator/assignedEntity/telecom/@value, authenticator/assignedEntity/telecom/@value</s:documentation>
@@ -98,69 +457,154 @@ PnR (Секция описания автора документа) - authorPers
       </s:element>
     </s:sequence>
   </s:complexType>
-<s:complexType name="CodeAndName">
+  <s:complexType name="CDAFacility">
     <s:complexContent>
-      <s:extension base="BaseSerial">
+      <s:extension base="tns:CodeAndName">
         <s:sequence>
-          <s:element minOccurs="0" name="code" type="String">
+          <s:element minOccurs="0" name="facilityAddress" type="tns:Address">
             <s:annotation>
-              <s:documentation>Код</s:documentation>
+              <s:documentation>Адрес ЛПУ</s:documentation>
             </s:annotation>
           </s:element>
-          <s:element minOccurs="0" name="name" type="String">
+          <s:element minOccurs="0" name="contactInfo" type="tns:ContactInfo">
             <s:annotation>
-              <s:documentation>Расшифровка</s:documentation>
-            </s:annotation>
-          </s:element>
-          <s:element minOccurs="0" name="codingSystem" type="String">
-            <s:annotation>
-              <s:documentation>Система кодификации (используемый справочник)</s:documentation>
+              <s:documentation>Контактные данные ЛПУ</s:documentation>
             </s:annotation>
           </s:element>
         </s:sequence>
       </s:extension>
     </s:complexContent>
   </s:complexType>
-<s:complexType name="BaseSerial"/>
-<s:simpleType name="Snils">
-    <s:restriction base="s:string">
-      <s:pattern value="(\d){3}-(\d){3}-(\d){3} (\d){2}"/>
-      <s:maxLength value="14"/>
-      <s:minLength value="14"/>
-    </s:restriction>
-  </s:simpleType>
-<s:complexType name="ContactInfo">
+  <s:complexType name="Address">
     <s:complexContent>
-      <s:extension base="BaseSerial">
+      <s:extension base="tns:BaseSerial">
         <s:sequence>
-          <s:element minOccurs="0" name="homePhone" type="String">
+          <s:element minOccurs="0" name="country" type="tns:String">
+            <s:annotation>
+              <s:documentation>Страна</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="region" type="tns:String">
+            <s:annotation>
+              <s:documentation>Область/край/республика/... (субъект РФ)</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="regionKladr" type="tns:String">
+            <s:annotation>
+              <s:documentation>Код субъекта РФ согласно КЛАДР
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №2</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="district" type="tns:String">
+            <s:annotation>
+              <s:documentation>Район</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="districtKladr" type="tns:String">
+            <s:annotation>
+              <s:documentation>Код района (или города субъектного подчинения) согласно КЛАДР
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №3</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="city" type="tns:String">
+            <s:annotation>
+              <s:documentation>Населенный пункт</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="cityKladr" type="tns:String">
+            <s:annotation>
+              <s:documentation>Код населенного пункта согласно КЛАДР
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №4</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="street" type="tns:String">
+            <s:annotation>
+              <s:documentation>Название улицы</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="streetKladr" type="tns:String">
+            <s:annotation>
+              <s:documentation>Код улицы согласно КЛАДР
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №8</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="house" type="tns:String">
+            <s:annotation>
+              <s:documentation>Номер дома
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №9</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="block" type="tns:String">
+            <s:annotation>
+              <s:documentation>Номер корпуса
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №10</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="building" type="tns:String">
+            <s:annotation>
+              <s:documentation>Номер строения</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="apartment" type="tns:String">
+            <s:annotation>
+              <s:documentation>Номер квартиры
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №11</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="postalCode" type="tns:String">
+            <s:annotation>
+              <s:documentation>Почтовый индекс
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №7</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="okato" type="tns:String">
+            <s:annotation>
+              <s:documentation>ОКАТО
+ТФОМС: OKATOG/OKATOP - Заполняется стыковкой полей TER+ORGN1+ORGN2+ORGN3+RAZDEL справочника OKATO
+ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №5</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="effectiveDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата регистрации по месту жительства (для адреса регистрации)</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="ContactInfo">
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="homePhone" type="tns:String">
             <s:annotation>
               <s:documentation>Домашний телефон
 ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №12</s:documentation>
             </s:annotation>
           </s:element>
-          <s:element minOccurs="0" name="cellPhone" type="String">
+          <s:element minOccurs="0" name="cellPhone" type="tns:String">
             <s:annotation>
               <s:documentation>Мобильный телефон</s:documentation>
             </s:annotation>
           </s:element>
-          <s:element minOccurs="0" name="workPhone" type="String">
+          <s:element minOccurs="0" name="workPhone" type="tns:String">
             <s:annotation>
               <s:documentation>Служебный телефон</s:documentation>
             </s:annotation>
           </s:element>
-          <s:element minOccurs="0" name="email" type="String">
+          <s:element minOccurs="0" name="email" type="tns:String">
             <s:annotation>
               <s:documentation>Адрес e-mail
 ЕГИСЗ "Пациент" таблица данных адреса и контактов, поле №13</s:documentation>
             </s:annotation>
           </s:element>
-          <s:element minOccurs="0" name="contactInfoString" type="String">
+          <s:element minOccurs="0" name="contactInfoString" type="tns:String">
             <s:annotation>
               <s:documentation>Контактная информация одной строкой</s:documentation>
             </s:annotation>
           </s:element>
-          <s:element minOccurs="0" name="fax" type="String">
+          <s:element minOccurs="0" name="fax" type="tns:String">
             <s:annotation>
               <s:documentation>Факс
 СЭМД</s:documentation>
@@ -170,11 +614,985 @@ PnR (Секция описания автора документа) - authorPers
       </s:extension>
     </s:complexContent>
   </s:complexType>
-<s:complexType name="PatientParams">
+  <s:simpleType name="Snils">
+    <s:restriction base="s:string">
+      <s:pattern value="(\d){3}-(\d){3}-(\d){3} (\d){2}"/>
+      <s:maxLength value="14"/>
+      <s:minLength value="14"/>
+    </s:restriction>
+  </s:simpleType>
+  <s:simpleType name="Enp">
+    <s:restriction base="s:string">
+      <s:pattern value="(\d){16}"/>
+      <s:maxLength value="16"/>
+      <s:minLength value="16"/>
+    </s:restriction>
+  </s:simpleType>
+  <s:complexType name="ArrayOfNameName">
     <s:sequence>
-      <s:element minOccurs="0" name="gender">
+      <s:element maxOccurs="unbounded" minOccurs="0" name="Name" nillable="true" type="tns:Name"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Name">
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="familyName" type="tns:String">
+            <s:annotation>
+              <s:documentation>Фамилия</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="givenName" type="tns:String">
+            <s:annotation>
+              <s:documentation>Имя</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="middleName" type="tns:String">
+            <s:annotation>
+              <s:documentation>Отчество</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="beginDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата начала периода актуальности ФИО</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="endDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата окончания периода актуальности ФИО</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="ArrayOfaddressAddress">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="address" nillable="true" type="tns:Address"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="ArrayOfPrivilegePrivilege">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="Privilege" nillable="true" type="tns:Privilege"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Privilege">
+    <s:annotation>
+      <s:documentation>Льготы пациента</s:documentation>
+    </s:annotation>
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="category" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Код категории льготы
+ф 025/у-04, 025-12/у
+ЕГИСЗ Код: SMP369, OID: 1.2.643.5.1.13.2.1.1.358
+СЭМД recordTarget/patientRole/patient/ext:patient/ext:code[@codeSystem='1.2.643.5.1.13.2.1.1.358']</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="document" type="tns:PrivilegeDocument">
+            <s:annotation>
+              <s:documentation>Документ, удостоверяющий право на льготу
+ф 025/у-04</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="PrivilegeDocument">
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="docType" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Тип документа</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docSer" type="tns:String">
+            <s:annotation>
+              <s:documentation>Серия документа</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docNum" type="tns:String">
+            <s:annotation>
+              <s:documentation>Номер документа</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата документа
+СЭМД ext:effectiveTime/ext:low</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docSource" type="tns:String">
+            <s:annotation>
+              <s:documentation>Кем выдан</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="expirationDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата истечения срока действия документа
+СЭМД ext:effectiveTime/ext:high</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="ArrayOfCodeAndNameCodeAndName">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="CodeAndName" nillable="true" type="tns:CodeAndName"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="ArrayOfOccupationOccupation">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="Occupation" nillable="true" type="tns:Occupation"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Occupation">
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="organizationName" type="tns:String">
+            <s:annotation>
+              <s:documentation>Наименование места работы/учебы/службы
+ЕГИСЗ "Пациент" поле №20
+СЭМД ext:employerOrganization/ext:name</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="organizationType" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Тип места работы/учебы/службы (дошкольное учреждение, школа, ВУЗ, военная часть, производство, ...)</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="position" type="tns:String">
+            <s:annotation>
+              <s:documentation>Должность/звание
+ЕГИСЗ "Пациент" поле №21
+СЭМД ext:jobTitleName</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="profession" type="tns:String">
+            <s:annotation>
+              <s:documentation>Профессия</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="laborType" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Характер труда
+ЕГИСЗ "Пациент" поле №22</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="socialProfessionalGroup" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Социально-профессиональная группа
+ЕГИСЗ "Пациент" поле №24</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="okved" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Код ОКВЭД (отрасль)
+СЭМД ext:jobCode - НСИ: 1.2.643.5.1.13.2.1.1.62 (O00020)</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="startedOn" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата поступления на работу/учебу</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="harmfulConditions" type="tns:String">
+            <s:annotation>
+              <s:documentation>Профессиональная вредность (наличие вредных и/или опасных производственных факторов)
+ЕГИСЗ "Пациент" поле №23</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="dayDuration" type="tns:String">
+            <s:annotation>
+              <s:documentation>Продолжительность рабочего дня/учебы (час)</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="shiftDuration" type="tns:String">
+            <s:annotation>
+              <s:documentation>Продолжительность рабочей смены (час)</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="ogrn" type="tns:String">
+            <s:annotation>
+              <s:documentation>Код ОГРН работодателя
+СЭМД ext:employerOrganization/ext:id/@extension [root='1.2.643.100.1']</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="ArrayOfoccupationHistoryEntry">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="occupation" nillable="true" type="tns:HistoryEntry"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="HistoryEntry">
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="startedOn" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата начала актуальности записи</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="historyEntry" type="tns:String">
+            <s:annotation>
+              <s:documentation>Содержимое записи</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="IdentityDocument">
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="docType" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Тип документа
+ТФОМС: DOCTYPE (F011 - Классификатор типов документов, удостоверяющих личность)
+ЕГИСЗ "Пациент" поле №12
+СЭМД ext:asOtherIDs/ext:documentType/ext:translation codeSystem="1.2.643.5.1.13.2.1.1.498"</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docSer" type="tns:String">
+            <s:annotation>
+              <s:documentation>Серия документа
+ЕГИСЗ "Пациент" поле №13
+СЭМД ext:asOtherIDs/ext:documentNumber/@series</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docNum" type="tns:String">
+            <s:annotation>
+              <s:documentation>Номер документа
+ЕГИСЗ "Пациент" поле №13
+СЭМД ext:asOtherIDs/ext:documentNumber/@number</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата документа
+ЕГИСЗ "Пациент" поле №15
+СЭМД ext:asOtherIDs/ext:effectiveTime/@value</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docSource" type="tns:String">
+            <s:annotation>
+              <s:documentation>Кем выдан
+ЕГИСЗ "Пациент" поле №14
+СЭМД ext:asOtherIDs/ext:scopingOrganization/ext:name</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="expirationDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата истечения срока действия документа</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="ArrayOfidentityDocumentIdentityDocument">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="identityDocument" nillable="true" type="tns:IdentityDocument"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Insurance">
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="insuranceCompany" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Страховая компания
+ЕГИСЗ: справочник 1.2.643.5.1.13.2.1.1.635 (MDN366)
+ТФОМС: SMO (код - по справочнику F002)
+ЕГИСЗ "Пациент" поле №26
+СЭМД ext:asOtherIDs/ext:scopingOrganization</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="insuranceCompanyOkato" type="tns:String">
+            <s:annotation>
+              <s:documentation>ОКАТО территории страхования (F001)
+ТФОМС: SMO_OK</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="policyType" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Тип полиса (F008)
+ТФОМС: VPOLIS - Тип документа, подтверждающего факт страхования по ОМС
+ЕГИСЗ "Пациент" поле №27</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="policySer" type="tns:String">
+            <s:annotation>
+              <s:documentation>Серия страхового полиса
+ТФОМС: SPOLIS - Серия документа, подтверждающего факт страхования по ОМС
+ЕГИСЗ "Пациент" поле №28
+СЭМД ext:asOtherIDs/ext:documentNumber/@series</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="policyNum" type="tns:String">
+            <s:annotation>
+              <s:documentation>Номер страхового полиса
+ТФОМС: NPOLIS - Номер документа, подтверждающего факт страхования по ОМС
+ЕГИСЗ "Пациент" поле №29
+СЭМД ext:asOtherIDs/ext:documentNumber/@number</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="effectiveDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата начала действия страхового полиса
+ЕГИСЗ "Пациент" поле №30
+СЭМД ext:asOtherIDs/ext:effectiveTime/ext:low</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="expirationDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата окончания действия страхового полиса
+СЭМД ext:asOtherIDs/ext:effectiveTime/ext:high</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="insuranceCompanyKladr" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>КЛАДР территории страхования
+СЭМД ext:InsuredTerritory codeSystem="1.2.643.5.1.13.2.1.1.196"</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="ArrayOfInsuranceInsurance">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="Insurance" nillable="true" type="tns:Insurance"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="ArrayOftrusteeTrustee">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="trustee" nillable="true" type="tns:Trustee"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Trustee">
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="trusteeType" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Тип представителя
+ЕГИСЗ "Представитель пациента" поле №1</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="familyName" type="tns:String">
+            <s:annotation>
+              <s:documentation>Фамилия
+ЕГИСЗ "Представитель пациента" поле №2
+СЭМД participant/associatedEntity/associatedPerson/name/family</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="givenName" type="tns:String">
+            <s:annotation>
+              <s:documentation>Имя
+ЕГИСЗ "Представитель пациента" поле №2
+СЭМД participant/associatedEntity/associatedPerson/name/given</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="middleName" type="tns:String">
+            <s:annotation>
+              <s:documentation>Отчество
+ЕГИСЗ "Представитель пациента" поле №2
+СЭМД participant/associatedEntity/associatedPerson/name/given</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="kinship" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Степень родства
+ЕГИСЗ "Представитель пациента" поля №№3-4
+СЭМД participant/associatedEntity/code[@codeSystem='1.2.643.5.1.13.2.7.1.15']/@code - содержимое справочника 1.2.643.5.1.13.2.7.1.15 имеется в документе "Описание структуры документов v1.1.odt"</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="trusteeDocType" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Тип документа, удостоверяющего права представителя
+ЕГИСЗ "Представитель пациента" поле №9</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="identityDocument" type="tns:IdentityDocument">
+            <s:annotation>
+              <s:documentation>Документ, удостоверяющий личность
+ЕГИСЗ "Представитель пациента" поля №№5-8</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="legalAddress" type="tns:Address">
+            <s:annotation>
+              <s:documentation>Адрес прописки (постоянного места жительства)
+ЕГИСЗ "Представитель пациента" поля №№10-18 (тип адреса = 1)</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="actualAddress" type="tns:Address">
+            <s:annotation>
+              <s:documentation>Адрес пребывания
+ЕГИСЗ "Представитель пациента" поля №№10-18 (тип адреса = 2)</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="contactInfo" type="tns:ContactInfo">
+            <s:annotation>
+              <s:documentation>Контактная информация
+ЕГИСЗ "Представитель пациента" поле №19
+СЭМД participant/associatedEntity/telecom</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="isGuardian" type="s:boolean">
+            <s:annotation>
+              <s:documentation>Признак опекуна/родителя
+СЭМД recordTarget/patientRole/patient/guardian</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:simpleType name="Inn">
+    <s:restriction base="s:string">
+      <s:pattern value="(\d){12}"/>
+      <s:maxLength value="12"/>
+      <s:minLength value="12"/>
+    </s:restriction>
+  </s:simpleType>
+  <s:complexType name="ContainerDocument">
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="docType" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Тип документа</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docNum" type="tns:String">
+            <s:annotation>
+              <s:documentation>Номер документа</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата документа</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docAuthor" type="tns:Employee">
+            <s:annotation>
+              <s:documentation>Создатель документа</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="docTarget" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Для кого предназначен (куда направляется) документ
+ф 027/у</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="ArrayOfencounterEncounter">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="encounter" nillable="true" type="tns:Encounter"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Encounter">
+    <s:annotation>
+      <s:documentation>Эпизод (амбулаторное обращение или госпитализация)</s:documentation>
+    </s:annotation>
+    <s:sequence>
+      <s:element name="extId" type="tns:String">
         <s:annotation>
-          <s:documentation>Пол</s:documentation>
+          <s:documentation>Идентификатор эпизода, уникальный в рамках МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredBy" type="tns:Employee">
+        <s:annotation>
+          <s:documentation>Автор записи (врач)
+ТФОМС: IDDOKT (региональный справочник) - код врача, закрывшего талон/историю болезни
+ТФОМС: PRVS (V004) - специальность врача</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredOn" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время ввода записи в МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element name="encType">
+        <s:annotation>
+          <s:documentation>Тип эпизода (амбулаторный=O/стационар=I)
+СЭМД componentOf/encompassingEncounter/code/@code, амбулаторный=AMB/стационар=STAT, codeSystem="1.2.643.5.1.13.2.7.1.1"</s:documentation>
+        </s:annotation>
+        <s:simpleType>
+          <s:restriction base="s:string">
+            <s:enumeration value="I"/>
+            <s:enumeration value="O"/>
+          </s:restriction>
+        </s:simpleType>
+      </s:element>
+      <s:element minOccurs="0" name="paymentType" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Вид оплаты (ОМС, бюджет, платные услуги, ДМС, ...)
+ф 025-12/у</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="isAtHome" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Признак "на дому"
+ф 025-12/у</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="encounterReason" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Причина посещения/госпитализации (заболевание, профосмотр, патронаж, ..., плановая госпитализация, травма, ...)
+ф 025-12/у, 003/у</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="facilityDept" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Отделение МО
+ТФОМС: LPUCODE - Подразделение МО лечения из регионального справочника</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="referralFacility" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>ЛПУ, направившее пациента
+ф 003/у
+ТФОМС: NPR_MO (F003)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="admissionInfo" type="tns:Admission">
+        <s:annotation>
+          <s:documentation>Данные о госпитализации
+ф 003/у
+ТФОМС: EXTR (1 –плановая; 2 – экстренная госпитализация)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="encounterResult" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Результат обращения/госпитализации
+ф 003/у, ф 025-12/у
+ТФОМС: RSLT (V009 - Классификатор результатов обращения за медицинской помощью)
+СЭМД стац: encompassingEncounter/dischargeDispositionCode - Классификатор исходов госпитализации (1.2.643.5.1.13.2.1.1.123 или 1.2.643.5.1.13.2.1.1.542?)
+??? Для амб - 1.2.643.5.1.13.2.1.1.551 [Классификатор результатов обращения за медицинской помощью]</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="encounterOutcome" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Исход заболевания
+ТФОМС: ISHOD (V012 - Классификатор исходов заболевания)
+СЭМД амб: encompassingEncounter/dischargeDispositionCode - 1.2.643.5.1.13.2.1.1.357 - Классификатор результатов госпитализации (исхода заболевания, причин выписки)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="finalAbilityToWork" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Трудоспособность восстановлена полностью, снижена, временно утрачена, стойко утрачена в связи с данным заболеванием, с другими причинами
+ф 003/у</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="careType" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Вид помощи (V008)
+ТФОМС: VIDPOM</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="mes" type="tns:ArrayOfmesCodeString">
+        <s:annotation>
+          <s:documentation>Коды МЭС
+ТФОМС: CODE_MES1, CODE_MES2</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="recordNumber" type="tns:String">
+        <s:annotation>
+          <s:documentation>Номер истории болезни (номер медицинской карты)
+СЭМД</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element name="fromTime" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время начала лечения
+ТФОМС: BEGDATE - Дата начала лечения</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="toTime" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время окончания лечения
+ТФОМС: ENDDATE - Дата окончания лечения</s:documentation>
+        </s:annotation>
+      </s:element>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Admission">
+    <s:annotation>
+      <s:documentation>Данные о госпитализации</s:documentation>
+    </s:annotation>
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="isUrgentAdmission" type="s:boolean">
+            <s:annotation>
+              <s:documentation>Доставлен в стационар по экстренным показаниям
+ф 003/у
+ТФОМС: EXTR (1 –плановая; 2 – экстренная госпитализация)</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="timeAfterFallingIll" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Время, прошедшее c начала заболевания (получения травмы) до госпитализации
+ф 003/у
+СЭМД ext:encounter/ext:timeAfterBegining - 1.2.643.5.1.13.2.1.1.537 /PRK371 (1=в первые 6 часов, 2=в течение 7-24 часов, 3=позднее 24-х часов)</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="transportType" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Виды транспортировки (на каталке, на кресле, может идти)
+ф 003/у</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="department" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Отделение
+ф 003/у</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="finalDepartment" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Переведен в отделение
+ф 003/у</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="ward" type="tns:String">
+            <s:annotation>
+              <s:documentation>Палата
+ф 003/у</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="bedDayCount" type="s:long">
+            <s:annotation>
+              <s:documentation>Проведено койко-дней в стационаре
+ф 003/у
+СЭМД componentOf/encompassingEncounter/ext:encounter/ext:lengthOfStayQuantity</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="admittingDoctor" type="tns:Employee">
+            <s:annotation>
+              <s:documentation>Врач приемного отделения
+ф 003/у</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="attendingDoctor" type="tns:Employee">
+            <s:annotation>
+              <s:documentation>Лечащий врач
+ф 003/у</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="admissionReferral" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Кем доставлен
+СЭМД componentOf/encompassingEncounter/ext:encounter/ext:admissionReferralSourceCode - codeSystem="1.2.643.5.1.13.2.1.1.281" - Классификатор каналов госпитализации</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="priorityCode" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Срочность госпитализации
+СЭМД inFulfillmentOf/order/priorityCode - codeSystem="1.2.643.5.1.13.2.1.1.568"</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="admissionsThisYear" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Кол-во госпитализации в текущем году
+СЭМД componentOf/encompassingEncounter/ext:encounter/ext:priorityCode - codeSystem="1.2.643.5.1.13.2.1.1.109" (1=Госпитализирован впервые в данном году по диагнозу)</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="ArrayOfmesCodeString">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="mesCode" nillable="true" type="tns:String"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="ArrayOfdiagnosisDiagnosis">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="diagnosis" nillable="true" type="tns:Diagnosis"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Diagnosis">
+    <s:annotation>
+      <s:documentation>Диагноз</s:documentation>
+    </s:annotation>
+    <s:sequence>
+      <s:element minOccurs="0" name="extId" type="tns:String">
+        <s:annotation>
+          <s:documentation>Идентификатор в МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="encounterCode" type="tns:String">
+        <s:annotation>
+          <s:documentation>Код эпизода</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredBy" type="tns:Employee">
+        <s:annotation>
+          <s:documentation>Автор записи (врач)
+ТФОМС: IDDOKT (региональный справочник), PRVS (V004) - специальность</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredOn" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время ввода записи в МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="diagnosis" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Диагноз (код МКБ-10 и расшифровка)
+ЕГИСЗ - 1.2.643.5.1.13.2.1.1.641 (MKB308) - Международная классификация болезней и состояний, связанных со здоровьем, Десятого пересмотра. Версия 2</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="diagnosisType" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Тип диагноза: FINAL(заключительный), WAY(направившего учреждения), IN(при поступлении), DEAD(Непосредственная причина смерти), IL(Заболевание, вызвавшее смерть), DPA(Патологоанатомический диагноз)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="diagnosisKind" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Вид диагноза: DIFF(осложнение основного), SEC(сопутствующий); для основного - не указывается</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="replacedExtId" type="tns:String">
+        <s:annotation>
+          <s:documentation>Идентификатор заменяемого диагноза</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="acuteOrChronic">
+        <s:annotation>
+          <s:documentation>Острое или хроническое заболевание</s:documentation>
+        </s:annotation>
+        <s:simpleType>
+          <s:restriction base="tns:String">
+            <s:enumeration value="ACUTE"/>
+            <s:enumeration value="CHRONIC"/>
+          </s:restriction>
+        </s:simpleType>
+      </s:element>
+      <s:element minOccurs="0" name="onsetTime" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время начала заболевания (не постановки диагноза!)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="isFirstTime" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Признак впервые установленного заболевания</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="dispensarySupervision" type="tns:DispensarySupervision">
+        <s:annotation>
+          <s:documentation>Диспансерное наблюдение</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="traumaType" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Вид травмы
+??? - ЕГИСЗ - 1.2.643.5.1.13.2.1.1.105 - Классификатор травм по способу получения (амбулаторное лечение)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="admissionsThisYear" type="s:long">
+        <s:annotation>
+          <s:documentation>Кол-во госпитализаций в текущем году с данным диагнозом
+ф 003/у</s:documentation>
+        </s:annotation>
+      </s:element>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="DispensarySupervision">
+    <s:annotation>
+      <s:documentation>Диспансерное наблюдение</s:documentation>
+    </s:annotation>
+    <s:complexContent>
+      <s:extension base="tns:BaseSerial">
+        <s:sequence>
+          <s:element minOccurs="0" name="startDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата постановки на диспансерное наблюдение</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="stopDate" type="s:date">
+            <s:annotation>
+              <s:documentation>Дата снятия с диспансерного наблюдения</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="startedBy" type="tns:Employee">
+            <s:annotation>
+              <s:documentation>Кто осуществил постановку на диспансерное наблюдение</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="stoppedBy" type="tns:Employee">
+            <s:annotation>
+              <s:documentation>Кто осуществил снятие с диспансерного наблюдения</s:documentation>
+            </s:annotation>
+          </s:element>
+          <s:element minOccurs="0" name="stopReason" type="tns:CodeAndName">
+            <s:annotation>
+              <s:documentation>Причина снятия с диспансерного наблюдения</s:documentation>
+            </s:annotation>
+          </s:element>
+        </s:sequence>
+      </s:extension>
+    </s:complexContent>
+  </s:complexType>
+  <s:complexType name="ArrayOfdisabilityDisability">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="disability" nillable="true" type="tns:Disability"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Disability">
+    <s:annotation>
+      <s:documentation>Инвалидность</s:documentation>
+    </s:annotation>
+    <s:sequence>
+      <s:element minOccurs="0" name="extId" type="tns:String">
+        <s:annotation>
+          <s:documentation>Идентификатор в МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="encounterCode" type="tns:String">
+        <s:annotation>
+          <s:documentation>Код эпизода</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredBy" type="tns:Employee">
+        <s:annotation>
+          <s:documentation>Автор записи (врач)
+ТФОМС: IDDOKT (региональный справочник), PRVS (V004) - специальность</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredOn" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время ввода записи в МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="disabilityGroup">
+        <s:annotation>
+          <s:documentation>Группа инвалидности</s:documentation>
+        </s:annotation>
+        <s:simpleType>
+          <s:restriction base="s:string">
+            <s:enumeration value="1"/>
+            <s:enumeration value="2"/>
+            <s:enumeration value="3"/>
+          </s:restriction>
+        </s:simpleType>
+      </s:element>
+      <s:element minOccurs="0" name="isDisabledChild" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Признак ребенок-инвалид
+ф 025-12/у</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="disabilityCause" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Причина инвалидности (инвалид с детства, заболевание, трудовое увечье, военная травма, инвалидность, связанная с катастрофой на Чернобыльской АЭС, ...)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="diagnosis" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Диагноз (код МКБ-10 и расшифровка)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="disabilityLevel" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Степень инвалидности
+ф 025-12/у</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="isFirstTime" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Установлена впервые в жизни
+ф 025-12/у</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="cancelReason" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Причина снятия инвалидности</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="fromTime" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Действует с</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="toTime" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Действует по</s:documentation>
+        </s:annotation>
+      </s:element>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="ArrayOfsickLeaveDocumentSickLeaveDocument">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="sickLeaveDocument" nillable="true" type="tns:SickLeaveDocument"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="SickLeaveDocument">
+    <s:annotation>
+      <s:documentation>Документ временной нетрудоспособности</s:documentation>
+    </s:annotation>
+    <s:sequence>
+      <s:element minOccurs="0" name="extId" type="tns:String">
+        <s:annotation>
+          <s:documentation>Идентификатор в МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="encounterCode" type="tns:String">
+        <s:annotation>
+          <s:documentation>Код эпизода</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredBy" type="tns:Employee">
+        <s:annotation>
+          <s:documentation>Автор записи (врач)
+ТФОМС: IDDOKT (региональный справочник), PRVS (V004) - специальность</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredOn" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время ввода записи в МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="docSer" type="tns:String">
+        <s:annotation>
+          <s:documentation>Серия документа</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="docNum" type="tns:String">
+        <s:annotation>
+          <s:documentation>Номер документа</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="reason" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Причина выдачи (заболевание; по уходу; карантин; прерывание беременности; отпуск по беременности и родам; санаторно-курортное лечение)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="diagnosis" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Диагноз (код МКБ-10 и расшифровка)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="attendantGender">
+        <s:annotation>
+          <s:documentation>Пол ухаживающего
+ф 025-12/у</s:documentation>
         </s:annotation>
         <s:simpleType>
           <s:restriction base="s:string">
@@ -183,223 +1601,302 @@ PnR (Секция описания автора документа) - authorPers
           </s:restriction>
         </s:simpleType>
       </s:element>
-      <s:element minOccurs="0" name="dobLow" type="s:date">
+      <s:element minOccurs="0" name="attendantAge" type="tns:String">
         <s:annotation>
-          <s:documentation>Дата рождения (начало периода)</s:documentation>
+          <s:documentation>Возраст ухаживающего
+ф 025-12/у</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="dobHigh" type="s:date">
+      <s:element minOccurs="0" name="fromTime" type="s:dateTime">
         <s:annotation>
-          <s:documentation>Дата рождения (окончание периода)</s:documentation>
+          <s:documentation>Дата/время начала</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="mrn" type="InstanceIdentifier">
+      <s:element minOccurs="0" name="toTime" type="s:dateTime">
         <s:annotation>
-          <s:documentation>Идентификатор пациента в МИС ЛПУ (extension) + код ЛПУ (root)</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="familyName" type="String">
-        <s:annotation>
-          <s:documentation>Фамилия</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="givenName" type="String">
-        <s:annotation>
-          <s:documentation>Имя</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="middleName" type="String">
-        <s:annotation>
-          <s:documentation>Отчество</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="snils" type="Snils">
-        <s:annotation>
-          <s:documentation>СНИЛС</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="omsPolicy" type="SeriesNumberAndType">
-        <s:annotation>
-          <s:documentation>Серия/номер полиса ОМС</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="identityDocument" type="SeriesNumberAndType">
-        <s:annotation>
-          <s:documentation>Серия/номер паспорта (в будущем - документа, удостоверяющего личность)</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="isUnidentified" type="s:boolean">
-        <s:annotation>
-          <s:documentation>Признак неидентифицированного</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="extraMark" type="String">
-        <s:annotation>
-          <s:documentation>Особые отметки</s:documentation>
+          <s:documentation>Дата/время окончания</s:documentation>
         </s:annotation>
       </s:element>
     </s:sequence>
   </s:complexType>
-<s:complexType name="InstanceIdentifier">
+  <s:complexType name="ArrayOfallergyAllergy">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="allergy" nillable="true" type="tns:Allergy"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Allergy">
     <s:annotation>
-      <s:documentation>Пара root + extension</s:documentation>
+      <s:documentation>Аллергия и лекарственная непереносимость</s:documentation>
     </s:annotation>
     <s:sequence>
-      <s:element minOccurs="0" name="root" type="String">
+      <s:element minOccurs="0" name="extId" type="tns:String">
         <s:annotation>
-          <s:documentation>Assigning authority OID</s:documentation>
+          <s:documentation>Идентификатор в МИС</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="extension" type="String">
+      <s:element minOccurs="0" name="encounterCode" type="tns:String">
         <s:annotation>
-          <s:documentation>Identifier extension</s:documentation>
+          <s:documentation>Код эпизода</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredBy" type="tns:Employee">
+        <s:annotation>
+          <s:documentation>Автор записи (врач)
+ТФОМС: IDDOKT (региональный справочник), PRVS (V004) - специальность</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredOn" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время ввода записи в МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="allergy" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Аллергия/непереносимость (название препарата, шерсть животных, продукт питания, пыль, ...)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="reaction" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Тип реакции (характер побочного действия)
+ф 003/у</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="comments" type="tns:String">
+        <s:annotation>
+          <s:documentation>Дополнительная информация</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="onsetTime" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время начала заболевания</s:documentation>
         </s:annotation>
       </s:element>
     </s:sequence>
   </s:complexType>
-<s:complexType name="SeriesNumberAndType">
+  <s:complexType name="ArrayOfdocumentDocument">
+    <s:sequence>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="document" nillable="true" type="tns:Document"/>
+    </s:sequence>
+  </s:complexType>
+  <s:complexType name="Document">
     <s:annotation>
-      <s:documentation>Пара серия + номер (+ тип)</s:documentation>
+      <s:documentation>Документы</s:documentation>
     </s:annotation>
     <s:sequence>
-      <s:element minOccurs="0" name="series" type="String">
+      <s:element name="extId" type="tns:String">
         <s:annotation>
-          <s:documentation>Серия</s:documentation>
+          <s:documentation>Идентификатор документа, уникальный в рамках МИС</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="number" type="String">
+      <s:element name="encounterCode" type="tns:String">
         <s:annotation>
-          <s:documentation>Номер</s:documentation>
+          <s:documentation>Код эпизода (привязка к эпизоду обязательна в связи с необходимостью отправки СЭМД в фед ИЭМК)</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="type" type="String">
+      <s:element name="enteredBy" type="tns:Employee">
         <s:annotation>
-          <s:documentation>Тип (не используется)</s:documentation>
+          <s:documentation>Автор документа (указание автора обязательно в связи с необходимостью отправки СЭМД в фед ИЭМК)</s:documentation>
         </s:annotation>
       </s:element>
+      <s:element minOccurs="0" name="enteredOn" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время добавления документа в МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="noteText" type="tns:String">
+        <s:annotation>
+          <s:documentation>Текст документа</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="docType" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Тип документа
+PnR - "Отображаемое значение типа СЭМД ко классификатору 1.2.643.5.1.13.2.1.1.646" (SLM365)
+СЭМД - "Тип медицинского документа" - code/codeSystem=1.2.643.5.1.13.2.1.1.646 (1=Эпикриз стационара, 2=Амбулаторный эпикриз, 3=Направление)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="docNum" type="tns:String">
+        <s:annotation>
+          <s:documentation>Номер документа</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="docDate" type="s:date">
+        <s:annotation>
+          <s:documentation>Дата документа</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="docName" type="tns:String">
+        <s:annotation>
+          <s:documentation>Название документа
+PnR - Name (Заголовок документа)
+СЭМД - title</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="fileType" type="tns:String">
+        <s:annotation>
+          <s:documentation>Тип файла</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="stream" type="s:base64Binary">
+        <s:annotation>
+          <s:documentation>Содержимое файла</s:documentation>
+        </s:annotation>
+      </s:element>
+      
     </s:sequence>
   </s:complexType>
-<s:complexType name="DocumentQuery">
+  <s:complexType name="ArrayOfserviceMedService">
     <s:sequence>
-      <s:element name="facilityCode" type="String">
-        <s:annotation>
-          <s:documentation>Код ЛПУ по справочнику 1.2.643.5.1.13.2.1.1.178 (MDR308)</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="initiatedBy" type="Employee">
-        <s:annotation>
-          <s:documentation>Инициатор запроса</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="params" type="DocumentParams">
-        <s:annotation>
-          <s:documentation>Параметры запроса</s:documentation>
-        </s:annotation>
-      </s:element>
+      <s:element maxOccurs="unbounded" minOccurs="0" name="service" nillable="true" type="tns:MedService"/>
     </s:sequence>
   </s:complexType>
-<s:complexType name="DocumentParams">
+  <s:complexType name="MedService">
+    <s:annotation>
+      <s:documentation>Оказанные медицинские услуги</s:documentation>
+    </s:annotation>
     <s:sequence>
-      <s:element minOccurs="0" name="patientMRN" type="InstanceIdentifier">
+      <s:element minOccurs="0" name="extId" type="tns:String">
         <s:annotation>
-          <s:documentation>Идентификатор пациента в МИС ЛПУ (extension) + код ЛПУ (root)</s:documentation>
+          <s:documentation>Идентификатор в МИС</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="status">
+      <s:element minOccurs="0" name="encounterCode" type="tns:String">
         <s:annotation>
-          <s:documentation>Статус документа</s:documentation>
-        </s:annotation>
-        <s:simpleType>
-          <s:restriction base="s:string">
-            <s:enumeration value="SUBMITTED"/>
-            <s:enumeration value="APPROVED"/>
-            <s:enumeration value="DEPRECATED"/>
-          </s:restriction>
-        </s:simpleType>
-      </s:element>
-      <s:element minOccurs="0" name="docDateLow" type="s:date">
-        <s:annotation>
-          <s:documentation>Дата документа (начало периода)</s:documentation>
+          <s:documentation>Код эпизода</s:documentation>
         </s:annotation>
       </s:element>
-      <s:element minOccurs="0" name="docDateHigh" type="s:date">
+      <s:element minOccurs="0" name="enteredBy" type="tns:Employee">
         <s:annotation>
-          <s:documentation>Дата документа (окончание периода)</s:documentation>
+          <s:documentation>Автор записи (врач)
+ТФОМС: IDDOKT (региональный справочник), PRVS (V004) - специальность</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="enteredOn" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время ввода записи в МИС</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="service" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Код и название услуги
+ТФОМС: CODE_USL - Территориальный классификатор услуг (поле PriceCode в справочнике AMB)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="standard" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Код и название стандарта медицинской помощи (СМП)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="diagnosis" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Диагноз (код МКБ-10 и расшифровка)
+ТФОМС: только для стомат услуг - DS_DENT</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="quantity" type="s:decimal">
+        <s:annotation>
+          <s:documentation>Кол-во оказанных услуг
+ТФОМС: KOL_USL</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="unitOfMeasure" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Единица измерения</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="renderedOn" type="s:dateTime">
+        <s:annotation>
+          <s:documentation>Дата/время оказания
+ТФОМС: DATEUSL</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="renderedBy" type="tns:Employee">
+        <s:annotation>
+          <s:documentation>Врач
+ТФОМС: CODE_MD, PRVS</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="description" type="tns:String">
+        <s:annotation>
+          <s:documentation>Описание</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="anesthesia" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Метод обезболивания</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="complications" type="tns:String">
+        <s:annotation>
+          <s:documentation>Осложнения</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="servCareType" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Вид медицинской помощи
+ТФОМС: SKIND (региональный справочник - более детализирован, чем V008)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="typeOper" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Вид лечения - для стационарных услуг
+ТФОМС: TYPEOPER - Код вида лечения (Из справочника Typeoper)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="interventionType" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Вид вмешательства
+ТФОМС: INTOX - Код вмешательства (Заполняется кодом вмешательства из справочника INTERV)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="facilityDept" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Отделение МО
+ТФОМС: PODR - Отделение МО лечения из регионального справочника</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="careProfile" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Профиль оказанной медицинской помощи
+ТФОМС: PROFIL (V002)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="isChildProfile" type="s:boolean">
+        <s:annotation>
+          <s:documentation>Признак детского профиля
+ТФОМС: DET (0-нет, 1-да, заполняется 1 если в прейскуранте поле AGE = 2, т.е. возраст пациента меньше 18 лет)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="bedProfile" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Профиль койки
+ТФОМС: BEDPROF (справочник LPUPL)</s:documentation>
+        </s:annotation>
+      </s:element>
+      <s:element minOccurs="0" name="servPaymentType" type="tns:CodeAndName">
+        <s:annotation>
+          <s:documentation>Способ оплаты медицинской помощи
+ТФОМС: IDSP (Классификатор способов оплаты медицинской помощи V010)</s:documentation>
         </s:annotation>
       </s:element>
     </s:sequence>
   </s:complexType>
-<s:complexType name="RetrieveDocumentQuery">
-    <s:sequence>
-      <s:element name="facilityCode" type="String">
-        <s:annotation>
-          <s:documentation>Код ЛПУ по справочнику 1.2.643.5.1.13.2.1.1.178 (MDR308)</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element minOccurs="0" name="initiatedBy" type="Employee">
-        <s:annotation>
-          <s:documentation>Инициатор запроса</s:documentation>
-        </s:annotation>
-      </s:element>
-      <s:element name="documentId" type="String">
-        <s:annotation>
-          <s:documentation>Идентификатор документа</s:documentation>
-        </s:annotation>
-      </s:element>
-    </s:sequence>
-  </s:complexType>
-<s:element name="patientQuery" type="PatientQuery"/>
-<s:element name="documentQuery" type="DocumentQuery"/>
-<s:element name="retrieveDocumentQuery" type="RetrieveDocumentQuery"/>
+<s:element name="container" type="__tns:Container"/>
 </s:schema>
 </wsdl:types>
-<wsdl:message name="patientQuerySoapIn">
-<wsdl:part name="parameters" element="patientQuery"/>
+<wsdl:message name="containerSoapIn">
+<wsdl:part name="parameters" element="ns:container"/>
 </wsdl:message>
-<wsdl:message name="patientQuerySoapOut"/>
-<wsdl:message name="documentQuerySoapIn">
-<wsdl:part name="parameters" element="documentQuery"/>
-</wsdl:message>
-<wsdl:message name="documentQuerySoapOut"/>
-<wsdl:message name="retrieveDocumentQuerySoapIn">
-<wsdl:part name="parameters" element="retrieveDocumentQuery"/>
-</wsdl:message>
-<wsdl:message name="retrieveDocumentQuerySoapOut"/>
-<wsdl:portType name="QueryIEMKServiceSoap">
-<wsdl:operation name="patientQuery">
-<wsdl:input message="tns:patientQuerySoapIn"/>
-<wsdl:output message="tns:patientQuerySoapOut"/>
-</wsdl:operation>
-<wsdl:operation name="documentQuery">
-<wsdl:input message="tns:documentQuerySoapIn"/>
-<wsdl:output message="tns:documentQuerySoapOut"/>
-</wsdl:operation>
-<wsdl:operation name="retrieveDocumentQuery">
-<wsdl:input message="tns:retrieveDocumentQuerySoapIn"/>
-<wsdl:output message="tns:retrieveDocumentQuerySoapOut"/>
+<wsdl:message name="containerSoapOut"/>
+<wsdl:portType name="EMRReceiverServiceSoap">
+<wsdl:operation name="container">
+<wsdl:input message="tns:containerSoapIn"/>
+<wsdl:output message="tns:containerSoapOut"/>
 </wsdl:operation>
 </wsdl:portType>
-<wsdl:binding name="QueryIEMKServiceSoap" type="tns:QueryIEMKServiceSoap">
+<wsdl:binding name="EMRReceiverServiceSoap" type="tns:EMRReceiverServiceSoap">
 <soap:binding style="document" transport="http://schemas.xmlsoap.org/soap/http"/>
-<wsdl:operation name="patientQuery">
-<soap:operation soapAction="" style="document"/>
-<wsdl:input>
-<soap:body use="literal"/>
-</wsdl:input>
-<wsdl:output>
-<soap:body use="literal"/>
-</wsdl:output>
-</wsdl:operation>
-<wsdl:operation name="documentQuery">
-<soap:operation soapAction="" style="document"/>
-<wsdl:input>
-<soap:body use="literal"/>
-</wsdl:input>
-<wsdl:output>
-<soap:body use="literal"/>
-</wsdl:output>
-</wsdl:operation>
-<wsdl:operation name="retrieveDocumentQuery">
+<wsdl:operation name="container">
 <soap:operation soapAction="" style="document"/>
 <wsdl:input>
 <soap:body use="literal"/>
@@ -409,9 +1906,9 @@ PnR (Секция описания автора документа) - authorPers
 </wsdl:output>
 </wsdl:operation>
 </wsdl:binding>
-<wsdl:service name="QueryIEMKService">
-<wsdl:port name="QueryIEMKServiceSoap" binding="tns:QueryIEMKServiceSoap">
-<soap:address location="http://localhost:57776/csp/healthshare/ehr/isc.emr.QueryIEMKService.cls"/>
+<wsdl:service name="EMRReceiverService">
+<wsdl:port name="EMRReceiverServiceSoap" binding="tns:EMRReceiverServiceSoap">
+<soap:address location="http://37.139.9.166:57772/csp/healthshare/ehr/isc.emr.EMRReceiverService.cls"/>
 </wsdl:port>
 </wsdl:service>
 </wsdl:definitions>

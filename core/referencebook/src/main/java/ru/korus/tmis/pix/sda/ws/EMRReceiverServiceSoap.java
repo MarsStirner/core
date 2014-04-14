@@ -6,7 +6,6 @@ import javax.jws.WebParam;
 import javax.jws.WebService;
 import javax.jws.soap.SOAPBinding;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.ws.soap.Addressing;
 
 
 /**
@@ -20,7 +19,6 @@ import javax.xml.ws.soap.Addressing;
 @XmlSeeAlso({
     ObjectFactory.class
 })
-@Addressing(enabled=true, required=false)
 public interface EMRReceiverServiceSoap {
 
 
@@ -30,7 +28,7 @@ public interface EMRReceiverServiceSoap {
      */
     @WebMethod
     public void container(
-        @WebParam(name = "container", targetNamespace = "", partName = "parameters")
+        @WebParam(name = "container", targetNamespace = "http://schemas.intersystems.ru/hs/ehr/v1", partName = "parameters")
         Container parameters);
 
 }

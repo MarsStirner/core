@@ -3,6 +3,7 @@ package ru.korus.tmis.pix.sda.ws;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.bind.annotation.XmlType;
 
 
@@ -14,11 +15,11 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="CodeAndName">
  *   &lt;complexContent>
- *     &lt;extension base="{}BaseSerial">
+ *     &lt;extension base="{http://schemas.intersystems.ru/hs/ehr/v1}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="code" type="{}String" minOccurs="0"/>
- *         &lt;element name="name" type="{}String" minOccurs="0"/>
- *         &lt;element name="codingSystem" type="{}String" minOccurs="0"/>
+ *         &lt;element name="code" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="name" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="codingSystem" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
@@ -32,6 +33,9 @@ import javax.xml.bind.annotation.XmlType;
     "code",
     "name",
     "codingSystem"
+})
+@XmlSeeAlso({
+    CDAFacility.class
 })
 public class CodeAndName
     extends BaseSerial

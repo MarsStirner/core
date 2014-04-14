@@ -16,10 +16,10 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="Privilege">
  *   &lt;complexContent>
- *     &lt;extension base="{}BaseSerial">
+ *     &lt;extension base="{http://schemas.intersystems.ru/hs/ehr/v1}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="category" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="document" type="{}PrivilegeDocument" minOccurs="0"/>
+ *         &lt;element name="category" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="document" type="{http://schemas.intersystems.ru/hs/ehr/v1}PrivilegeDocument" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>

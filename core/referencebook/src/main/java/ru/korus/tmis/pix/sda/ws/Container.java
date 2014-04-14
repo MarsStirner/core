@@ -16,18 +16,18 @@ import javax.xml.bind.annotation.*;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="patient" type="{}Patient" minOccurs="0"/>
- *         &lt;element name="sourceDocument" type="{}ContainerDocument" minOccurs="0"/>
- *         &lt;element name="encounters" type="{}ArrayOfencounterEncounter" minOccurs="0"/>
- *         &lt;element name="diagnoses" type="{}ArrayOfdiagnosisDiagnosis" minOccurs="0"/>
- *         &lt;element name="disabilities" type="{}ArrayOfdisabilityDisability" minOccurs="0"/>
- *         &lt;element name="sickLeaveDocuments" type="{}ArrayOfsickLeaveDocumentSickLeaveDocument" minOccurs="0"/>
- *         &lt;element name="allergies" type="{}ArrayOfallergyAllergy" minOccurs="0"/>
- *         &lt;element name="documents" type="{}ArrayOfdocumentDocument" minOccurs="0"/>
- *         &lt;element name="services" type="{}ArrayOfserviceMedService" minOccurs="0"/>
+ *         &lt;element name="patient" type="{http://schemas.intersystems.ru/hs/ehr/v1}Patient" minOccurs="0"/>
+ *         &lt;element name="sourceDocument" type="{http://schemas.intersystems.ru/hs/ehr/v1}ContainerDocument" minOccurs="0"/>
+ *         &lt;element name="encounters" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfencounterEncounter" minOccurs="0"/>
+ *         &lt;element name="diagnoses" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfdiagnosisDiagnosis" minOccurs="0"/>
+ *         &lt;element name="disabilities" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfdisabilityDisability" minOccurs="0"/>
+ *         &lt;element name="sickLeaveDocuments" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfsickLeaveDocumentSickLeaveDocument" minOccurs="0"/>
+ *         &lt;element name="allergies" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfallergyAllergy" minOccurs="0"/>
+ *         &lt;element name="documents" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfdocumentDocument" minOccurs="0"/>
+ *         &lt;element name="services" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfserviceMedService" minOccurs="0"/>
  *       &lt;/sequence>
- *       &lt;attribute name="facilityCode" use="required" type="{}String" />
- *       &lt;attribute name="patientMRN" use="required" type="{}String" />
+ *       &lt;attribute name="facilityCode" use="required" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" />
+ *       &lt;attribute name="patientMRN" use="required" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" />
  *     &lt;/restriction>
  *   &lt;/complexContent>
  * &lt;/complexType>
@@ -37,7 +37,7 @@ import javax.xml.bind.annotation.*;
  */
 @XmlRootElement
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "container", propOrder = {
+@XmlType(name = "Container", propOrder = {
     "patient",
     "sourceDocument",
     "encounters",

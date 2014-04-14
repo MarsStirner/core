@@ -16,23 +16,23 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="Address">
  *   &lt;complexContent>
- *     &lt;extension base="{}BaseSerial">
+ *     &lt;extension base="{http://schemas.intersystems.ru/hs/ehr/v1}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="country" type="{}String" minOccurs="0"/>
- *         &lt;element name="region" type="{}String" minOccurs="0"/>
- *         &lt;element name="regionKladr" type="{}String" minOccurs="0"/>
- *         &lt;element name="district" type="{}String" minOccurs="0"/>
- *         &lt;element name="districtKladr" type="{}String" minOccurs="0"/>
- *         &lt;element name="city" type="{}String" minOccurs="0"/>
- *         &lt;element name="cityKladr" type="{}String" minOccurs="0"/>
- *         &lt;element name="street" type="{}String" minOccurs="0"/>
- *         &lt;element name="streetKladr" type="{}String" minOccurs="0"/>
- *         &lt;element name="house" type="{}String" minOccurs="0"/>
- *         &lt;element name="block" type="{}String" minOccurs="0"/>
- *         &lt;element name="building" type="{}String" minOccurs="0"/>
- *         &lt;element name="apartment" type="{}String" minOccurs="0"/>
- *         &lt;element name="postalCode" type="{}String" minOccurs="0"/>
- *         &lt;element name="okato" type="{}String" minOccurs="0"/>
+ *         &lt;element name="country" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="region" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="regionKladr" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="district" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="districtKladr" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="city" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="cityKladr" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="street" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="streetKladr" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="house" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="block" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="building" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="apartment" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="postalCode" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="okato" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *         &lt;element name="effectiveDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>

@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="disability" type="{}Disability" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="disability" type="{http://schemas.intersystems.ru/hs/ehr/v1}Disability" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

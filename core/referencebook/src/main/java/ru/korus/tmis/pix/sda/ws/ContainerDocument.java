@@ -16,13 +16,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="ContainerDocument">
  *   &lt;complexContent>
- *     &lt;extension base="{}BaseSerial">
+ *     &lt;extension base="{http://schemas.intersystems.ru/hs/ehr/v1}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="docType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="docNum" type="{}String" minOccurs="0"/>
+ *         &lt;element name="docType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="docNum" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *         &lt;element name="docDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
- *         &lt;element name="docAuthor" type="{}Employee" minOccurs="0"/>
- *         &lt;element name="docTarget" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="docAuthor" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee" minOccurs="0"/>
+ *         &lt;element name="docTarget" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>

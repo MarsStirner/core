@@ -23,14 +23,15 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="baseClinic" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="snils" type="{}Snils" minOccurs="0"/>
- *         &lt;element name="enp" type="{}Enp" minOccurs="0"/>
- *         &lt;element name="familyName" type="{}String" minOccurs="0"/>
- *         &lt;element name="givenName" type="{}String" minOccurs="0"/>
- *         &lt;element name="middleName" type="{}String" minOccurs="0"/>
- *         &lt;element name="dob" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
- *         &lt;element name="birthAddress" type="{}Address" minOccurs="0"/>
+ *         &lt;element name="baseClinic" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="snils" type="{http://schemas.intersystems.ru/hs/ehr/v1}Snils" minOccurs="0"/>
+ *         &lt;element name="enp" type="{http://schemas.intersystems.ru/hs/ehr/v1}Enp" minOccurs="0"/>
+ *         &lt;element name="familyName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String"/>
+ *         &lt;element name="givenName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String"/>
+ *         &lt;element name="middleName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="prevNames" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfNameName" minOccurs="0"/>
+ *         &lt;element name="dob" type="{http://www.w3.org/2001/XMLSchema}date"/>
+ *         &lt;element name="birthAddress" type="{http://schemas.intersystems.ru/hs/ehr/v1}Address" minOccurs="0"/>
  *         &lt;element name="gender" minOccurs="0">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -39,10 +40,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *             &lt;/restriction>
  *           &lt;/simpleType>
  *         &lt;/element>
- *         &lt;element name="legalAddress" type="{}Address" minOccurs="0"/>
- *         &lt;element name="actualAddress" type="{}Address" minOccurs="0"/>
- *         &lt;element name="postalAddress" type="{}Address" minOccurs="0"/>
- *         &lt;element name="prevAddresses" type="{}ArrayOfaddressHistoryEntry" minOccurs="0"/>
+ *         &lt;element name="legalAddress" type="{http://schemas.intersystems.ru/hs/ehr/v1}Address" minOccurs="0"/>
+ *         &lt;element name="actualAddress" type="{http://schemas.intersystems.ru/hs/ehr/v1}Address" minOccurs="0"/>
+ *         &lt;element name="postalAddress" type="{http://schemas.intersystems.ru/hs/ehr/v1}Address" minOccurs="0"/>
+ *         &lt;element name="prevAddresses" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfaddressAddress" minOccurs="0"/>
  *         &lt;element name="dwellingType" minOccurs="0">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -51,18 +52,18 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *             &lt;/restriction>
  *           &lt;/simpleType>
  *         &lt;/element>
- *         &lt;element name="privilege" type="{}Privilege" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="socialStatus" type="{}CodeAndName" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="privilege" type="{http://schemas.intersystems.ru/hs/ehr/v1}Privilege" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="socialStatus" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="isHomeless" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="isServicemanFamily" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="occupation" type="{}Occupation" maxOccurs="unbounded" minOccurs="0"/>
- *         &lt;element name="prevOccupations" type="{}ArrayOfoccupationHistoryEntry" minOccurs="0"/>
- *         &lt;element name="citizenship" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="identityDocument" type="{}IdentityDocument" minOccurs="0"/>
- *         &lt;element name="prevIdentityDocuments" type="{}ArrayOfidentityDocumentIdentityDocument" minOccurs="0"/>
- *         &lt;element name="birthCertificate" type="{}IdentityDocument" minOccurs="0"/>
- *         &lt;element name="omsInsurance" type="{}Insurance" minOccurs="0"/>
- *         &lt;element name="dmsInsurance" type="{}Insurance" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="occupation" type="{http://schemas.intersystems.ru/hs/ehr/v1}Occupation" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="prevOccupations" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfoccupationHistoryEntry" minOccurs="0"/>
+ *         &lt;element name="citizenship" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="identityDocument" type="{http://schemas.intersystems.ru/hs/ehr/v1}IdentityDocument" minOccurs="0"/>
+ *         &lt;element name="prevIdentityDocuments" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfidentityDocumentIdentityDocument" minOccurs="0"/>
+ *         &lt;element name="birthCertificate" type="{http://schemas.intersystems.ru/hs/ehr/v1}IdentityDocument" minOccurs="0"/>
+ *         &lt;element name="omsInsurance" type="{http://schemas.intersystems.ru/hs/ehr/v1}Insurance" minOccurs="0"/>
+ *         &lt;element name="dmsInsurance" type="{http://schemas.intersystems.ru/hs/ehr/v1}Insurance" maxOccurs="unbounded" minOccurs="0"/>
  *         &lt;element name="bloodGroup" minOccurs="0">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -74,17 +75,17 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *           &lt;/simpleType>
  *         &lt;/element>
  *         &lt;element name="rhesusFactor" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="contactInfo" type="{}ContactInfo" minOccurs="0"/>
+ *         &lt;element name="contactInfo" type="{http://schemas.intersystems.ru/hs/ehr/v1}ContactInfo" minOccurs="0"/>
  *         &lt;element name="isTrustee" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="trusteeList" type="{}ArrayOftrusteeTrustee" minOccurs="0"/>
- *         &lt;element name="newBornData" type="{}String" minOccurs="0"/>
+ *         &lt;element name="trusteeList" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOftrusteeTrustee" minOccurs="0"/>
+ *         &lt;element name="newBornData" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *         &lt;element name="isUnidentified" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *         &lt;element name="isForeigner" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="inn" type="{}Inn" minOccurs="0"/>
- *         &lt;element name="race" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="maritalStatus" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="inn" type="{http://schemas.intersystems.ru/hs/ehr/v1}Inn" minOccurs="0"/>
+ *         &lt;element name="race" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="maritalStatus" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *         &lt;element name="children" type="{http://www.w3.org/2001/XMLSchema}long" minOccurs="0"/>
- *         &lt;element name="levelOfEducation" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="levelOfEducation" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -101,6 +102,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "familyName",
     "givenName",
     "middleName",
+    "prevNames",
     "dob",
     "birthAddress",
     "gender",
@@ -140,9 +142,13 @@ public class Patient {
     protected CodeAndName baseClinic;
     protected String snils;
     protected String enp;
+    @XmlElement(required = true)
     protected String familyName;
+    @XmlElement(required = true)
     protected String givenName;
     protected String middleName;
+    protected ArrayOfNameName prevNames;
+    @XmlElement(required = true)
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar dob;
     protected Address birthAddress;
@@ -150,7 +156,7 @@ public class Patient {
     protected Address legalAddress;
     protected Address actualAddress;
     protected Address postalAddress;
-    protected ArrayOfaddressHistoryEntry prevAddresses;
+    protected ArrayOfaddressAddress prevAddresses;
     protected String dwellingType;
     @XmlElement(nillable = true)
     protected List<Privilege> privilege;
@@ -327,6 +333,30 @@ public class Patient {
     }
 
     /**
+     * Gets the value of the prevNames property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ArrayOfNameName }
+     *     
+     */
+    public ArrayOfNameName getPrevNames() {
+        return prevNames;
+    }
+
+    /**
+     * Sets the value of the prevNames property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ArrayOfNameName }
+     *     
+     */
+    public void setPrevNames(ArrayOfNameName value) {
+        this.prevNames = value;
+    }
+
+    /**
      * Gets the value of the dob property.
      * 
      * @return
@@ -475,10 +505,10 @@ public class Patient {
      * 
      * @return
      *     possible object is
-     *     {@link ArrayOfaddressHistoryEntry }
+     *     {@link ArrayOfaddressAddress }
      *     
      */
-    public ArrayOfaddressHistoryEntry getPrevAddresses() {
+    public ArrayOfaddressAddress getPrevAddresses() {
         return prevAddresses;
     }
 
@@ -487,10 +517,10 @@ public class Patient {
      * 
      * @param value
      *     allowed object is
-     *     {@link ArrayOfaddressHistoryEntry }
+     *     {@link ArrayOfaddressAddress }
      *     
      */
-    public void setPrevAddresses(ArrayOfaddressHistoryEntry value) {
+    public void setPrevAddresses(ArrayOfaddressAddress value) {
         this.prevAddresses = value;
     }
 

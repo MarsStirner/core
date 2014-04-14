@@ -10,16 +10,16 @@ import javax.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Java class for ArrayOfaddressHistoryEntry complex type.
+ * <p>Java class for ArrayOfNameName complex type.
  * 
  * <p>The following schema fragment specifies the expected content contained within this class.
  * 
  * <pre>
- * &lt;complexType name="ArrayOfaddressHistoryEntry">
+ * &lt;complexType name="ArrayOfNameName">
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="address" type="{}HistoryEntry" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="Name" type="{http://schemas.intersystems.ru/hs/ehr/v1}Name" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -29,41 +29,41 @@ import javax.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfaddressHistoryEntry", propOrder = {
-    "address"
+@XmlType(name = "ArrayOfNameName", propOrder = {
+    "name"
 })
-public class ArrayOfaddressHistoryEntry {
+public class ArrayOfNameName {
 
-    @XmlElement(nillable = true)
-    protected List<HistoryEntry> address;
+    @XmlElement(name = "Name", nillable = true)
+    protected List<Name> name;
 
     /**
-     * Gets the value of the address property.
+     * Gets the value of the name property.
      * 
      * <p>
      * This accessor method returns a reference to the live list,
      * not a snapshot. Therefore any modification you make to the
      * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the address property.
+     * This is why there is not a <CODE>set</CODE> method for the name property.
      * 
      * <p>
      * For example, to add a new item, do as follows:
      * <pre>
-     *    getAddress().add(newItem);
+     *    getName().add(newItem);
      * </pre>
      * 
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link HistoryEntry }
+     * {@link Name }
      * 
      * 
      */
-    public List<HistoryEntry> getAddress() {
-        if (address == null) {
-            address = new ArrayList<HistoryEntry>();
+    public List<Name> getName() {
+        if (name == null) {
+            name = new ArrayList<Name>();
         }
-        return this.address;
+        return this.name;
     }
 
 }

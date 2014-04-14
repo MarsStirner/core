@@ -21,8 +21,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="extId" type="{}String"/>
- *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
+ *         &lt;element name="extId" type="{http://schemas.intersystems.ru/hs/ehr/v1}String"/>
+ *         &lt;element name="enteredBy" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="encType">
  *           &lt;simpleType>
@@ -32,18 +32,18 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *             &lt;/restriction>
  *           &lt;/simpleType>
  *         &lt;/element>
- *         &lt;element name="paymentType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="paymentType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *         &lt;element name="isAtHome" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="encounterReason" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="facilityDept" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="referralFacility" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="admissionInfo" type="{}Admission" minOccurs="0"/>
- *         &lt;element name="encounterResult" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="encounterOutcome" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="finalAbilityToWork" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="careType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="mes" type="{}ArrayOfmesCodeString" minOccurs="0"/>
- *         &lt;element name="recordNumber" type="{}String" minOccurs="0"/>
+ *         &lt;element name="encounterReason" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="facilityDept" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="referralFacility" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="admissionInfo" type="{http://schemas.intersystems.ru/hs/ehr/v1}Admission" minOccurs="0"/>
+ *         &lt;element name="encounterResult" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="encounterOutcome" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="finalAbilityToWork" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="careType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="mes" type="{http://schemas.intersystems.ru/hs/ehr/v1}ArrayOfmesCodeString" minOccurs="0"/>
+ *         &lt;element name="recordNumber" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *         &lt;element name="fromTime" type="{http://www.w3.org/2001/XMLSchema}dateTime"/>
  *         &lt;element name="toTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *       &lt;/sequence>

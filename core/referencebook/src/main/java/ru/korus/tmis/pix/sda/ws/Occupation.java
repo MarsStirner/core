@@ -16,20 +16,20 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="Occupation">
  *   &lt;complexContent>
- *     &lt;extension base="{}BaseSerial">
+ *     &lt;extension base="{http://schemas.intersystems.ru/hs/ehr/v1}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="organizationName" type="{}String" minOccurs="0"/>
- *         &lt;element name="organizationType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="position" type="{}String" minOccurs="0"/>
- *         &lt;element name="profession" type="{}String" minOccurs="0"/>
- *         &lt;element name="laborType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="socialProfessionalGroup" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="okved" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="organizationName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="organizationType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="position" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="profession" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="laborType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="socialProfessionalGroup" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="okved" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *         &lt;element name="startedOn" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
- *         &lt;element name="harmfulConditions" type="{}String" minOccurs="0"/>
- *         &lt;element name="dayDuration" type="{}String" minOccurs="0"/>
- *         &lt;element name="shiftDuration" type="{}String" minOccurs="0"/>
- *         &lt;element name="ogrn" type="{}String" minOccurs="0"/>
+ *         &lt;element name="harmfulConditions" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="dayDuration" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="shiftDuration" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="ogrn" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>
