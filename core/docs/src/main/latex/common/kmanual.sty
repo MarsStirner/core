@@ -1,0 +1,124 @@
+ \RequirePackage[TS1,T2A]{fontenc}
+ \RequirePackage[14pt]{extsizes}
+ \RequirePackage[utf8]{inputenc}%включаем свою кодировку: koi8-r или utf8 в UNIX, cp1251 в Windows
+ \RequirePackage[english,russian]{babel}%используем русский и английский языки с переносами
+ \RequirePackage{enumerate} %создание и автоматическая нумерация списков
+ \RequirePackage[pdftex]{graphicx} %рисунки
+ \graphicspath{{images/}}%путь к рисункам
+ 
+ \RequirePackage{indentfirst} %абзацные отступы
+ \RequirePackage{cmap} % чтобы работал поиск по PDF
+ \RequirePackage{amssymb}
+ \RequirePackage{textcomp}
+ \RequirePackage{color} %раскраска текста и фона
+ \RequirePackage{colortbl} %раскраска таблиц
+ \RequirePackage{fancyhdr} 
+ \RequirePackage{topcapt} % Заголовок над таблицей
+ \RequirePackage{longtable} % Многостраничные таблицы
+ \RequirePackage [section]{placeins} % размещать все плавающие объекты в пределах подраздела
+ \RequirePackage{caption} %для настройки заголовков рисунков и таблиц
+ 
+ \RequirePackage[pdftex]{geometry} % Меняем поля страницы
+  \geometry{left=2.5cm}% левое поле
+  \geometry{right=1cm}% правое поле
+  \geometry{top=2.5cm}% верхнее поле
+  \geometry{bottom=2.5cm}% нижнее поле
+  \geometry{headheight = 44pt} %высота верхнего колонтитула
+  \geometry{headsep = 21pt} %отступ от колонтитула
+  %\geometry{footskip = 15pt} %нижний колонтитул
+    
+ % формат "содержания"
+ \newcommand\l@sect{\@dottedtocline{1}{0em}{0em}} % собственный тип раздела
+ \renewcommand{\l@part}{\@dottedtocline{1}{0em}{0em}}
+ \renewcommand{\l@section}{\@dottedtocline{1}{0em}{1.5em}}
+ \renewcommand{\l@subsection}{\@dottedtocline{2}{1.5em}{2em}}
+ \renewcommand{\l@subsubsection}{\@dottedtocline{3}{3em}{3em}}
+    
+ %переопределение команд, чтобы названия разделов печатались с красной строки
+ \renewcommand\section{\@startsection {section}{1}{\parindent}%
+   {3.5ex \@plus 1ex \@minus .2ex}%
+   {2.3ex \@plus.2ex}%
+   {\normalfont\Large\bfseries}}
+ \renewcommand\subsection{\@startsection{subsection}{2}{\parindent}%
+   {3.25ex\@plus 1ex \@minus .2ex}%
+   {1.5ex \@plus .2ex}%
+   {\normalfont\large\bfseries}}
+ \renewcommand\subsubsection{\@startsection{subsubsection}{3}{\parindent}%
+   {3.25ex\@plus 1ex \@minus .2ex}%
+   {1.5ex \@plus .2ex}%
+   {\normalfont\normalsize\bfseries}}
+ \renewcommand{\paragraph}{\@startsection{paragraph}{4}{\parindent}% переопределение параграфа, чтобы содержимое отображалось с новой строки после заголовка
+   {3.25ex\@plus 1ex \@minus .2ex}%
+   {1.5ex \@plus .2ex}%
+   {\normalfont\normalsize\bfseries}}
+
+ \renewcommand{\thesection}{\arabic{section}.} % Точка после номера раздела
+ \renewcommand{\thesubsection}{\arabic{section}.\arabic{subsection}.} % Номер подраздела
+ \renewcommand{\thesubsubsection}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.} %Номер под-под раздела
+ \renewcommand{\theparagraph}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.\arabic{paragraph}.} % Номер параграфа
+ \renewcommand{\thesubparagraph}{\arabic{section}.\arabic{subsection}.\arabic{subsubsection}.\arabic{paragraph}.\arabic{subparagraph}.} % Номер подпараграфа
+  
+ \renewcommand{\@listI}{% формат списков (номеров, маркиров)
+  \itemindent=\parindent
+  \listparindent=0em
+  \topsep=8pt plus 2pt minus 4pt
+  \partopsep=2pt plus 1pt minus 1pt
+  \parskip=0pt
+  \itemsep=\parsep
+ }
+  \renewcommand{\@listii}{% формат списков 2-го уровня
+   \itemindent=1em
+  }    
+ \newcommand{\secname}{\hspace{7mm}}
+ 
+ \setcounter{secnumdepth}{5} %глубина нумеруемых разделов
+ \setcounter{tocdepth}{3} % глубина оглавления
+ \tabcolsep=0.15cm % отступы от границ таблицы
+ \AtBeginDocument{\renewcommand\contentsname{Содержание}}
+ \addto\captionsrussian{\def\figurename{Рисунок}}
+ \linespread{1.3} % полуторный межстрочный интервал
+ %\renewcommand{\bfdefault}{b} % менее широкий жирный шрифт - !при включении опции не работает жирный курсив!
+ \righthyphenmin=2 %минимальное число букв для переноса
+ \emergencystretch=25pt % допустимая разреженность строк
+ \tolerance=10000 % граница информирования о разреженности строк
+ \raggedbottom % страницы могут быть разной высоты
+ \captionsetup[figure]{labelsep = period,justification = centering} % разделитель подписи рисунков - точка, выравнивание - по центру
+ \captionsetup[table]{labelsep=period,
+        justification=raggedright,singlelinecheck=false} % разделитель подписи таблиц - точка, выравнивание - по левому краю       
+ 
+ % оформление элементов интерфейса:
+ \newcommand{\btn}[1]{\fboxsep=3pt\fboxrule=0.5pt
+    \fcolorbox[gray]{0}{0.95}{#1}} % кнопка
+ \newcommand{\mm}[1]{\textbf{\textit{#1}}} % пункт главного меню
+ \newcommand{\dm}[1]{\textbf{\textit{#1}}} % прочие поля, вкладки и т.п.
+ \newcommand{\keys}[1]{\colorbox[gray]{0.9}{\texttt{#1}}} % клавиши клавиатуры
+ \newcommand{\putx}{\includegraphics{x}} % вывод изображения флажка х
+ \newcommand{\str}{$\Rightarrow$ }
+ \newcommand{\opr}[1]{\textbf{\textit{\underline{#1}}}} % определения
+ \newcommand{\code}[1]{\texttt{#1}} % текст команд и шаблонов
+ \renewcommand{\labelitemi}{$\mathsurround=0pt \blacktriangleright $} % переопределение маркеров списка
+ \renewcommand{\labelitemii}{$\mathsurround=0pt \triangleright$} % переопределение маркеров списка второго уровня
+    
+ % создаем новый тип раздела (для "Введения" и т.п.
+ % по центру и без номера):
+ \newcounter{sect1}
+ \newcommand{\sect}[1]{\refstepcounter{sect1}\par\vspace{1cm plus 1cm minus .5cm}
+  {\Large\bf\begin{center}#1\end{center}}\par%
+            \addcontentsline{toc}{sect}{#1}\markboth{#1}{#1}
+            \nopagebreak\par}
+     
+ % оформление примечания:
+ \newenvironment{prim}{\tabcolsep=0.25cm \vspace{0.8em}
+    \raggedright
+    \begin{tabular}{|p{16.94cm}|}\hline \includegraphics[width = 25pt, keepaspectratio]{prim}
+    \textbf{Примечание:}}
+    {\\\hline\end{tabular}
+    \vspace{0.5em}} 
+    
+ % оформление секции Внимание:
+ \newenvironment{vnim}{\tabcolsep=0.25cm \vspace{0.8em}
+     \raggedright
+     \begin{tabular}{|p{16.94cm}|}\hline  \includegraphics[width = 14pt, keepaspectratio]{vnim}
+      \bfseries Внимание!}
+     {\\\hline\end{tabular}
+     \vspace{0.5em}} 
