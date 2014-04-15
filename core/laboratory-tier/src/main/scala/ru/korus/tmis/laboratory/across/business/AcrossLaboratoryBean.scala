@@ -5,6 +5,7 @@ import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal}
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
+import java.util
 
 //import ru.korus.tmis.laboratory.data.lis.accept.{AnalysisResult => AResult1}
 
@@ -66,19 +67,19 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   var dbManager: DbManagerBeanLocal = _
 
 
-  def getAcrossLab(): lab2.IAcrossIntf_FNKC = {
+  def getAcrossLab: lab2.IAcrossIntf_FNKC = {
     import lab2._
     try {
       // Вызываем удаленный веб-сервис
       if (ConfigManager.Laboratory2.User != null && ConfigManager.Laboratory2.Password != null) {
         Authenticator.setDefault(new Authenticator() {
-          override def getPasswordAuthentication(): PasswordAuthentication = {
+          override def getPasswordAuthentication: PasswordAuthentication = {
             info("Authentication requested")
             info("host: " + getRequestingHost)
             info("site: " + getRequestingSite.toString)
             info("url: " + getRequestingURL.toString)
 
-            return new PasswordAuthentication(ConfigManager.Laboratory2.User, ConfigManager.Laboratory2.Password.toCharArray);
+            new PasswordAuthentication(ConfigManager.Laboratory2.User, ConfigManager.Laboratory2.Password.toCharArray)
           }
         })
       }
@@ -102,7 +103,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
       val handlerInfo = LoggingHandler.handlerInfo
       val handlerChain =
-        Option(service.getHandlerRegistry.getHandlerChain(endPoint).asInstanceOf[JList[AnyRef]]).getOrElse(new ArrayList[AnyRef])
+        Option(service.getHandlerRegistry.getHandlerChain(endPoint).asInstanceOf[JList[AnyRef]]).getOrElse(new util.ArrayList[AnyRef])
 
       if (!handlerChain.contains(handlerInfo)) handlerChain.add(handlerInfo)
 
@@ -129,7 +130,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
       port
     } catch {
-      case e => {
+      case e: Throwable => {
         error("Error while creating LIS2 service endpoint", e)
         throw e
       }
@@ -189,7 +190,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     // Фильтруем map чтобы найти показатели/методы
 
     val indicators = apsMap.collect {
-      case (apt, ap) if (apt.getTest != null && (apt.getIsAssignable == false || ap.getIsAssigned == true)) =>
+      case (apt, ap) if apt.getTest != null && (!apt.getIsAssignable || ap.getIsAssigned) =>
         info("ap.id=" + ap.getId + " apt.name=" + apt.getName +
           " code=" + apt.getTest.getCode + " name=" + apt.getTest.getName)
 
@@ -230,7 +231,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
   def getDiagnosticRequestInfo(a: Action): DiagnosticRequestInfo = {
     // Id (long) -- уникальный идентификатор направления в МИС (Action.id)
-    val id = (a.getId.intValue)
+    val id = a.getId.intValue
     info("Request:Id=" + a.getId.intValue)
 
     // номер истории болезни eventid
@@ -246,8 +247,8 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     info("Request:CreateDate=" + a.getCreateDatetime)
 
     // PregnancyDurationWeeks (int) -- срок беременности пациентки (в неделях)
-    val pregMin = (a.getEvent.getPregnancyWeek * 7)
-    val pregMax = (a.getEvent.getPregnancyWeek * 7)
+    val pregMin = a.getEvent.getPregnancyWeek * 7
+    val pregMax = a.getEvent.getPregnancyWeek * 7
     info("Request:PregnancyDurationWeeks=" + a.getEvent.getPregnancyWeek)
 
     // Diagnosis
@@ -267,7 +268,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     }
 
     // Comment (string) (необязательно) – произвольный текстовый комментарий к направлению
-    val comment = (a.getNote)
+    val comment = a.getNote
     info("Request:Comment" + comment)
 
     val department = getOrgStructureByEvent(a.getEvent)
@@ -355,9 +356,10 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         val apvs = dbActionProperty.getActionPropertyValue(hospitalBed)
         apvs.foreach(
           (apv) => {
-            if (apv.getValue.isInstanceOf[OrgStructureHospitalBed]) {
-              val bed = apv.getValue.asInstanceOf[OrgStructureHospitalBed]
-              return bed.getMasterDepartment
+            apv.getValue match {
+              case bed: OrgStructureHospitalBed =>
+                return bed.getMasterDepartment
+              case _ =>
             }
           })
       }
@@ -479,7 +481,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
           // Устанавливаем норму
           r.norm.foreach {
-            ap.setNorm(_)
+            ap.setNorm
           }
 
 
@@ -491,7 +493,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
           }))
 
           unit.foreach {
-            ap.setUnit(_)
+            ap.setUnit
           }
 
           entities += ap
@@ -663,7 +665,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
     info("connecting to LIS2 webservice...")
 
-    val labws = getAcrossLab()
+    val labws = getAcrossLab
 
     info("sending to LIS2 webservice...")
     try {
@@ -678,7 +680,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     val a = dbActionBean.getActionById(actionId)
 
     val at = a.getActionType
-    if (at.getId == -1) throw new CoreException(i18n("error.noTypeForAction", a.getId))
+    if (at.getId equals -1) throw new CoreException(i18n("error.noTypeForAction", a.getId))
 
     if (at.getTypeClass != Integer.valueOf(i18n("db.action.diagnosticClass")).intValue) {
       throw new CoreException(i18n("error.invalidActionClass", a.getId, at.getTypeClass))
@@ -725,10 +727,10 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     }
     info("sending to Across LIS webservice...")
     try {
-      getAcrossLab().queryAnalysis(patientInfo, requestInfo, biomaterialInfo, orderInfo)
+      getAcrossLab.queryAnalysis(patientInfo, requestInfo, biomaterialInfo, orderInfo)
       info("successfully interacted with Across LIS webservice...")
     } catch {
-      case e => error("Error response from Across LIS webservice", e)
+      case e: Throwable => error("Error response from Across LIS webservice", e)
     }
   }
 }
