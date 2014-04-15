@@ -20,9 +20,9 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="extId" type="{}String" minOccurs="0"/>
- *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
- *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
+ *         &lt;element name="extId" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="encounterCode" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="enteredBy" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="disabilityGroup" minOccurs="0">
  *           &lt;simpleType>
@@ -34,11 +34,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *           &lt;/simpleType>
  *         &lt;/element>
  *         &lt;element name="isDisabledChild" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="disabilityCause" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="diagnosis" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="disabilityLevel" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="disabilityCause" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="diagnosis" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="disabilityLevel" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *         &lt;element name="isFirstTime" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="cancelReason" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="cancelReason" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *         &lt;element name="fromTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="toTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *       &lt;/sequence>

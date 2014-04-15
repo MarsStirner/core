@@ -14,18 +14,18 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="Trustee">
  *   &lt;complexContent>
- *     &lt;extension base="{}BaseSerial">
+ *     &lt;extension base="{http://schemas.intersystems.ru/hs/ehr/v1}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="trusteeType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="familyName" type="{}String" minOccurs="0"/>
- *         &lt;element name="givenName" type="{}String" minOccurs="0"/>
- *         &lt;element name="middleName" type="{}String" minOccurs="0"/>
- *         &lt;element name="kinship" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="trusteeDocType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="identityDocument" type="{}IdentityDocument" minOccurs="0"/>
- *         &lt;element name="legalAddress" type="{}Address" minOccurs="0"/>
- *         &lt;element name="actualAddress" type="{}Address" minOccurs="0"/>
- *         &lt;element name="contactInfo" type="{}ContactInfo" minOccurs="0"/>
+ *         &lt;element name="trusteeType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="familyName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="givenName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="middleName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="kinship" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="trusteeDocType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="identityDocument" type="{http://schemas.intersystems.ru/hs/ehr/v1}IdentityDocument" minOccurs="0"/>
+ *         &lt;element name="legalAddress" type="{http://schemas.intersystems.ru/hs/ehr/v1}Address" minOccurs="0"/>
+ *         &lt;element name="actualAddress" type="{http://schemas.intersystems.ru/hs/ehr/v1}Address" minOccurs="0"/>
+ *         &lt;element name="contactInfo" type="{http://schemas.intersystems.ru/hs/ehr/v1}ContactInfo" minOccurs="0"/>
  *         &lt;element name="isGuardian" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>

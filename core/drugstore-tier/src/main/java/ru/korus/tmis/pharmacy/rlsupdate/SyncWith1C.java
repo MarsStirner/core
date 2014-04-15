@@ -85,7 +85,7 @@ public class SyncWith1C {
     /**
      * Обновление БД - один раз в день в 0 часов 00 мин
      */
-    @Schedule(second = "00", minute = "00", hour = "00")
+    @Schedule(second = "0", minute = "0", hour = "3")
     public void pull1С() {
         logger.info("update RLS pull...start");
         if ( ConfigManager.Drugstore().isUpdateRLS()) {

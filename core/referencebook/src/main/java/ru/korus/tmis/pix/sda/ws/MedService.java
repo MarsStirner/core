@@ -21,28 +21,28 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="extId" type="{}String" minOccurs="0"/>
- *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
- *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
+ *         &lt;element name="extId" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="encounterCode" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="enteredBy" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="service" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="standard" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="diagnosis" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="service" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="standard" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="diagnosis" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *         &lt;element name="quantity" type="{http://www.w3.org/2001/XMLSchema}decimal" minOccurs="0"/>
- *         &lt;element name="unitOfMeasure" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="unitOfMeasure" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *         &lt;element name="renderedOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="renderedBy" type="{}Employee" minOccurs="0"/>
- *         &lt;element name="description" type="{}String" minOccurs="0"/>
- *         &lt;element name="anesthesia" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="complications" type="{}String" minOccurs="0"/>
- *         &lt;element name="servCareType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="typeOper" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="interventionType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="facilityDept" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="careProfile" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="renderedBy" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee" minOccurs="0"/>
+ *         &lt;element name="description" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="anesthesia" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="complications" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="servCareType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="typeOper" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="interventionType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="facilityDept" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="careProfile" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *         &lt;element name="isChildProfile" type="{http://www.w3.org/2001/XMLSchema}boolean" minOccurs="0"/>
- *         &lt;element name="bedProfile" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="servPaymentType" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="bedProfile" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="servPaymentType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

@@ -16,10 +16,10 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="HistoryEntry">
  *   &lt;complexContent>
- *     &lt;extension base="{}BaseSerial">
+ *     &lt;extension base="{http://schemas.intersystems.ru/hs/ehr/v1}BaseSerial">
  *       &lt;sequence>
  *         &lt;element name="startedOn" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
- *         &lt;element name="historyEntry" type="{}String" minOccurs="0"/>
+ *         &lt;element name="historyEntry" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>

@@ -16,16 +16,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="Insurance">
  *   &lt;complexContent>
- *     &lt;extension base="{}BaseSerial">
+ *     &lt;extension base="{http://schemas.intersystems.ru/hs/ehr/v1}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="insuranceCompany" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="insuranceCompanyOkato" type="{}String" minOccurs="0"/>
- *         &lt;element name="policyType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="policySer" type="{}String" minOccurs="0"/>
- *         &lt;element name="policyNum" type="{}String" minOccurs="0"/>
+ *         &lt;element name="insuranceCompany" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="insuranceCompanyOkato" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="policyType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="policySer" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="policyNum" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *         &lt;element name="effectiveDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
  *         &lt;element name="expirationDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
- *         &lt;element name="insuranceCompanyKladr" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="insuranceCompanyKladr" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>

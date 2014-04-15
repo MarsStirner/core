@@ -20,13 +20,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="extId" type="{}String" minOccurs="0"/>
- *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
- *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
+ *         &lt;element name="extId" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="encounterCode" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="enteredBy" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="allergy" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="reaction" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="comments" type="{}String" minOccurs="0"/>
+ *         &lt;element name="allergy" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="reaction" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="comments" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *         &lt;element name="onsetTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>

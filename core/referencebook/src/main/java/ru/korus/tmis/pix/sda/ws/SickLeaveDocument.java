@@ -20,14 +20,14 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="extId" type="{}String" minOccurs="0"/>
- *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
- *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
+ *         &lt;element name="extId" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="encounterCode" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="enteredBy" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee" minOccurs="0"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="docSer" type="{}String" minOccurs="0"/>
- *         &lt;element name="docNum" type="{}String" minOccurs="0"/>
- *         &lt;element name="reason" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="diagnosis" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="docSer" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="docNum" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="reason" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="diagnosis" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *         &lt;element name="attendantGender" minOccurs="0">
  *           &lt;simpleType>
  *             &lt;restriction base="{http://www.w3.org/2001/XMLSchema}string">
@@ -36,7 +36,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *             &lt;/restriction>
  *           &lt;/simpleType>
  *         &lt;/element>
- *         &lt;element name="attendantAge" type="{}String" minOccurs="0"/>
+ *         &lt;element name="attendantAge" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *         &lt;element name="fromTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *         &lt;element name="toTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *       &lt;/sequence>

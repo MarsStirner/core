@@ -335,7 +335,7 @@ public class SdaBuilder {
         }
 
         //Свидетельство о рождении
-        if (clientInfo.getPassport() != null) {
+        if (clientInfo.getBirthCertificate() != null) {
             final IdentityDocument doc = toSdaIdentityDoc(clientInfo.getBirthCertificate());
             if (doc != null) {
                 patient.setBirthCertificate(doc);

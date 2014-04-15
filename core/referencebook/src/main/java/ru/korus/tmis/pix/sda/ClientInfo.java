@@ -633,12 +633,16 @@ public class ClientInfo {
             this.name = name;
             this.pos = clientWork.getPost();
             this.ogrn = ogrn;
-            this.okved = CodeNameSystem.newInstance(clientWork.getOkved(), null, "1.2.643.5.1.13.2.1.1.62");
+
             //TODO: skype:
             //  [17:46:19] Сергей Загребельный: в БД может быть несколько
             //  [17:47:47] Сергей Загребельный: как быть? какую вредность передавать?
             //  [17:48:21] Александр Мартынов: любую... сомневаюсь что вообще кто то это заполняет
             this.harmful = clientWork.getClientWorkHurts().isEmpty() ? null : clientWork.getClientWorkHurts().get(0).getHurtType().getName();
+
+            this.okved = clientWork.getOkved() == null ? null :
+                    RbManager.get(RbManager.RbType.rbOKVED,
+                            CodeNameSystem.newInstance(clientWork.getOkved(), null, "1.2.643.5.1.13.2.1.1.62"));
         }
 
         public String getName() {

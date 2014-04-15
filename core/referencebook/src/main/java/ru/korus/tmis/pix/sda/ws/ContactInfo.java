@@ -14,14 +14,14 @@ import javax.xml.bind.annotation.XmlType;
  * <pre>
  * &lt;complexType name="ContactInfo">
  *   &lt;complexContent>
- *     &lt;extension base="{}BaseSerial">
+ *     &lt;extension base="{http://schemas.intersystems.ru/hs/ehr/v1}BaseSerial">
  *       &lt;sequence>
- *         &lt;element name="homePhone" type="{}String" minOccurs="0"/>
- *         &lt;element name="cellPhone" type="{}String" minOccurs="0"/>
- *         &lt;element name="workPhone" type="{}String" minOccurs="0"/>
- *         &lt;element name="email" type="{}String" minOccurs="0"/>
- *         &lt;element name="contactInfoString" type="{}String" minOccurs="0"/>
- *         &lt;element name="fax" type="{}String" minOccurs="0"/>
+ *         &lt;element name="homePhone" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="cellPhone" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="workPhone" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="email" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="contactInfoString" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="fax" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>

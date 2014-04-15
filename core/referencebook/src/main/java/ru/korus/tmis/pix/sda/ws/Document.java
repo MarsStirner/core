@@ -3,6 +3,7 @@ package ru.korus.tmis.pix.sda.ws;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -20,16 +21,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="extId" type="{}String" minOccurs="0"/>
- *         &lt;element name="encounterCode" type="{}String" minOccurs="0"/>
- *         &lt;element name="enteredBy" type="{}Employee" minOccurs="0"/>
+ *         &lt;element name="extId" type="{http://schemas.intersystems.ru/hs/ehr/v1}String"/>
+ *         &lt;element name="encounterCode" type="{http://schemas.intersystems.ru/hs/ehr/v1}String"/>
+ *         &lt;element name="enteredBy" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee"/>
  *         &lt;element name="enteredOn" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
- *         &lt;element name="noteText" type="{}String" minOccurs="0"/>
- *         &lt;element name="docType" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="docNum" type="{}String" minOccurs="0"/>
+ *         &lt;element name="noteText" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="docType" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="docNum" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *         &lt;element name="docDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
- *         &lt;element name="docName" type="{}String" minOccurs="0"/>
- *         &lt;element name="fileType" type="{}String" minOccurs="0"/>
+ *         &lt;element name="docName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="fileType" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
  *         &lt;element name="stream" type="{http://www.w3.org/2001/XMLSchema}base64Binary" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -55,8 +56,11 @@ import javax.xml.datatype.XMLGregorianCalendar;
 })
 public class Document {
 
+    @XmlElement(required = true)
     protected String extId;
+    @XmlElement(required = true)
     protected String encounterCode;
+    @XmlElement(required = true)
     protected Employee enteredBy;
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar enteredOn;

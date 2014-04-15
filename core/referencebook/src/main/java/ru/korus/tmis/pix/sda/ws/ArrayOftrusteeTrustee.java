@@ -19,7 +19,7 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="trustee" type="{}Trustee" maxOccurs="unbounded" minOccurs="0"/>
+ *         &lt;element name="trustee" type="{http://schemas.intersystems.ru/hs/ehr/v1}Trustee" maxOccurs="unbounded" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>

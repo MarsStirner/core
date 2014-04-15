@@ -18,13 +18,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
  * <pre>
  * &lt;complexType name="DispensarySupervision">
  *   &lt;complexContent>
- *     &lt;extension base="{}BaseSerial">
+ *     &lt;extension base="{http://schemas.intersystems.ru/hs/ehr/v1}BaseSerial">
  *       &lt;sequence>
  *         &lt;element name="startDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
  *         &lt;element name="stopDate" type="{http://www.w3.org/2001/XMLSchema}date" minOccurs="0"/>
- *         &lt;element name="startedBy" type="{}Employee" minOccurs="0"/>
- *         &lt;element name="stoppedBy" type="{}Employee" minOccurs="0"/>
- *         &lt;element name="stopReason" type="{}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="startedBy" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee" minOccurs="0"/>
+ *         &lt;element name="stoppedBy" type="{http://schemas.intersystems.ru/hs/ehr/v1}Employee" minOccurs="0"/>
+ *         &lt;element name="stopReason" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/extension>
  *   &lt;/complexContent>

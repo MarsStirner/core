@@ -18,16 +18,16 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="code" type="{}String" minOccurs="0"/>
- *         &lt;element name="name" type="{}String" minOccurs="0"/>
- *         &lt;element name="codingSystem" type="{}String" minOccurs="0"/>
- *         &lt;element name="specialty" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="role" type="{}CodeAndName" minOccurs="0"/>
- *         &lt;element name="snils" type="{}Snils" minOccurs="0"/>
- *         &lt;element name="familyName" type="{}String" minOccurs="0"/>
- *         &lt;element name="givenName" type="{}String" minOccurs="0"/>
- *         &lt;element name="middleName" type="{}String" minOccurs="0"/>
- *         &lt;element name="contactInfo" type="{}ContactInfo" minOccurs="0"/>
+ *         &lt;element name="code" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="name" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="codingSystem" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="specialty" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="role" type="{http://schemas.intersystems.ru/hs/ehr/v1}CodeAndName" minOccurs="0"/>
+ *         &lt;element name="snils" type="{http://schemas.intersystems.ru/hs/ehr/v1}Snils" minOccurs="0"/>
+ *         &lt;element name="familyName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="givenName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="middleName" type="{http://schemas.intersystems.ru/hs/ehr/v1}String" minOccurs="0"/>
+ *         &lt;element name="contactInfo" type="{http://schemas.intersystems.ru/hs/ehr/v1}ContactInfo" minOccurs="0"/>
  *         &lt;element name="fromTime" type="{http://www.w3.org/2001/XMLSchema}dateTime" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
