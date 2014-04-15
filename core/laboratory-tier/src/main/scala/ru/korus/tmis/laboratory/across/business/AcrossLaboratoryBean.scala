@@ -568,7 +568,10 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     // Сохраняем дефекты биоматериала в комментарий к действию
     a.setNote(biomaterialDefects)
     // Изменяем статус действия на "Закончено"
-    if (finished) a.setStatus(ActionStatus.FINISHED.getCode)
+    if (finished) {
+      a.setStatus(ActionStatus.FINISHED.getCode)
+      entities += a
+    }
 
     // Сохраняем изменившиеся сущности в БД
     dbManager.mergeAll(entities)
