@@ -58,7 +58,7 @@
             <position>сторож</position>
             <okved>
                 <code>01114</code>
-                <codingSystem>1.2.643.5.1.13.2.1.1.62</codingSystem>
+                <codingSystem>rbOKVED</codingSystem>
             </okved>
             <harmfulConditions>Работы на высоте, верхолазные работы, крановщика (машиниста крана), лифтера скоростных лифтов </harmfulConditions>
             <ogrn>1234567890123</ogrn>
