@@ -1,0 +1,27 @@
+ \documentclass[a4paper,14pt]{report} %размер бумаги устанавливаем А4, шрифт 14пунктов
+ \usepackage{kmanual} % собственный стиль
+ \usepackage{makeidx}
+ \usepackage{longtable, tabu}
+ \makeindex
+
+ \makeatletter
+
+ \makeatother
+
+ \begin{document}
+ \include{movings_title}
+ В основе реализации движений пациентов по отделениям лежит таблица Action (Таблица \ref{db.ActionTable}).
+ {\scriptsize \input{action}}
+
+ Движение пациента описывается следующими типами действий: \\
+ \begin{table}[h]
+ \begin{tabular}{|c|c|}
+ \hline
+ Имя типа & flatcode \\
+ \hline
+ Поступление & received \\
+ Движение & moving \\
+ \hline
+ \end{tabular}
+ \end{table}
+ \end{document}

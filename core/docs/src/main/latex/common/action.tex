@@ -1,0 +1,56 @@
+ {\tabulinesep=1.2mm
+ \begin{longtabu} to \textwidth {|X[1,c]|X[1,l]|X[1.5,l]|}
+ \caption{Описание полей таблицы Action} \label{db.ActionTable}\\
+ \hline
+ Поле                   & Описание                                          & MySQL описание \\                             \hline
+ id                     & Идентификатор действия                            & int(11) NOT NULL AUTO\_INCREMENT \\           \hline
+ createDatetime         & Дата создания записи                              & datetime NOT NULL \\                          \hline
+ createPerson\_id       & Автор записи, ссылка на таблицу Person            & int(11) DEFAULT NULL \\                       \hline
+ modifyDatetime         & Дата изменения записи                             & datetime NOT NULL \\                          \hline
+ modifyPerson\_id       & Автор изменения записи, ссылка на таблицу Person  & int(11) DEFAULT NULL \\                       \hline
+ deleted                & Отметка удаления записи                           &  tinyint(1) NOT NULL DEFAULT \\               \hline
+ actionType\_id         & Тип действия, ссылка на таблицу ActionType        & int(11) NOT NULL \\                           \hline
+ event\_id              & Событие, к которому относистся действие, ссылка на
+                            таблицу Event                                   & int(11) DEFAULT NULL \\                       \hline
+ idx                    & Индекс в списке событий (для сортировки в списке) & NOT NULL DEFAULT '0' \\                       \hline
+ directionDate          & Дата назначения                                   & datetime DEFAULT NULL \\                                                                 \hline
+ status                 & Статус выполнения: 0-Начато, 1-Ожидание,
+                            2-Закончено, 3-Отменено                         & tinyint(4) NOT NULL \\                        \hline
+ setPerson\_id          & Назначивший, ссылка на таблицу Person             & int(11) DEFAULT NULL \\                       \hline
+ isUrgent               & Является срочным                                  & int(1) NOT NULL DEFAULT '0' \\                \hline
+ begDate                & Дата начала работы                                & datetime DEFAULT NULL \\                      \hline
+ plannedEndDate         & Плановая дата выполнения                          & datetime NOT NULL \\                          \hline
+ endDate                & Дата окончания работы                             & datetime DEFAULT NULL \\                      \hline
+ note                   & Примечания                                        & text NOT NULL \\                              \hline
+ person\_id             & Исполнитель, ссылка на таблицу Person             & int(11) DEFAULT NULL \\                       \hline
+ office                 & Кабинет                                           & varchar(16) NOT NULL \\                       \hline
+ amount                 & Количество                                        & double NOT NULL \\                            \hline
+ uet                    & УЕТ (Условные Единицы Трудозатрат)                & double DEFAULT '0' \\                         \hline
+ expose                 & Выставлять счёт                                   & int(1) NOT NULL DEFAULT '1' \\                \hline
+ payStatus              & Флаги финансирования                              & int(11) NOT NULL \\                           \hline
+ account                & Флаг Считать                                      & tinyint(1) NOT NULL \\                        \hline
+ finance\_id            & Тип финансирования, ссылка на таблицу rbFinance   & int(11) DEFAULT NULL \\                       \hline
+ prescription\_id       & Назначение, ссылка на талицу Action               & int(11) DEFAULT NULL \\                       \hline
+ takenTissueJournal\_id & Журнал забора тканей, ссылка на
+                            таблицу TakenTissueJournal                      & int(11) DEFAULT NULL \\                       \hline
+ contract\_id           & Договор, ссылка на таблицу Contract               & int(11) DEFAULT NULL \\                       \hline
+ coordDate              & Дата и время согласования                         & datetime DEFAULT NULL \\                      \hline
+ coordAgent             & Сотрудник ЛПУ, согласовавший действие             & varchar(128) NOT NULL DEFAULT '' \\           \hline
+ coordInspector         & Представитель плательщика (сотрудник СМО),
+                            согласовавший действие                          & varchar(128) NOT NULL DEFAULT '' \\           \hline
+ coordText              & Текст согласования                                & tinytext NOT NULL \\                          \hline
+ hospitalUidFrom        &                                                   & varchar(128) NOT NULL DEFAULT '0' \\          \hline
+ pacientInQueueType     &                                                   & tinyint(4) DEFAULT '0' \\                     \hline
+ AppointmentType        & amb - амбулаторный пациент, hospital - пациент из
+                            стационара (прием в стационаре), polyclinic -
+                            пациент из стационара (прием в поликлинике),
+                            diagnostics - диагностика                       & enum('0', 'amb',
+                                                                                'hospital', 'polyclinic', 'diagnostics',
+                                                                                'portal', 'otherLPU') \\                    \hline
+ version                &                                                   & int(11) NOT NULL DEFAULT '0' \\               \hline
+ parentAction\_id       & Родительское действие, ссылка на таблицу Action   & int(11) DEFAULT NULL \\                       \hline
+ uuid\_id               &                                                   & int(11) NOT NULL DEFAULT '0' \\               \hline
+ dcm\_study\_uid        & Внешний идентификатор записи в системе
+                            DICOM Архив                                     & varchar(50) DEFAULT NULL \\                   \hline
+ \end{longtabu}
+}

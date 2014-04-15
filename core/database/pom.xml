@@ -30,7 +30,12 @@
             <type>jar</type>
         </dependency>
 
-
+        <dependency>
+            <groupId>joda-time</groupId>
+            <artifactId>joda-time</artifactId>
+            <version>${version.joda.time}</version>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
     <build>
