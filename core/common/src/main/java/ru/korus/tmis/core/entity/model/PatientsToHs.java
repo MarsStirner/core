@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
+import ru.korus.tmis.core.data.Transmittable;
+
 import java.io.Serializable;
 import java.sql.Timestamp;
 
@@ -16,7 +18,7 @@ import javax.persistence.*;
                 @NamedQuery(name = "PatientsToHs.ToSend", query = "SELECT pths FROM PatientsToHs pths WHERE pths.sendTime < :now ORDER BY pths.patientId")
         }
 )
-public class PatientsToHs implements Serializable {
+public class PatientsToHs implements Serializable, Transmittable {
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -82,4 +84,8 @@ public class PatientsToHs implements Serializable {
         this.patient = patient;
     }
 
+    @Override
+    public Integer getId() {
+       return getPatientId();
+    }
 }

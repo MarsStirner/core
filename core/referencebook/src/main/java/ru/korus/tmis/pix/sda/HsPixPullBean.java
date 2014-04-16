@@ -3,6 +3,7 @@ package ru.korus.tmis.pix.sda;
 import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.data.Transmittable;
 import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.database.RbMedicalAidProfileBeanLocal;
@@ -92,12 +93,10 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
 
                 addNewEvent(newEvents);
 
-                EMRReceiverServiceSoap port = getEmrReceiverServiceSoap();
-
                 // Отправка завершенных обращений
-                sendNewEventToHS(port);
+                sendNewEventToHS();
                 // Отправка карточек новых/обновленных пациентов
-                sendPatientsInfo(port);
+                sendPatientsInfo();
             } else {
                 logger.info("HS integration is disabled...");
             }
@@ -116,43 +115,30 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
         return port;
     }
 
-    /**
-     * @param port
-     */
-    private void sendPatientsInfo(EMRReceiverServiceSoap port) {
+
+    private void sendPatientsInfo() {
         List<PatientsToHs> patientsToHs = em.
                 createNamedQuery("PatientsToHs.ToSend", PatientsToHs.class)
                 .setParameter("now", new Timestamp((new Date()).getTime())).setMaxResults(MAX_RESULT).getResultList();
-        for (PatientsToHs patientToHs : patientsToHs) {
+
+        for (Transmittable patientToHs : patientsToHs) {
             try {
-                logger.info("HS integration processing. Sending patient info. PatientsToHs.client_id = {}", patientToHs.getPatientId());
-                sendPatientInfo(port, patientToHs);
+                logger.info("Integration processing. Sending {} info. Transmittable.getId = {}", patientToHs.getClass().getCanonicalName(), patientToHs.getId());
+                sendPatientInfo(patientToHs);
             } catch (Exception ex) {
                 logger.error("Sending patient info. HS integration internal error.", ex);
             }
         }
     }
 
-    private void sendPatientInfo(EMRReceiverServiceSoap port, PatientsToHs patientToHs) {
+    private void sendPatientInfo(Transmittable patientToHs) {
         try {
-            logger.info("HS integration processing PatientsToHs.patientId = {}", patientToHs.getPatientId());
+            logger.info("Integration processing Transmittable.patientId = {}",  patientToHs.getClass().getCanonicalName(), patientToHs.getId());
             int errCount = patientToHs.getErrCount();
             long step = 89 * 1000; // время до слейдующей попытки передачи данных
             patientToHs.setErrCount(errCount + 1);
             patientToHs.setSendTime(new Timestamp(patientToHs.getSendTime().getTime() + (long) (errCount) * step));
-            final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
-            List<DiagnosisInfo> emptyDiag = new LinkedList<DiagnosisInfo>();
-            List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
-            port.container(
-                    SdaBuilder.toSda(new ClientInfo(
-                            patientToHs.getPatient(),
-                            dbSchemeKladrBeanLocal),
-                            new EventInfo(getDefOrgName()),
-                            emptyAllergy,
-                            emptyDiag,
-                            new LinkedList<DisabilitiesInfo>(),
-                            emptyEpi,
-                            new LinkedList<ServiceInfo>()));
+            sendEntity(patientToHs);
             em.remove(patientToHs);
         } catch (SOAPFaultException ex) {
             patientToHs.setInfo(ex.getMessage());
@@ -165,10 +151,26 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
         }
     }
 
-    /**
-     * @param port
-     */
-    private void sendNewEventToHS(EMRReceiverServiceSoap port) {
+    public void sendEntity(Object patientToHs) {
+        assert patientToHs instanceof PatientsToHs;
+        EMRReceiverServiceSoap port = getEmrReceiverServiceSoap();
+        final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
+        List<DiagnosisInfo> emptyDiag = new LinkedList<DiagnosisInfo>();
+        List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
+        port.container(
+                SdaBuilder.toSda(new ClientInfo(
+                        ((PatientsToHs)patientToHs).getPatient(),
+                        dbSchemeKladrBeanLocal),
+                        new EventInfo(getDefOrgName()),
+                        emptyAllergy,
+                        emptyDiag,
+                        new LinkedList<DisabilitiesInfo>(),
+                        emptyEpi,
+                        new LinkedList<ServiceInfo>()));
+    }
+
+    private void sendNewEventToHS() {
+        EMRReceiverServiceSoap port = getEmrReceiverServiceSoap();
         List<Event> newEvents = em.
                 createQuery("SELECT hsi.event FROM HSIntegration hsi WHERE hsi.status = :newEvent AND hsi.event.execDate IS NOT NULL AND (" +
                         "hsi.event.eventType.requestType.code = 'clinic' OR " +

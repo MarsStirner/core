@@ -63,6 +63,14 @@
             <type>jar</type>
         </dependency>
 
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-database</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>ejb</type>
+        </dependency>
+
+
     </dependencies>
 
 </project>

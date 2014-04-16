@@ -905,11 +905,16 @@ public class SdaBuilder {
             allergy = allergy == null ? SDAFactory.createAllergy() : allergy;
             allergy.setExtId(allergyInfo.getId());
         }
+
+        // Закомментировано в соответчики комментарием в MIS-1051
+        // Александр Мартынов [16.04.2014 13:16]
+        //2) Блок <allergy>...</allergy> убрать формирование тэга <encounterCode>, он приводит к дублированию данных в HS при отправке новых обращений.
+        // и подтверждения: [13:50:18] Dmitry Zasypkin: вобщем ты прав - нужно убрать encounterCode из аллергий
         //Код эпизода
-        if(eventInfo != null) {
+        /*if(eventInfo != null) {
             allergy = allergy == null ? SDAFactory.createAllergy() : allergy;
             allergy.setEncounterCode(eventInfo.getEventId());
-        }
+        }*/
 
         //Автор записи (Врач)
         if(allergyInfo.getCreatedPerson() != null) {

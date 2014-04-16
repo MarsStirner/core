@@ -1,0 +1,90 @@
+package ru.korus.tmis.core.database.finance;
+
+/**
+ * Author:      Sergey A. Zagrebelny <br>
+ * Date:        15.04.14, 13:10 <br>
+ * Company:     Korus Consulting IT<br>
+ * Description:  <br>
+ */
+public class ServicePaidInfo {
+    /**
+     * ID услуги в МИС (в БД МИС  - Action.id)
+     */
+    private Integer idAction;
+
+    /**
+     * код услуги в МИС (в БД МИС  - rbService.code)
+     */
+    private String codeService;
+
+    /**
+     * наименование услуги в МИС (в БД МИС  - rbService.name)
+     */
+    private String nameService;
+
+    /**
+     * количество (в БД МИС - Action.amount)
+     */
+    private Double amount;
+
+    /**
+     * сумма скидки   (в БД МИС - EventPayment.sumDesc)
+     */
+    private Double sumDisc;
+
+    /**
+     * сумма оплаты за услугу (в БД МИС - EventPayment. actionSum)
+     */
+    private Double sum;
+
+    /**
+     * ID пациента в МИС (в БД МИС – Client.id)
+     */
+    private String codePatient;
+
+    /**
+     *  ФИО пациента
+     */
+    private PersonName patientName;
+
+    /**
+     *  Тип оплаты (наличный = false, безналичный = true)
+     */
+    private boolean  typePayment;
+
+    public Integer getIdAction() {
+        return idAction;
+    }
+
+    public String getCodeService() {
+        return codeService;
+    }
+
+    public String getNameService() {
+        return nameService;
+    }
+
+    public Double getAmount() {
+        return amount;
+    }
+
+    public Double getSumDisc() {
+        return sumDisc;
+    }
+
+    public Double getSum() {
+        return sum;
+    }
+
+    public String getCodePatient() {
+        return codePatient;
+    }
+
+    public PersonName getPatientName() {
+        return patientName;
+    }
+
+    public boolean isTypePayment() {
+        return typePayment;
+    }
+}

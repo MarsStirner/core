@@ -232,4 +232,12 @@ public interface DbActionBeanLocal {
      * конфигурации срок
      */
     void closeAppealsDocs();
+
+    /**
+     * Получить список услуг в рамках одного обращения
+     *
+     * @param eventId - ID обращения
+     * @return список услуг
+     */
+    List<Action>  getServiceList(Integer eventId);
 }

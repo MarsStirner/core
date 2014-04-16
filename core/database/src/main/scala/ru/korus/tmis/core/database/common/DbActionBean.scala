@@ -10,7 +10,7 @@ import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.QueryDataStructure
-import java.{lang, util}
+import java.{util, lang}
 import ru.korus.tmis.core.filter.ListDataFilter
 import java.text.SimpleDateFormat
 import ru.korus.tmis.schedule.QueueActionParam
@@ -717,4 +717,10 @@ class DbActionBean
 
   }
 
+  def getServiceList(eventId: Integer): util.List[Action] = {
+    em.createNamedQuery("Action.ServiceList",
+      classOf[Action])
+      .setParameter("eventId", eventId)
+      .getResultList
+  }
 }
