@@ -298,7 +298,8 @@ class ActionTypesListData {
                                                                   at.getId.intValue(),
                                                                   this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].flatCodes,
                                                                   this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
-                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view))
+                                                                  this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view,
+                                                                  true))
       var elem: ActionType = null
       if (at.getGroupId != null && requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
         elem = ats.find(at2 => at2.getId.intValue() == at.getGroupId.intValue()).getOrElse(null)
@@ -329,23 +330,18 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   @BeanProperty
   var view: String = "all"
 
+  @BeanProperty
+  var showHidden: Boolean = false
+
   def this(code_x: String,
            groupId: Int,
            flatCodes: java.util.List[String],
-           //diaType_xs: java.util.List[String],
            mnemonics: java.util.List[String],
-           view: String) {
+           view: String,
+           showHidden: Boolean) {
     this()
     if(code_x!=null && code_x!="")
       this.code = code_x
-
-                /*else {
-                        this.code = diaType_x match {
-                                            case "laboratory" => {"2"}
-                                            case "instrumental" => {"3"}
-                                            case _ => {""}
-                                        }
-                }*/
     this.groupId = groupId
     if (flatCodes != null && flatCodes.size() > 0) {
       this.flatCodes = flatCodes.filter(p=>(p!=null && !p.isEmpty))
@@ -354,6 +350,7 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
     if (view!=null && !view.isEmpty){
       this.view = view
     }
+    this.showHidden = showHidden
   }
 
   @Override
@@ -374,6 +371,9 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
     if (this.mnemonics!=null && this.mnemonics.size() > 0) {
       qs.query += ("AND at.mnemonic IN :mnemonic\n")
       qs.add("mnemonic",asJavaCollection(this.mnemonics))
+    }
+    if (!showHidden) {
+      qs.query += ("AND at.hidden = false")
     }
     qs
   }
@@ -440,7 +440,8 @@ class ActionTypesListEntry {
                                                           f.getId.intValue(),
                                                           requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].flatCodes,
                                                           requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
-                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view)
+                                                          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view,
+                                                          true)
         val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter)
         this.groups.add(new ActionTypesListEntry(f, request, getAllActionTypeWithFilter))
       })

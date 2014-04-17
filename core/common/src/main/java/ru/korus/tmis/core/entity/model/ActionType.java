@@ -96,6 +96,10 @@ public class ActionType implements Serializable {
     private String flatCode;
 
     @Basic(optional = false)
+    @Column(name="hidden")
+    private boolean hidden;
+
+    @Basic(optional = false)
     @Column(name = "sex")
     private short sex;
 
@@ -594,6 +598,14 @@ public class ActionType implements Serializable {
         this.jobType = jobType;
     }
 
+    public boolean isHidden() {
+        return hidden;
+    }
+
+    public void setHidden(boolean hidden) {
+        this.hidden = hidden;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -618,4 +630,5 @@ public class ActionType implements Serializable {
     public String toString() {
         return "ru.korus.tmis.core.entity.model.ActionType[id=" + id + "]";
     }
+
 }
