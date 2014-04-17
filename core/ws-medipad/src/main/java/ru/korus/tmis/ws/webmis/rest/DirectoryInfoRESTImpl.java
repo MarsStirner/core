@@ -439,7 +439,8 @@ public class DirectoryInfoRESTImpl {
                                         @QueryParam("patientId")int patientId,
                                         @QueryParam("filter[groupId]")int groupId,
                                         @QueryParam("filter[code]")String code,
-                                        @QueryParam("filter[view]")String view) {
+                                        @QueryParam("filter[view]")String view,
+                                        @QueryParam("showHidden") int showHidden) {
 
         java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
         java.util.List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
@@ -448,9 +449,9 @@ public class DirectoryInfoRESTImpl {
 
         if(mnems!=null)
             for(String mnem: mnems)
-                if(mnem != null && mnem != "") mnemonics.add(mnem);
+                if(mnem != null && !mnem.equals("")) mnemonics.add(mnem);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, mnemonics, view);
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, mnemonics, view, showHidden == 1);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding((view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
                                                                                  : wsImpl.getListOfActionTypeIdNames(request, patientId), this.callback);
