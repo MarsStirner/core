@@ -1,18 +1,14 @@
 
 package misexchange;
 
-import ru.korus.tmis.core.database.DbSettingsBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
-import ru.korus.tmis.util.reflect.Configuration;
 
-import javax.ejb.EJB;
 import javax.xml.namespace.QName;
 import javax.xml.ws.*;
 import java.net.Authenticator;
 import java.net.MalformedURLException;
 import java.net.PasswordAuthentication;
 import java.net.URL;
-import java.util.List;
 import java.util.Map;
 
 

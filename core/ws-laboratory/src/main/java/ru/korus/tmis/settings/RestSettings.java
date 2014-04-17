@@ -3,7 +3,7 @@ package ru.korus.tmis.settings;
 import com.google.gson.Gson;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.DbSettingsBeanLocal;
+import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.core.entity.model.Setting;
 
 import javax.ejb.EJB;

@@ -27,6 +27,7 @@ public class TestUtilWsMedipad implements TestUtil {
                 ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage.class.getPackage(),
                 ru.korus.tmis.ws.handlers.AuthenticatingHandler.class.getPackage(),
                 ru.korus.tmis.ws.impl.AuthenticationWSImpl.class.getPackage(),
+
         };
         return res;
     }

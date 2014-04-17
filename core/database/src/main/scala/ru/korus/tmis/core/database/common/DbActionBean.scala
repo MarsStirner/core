@@ -15,7 +15,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import java.text.SimpleDateFormat
 import ru.korus.tmis.schedule.QueueActionParam
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import ru.korus.tmis.core.database.{DbSettingsBeanLocal, DbActionTypeBeanLocal}
+import ru.korus.tmis.core.database.{DbActionTypeBeanLocal}
 import org.joda.time.{DateTimeConstants, DateTime}
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))

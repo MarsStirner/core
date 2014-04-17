@@ -21,6 +21,8 @@ import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
+import ru.korus.tmis.core.database.common.DbSettingsBean;
+import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.patient.AppealBeanLocal;
 import ru.korus.tmis.testutil.DbUtil;
@@ -85,6 +87,9 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
         wa.addClass(CommonDataProcessorBeanLocal.class);
         wa.addClass(CommonDataProcessorBean.class);
+
+        wa.addClass(DbSettingsBeanLocal.class);
+        wa.addClass(DbSettingsBean.class);
 
      /*   wa.addPackage(ru.korus.tmis.ws.webmis.rest.servlet.RestServlet.class.getPackage());
         wa.addPackage(ru.korus.tmis.ws.webmis.rest.WebMisREST.class.getPackage());

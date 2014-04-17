@@ -1,7 +1,7 @@
 package ru.korus.tmis.ru.korus.utils.timers;
 
 import ru.korus.tmis.core.database.DbEnumBeanLocal;
-import ru.korus.tmis.core.database.DbSettingsBeanLocal;
+import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 
 import javax.ejb.EJB;

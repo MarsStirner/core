@@ -8,23 +8,23 @@ import java.sql.Timestamp;
 
 
 /**
- * The persistent class for the EventsToODVD database table.
+ * The persistent class for the ActionToODVD database table.
  * 
  */
 @Entity
-@Table(name="EventsToODVD")
+@Table(name="ActionToODVD")
 @NamedQueries(
         {
-                @NamedQuery(name = "EventsToODVD.ToSend", query = "SELECT e FROM EventsToODVD e WHERE e.sendTime < :now ORDER BY e.eventId")
+                @NamedQuery(name = "ActionToODVD.ToSend", query = "SELECT e FROM ActionToODVD e WHERE e.sendTime < :now ORDER BY e.actionId")
         }
 )
-public class EventsToODVD implements Serializable, Transmittable {
+public class ActionToODVD implements Serializable, Transmittable {
 	private static final long serialVersionUID = 1L;
 
 	@Id
 	@GeneratedValue(strategy=GenerationType.IDENTITY)
-	@Column(name="event_id", unique=true, nullable=false)
-	private int eventId;
+	@Column(name="action_id", unique=true, nullable=false)
+	private int actionId;
 
 	@Column(nullable=false)
 	private int errCount;
@@ -35,25 +35,25 @@ public class EventsToODVD implements Serializable, Transmittable {
 	@Column(nullable=false)
 	private Timestamp sendTime;
 
-	//bi-directional one-to-one association to Event
+	//bi-directional one-to-one association to ActionTst
 	@OneToOne
-	@JoinColumn(name="event_id", nullable=false, insertable=false, updatable=false)
-	private Event event;
+	@JoinColumn(name="action_id", nullable=false, insertable=false, updatable=false)
+	private Action action;
 
-	public EventsToODVD() {
+	public ActionToODVD() {
 	}
 
-	public int getEventId() {
-		return this.eventId;
+	public int getActionId() {
+		return this.actionId;
 	}
 
-	public void setEventId(int eventId) {
-		this.eventId = eventId;
+	public void setActionId(int actionId) {
+		this.actionId = actionId;
 	}
 
     @Override
     public Integer getId() {
-        return getEventId();
+        return getActionId();
     }
 
     public int getErrCount() {
@@ -80,12 +80,12 @@ public class EventsToODVD implements Serializable, Transmittable {
 		this.sendTime = sendTime;
 	}
 
-	public Event getEvent() {
-		return this.event;
+	public Action getAction() {
+		return this.action;
 	}
 
-	public void setEvent(Event event) {
-		this.event = event;
+	public void setAction(Action action) {
+		this.action = action;
 	}
 
 }

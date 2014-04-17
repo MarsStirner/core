@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.database;
+package ru.korus.tmis.core.database.common;
 
 import ru.korus.tmis.core.entity.model.Setting;
 import ru.korus.tmis.core.exception.CoreException;

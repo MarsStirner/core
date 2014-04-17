@@ -1,6 +1,11 @@
 package ru.korus.tmis.ws.finance;
 
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.Event;
+import ru.korus.tmis.ws.finance.odvd.WsPoliclinicPortType;
+
 import javax.ejb.Local;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -11,5 +16,9 @@ import javax.ejb.Local;
 @Local
 public interface FinancePullBeanLocal {
 
+    void setPort(WsPoliclinicPortType port);
+
     void pullDb();
+
+    void sendClosedActions(Event event, List<Action> actionList);
 }

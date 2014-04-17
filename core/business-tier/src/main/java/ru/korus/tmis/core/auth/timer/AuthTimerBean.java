@@ -1,8 +1,6 @@
 package ru.korus.tmis.core.auth.timer;
 
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
-import ru.korus.tmis.core.database.DbEnumBeanLocal;
-import ru.korus.tmis.core.database.DbSettingsBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.annotation.PostConstruct;

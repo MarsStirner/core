@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions xmlns="http://schemas.xmlsoap.org/wsdl/"
+		xmlns:soap12bind="http://schemas.xmlsoap.org/wsdl/soap12/"
+		xmlns:soapbind="http://schemas.xmlsoap.org/wsdl/soap/"
+		xmlns:tns="http://localhost/Policlinic"
+		xmlns:xsd="http://www.w3.org/2001/XMLSchema"
+		xmlns:xsd1="http://localhost/Policlinic"
+		name="wsPoliclinic"
+		targetNamespace="http://localhost/Policlinic">
+	<types>
+		<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
+				xmlns:xs1="http://localhost/Policlinic"
+				targetNamespace="http://localhost/Policlinic"
+				attributeFormDefault="unqualified"
+				elementFormDefault="qualified">
+			<xs:complexType name="RowTable">
+				<xs:sequence>
+					<xs:element name="idService"
+							type="xs:integer"
+							nillable="true"/>
+					<xs:element name="endDate"
+							type="xs:date"
+							nillable="true"/>
+					<xs:element name="codeOfService"
+							type="xs:string"
+							nillable="true"/>
+					<xs:element name="nameOfService"
+							type="xs:string"
+							nillable="true"/>
+					<xs:element name="codeOfStruct"
+							type="xs:integer"
+							nillable="true"/>
+					<xs:element name="nameOfStruct"
+							type="xs:string"
+							nillable="true"/>
+					<xs:element name="amount"
+							type="xs:integer"
+							nillable="true"/>
+					<xs:element name="isService"
+							type="xs:boolean"
+							nillable="true"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="Table">
+				<xs:sequence>
+					<xs:element name="listServiceComplete"
+							type="tns:RowTable"
+							minOccurs="0"
+							maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:element name="PutService">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="idTreatment"
+								type="xs:integer"/>
+						<xs:element name="listServiceComplete"
+								type="tns:Table"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="PutServiceResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="return"
+								type="xs:integer"
+								nillable="true"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="putTreatment">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="idTreatment"
+								type="xs:integer"/>
+						<xs:element name="numTreatment"
+								type="xs:string"/>
+						<xs:element name="dateTreatment"
+								type="xs:date"/>
+						<xs:element name="codeContract"
+								type="xs:string"/>
+						<xs:element name="codePatient"
+								type="xs:string"/>
+						<xs:element name="patientName"
+								type="xs:string"/>
+						<xs:element name="paidName"
+								type="xs:string"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+			<xs:element name="putTreatmentResponse">
+				<xs:complexType>
+					<xs:sequence>
+						<xs:element name="return"
+								type="xs:integer"
+								nillable="true"/>
+					</xs:sequence>
+				</xs:complexType>
+			</xs:element>
+		</xs:schema>
+	</types>
+	<message name="PutServiceRequestMessage">
+		<part name="parameters"
+				element="tns:PutService"/>
+	</message>
+	<message name="PutServiceResponseMessage">
+		<part name="parameters"
+				element="tns:PutServiceResponse"/>
+	</message>
+	<message name="putTreatmentRequestMessage">
+		<part name="parameters"
+				element="tns:putTreatment"/>
+	</message>
+	<message name="putTreatmentResponseMessage">
+		<part name="parameters"
+				element="tns:putTreatmentResponse"/>
+	</message>
+	<portType name="wsPoliclinicPortType">
+		<operation name="PutService">
+			<input message="tns:PutServiceRequestMessage"/>
+			<output message="tns:PutServiceResponseMessage"/>
+		</operation>
+		<operation name="putTreatment">
+			<input message="tns:putTreatmentRequestMessage"/>
+			<output message="tns:putTreatmentResponseMessage"/>
+		</operation>
+	</portType>
+	<binding name="wsPoliclinicSoapBinding"
+			type="tns:wsPoliclinicPortType">
+		<soapbind:binding style="document"
+				transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="PutService">
+			<soapbind:operation style="document"
+					soapAction="http://localhost/Policlinic#wsPoliclinic:PutService"/>
+			<input>
+				<soapbind:body use="literal"/>
+			</input>
+			<output>
+				<soapbind:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="putTreatment">
+			<soapbind:operation style="document"
+					soapAction="http://localhost/Policlinic#wsPoliclinic:putTreatment"/>
+			<input>
+				<soapbind:body use="literal"/>
+			</input>
+			<output>
+				<soapbind:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<binding name="wsPoliclinicSoap12Binding"
+			type="tns:wsPoliclinicPortType">
+		<soap12bind:binding style="document"
+				transport="http://schemas.xmlsoap.org/soap/http"/>
+		<operation name="PutService">
+			<soap12bind:operation style="document"
+					soapAction="http://localhost/Policlinic#wsPoliclinic:PutService"/>
+			<input>
+				<soap12bind:body use="literal"/>
+			</input>
+			<output>
+				<soap12bind:body use="literal"/>
+			</output>
+		</operation>
+		<operation name="putTreatment">
+			<soap12bind:operation style="document"
+					soapAction="http://localhost/Policlinic#wsPoliclinic:putTreatment"/>
+			<input>
+				<soap12bind:body use="literal"/>
+			</input>
+			<output>
+				<soap12bind:body use="literal"/>
+			</output>
+		</operation>
+	</binding>
+	<service name="wsPoliclinic">
+		<port name="wsPoliclinicSoap"
+				binding="tns:wsPoliclinicSoapBinding">
+			<documentation> 
+				<wsi:Claim xmlns:wsi="http://ws-i.org/schemas/conformanceClaim/"
+						conformsTo="http://ws-i.org/profiles/basic/1.1"/>
+			</documentation>
+			<soapbind:address location="http://10.128.51.67/buh1/ws/wsPoliclinic.1cws"/>
+		</port>
+		<port name="wsPoliclinicSoap12"
+				binding="tns:wsPoliclinicSoap12Binding">
+			<soap12bind:address location="http://10.128.51.67/buh1/ws/wsPoliclinic.1cws"/>
+		</port>
+	</service>
+</definitions>

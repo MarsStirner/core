@@ -11,6 +11,10 @@ import java.util.Date;
  */
 @Entity
 @Table(name="Event_LocalContract")
+@NamedQueries(
+        {
+                @NamedQuery(name = "EventLocalContract.findByEventId", query = "SELECT elc FROM EventLocalContract elc WHERE elc.event.id = :id"),
+        })
 public class EventLocalContract implements Serializable {
 	private static final long serialVersionUID = 1L;
 

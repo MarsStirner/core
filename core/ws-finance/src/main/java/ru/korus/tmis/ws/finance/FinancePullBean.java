@@ -2,14 +2,23 @@ package ru.korus.tmis.ws.finance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.EventsToODVD;
+import ru.korus.tmis.core.database.dbutil.Database;
+import ru.korus.tmis.core.database.finance.DbEventLocalContractLocal;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.transmit.Sender;
 import ru.korus.tmis.core.transmit.TransmitterLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
+import ru.korus.tmis.ws.finance.odvd.ObjectFactory;
+import ru.korus.tmis.ws.finance.odvd.Table;
+import ru.korus.tmis.ws.finance.odvd.WsPoliclinic;
+import ru.korus.tmis.ws.finance.odvd.WsPoliclinicPortType;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.XMLGregorianCalendar;
+import java.math.BigInteger;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -24,15 +33,28 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     @EJB
     private TransmitterLocal transmitterLocal;
 
+    @EJB
+    DbEventLocalContractLocal dbEventLocalContractLocal;
+
+    private WsPoliclinicPortType port = null;
+
     private static final Logger logger = LoggerFactory.getLogger(FinancePullBean.class);
+
+    @Override
+    public void setPort(WsPoliclinicPortType port) {
+        this.port = port;
+    }
 
     @Override
     public void pullDb() {
         try {
             logger.info("1C ODVD integration entry...");
-            if ( ConfigManager.Finance().isFinanceActive()) {
+            if (ConfigManager.Finance().isFinanceActive()) {
                 logger.info("1C ODVD integration is active...");
+                logger.info("1C ODVD integration send new events-..");
                 transmitterLocal.send(this, EventsToODVD.class, "EventsToODVD.ToSend");
+                logger.info("1C ODVD integration send service...");
+                transmitterLocal.send(this, ActionToODVD.class, "ActionToODVD.ToSend");
             } else {
                 logger.info("1C ODVD integration is disabled...");
             }
@@ -44,7 +66,98 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
 
     @Override
     public void sendEntity(Object entity) {
-        assert entity instanceof EventsToODVD;
-        //TODO implements me!
+        assert entity instanceof EventsToODVD || entity instanceof ActionToODVD;
+
+        if (entity instanceof EventsToODVD) {  // передаем в 1С новое платное обращение
+            final EventsToODVD eventsToODVD = (EventsToODVD) entity;
+            sendNewEvent(entity, eventsToODVD);
+        } else { // передаем в 1С информацию об оказанной услуги
+            final ActionToODVD actionsToODVD = (ActionToODVD) entity;
+            sendNewAction(entity, actionsToODVD);
+        }
+    }
+
+    private void sendNewAction(Object entity, ActionToODVD actionsToODVD) {
+        logger.info("processing ActionToODVD.event_id = ", actionsToODVD.getActionId());
+        List<Action> actionList = new LinkedList<Action>();
+        final Action action = actionsToODVD.getAction();
+        if (action == null) {
+            logger.error("action not found");
+            return;
+        }
+        actionList.add(action);
+        final Event event = action.getEvent();
+        if (event == null) {
+            logger.error("event not found");
+            return;
+        }
+        sendClosedActions(event, actionList);
+    }
+
+    public void sendClosedActions(Event event, List<Action> actionList) {
+        assert event != null;
+        assert !actionList.isEmpty();
+        getPort().putService(BigInteger.valueOf(event.getId()), OdvdBuilder.toOdvdTableActions(actionList));
+    }
+
+
+
+    private void sendNewEvent(Object entity, EventsToODVD eventsToODVD) {
+        logger.info("processing EventsToODVD.event_id = ", eventsToODVD.getEventId());
+        Event event = eventsToODVD.getEvent();
+        if (event == null) {
+            logger.error("event not found: entry: " + entity);
+            return;
+        }
+        Patient patient = event.getPatient();
+        if (patient == null) {
+            logger.error("patient not found");
+            return;
+        }
+        EventLocalContract eventLocalContract = dbEventLocalContractLocal.getByEventId(event.getId());
+        if (eventLocalContract == null) {
+            logger.error("EventLocalContract not found");
+            return;
+        }
+
+        try {
+            final BigInteger idTreatment = BigInteger.valueOf(event.getId());
+            final String numTreatment = event.getExternalId();
+            final XMLGregorianCalendar dateTreatment = Database.toGregorianCalendar(event.getCreateDatetime());
+            final String codeContract = eventLocalContract.getNumberContract();
+            final String codePatient = String.valueOf(patient.getId());
+
+            //TODO не по протоколу (ФИО должны быть отдельно)
+            final String patientName = String.format("%s %s %s", nullToEmpty(patient.getFirstName()),
+                    nullToEmpty(patient.getPatrName()),
+                    nullToEmpty(patient.getLastName()));
+            //TODO не по протоколу (ФИО должны быть отдельно)
+            final String paidName = String.format("%s %s %s", nullToEmpty(eventLocalContract.getFirstName()),
+                    nullToEmpty(eventLocalContract.getPatrName()),
+                    nullToEmpty(eventLocalContract.getLastName()));
+            getPort().putTreatment(idTreatment,
+                    numTreatment,
+                    dateTreatment,
+                    codeContract,
+                    codePatient,
+                    patientName,
+                    paidName);
+        } catch (DatatypeConfigurationException e) {
+            logger.error("wrong event.createDate. ", e);
+            return;
+        }
+    }
+
+    private String nullToEmpty(String s) {
+        return s == null ? "" : s;
+    }
+
+
+    private WsPoliclinicPortType getPort() {
+        if (port == null) {
+            WsPoliclinic service = new WsPoliclinic();
+            setPort(service.getWsPoliclinicSoap());
+        }
+        return port;
     }
 }
