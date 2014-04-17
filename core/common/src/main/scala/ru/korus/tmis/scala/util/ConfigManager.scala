@@ -170,7 +170,45 @@ object ConfigManager extends Configuration {
     def isSdaActive = "on".equals(SdaActive)
   }
 
+
   /**
+   *
+   *
+   * Интеграция с 1С ОДВД
+   *
+   *
+   */
+  var Finance = new FinanceClass
+
+  class FinanceClass extends Configuration {
+
+
+    /**
+     *  URL сервиса 1С ОДВД
+     */
+    var ServiceUrl = "http://10.128.51.67/buh1/ws/wsPoliclinic.1cws"
+
+    /**
+     * Login basic http auth
+     */
+
+    var User = "WebService"
+    /**
+     * Password basic http auth
+     */
+    var Password = "webservice123"
+
+    /**
+     * Передача данных в 1С ОДВД
+     * on - включен
+     * off - выключен
+     */
+    var FinanceActive = "off"
+
+    def isFinanceActive = "on".equals(FinanceActive)
+  }
+
+   /**
    *
    *
    * Настройки для Система-Софт (вызов отправки назначения на анализ в ЛИС)

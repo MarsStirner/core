@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.entity.model;
 
-import ru.korus.tmis.core.data.Transmittable;
+import ru.korus.tmis.core.transmit.Transmittable;
 
 import java.io.Serializable;
 import java.sql.Timestamp;

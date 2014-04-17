@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.data;
+package ru.korus.tmis.core.transmit;
 
 import java.sql.Timestamp;
 

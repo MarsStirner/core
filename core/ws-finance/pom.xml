@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis.ws.finance</groupId>
     <artifactId>tmis-ws-finance</artifactId>
     <version>${version.tmis.core}</version>
-    <packaging>war</packaging>
+    <packaging>ejb</packaging>
     <name>TMIS WS Finance Report</name>
 
     <parent>
@@ -30,26 +30,14 @@
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
+                <artifactId>maven-ejb-plugin</artifactId>
+                <version>${version.maven.plugin.ejb}</version>
                 <configuration>
-                    <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                        </manifest>
-                    </archive>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <webResources>
-                        <resource>
-                            <filtering>true</filtering>
-                            <directory>src/main/webapp</directory>
-                            <includes>
-                                <include>**/web.xml</include>
-                            </includes>
-                        </resource>
-                    </webResources>
+                    <ejbVersion>3.1</ejbVersion>
+                    <generateClient>true</generateClient>
+                    <clientIncludes>
+                        <include>../../*.wsdl</include>
+                    </clientIncludes>
                 </configuration>
             </plugin>
         </plugins>

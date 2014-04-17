@@ -3,11 +3,10 @@ package ru.korus.tmis.pix.sda;
 import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.data.Transmittable;
+import ru.korus.tmis.core.transmit.Sender;
 import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.database.RbMedicalAidProfileBeanLocal;
-import ru.korus.tmis.core.database.RbMedicalAidTypeBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
@@ -18,6 +17,7 @@ import ru.korus.tmis.hs.HsPixPullTimerBeanLocal;
 import ru.korus.tmis.pix.sda.ws.EMRReceiverService;
 import ru.korus.tmis.pix.sda.ws.EMRReceiverServiceSoap;
 import ru.korus.tmis.scala.util.ConfigManager;
+import ru.korus.tmis.core.transmit.TransmitterLocal;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -25,7 +25,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
-import java.sql.Timestamp;
 import java.util.*;
 
 /**
@@ -39,10 +38,9 @@ import java.util.*;
  *
  */
 @Stateless
-public class HsPixPullBean implements HsPixPullTimerBeanLocal {
+public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
 
     private static final Logger logger = LoggerFactory.getLogger(HsPixPullBean.class);
-    private static final int MAX_RESULT = 100;
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
@@ -69,6 +67,9 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
     @EJB
     private DbQueryBeanLocal dbQueryBean;
 
+    @EJB
+    private TransmitterLocal transmitterLocal;
+
     private EMRReceiverServiceSoap port = null;
 
     @Override
@@ -89,7 +90,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
                 }
                 logger.info("HS integration ... maxId = {}", maxId);
                 List<Event> newEvents =
-                        em.createNamedQuery("Event.toHS", Event.class).setParameter("max", maxId).setMaxResults(MAX_RESULT).getResultList();
+                        em.createNamedQuery("Event.toHS", Event.class).setParameter("max", maxId).setMaxResults(TransmitterLocal.MAX_RESULT).getResultList();
 
                 addNewEvent(newEvents);
 
@@ -117,7 +118,8 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
 
 
     private void sendPatientsInfo() {
-        List<PatientsToHs> patientsToHs = em.
+        transmitterLocal.send(this, PatientsToHs.class, "PatientsToHs.ToSend");
+       /* List<PatientsToHs> patientsToHs = em.
                 createNamedQuery("PatientsToHs.ToSend", PatientsToHs.class)
                 .setParameter("now", new Timestamp((new Date()).getTime())).setMaxResults(MAX_RESULT).getResultList();
 
@@ -128,10 +130,10 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
             } catch (Exception ex) {
                 logger.error("Sending patient info. HS integration internal error.", ex);
             }
-        }
+        }*/
     }
 
-    private void sendPatientInfo(Transmittable patientToHs) {
+  /*  private void sendPatientInfo(Transmittable patientToHs) {
         try {
             logger.info("Integration processing Transmittable.patientId = {}",  patientToHs.getClass().getCanonicalName(), patientToHs.getId());
             int errCount = patientToHs.getErrCount();
@@ -149,7 +151,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal {
             ex.printStackTrace();
             em.flush();
         }
-    }
+    }*/
 
     public void sendEntity(Object patientToHs) {
         assert patientToHs instanceof PatientsToHs;

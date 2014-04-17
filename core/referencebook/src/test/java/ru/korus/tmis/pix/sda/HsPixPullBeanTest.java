@@ -18,6 +18,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.database.kladr.DbSchemeKladrBean;
+import ru.korus.tmis.core.transmit.Transmitter;
 import ru.korus.tmis.hs.HsPixPullTimerBeanLocal;
 import ru.korus.tmis.pix.sda.ws.Container;
 import ru.korus.tmis.pix.sda.ws.EMRReceiverServiceSoap;
@@ -69,6 +70,8 @@ public class HsPixPullBeanTest extends Arquillian {
         wa.addPackages(false, (new TestUtilCommon()).getPackagesForTest());
         wa.addPackages(false, (new TestUtilBusiness()).getPackagesForTest());
         // --------------------------------------------------------------------------
+        wa.addPackage(Transmitter.class.getPackage());
+
         wa.addClass(DbQueryBeanLocal.class);
         wa.addClass(DbQueryBean.class);
 

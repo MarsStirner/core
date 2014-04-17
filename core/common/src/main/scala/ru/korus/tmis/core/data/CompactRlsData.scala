@@ -11,7 +11,7 @@ import scala.reflect.BeanProperty
 
 @XmlType(name = "compactRls")
 @XmlRootElement(name = "compactRls")
-class CompactRlsData {
+class CompactRlsData  {
   var version: String = _
 
   @XmlAttribute
