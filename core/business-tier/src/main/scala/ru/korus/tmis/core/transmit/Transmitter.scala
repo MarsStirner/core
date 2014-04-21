@@ -1,4 +1,4 @@
-package ru.korus.tmis.transmit
+package ru.korus.tmis.core.transmit
 
 import ru.korus.tmis.core.entity.model.PatientsToHs
 import java.sql.Timestamp
