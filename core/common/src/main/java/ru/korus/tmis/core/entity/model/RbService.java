@@ -10,7 +10,8 @@ import java.util.Date;
 @Table(name = "rbService")
 @NamedQueries(
         {
-                @NamedQuery(name = "rbService.findAll", query = "SELECT s FROM RbService s")
+                @NamedQuery(name = "rbService.findAll", query = "SELECT s FROM RbService s"),
+                @NamedQuery(name = "rbService.findByCode", query = "SELECT s FROM RbService s WHERE s.code = :code")
         })
 @XmlType(name = "service")
 @XmlRootElement(name = "service")

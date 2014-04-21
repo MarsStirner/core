@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database.finance
 import grizzled.slf4j.Logging
 import ru.korus.tmis.scala.util.I18nable
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Action, Event, EventPayment}
+import ru.korus.tmis.core.entity.model.{RbService, Action, Event, EventPayment}
 import java.util.Date
 import javax.ejb.Stateless
 
@@ -21,7 +21,6 @@ with I18nable {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-
   def savePaidInfo(event: Event, date: Date, action: Action, servicePaidInfo: ServicePaidInfo) {
     val eventPayment: EventPayment = new EventPayment
     val now = new Date
@@ -33,6 +32,8 @@ with I18nable {
     eventPayment.setActionSum(servicePaidInfo.getAmount)
     eventPayment.setCashBox("");
     eventPayment.setAction(action);
+    val servList = em.createNamedQuery("rbService.findByCode", classOf[RbService]).setParameter("code", servicePaidInfo.getCodeService).getResultList
+    eventPayment.setService( if (servList.isEmpty) { null } else {servList.get(0)} )
     em.persist(eventPayment)
   }
 
