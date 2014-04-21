@@ -87,4 +87,40 @@ public class ServicePaidInfo {
     public boolean isTypePayment() {
         return typePayment;
     }
+
+    public void setIdAction(Integer idAction) {
+        this.idAction = idAction;
+    }
+
+    public void setCodeService(String codeService) {
+        this.codeService = codeService;
+    }
+
+    public void setNameService(String nameService) {
+        this.nameService = nameService;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
+    }
+
+    public void setSumDisc(Double sumDisc) {
+        this.sumDisc = sumDisc;
+    }
+
+    public void setSum(Double sum) {
+        this.sum = sum;
+    }
+
+    public void setCodePatient(String codePatient) {
+        this.codePatient = codePatient;
+    }
+
+    public void setPatientName(PersonName patientName) {
+        this.patientName = patientName;
+    }
+
+    public void setTypePayment(boolean typePayment) {
+        this.typePayment = typePayment;
+    }
 }

@@ -13,7 +13,7 @@ import java.util.Date;
 @Table(name="Event_LocalContract")
 @NamedQueries(
         {
-                @NamedQuery(name = "EventLocalContract.findByEventId", query = "SELECT elc FROM EventLocalContract elc WHERE elc.event.id = :id"),
+                @NamedQuery(name = "EventLocalContract.findByEventId", query = "SELECT elc FROM EventLocalContract elc WHERE elc.event.id = :eventId"),
         })
 public class EventLocalContract implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -53,7 +53,7 @@ public class EventLocalContract implements Serializable {
 	private Date dateContract;
 
 	@Column(nullable=false)
-	private byte deleted;
+	private boolean deleted;
 
     @ManyToOne
     @JoinColumn(name="documentType_id")
@@ -177,11 +177,11 @@ public class EventLocalContract implements Serializable {
 		this.dateContract = dateContract;
 	}
 
-	public byte getDeleted() {
+	public boolean getDeleted() {
 		return this.deleted;
 	}
 
-	public void setDeleted(byte deleted) {
+	public void setDeleted(boolean deleted) {
 		this.deleted = deleted;
 	}
 

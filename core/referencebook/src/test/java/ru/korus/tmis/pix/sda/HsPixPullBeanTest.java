@@ -1,6 +1,5 @@
 package ru.korus.tmis.pix.sda;
 
-import org.custommonkey.xmlunit.Diff;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.persistence.PersistenceTest;
 import org.jboss.arquillian.persistence.TransactionMode;
@@ -25,15 +24,12 @@ import ru.korus.tmis.pix.sda.ws.EMRReceiverServiceSoap;
 import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.util.TestUtilBusiness;
 import ru.korus.tmis.util.TestUtilCommon;
-import ru.korus.tmis.util.Utils;
+import ru.korus.tmis.util.TestUtilDatabase;
 
 import javax.ejb.EJB;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
 import static org.mockito.Matchers.any;
 import static org.mockito.Matchers.eq;
@@ -69,6 +65,8 @@ public class HsPixPullBeanTest extends Arquillian {
         // common -------------------------------------------------------------------
         wa.addPackages(false, (new TestUtilCommon()).getPackagesForTest());
         wa.addPackages(false, (new TestUtilBusiness()).getPackagesForTest());
+        wa.addPackages(false, (new TestUtilDatabase()).getPackagesForTest());
+
         // --------------------------------------------------------------------------
         wa.addPackage(Transmitter.class.getPackage());
 
@@ -123,52 +121,23 @@ public class HsPixPullBeanTest extends Arquillian {
         hsPixPullBean.pullDb(true);
         ArgumentCaptor<Container> argument = ArgumentCaptor.forClass(Container.class);
         verify(mockPort, times(2)).container(argument.capture());
-        checkArgument(argument.getAllValues().get(0), "./src/test/resources/xml/event.xml");
-        checkArgument(argument.getAllValues().get(1), "./src/test/resources/xml/patient.xml");
-    }
-
-    private void checkArgument(Container value, String pathExcept) throws Exception {
-        String res = Utils.marshallMessage(value, "ru.korus.tmis.pix.sda.ws");
-        final String pathToExceptMessage = pathExcept;
-        String except = readAllBytes(pathToExceptMessage);
-        Diff diff = new Diff(except, res);
-        if( !diff.identical() ) {
-            System.out.println("Argument:");
-            System.out.println(res);
-            System.out.println("Diff with " + pathToExceptMessage + " :");
-            System.out.println(diff.toString());
-        }
-        Assert.assertTrue(diff.identical());
+        final String contextPath = "ru.korus.tmis.pix.sda.ws";
+        Assert.assertTrue(TestUtilCommon.checkArgument(argument.getAllValues().get(0), "./src/test/resources/xml/event.xml", contextPath));
+        Assert.assertTrue(TestUtilCommon.checkArgument(argument.getAllValues().get(1), "./src/test/resources/xml/patient.xml", contextPath));
     }
 
     private void initDb() throws InterruptedException {
-        executeQuery(getSqlFromFile("./src/test/resources/sql/rbDocumentType.sql"));
-        executeQuery(getSqlFromFile("./src/test/resources/sql/rbEventTypePurpose.sql"));
-        executeQuery(getSqlFromFile("./src/test/resources/sql/rbAcheResult.sql"));
-        executeQuery(getSqlFromFile("./src/test/resources/sql/rbSocStatusClass.sql"));
-        executeQuery(getSqlFromFile("./src/test/resources/sql/init.sql"));
+        TestUtilCommon.executeQuery(em, "./src/test/resources/sql/rbDocumentType.sql");
+        TestUtilCommon.executeQuery(em, "./src/test/resources/sql/rbEventTypePurpose.sql");
+        TestUtilCommon.executeQuery(em, "./src/test/resources/sql/rbAcheResult.sql");
+        TestUtilCommon.executeQuery(em, "./src/test/resources/sql/rbSocStatusClass.sql");
+        TestUtilCommon.executeQuery(em, "./src/test/resources/sql/init.sql");
         em.flush();
         Thread.sleep(1000);// чтобы успел отработать триггер в БД ??
     }
 
-    private void executeQuery(String[] sqlFromFile) {
-        for(String sql : sqlFromFile) {
-            em.createNativeQuery(sql).executeUpdate();
-        }
-    }
 
-    private String[] getSqlFromFile(String sqlFileNAme) {
-        try {
-            return readAllBytes(sqlFileNAme).split(";");
-        } catch (IOException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-            Assert.fail("cannot load initial SQL request");
-        }
-        return null;
-    }
 
-    private String readAllBytes(String sqlFileNAme) throws IOException {
-        return (new String(Files.readAllBytes(Paths.get(sqlFileNAme)), "UTF-8"));
-    }
+
 
 }

@@ -27,7 +27,7 @@ class Transmitter extends TransmitterLocal with Logging {
   for (entity <- listEntity) {
     try {
       val transmittable = entity.asInstanceOf[Transmittable];
-      logger.info("Sending {} info. Transmittable.getId = {}", transmittable.getClass.getCanonicalName, transmittable.getId)
+      logger.info("Sending %s info. Transmittable.getId = %d".format(transmittable.getClass.getCanonicalName, transmittable.getId))
       sendEntity(sender, transmittable)
     }
     catch {

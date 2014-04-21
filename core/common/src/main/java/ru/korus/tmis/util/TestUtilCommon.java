@@ -1,11 +1,17 @@
 package ru.korus.tmis.util;
 
+import org.custommonkey.xmlunit.Diff;
 import ru.korus.tmis.core.entity.model.RbFinance;
 import ru.korus.tmis.core.entity.model.fd.FDRecord;
 import ru.korus.tmis.core.entity.model.kladr.Kladr;
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.PublicClonable;
+
+import javax.persistence.EntityManager;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -26,4 +32,40 @@ public class TestUtilCommon implements TestUtil {
 
         return res;
     }
+
+    public static boolean checkArgument(Object value, String pathExcept, String contextPath) throws Exception {
+        String res = Utils.marshallMessage(value, contextPath);
+        final String pathToExceptMessage = pathExcept;
+        String except = readAllBytes(pathToExceptMessage);
+        Diff diff = new Diff(except, res);
+        if( !diff.identical() ) {
+            System.out.println("Argument:");
+            System.out.println(res);
+            System.out.println("Diff with " + pathToExceptMessage + " :");
+            System.out.println(diff.toString());
+        }
+        return diff.identical();
+    }
+
+    public static String readAllBytes(String sqlFileNAme) throws IOException {
+        return (new String(Files.readAllBytes(Paths.get(sqlFileNAme)), "UTF-8"));
+    }
+
+    public static void executeQuery(final EntityManager em, String sqlFileName) {
+        final String[] sqlFromFile = getSqlFromFile(sqlFileName);
+        for(String sql : sqlFromFile) {
+            em.createNativeQuery(sql).executeUpdate();
+        }
+    }
+
+    public static String[] getSqlFromFile(String sqlFileName) {
+        try {
+            return TestUtilCommon.readAllBytes(sqlFileName).split(";");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
 }

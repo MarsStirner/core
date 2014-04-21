@@ -23,13 +23,6 @@ public class SdaBuilder {
 
     static final Logger logger = LoggerFactory.getLogger(SdaBuilder.class);
 
-    static public enum EventType {
-        I, // стационар
-        O, // амбулаторный прием
-        UPDATE_INFO; // создание/изменение карточки пациента
-
-    }
-
     private static ru.korus.tmis.pix.sda.ws.ObjectFactory SDAFactory = new ru.korus.tmis.pix.sda.ws.ObjectFactory();
 
     static public Container toSda(ClientInfo clientInfo,

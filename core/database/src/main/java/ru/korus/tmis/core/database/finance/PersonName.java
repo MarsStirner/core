@@ -8,11 +8,17 @@ package ru.korus.tmis.core.database.finance;
  */
 public class PersonName {
 
-    private String family;
+    private final String family;
 
-    private String given;
+    private final String given;
 
-    private String partName;
+    private final String partName;
+
+    public PersonName(String family, String given, String partName) {
+        this.family = family;
+        this.given = given;
+        this.partName = partName;
+    }
 
     public String getPartName() {
         return partName;
@@ -25,6 +31,8 @@ public class PersonName {
     public String getFamily() {
         return family;
     }
+
+
 
     @Override
     public String toString() {

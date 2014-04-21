@@ -103,7 +103,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
 
 
     private void sendNewEvent(Object entity, EventsToODVD eventsToODVD) {
-        logger.info("processing EventsToODVD.event_id = ", eventsToODVD.getEventId());
+        logger.info("processing EventsToODVD.event_id = {}", eventsToODVD.getEventId());
         Event event = eventsToODVD.getEvent();
         if (event == null) {
             logger.error("event not found: entry: " + entity);

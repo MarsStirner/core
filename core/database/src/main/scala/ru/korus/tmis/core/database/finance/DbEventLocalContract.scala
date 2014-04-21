@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database.finance
 
-import javax.ejb.EJB
+import javax.ejb.{Stateless, EJB}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.scala.util.I18nable
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -12,7 +12,7 @@ import ru.korus.tmis.core.entity.model.EventLocalContract
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-@EJB
+@Stateless
 class DbEventLocalContract extends DbEventLocalContractLocal
 with Logging
 with I18nable {

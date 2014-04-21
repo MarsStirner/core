@@ -145,6 +145,7 @@ public class ServiceInfo {
      * Поиск последнего движения
      */
     private Action getLastMoving(Multimap<String, Action> actions) {
+        //TODO заменить на HospitalBedBeanLocal.getLastMovingActionForEventId
         Action res = null;
         for (Action action : actions.get("moving")) {
             if (res == null || action.getCreateDatetime().compareTo(res.getCreateDatetime()) > 0) {

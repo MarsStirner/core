@@ -34,13 +34,7 @@ public class ServiceFinanceInfoImpl implements ServiceFinanceInfo {
     private static final Logger logger = LoggerFactory.getLogger(ServiceFinanceInfoImpl.class);
 
     @EJB
-    DbEventBeanLocal dbEventBeanLocal;
-
-    @EJB
-    DbActionBeanLocal dbActionBeanLocal;
-
-    @EJB
-    DbEventPaymentLocal dbEventPaymentLocal;
+    PaymentBeanLocal paymentBeanLocal;
 
     /**
      * @see ServiceFinanceInfo#getFinanceInfo(String)
@@ -56,8 +50,7 @@ public class ServiceFinanceInfoImpl implements ServiceFinanceInfo {
    @Override
     public ServiceListResult getServiceList(Integer idTreatment) throws CoreException {
        logger.info("call ServiceFinanceInfoImpl.getServiceList. idTreatment = " + idTreatment);
-        Event event =  dbEventBeanLocal.getEventById(idTreatment);
-        return new ServiceListResult(event, dbActionBeanLocal);
+       return paymentBeanLocal.getServiceList(idTreatment);
     }
 
     @Override
@@ -70,12 +63,8 @@ public class ServiceFinanceInfoImpl implements ServiceFinanceInfo {
                 " datePaid = " + datePaid +
                 " codeContract = " + codeContract +
                 " paidName = " + paidName +
-               " size of listService = " + listService.size());
-        Event event =  dbEventBeanLocal.getEventById(idTreatment);
-        for(ServicePaidInfo servicePaidInfo : listService) {
-            Action action = dbActionBeanLocal.getActionById(servicePaidInfo.getIdAction());
-            dbEventPaymentLocal.savePaidInfo(event, datePaid, action, servicePaidInfo);
-        }
-        return idTreatment;
+                " size of listService = " + listService.size());
+        return paymentBeanLocal.setPaymentInfo(datePaid, codeContract, idTreatment, paidName, listService);
     }
+
 }

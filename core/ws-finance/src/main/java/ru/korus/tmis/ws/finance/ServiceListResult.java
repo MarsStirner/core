@@ -31,4 +31,12 @@ public class ServiceListResult {
            listService.add(new ServiceInfo(action));
         }
     }
+
+    public Integer getIdTreatment() {
+        return idTreatment;
+    }
+
+    public List<ServiceInfo> getListService() {
+        return listService;
+    }
 }
