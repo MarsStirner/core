@@ -87,7 +87,7 @@
             <groupId>ru.korus.tmis.ws.finance</groupId>
             <artifactId>tmis-ws-finance</artifactId>
             <version>${version.tmis.core}</version>
-            <type>ejb</type>
+            <type>war</type>
         </dependency>
 
         <dependency>

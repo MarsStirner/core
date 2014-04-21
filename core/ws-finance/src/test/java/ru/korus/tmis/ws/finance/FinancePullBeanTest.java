@@ -15,7 +15,6 @@ import org.mockito.Mock;
 import org.testng.Assert;
 import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
-import ru.korus.tmis.core.database.common.DbActionBean;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.finance.*;
 import ru.korus.tmis.core.entity.model.EventPayment;
@@ -38,7 +37,6 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.MockitoAnnotations.initMocks;
@@ -56,6 +54,12 @@ import static org.mockito.MockitoAnnotations.initMocks;
 @Transactional(value = TransactionMode.ROLLBACK)
 public class FinancePullBeanTest extends Arquillian {
 
+    private static final String TEST_SERVICE_CODE = "В02.018.01";
+    private static final String TEST_SERVICE_NAME = "Процедуры сестринского ухода при подготовке больного к колопроктологической операции";
+    private static final double TEST_SERVICE_AMOUNT = 2.0;
+    private static final double TEST_SERVICE_SUM = 10000.0;
+    private static final double TEST_SERVICE_SUM_DISC = 1000.0;
+    private static final int TEST_SERVICE_PATIENT_ID = 347610;
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em;
 
@@ -68,6 +72,7 @@ public class FinancePullBeanTest extends Arquillian {
     @EJB
     DbActionBeanLocal dbActionBeanLocal;
 
+    private static final Integer TEST_SERVICE_ACTION_ID = 793630;
 
     private final Integer TEST_EVENT_ID = 841672;
 
@@ -163,20 +168,34 @@ public class FinancePullBeanTest extends Arquillian {
         Integer res = paymentBeanLocal.setPaymentInfo(new Date(), "test", TEST_EVENT_ID, personName, servicePaidInfoList);
         Assert.assertTrue(res.equals(TEST_EVENT_ID));
         Object lastId = em.createNativeQuery("SELECT LAST_INSERT_ID()").getSingleResult();
-        Assert.assertTrue(lastId instanceof Integer);
-        EventPayment eventPayment = em.find(EventPayment.class, lastId);
+        Assert.assertTrue(lastId instanceof Long);
+        EventPayment eventPayment = em.find(EventPayment.class, ((Long)lastId).intValue());
         Assert.assertNotNull(eventPayment);
+        checkTestServicePaidInfo(eventPayment);
+    }
+
+    private void checkTestServicePaidInfo(EventPayment eventPayment) {
+        Assert.assertNotNull(eventPayment.getAction());
+        Assert.assertEquals(eventPayment.getAction().getId(), TEST_SERVICE_ACTION_ID);
+        Assert.assertNotNull(eventPayment.getService());
+        Assert.assertEquals(eventPayment.getService().getCode(), TEST_SERVICE_CODE);
+        Assert.assertEquals(eventPayment.getService().getName(), TEST_SERVICE_NAME);
+        Assert.assertTrue(eventPayment.getAction().getAmount() == TEST_SERVICE_AMOUNT);
+        Assert.assertTrue(eventPayment.getAction().getEvent().getPatient().getId() == TEST_SERVICE_PATIENT_ID);
+       //Assert.assertEquals(eventPayment.get);
+        //TODO add check TypePayment
+
     }
 
     private ServicePaidInfo getTestServicePaidInfo() {
         ServicePaidInfo res = new ServicePaidInfo();
-        res.setIdAction(793630);
-        res.setCodeService("В02.018.01");
-        res.setNameService("Процедуры сестринского ухода при подготовке больного к колопроктологической операции");
-        res.setAmount(2.0);
-        res.setSum(10000.0);
-        res.setSumDisc(1000.0);
-        res.setCodePatient("347610");
+        res.setIdAction(TEST_SERVICE_ACTION_ID);
+        res.setCodeService(TEST_SERVICE_CODE);
+        res.setNameService(TEST_SERVICE_NAME);
+        res.setAmount(TEST_SERVICE_AMOUNT);
+        res.setSum(TEST_SERVICE_SUM);
+        res.setSumDisc(TEST_SERVICE_SUM_DISC);
+        res.setCodePatient("" + TEST_SERVICE_PATIENT_ID);
         res.setTypePayment(true);
         return res;
     }

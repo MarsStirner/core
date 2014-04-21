@@ -76,6 +76,10 @@ public class EventPayment implements Serializable {
     @JoinColumn(name = "action_id")
     private Action action;
 
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    private RbService service;
+
     public EventPayment() {
     }
 
@@ -213,6 +217,14 @@ public class EventPayment implements Serializable {
 
     public void setAction(Action action) {
         this.action = action;
+    }
+
+    public RbService getService() {
+        return service;
+    }
+
+    public void setService(RbService service) {
+        this.service = service;
     }
 
 }
