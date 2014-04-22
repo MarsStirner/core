@@ -3,7 +3,7 @@ package ru.korus.tmis.core.entity.model
 import javax.persistence._
 import scala.beans.BeanProperty
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
-import org.codehaus.jackson.annotate.{JsonIgnoreProperties}
+import org.codehaus.jackson.annotate.JsonIgnoreProperties
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
  * Date: 2/21/14
@@ -61,7 +61,7 @@ class RbPrintTemplate extends Serializable {
   var hasPopApp: java.lang.Boolean = _
 
   @PostLoad
-  def constructHasPopApp = {
+  def constructHasPopApp() = {
       // Ищем в тексте шаблона определенные конструкции
       val popApp = default.matches("(.*dialogs\\.dial.*)|(.*SpecialVar_.*)|(.*SpecialVariable.*)")
       if (popApp) {
