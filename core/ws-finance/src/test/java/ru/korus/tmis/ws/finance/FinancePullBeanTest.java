@@ -23,6 +23,7 @@ import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.util.TestUtilBusiness;
 import ru.korus.tmis.util.TestUtilCommon;
 import ru.korus.tmis.util.TestUtilDatabase;
+import ru.korus.tmis.util.TestUtilLaboratory;
 import ru.korus.tmis.ws.finance.odvd.Table;
 import ru.korus.tmis.ws.finance.odvd.WsPoliclinicPortType;
 
@@ -86,6 +87,7 @@ public class FinancePullBeanTest extends Arquillian {
         wa.addPackages(false, (new TestUtilCommon()).getPackagesForTest());
         wa.addPackages(false, (new TestUtilDatabase()).getPackagesForTest());
         wa.addPackages(false, (new TestUtilBusiness()).getPackagesForTest());
+        wa.addPackages(false, (new TestUtilLaboratory()).getPackagesForTest());
         // --------------------------------------------------------------------------
         wa.addPackage(Transmitter.class.getPackage());
 
