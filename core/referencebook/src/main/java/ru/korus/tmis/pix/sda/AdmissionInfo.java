@@ -6,6 +6,7 @@ import org.joda.time.Days;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
 
 import java.util.HashMap;
 import java.util.LinkedList;
@@ -57,7 +58,7 @@ public class AdmissionInfo {
 
     private final CodeNameSystem admissionsThisYear;
 
-    public AdmissionInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
+    public AdmissionInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal, HospitalBedBeanLocal hospitalBedBeanLocal) {
         this.dbActionPropertyBeanLocal = dbActionPropertyBeanLocal;
         final Action received = actions.get("received").iterator().hasNext() ? actions.get("received").iterator().next() : null;
         final List<CodeNameSystem> propsInfoMapRecieved = new LinkedList<CodeNameSystem>() {{
@@ -79,7 +80,7 @@ public class AdmissionInfo {
         this.admissionsThisYear = apValue == null ? null : RbManager.get(RbManager.RbType.C42007,
                 CodeNameSystem.newInstance(admissionsThisYearMap.get(apValue.getValueAsString()), apValue.getValueAsString(), "1.2.643.5.1.13.2.1.1.109"));
 
-        final Action movingLast = getLastMoving(actions);
+        final Action movingLast = hospitalBedBeanLocal.getLastMovingActionForEventId(event.getId());
         APValueOrgStructure apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(movingLast, FINAL_DEPARTMENT);
         this.finalDepartment = (apValueOrgStructure == null || apValueOrgStructure.getValue() == null) ?
                 null : new CodeNameSystem(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
@@ -108,16 +109,6 @@ public class AdmissionInfo {
         return res;
     }
 
-    private Action getLastMoving(Multimap<String, Action> actions) {
-        //TODO заменить на HospitalBedBeanLocal.getLastMovingActionForEventId
-        Action res = null;
-        for (Action action : actions.get("moving")) {
-            if (res == null || action.getCreateDatetime().compareTo(res.getCreateDatetime()) > 0) {
-                res = action;
-            }
-        }
-        return res;
-    }
 
     private APValue getActionPropertyByCodeOrName(Action action, CodeNameSystem prop) {
         if (action == null) {

@@ -218,6 +218,7 @@ public class FinanceInfo {
 
                 final Staff executor = EntityMgr.getSafe(action.getExecutor());
                 final OrgStructure orgStructure = EntityMgr.getSafe(executor.getOrgStructure());
+
                 cur.setCodeOfStruct(orgStructure.getCode());
                 cur.setNameOfStruct(orgStructure.getName());
 

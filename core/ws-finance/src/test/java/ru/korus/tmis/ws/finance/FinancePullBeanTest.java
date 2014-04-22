@@ -20,6 +20,7 @@ import ru.korus.tmis.core.database.finance.*;
 import ru.korus.tmis.core.entity.model.EventPayment;
 import ru.korus.tmis.core.transmit.Transmitter;
 import ru.korus.tmis.scala.util.ConfigManager;
+import ru.korus.tmis.util.TestUtilBusiness;
 import ru.korus.tmis.util.TestUtilCommon;
 import ru.korus.tmis.util.TestUtilDatabase;
 import ru.korus.tmis.ws.finance.odvd.Table;
@@ -84,7 +85,7 @@ public class FinancePullBeanTest extends Arquillian {
         // common -------------------------------------------------------------------
         wa.addPackages(false, (new TestUtilCommon()).getPackagesForTest());
         wa.addPackages(false, (new TestUtilDatabase()).getPackagesForTest());
-        /// wa.addPackages(false, (new TestUtilBusiness()).getPackagesForTest());
+        wa.addPackages(false, (new TestUtilBusiness()).getPackagesForTest());
         // --------------------------------------------------------------------------
         wa.addPackage(Transmitter.class.getPackage());
 
@@ -227,7 +228,7 @@ public class FinancePullBeanTest extends Arquillian {
             Assert.fail();
         }
         Assert.assertEquals(codeContractCapator.getValue(), "2201-п");
-        Assert.assertEquals(codePatientCapator.getValue(), "347610");
+        Assert.assertEquals(codePatientCapator.getValue(), String.valueOf(TEST_SERVICE_PATIENT_ID));
         Assert.assertEquals(patientNameCapator.getValue(), "АРИНА ВЯЧЕСЛАВОВНА КОЗИНА");
         Assert.assertEquals(paidNameCapator.getValue(), "Юлия Владимировна Копытина");
     }
@@ -235,10 +236,11 @@ public class FinancePullBeanTest extends Arquillian {
     private void checkPutService() throws Exception {
         ArgumentCaptor<BigInteger> idTreatmentCapture = ArgumentCaptor.forClass(BigInteger.class);
         ArgumentCaptor<Table> listServiceCompleteCapture = ArgumentCaptor.forClass(Table.class);
-        verify(mockPort, times(1)).putService(idTreatmentCapture.capture(), listServiceCompleteCapture.capture());
+        verify(mockPort, times(2)).putService(idTreatmentCapture.capture(), listServiceCompleteCapture.capture());
         Assert.assertEquals(idTreatmentCapture.getValue(), BigInteger.valueOf(TEST_EVENT_ID));
         final String contextPath = "ru.korus.tmis.ws.finance.odvd";
         Assert.assertTrue(TestUtilCommon.checkArgument(listServiceCompleteCapture.getAllValues().get(0), "./src/test/resources/xml/services.xml", contextPath));
+        Assert.assertTrue(TestUtilCommon.checkArgument(listServiceCompleteCapture.getAllValues().get(1), "./src/test/resources/xml/services1.xml", contextPath));
     }
 
 

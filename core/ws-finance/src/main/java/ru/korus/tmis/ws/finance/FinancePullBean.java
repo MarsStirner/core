@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.database.finance.DbEventLocalContractLocal;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
 import ru.korus.tmis.core.transmit.Sender;
 import ru.korus.tmis.core.transmit.TransmitterLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
@@ -35,6 +36,9 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
 
     @EJB
     DbEventLocalContractLocal dbEventLocalContractLocal;
+
+    @EJB
+    HospitalBedBeanLocal hospitalBedBeanLocal;
 
     private WsPoliclinicPortType port = null;
 
@@ -97,7 +101,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     public void sendClosedActions(Event event, List<Action> actionList) {
         assert event != null;
         assert !actionList.isEmpty();
-        getPort().putService(BigInteger.valueOf(event.getId()), OdvdBuilder.toOdvdTableActions(actionList));
+        getPort().putService(BigInteger.valueOf(event.getId()), OdvdBuilder.toOdvdTableActions(actionList, hospitalBedBeanLocal));
     }
 
 

@@ -7,6 +7,7 @@ import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.database.RbMedicalAidProfileBeanLocal;
 import ru.korus.tmis.core.database.RbMedicalAidTypeBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
 
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.util.Date;
@@ -82,7 +83,8 @@ public class ServiceInfo {
     public ServiceInfo(final Action action,
                        final Multimap<String, Action> actionsByTypeCode,
                        final DbQueryBeanLocal dbCustomQueryBean,
-                       final RbMedicalAidProfileBeanLocal rbMedicalAidProfileBean) {
+                       final RbMedicalAidProfileBeanLocal rbMedicalAidProfileBean,
+                       final HospitalBedBeanLocal hospitalBedBeanLocal) {
         this.id = String.valueOf(action.getId());
         this.createdPerson = EmployeeInfo.newInstance(action.getCreatePerson());
         this.createDate = ClientInfo.getXmlGregorianCalendar(action.getEndDate());
@@ -104,7 +106,7 @@ public class ServiceInfo {
         }
         this.isChildProfile = isChild;
 
-        final Action moving = getLastMoving(actionsByTypeCode);
+        final Action moving =  hospitalBedBeanLocal.getLastMovingActionForEventId(event.getId());
         this.bedProfile = moving == null ? null : dbCustomQueryBean.getBedProfileName(moving); // 450
 
         CodeNameSystem diag = null;
@@ -141,19 +143,6 @@ public class ServiceInfo {
         this.serviceProfile = (profile == null || medicalAidProfileId == null) ? null : new CodeNameSystem(profile.getCode(), profile.getName());
     }
 
-    /**
-     * Поиск последнего движения
-     */
-    private Action getLastMoving(Multimap<String, Action> actions) {
-        //TODO заменить на HospitalBedBeanLocal.getLastMovingActionForEventId
-        Action res = null;
-        for (Action action : actions.get("moving")) {
-            if (res == null || action.getCreateDatetime().compareTo(res.getCreateDatetime()) > 0) {
-                res = action;
-            }
-        }
-        return res;
-    }
 
     public String getId() {
         return id;

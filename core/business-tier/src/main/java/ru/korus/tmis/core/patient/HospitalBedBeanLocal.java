@@ -108,9 +108,8 @@ public interface HospitalBedBeanLocal {
      * @param eventId Идентификатор ивента.
      * @see AuthData
      * @return
-     * @throws CoreException
      */
-    Action getLastMovingActionForEventId(int eventId) throws CoreException;
+    Action getLastMovingActionForEventId(int eventId);
 
     /**
      * Запрос на последнее по ивенту действие типа Движение
@@ -122,10 +121,19 @@ public interface HospitalBedBeanLocal {
     Action getLastCloseMovingActionForEventId(int eventId) throws CoreException;
 
     /**
-     * Получить отделение нахождения пациента
-     * @param movingId Идентификатор движения
+     * Получить отделение нахождения пациента млм приемное отделение
+     * @param eventId
      * @return
      * @throws CoreException
      */
-    OrgStructure getCurrentDepartmentForAppeal(int movingId)  throws CoreException;
+    OrgStructure getCurrentDepartmentForAppeal(int eventId) throws CoreException;
+
+    /**
+     * Получить отделение нахождения пациента
+     * @param eventId
+     * @return
+     * @throws CoreException
+     */
+    OrgStructure getCurrentDepartment(int eventId) throws CoreException;
+
 }

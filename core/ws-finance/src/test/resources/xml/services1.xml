@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<table xmlns="http://localhost/Policlinic">
+    <listServiceComplete>
+        <idService>793635</idService>
+        <endDate>2014-01-22+04:00</endDate>
+        <codeOfService>Лаборатория биофизики</codeOfService>
+        <nameOfService>Движение</nameOfService>
+        <codeOfStruct xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <nameOfStruct>Лаборатория биофизики</nameOfStruct>
+        <amount xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <isService>true</isService>
+    </listServiceComplete>
+</table>

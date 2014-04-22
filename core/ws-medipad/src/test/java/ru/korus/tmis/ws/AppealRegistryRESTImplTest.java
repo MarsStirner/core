@@ -26,10 +26,7 @@ import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.patient.AppealBeanLocal;
 import ru.korus.tmis.testutil.DbUtil;
-import ru.korus.tmis.util.TestUtilBusiness;
-import ru.korus.tmis.util.TestUtilCommon;
-import ru.korus.tmis.util.TestUtilDatabase;
-import ru.korus.tmis.util.TestUtilWsMedipad;
+import ru.korus.tmis.util.*;
 import scala.actors.threadpool.Arrays;
 
 import javax.ejb.EJB;
@@ -80,6 +77,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         wa.addPackages(false, (new TestUtilCommon()).getPackagesForTest());
         wa.addPackages(false, (new TestUtilBusiness()).getPackagesForTest());
         wa.addPackages(false, (new TestUtilDatabase()).getPackagesForTest());
+        wa.addPackages(false, (new TestUtilLaboratory()).getPackagesForTest());
         // --------------------------------------------------------------------------
 
         wa.addPackages(true, (new TestUtilWsMedipad()).getPackagesForTest());

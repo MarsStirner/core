@@ -3,6 +3,7 @@ package ru.korus.tmis.pix.sda;
 import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
 import ru.korus.tmis.core.transmit.Sender;
 import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
@@ -69,6 +70,9 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
 
     @EJB
     private TransmitterLocal transmitterLocal;
+
+    @EJB
+    private HospitalBedBeanLocal hospitalBedBeanLocal;
 
     private EMRReceiverServiceSoap port = null;
 
@@ -200,7 +204,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
 
             final HashSet<String> flatCodes = new HashSet<String>(Arrays.asList("received", "moving"));
             final Multimap<String, Action> actionsByTypeCode = dbEventBeanLocal.getActionsByTypeCode(event, flatCodes);
-            final EventInfo eventInfo = new EventInfo(event, actionsByTypeCode, dbActionPropertyBeanLocal);
+            final EventInfo eventInfo = new EventInfo(event, actionsByTypeCode, dbActionPropertyBeanLocal, hospitalBedBeanLocal);
             port.container(SdaBuilder.toSda(
                     clientInfo,
                     eventInfo,
@@ -234,7 +238,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
                 .setParameter("eventId", event.getId()).getResultList();
         List<ServiceInfo> res = new LinkedList<ServiceInfo>();
         for (Action action : services) {
-            res.add(new ServiceInfo(action, actionsByTypeCode, dbCustomQueryBean, dbRbMedicalAidProfileBean));
+            res.add(new ServiceInfo(action, actionsByTypeCode, dbCustomQueryBean, dbRbMedicalAidProfileBean, hospitalBedBeanLocal));
         }
         return res;
     }

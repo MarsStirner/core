@@ -9,6 +9,7 @@ import com.google.common.collect.Multimap;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -84,7 +85,7 @@ public class EventInfo {
      */
     private final String externalId;
 
-    public EventInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal) {
+    public EventInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal, HospitalBedBeanLocal hospitalBedBeanLocal) {
         final ru.korus.tmis.core.entity.model.UUID uuid = event.getUuid();
         this.eventUuid = uuid != null ? uuid.getUuid() : null;
         RbRequestType requestType = event.getEventType().getRequestType();
@@ -109,7 +110,7 @@ public class EventInfo {
                 CodeNameSystem.newInstance(finance.getCode(), finance.getName(), "1.2.643.5.1.13.2.1.1.528"));
         atHome = initAtHome(event.getEventType());
         orgStructure = initOrgStructByPerson(event.getExecutor());
-        admissionInfo = new AdmissionInfo(event, actions, dbActionPropertyBeanLocal);
+        admissionInfo = new AdmissionInfo(event, actions, dbActionPropertyBeanLocal, hospitalBedBeanLocal);
         encounterResult = event.getResult() == null ? null : RbManager.get(RbManager.RbType.rbResult,
                 CodeNameSystem.newInstance(event.getResult().getCode(), event.getResult().getName(), "1.2.643.5.1.13.2.1.1.123"));
         eventId = String.valueOf(event.getId());

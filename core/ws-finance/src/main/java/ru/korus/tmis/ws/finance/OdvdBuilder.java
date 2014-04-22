@@ -6,7 +6,8 @@ import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbService;
-import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
 import ru.korus.tmis.ws.finance.odvd.ObjectFactory;
 import ru.korus.tmis.ws.finance.odvd.RowTable;
 import ru.korus.tmis.ws.finance.odvd.Table;
@@ -27,15 +28,15 @@ public class OdvdBuilder {
 
     private static ru.korus.tmis.ws.finance.odvd.ObjectFactory odvdObjectFactory = new ObjectFactory();
 
-    public static Table toOdvdTableActions(List<Action> actionList) {
+    public static Table toOdvdTableActions(List<Action> actionList, HospitalBedBeanLocal hospitalBedBeanLocal) {
         Table res = odvdObjectFactory.createTable();
         for (Action action : actionList) {
-           res.getListServiceComplete().add(toOdvdRowTable(action));
+            res.getListServiceComplete().add(toOdvdRowTable(action, hospitalBedBeanLocal));
         }
         return res;
     }
 
-    private static RowTable toOdvdRowTable(Action action) {
+    private static RowTable toOdvdRowTable(Action action, HospitalBedBeanLocal hospitalBedBeanLocal) {
         RowTable res = odvdObjectFactory.createRowTable();
         assert action.getActionType() != null;
         assert action.getEvent() != null;
@@ -53,14 +54,21 @@ public class OdvdBuilder {
             res.setNameOfService(service.getName());
             res.setCodeOfService(service.getCode());
         }
-        //TODO Уточнить у Алены Карасевой
-        final Staff executor = action.getEvent().getExecutor();
-        final OrgStructure orgStructure = executor == null ? null : executor.getOrgStructure();
-        res.setNameOfStruct(orgStructure.getName());
-        res.setCodeOfService(orgStructure.getCode());
+
+        try {
+            if (action.getEvent() != null) {
+                final OrgStructure orgStructure = hospitalBedBeanLocal.getCurrentDepartment(action.getEvent().getId());
+                if (orgStructure != null) {
+                    res.setNameOfStruct(orgStructure.getName());
+                    res.setCodeOfService(orgStructure.getCode());
+                }
+            }
+        } catch (CoreException ex) {
+            logger.info("Current department is not set", ex);
+        }
 
         //TODO amount должен быть не integer, а double  ???
-       // res.setAmount(action.getAmount());
+        // res.setAmount(action.getAmount());
         return res;
     }
 

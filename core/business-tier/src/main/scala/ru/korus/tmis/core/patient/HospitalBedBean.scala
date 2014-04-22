@@ -689,36 +689,42 @@ with TmisLogging{
    * @param id Идентификатор госпитализации
    *@return Экземпляр класса, описывающего организационную структуру в БД
    */
-  def getCurrentDepartmentForAppeal(id: Int) = {
-    // Текущее отделение пребывания пациента
-    val moving = this.getLastMovingActionForEventId(id)
-    var department: OrgStructure = null
-    if (moving != null) {
-      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(moving.getId.intValue,
-        JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
-      if (bedValues!=null && bedValues.size()>0) {
-        val values = bedValues.iterator.next()._2
-        if (values!=null && values.size()>0){
-          department = values.get(0).getValue.asInstanceOf[OrgStructure]
-        }
-      }
-    // Отсутствуют движения, смотрим поступления
-    } else {
-      val receiving = getReceivingActionByCondition(id, "ORDER BY a.createDatetime desc")
-      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(receiving.getId.intValue, JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
-      if (bedValues!=null && bedValues.size()>0) {
-        val values = bedValues.iterator.next()._2
-        if (values!=null && values.size()>0){
-          department = values.get(0).getValue.asInstanceOf[OrgStructure]
-        }
-      }
-    }
+  def getCurrentDepartmentForAppeal(eventId: Int) = {
+    var department: OrgStructure = getCurrentDepartment(eventId)
     //Добавлено для совместимости с предыдущим поведением, когда если не было движений - возвращалось приемное отделение
     //Рекомендую убрать, когда точно будет ясно, что
     if(department == null)
       dbOrgStructureBean.getOrgStructureById(i18n("db.dayHospital.id").toInt)
     else
       department
+  }
+
+
+  def getCurrentDepartment(eventId: Int): OrgStructure = {
+    // Текущее отделение пребывания пациента
+    val moving = this.getLastMovingActionForEventId(eventId)
+    var department: OrgStructure = null
+    if (moving != null) {
+      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(moving.getId.intValue,
+        JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
+      if (bedValues != null && bedValues.size() > 0) {
+        val values = bedValues.iterator.next()._2
+        if (values != null && values.size() > 0) {
+          department = values.get(0).getValue.asInstanceOf[OrgStructure]
+        }
+      }
+      // Отсутствуют движения, смотрим поступления
+    } else {
+      val receiving = getReceivingActionByCondition(eventId, "ORDER BY a.createDatetime desc")
+      val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(receiving.getId.intValue, JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
+      if (bedValues != null && bedValues.size() > 0) {
+        val values = bedValues.iterator.next()._2
+        if (values != null && values.size() > 0) {
+          department = values.get(0).getValue.asInstanceOf[OrgStructure]
+        }
+      }
+    }
+    department
   }
 
   private def getLastMovingActionByCondition(eventId: Int, condition: String) = {
