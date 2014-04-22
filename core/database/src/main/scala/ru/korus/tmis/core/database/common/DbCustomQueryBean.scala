@@ -8,7 +8,7 @@ import scala.collection.JavaConversions._
 import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model._
 import scala.Predef._
-import java.util.Date
+import java.util.{Date, List}
 import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless}
 import scala.collection.convert.Wrappers.MapWrapper
@@ -18,7 +18,7 @@ import collection.immutable.ListMap
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.core.database.bak.BakDiagnosis
 import scala.collection.mutable
-import java.{util => ju, util}
+import java.{util => ju}
 import ru.korus.tmis.scala.util.{General, CAPids, I18nable}
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
@@ -900,8 +900,8 @@ class DbCustomQueryBean
 
   private def getBedValueForSortingCondition(a: AnyRef) = {
     a match {
-      case b: MapWrapper[ActionProperty, util.List[APValue]] => {
-        val apvs = a.asInstanceOf[MapWrapper[ActionProperty, util.List[APValue]]]
+      case b: MapWrapper[ActionProperty, List[APValue]] => {
+        val apvs = a.asInstanceOf[MapWrapper[ActionProperty, List[APValue]]]
         if (apvs != null && apvs.size > 0) {
           val values = apvs.iterator.next()._2
           if (values != null && values.size() > 0 && values.get(0).isInstanceOf[APValueHospitalBed])
