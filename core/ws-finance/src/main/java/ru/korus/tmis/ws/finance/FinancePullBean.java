@@ -5,6 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.database.finance.DbEventLocalContractLocal;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
 import ru.korus.tmis.core.transmit.Sender;
 import ru.korus.tmis.core.transmit.TransmitterLocal;
@@ -69,7 +70,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     }
 
     @Override
-    public void sendEntity(Object entity) {
+    public void sendEntity(Object entity) throws CoreException {
         assert entity instanceof EventsToODVD || entity instanceof ActionToODVD;
 
         if (entity instanceof EventsToODVD) {  // передаем в 1С новое платное обращение
@@ -81,19 +82,22 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
         }
     }
 
-    private void sendNewAction(Object entity, ActionToODVD actionsToODVD) {
+    private void sendNewAction(Object entity, ActionToODVD actionsToODVD) throws CoreException {
         logger.info("processing ActionToODVD.event_id = ", actionsToODVD.getActionId());
         List<Action> actionList = new LinkedList<Action>();
         final Action action = actionsToODVD.getAction();
         if (action == null) {
-            logger.error("action not found");
-            return;
+            final String msg = "action not found";
+            logger.error(msg);
+            throw new CoreException(msg);
         }
         actionList.add(action);
         final Event event = action.getEvent();
         if (event == null) {
-            logger.error("event not found");
-            return;
+            final String msg = "event not found";
+            logger.error(msg);
+            throw new CoreException(msg);
+
         }
         sendClosedActions(event, actionList);
     }
@@ -106,29 +110,27 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
 
 
 
-    private void sendNewEvent(Object entity, EventsToODVD eventsToODVD) {
+    private void sendNewEvent(Object entity, EventsToODVD eventsToODVD) throws CoreException {
         logger.info("processing EventsToODVD.event_id = {}", eventsToODVD.getEventId());
         Event event = eventsToODVD.getEvent();
         if (event == null) {
-            logger.error("event not found: entry: " + entity);
-            return;
+            final String msg = "event not found: entry: " + entity;
+            logger.error(msg);
+            throw new CoreException(msg);
         }
         Patient patient = event.getPatient();
         if (patient == null) {
-            logger.error("patient not found");
-            return;
+            final String msg = "patient not found";
+            logger.error(msg);
+            throw new CoreException(msg);
         }
         EventLocalContract eventLocalContract = dbEventLocalContractLocal.getByEventId(event.getId());
-        if (eventLocalContract == null) {
-            logger.error("EventLocalContract not found");
-            return;
-        }
 
         try {
             final BigInteger idTreatment = BigInteger.valueOf(event.getId());
             final String numTreatment = event.getExternalId();
             final XMLGregorianCalendar dateTreatment = Database.toGregorianCalendar(event.getCreateDatetime());
-            final String codeContract = eventLocalContract.getNumberContract();
+            final String codeContract = eventLocalContract == null ? null : eventLocalContract.getNumberContract();
             final String codePatient = String.valueOf(patient.getId());
 
             //TODO не по протоколу (ФИО должны быть отдельно)
@@ -136,7 +138,8 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
                     nullToEmpty(patient.getPatrName()),
                     nullToEmpty(patient.getLastName()));
             //TODO не по протоколу (ФИО должны быть отдельно)
-            final String paidName = String.format("%s %s %s", nullToEmpty(eventLocalContract.getFirstName()),
+
+            final String paidName = eventLocalContract == null ? "unknown" : String.format("%s %s %s", nullToEmpty(eventLocalContract.getFirstName()),
                     nullToEmpty(eventLocalContract.getPatrName()),
                     nullToEmpty(eventLocalContract.getLastName()));
             getPort().putTreatment(idTreatment,
@@ -147,8 +150,9 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
                     patientName,
                     paidName);
         } catch (DatatypeConfigurationException e) {
-            logger.error("wrong event.createDate. ", e);
-            return;
+            final String msg = "wrong event.createDate";
+            logger.error(msg, e);
+            throw new CoreException(msg);
         }
     }
 

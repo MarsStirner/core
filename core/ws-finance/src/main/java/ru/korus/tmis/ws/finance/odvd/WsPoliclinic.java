@@ -45,7 +45,7 @@ public class WsPoliclinic
         WebServiceException e = null;
         try {
             final URL baseUrl = WsPoliclinic.class.getResource("");
-            url = new URL("../../../../../../wsdl/wsPoliclinic.wsdl");
+            url = new URL(baseUrl, "../../../../../../../wsdl/wsPoliclinic.wsdl");
         } catch (MalformedURLException ex) {
             e = new WebServiceException(ex);
         }

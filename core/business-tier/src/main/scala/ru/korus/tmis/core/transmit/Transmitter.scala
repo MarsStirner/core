@@ -49,12 +49,7 @@ class Transmitter extends TransmitterLocal with Logging {
       em.remove(transmittable)
     }
     catch {
-      case ex: SOAPFaultException => {
-        transmittable.setInfo(ex.getMessage)
-        ex.printStackTrace
-        em.flush
-      }
-      case ex: WebServiceException => {
+      case ex: Exception => {
         transmittable.setInfo(ex.getMessage)
         ex.printStackTrace
         em.flush

@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.transmit;
 
+import ru.korus.tmis.core.exception.CoreException;
+
 /**
  * Author:      Sergey A. Zagrebelny <br>
  * Date:        16.04.14, 17:33 <br>
@@ -7,5 +9,5 @@ package ru.korus.tmis.core.transmit;
  * Description:  <br>
  */
 public interface Sender {
-    void  sendEntity(Object entity);
+    void  sendEntity(Object entity) throws CoreException;
 }
