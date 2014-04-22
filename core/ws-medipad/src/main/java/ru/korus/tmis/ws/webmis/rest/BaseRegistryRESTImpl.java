@@ -89,6 +89,12 @@ public class BaseRegistryRESTImpl implements Serializable {
         return new HospitalBedsInfoRESTImpl(wsImpl, callback, makeAuth(token));
     }
 
+    @Path("/autosave")
+    public AutoSaveStorage getAutoSaveStarage(@QueryParam("token") String token,
+                                              @QueryParam("callback") String callback) {
+        return new AutoSaveStorage(wsImpl, makeAuth(token), callback);
+    }
+
     //__________________________________________________________________________________________________________________
 
     private AuthData makeAuth(String token) {

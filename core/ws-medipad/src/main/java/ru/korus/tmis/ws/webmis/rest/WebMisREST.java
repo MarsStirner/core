@@ -417,4 +417,23 @@ public interface WebMisREST extends Serializable {
      * @return
      */
     Boolean removeAction(int actionId);
+
+    /**
+     * Метод сохранения текста при автосохранении полей ввода
+     * @param id Идентификатор поля, строка длинной не более 40 символов
+     * @param text Сохраняемая текстовая запись
+     * @param auth Данные авторизации пользователя
+     * @throws CoreException В случае неверных входящих данных
+     */
+    Object saveAutoSaveField(String id, String text, AuthData auth) throws CoreException;
+
+    /**
+     * Получение сохраненного ранее автосохраняемого текста
+     * @param id Идентификатор поля, строка длинной не более 40 символов
+     * @param auth Данные авторизации пользователя
+     * @return Запрашиваемое текстовое поле
+     * @throws CoreException
+     */
+    AutoSaveOutputDataContainer loadAutoSaveField(String id, AuthData auth) throws CoreException;
+
 }

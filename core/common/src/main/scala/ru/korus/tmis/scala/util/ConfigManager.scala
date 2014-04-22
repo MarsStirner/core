@@ -524,6 +524,7 @@ object ConfigManager extends Configuration {
     var ClientDocumentNotFound = 0x107
     var RbDocumentTypeNotFound = 0x108
     var ClientPolicyNotFound = 0x109
+    var TooLongAutoSaveFieldIdentifier = 0x10A
     var RbPolicyTypeNotFound = 0x110
     var OrganisationNotFound = 0x111
     var RbContactTypeNotFound = 0x112
@@ -571,6 +572,7 @@ object ConfigManager extends Configuration {
     var RbDiseaseStageNotFound = 0x154
     var RbDiseaseCharacterNotFound = 0x155
     var NoMoving = 0x156
+    var UnknownError = 0x157
   }
 
 

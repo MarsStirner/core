@@ -172,8 +172,6 @@ class WebMisRESTImpl  extends WebMisREST
   @EJB
   var dbLayoutAttributeBean: DbLayoutAttributeBeanLocal = _
 
- // @EJB
- // var lisBean: LaboratoryBeanLocal = _
 
   @EJB
   var dbTempInvalidBean: DbTempInvalidBeanLocal = _
@@ -192,6 +190,9 @@ class WebMisRESTImpl  extends WebMisREST
 
   @EJB
   var dbSettingsBean: DbSettingsBeanLocal = _
+
+  @EJB
+  var dbAutoSaveStorageLocal: DbAutoSaveStorageLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -1478,5 +1479,14 @@ class WebMisRESTImpl  extends WebMisREST
 
   def removeAction(actionId: Int): lang.Boolean = {
     actionBean.removeAction(actionId)
+  }
+
+  def saveAutoSaveField(id: String, text: String, auth: AuthData) = {
+    dbAutoSaveStorageLocal.save(id, auth.getUserId, text)
+    ""
+  }
+
+  def loadAutoSaveField(id: String, auth: AuthData): AutoSaveOutputDataContainer = {
+    dbAutoSaveStorageLocal.load(id, auth.getUserId)
   }
 }

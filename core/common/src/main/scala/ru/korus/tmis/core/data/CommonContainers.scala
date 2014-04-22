@@ -168,3 +168,8 @@ class OrgStructureContainer {
     }
   }
 }
+
+@XmlType(name = "booleanContainer")
+@XmlRootElement(name = "booleanContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+case class BooleanContainer(@BeanProperty var value: Boolean)
