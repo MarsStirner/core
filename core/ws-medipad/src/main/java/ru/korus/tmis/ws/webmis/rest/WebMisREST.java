@@ -1,12 +1,14 @@
 package ru.korus.tmis.ws.webmis.rest;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.entity.model.APValueAction;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.entity.model.RbPrintTemplate;
 import ru.korus.tmis.core.exception.CoreException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -153,11 +155,14 @@ public interface WebMisREST extends Serializable {
 
     JSONCommonData modifyInstrumentalStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
+    JSONCommonData modifyConsultation(ConsultationRequestData request, AuthData authData);
+
     boolean removeDirection(AssignmentsToRemoveDataList data, String directionType, AuthData auth) throws CoreException;
 
     void checkCountOfConsultations(int eventId, int pqt, int executorId, long data) throws CoreException;
 
-    //APValueAction getPlannedTime(Action action) throws CoreException;
+    ScheduleContainer getPlannedTime(int actionId);
+
     /**
      * Получение справочника FlatDirectory
      * @param request Данные из запроса как FlatDirectoryRequestData
@@ -248,6 +253,8 @@ public interface WebMisREST extends Serializable {
      * @see AuthData
      */
     String getEventTypes(ListDataRequest request, AuthData authData) throws CoreException;
+
+    List<ContractContainer> getContracts(int eventTypeId, boolean showDeleted, boolean showExpired);
 
     /**
      * Сервис на получении списка пациентов из открытых госпитализаций, которые лежат на койке
@@ -412,6 +419,10 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     OrganizationContainer getOrganizationById(int id, AuthData authData) throws CoreException;
+
+    AuthData checkTokenCookies(HttpServletRequest srvletRequest);
+
+    AuthData getStorageAuthData(AuthToken token);
 
     /**
      * Пометить action как удаленный

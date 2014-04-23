@@ -1340,7 +1340,7 @@ class WebMisRESTImpl  extends WebMisREST
     val e = dbEventTypeBean.getEventTypeById(eventTypeId)
     val result = dbContractBean.getContractsByEventTypeId(eventTypeId, e.getFinance.getId, showDeleted, showExpired)
     if (result == null)
-      new ju.ArrayList[Contract]()
+      new ju.ArrayList[ContractContainer]()
     else
       result.map(x => new ContractContainer(x)).asJava
 
@@ -1469,7 +1469,7 @@ class WebMisRESTImpl  extends WebMisREST
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________
 
-  def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
+  def checkTokenCookies(srvletRequest: HttpServletRequest) = {
     authStorage.checkTokenCookies(srvletRequest)
   }
 
@@ -1486,7 +1486,7 @@ class WebMisRESTImpl  extends WebMisREST
     ""
   }
 
-  def loadAutoSaveField(id: String, auth: AuthData): AutoSaveOutputDataContainer = {
+  def loadAutoSaveField(id: String, auth: AuthData) = {
     dbAutoSaveStorageLocal.load(id, auth.getUserId)
   }
 }
