@@ -79,6 +79,8 @@ public interface WebMisREST extends Serializable {
 
     HospitalBedProfilesListContainer getAllAvailableBedProfiles(AuthData authData) throws CoreException;
 
+    HospitalBedProfilesListContainer getAllAvailableBedProfiles() throws CoreException;
+
     //FormOfAccountingMovementOfPatientsData getFormOfAccountingMovementOfPatients(int departmentId) throws CoreException;
 
     FormOfAccountingMovementOfPatientsData getForm007( int departmentId,
