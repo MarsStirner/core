@@ -11,7 +11,7 @@ import javax.ws.rs.core.MediaType
  * Date: 4/22/14
  * Time: 2:35 PM
  */
-class AutoSaveStorage(val wsImpl: WebMisREST, val authData: AuthData, val callback: String) {
+class AutoSaveStorageREST(val wsImpl: WebMisREST, val authData: AuthData, val callback: String) {
 
   @POST
   @Consumes(Array("application/json", MediaType.APPLICATION_XML))
