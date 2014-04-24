@@ -17,5 +17,11 @@ import java.util.List;
 @Local
 public interface PaymentBeanLocal {
     ServiceListResult getServiceList(Integer idTreatment) throws CoreException;
-    public Integer setPaymentInfo(Date datePaid, String codeContract, Integer idTreatment, PersonName paidName, List<ServicePaidInfo> listService) throws CoreException;
+    public Integer setPaymentInfo(Date datePaid,
+                                  String codeContract,
+                                  Date dateContract,
+                                  Integer idTreatment,
+                                  PersonName paidName,
+                                  Date birthDate,
+                                  List<ServicePaidInfo> listService) throws CoreException;
 }

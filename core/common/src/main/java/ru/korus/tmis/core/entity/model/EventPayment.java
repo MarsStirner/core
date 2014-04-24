@@ -21,6 +21,9 @@ public class EventPayment implements Serializable {
     @Column(nullable = false)
     private double actionSum;
 
+    @Column(name = "sumDisc")
+    private double sumDisc;
+
     @ManyToOne
     @JoinColumn(name = "bank_id")
     private Bank bank;
@@ -225,6 +228,14 @@ public class EventPayment implements Serializable {
 
     public void setService(RbService service) {
         this.service = service;
+    }
+
+    public double getSumDisc() {
+        return sumDisc;
+    }
+
+    public void setSumDisc(double sumDisc) {
+        this.sumDisc = sumDisc;
     }
 
 }

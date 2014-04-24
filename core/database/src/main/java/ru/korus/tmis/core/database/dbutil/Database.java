@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -14,6 +15,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.APValue;
 import ru.korus.tmis.core.entity.model.AbstractAPValue;
 import ru.korus.tmis.core.entity.model.Action;
@@ -38,6 +40,9 @@ public class Database {
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em = null;
+
+    @EJB
+    DbStaffBeanLocal dbStaffBeanLocal;
 
     /**
      * Статус действия: Начато {Action.status}
@@ -292,14 +297,6 @@ public class Database {
     }
 
     public Staff getCoreUser() {
-        final String coreLogin = ConfigManager.UsersMgr().CoreUserLogin();
-        // System.getProperty("tmis.core.user");
-        if (coreLogin != null) {
-            final List<Staff> coreUsers = em.createQuery("SELECT u FROM Staff u WHERE u.login = :login", Staff.class)
-                    .setParameter("login", coreLogin)
-                    .getResultList();
-            return coreUsers.isEmpty() ? null : coreUsers.get(0);
-        }
-        return null;
+        return dbStaffBeanLocal.getCoreUser();
     }
 }

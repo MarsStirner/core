@@ -56,15 +56,19 @@ public class ServiceFinanceInfoImpl implements ServiceFinanceInfo {
     @Override
     public Integer setPaymentInfo(@WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date datePaid,
                                   @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final String codeContract,
+                                  @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date dateContract,
                                   @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Integer idTreatment,
                                   @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final PersonName paidName,
+                                  @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date birthDate,
                                   @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final List<ServicePaidInfo> listService) throws CoreException {
         logger.info("call ServiceFinanceInfoImpl.setPaymentInfo. idTreatment = " + idTreatment +
                 " datePaid = " + datePaid +
                 " codeContract = " + codeContract +
+                " dateContract = " + dateContract +
                 " paidName = " + paidName +
+                " birthDate =" +  birthDate +
                 " size of listService = " + listService.size());
-        return paymentBeanLocal.setPaymentInfo(datePaid, codeContract, idTreatment, paidName, listService);
+        return paymentBeanLocal.setPaymentInfo(datePaid, codeContract, dateContract, idTreatment, paidName, birthDate, listService);
     }
 
 }
