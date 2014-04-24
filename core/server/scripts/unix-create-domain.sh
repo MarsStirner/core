@@ -199,7 +199,7 @@ function start_stop_domain {
     echo $STOP_DOMAIN_CMD
     $STOP_DOMAIN_CMD
 
-    echo $STOP_DOMAIN_CMD
+    echo $START_DOMAIN_CMD
     $START_DOMAIN_CMD
     print_separator
 
