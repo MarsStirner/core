@@ -1,5 +1,7 @@
 package ru.korus.tmis.ru.korus.utils.timers;
 
+import org.joda.time.DateTime;
+import ru.korus.tmis.core.database.DbAutoSaveStorageLocal;
 import ru.korus.tmis.core.database.DbEnumBeanLocal;
 import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
@@ -26,17 +28,25 @@ public class SchedulerBean implements  SchedulerBeanLocal {
     @EJB
     DbActionBeanLocal dbAction;
 
-    @Override
+    @EJB
+    DbAutoSaveStorageLocal dbAutoSaveStorageLocal;
+
     @Schedule(second = "0", minute = "0", hour = "4")
     public void nightlyUpdate() {
             dbSettingsBean.init();
             dbEnumBean.init();
     }
 
-    @Override
     @Schedule(second = "0", minute = "0", hour = "*",
-    info = "Запуск задачи закрытия документов в закрытых историях болезни")
+            info = "Запуск задачи закрытия документов в закрытых историях болезни")
     public void closeAppealsDocs() {
         dbAction.closeAppealsDocs();
     }
+
+    @Schedule(second = "0", minute = "0", hour = "0", dayOfWeek = "1",
+            info = "Запуск задачи удаления устаревших (30 дней) записей в таблице автосохранения полей")
+    public void removeOldAutoSaveEntries() {
+        dbAutoSaveStorageLocal.clean(new DateTime().minusDays(30).toDate());
+    }
+
 }

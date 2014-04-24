@@ -27,18 +27,18 @@ object ConfigManager extends Configuration {
     var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
   }
 
-  var RbManagerSetting = new RbManagerClass;
+  var RbManagerSetting = new RbManagerClass
 
   class RbManagerClass extends Configuration {
     /**
      * URL сервиса управления справочниками
      */
-    var ServiceUrl = "http://192.168.1.123:5005";
+    var ServiceUrl = "http://192.168.1.123:5005"
 
     /**
      * Отладочный режим
      */
-    var DebugDemoMode = "off";
+    var DebugDemoMode = "off"
 
     def isDebugDemoMode = "on".equals(DebugDemoMode)
 
@@ -524,6 +524,7 @@ object ConfigManager extends Configuration {
     var ClientDocumentNotFound = 0x107
     var RbDocumentTypeNotFound = 0x108
     var ClientPolicyNotFound = 0x109
+    var TooLongAutoSaveFieldIdentifier = 0x10A
     var RbPolicyTypeNotFound = 0x110
     var OrganisationNotFound = 0x111
     var RbContactTypeNotFound = 0x112
@@ -571,6 +572,7 @@ object ConfigManager extends Configuration {
     var RbDiseaseStageNotFound = 0x154
     var RbDiseaseCharacterNotFound = 0x155
     var NoMoving = 0x156
+    var UnknownError = 0x157
   }
 
 

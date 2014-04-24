@@ -23,7 +23,7 @@ class CommonData {
 
   @BeanProperty var version: String = _
 
-  @BeanProperty var entity = new LinkedList[CommonEntity]
+  @BeanProperty var entity = new util.LinkedList[CommonEntity]
 
   def this(id: Integer) = {
     this()
@@ -69,7 +69,7 @@ class CommonEntity {
 
   @BeanProperty var context: String = _
 
-  @BeanProperty var group = new LinkedList[CommonGroup]
+  @BeanProperty var group = new util.LinkedList[CommonGroup]
 
   private def this(id: Integer,
                    name: String,
@@ -145,7 +145,7 @@ class CommonGroup {
 
   @BeanProperty var name: String = _
 
-  @BeanProperty var attribute = new LinkedList[CommonAttribute]
+  @BeanProperty var attribute = new util.LinkedList[CommonAttribute]
 
   def this(id: Integer, name: String) = {
     this()
@@ -202,9 +202,9 @@ class CommonAttribute{
 
   @BeanProperty var tableValues : java.util.LinkedList[java.util.LinkedList[String]] = _
 
-  @BeanProperty var properties: java.util.List[PropertyPair] = new java.util.LinkedList[PropertyPair];
+  @BeanProperty var properties: java.util.List[PropertyPair] = new java.util.LinkedList[PropertyPair]
 
-  def getPropertiesMap() = {
+  def getPropertiesMap = {
     val map =  new java.util.HashMap[String, String]()
     properties.asScala.foreach((p) => map.put(p.name, p.value))
     map.asScala.toMap
@@ -335,7 +335,7 @@ class CommonAttributeWithLayout(id: Integer,
                                 props: Map[String, String]) extends CommonAttribute (id, version, name, code, aType, mandatory, readOnly, scope, null, props){
 
   @BeanProperty
-  var layoutAttributeValues = new LinkedList[LayoutAttributeSimplifyDataContainer]
+  var layoutAttributeValues = new util.LinkedList[LayoutAttributeSimplifyDataContainer]
 
   def this(id: Integer,
            version: Integer,

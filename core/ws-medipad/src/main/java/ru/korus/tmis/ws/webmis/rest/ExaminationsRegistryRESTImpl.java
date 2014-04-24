@@ -209,7 +209,7 @@ public class ExaminationsRegistryRESTImpl {
         List<String> mnemonics = new LinkedList<String>();
         if(mnems!=null)
             for(String mnem: mnems)
-                if(mnem != null && mnem != "") mnemonics.add(mnem);
+                if(mnem != null && !mnem.equals("")) mnemonics.add(mnem);
 
         AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, patientId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics, flatCodes){
             @Override

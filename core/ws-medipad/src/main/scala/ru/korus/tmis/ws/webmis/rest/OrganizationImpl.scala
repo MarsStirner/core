@@ -16,8 +16,7 @@ class OrganizationImpl(val wsImpl: WebMisRESTImpl, val authData: AuthData, val c
   @Path("/{id}")
   @Produces(Array[String]("application/x-javascript"))
   def getOrganizationById(@PathParam("id") id: Int): JSONWithPadding = {
-    val l = new JSONWithPadding(wsImpl.getOrganizationById(id, authData), callback)
-    l
+    new JSONWithPadding(wsImpl.getOrganizationById(id, authData), callback)
   }
 
 }

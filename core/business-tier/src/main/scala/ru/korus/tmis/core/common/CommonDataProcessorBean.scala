@@ -109,45 +109,45 @@ class CommonDataProcessorBean
 
         aps.foreach(attribute => {
           if (attribute.name == AWI.Multiplicity.toString) {
-            multiplicity = attribute.getPropertiesMap().get(APWI.Value.toString) match {
+            multiplicity = attribute.getPropertiesMap.get(APWI.Value.toString) match {
               case None | Some("") => 1
               case Some(x) => x.toInt
             }
           }
           else if (attribute.name == AWI.assessmentBeginDate.toString) {
-            beginDate = attribute.getPropertiesMap().get(APWI.Value.toString) match {
+            beginDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
               case None | Some("") => null
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
           else if (attribute.name == AWI.assessmentEndDate.toString) {
-            endDate = attribute.getPropertiesMap().get(APWI.Value.toString) match {
+            endDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
               case None | Some("") => null
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
           else if (attribute.name == AWI.finance.toString) {
-            finance = attribute.getPropertiesMap().get(APWI.Value.toString) match {
+            finance = attribute.getPropertiesMap.get(APWI.Value.toString) match {
               case None | Some("") => 0
               case Some(x) => x.toInt
             }
           }
           else if (attribute.name == AWI.plannedEndDate.toString) {
-            plannedEndDate = attribute.getPropertiesMap().get(APWI.Value.toString) match {
+            plannedEndDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
               case None | Some("") => null
               case Some(x) => ConfigManager.DateFormatter.parse(x)
             }
           }
           else if (attribute.name == AWI.assignerId.toString) {
             //ид. направившего врача
-            assignerId = attribute.getPropertiesMap().get(APWI.Value.toString) match {
+            assignerId = attribute.getPropertiesMap.get(APWI.Value.toString) match {
               case None | Some("") => 0
               case Some(x) => x.toInt
             }
           }
           else if (attribute.name == AWI.executorId.toString) {
             //ид. исполнителя
-            executorId = attribute.getPropertiesMap().get(APWI.Value.toString) match {
+            executorId = attribute.getPropertiesMap.get(APWI.Value.toString) match {
               case None | Some("") => 0
               case Some(x) => x.toInt
             }
@@ -299,7 +299,7 @@ class CommonDataProcessorBean
    */
   def toActionPropertyValue(entry: (ActionProperty, CommonAttribute), list: List[APValue]): List[APValue] = {
     val (ap, attribute) = entry
-    (attribute.getPropertiesMap().get("valueId"), attribute.getPropertiesMap().get("value")) match {
+    (attribute.getPropertiesMap.get("valueId"), attribute.getPropertiesMap.get("value")) match {
       case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
         if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 &&
           ap.getType.getTypeName.compareTo("FlatDictionary") != 0 &&
@@ -317,7 +317,7 @@ class CommonDataProcessorBean
         } else list
       }
       case (None | Some(null) | Some(""), Some(value)) => {
-        if(ap.getType.getTypeName.equals("Date") && attribute.getPropertiesMap().get("value").getOrElse("").equals("0000-00-00 00:00:00"))
+        if(ap.getType.getTypeName.equals("Date") && attribute.getPropertiesMap.get("value").getOrElse("").equals("0000-00-00 00:00:00"))
           list
         else {
         val apv = dbActionProperty.setActionPropertyValue(
@@ -379,42 +379,42 @@ class CommonDataProcessorBean
 
         var res = aps.find(p => p.name == AWI.assessmentBeginDate.toString).getOrElse(null)
         if (res != null) {
-          beginDate = res.getPropertiesMap().get(APWI.Value.toString) match {
+          beginDate = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => null
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
         res = aps.find(p => p.name == AWI.assessmentEndDate.toString).getOrElse(null)
         if (res != null) {
-          endDate = res.getPropertiesMap().get(APWI.Value.toString) match {
+          endDate = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => null
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
         res = aps.find(p => p.name == AWI.finance.toString).getOrElse(null)
         if (res != null) {
-          finance = res.getPropertiesMap().get(APWI.Value.toString) match {
+          finance = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => 0
             case Some(x) => x.toInt
           }
         }
         res = aps.find(p => p.name == AWI.plannedEndDate.toString).getOrElse(null)
         if (res != null) {
-          plannedEndDate = res.getPropertiesMap().get(APWI.Value.toString) match {
+          plannedEndDate = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => null
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
         res = aps.find(p => p.name == AWI.assignerId.toString).getOrElse(null)
         if (res != null) {
-          assignerId = res.getPropertiesMap().get(APWI.Value.toString) match {
+          assignerId = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => 0
             case Some(x) => x.toInt
           }
         }
         res = aps.find(p => p.name == AWI.executorId.toString).getOrElse(null)
         if (res != null) {
-          executorId = res.getPropertiesMap().get(APWI.Value.toString) match {
+          executorId = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => 0
             case Some(x) => x.toInt
           }
@@ -444,7 +444,7 @@ class CommonDataProcessorBean
           if (AWI.isSupported(attribute.name)) {
             aw.set(attribute)
           } else {
-            (attribute.getPropertiesMap().get("valueId"), attribute.getPropertiesMap().get("value")) match {
+            (attribute.getPropertiesMap.get("valueId"), attribute.getPropertiesMap.get("value")) match {
 
               case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
                 val ap = dbActionProperty.getActionPropertyById(

@@ -1,10 +1,8 @@
 package ru.korus.tmis.core.database.common
 
 import ru.korus.tmis.core.indicators.IndicatorValue
-import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging
-import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
 import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
@@ -12,7 +10,8 @@ import ru.korus.tmis.core.entity.model._
 import scala.Predef._
 import java.util.{Date, List}
 import ru.korus.tmis.core.data._
-import javax.ejb.{EJB, Stateless, TransactionAttributeType, TransactionAttribute}
+import javax.ejb.{EJB, Stateless}
+import scala.collection.convert.Wrappers.MapWrapper
 
 import java.lang.{Double => JDouble}
 import collection.immutable.ListMap
@@ -266,7 +265,7 @@ class DbCustomQueryBean
         }
       )
 
-    asJavaList(indicators)
+    seqAsJavaList(indicators)
   }
 
   def getTreatmentInfo(eventId: Int,

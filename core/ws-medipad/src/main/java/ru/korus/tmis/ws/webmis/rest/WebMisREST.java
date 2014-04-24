@@ -1,11 +1,14 @@
 package ru.korus.tmis.ws.webmis.rest;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.entity.model.APValueAction;
+import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.entity.model.RbPrintTemplate;
 import ru.korus.tmis.core.exception.CoreException;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -79,6 +82,8 @@ public interface WebMisREST extends Serializable {
 
     HospitalBedProfilesListContainer getAllAvailableBedProfiles(AuthData authData) throws CoreException;
 
+    Iterable<RbHospitalBedProfile> getAllAvailableBedProfiles() throws CoreException;
+
     //FormOfAccountingMovementOfPatientsData getFormOfAccountingMovementOfPatients(int departmentId) throws CoreException;
 
     FormOfAccountingMovementOfPatientsData getForm007( int departmentId,
@@ -150,11 +155,14 @@ public interface WebMisREST extends Serializable {
 
     JSONCommonData modifyInstrumentalStudies(int eventId, CommonData data, AuthData auth) throws CoreException;
 
+    JSONCommonData modifyConsultation(ConsultationRequestData request, AuthData authData);
+
     boolean removeDirection(AssignmentsToRemoveDataList data, String directionType, AuthData auth) throws CoreException;
 
     void checkCountOfConsultations(int eventId, int pqt, int executorId, long data) throws CoreException;
 
-    //APValueAction getPlannedTime(Action action) throws CoreException;
+    ScheduleContainer getPlannedTime(int actionId);
+
     /**
      * Получение справочника FlatDirectory
      * @param request Данные из запроса как FlatDirectoryRequestData
@@ -245,6 +253,8 @@ public interface WebMisREST extends Serializable {
      * @see AuthData
      */
     String getEventTypes(ListDataRequest request, AuthData authData) throws CoreException;
+
+    List<ContractContainer> getContracts(int eventTypeId, boolean showDeleted, boolean showExpired);
 
     /**
      * Сервис на получении списка пациентов из открытых госпитализаций, которые лежат на койке
@@ -410,6 +420,10 @@ public interface WebMisREST extends Serializable {
      */
     OrganizationContainer getOrganizationById(int id, AuthData authData) throws CoreException;
 
+    AuthData checkTokenCookies(HttpServletRequest srvletRequest);
+
+    AuthData getStorageAuthData(AuthToken token);
+
     /**
      * Пометить action как удаленный
      *
@@ -417,4 +431,23 @@ public interface WebMisREST extends Serializable {
      * @return
      */
     Boolean removeAction(int actionId);
+
+    /**
+     * Метод сохранения текста при автосохранении полей ввода
+     * @param id Идентификатор поля, строка длинной не более 40 символов
+     * @param text Сохраняемая текстовая запись
+     * @param auth Данные авторизации пользователя
+     * @throws CoreException В случае неверных входящих данных
+     */
+    Object saveAutoSaveField(String id, String text, AuthData auth) throws CoreException;
+
+    /**
+     * Получение сохраненного ранее автосохраняемого текста
+     * @param id Идентификатор поля, строка длинной не более 40 символов
+     * @param auth Данные авторизации пользователя
+     * @return Запрашиваемое текстовое поле
+     * @throws CoreException
+     */
+    AutoSaveOutputDataContainer loadAutoSaveField(String id, AuthData auth) throws CoreException;
+
 }

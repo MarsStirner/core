@@ -59,9 +59,9 @@ public class BaseRegistryRESTImpl implements Serializable {
                                                           @QueryParam("sortingField") String sortingField,
                                                           @QueryParam("sortingMethod") String sortingMethod) {
         //TODO: Вставлен кэйс для тестов (нужно ли?)
-        this.testConstruct = (test!=null &&
-                              !test.isEmpty() &&
-                              (test.toLowerCase().compareTo("yes")==0 || test.toLowerCase().compareTo("true")==0)) ? true : false;
+        this.testConstruct = (test != null &&
+                !test.isEmpty() &&
+                (test.toLowerCase().compareTo("yes") == 0 || test.toLowerCase().compareTo("true") == 0));
         return new DirectoryInfoRESTImpl(wsImpl, servRequest, callback, limit, page, sortingField, sortingMethod, makeAuth(token), testConstruct);
     }
 
@@ -87,6 +87,12 @@ public class BaseRegistryRESTImpl implements Serializable {
     public HospitalBedsInfoRESTImpl getHospitalBedsInfoRESTImpl(@QueryParam("token") String token,
                                                                 @QueryParam("callback") String callback){
         return new HospitalBedsInfoRESTImpl(wsImpl, callback, makeAuth(token));
+    }
+
+    @Path("/autosave")
+    public AutoSaveStorageREST getAutoSaveStarage(@QueryParam("token") String token,
+                                              @QueryParam("callback") String callback) {
+        return new AutoSaveStorageREST(wsImpl, makeAuth(token), callback);
     }
 
     //__________________________________________________________________________________________________________________

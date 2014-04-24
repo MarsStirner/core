@@ -172,8 +172,6 @@ class WebMisRESTImpl  extends WebMisREST
   @EJB
   var dbLayoutAttributeBean: DbLayoutAttributeBeanLocal = _
 
- // @EJB
- // var lisBean: LaboratoryBeanLocal = _
 
   @EJB
   var dbTempInvalidBean: DbTempInvalidBeanLocal = _
@@ -192,6 +190,9 @@ class WebMisRESTImpl  extends WebMisREST
 
   @EJB
   var dbSettingsBean: DbSettingsBeanLocal = _
+
+  @EJB
+  var dbAutoSaveStorageLocal: DbAutoSaveStorageLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -1339,7 +1340,7 @@ class WebMisRESTImpl  extends WebMisREST
     val e = dbEventTypeBean.getEventTypeById(eventTypeId)
     val result = dbContractBean.getContractsByEventTypeId(eventTypeId, e.getFinance.getId, showDeleted, showExpired)
     if (result == null)
-      new ju.ArrayList[Contract]()
+      new ju.ArrayList[ContractContainer]()
     else
       result.map(x => new ContractContainer(x)).asJava
 
@@ -1468,7 +1469,7 @@ class WebMisRESTImpl  extends WebMisREST
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________
 
-  def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
+  def checkTokenCookies(srvletRequest: HttpServletRequest) = {
     authStorage.checkTokenCookies(srvletRequest)
   }
 
@@ -1478,5 +1479,14 @@ class WebMisRESTImpl  extends WebMisREST
 
   def removeAction(actionId: Int): lang.Boolean = {
     actionBean.removeAction(actionId)
+  }
+
+  def saveAutoSaveField(id: String, text: String, auth: AuthData) = {
+    dbAutoSaveStorageLocal.save(id, auth.getUserId, text)
+    ""
+  }
+
+  def loadAutoSaveField(id: String, auth: AuthData) = {
+    dbAutoSaveStorageLocal.load(id, auth.getUserId)
   }
 }
