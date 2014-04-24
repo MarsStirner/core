@@ -52,15 +52,19 @@ interface ServiceFinanceInfo {
      *
      * @param datePaid - дата и время оплаты/возврата (в БД МИС  - EventPayment.date)
      * @param codeContract -  номер договора (в БД МИС – Event. EventLocalContract.numberContract)
+     * @param dateContract - дата договора
      * @param idTreatment - ID обращения в МИС (в БД МИС  - Event.id)
      * @param paidName - ФИО платильщика
+     * @param birthDate - дата рождения плательщика
      * @param listService - массив с информацией об оплаченных услугах
-     * @return
+     * @return ID обращения
      */
      Integer setPaymentInfo(@WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date datePaid,
                             @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final String codeContract,
+                            @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date dateContract,
                             @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Integer idTreatment,
                             @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final PersonName paidName,
+                            @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date birthDate,
                             @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final List<ServicePaidInfo> listService) throws CoreException;
 
 }

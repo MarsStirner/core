@@ -22,6 +22,7 @@ import org.eclipse.persistence.queries.DatabaseQuery
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 
+
 @Stateless
 class DbStaffBean
   extends DbStaffBeanLocal
@@ -443,6 +444,18 @@ class DbStaffBean
       .setParameter("begDate", begDate, TemporalType.DATE)
       .setParameter("endDate", endDate, TemporalType.DATE)
     .getResultList
+  }
+
+
+  def getCoreUser: Staff = {
+    val coreLogin: String = ConfigManager.UsersMgr.CoreUserLogin
+    if (coreLogin != null) {
+      val coreUsers = em.createNamedQuery("Staff.findByLogin", classOf[Staff])
+        .setParameter("login", coreLogin)
+        .getResultList
+      return if (coreUsers.isEmpty) null else coreUsers.get(0)
+    }
+    return null
   }
 }
 

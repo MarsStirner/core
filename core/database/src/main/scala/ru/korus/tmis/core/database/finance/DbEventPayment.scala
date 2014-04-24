@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database.finance
 import grizzled.slf4j.Logging
 import ru.korus.tmis.scala.util.I18nable
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{RbService, Action, Event, EventPayment}
+import ru.korus.tmis.core.entity.model._
 import java.util.Date
 import javax.ejb.Stateless
 
@@ -21,7 +21,7 @@ with I18nable {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def savePaidInfo(event: Event, date: Date, action: Action, servicePaidInfo: ServicePaidInfo) {
+  def savePaidInfo(event: Event, date: Date, eventLocalContract: EventLocalContract, paidName: PersonName, action: Action, servicePaidInfo: ServicePaidInfo) {
     val eventPayment: EventPayment = new EventPayment
     val now = new Date
     eventPayment.setCreateDatetime(now)
@@ -29,12 +29,17 @@ with I18nable {
     eventPayment.setDeleted(false)
     eventPayment.setEvent(event)
     eventPayment.setDate(date) //Дата платежа
-    eventPayment.setActionSum(servicePaidInfo.getAmount)
-    eventPayment.setCashBox("");
-    eventPayment.setAction(action);
+    eventPayment.setActionSum(servicePaidInfo.getSum)
+    eventPayment.setSumDisc(servicePaidInfo.getSumDisc)
+    eventPayment.setCashBox("")
+    eventPayment.setAction(action)
     val servList = em.createNamedQuery("rbService.findByCode", classOf[RbService]).setParameter("code", servicePaidInfo.getCodeService).getResultList
     eventPayment.setService( if (servList.isEmpty) { null } else {servList.get(0)} )
     em.persist(eventPayment)
+    em.merge(eventPayment)
+    val paymentLocalContract = new PaymentLocalContract
+    paymentLocalContract.setEventLocalContract(eventLocalContract)
+    paymentLocalContract.setEventPayment(eventPayment)
+    em.persist(paymentLocalContract)
   }
-
 }

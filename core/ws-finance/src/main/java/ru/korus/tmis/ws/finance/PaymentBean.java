@@ -2,11 +2,10 @@ package ru.korus.tmis.ws.finance;
 
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
-import ru.korus.tmis.core.database.finance.DbEventPaymentLocal;
-import ru.korus.tmis.core.database.finance.PersonName;
-import ru.korus.tmis.core.database.finance.ServicePaidInfo;
+import ru.korus.tmis.core.database.finance.*;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
+import ru.korus.tmis.core.entity.model.EventLocalContract;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.EJB;
@@ -37,6 +36,9 @@ public class PaymentBean implements PaymentBeanLocal {
     @EJB
     DbEventPaymentLocal dbEventPaymentLocal;
 
+    @EJB
+    DbEventLocalContractLocal dbEventLocalContractLocal;
+
     @Override
     public ServiceListResult getServiceList(Integer idTreatment) throws CoreException {
         Event event =  dbEventBeanLocal.getEventById(idTreatment);
@@ -44,11 +46,29 @@ public class PaymentBean implements PaymentBeanLocal {
     }
 
     @Override
-    public Integer setPaymentInfo(Date datePaid, String codeContract, Integer idTreatment, PersonName paidName, List<ServicePaidInfo> listService) throws CoreException {
-        Event event =  dbEventBeanLocal.getEventById(idTreatment);
+    public Integer setPaymentInfo(Date datePaid,
+                                  String codeContract,
+                                  Date dateContract,
+                                  Integer idTreatment,
+                                  PersonName paidName,
+                                  Date birthDate,
+                                  List<ServicePaidInfo> listService) throws CoreException {
+        if(codeContract == null) {
+            throw new CoreException("An input parameter is invalid: codeContract == null" );
+        }
+        Event event = idTreatment == null ? null : em.find(Event.class, idTreatment);
+        EventLocalContract eventLocalContract = codeContract == null ? null : dbEventLocalContractLocal.getByContractNumber(codeContract);
+        if ( eventLocalContract != null && eventLocalContract.getEvent() != null && idTreatment != null &&
+            !idTreatment.equals(eventLocalContract.getEvent().getId())) { //если не сопадает ID обращение и номер договора не совпадают с данными в БД МИС, то возвращаем ошибку
+            throw new CoreException("Incompatible event ID and code of contract: idTreatment = " + idTreatment + " codeContract = " + codeContract
+                    + " The code of contract for this event should be equals to: " + eventLocalContract.getEvent().getId());
+        } else if (eventLocalContract == null) { //если в МИС нет договора, то создаем его
+            eventLocalContract = dbEventLocalContractLocal.create(codeContract, dateContract, event, paidName, birthDate);
+        }
+
         for(ServicePaidInfo servicePaidInfo : listService) {
-            Action action = dbActionBeanLocal.getActionById(servicePaidInfo.getIdAction());
-            dbEventPaymentLocal.savePaidInfo(event, datePaid, action, servicePaidInfo);
+            Action action = servicePaidInfo.getIdAction() == null ? null : dbActionBeanLocal.getActionById(servicePaidInfo.getIdAction());
+            dbEventPaymentLocal.savePaidInfo(event, datePaid, eventLocalContract, paidName, action, servicePaidInfo);
         }
         em.flush();
         return idTreatment;

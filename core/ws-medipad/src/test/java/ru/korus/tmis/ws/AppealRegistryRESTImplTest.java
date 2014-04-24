@@ -192,7 +192,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             JsonElement resJson = parser.parse(res);
             JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getActionTypeInfoResp.json"))));
             Assert.assertEquals(resJson, expected);
-
         } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();

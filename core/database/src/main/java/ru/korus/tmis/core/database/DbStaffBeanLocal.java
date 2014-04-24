@@ -73,4 +73,10 @@ public interface DbStaffBeanLocal {
      * @return список жействий с приемами врача
      */
     List<Action> getPersonShedule(final int personId, final Date begDate, final Date endDate);
+
+    /**
+     * Пользоваиель ядро
+     * @return
+     */
+    Staff getCoreUser();
 }

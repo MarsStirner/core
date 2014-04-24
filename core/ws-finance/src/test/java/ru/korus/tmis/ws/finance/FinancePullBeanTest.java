@@ -168,13 +168,17 @@ public class FinancePullBeanTest extends Arquillian {
         List<ServicePaidInfo> servicePaidInfoList = new LinkedList<ServicePaidInfo>();
         PersonName personName = new PersonName("Тестов", "Тест", "Тестович");
         servicePaidInfoList.add(getTestServicePaidInfo());
-        Integer res = paymentBeanLocal.setPaymentInfo(new Date(), "test", TEST_EVENT_ID, personName, servicePaidInfoList);
+        Integer res = paymentBeanLocal.setPaymentInfo(new Date(), "2201-п1", new Date(), TEST_EVENT_ID, personName, new Date(), servicePaidInfoList);
         Assert.assertTrue(res.equals(TEST_EVENT_ID));
         Object lastId = em.createNativeQuery("SELECT LAST_INSERT_ID()").getSingleResult();
         Assert.assertTrue(lastId instanceof Number);
-        EventPayment eventPayment = em.find(EventPayment.class, ((Number)lastId).intValue());
+        EventPayment eventPayment = getLastEventPayment();
         Assert.assertNotNull(eventPayment);
         checkTestServicePaidInfo(eventPayment);
+    }
+
+    private EventPayment getLastEventPayment() {
+        return em.createQuery("SELECT p FROM EventPayment p ORDER BY p.id DESC", EventPayment.class).getSingleResult();
     }
 
     private void checkTestServicePaidInfo(EventPayment eventPayment) {

@@ -14,6 +14,7 @@ import java.util.Date;
 @NamedQueries(
         {
                 @NamedQuery(name = "EventLocalContract.findByEventId", query = "SELECT elc FROM EventLocalContract elc WHERE elc.event.id = :eventId"),
+                @NamedQuery(name = "EventLocalContract.findByContractCode", query = "SELECT elc FROM EventLocalContract elc WHERE elc.numberContract = :code"),
         })
 public class EventLocalContract implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -189,7 +190,7 @@ public class EventLocalContract implements Serializable {
 		return this.rbDocumentType;
 	}
 
-	public void setRbDocumentType(int RbDocumentType) {
+	public void setRbDocumentType(RbDocumentType RbDocumentType) {
 		this.rbDocumentType = rbDocumentType;
 	}
 
@@ -229,7 +230,7 @@ public class EventLocalContract implements Serializable {
 		return this.modifyPerson;
 	}
 
-	public void setModifyPerson_id(Staff modifyPerson) {
+	public void setModifyPerson(Staff modifyPerson) {
 		this.modifyPerson = modifyPerson;
 	}
 
