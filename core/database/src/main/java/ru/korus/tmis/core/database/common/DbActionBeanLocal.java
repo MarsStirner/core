@@ -225,7 +225,7 @@ public interface DbActionBeanLocal {
      * @param actionId Идентификатор помечаемого действия
      * @return false если удаление не удалось и true  случае успеха
      */
-    Boolean removeAction(int actionId);
+    void removeAction(int actionId) throws CoreException;
 
     /**
      * Закрытие документов для закрытой истории болезни через определенный в

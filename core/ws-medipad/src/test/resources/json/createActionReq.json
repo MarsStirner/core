@@ -5,7 +5,7 @@
         "name": "Гемотрансфузионная терапия",
         "type": "Document",
         "typeId": 3911,
-        "status": null,
+        "status": 0,
         "code": "3_02",
         "isEditable": true,
         "flatCode": "TransfusionTherapy",

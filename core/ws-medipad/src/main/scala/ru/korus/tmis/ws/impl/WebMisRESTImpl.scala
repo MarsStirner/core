@@ -1477,7 +1477,7 @@ class WebMisRESTImpl  extends WebMisREST
     authStorage.getAuthData(token)
   }
 
-  def removeAction(actionId: Int): lang.Boolean = {
+  def removeAction(actionId: Int) {
     actionBean.removeAction(actionId)
   }
 

@@ -47,6 +47,7 @@ class Transmitter extends TransmitterLocal with Logging {
       transmittable.setSendTime(new Timestamp(transmittable.getSendTime.getTime + (errCount).asInstanceOf[Long] * step))
       sender.sendEntity(transmittable)
       em.remove(transmittable)
+      em.flush()
     }
     catch {
       case ex: Exception => {

@@ -13,15 +13,15 @@ public class ServiceInfo {
     /**
      * ID услуги в МИС (в БД МИС  - Action.id)
      */
-    private final Integer idService;
+    private Integer idService;
     /**
      * код услуги в МИС (в БД МИС  - rbService.code)
      */
-    private final String codeService;
+    private String codeService;
     /**
      * количество (в БД МИС - Action.amount)
      */
-    private final Double amount;
+    private Double amount;
 
     public ServiceInfo(Action action) {
         idService = action.getId();
@@ -72,5 +72,17 @@ public class ServiceInfo {
         sb.append(", amount=").append(amount);
         sb.append('}');
         return sb.toString();
+    }
+
+    public void setIdService(Integer idService) {
+        this.idService = idService;
+    }
+
+    public void setCodeService(String codeService) {
+        this.codeService = codeService;
+    }
+
+    public void setAmount(Double amount) {
+        this.amount = amount;
     }
 }

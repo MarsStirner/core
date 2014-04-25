@@ -18,12 +18,12 @@ public class ServiceListResult {
     /**
      * ID обращения в МИС (в БД МИС  - Event.id)
      */
-    final private Integer idTreatment;
+    private Integer idTreatment;
 
     /**
      * массив с информацией о заказанных услугах
      */
-    final private List<ServiceInfo> listService = new LinkedList<ServiceInfo>();
+    private List<ServiceInfo> listService = new LinkedList<ServiceInfo>();
 
     public ServiceListResult(Event event, DbActionBeanLocal dbActionBeanLocal) {
         this.idTreatment = event.getId();
@@ -38,5 +38,13 @@ public class ServiceListResult {
 
     public List<ServiceInfo> getListService() {
         return listService;
+    }
+
+    public void setIdTreatment(Integer idTreatment) {
+        this.idTreatment = idTreatment;
+    }
+
+    public void setListService(List<ServiceInfo> listService) {
+        this.listService = listService;
     }
 }

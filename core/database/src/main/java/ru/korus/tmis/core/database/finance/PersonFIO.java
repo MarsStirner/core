@@ -6,13 +6,19 @@ package ru.korus.tmis.core.database.finance;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-public class PersonName {
+public class PersonFIO {
 
-    private String family;
+    private final String family;
 
-    private String given;
+    private final String given;
 
-    private String partName;
+    private final String partName;
+
+    public PersonFIO(String family, String given, String partName) {
+        this.family = family;
+        this.given = given;
+        this.partName = partName;
+    }
 
     public String getPartName() {
         return partName;
@@ -26,22 +32,12 @@ public class PersonName {
         return family;
     }
 
-    public void setFamily(String family) {
-        this.family = family;
-    }
 
-    public void setGiven(String given) {
-        this.given = given;
-    }
-
-    public void setPartName(String partName) {
-        this.partName = partName;
-    }
 
     @Override
     public String toString() {
         final StringBuffer sb = new StringBuffer();
-        sb.append("PersonName");
+        sb.append("PersonFIO");
         sb.append("{family='").append(family).append('\'');
         sb.append(", given='").append(given).append('\'');
         sb.append(", partName='").append(partName).append('\'');

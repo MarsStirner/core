@@ -20,13 +20,13 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *   &lt;complexContent>
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
- *         &lt;element name="idService" type="{http://www.w3.org/2001/XMLSchema}integer"/>
+ *         &lt;element name="idAction" type="{http://www.w3.org/2001/XMLSchema}integer"/>
  *         &lt;element name="endDate" type="{http://www.w3.org/2001/XMLSchema}date"/>
  *         &lt;element name="codeOfService" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="nameOfService" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="codeOfStruct" type="{http://www.w3.org/2001/XMLSchema}integer"/>
  *         &lt;element name="nameOfStruct" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="amount" type="{http://www.w3.org/2001/XMLSchema}integer"/>
+ *         &lt;element name="amount" type="{http://www.w3.org/2001/XMLSchema}double"/>
  *         &lt;element name="isService" type="{http://www.w3.org/2001/XMLSchema}boolean"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -38,7 +38,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "RowTable", propOrder = {
-    "idService",
+    "idAction",
     "endDate",
     "codeOfService",
     "nameOfService",
@@ -50,7 +50,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 public class RowTable {
 
     @XmlElement(required = true, nillable = true)
-    protected BigInteger idService;
+    protected BigInteger idAction;
     @XmlElement(required = true, nillable = true)
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar endDate;
@@ -62,33 +62,33 @@ public class RowTable {
     protected BigInteger codeOfStruct;
     @XmlElement(required = true, nillable = true)
     protected String nameOfStruct;
-    @XmlElement(required = true, nillable = true)
-    protected BigInteger amount;
+    @XmlElement(required = true, type = Double.class, nillable = true)
+    protected Double amount;
     @XmlElement(required = true, type = Boolean.class, nillable = true)
     protected Boolean isService;
 
     /**
-     * Gets the value of the idService property.
+     * Gets the value of the idAction property.
      * 
      * @return
      *     possible object is
      *     {@link BigInteger }
      *     
      */
-    public BigInteger getIdService() {
-        return idService;
+    public BigInteger getIdAction() {
+        return idAction;
     }
 
     /**
-     * Sets the value of the idService property.
+     * Sets the value of the idAction property.
      * 
      * @param value
      *     allowed object is
      *     {@link BigInteger }
      *     
      */
-    public void setIdService(BigInteger value) {
-        this.idService = value;
+    public void setIdAction(BigInteger value) {
+        this.idAction = value;
     }
 
     /**
@@ -216,10 +216,10 @@ public class RowTable {
      * 
      * @return
      *     possible object is
-     *     {@link BigInteger }
+     *     {@link Double }
      *     
      */
-    public BigInteger getAmount() {
+    public Double getAmount() {
         return amount;
     }
 
@@ -228,10 +228,10 @@ public class RowTable {
      * 
      * @param value
      *     allowed object is
-     *     {@link BigInteger }
+     *     {@link Double }
      *     
      */
-    public void setAmount(BigInteger value) {
+    public void setAmount(Double value) {
         this.amount = value;
     }
 

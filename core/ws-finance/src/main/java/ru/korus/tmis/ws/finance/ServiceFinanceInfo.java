@@ -45,7 +45,7 @@ interface ServiceFinanceInfo {
      * @param idTreatment - ID обращения в МИС (в БД МИС  - Event.id)
      * @return ServiceInfo -  информациz о заказанных платных услугах
      */
-    ServiceListResult getServiceList(@WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Integer idTreatment) throws CoreException;
+    ServiceListResult getServiceList(@WebParam(name = "idTreatment", targetNamespace = "http://korus.ru/tmis/ws/finance") final Integer idTreatment) throws CoreException;
 
     /**
      * Web-сервис «Информация об оплаченных услугах»
@@ -59,12 +59,12 @@ interface ServiceFinanceInfo {
      * @param listService - массив с информацией об оплаченных услугах
      * @return ID обращения
      */
-     Integer setPaymentInfo(@WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date datePaid,
-                            @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final String codeContract,
-                            @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date dateContract,
-                            @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Integer idTreatment,
-                            @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final PersonName paidName,
-                            @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date birthDate,
-                            @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final List<ServicePaidInfo> listService) throws CoreException;
+     Integer setPaymentInfo(@WebParam(name = "datePaid", targetNamespace = "http://korus.ru/tmis/ws/finance") final Date datePaid,
+                            @WebParam(name = "codeContract", targetNamespace = "http://korus.ru/tmis/ws/finance") final String codeContract,
+                            @WebParam(name = "dateContract", targetNamespace = "http://korus.ru/tmis/ws/finance") final Date dateContract,
+                            @WebParam(name = "idTreatment", targetNamespace = "http://korus.ru/tmis/ws/finance") final Integer idTreatment,
+                            @WebParam(name = "paidName", targetNamespace = "http://korus.ru/tmis/ws/finance") final PersonName paidName,
+                            @WebParam(name = "birthDate", targetNamespace = "http://korus.ru/tmis/ws/finance") final Date birthDate,
+                            @WebParam(name = "listService", targetNamespace = "http://korus.ru/tmis/ws/finance") final List<ServicePaidInfo> listService) throws CoreException;
 
 }

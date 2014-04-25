@@ -41,7 +41,7 @@ public class OdvdBuilder {
         assert action.getActionType() != null;
         assert action.getEvent() != null;
         RbService service = action.getActionType().getService();
-        res.setIdService(BigInteger.valueOf(action.getId()));
+        res.setIdAction(BigInteger.valueOf(action.getId()));
         try {
             res.setEndDate(Database.toGregorianCalendar(action.getEndDate()));
         } catch (DatatypeConfigurationException e) {
@@ -67,8 +67,7 @@ public class OdvdBuilder {
             logger.info("Current department is not set", ex);
         }
 
-        //TODO amount должен быть не integer, а double  ???
-        // res.setAmount(action.getAmount());
+        res.setAmount(action.getAmount());
         return res;
     }
 

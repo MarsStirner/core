@@ -429,7 +429,7 @@ public interface WebMisREST extends Serializable {
      * @param actionId Идентификатор удаляемого действия
      * @return false если удаление не удалось и true  случае успеха
      */
-    Boolean removeAction(int actionId);
+    void removeAction(int actionId) throws CoreException;
 
     /**
      * Метод сохранения текста при автосохранении полей ввода

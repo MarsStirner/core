@@ -25,7 +25,9 @@ import ru.korus.tmis.util.TestUtilBusiness;
 import ru.korus.tmis.util.TestUtilCommon;
 import ru.korus.tmis.util.TestUtilDatabase;
 import ru.korus.tmis.util.TestUtilLaboratory;
+import ru.korus.tmis.ws.finance.odvd.RowTableName;
 import ru.korus.tmis.ws.finance.odvd.Table;
+import ru.korus.tmis.ws.finance.odvd.TableName;
 import ru.korus.tmis.ws.finance.odvd.WsPoliclinicPortType;
 
 import javax.ejb.EJB;
@@ -168,7 +170,10 @@ public class FinancePullBeanTest extends Arquillian {
         Assert.assertNotNull(paymentBeanLocal);
         initDb();
         List<ServicePaidInfo> servicePaidInfoList = new LinkedList<ServicePaidInfo>();
-        PersonName personName = new PersonName("Тестов", "Тест", "Тестович");
+        PersonName personName = new PersonName();
+        personName.setFamily("Тестов");
+        personName.setGiven("Тест");
+        personName.setPartName("Тестович");
         servicePaidInfoList.add(getTestServicePaidInfo());
         Integer res = paymentBeanLocal.setPaymentInfo(new Date(), CODE_CONTRACT, new Date(), TEST_EVENT_ID, personName, new Date(), servicePaidInfoList);
         Assert.assertTrue(res.equals(TEST_EVENT_ID));
@@ -227,17 +232,13 @@ public class FinancePullBeanTest extends Arquillian {
         ArgumentCaptor<BigInteger> idTreatmentCapture = ArgumentCaptor.forClass(BigInteger.class);
         ArgumentCaptor<String> numTreatmentCapator = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<XMLGregorianCalendar> dateTreatmentCapator = ArgumentCaptor.forClass(XMLGregorianCalendar.class);
-        ArgumentCaptor<String> codeContractCapator = ArgumentCaptor.forClass(String.class);
         ArgumentCaptor<String> codePatientCapator = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> patientNameCapator = ArgumentCaptor.forClass(String.class);
-        ArgumentCaptor<String> paidNameCapator = ArgumentCaptor.forClass(String.class);
+        ArgumentCaptor<TableName> patientNameCapator = ArgumentCaptor.forClass(TableName.class);
         verify(mockPort, times(1)).putTreatment(idTreatmentCapture.capture(),
                 numTreatmentCapator.capture(),
                 dateTreatmentCapator.capture(),
-                codeContractCapator.capture(),
                 codePatientCapator.capture(),
-                patientNameCapator.capture(),
-                paidNameCapator.capture());
+                patientNameCapator.capture());
         Assert.assertEquals(idTreatmentCapture.getValue(), BigInteger.valueOf(TEST_EVENT_ID));
         Assert.assertEquals(numTreatmentCapator.getValue(), "1111/22");
         try {
@@ -247,20 +248,30 @@ public class FinancePullBeanTest extends Arquillian {
             e.printStackTrace();
             Assert.fail();
         }
-        Assert.assertEquals(codeContractCapator.getValue(), "2201-п");
         Assert.assertEquals(codePatientCapator.getValue(), String.valueOf(TEST_SERVICE_PATIENT_ID));
-        Assert.assertEquals(patientNameCapator.getValue(), "АРИНА ВЯЧЕСЛАВОВНА КОЗИНА");
-        Assert.assertEquals(paidNameCapator.getValue(), "Юлия Владимировна Копытина");
+        Assert.assertEquals(patientNameCapator.getValue().getPatientName().size(), 1);
+        final RowTableName paidName = patientNameCapator.getValue().getPatientName().get(0);
+        Assert.assertEquals(paidName.getFamily(),"КОЗИНА");
+        Assert.assertEquals(paidName.getGiven(),"АРИНА");
+        Assert.assertEquals(paidName.getPartName(),"ВЯЧЕСЛАВОВНА");
+
     }
 
     private void checkPutService() throws Exception {
         ArgumentCaptor<BigInteger> idTreatmentCapture = ArgumentCaptor.forClass(BigInteger.class);
         ArgumentCaptor<Table> listServiceCompleteCapture = ArgumentCaptor.forClass(Table.class);
-        verify(mockPort, times(2)).putService(idTreatmentCapture.capture(), listServiceCompleteCapture.capture());
+        ArgumentCaptor<TableName> paidNameCapator = ArgumentCaptor.forClass(TableName.class);
+        verify(mockPort, times(2)).putService(idTreatmentCapture.capture(), paidNameCapator.capture(), listServiceCompleteCapture.capture());
         Assert.assertEquals(idTreatmentCapture.getValue(), BigInteger.valueOf(TEST_EVENT_ID));
         final String contextPath = "ru.korus.tmis.ws.finance.odvd";
         Assert.assertTrue(TestUtilCommon.checkArgument(listServiceCompleteCapture.getAllValues().get(0), "./src/test/resources/xml/services.xml", contextPath));
         Assert.assertTrue(TestUtilCommon.checkArgument(listServiceCompleteCapture.getAllValues().get(1), "./src/test/resources/xml/services1.xml", contextPath));
+        Assert.assertEquals(paidNameCapator.getValue().getPatientName().size(), 1);
+        final RowTableName paidName = paidNameCapator.getValue().getPatientName().get(0);
+        Assert.assertEquals(paidName.getFamily(),"Копытина");
+        Assert.assertEquals(paidName.getGiven(),"Юлия");
+        Assert.assertEquals(paidName.getPartName(),"Владимировна");
+
     }
 
 

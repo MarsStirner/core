@@ -21,7 +21,7 @@ with I18nable {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def savePaidInfo(event: Event, date: Date, eventLocalContract: EventLocalContract, paidName: PersonName, action: Action, servicePaidInfo: ServicePaidInfo) {
+  def savePaidInfo(event: Event, date: Date, eventLocalContract: EventLocalContract, paidName: PersonFIO, action: Action, servicePaidInfo: ServicePaidInfo) {
     val eventPayment: EventPayment = new EventPayment
     val now = new Date
     eventPayment.setCreateDatetime(now)

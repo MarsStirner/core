@@ -13010,7 +13010,7 @@ invariant(ST x) {
 					restriction on the entity name part qualifier.
 				</p>
 				<dtdl id="dtdl-PN" for="dt-PN" xml:space="preserve">
-type PersonName alias PN specializes EN;
+type PersonFIO alias PN specializes EN;
 
 invariant(PN this) {
    forall(ENXP part)

@@ -154,12 +154,10 @@ public class ExaminationsRegistryRESTImpl {
         return new JSONWithPadding(wsImpl.getPrimaryAssessmentById(actionId,this.auth), this.callback);
     }
 
-    @PUT
-    @Path("/{actionId}/remove")
-    @Consumes("application/json")
-    @Produces("application/x-javascript")
-    public Object removeAction(@PathParam("actionId")int actionId) {
-        return new JSONWithPadding(wsImpl.removeAction(actionId), this.callback);
+    @DELETE
+    @Path("/{actionId}")
+    public void removeAction(@PathParam("actionId")int actionId) {
+        wsImpl.removeAction(actionId);
     }
 
 

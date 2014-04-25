@@ -28,6 +28,7 @@ public interface WsPoliclinicPortType {
     /**
      * 
      * @param idTreatment
+     * @param paidName
      * @param listServiceComplete
      * @return
      *     returns java.math.BigInteger
@@ -39,17 +40,17 @@ public interface WsPoliclinicPortType {
     public BigInteger putService(
         @WebParam(name = "idTreatment", targetNamespace = "http://localhost/Policlinic")
         BigInteger idTreatment,
+        @WebParam(name = "paidName", targetNamespace = "http://localhost/Policlinic")
+        TableName paidName,
         @WebParam(name = "listServiceComplete", targetNamespace = "http://localhost/Policlinic")
         Table listServiceComplete);
 
     /**
      * 
-     * @param codeContract
      * @param numTreatment
      * @param patientName
      * @param idTreatment
      * @param codePatient
-     * @param paidName
      * @param dateTreatment
      * @return
      *     returns java.math.BigInteger
@@ -65,13 +66,9 @@ public interface WsPoliclinicPortType {
         String numTreatment,
         @WebParam(name = "dateTreatment", targetNamespace = "http://localhost/Policlinic")
         XMLGregorianCalendar dateTreatment,
-        @WebParam(name = "codeContract", targetNamespace = "http://localhost/Policlinic")
-        String codeContract,
         @WebParam(name = "codePatient", targetNamespace = "http://localhost/Policlinic")
         String codePatient,
         @WebParam(name = "patientName", targetNamespace = "http://localhost/Policlinic")
-        String patientName,
-        @WebParam(name = "paidName", targetNamespace = "http://localhost/Policlinic")
-        String paidName);
+        TableName patientName);
 
 }

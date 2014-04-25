@@ -658,14 +658,13 @@ class DbActionBean
     action.getStatus == 0
   }
 
-  def removeAction(actionId: Int): lang.Boolean = {
+  def removeAction(actionId: Int) {
     val action: Action = this.getActionIdWithoutDetach(actionId)
     if (!isOpenDoc(action)) {
-      return false
+      throw  new CoreException("Невозможно удалить закрытый документ")
     }
     action.setDeleted(true)
     em.merge(action)
-    true
   }
 
   def closeAppealsDocs() {

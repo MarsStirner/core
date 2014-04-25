@@ -24,10 +24,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="idTreatment" type="{http://www.w3.org/2001/XMLSchema}integer"/>
  *         &lt;element name="numTreatment" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="dateTreatment" type="{http://www.w3.org/2001/XMLSchema}date"/>
- *         &lt;element name="codeContract" type="{http://www.w3.org/2001/XMLSchema}string"/>
  *         &lt;element name="codePatient" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="patientName" type="{http://www.w3.org/2001/XMLSchema}string"/>
- *         &lt;element name="paidName" type="{http://www.w3.org/2001/XMLSchema}string"/>
+ *         &lt;element name="patientName" type="{http://localhost/Policlinic}TableName"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -41,10 +39,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "idTreatment",
     "numTreatment",
     "dateTreatment",
-    "codeContract",
     "codePatient",
-    "patientName",
-    "paidName"
+    "patientName"
 })
 @XmlRootElement(name = "putTreatment")
 public class PutTreatment {
@@ -57,13 +53,9 @@ public class PutTreatment {
     @XmlSchemaType(name = "date")
     protected XMLGregorianCalendar dateTreatment;
     @XmlElement(required = true)
-    protected String codeContract;
-    @XmlElement(required = true)
     protected String codePatient;
-    @XmlElement(required = true)
-    protected String patientName;
-    @XmlElement(required = true)
-    protected String paidName;
+    @XmlElement(required = true, nillable = true)
+    protected TableName patientName;
 
     /**
      * Gets the value of the idTreatment property.
@@ -138,30 +130,6 @@ public class PutTreatment {
     }
 
     /**
-     * Gets the value of the codeContract property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getCodeContract() {
-        return codeContract;
-    }
-
-    /**
-     * Sets the value of the codeContract property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setCodeContract(String value) {
-        this.codeContract = value;
-    }
-
-    /**
      * Gets the value of the codePatient property.
      * 
      * @return
@@ -190,10 +158,10 @@ public class PutTreatment {
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link TableName }
      *     
      */
-    public String getPatientName() {
+    public TableName getPatientName() {
         return patientName;
     }
 
@@ -202,35 +170,11 @@ public class PutTreatment {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link TableName }
      *     
      */
-    public void setPatientName(String value) {
+    public void setPatientName(TableName value) {
         this.patientName = value;
-    }
-
-    /**
-     * Gets the value of the paidName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getPaidName() {
-        return paidName;
-    }
-
-    /**
-     * Sets the value of the paidName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setPaidName(String value) {
-        this.paidName = value;
     }
 
 }

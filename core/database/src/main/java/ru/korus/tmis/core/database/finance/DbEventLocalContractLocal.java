@@ -40,6 +40,6 @@ public interface DbEventLocalContractLocal {
      * @return Новый договор
      * @throws CoreException если договор
      */
-    EventLocalContract create(String code, Date dateContract, Event event, PersonName paidName, Date birthDate) throws CoreException;
+    EventLocalContract create(String code, Date dateContract, Event event, PersonFIO paidName, Date birthDate) throws CoreException;
 
 }

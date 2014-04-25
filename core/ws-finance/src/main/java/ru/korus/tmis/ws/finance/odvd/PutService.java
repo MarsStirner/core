@@ -20,6 +20,7 @@ import javax.xml.bind.annotation.XmlType;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType">
  *       &lt;sequence>
  *         &lt;element name="idTreatment" type="{http://www.w3.org/2001/XMLSchema}integer"/>
+ *         &lt;element name="paidName" type="{http://localhost/Policlinic}TableName"/>
  *         &lt;element name="listServiceComplete" type="{http://localhost/Policlinic}Table"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
@@ -32,6 +33,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
     "idTreatment",
+    "paidName",
     "listServiceComplete"
 })
 @XmlRootElement(name = "PutService")
@@ -39,6 +41,8 @@ public class PutService {
 
     @XmlElement(required = true)
     protected BigInteger idTreatment;
+    @XmlElement(required = true, nillable = true)
+    protected TableName paidName;
     @XmlElement(required = true)
     protected Table listServiceComplete;
 
@@ -64,6 +68,30 @@ public class PutService {
      */
     public void setIdTreatment(BigInteger value) {
         this.idTreatment = value;
+    }
+
+    /**
+     * Gets the value of the paidName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link TableName }
+     *     
+     */
+    public TableName getPaidName() {
+        return paidName;
+    }
+
+    /**
+     * Sets the value of the paidName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TableName }
+     *     
+     */
+    public void setPaidName(TableName value) {
+        this.paidName = value;
     }
 
     /**

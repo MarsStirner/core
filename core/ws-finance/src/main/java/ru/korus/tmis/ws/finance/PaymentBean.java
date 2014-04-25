@@ -58,17 +58,18 @@ public class PaymentBean implements PaymentBeanLocal {
         }
         Event event = idTreatment == null ? null : em.find(Event.class, idTreatment);
         EventLocalContract eventLocalContract = codeContract == null ? null : dbEventLocalContractLocal.getByContractNumber(codeContract);
+        PersonFIO paidFIO = new PersonFIO(paidName.getFamily(), paidName.getGiven(), paidName.getPartName());
         if ( eventLocalContract != null && eventLocalContract.getEvent() != null && idTreatment != null &&
             !idTreatment.equals(eventLocalContract.getEvent().getId())) { //если не сопадает ID обращение и номер договора не совпадают с данными в БД МИС, то возвращаем ошибку
             throw new CoreException("Incompatible event ID and code of contract: idTreatment = " + idTreatment + " codeContract = " + codeContract
                     + " The code of contract for this event should be equals to: " + eventLocalContract.getEvent().getId());
         } else if (eventLocalContract == null) { //если в МИС нет договора, то создаем его
-            eventLocalContract = dbEventLocalContractLocal.create(codeContract, dateContract, event, paidName, birthDate);
+            eventLocalContract = dbEventLocalContractLocal.create(codeContract, dateContract, event, paidFIO, birthDate);
         }
 
         for(ServicePaidInfo servicePaidInfo : listService) {
             Action action = servicePaidInfo.getIdAction() == null ? null : dbActionBeanLocal.getActionById(servicePaidInfo.getIdAction());
-            dbEventPaymentLocal.savePaidInfo(event, datePaid, eventLocalContract, paidName, action, servicePaidInfo);
+            dbEventPaymentLocal.savePaidInfo(event, datePaid, eventLocalContract, paidFIO, action, servicePaidInfo);
         }
         em.flush();
         return idTreatment;

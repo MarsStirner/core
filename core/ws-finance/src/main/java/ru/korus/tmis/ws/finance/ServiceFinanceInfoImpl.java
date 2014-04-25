@@ -9,13 +9,8 @@ package ru.korus.tmis.ws.finance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.database.common.DbActionBeanLocal;
-import ru.korus.tmis.core.database.common.DbEventBeanLocal;
-import ru.korus.tmis.core.database.finance.DbEventPaymentLocal;
 import ru.korus.tmis.core.database.finance.PersonName;
 import ru.korus.tmis.core.database.finance.ServicePaidInfo;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.EJB;

@@ -15,7 +15,7 @@
 				elementFormDefault="qualified">
 			<xs:complexType name="RowTable">
 				<xs:sequence>
-					<xs:element name="idService"
+					<xs:element name="idAction"
 							type="xs:integer"
 							nillable="true"/>
 					<xs:element name="endDate"
@@ -34,10 +34,23 @@
 							type="xs:string"
 							nillable="true"/>
 					<xs:element name="amount"
-							type="xs:integer"
+							type="xs:double"
 							nillable="true"/>
 					<xs:element name="isService"
 							type="xs:boolean"
+							nillable="true"/>
+				</xs:sequence>
+			</xs:complexType>
+			<xs:complexType name="RowTableName">
+				<xs:sequence>
+					<xs:element name="family"
+							type="xs:string"
+							nillable="true"/>
+					<xs:element name="given"
+							type="xs:string"
+							nillable="true"/>
+					<xs:element name="partName"
+							type="xs:string"
 							nillable="true"/>
 				</xs:sequence>
 			</xs:complexType>
@@ -49,11 +62,22 @@
 							maxOccurs="unbounded"/>
 				</xs:sequence>
 			</xs:complexType>
+			<xs:complexType name="TableName">
+				<xs:sequence>
+					<xs:element name="patientName"
+							type="tns:RowTableName"
+							minOccurs="0"
+							maxOccurs="unbounded"/>
+				</xs:sequence>
+			</xs:complexType>
 			<xs:element name="PutService">
 				<xs:complexType>
 					<xs:sequence>
 						<xs:element name="idTreatment"
 								type="xs:integer"/>
+						<xs:element name="paidName"
+								type="tns:TableName"
+								nillable="true"/>
 						<xs:element name="listServiceComplete"
 								type="tns:Table"/>
 					</xs:sequence>
@@ -77,14 +101,11 @@
 								type="xs:string"/>
 						<xs:element name="dateTreatment"
 								type="xs:date"/>
-						<xs:element name="codeContract"
-								type="xs:string"/>
 						<xs:element name="codePatient"
 								type="xs:string"/>
 						<xs:element name="patientName"
-								type="xs:string"/>
-						<xs:element name="paidName"
-								type="xs:string"/>
+								type="tns:TableName"
+								nillable="true"/>
 					</xs:sequence>
 				</xs:complexType>
 			</xs:element>
@@ -182,11 +203,11 @@
 				<wsi:Claim xmlns:wsi="http://ws-i.org/schemas/conformanceClaim/"
 						conformsTo="http://ws-i.org/profiles/basic/1.1"/>
 			</documentation>
-			<soapbind:address location="http://10.128.51.67/buh1/ws/wsPoliclinic.1cws"/>
+			<soapbind:address location="http://10.128.51.67/bgu_copy/ws/wsPoliclinic.1cws"/>
 		</port>
 		<port name="wsPoliclinicSoap12"
 				binding="tns:wsPoliclinicSoap12Binding">
-			<soap12bind:address location="http://10.128.51.67/buh1/ws/wsPoliclinic.1cws"/>
+			<soap12bind:address location="http://10.128.51.67/bgu_copy/ws/wsPoliclinic.1cws"/>
 		</port>
 	</service>
 </definitions>

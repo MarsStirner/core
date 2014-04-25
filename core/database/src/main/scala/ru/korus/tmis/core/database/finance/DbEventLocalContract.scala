@@ -46,7 +46,7 @@ with I18nable {
 
   }
 
-  def create(code: String, dateContract: Date, event: Event, paidName: PersonName, birthDate: Date): EventLocalContract = {
+  def create(code: String, dateContract: Date, event: Event, paidName: PersonFIO, birthDate: Date): EventLocalContract = {
     val res = new EventLocalContract
     val now = new Date
     val coreStaff = dbStaffBeanLocal.getCoreUser

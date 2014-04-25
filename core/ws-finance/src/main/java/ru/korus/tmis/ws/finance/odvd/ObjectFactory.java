@@ -46,6 +46,14 @@ public class ObjectFactory {
     }
 
     /**
+     * Create an instance of {@link TableName }
+     * 
+     */
+    public TableName createTableName() {
+        return new TableName();
+    }
+
+    /**
      * Create an instance of {@link Table }
      * 
      */
@@ -67,6 +75,14 @@ public class ObjectFactory {
      */
     public PutTreatmentResponse createPutTreatmentResponse() {
         return new PutTreatmentResponse();
+    }
+
+    /**
+     * Create an instance of {@link RowTableName }
+     * 
+     */
+    public RowTableName createRowTableName() {
+        return new RowTableName();
     }
 
     /**

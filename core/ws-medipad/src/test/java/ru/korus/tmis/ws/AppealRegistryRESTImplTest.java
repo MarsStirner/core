@@ -251,20 +251,20 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
             final Integer transfusionTherapyActionId = 3911;
             final Integer eventId = 841695;
-            URL url = new URL(BASE_URL + String.format("/tms-registry/appeals/%s/documents/%s/remove", eventId, actionId));
+            URL url = new URL(BASE_URL + String.format("/tms-registry/appeals/%s/documents/%s", eventId, actionId));
             final String tstCallback = "tstCallback";
             url = addGetParam(url, "callback", tstCallback);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            System.out.println("Send PUT to..." + url.toString());
-            HttpURLConnection conn = openConnectionPut(url, authData);
-            toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionReq.json"))), conn);
+            System.out.println("Send DELETE to..." + url.toString());
+            HttpURLConnection conn = openConnectionDel(url, authData);
+            //toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionReq.json"))), conn);
             int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
+          //  String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 204);
 
-            res = removePadding(res, tstCallback);
+           // res = removePadding(res, tstCallback);
             //Assert.assertEquals(resJson, expected);
-            Assert.assertEquals(res, "true");
+           // Assert.assertEquals(res, "true");
         } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();

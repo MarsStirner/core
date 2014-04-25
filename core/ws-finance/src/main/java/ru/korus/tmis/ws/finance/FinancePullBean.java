@@ -10,10 +10,7 @@ import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
 import ru.korus.tmis.core.transmit.Sender;
 import ru.korus.tmis.core.transmit.TransmitterLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
-import ru.korus.tmis.ws.finance.odvd.ObjectFactory;
-import ru.korus.tmis.ws.finance.odvd.Table;
-import ru.korus.tmis.ws.finance.odvd.WsPoliclinic;
-import ru.korus.tmis.ws.finance.odvd.WsPoliclinicPortType;
+import ru.korus.tmis.ws.finance.odvd.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -44,6 +41,9 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     private WsPoliclinicPortType port = null;
 
     private static final Logger logger = LoggerFactory.getLogger(FinancePullBean.class);
+
+    private static ru.korus.tmis.ws.finance.odvd.ObjectFactory odvdObjectFactory = new ObjectFactory();
+
 
     @Override
     public void setPort(WsPoliclinicPortType port) {
@@ -105,9 +105,15 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     public void sendClosedActions(Event event, List<Action> actionList) {
         assert event != null;
         assert !actionList.isEmpty();
-        getPort().putService(BigInteger.valueOf(event.getId()), OdvdBuilder.toOdvdTableActions(actionList, hospitalBedBeanLocal));
+        EventLocalContract eventLocalContract = dbEventLocalContractLocal.getByEventId(event.getId());
+        final TableName paidName = odvdObjectFactory.createTableName();
+        final RowTableName paidRowName = odvdObjectFactory.createRowTableName();
+        paidName.getPatientName().add(paidRowName);
+        paidRowName.setFamily(eventLocalContract == null ? "unknown" : eventLocalContract.getLastName());
+        paidRowName.setGiven(eventLocalContract == null ? "unknown" : eventLocalContract.getFirstName());
+        paidRowName.setPartName(eventLocalContract == null ? "unknown" : eventLocalContract.getPatrName());
+        getPort().putService(BigInteger.valueOf(event.getId()), paidName, OdvdBuilder.toOdvdTableActions(actionList, hospitalBedBeanLocal));
     }
-
 
 
     private void sendNewEvent(Object entity, EventsToODVD eventsToODVD) throws CoreException {
@@ -124,31 +130,24 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
             logger.error(msg);
             throw new CoreException(msg);
         }
-        EventLocalContract eventLocalContract = dbEventLocalContractLocal.getByEventId(event.getId());
 
         try {
             final BigInteger idTreatment = BigInteger.valueOf(event.getId());
             final String numTreatment = event.getExternalId();
             final XMLGregorianCalendar dateTreatment = Database.toGregorianCalendar(event.getCreateDatetime());
-            final String codeContract = eventLocalContract == null ? null : eventLocalContract.getNumberContract();
             final String codePatient = String.valueOf(patient.getId());
+            final TableName patientName = odvdObjectFactory.createTableName();
+            final RowTableName patientRowName = odvdObjectFactory.createRowTableName();
+            patientName.getPatientName().add(patientRowName);
+            patientRowName.setFamily(patient.getLastName());
+            patientRowName.setGiven(patient.getFirstName());
+            patientRowName.setPartName(patient.getPatrName());
 
-            //TODO не по протоколу (ФИО должны быть отдельно)
-            final String patientName = String.format("%s %s %s", nullToEmpty(patient.getFirstName()),
-                    nullToEmpty(patient.getPatrName()),
-                    nullToEmpty(patient.getLastName()));
-            //TODO не по протоколу (ФИО должны быть отдельно)
-
-            final String paidName = eventLocalContract == null ? "unknown" : String.format("%s %s %s", nullToEmpty(eventLocalContract.getFirstName()),
-                    nullToEmpty(eventLocalContract.getPatrName()),
-                    nullToEmpty(eventLocalContract.getLastName()));
             getPort().putTreatment(idTreatment,
                     numTreatment,
                     dateTreatment,
-                    codeContract,
                     codePatient,
-                    patientName,
-                    paidName);
+                    patientName);
         } catch (DatatypeConfigurationException e) {
             final String msg = "wrong event.createDate";
             logger.error(msg, e);
