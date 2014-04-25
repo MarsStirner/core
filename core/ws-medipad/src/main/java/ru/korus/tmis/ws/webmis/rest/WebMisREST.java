@@ -427,7 +427,7 @@ public interface WebMisREST extends Serializable {
      * Пометить action как удаленный
      *
      * @param actionId Идентификатор удаляемого действия
-     * @return
+     * @return false если удаление не удалось и true  случае успеха
      */
     Boolean removeAction(int actionId);
 
@@ -449,6 +449,12 @@ public interface WebMisREST extends Serializable {
      */
     AutoSaveOutputDataContainer loadAutoSaveField(String id, AuthData auth) throws CoreException;
 
+    /**
+     * Получение сохраненного ранее автосохраняемого текста
+     * @param id Идентификатор поля
+     * @param auth Данные авторизации пользователя
+     * @throws CoreException
+     */
     void deleteAutoSaveField(String id, AuthData auth) throws CoreException;
 
 }
