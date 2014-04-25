@@ -17,6 +17,7 @@ import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.finance.*;
+import ru.korus.tmis.core.entity.model.EventLocalContract;
 import ru.korus.tmis.core.entity.model.EventPayment;
 import ru.korus.tmis.core.transmit.Transmitter;
 import ru.korus.tmis.scala.util.ConfigManager;
@@ -62,6 +63,7 @@ public class FinancePullBeanTest extends Arquillian {
     private static final double TEST_SERVICE_SUM = 10000.0;
     private static final double TEST_SERVICE_SUM_DISC = 1000.0;
     private static final int TEST_SERVICE_PATIENT_ID = 347610;
+    private static final String CODE_CONTRACT = "2201-п1";
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em;
 
@@ -168,20 +170,28 @@ public class FinancePullBeanTest extends Arquillian {
         List<ServicePaidInfo> servicePaidInfoList = new LinkedList<ServicePaidInfo>();
         PersonName personName = new PersonName("Тестов", "Тест", "Тестович");
         servicePaidInfoList.add(getTestServicePaidInfo());
-        Integer res = paymentBeanLocal.setPaymentInfo(new Date(), "2201-п1", new Date(), TEST_EVENT_ID, personName, new Date(), servicePaidInfoList);
+        Integer res = paymentBeanLocal.setPaymentInfo(new Date(), CODE_CONTRACT, new Date(), TEST_EVENT_ID, personName, new Date(), servicePaidInfoList);
         Assert.assertTrue(res.equals(TEST_EVENT_ID));
         Object lastId = em.createNativeQuery("SELECT LAST_INSERT_ID()").getSingleResult();
         Assert.assertTrue(lastId instanceof Number);
         EventPayment eventPayment = getLastEventPayment();
         Assert.assertNotNull(eventPayment);
-        checkTestServicePaidInfo(eventPayment);
+        checkEventPayment(eventPayment);
+        EventLocalContract eventLocalContract = getLastEventLocalContract();
+        Assert.assertNotNull(eventLocalContract);
+        checkEventLocalContract(eventLocalContract);
     }
 
     private EventPayment getLastEventPayment() {
-        return em.createQuery("SELECT p FROM EventPayment p ORDER BY p.id DESC", EventPayment.class).getSingleResult();
+        return em.createQuery("SELECT p FROM EventPayment p ORDER BY p.id DESC", EventPayment.class).setMaxResults(1).getSingleResult();
     }
 
-    private void checkTestServicePaidInfo(EventPayment eventPayment) {
+    private EventLocalContract getLastEventLocalContract() {
+        return em.createQuery("SELECT p FROM EventLocalContract p ORDER BY p.id DESC", EventLocalContract.class).setMaxResults(1).getSingleResult();
+    }
+
+
+    private void checkEventPayment(EventPayment eventPayment) {
         Assert.assertNotNull(eventPayment.getAction());
         Assert.assertEquals(eventPayment.getAction().getId(), TEST_SERVICE_ACTION_ID);
         Assert.assertNotNull(eventPayment.getService());
@@ -192,7 +202,11 @@ public class FinancePullBeanTest extends Arquillian {
         Assert.assertTrue(eventPayment.getAction().getEvent().getPatient().getId() == TEST_SERVICE_PATIENT_ID);
        //Assert.assertEquals(eventPayment.get);
         //TODO add check TypePayment
+    }
 
+    private void checkEventLocalContract(EventLocalContract eventLocalContract) {
+        Assert.assertEquals(eventLocalContract.getNumberContract(), CODE_CONTRACT);
+        //TODO check other attribute value
     }
 
     private ServicePaidInfo getTestServicePaidInfo() {
