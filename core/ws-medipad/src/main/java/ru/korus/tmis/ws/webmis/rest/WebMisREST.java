@@ -3,7 +3,6 @@ package ru.korus.tmis.ws.webmis.rest;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
-import ru.korus.tmis.core.entity.model.APValueAction;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.entity.model.RbPrintTemplate;
 import ru.korus.tmis.core.exception.CoreException;
@@ -427,7 +426,7 @@ public interface WebMisREST extends Serializable {
     /**
      * Пометить action как удаленный
      *
-     * @param actionId
+     * @param actionId Идентификатор удаляемого действия
      * @return
      */
     Boolean removeAction(int actionId);
@@ -449,5 +448,7 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     AutoSaveOutputDataContainer loadAutoSaveField(String id, AuthData auth) throws CoreException;
+
+    void deleteAutoSaveField(String id, AuthData auth) throws CoreException;
 
 }

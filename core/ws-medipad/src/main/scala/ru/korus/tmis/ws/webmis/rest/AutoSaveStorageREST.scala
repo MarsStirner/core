@@ -4,7 +4,7 @@ import ru.korus.tmis.core.auth.AuthData
 import javax.ws.rs._
 import com.sun.jersey.api.json.JSONWithPadding
 import ru.korus.tmis.core.data.AutoSaveInputDataContainer
-import javax.ws.rs.core.MediaType
+import javax.ws.rs.core.{Response, MediaType}
 
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
@@ -27,4 +27,10 @@ class AutoSaveStorageREST(val wsImpl: WebMisREST, val authData: AuthData, val ca
     new JSONWithPadding(wsImpl.loadAutoSaveField(id, authData))
   }
 
+  @DELETE
+  @Path("/{id}")
+  def delete(@PathParam("id") id: String): Response = {
+      wsImpl.deleteAutoSaveField(id, authData)
+      Response.noContent().build()
+  }
 }

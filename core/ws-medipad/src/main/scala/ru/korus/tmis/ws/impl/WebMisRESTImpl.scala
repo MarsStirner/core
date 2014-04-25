@@ -220,7 +220,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   def insertPatient(patientData: PatientCardData, auth: AuthData) : PatientCardData = {
     //requiresPermissions(Array("clientAssessmentCreate"))
-    val inPatientEntry = patientData.getData()
+    val inPatientEntry = patientData.getData
     if (inPatientEntry != null) {
       if (auth != null) {
         val outPatientEntry: PatientEntry = patientBean.savePatient(-1, inPatientEntry, auth)  //currentAuthData
@@ -237,7 +237,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   def updatePatient(id: Int, patientData: PatientCardData, auth: AuthData) : PatientCardData = {
     //requiresPermissions(Array("clientAssessmentCreate"))
-    val inPatientEntry = patientData.getData()
+    val inPatientEntry = patientData.getData
     if (inPatientEntry != null) {
       if (auth != null) {
         val outPatientEntry: PatientEntry = patientBean.savePatient(id, inPatientEntry, auth)
@@ -283,7 +283,7 @@ class WebMisRESTImpl  extends WebMisREST
       val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
 
       val mapper: ObjectMapper = new ObjectMapper()
-      mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
+      mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsStandartForm])
       val patient = positionE._1.getPatient
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
@@ -1489,4 +1489,9 @@ class WebMisRESTImpl  extends WebMisREST
   def loadAutoSaveField(id: String, auth: AuthData) = {
     dbAutoSaveStorageLocal.load(id, auth.getUserId)
   }
+
+  def deleteAutoSaveField(id: String, auth: AuthData) = {
+   dbAutoSaveStorageLocal.delete(id, auth.getUserId)
+  }
+
 }

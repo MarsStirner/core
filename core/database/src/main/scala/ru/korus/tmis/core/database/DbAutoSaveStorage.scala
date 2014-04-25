@@ -46,6 +46,16 @@ class DbAutoSaveStorage extends  DbAutoSaveStorageLocal {
     }
   }
 
+
+  def delete(id: String, userId: Int): Unit = {
+    try {
+      Option(em.find(classOf[AutoSaveStorage], new AutosaveStoragePK(id, userId)))
+        .foreach(em.remove(_))
+    } catch {
+      case e: Throwable => throw new CoreException(e)
+    }
+  }
+
   def clean(date: Date): Unit = {
     try {
       em.createQuery("DELETE FROM AutoSaveStorage s WHERE s.modifyDatetime < :date")

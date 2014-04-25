@@ -30,6 +30,13 @@ trait DbAutoSaveStorageLocal {
   def load(id: String, userId: Int): AutoSaveOutputDataContainer
 
   /**
+   * Удаление записи из хранилища
+   * @param id Идентификатор записи
+   * @param userId Идентификатор пользователя
+   */
+  def delete(id: String, userId: Int)
+
+  /**
    * Удаление из хранилища устаревших записей
    * @param date Дата, ранее которой все записи будут удалены
    */
