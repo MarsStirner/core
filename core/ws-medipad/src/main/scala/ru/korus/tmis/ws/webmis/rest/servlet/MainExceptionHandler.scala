@@ -37,7 +37,7 @@ class MainExceptionHandler extends HttpServlet {
     val ob = new ObjectMapper()
     val s = ob.writeValueAsString(new ExceptionJSONMessage(throwable))
 
-    p2.setStatus(200)
+    p2.setStatus(500)
     p2 setContentType MediaType.APPLICATION_JSON
     p2 setCharacterEncoding "UTF8"
     p2.getWriter.write(s)
