@@ -7,7 +7,7 @@
         <nameOfService>Услуги: в Приемном отделении</nameOfService>
         <codeOfStruct xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
         <nameOfStruct>Лаборатория биофизики</nameOfStruct>
-        <amount xsi:nil="true" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+        <amount>1.0</amount>
         <isService>false</isService>
     </listServiceComplete>
 </table>
