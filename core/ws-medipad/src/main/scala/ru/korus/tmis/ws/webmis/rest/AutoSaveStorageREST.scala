@@ -29,8 +29,7 @@ class AutoSaveStorageREST(val wsImpl: WebMisREST, val authData: AuthData, val ca
 
   @DELETE
   @Path("/{id}")
-  def delete(@PathParam("id") id: String): Response = {
+  def delete(@PathParam("id") id: String) {
       wsImpl.deleteAutoSaveField(id, authData)
-      Response.noContent().build()
   }
 }

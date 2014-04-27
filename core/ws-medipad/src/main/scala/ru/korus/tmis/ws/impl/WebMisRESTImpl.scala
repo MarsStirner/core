@@ -1490,7 +1490,7 @@ class WebMisRESTImpl  extends WebMisREST
     dbAutoSaveStorageLocal.load(id, auth.getUserId)
   }
 
-  def deleteAutoSaveField(id: String, auth: AuthData) = {
+  def deleteAutoSaveField(id: String, auth: AuthData) {
    dbAutoSaveStorageLocal.delete(id, auth.getUserId)
   }
 
