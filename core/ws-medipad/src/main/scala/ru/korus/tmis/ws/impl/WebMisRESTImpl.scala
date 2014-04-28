@@ -545,31 +545,31 @@ class WebMisRESTImpl  extends WebMisREST
    * @param ap Свойство создаваемого документа
    */
   private def calculateActionPropertyValue(event: Event, at: ActionType, ap: ActionPropertyType): APValue = {
-    if(at.getCode.equals("4504")) { // Заключительный эпикриз
-      // ActionType.code эпикризов, может, оставить только заключительный эпикриз
-      val oldDocumentCodes = Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511")
-      if(oldDocumentCodes.contains(at.getCode)) {
-        val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
-        if(pastActions != null && !pastActions.isEmpty)
-           pastActions.head.getActionProperties.foreach(e => {
-             if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
-               val values = actionPropertyBean.getActionPropertyValue(e)
-               // Основной клинический диагноз
-               if(e.getType.getCode.equals("mainDiag")) {
-                 if(values.size() > 0)
-                   return values.head
-             }
-               // Основной клинический диагноз по МКБ
-               else if (e.getType.getCode.equals("mainDiagMkb")) {
-                 if(values.size() > 0)
-                   return values.head
-               }
-             }
-           })
-        null
-      }
-    }
+
+    // Получение значения свойства у предыдущих действий
+    def getProperty(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
+        if(oldDocumentCodes.contains(at.getCode)) {
+          val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
+          if(pastActions != null && !pastActions.isEmpty)
+            pastActions.head.getActionProperties.foreach(e => {
+              if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
+                val values = actionPropertyBean.getActionPropertyValue(e)
+                if(actionTypeCodes.contains(e.getType.getCode)) {
+                  if(values.size() > 0)
+                    return values.head
+                }
+              }
+            })
+          null
+        }
       null
+    }
+
+    at.getCode match {
+      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag","mainDiagMkb")) // Заключительный эпикриз
+      case "1_2_18" => getProperty(Set("1_2_18"), Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")) // Дневниковый осмотр
+      case _ => null
+    }
   }
 
   //создание первичного мед. осмотра
