@@ -11,7 +11,9 @@ import java.util.Date;
 @NamedQueries(
         {
                 @NamedQuery(name = "OrgStructure.findAll", query = "SELECT o FROM OrgStructure o"),
-                @NamedQuery(name = "OrgStructure.findMain", query = "SELECT o FROM OrgStructure o WHERE o.parentId IS NULL")
+                @NamedQuery(name = "OrgStructure.findMain", query = "SELECT o FROM OrgStructure o WHERE o.parentId IS NULL"),
+                @NamedQuery(name = "OrgStructure.findByOrganisationId",
+                        query = "SELECT o FROM OrgStructure o WHERE o.organisation.id = :ORG_ID AND o.deleted = 0")
         })
 @XmlType(name = "orgStructure")
 @XmlRootElement(name = "orgStructure")

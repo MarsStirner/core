@@ -31,7 +31,7 @@ public class RbService
     @Column(name = "name")
     private String name;
 
-    @Column(name  = "eisLegacy")
+    @Column(name = "eisLegacy")
     private short eisLegacy;
 
     @Column(name = "nomenclatureLegacy")
@@ -51,8 +51,9 @@ public class RbService
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
 
-    @Column(name = "medicalAidProfile_id")
-    private Integer medicalAidProfileId;
+    @ManyToOne
+    @JoinColumn(name = "medicalAidProfile_id")
+    private RbMedicalAidProfile medicalAidProfile;
 
     @Column(name = "adultUetDoctor")
     private double adultUetDoctor;
@@ -65,6 +66,24 @@ public class RbService
 
     @Column(name = "childUetAverageMedWorker")
     private double childUetAverageMedWorker;
+
+    @ManyToOne
+    @JoinColumn(name = "rbMedicalKind_id")
+    private RbMedicalKind medicalKind;
+
+    @Column(name = "departCode")
+    private String departCode;
+
+    @Column(name = "UET")
+    private Double uet;
+
+
+    public RbService(Integer id) {
+        this.id = id;
+    }
+
+    public RbService() {
+    }
 
     public double getChildUetAverageMedWorker() {
         return childUetAverageMedWorker;
@@ -114,12 +133,12 @@ public class RbService
         this.endDate = endDate;
     }
 
-    public Integer getMedicalAidProfileId() {
-        return medicalAidProfileId;
+    public RbMedicalAidProfile getMedicalAidProfile() {
+        return medicalAidProfile;
     }
 
-    public void setMedicalAidProfileId(Integer medicalAidProfileId) {
-        this.medicalAidProfileId = medicalAidProfileId;
+    public void setMedicalAidProfile(RbMedicalAidProfile medicalAidProfile) {
+        this.medicalAidProfile = medicalAidProfile;
     }
 
     public double getAdultUetDoctor() {
@@ -178,6 +197,22 @@ public class RbService
         this.code = code;
     }
 
+    public RbMedicalKind getMedicalKind() {
+        return medicalKind;
+    }
+
+    public void setMedicalKind(RbMedicalKind medicalKind) {
+        this.medicalKind = medicalKind;
+    }
+
+    public Double getUet() {
+        return uet;
+    }
+
+    public void setUet(Double uet) {
+        this.uet = uet;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -199,6 +234,14 @@ public class RbService
 
     @Override
     public String toString() {
-        return "ru.korus.tmis.core.entity.model.RbRequestType[id=" + id + "]";
+        return this.getClass().getName()+"[id=" + id + "]";
+    }
+
+    public String getDepartCode() {
+        return departCode;
+    }
+
+    public void setDepartCode(String departCode) {
+        this.departCode = departCode;
     }
 }

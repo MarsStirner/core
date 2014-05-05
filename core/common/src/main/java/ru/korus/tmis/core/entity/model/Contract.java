@@ -19,7 +19,9 @@ import java.util.Date;
 @Table(name = "Contract")
 @NamedQueries(
         {
-                @NamedQuery(name = "Contract.findAll", query = "SELECT c FROM Contract c")
+                @NamedQuery(name = "Contract.findAll", query = "SELECT c FROM Contract c"),
+                @NamedQuery(name = "Contract.findByOrganisationId",
+                        query = "SELECT c FROM Contract c WHERE c.recipientId = :ORGANISATIONID")
         })
 @XmlType(name = "contract")
 @XmlRootElement(name = "contract")
