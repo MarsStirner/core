@@ -83,7 +83,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     }
 
     private void sendNewAction(Object entity, ActionToODVD actionsToODVD) throws CoreException {
-        logger.info("processing ActionToODVD.event_id = ", actionsToODVD.getActionId());
+        logger.info("processing ActionToODVD.event_id = {}", actionsToODVD.getActionId());
         List<Action> actionList = new LinkedList<Action>();
         final Action action = actionsToODVD.getAction();
         if (action == null) {

@@ -3,6 +3,7 @@ package ru.korus.tmis.ws.finance;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.finance.*;
+import ru.korus.tmis.core.database.finance.ServicePaidFinanceInfo;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.EventLocalContract;
@@ -68,11 +69,27 @@ public class PaymentBean implements PaymentBeanLocal {
         }
 
         for(ServicePaidInfo servicePaidInfo : listService) {
-            Action action = servicePaidInfo.getIdAction() == null ? null : dbActionBeanLocal.getActionById(servicePaidInfo.getIdAction());
-            dbEventPaymentLocal.savePaidInfo(event, datePaid, eventLocalContract, paidFIO, action, servicePaidInfo);
+            final Integer idAction = servicePaidInfo.getIdAction();
+            Action action = idAction == null || idAction == 0 ? null : dbActionBeanLocal.getActionById(idAction);
+            dbEventPaymentLocal.savePaidInfo(event, datePaid, eventLocalContract, paidFIO, action, toServiceFinanceInfo(servicePaidInfo));
         }
         em.flush();
         return idTreatment;
+    }
+
+    private ServicePaidFinanceInfo toServiceFinanceInfo(ServicePaidInfo servicePaidInfo) {
+        ServicePaidFinanceInfo res = new ServicePaidFinanceInfo();
+        res.setAmount(servicePaidInfo.getAmount());
+        res.setCodePatient(servicePaidInfo.getCodePatient());
+        res.setCodeService(servicePaidInfo.getCodeService());
+        res.setIdAction(servicePaidInfo.getIdAction());
+        res.setNameService(servicePaidInfo.getNameService());
+        final PersonName patientName = servicePaidInfo.getPatientName();
+        res.setPatientName(new PersonFIO(patientName.getFamily(), patientName.getGiven(), patientName.getPartName()));
+        res.setSum(servicePaidInfo.getSum());
+        res.setSumDisc(servicePaidInfo.getSumDisc());
+        res.setTypePayment(servicePaidInfo.isTypePayment());
+        return res;
     }
 
 }

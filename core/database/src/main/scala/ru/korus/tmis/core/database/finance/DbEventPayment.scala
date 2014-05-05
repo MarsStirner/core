@@ -21,7 +21,7 @@ with I18nable {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def savePaidInfo(event: Event, date: Date, eventLocalContract: EventLocalContract, paidName: PersonFIO, action: Action, servicePaidInfo: ServicePaidInfo) {
+  def savePaidInfo(event: Event, date: Date, eventLocalContract: EventLocalContract, paidName: PersonFIO, action: Action, servicePaidFinanceInfo: ServicePaidFinanceInfo) {
     val eventPayment: EventPayment = new EventPayment
     val now = new Date
     eventPayment.setCreateDatetime(now)
@@ -29,17 +29,13 @@ with I18nable {
     eventPayment.setDeleted(false)
     eventPayment.setEvent(event)
     eventPayment.setDate(date) //Дата платежа
-    eventPayment.setActionSum(servicePaidInfo.getSum)
-    eventPayment.setSumDisc(servicePaidInfo.getSumDisc)
+    eventPayment.setSum(servicePaidFinanceInfo.getSum)
+    eventPayment.setSumDisc(servicePaidFinanceInfo.getSumDisc)
     eventPayment.setCashBox("")
     eventPayment.setAction(action)
-    val servList = em.createNamedQuery("rbService.findByCode", classOf[RbService]).setParameter("code", servicePaidInfo.getCodeService).getResultList
+    val servList = em.createNamedQuery("rbService.findByCode", classOf[RbService]).setParameter("code", servicePaidFinanceInfo.getCodeService).getResultList
     eventPayment.setService( if (servList.isEmpty) { null } else {servList.get(0)} )
+    eventPayment.setEventLocalContract(eventLocalContract)
     em.persist(eventPayment)
-    em.merge(eventPayment)
-    val paymentLocalContract = new PaymentLocalContract
-    paymentLocalContract.setEventLocalContract(eventLocalContract)
-    paymentLocalContract.setEventPayment(eventPayment)
-    em.persist(paymentLocalContract)
   }
 }

@@ -13,6 +13,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
 
 import com.google.gson.Gson;
+import ru.korus.tmis.core.database.finance.ServicePaidFinanceInfo;
 
 @Path("/tmis-finance")
 public class RestFinanceInfo {

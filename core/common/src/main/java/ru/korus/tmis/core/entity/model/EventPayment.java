@@ -18,11 +18,8 @@ public class EventPayment implements Serializable {
     @Column(unique = true, nullable = false)
     private int id;
 
-    @Column(nullable = false)
-    private double actionSum;
-
-    @Column(name = "sumDisc")
-    private double sumDisc;
+    @Column(name = "sumDiscount")
+    private Double sumDisc;
 
     @ManyToOne
     @JoinColumn(name = "bank_id")
@@ -83,8 +80,21 @@ public class EventPayment implements Serializable {
     @JoinColumn(name = "service_id")
     private RbService service;
 
+    @ManyToOne
+    @JoinColumn(name = "localContract_id")
+    private EventLocalContract eventLocalContract;
+
     public EventPayment() {
     }
+
+    public EventLocalContract getEventLocalContract() {
+        return eventLocalContract;
+    }
+
+    public void setEventLocalContract(EventLocalContract eventLocalContract) {
+        this.eventLocalContract = eventLocalContract;
+    }
+
 
     public int getId() {
         return this.id;
@@ -92,14 +102,6 @@ public class EventPayment implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public double getActionSum() {
-        return this.actionSum;
-    }
-
-    public void setActionSum(double actionSum) {
-        this.actionSum = actionSum;
     }
 
     public Bank getBank() {
@@ -195,7 +197,7 @@ public class EventPayment implements Serializable {
     }
 
     public void setSum(double sum) {
-        this.sum = sum;
+            this.sum = sum;
     }
 
     public byte getTypePayment() {

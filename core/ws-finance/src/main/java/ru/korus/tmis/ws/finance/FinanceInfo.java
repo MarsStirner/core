@@ -45,7 +45,7 @@ public class FinanceInfo {
     private static final Integer PAID_PATIENT = 4;
 
     /**
-     * @see ServiceFinanceInfo#getFinanceInfo(String)
+     * @see ru.korus.tmis.core.database.finance.ServicePaidFinanceInfo#getFinanceInfo(String)
      */
     public FinanceBean[] getFinanceInfo(final String nameOfStructure) {
         try {

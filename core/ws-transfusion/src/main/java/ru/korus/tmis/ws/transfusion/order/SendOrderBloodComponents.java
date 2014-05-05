@@ -123,7 +123,7 @@ public class SendOrderBloodComponents {
     public static PatientCredentials getPatientCredentials(final Action action, final TrfuActionProp trfuActionProp, EntityManager em) throws CoreException,
             DatatypeConfigurationException {
         if (!checkMovingForPatient(action, em)) {
-            trfuActionProp.setRequestState(action.getId(), "Ошибка: Пациента снят с койки");
+            trfuActionProp.setRequestState(action.getId(), "Ошибка: Пациент снят с койки");
             return null;
         }
         final PatientCredentials res = new PatientCredentials();

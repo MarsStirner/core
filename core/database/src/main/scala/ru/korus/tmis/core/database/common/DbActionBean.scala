@@ -722,4 +722,11 @@ class DbActionBean
       .setParameter("eventId", eventId)
       .getResultList
   }
+
+  def getActionsByEvent(eventId: Integer): util.List[Action] = {
+    em.createNamedQuery("Action.findByEventId",
+      classOf[Action])
+      .setParameter("eventId", eventId)
+      .getResultList
+  }
 }

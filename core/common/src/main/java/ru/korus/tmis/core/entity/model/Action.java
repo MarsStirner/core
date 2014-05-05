@@ -14,7 +14,8 @@ import java.util.*;
                 @NamedQuery(name = "Action.findById", query = "SELECT a FROM Action a WHERE a.id = :id"),
                 @NamedQuery(name = "Action.findNewByFlatCode", query = "SELECT a FROM Action a WHERE a.status = 0 AND a.actionType.flatCode = :flatCode AND a.event IS NOT NULL AND a.event.patient IS NOT NULL AND a.deleted = 0 "),
                 @NamedQuery(name = "Action.ActionsByFlatCode", query = "SELECT a FROM Action a WHERE a.actionType.flatCode IN :codes AND a.event.id = :id AND a.deleted = 0"),
-                @NamedQuery(name = "Action.ServiceList", query = "SELECT a FROM Action a WHERE a.actionType.service IS NOT NULL AND a.event.id = :eventId AND a.deleted = 0")
+                @NamedQuery(name = "Action.ServiceList", query = "SELECT a FROM Action a WHERE a.actionType.service IS NOT NULL AND a.event.id = :eventId AND a.deleted = 0"),
+                @NamedQuery(name = "Action.findByEventId", query = "SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0")
 })
 @XmlType(name = "action")
 @XmlRootElement(name = "action")

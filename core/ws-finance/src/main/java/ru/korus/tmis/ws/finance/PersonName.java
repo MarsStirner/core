@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.database.finance;
+package ru.korus.tmis.ws.finance;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
