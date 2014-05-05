@@ -125,6 +125,12 @@
             <type>jar</type>
         </dependency>
 
+        <dependency>
+            <groupId>ru.korus.tmis.tfoms</groupId>
+            <artifactId>tmis-ws-tfoms</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>ejb</type>
+        </dependency>
 
     </dependencies>
 

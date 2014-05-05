@@ -576,6 +576,25 @@ object ConfigManager extends Configuration {
     var UnknownError = 0x157
   }
 
+  /**
+   *
+   * Настройки thrift сервиса для выгрузки в ТФОМС
+   *
+   */
+  var TfomsUpload = new TfomsUploadClass
+
+  class TfomsUploadClass extends Configuration {
+    /**
+     * Порт сервиса, к которому будут подключаться системы
+     */
+    var Port = 7912
+
+    /**
+     * Максимальное кол-во потоков, участвующее в работе
+     */
+    var MaxThreads = 5
+  }
+
   class Codes extends Configuration {
     val bundle = ResourceBundle.getBundle("codes", Utf8ResourceBundleControl.Singleton)
     def getValue(key : String) : java.lang.String = {
