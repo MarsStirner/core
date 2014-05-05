@@ -241,6 +241,12 @@ class DbOrgStructureBean
       .setParameter("orgStructure", orgStructure).getResultList
   }
 
+  def getOrgStructuresByOrganisationId(organisationId: Int): util.List[OrgStructure] = {
+    em.createNamedQuery("OrgStructure.findByOrganisationId", classOf[OrgStructure])
+      .setParameter("ORG_ID", organisationId)
+      .getResultList
+  }
+
   override def getRecursiveOrgStructuresWithoutAvailableForExternal(parentId: Int, recursive: Boolean, infisCode: String): util.List[OrgStructure] = {
     val allEntitiesList = getAllOrgStructures()
     var parentIdsSet = Set[java.lang.Integer](parentId)

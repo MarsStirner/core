@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.ClientPolicy;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.RbPolicyType;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -36,6 +37,16 @@ public interface DbClientPolicyBeanLocal {
     Boolean checkPolicyNumber(String number, String serial, int typeId) throws CoreException;
 
     ClientPolicy findBySerialAndNumberAndType(String serial, String number, int typeId);
+
+    /**
+     * Возвращает список всех активных полисов заданного типа,  принадлежащих клиенту
+     *
+     * @param patientId  идентификатор клиента
+     * @param policyType тип полисов
+     * @return Список полисов
+     * @throws CoreException
+     */
+    List<ClientPolicy> getActivePoliciesByClientAndType(final int patientId, final RbPolicyType policyType) throws CoreException;
 
     /**
      * Сохраняет в БД новый полис

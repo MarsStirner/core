@@ -117,6 +117,13 @@ public interface DbOrgStructureBeanLocal {
     List<OrgStructureAddress> getOrgStructureAddressByOrgStructure(OrgStructure currentOrgStructure);
 
     /**
+     * Получение подразделений ЛПУ, относящихся к заданной организации
+     * @param organisationId Идентификатор организации
+     * @return    Список подразделений\ пустой спсиок
+     */
+    List<OrgStructure> getOrgStructuresByOrganisationId(int organisationId);
+
+    /**
      * Запрос на получение под-отделений начиная с указаного parentId. Без учета признака AvailableForExternal
      *
      * @param parentId  Идентификатор отделения для которго выводим все подотделения
