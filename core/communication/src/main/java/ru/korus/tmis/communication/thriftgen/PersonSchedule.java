@@ -457,16 +457,16 @@ public class PersonSchedule implements org.apache.thrift.TBase<PersonSchedule, P
           case 1: // SCHEDULES
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map16 = iprot.readMapBegin();
-                struct.schedules = new HashMap<Long,Schedule>(2*_map16.size);
-                for (int _i17 = 0; _i17 < _map16.size; ++_i17)
+                org.apache.thrift.protocol.TMap _map32 = iprot.readMapBegin();
+                struct.schedules = new HashMap<Long,Schedule>(2*_map32.size);
+                for (int _i33 = 0; _i33 < _map32.size; ++_i33)
                 {
-                  long _key18; // required
-                  Schedule _val19; // required
-                  _key18 = iprot.readI64();
-                  _val19 = new Schedule();
-                  _val19.read(iprot);
-                  struct.schedules.put(_key18, _val19);
+                  long _key34; // required
+                  Schedule _val35; // required
+                  _key34 = iprot.readI64();
+                  _val35 = new Schedule();
+                  _val35.read(iprot);
+                  struct.schedules.put(_key34, _val35);
                 }
                 iprot.readMapEnd();
               }
@@ -478,16 +478,16 @@ public class PersonSchedule implements org.apache.thrift.TBase<PersonSchedule, P
           case 2: // PERSON_ABSENCES
             if (schemeField.type == org.apache.thrift.protocol.TType.MAP) {
               {
-                org.apache.thrift.protocol.TMap _map20 = iprot.readMapBegin();
-                struct.personAbsences = new HashMap<Long,ReasonOfAbsenceException>(2*_map20.size);
-                for (int _i21 = 0; _i21 < _map20.size; ++_i21)
+                org.apache.thrift.protocol.TMap _map36 = iprot.readMapBegin();
+                struct.personAbsences = new HashMap<Long,ReasonOfAbsenceException>(2*_map36.size);
+                for (int _i37 = 0; _i37 < _map36.size; ++_i37)
                 {
-                  long _key22; // required
-                  ReasonOfAbsenceException _val23; // required
-                  _key22 = iprot.readI64();
-                  _val23 = new ReasonOfAbsenceException();
-                  _val23.read(iprot);
-                  struct.personAbsences.put(_key22, _val23);
+                  long _key38; // required
+                  ReasonOfAbsenceException _val39; // required
+                  _key38 = iprot.readI64();
+                  _val39 = new ReasonOfAbsenceException();
+                  _val39.read(iprot);
+                  struct.personAbsences.put(_key38, _val39);
                 }
                 iprot.readMapEnd();
               }
@@ -515,10 +515,10 @@ public class PersonSchedule implements org.apache.thrift.TBase<PersonSchedule, P
         oprot.writeFieldBegin(SCHEDULES_FIELD_DESC);
         {
           oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I64, org.apache.thrift.protocol.TType.STRUCT, struct.schedules.size()));
-          for (Map.Entry<Long, Schedule> _iter24 : struct.schedules.entrySet())
+          for (Map.Entry<Long, Schedule> _iter40 : struct.schedules.entrySet())
           {
-            oprot.writeI64(_iter24.getKey());
-            _iter24.getValue().write(oprot);
+            oprot.writeI64(_iter40.getKey());
+            _iter40.getValue().write(oprot);
           }
           oprot.writeMapEnd();
         }
@@ -529,10 +529,10 @@ public class PersonSchedule implements org.apache.thrift.TBase<PersonSchedule, P
           oprot.writeFieldBegin(PERSON_ABSENCES_FIELD_DESC);
           {
             oprot.writeMapBegin(new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I64, org.apache.thrift.protocol.TType.STRUCT, struct.personAbsences.size()));
-            for (Map.Entry<Long, ReasonOfAbsenceException> _iter25 : struct.personAbsences.entrySet())
+            for (Map.Entry<Long, ReasonOfAbsenceException> _iter41 : struct.personAbsences.entrySet())
             {
-              oprot.writeI64(_iter25.getKey());
-              _iter25.getValue().write(oprot);
+              oprot.writeI64(_iter41.getKey());
+              _iter41.getValue().write(oprot);
             }
             oprot.writeMapEnd();
           }
@@ -558,10 +558,10 @@ public class PersonSchedule implements org.apache.thrift.TBase<PersonSchedule, P
       TTupleProtocol oprot = (TTupleProtocol) prot;
       {
         oprot.writeI32(struct.schedules.size());
-        for (Map.Entry<Long, Schedule> _iter26 : struct.schedules.entrySet())
+        for (Map.Entry<Long, Schedule> _iter42 : struct.schedules.entrySet())
         {
-          oprot.writeI64(_iter26.getKey());
-          _iter26.getValue().write(oprot);
+          oprot.writeI64(_iter42.getKey());
+          _iter42.getValue().write(oprot);
         }
       }
       BitSet optionals = new BitSet();
@@ -572,10 +572,10 @@ public class PersonSchedule implements org.apache.thrift.TBase<PersonSchedule, P
       if (struct.isSetPersonAbsences()) {
         {
           oprot.writeI32(struct.personAbsences.size());
-          for (Map.Entry<Long, ReasonOfAbsenceException> _iter27 : struct.personAbsences.entrySet())
+          for (Map.Entry<Long, ReasonOfAbsenceException> _iter43 : struct.personAbsences.entrySet())
           {
-            oprot.writeI64(_iter27.getKey());
-            _iter27.getValue().write(oprot);
+            oprot.writeI64(_iter43.getKey());
+            _iter43.getValue().write(oprot);
           }
         }
       }
@@ -585,32 +585,32 @@ public class PersonSchedule implements org.apache.thrift.TBase<PersonSchedule, P
     public void read(org.apache.thrift.protocol.TProtocol prot, PersonSchedule struct) throws org.apache.thrift.TException {
       TTupleProtocol iprot = (TTupleProtocol) prot;
       {
-        org.apache.thrift.protocol.TMap _map28 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I64, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-        struct.schedules = new HashMap<Long,Schedule>(2*_map28.size);
-        for (int _i29 = 0; _i29 < _map28.size; ++_i29)
+        org.apache.thrift.protocol.TMap _map44 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I64, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+        struct.schedules = new HashMap<Long,Schedule>(2*_map44.size);
+        for (int _i45 = 0; _i45 < _map44.size; ++_i45)
         {
-          long _key30; // required
-          Schedule _val31; // required
-          _key30 = iprot.readI64();
-          _val31 = new Schedule();
-          _val31.read(iprot);
-          struct.schedules.put(_key30, _val31);
+          long _key46; // required
+          Schedule _val47; // required
+          _key46 = iprot.readI64();
+          _val47 = new Schedule();
+          _val47.read(iprot);
+          struct.schedules.put(_key46, _val47);
         }
       }
       struct.setSchedulesIsSet(true);
       BitSet incoming = iprot.readBitSet(1);
       if (incoming.get(0)) {
         {
-          org.apache.thrift.protocol.TMap _map32 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I64, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.personAbsences = new HashMap<Long,ReasonOfAbsenceException>(2*_map32.size);
-          for (int _i33 = 0; _i33 < _map32.size; ++_i33)
+          org.apache.thrift.protocol.TMap _map48 = new org.apache.thrift.protocol.TMap(org.apache.thrift.protocol.TType.I64, org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.personAbsences = new HashMap<Long,ReasonOfAbsenceException>(2*_map48.size);
+          for (int _i49 = 0; _i49 < _map48.size; ++_i49)
           {
-            long _key34; // required
-            ReasonOfAbsenceException _val35; // required
-            _key34 = iprot.readI64();
-            _val35 = new ReasonOfAbsenceException();
-            _val35.read(iprot);
-            struct.personAbsences.put(_key34, _val35);
+            long _key50; // required
+            ReasonOfAbsenceException _val51; // required
+            _key50 = iprot.readI64();
+            _val51 = new ReasonOfAbsenceException();
+            _val51.read(iprot);
+            struct.personAbsences.put(_key50, _val51);
           }
         }
         struct.setPersonAbsencesIsSet(true);

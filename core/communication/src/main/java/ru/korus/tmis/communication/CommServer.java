@@ -23,6 +23,7 @@ import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.communication.QueueTicket;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.exception.NoSuchPatientException;
+import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.schedule.*;
 
 import javax.ejb.EJBException;
@@ -118,7 +119,7 @@ public class CommServer implements Communications.Iface {
     /**
      * Получение списка всех подразделений, относящихся к запрошенному ЛПУ
      *
-     * @param parentId 1) идентификатор подразделения, для которого нужно найти дочернии подразделения
+     * @param parentId  1) идентификатор подразделения, для которого нужно найти дочернии подразделения
      * @param recursive 2) Флаг рекурсии (выбрать также подразделения, входяшие во все дочерние подразделения)
      * @param infisCode 3) Инфис-код
      * @return Список структур, содержащих информацию о дочерних подразделениях
@@ -913,7 +914,7 @@ public class CommServer implements Communications.Iface {
      *
      * @param params Параметры для получения расписания
      * @return map[timestamp, Amb] - карта вида <[Дата приема], [Расписание на эту дату]>,
-     *         в случае отсутствия расписания на указанную дату набор ключ-значение опускается
+     * в случае отсутствия расписания на указанную дату набор ключ-значение опускается
      * @throws NotFoundException когда нету такого идентификатора врача
      */
     @Override
@@ -997,7 +998,20 @@ public class CommServer implements Communications.Iface {
                 try {
                     final Patient requested = patientBean.getPatientById(current);
                     if (requested != null) {
-                        resultMap.put(current, ParserToThriftStruct.parsePatient(requested));
+                        final List<ClientDocument> passports = new ArrayList<ClientDocument>(3);
+                        for (ClientDocument currentDocument : requested.getActiveClientDocuments()) {
+                            if (ConfigManager.codes().getValue("rbDocumentType.passport").equalsIgnoreCase(currentDocument.getDocumentType().getCode())) {
+                                passports.add(currentDocument);
+                            }
+                        }
+                        final List<ClientPolicy> omsPolicies = new ArrayList<ClientPolicy>(3);
+                        logger.debug(ConfigManager.codes().getValueList("rbPolicyType.oms").toString());
+                        for(ClientPolicy currentPolicy : requested.getActiveClientPolicies()){
+                            if(ConfigManager.codes().getValueList("rbPolicyType.oms").contains(currentPolicy.getPolicyType().getCode())){
+                                omsPolicies.add(currentPolicy);
+                            }
+                        }
+                        resultMap.put(current, ParserToThriftStruct.parsePatient(requested, passports, omsPolicies));
                         logger.debug("Add patient ID={},NAME={} {}",
                                 requested.getId(), requested.getFirstName(), requested.getLastName());
                     }
