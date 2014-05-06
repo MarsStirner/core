@@ -1,12 +1,13 @@
 package ru.korus.tmis.pix.sda;
 
+import ru.korus.tmis.core.entity.model.*;
 import com.google.common.collect.Multimap;
 import org.joda.time.DateTime;
 import org.joda.time.Years;
 import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.database.RbMedicalAidProfileBeanLocal;
 import ru.korus.tmis.core.database.RbMedicalAidTypeBeanLocal;
-import ru.korus.tmis.core.entity.model.*;
+
 import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
 
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -138,9 +139,8 @@ public class ServiceInfo {
         final RbMedicalAidType type = action.getEvent().getEventType().getRbMedicalAidType();
         this.servType = type == null ? null : new CodeNameSystem(type.getCode(), type.getName());
 
-        final Integer medicalAidProfileId = service == null ? null : service.getMedicalAidProfileId();
-        final RbMedicalAidProfile profile = medicalAidProfileId == null ? null : rbMedicalAidProfileBean.getProfileById(medicalAidProfileId);
-        this.serviceProfile = (profile == null || medicalAidProfileId == null) ? null : new CodeNameSystem(profile.getCode(), profile.getName());
+        final RbMedicalAidProfile profile = service != null && service.getMedicalAidProfile() == null ? null : service.getMedicalAidProfile();
+        this.serviceProfile = (profile == null) ? null : new CodeNameSystem(profile.getCode(), profile.getName());
     }
 
 

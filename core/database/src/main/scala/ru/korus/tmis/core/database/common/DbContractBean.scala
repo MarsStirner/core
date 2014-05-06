@@ -9,6 +9,7 @@ import scala.collection.JavaConversions._
 import java.util.Date
 import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import java.util
 
 
 /**
@@ -167,6 +168,13 @@ class DbContractBean
         result
       }
     }
+  }
+
+
+  def getContractByOrganisationId(organisationId: Int): util.List[Contract] = {
+    em.createNamedQuery("Contract.findByOrganisationId", classOf[Contract])
+      .setParameter("ORGANISATIONID", organisationId)
+      .getResultList
   }
 
 }

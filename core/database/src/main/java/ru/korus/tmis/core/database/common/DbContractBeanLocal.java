@@ -29,4 +29,11 @@ public interface DbContractBeanLocal {
     Contract getContractForEventType(EventType eventType);
 
     List<Contract> getContractsByEventTypeId(int eventTypeId, int financeId, boolean showDeleted, boolean showExpired);
+
+    /**
+     * Получение списка котрактов, где получателем я вляется заданная организация
+     * @param organisationId  идентификатор организации
+     * @return  список контрактов\ пустой список
+     */
+    List<Contract> getContractByOrganisationId(int organisationId);
 }

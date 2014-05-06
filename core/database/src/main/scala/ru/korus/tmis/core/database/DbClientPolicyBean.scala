@@ -203,4 +203,32 @@ class DbClientPolicyBean
       .setParameter("policyTypeCode", policyTypeCode)
     .executeUpdate()
   }
+
+  val ClientPolicyFindActiveByClientAndTypeQuery =
+    """
+      SELECT p
+      FROM ClientPolicy p
+      WHERE p.patient.id = :patientId
+      AND p.deleted = 0
+      AND p.policyType = :policyType
+    """
+
+  def getActivePoliciesByClientAndType(patientId: Int, policyType: RbPolicyType): util.List[ClientPolicy] = {
+    val result = em.createQuery(ClientPolicyFindActiveByClientAndTypeQuery,
+      classOf[ClientPolicy])
+      .setParameter("patientId", patientId)
+      .setParameter("policyType", policyType)
+      .getResultList
+    result.size match {
+      case 0 => {
+        throw new NoSuchClientPolicyException(
+          ConfigManager.ErrorCodes.ClientPolicyNotFound,
+          patientId,
+          i18n("error.clientPolicyNotFound"))
+      }
+      case size => {
+        result
+      }
+    }
+  }
 }

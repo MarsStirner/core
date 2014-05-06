@@ -49,6 +49,9 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
   private static final org.apache.thrift.protocol.TField PATR_NAME_FIELD_DESC = new org.apache.thrift.protocol.TField("patrName", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField BIRTH_DATE_FIELD_DESC = new org.apache.thrift.protocol.TField("birthDate", org.apache.thrift.protocol.TType.I64, (short)5);
   private static final org.apache.thrift.protocol.TField SEX_FIELD_DESC = new org.apache.thrift.protocol.TField("sex", org.apache.thrift.protocol.TType.I32, (short)6);
+  private static final org.apache.thrift.protocol.TField SNILS_FIELD_DESC = new org.apache.thrift.protocol.TField("snils", org.apache.thrift.protocol.TType.STRING, (short)7);
+  private static final org.apache.thrift.protocol.TField DOCUMENTS_FIELD_DESC = new org.apache.thrift.protocol.TField("documents", org.apache.thrift.protocol.TType.LIST, (short)8);
+  private static final org.apache.thrift.protocol.TField POLICIES_FIELD_DESC = new org.apache.thrift.protocol.TField("policies", org.apache.thrift.protocol.TType.LIST, (short)9);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -62,6 +65,9 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
   public String patrName; // optional
   public long birthDate; // optional
   public int sex; // optional
+  public String snils; // optional
+  public List<Document> documents; // optional
+  public List<Policy> policies; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -70,7 +76,10 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
     FIRST_NAME((short)3, "firstName"),
     PATR_NAME((short)4, "patrName"),
     BIRTH_DATE((short)5, "birthDate"),
-    SEX((short)6, "sex");
+    SEX((short)6, "sex"),
+    SNILS((short)7, "snils"),
+    DOCUMENTS((short)8, "documents"),
+    POLICIES((short)9, "policies");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -97,6 +106,12 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
           return BIRTH_DATE;
         case 6: // SEX
           return SEX;
+        case 7: // SNILS
+          return SNILS;
+        case 8: // DOCUMENTS
+          return DOCUMENTS;
+        case 9: // POLICIES
+          return POLICIES;
         default:
           return null;
       }
@@ -141,7 +156,7 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
   private static final int __BIRTHDATE_ISSET_ID = 1;
   private static final int __SEX_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.LAST_NAME,_Fields.FIRST_NAME,_Fields.PATR_NAME,_Fields.BIRTH_DATE,_Fields.SEX};
+  private _Fields optionals[] = {_Fields.LAST_NAME,_Fields.FIRST_NAME,_Fields.PATR_NAME,_Fields.BIRTH_DATE,_Fields.SEX,_Fields.SNILS,_Fields.DOCUMENTS,_Fields.POLICIES};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -157,6 +172,14 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I64        , "timestamp")));
     tmpMap.put(_Fields.SEX, new org.apache.thrift.meta_data.FieldMetaData("sex", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.I32)));
+    tmpMap.put(_Fields.SNILS, new org.apache.thrift.meta_data.FieldMetaData("snils", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.DOCUMENTS, new org.apache.thrift.meta_data.FieldMetaData("documents", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Document.class))));
+    tmpMap.put(_Fields.POLICIES, new org.apache.thrift.meta_data.FieldMetaData("policies", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
+            new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Policy.class))));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Patient.class, metaDataMap);
   }
@@ -189,6 +212,23 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
     }
     this.birthDate = other.birthDate;
     this.sex = other.sex;
+    if (other.isSetSnils()) {
+      this.snils = other.snils;
+    }
+    if (other.isSetDocuments()) {
+      List<Document> __this__documents = new ArrayList<Document>();
+      for (Document other_element : other.documents) {
+        __this__documents.add(new Document(other_element));
+      }
+      this.documents = __this__documents;
+    }
+    if (other.isSetPolicies()) {
+      List<Policy> __this__policies = new ArrayList<Policy>();
+      for (Policy other_element : other.policies) {
+        __this__policies.add(new Policy(other_element));
+      }
+      this.policies = __this__policies;
+    }
   }
 
   public Patient deepCopy() {
@@ -206,6 +246,9 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
     this.birthDate = 0;
     setSexIsSet(false);
     this.sex = 0;
+    this.snils = null;
+    this.documents = null;
+    this.policies = null;
   }
 
   public int getId() {
@@ -349,6 +392,108 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
     __isset_bitfield = EncodingUtils.setBit(__isset_bitfield, __SEX_ISSET_ID, value);
   }
 
+  public String getSnils() {
+    return this.snils;
+  }
+
+  public Patient setSnils(String snils) {
+    this.snils = snils;
+    return this;
+  }
+
+  public void unsetSnils() {
+    this.snils = null;
+  }
+
+  /** Returns true if field snils is set (has been assigned a value) and false otherwise */
+  public boolean isSetSnils() {
+    return this.snils != null;
+  }
+
+  public void setSnilsIsSet(boolean value) {
+    if (!value) {
+      this.snils = null;
+    }
+  }
+
+  public int getDocumentsSize() {
+    return (this.documents == null) ? 0 : this.documents.size();
+  }
+
+  public java.util.Iterator<Document> getDocumentsIterator() {
+    return (this.documents == null) ? null : this.documents.iterator();
+  }
+
+  public void addToDocuments(Document elem) {
+    if (this.documents == null) {
+      this.documents = new ArrayList<Document>();
+    }
+    this.documents.add(elem);
+  }
+
+  public List<Document> getDocuments() {
+    return this.documents;
+  }
+
+  public Patient setDocuments(List<Document> documents) {
+    this.documents = documents;
+    return this;
+  }
+
+  public void unsetDocuments() {
+    this.documents = null;
+  }
+
+  /** Returns true if field documents is set (has been assigned a value) and false otherwise */
+  public boolean isSetDocuments() {
+    return this.documents != null;
+  }
+
+  public void setDocumentsIsSet(boolean value) {
+    if (!value) {
+      this.documents = null;
+    }
+  }
+
+  public int getPoliciesSize() {
+    return (this.policies == null) ? 0 : this.policies.size();
+  }
+
+  public java.util.Iterator<Policy> getPoliciesIterator() {
+    return (this.policies == null) ? null : this.policies.iterator();
+  }
+
+  public void addToPolicies(Policy elem) {
+    if (this.policies == null) {
+      this.policies = new ArrayList<Policy>();
+    }
+    this.policies.add(elem);
+  }
+
+  public List<Policy> getPolicies() {
+    return this.policies;
+  }
+
+  public Patient setPolicies(List<Policy> policies) {
+    this.policies = policies;
+    return this;
+  }
+
+  public void unsetPolicies() {
+    this.policies = null;
+  }
+
+  /** Returns true if field policies is set (has been assigned a value) and false otherwise */
+  public boolean isSetPolicies() {
+    return this.policies != null;
+  }
+
+  public void setPoliciesIsSet(boolean value) {
+    if (!value) {
+      this.policies = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case ID:
@@ -399,6 +544,30 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
       }
       break;
 
+    case SNILS:
+      if (value == null) {
+        unsetSnils();
+      } else {
+        setSnils((String)value);
+      }
+      break;
+
+    case DOCUMENTS:
+      if (value == null) {
+        unsetDocuments();
+      } else {
+        setDocuments((List<Document>)value);
+      }
+      break;
+
+    case POLICIES:
+      if (value == null) {
+        unsetPolicies();
+      } else {
+        setPolicies((List<Policy>)value);
+      }
+      break;
+
     }
   }
 
@@ -421,6 +590,15 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
 
     case SEX:
       return Integer.valueOf(getSex());
+
+    case SNILS:
+      return getSnils();
+
+    case DOCUMENTS:
+      return getDocuments();
+
+    case POLICIES:
+      return getPolicies();
 
     }
     throw new IllegalStateException();
@@ -445,6 +623,12 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
       return isSetBirthDate();
     case SEX:
       return isSetSex();
+    case SNILS:
+      return isSetSnils();
+    case DOCUMENTS:
+      return isSetDocuments();
+    case POLICIES:
+      return isSetPolicies();
     }
     throw new IllegalStateException();
   }
@@ -513,6 +697,33 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
       if (!(this_present_sex && that_present_sex))
         return false;
       if (this.sex != that.sex)
+        return false;
+    }
+
+    boolean this_present_snils = true && this.isSetSnils();
+    boolean that_present_snils = true && that.isSetSnils();
+    if (this_present_snils || that_present_snils) {
+      if (!(this_present_snils && that_present_snils))
+        return false;
+      if (!this.snils.equals(that.snils))
+        return false;
+    }
+
+    boolean this_present_documents = true && this.isSetDocuments();
+    boolean that_present_documents = true && that.isSetDocuments();
+    if (this_present_documents || that_present_documents) {
+      if (!(this_present_documents && that_present_documents))
+        return false;
+      if (!this.documents.equals(that.documents))
+        return false;
+    }
+
+    boolean this_present_policies = true && this.isSetPolicies();
+    boolean that_present_policies = true && that.isSetPolicies();
+    if (this_present_policies || that_present_policies) {
+      if (!(this_present_policies && that_present_policies))
+        return false;
+      if (!this.policies.equals(that.policies))
         return false;
     }
 
@@ -592,6 +803,36 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetSnils()).compareTo(typedOther.isSetSnils());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetSnils()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.snils, typedOther.snils);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetDocuments()).compareTo(typedOther.isSetDocuments());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetDocuments()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.documents, typedOther.documents);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetPolicies()).compareTo(typedOther.isSetPolicies());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetPolicies()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.policies, typedOther.policies);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -655,6 +896,36 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
       if (!first) sb.append(", ");
       sb.append("sex:");
       sb.append(this.sex);
+      first = false;
+    }
+    if (isSetSnils()) {
+      if (!first) sb.append(", ");
+      sb.append("snils:");
+      if (this.snils == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.snils);
+      }
+      first = false;
+    }
+    if (isSetDocuments()) {
+      if (!first) sb.append(", ");
+      sb.append("documents:");
+      if (this.documents == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.documents);
+      }
+      first = false;
+    }
+    if (isSetPolicies()) {
+      if (!first) sb.append(", ");
+      sb.append("policies:");
+      if (this.policies == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.policies);
+      }
       first = false;
     }
     sb.append(")");
@@ -751,6 +1022,52 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 7: // SNILS
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.snils = iprot.readString();
+              struct.setSnilsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 8: // DOCUMENTS
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
+                struct.documents = new ArrayList<Document>(_list8.size);
+                for (int _i9 = 0; _i9 < _list8.size; ++_i9)
+                {
+                  Document _elem10; // required
+                  _elem10 = new Document();
+                  _elem10.read(iprot);
+                  struct.documents.add(_elem10);
+                }
+                iprot.readListEnd();
+              }
+              struct.setDocumentsIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 9: // POLICIES
+            if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
+              {
+                org.apache.thrift.protocol.TList _list11 = iprot.readListBegin();
+                struct.policies = new ArrayList<Policy>(_list11.size);
+                for (int _i12 = 0; _i12 < _list11.size; ++_i12)
+                {
+                  Policy _elem13; // required
+                  _elem13 = new Policy();
+                  _elem13.read(iprot);
+                  struct.policies.add(_elem13);
+                }
+                iprot.readListEnd();
+              }
+              struct.setPoliciesIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -803,6 +1120,41 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
         oprot.writeI32(struct.sex);
         oprot.writeFieldEnd();
       }
+      if (struct.snils != null) {
+        if (struct.isSetSnils()) {
+          oprot.writeFieldBegin(SNILS_FIELD_DESC);
+          oprot.writeString(struct.snils);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.documents != null) {
+        if (struct.isSetDocuments()) {
+          oprot.writeFieldBegin(DOCUMENTS_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.documents.size()));
+            for (Document _iter14 : struct.documents)
+            {
+              _iter14.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.policies != null) {
+        if (struct.isSetPolicies()) {
+          oprot.writeFieldBegin(POLICIES_FIELD_DESC);
+          {
+            oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.policies.size()));
+            for (Policy _iter15 : struct.policies)
+            {
+              _iter15.write(oprot);
+            }
+            oprot.writeListEnd();
+          }
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -837,7 +1189,16 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
       if (struct.isSetSex()) {
         optionals.set(4);
       }
-      oprot.writeBitSet(optionals, 5);
+      if (struct.isSetSnils()) {
+        optionals.set(5);
+      }
+      if (struct.isSetDocuments()) {
+        optionals.set(6);
+      }
+      if (struct.isSetPolicies()) {
+        optionals.set(7);
+      }
+      oprot.writeBitSet(optionals, 8);
       if (struct.isSetLastName()) {
         oprot.writeString(struct.lastName);
       }
@@ -853,6 +1214,27 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
       if (struct.isSetSex()) {
         oprot.writeI32(struct.sex);
       }
+      if (struct.isSetSnils()) {
+        oprot.writeString(struct.snils);
+      }
+      if (struct.isSetDocuments()) {
+        {
+          oprot.writeI32(struct.documents.size());
+          for (Document _iter16 : struct.documents)
+          {
+            _iter16.write(oprot);
+          }
+        }
+      }
+      if (struct.isSetPolicies()) {
+        {
+          oprot.writeI32(struct.policies.size());
+          for (Policy _iter17 : struct.policies)
+          {
+            _iter17.write(oprot);
+          }
+        }
+      }
     }
 
     @Override
@@ -860,7 +1242,7 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
       TTupleProtocol iprot = (TTupleProtocol) prot;
       struct.id = iprot.readI32();
       struct.setIdIsSet(true);
-      BitSet incoming = iprot.readBitSet(5);
+      BitSet incoming = iprot.readBitSet(8);
       if (incoming.get(0)) {
         struct.lastName = iprot.readString();
         struct.setLastNameIsSet(true);
@@ -880,6 +1262,38 @@ public class Patient implements org.apache.thrift.TBase<Patient, Patient._Fields
       if (incoming.get(4)) {
         struct.sex = iprot.readI32();
         struct.setSexIsSet(true);
+      }
+      if (incoming.get(5)) {
+        struct.snils = iprot.readString();
+        struct.setSnilsIsSet(true);
+      }
+      if (incoming.get(6)) {
+        {
+          org.apache.thrift.protocol.TList _list18 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.documents = new ArrayList<Document>(_list18.size);
+          for (int _i19 = 0; _i19 < _list18.size; ++_i19)
+          {
+            Document _elem20; // required
+            _elem20 = new Document();
+            _elem20.read(iprot);
+            struct.documents.add(_elem20);
+          }
+        }
+        struct.setDocumentsIsSet(true);
+      }
+      if (incoming.get(7)) {
+        {
+          org.apache.thrift.protocol.TList _list21 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.policies = new ArrayList<Policy>(_list21.size);
+          for (int _i22 = 0; _i22 < _list21.size; ++_i22)
+          {
+            Policy _elem23; // required
+            _elem23 = new Policy();
+            _elem23.read(iprot);
+            struct.policies.add(_elem23);
+          }
+        }
+        struct.setPoliciesIsSet(true);
       }
     }
   }

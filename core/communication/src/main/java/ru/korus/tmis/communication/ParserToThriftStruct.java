@@ -11,6 +11,8 @@ import ru.korus.tmis.core.entity.model.communication.QueueTicket;
 import ru.korus.tmis.schedule.*;
 import ru.korus.tmis.schedule.Ticket;
 
+import java.util.List;
+
 
 /**
  * User: EUpatov<br>
@@ -39,8 +41,44 @@ public final class ParserToThriftStruct {
                 .setPatrName(item.getPatrName())
                 .setSex(item.getSex())
                 .setBirthDate(DateConvertions.convertDateToUTCMilliseconds(item.getBirthDate()))
+                .setSnils(item.getSnils())
                 .setId(item.getId());
         return result;
+    }
+
+    public static ru.korus.tmis.communication.thriftgen.Patient parsePatient(Patient item, List<ClientDocument> documents, List<ClientPolicy> policies) {
+        final ru.korus.tmis.communication.thriftgen.Patient result = parsePatient(item);
+        if (result != null) {
+            for (ClientDocument current : documents) {
+                result.addToDocuments(parseDocument(current));
+            }
+            for(ClientPolicy current: policies){
+                result.addToPolicies(parsePolicy(current));
+            }
+        }
+        return result;
+    }
+
+    private static Policy parsePolicy(ClientPolicy item) {
+        if(item != null){
+            final Policy result = new Policy();
+            result.setNumber(item.getNumber());
+            result.setSerial(item.getSerial());
+            result.setTypeCode(item.getPolicyType().getCode());
+            return result;
+        }
+        return null;
+    }
+
+    private static Document parseDocument(ClientDocument item) {
+        if(item != null){
+            final Document result = new Document();
+            result.setNumber(item.getNumber());
+            result.setSerial(item.getSerial());
+            result.setTypeCode(item.getDocumentType().getCode());
+            return result;
+        }
+        return null;
     }
 
     public static ru.korus.tmis.communication.thriftgen.OrgStructure parseOrgStructure(final ru.korus.tmis.core.entity.model.OrgStructure item) {
@@ -96,7 +134,7 @@ public final class ParserToThriftStruct {
         if (item.getPost() != null) {
             result.setPost(item.getPost().getName());
         }
-        if(item.getSnils() != null){
+        if (item.getSnils() != null) {
             result.setSnils(item.getSnils());
         }
         return result;
@@ -238,4 +276,6 @@ public final class ParserToThriftStruct {
                 .setFirstFlat(orgStructureAddress.getFirstFlat())
                 .setLastFlat(orgStructureAddress.getLastFlat());
     }
+
+
 }

@@ -840,14 +840,14 @@ public class Schedule implements org.apache.thrift.TBase<Schedule, Schedule._Fie
           case 6: // TICKETS
             if (schemeField.type == org.apache.thrift.protocol.TType.LIST) {
               {
-                org.apache.thrift.protocol.TList _list8 = iprot.readListBegin();
-                struct.tickets = new ArrayList<TTicket>(_list8.size);
-                for (int _i9 = 0; _i9 < _list8.size; ++_i9)
+                org.apache.thrift.protocol.TList _list24 = iprot.readListBegin();
+                struct.tickets = new ArrayList<TTicket>(_list24.size);
+                for (int _i25 = 0; _i25 < _list24.size; ++_i25)
                 {
-                  TTicket _elem10; // required
-                  _elem10 = new TTicket();
-                  _elem10.read(iprot);
-                  struct.tickets.add(_elem10);
+                  TTicket _elem26; // required
+                  _elem26 = new TTicket();
+                  _elem26.read(iprot);
+                  struct.tickets.add(_elem26);
                 }
                 iprot.readListEnd();
               }
@@ -917,9 +917,9 @@ public class Schedule implements org.apache.thrift.TBase<Schedule, Schedule._Fie
           oprot.writeFieldBegin(TICKETS_FIELD_DESC);
           {
             oprot.writeListBegin(new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, struct.tickets.size()));
-            for (TTicket _iter11 : struct.tickets)
+            for (TTicket _iter27 : struct.tickets)
             {
-              _iter11.write(oprot);
+              _iter27.write(oprot);
             }
             oprot.writeListEnd();
           }
@@ -970,9 +970,9 @@ public class Schedule implements org.apache.thrift.TBase<Schedule, Schedule._Fie
       if (struct.isSetTickets()) {
         {
           oprot.writeI32(struct.tickets.size());
-          for (TTicket _iter12 : struct.tickets)
+          for (TTicket _iter28 : struct.tickets)
           {
-            _iter12.write(oprot);
+            _iter28.write(oprot);
           }
         }
       }
@@ -1000,14 +1000,14 @@ public class Schedule implements org.apache.thrift.TBase<Schedule, Schedule._Fie
       }
       if (incoming.get(2)) {
         {
-          org.apache.thrift.protocol.TList _list13 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
-          struct.tickets = new ArrayList<TTicket>(_list13.size);
-          for (int _i14 = 0; _i14 < _list13.size; ++_i14)
+          org.apache.thrift.protocol.TList _list29 = new org.apache.thrift.protocol.TList(org.apache.thrift.protocol.TType.STRUCT, iprot.readI32());
+          struct.tickets = new ArrayList<TTicket>(_list29.size);
+          for (int _i30 = 0; _i30 < _list29.size; ++_i30)
           {
-            TTicket _elem15; // required
-            _elem15 = new TTicket();
-            _elem15.read(iprot);
-            struct.tickets.add(_elem15);
+            TTicket _elem31; // required
+            _elem31 = new TTicket();
+            _elem31.read(iprot);
+            struct.tickets.add(_elem31);
           }
         }
         struct.setTicketsIsSet(true);

@@ -78,7 +78,7 @@ class DbActionBean
       case 0 => {
         throw new CoreException(
           ConfigManager.ErrorCodes.ActionNotFound,
-          i18n("error.actionNotFound") + " id:[" + id + "]")
+          i18n("error.actionNotFound") + " id = " + id)
       }
       case size => {
         result.iterator.next()

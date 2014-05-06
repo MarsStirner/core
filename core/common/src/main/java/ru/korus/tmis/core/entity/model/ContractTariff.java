@@ -3,17 +3,7 @@ package ru.korus.tmis.core.entity.model;
 import java.io.Serializable;
 import java.util.Date;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -21,7 +11,9 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "Contract_Tariff")
 @NamedQueries(
         {
-                @NamedQuery(name = "ContractTariff.findAll", query = "SELECT ct FROM ContractTariff ct")
+                @NamedQuery(name = "ContractTariff.findAll", query = "SELECT ct FROM ContractTariff ct"),
+                @NamedQuery(name = "ContractTariff.removeBeforeDate",
+                        query = "DELETE FROM ContractTariff ct WHERE ct.endDate < :removeDate")
         })
 @XmlType(name = "service")
 @XmlRootElement(name = "service")
@@ -38,70 +30,94 @@ public class ContractTariff
     @Column(name = "deleted")
     private short deleted;
 
-    @Column(name = "master_id" )
+    @Column(name = "master_id")
     private Integer masterId;
 
-    @Column(name = "eventType_id" )
+    @Column(name = "eventType_id")
     private Integer eventTypeId;
 
-    @Column(name = "tariffType" )
+    @Column(name = "tariffType")
     private short tariffType;
 
-    @Column(name = "service_id" )
-    private Integer serviceId;
+    @ManyToOne
+    @JoinColumn(name = "service_id")
+    private RbService service;
 
-    @Column(name = "tariffCategory_id" )
+    @Column(name = "tariffCategory_id")
     private Integer tariffCategoryId;
 
-    @Column(name = "begDate" )
+    @Column(name = "begDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date begDate;
 
-    @Column(name = "endDate" )
+    @Column(name = "endDate")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
 
-    @Column(name = "sex" )
+    @Column(name = "sex")
     private short sex;
 
-    @Column(name = "age" )
+    @Column(name = "age")
     private String age;
 
-    @Column(name = "age_bu" )
+    @Column(name = "age_bu")
     private short ageBu;
 
-    @Column(name = "age_bc" )
+    @Column(name = "age_bc")
     private short ageBc;
 
-    @Column(name = "age_eu" )
+    @Column(name = "age_eu")
     private short ageEu;
 
-    @Column(name = "age_ec" )
+    @Column(name = "age_ec")
     private short ageEc;
 
-    @Column(name = "unit_id" )
-    private Integer unitId;
+    @ManyToOne
+    @JoinColumn(name = "unit_id")
+    private RbMedicalAidUnit unit;
 
-    @Column(name = "amount" )
+    @Column(name = "amount")
     private double amount;
 
-    @Column(name = "uet" )
+    @Column(name = "uet")
     private double uet;
 
-    @Column(name = "price" )
+    @Column(name = "price")
     private double price;
 
-    @Column(name = "limitationExceedMode" )
-    private Integer limitationExceedMode;
+    @Column(name = "limitationExceedMode")
+    private int limitationExceedMode;
 
-    @Column(name = "limitation" )
+    @Column(name = "limitation")
     private double limitation;
 
-    @Column(name = "priceEx" )
+    @Column(name = "priceEx")
     private double priceEx;
 
-    @Column(name = "MKB" )
+    @Column(name = "MKB")
     private String mkb;
+
+    @ManyToOne
+    @JoinColumn(name = "rbServiceFinance_id")
+    private RbServiceFinance serviceFinance;
+
+    @Basic(optional = false)
+    @Column(name = "createDatetime")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date createDatetime;
+
+    @ManyToOne
+    @JoinColumn(name = "createPerson_id")
+    private Staff createPerson;
+
+    @Basic(optional = false)
+    @Column(name = "modifyDatetime")
+    @Temporal(TemporalType.TIMESTAMP)
+    private Date modifyDatetime;
+
+    @ManyToOne
+    @JoinColumn(name = "modifyPerson_id")
+    private Staff modifyPerson;
 
     public Integer getId() {
         return id;
@@ -143,12 +159,12 @@ public class ContractTariff
         this.tariffType = tariffType;
     }
 
-    public Integer getServiceId() {
-        return serviceId;
+    public RbService getService() {
+        return service;
     }
 
-    public void setServiceId(Integer serviceId) {
-        this.serviceId = serviceId;
+    public void setService(RbService service) {
+        this.service = service;
     }
 
     public Integer getTariffCategoryId() {
@@ -223,12 +239,12 @@ public class ContractTariff
         this.ageEc = ageEc;
     }
 
-    public Integer getUnitId() {
-        return unitId;
+    public RbMedicalAidUnit getUnit() {
+        return unit;
     }
 
-    public void setUnitId(Integer unitId) {
-        this.unitId = unitId;
+    public void setUnit(RbMedicalAidUnit unit) {
+        this.unit = unit;
     }
 
     public double getAmount() {
@@ -287,6 +303,46 @@ public class ContractTariff
         this.mkb = mkb;
     }
 
+    public RbServiceFinance getServiceFinance() {
+        return serviceFinance;
+    }
+
+    public void setServiceFinance(RbServiceFinance serviceFinance) {
+        this.serviceFinance = serviceFinance;
+    }
+
+    public Date getCreateDatetime() {
+        return createDatetime;
+    }
+
+    public void setCreateDatetime(Date createDatetime) {
+        this.createDatetime = createDatetime;
+    }
+
+    public Staff getCreatePerson() {
+        return createPerson;
+    }
+
+    public void setCreatePerson(Staff createPerson) {
+        this.createPerson = createPerson;
+    }
+
+    public Date getModifyDatetime() {
+        return modifyDatetime;
+    }
+
+    public void setModifyDatetime(Date modifyDatetime) {
+        this.modifyDatetime = modifyDatetime;
+    }
+
+    public Staff getModifyPerson() {
+        return modifyPerson;
+    }
+
+    public void setModifyPerson(Staff modifyPerson) {
+        this.modifyPerson = modifyPerson;
+    }
+
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
@@ -317,4 +373,24 @@ public class ContractTariff
     public Object clone() throws CloneNotSupportedException {
         return super.clone();
     }
+
+    public String getInfo() {
+        StringBuilder info = new StringBuilder("ContractTariff[id=").append(id != null ? id : -1)
+                .append(", master_id=").append(masterId)
+                .append(", eventType=").append(eventTypeId)
+                .append(", tariffType=").append(tariffType)
+                .append(", service=").append(service != null ? service.getId() : "NULL")
+                .append(", begDate=").append(begDate)
+                .append(", endDate=").append(endDate)
+                .append(", sex=").append(sex)
+                .append(", age=").append(age)
+                .append(", unit=").append(unit != null ? unit.getId() : "NULL")
+                .append(", amount=").append(amount)
+                .append(", uet=").append(uet)
+                .append(", price=").append(price)
+                .append(", amount=").append(amount)
+                .append(", mkb=").append(mkb)
+                .append(", serviceFinance_id = ").append(serviceFinance != null ? serviceFinance.getId(): "NULL")
+                .append("]");
+        return info.toString();    }
 }
