@@ -17,7 +17,7 @@ import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.patient._
 import scala.collection.JavaConversions._
 import com.google.common.collect.Lists
-import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.Cookie
 import scala.Predef._
 
 import ru.korus.tmis.scala.util._
@@ -1469,8 +1469,8 @@ class WebMisRESTImpl  extends WebMisREST
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________
 
-  def checkTokenCookies(srvletRequest: HttpServletRequest) = {
-    authStorage.checkTokenCookies(srvletRequest)
+  def checkTokenCookies(cookies: lang.Iterable[Cookie]) = {
+    authStorage.checkTokenCookies(cookies)
   }
 
   def getStorageAuthData(token: AuthToken) = {

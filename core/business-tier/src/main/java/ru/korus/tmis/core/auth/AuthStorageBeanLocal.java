@@ -7,7 +7,7 @@ import ru.korus.tmis.core.exception.NoSuchUserException;
 import java.util.Date;
 import java.util.Set;
 import javax.ejb.Local;
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Cookie;
 
 @Local
 public interface AuthStorageBeanLocal {
@@ -59,7 +59,13 @@ public interface AuthStorageBeanLocal {
     Date getAuthDateTime(AuthToken token)
             throws CoreException;
 
-    AuthData checkTokenCookies(HttpServletRequest srvletRequest)
+    /**
+     * Проверка аутентификации
+     * @param cookies Cookies, передаваемые в запросе
+     * @return Данные аутентификации пользователя
+     * @throws CoreException
+     */
+    AuthData checkTokenCookies(Iterable<Cookie> cookies)
            throws CoreException;//AuthenticationException
 
     void timeoutHandler();

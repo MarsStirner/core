@@ -13,6 +13,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Базовый класс для registry REST-сервисов
@@ -101,7 +102,7 @@ public class BaseRegistryRESTImpl implements Serializable {
        if(TEST_MODE && token!=null && !token.isEmpty()) { //Тестовый режим
          return wsImpl.getStorageAuthData(new AuthToken(token));
        } else { //Боевой режим
-         return this.wsImpl.checkTokenCookies(this.servRequest);
+         return this.wsImpl.checkTokenCookies(Arrays.asList(this.servRequest.getCookies()));
        }
     }
 

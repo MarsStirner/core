@@ -9,12 +9,13 @@ import javax.ejb._
 import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
-import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.Cookie
 import scala.None
 import ru.korus.tmis.core.exception.{AuthenticationException, NoSuchUserException}
 import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import java.util
+import java.lang
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
@@ -151,15 +152,15 @@ class AuthStorageBean
     )
   }
 
-  def checkTokenCookies(srvletRequest: HttpServletRequest): AuthData = {
+  def checkTokenCookies(cookies: lang.Iterable[Cookie]): AuthData = {
     //проверим, пришли ли куки
-    val cookiesArray = srvletRequest.getCookies //srvletRequest
-    if (cookiesArray == null) {
+    if (cookies == null) {
       error("No authentication data found")
       throw new AuthenticationException(
         ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
         i18n("error.invalidToken"))
     }
+    val cookiesArray = cookies.toArray
 
     var token: String = null
     for (i <- 0 to cookiesArray.length - 1) {
