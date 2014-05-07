@@ -18,7 +18,11 @@ public enum PharmacyStatus {
     /**
      * При передаче пакета случилась ошибка
      */
-    ERROR("error");
+    ERROR("error"),
+    /**
+     * Изменение сведений о госпитализации
+     */
+    RESEND("resend");
 
     private String status;
 

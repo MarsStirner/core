@@ -37,6 +37,12 @@ public final class HL7PacketBuilder {
     private static final org.hl7.v3.ObjectFactory FACTORY_HL7 = new org.hl7.v3.ObjectFactory();
     private static final String DATE_FORMAT = "yyyyMMdd";
     private static final String DATETIME_FORMAT = "yyyyMMddHHmmss";
+    private static final String XML_1_0 = "XML_1.0";
+    private static final String AL = "AL";
+    private static final String ROOT_INTERACTION_ID = "2.16.840.1.113883.1.18";
+    private static final String PROCESSING_CODE_P = "P";
+    private static final String PROCESSING_MODE_T = "T";
+    private static final String STATUS_COMPLETED = "completed";
 
 
     private static boolean isTestMode = false;  //TODO: убрать!
@@ -68,14 +74,13 @@ public final class HL7PacketBuilder {
         final Request request = FACTORY_MIS.createPRPAIN402001UV02();
 
         final PRPAIN402001UV022 prpain402001UV022 = FACTORY_HL7.createPRPAIN402001UV022();
-        prpain402001UV022.setITSVersion("XML_1.0");
-        prpain402001UV022.setCreationTime(createTS(action.getCreateDatetime(),
-                DATETIME_FORMAT));
-        prpain402001UV022.setAcceptAckCode(createCS("AL"));
+        prpain402001UV022.setITSVersion(XML_1_0);
+        prpain402001UV022.setCreationTime(createTS(action.getCreateDatetime(),DATETIME_FORMAT));
+        prpain402001UV022.setAcceptAckCode(createCS(AL));
         prpain402001UV022.setId(createII(uuidDocument));
-        prpain402001UV022.setInteractionId(createII("2.16.840.1.113883.1.18", "PRPA_IN402001UV02"));
-        prpain402001UV022.setProcessingCode(createCS("P"));
-        prpain402001UV022.setProcessingModeCode(createCS("T"));
+        prpain402001UV022.setInteractionId(createII(ROOT_INTERACTION_ID, "PRPA_IN402001UV02"));
+        prpain402001UV022.setProcessingCode(createCS(PROCESSING_CODE_P));
+        prpain402001UV022.setProcessingModeCode(createCS(PROCESSING_MODE_T));
         prpain402001UV022.setSender(createSender());
         prpain402001UV022.getReceiver().add(createReceiver());
 
@@ -92,10 +97,9 @@ public final class HL7PacketBuilder {
 
         inpatientEncounterEvent.getId().add(createII(uuidExternalId, externalId));
         inpatientEncounterEvent.getId().add(createIIEx(financeId));
-        inpatientEncounterEvent.setCode(createCD("IMP", "2.16.840.1.113883.5.4", "actCode", "abc"));
-        inpatientEncounterEvent.setStatusCode(createCS("completed"));
+        inpatientEncounterEvent.setCode(createEncounterCode());
+        inpatientEncounterEvent.setStatusCode(createCS(STATUS_COMPLETED));
         inpatientEncounterEvent.setEffectiveTime(createIVLTS(action.getCreateDatetime(), DATE_FORMAT));
-//        inpatientEncounterEvent.setLengthOfStayQuantity(createPQ("5", "d"));
 
         final PRPAMT402001UV02Subject subject = FACTORY_HL7.createPRPAMT402001UV02Subject();
         subject.setTypeCode(ParticipationTargetSubject.SBJ);
@@ -141,6 +145,99 @@ public final class HL7PacketBuilder {
 
         ((misexchange.PRPAIN402001UV02) request).setMessage(prpain402001UV022);
         return request;
+    }
+
+    /**
+     * Формирование и отправка сообщения о изменение сведений о госпитализации PRPA_IN402002UV02
+     */
+    public static Request processUpdateReceived(final Action action, final OrgStructure orgStructure, final String financeId) {
+
+        final Event event = action.getEvent();
+        final Patient client = event.getPatient();
+        final String uuidExternalId = event.getUuid().getUuid();
+        final String externalId = event.getExternalId();
+        final String uuidDocument = UUID.randomUUID().toString();
+        final String uuidOrgStructure = orgStructure.getUuid().getUuid();
+        final String uuidClient = client.getUuid().getUuid();
+
+        final Request request = FACTORY_MIS.createPRPAIN402001UV02();
+
+        final PRPAIN402002UV022 prpain402002UV022 = FACTORY_HL7.createPRPAIN402002UV022();
+        prpain402002UV022.setITSVersion(XML_1_0);
+        prpain402002UV022.setCreationTime(createTS(action.getCreateDatetime(), DATETIME_FORMAT));
+        prpain402002UV022.setAcceptAckCode(createCS(AL));
+        prpain402002UV022.setId(createII(uuidDocument));
+        prpain402002UV022.setInteractionId(createII(ROOT_INTERACTION_ID, "PRPA_IN402002UV02"));
+        prpain402002UV022.setProcessingCode(createCS(PROCESSING_CODE_P));
+        prpain402002UV022.setProcessingModeCode(createCS(PROCESSING_MODE_T));
+        prpain402002UV022.setSender(createSender());
+        prpain402002UV022.getReceiver().add(createReceiver());
+
+        final PRPAIN402002UV02MCAIMT700201UV01ControlActProcess controlActProcess = FACTORY_HL7.createPRPAIN402002UV02MCAIMT700201UV01ControlActProcess();
+        controlActProcess.setClassCode(ActClassControlAct.CACT);
+        controlActProcess.setMoodCode(XActMoodIntentEvent.EVN);
+
+        final PRPAIN402002UV02MCAIMT700201UV01Subject2 subject2 = FACTORY_HL7.createPRPAIN402002UV02MCAIMT700201UV01Subject2();
+        subject2.setTypeCode(ActRelationshipHasSubject.SUBJ);
+
+        final PRPAMT402002UV02InpatientEncounterEvent inpatientEncounterEvent = FACTORY_HL7.createPRPAMT402002UV02InpatientEncounterEvent();
+        inpatientEncounterEvent.setClassCode(ActClassEncounter.ENC);
+        inpatientEncounterEvent.setMoodCode(ActMoodEventOccurrence.EVN);
+
+        inpatientEncounterEvent.getId().add(createII(uuidExternalId, externalId));
+        inpatientEncounterEvent.getId().add(createIIEx(financeId));
+        inpatientEncounterEvent.setCode(createEncounterCode());
+        inpatientEncounterEvent.setStatusCode(createCS(STATUS_COMPLETED));
+        inpatientEncounterEvent.setEffectiveTime(createIVLTS(action.getCreateDatetime(), DATE_FORMAT));
+
+        final PRPAMT402002UV02Subject subject = FACTORY_HL7.createPRPAMT402002UV02Subject();
+        subject.setTypeCode(ParticipationTargetSubject.SBJ);
+        subject.setContextControlCode(ContextControl.OP);
+        final COCTMT050002UV07Patient patient = FACTORY_HL7.createCOCTMT050002UV07Patient();
+        patient.setClassCode(RoleClassPatient.PAT);
+        patient.getId().add(createCS(uuidClient));
+        patient.setPatientPerson(createPerson(client));
+        subject.setPatient(patient);
+        inpatientEncounterEvent.setSubject(subject);
+        final PRPAMT402002UV02Admitter admitter = FACTORY_HL7.createPRPAMT402002UV02Admitter();
+        admitter.setNullFlavor(NullFlavor.NI);
+        admitter.setTypeCode(ParticipationAdmitter.ADM);
+        final IVLTS time = FACTORY_HL7.createIVLTS();
+        time.setNullFlavor(NullFlavor.NI);
+        admitter.setTime(time);
+
+        final COCTMT090100UV01AssignedPerson assignedPerson = FACTORY_HL7.createCOCTMT090100UV01AssignedPerson();
+        assignedPerson.setClassCode(RoleClassAssignedEntity.ASSIGNED);
+        admitter.setAssignedPerson(assignedPerson);
+
+        inpatientEncounterEvent.setAdmitter(admitter);
+
+        final PRPAMT402002UV02Location1 uv02Location1 = FACTORY_HL7.createPRPAMT402002UV02Location1();
+        uv02Location1.setTypeCode(ParticipationTargetLocation.LOC);
+        uv02Location1.setTime(time);
+        final CS statusCode1 = FACTORY_HL7.createCS();
+        statusCode1.setCode("active");
+        uv02Location1.setStatusCode(statusCode1);
+
+        final PRPAMT402002UV02ServiceDeliveryLocation deliveryLocation = FACTORY_HL7.createPRPAMT402002UV02ServiceDeliveryLocation();
+        deliveryLocation.setClassCode(RoleClassServiceDeliveryLocation.SDLOC);
+        final II typeId4 = FACTORY_HL7.createII();
+        typeId4.setRoot(uuidOrgStructure);
+        deliveryLocation.getId().add(typeId4);
+        uv02Location1.setServiceDeliveryLocation(deliveryLocation);
+
+        inpatientEncounterEvent.getLocation().add(uv02Location1);
+
+        subject2.setInpatientEncounterEvent(inpatientEncounterEvent);
+        controlActProcess.getSubject().add(subject2);
+        prpain402002UV022.setControlActProcess(controlActProcess);
+
+        ((misexchange.PRPAIN402002UV02) request).setMessage(prpain402002UV022);
+        return request;
+    }
+
+    private static CD createEncounterCode() {
+        return createCD("IMP", "2.16.840.1.113883.5.4", "actCode", "abc");
     }
 
     /**
@@ -1086,11 +1183,10 @@ public final class HL7PacketBuilder {
             person.getId().add(createIIEx(client.getSnils()));
         }
         person.getName().add(createPN(client));
-        person.setAdministrativeGenderCode(createCE("M", "2.16.840.1.113883.5.1"));
+        person.setAdministrativeGenderCode(createCE(client.getSex() == 1 ? "M" : "F", "2.16.840.1.113883.5.1"));
         person.setBirthTime(createTS(client.getBirthDate(), "YYYYddMM"));
         patientPerson.setValue(person);
         return patientPerson;
-
     }
 
 }

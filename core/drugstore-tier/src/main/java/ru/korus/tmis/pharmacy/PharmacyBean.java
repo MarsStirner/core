@@ -159,7 +159,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // сохранение данных об отправке
             pharmacy = dbPharmacy.getOrCreate(action);
             // формирование сообщения для отправки
-            final Request request = createRequest(action, toLog);
+            final Request request = createRequest(action, pharmacy.getStatus(), toLog);
 
             toLog.addN("prepare message... \n\n #", HL7PacketBuilder.marshallMessage(request, "misexchange"));
             // отправка сообщения в 1С
@@ -242,15 +242,22 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Создание объектной модели сообщения для 1С Аптеки в соответсвии с типом сообщения
      *
+     *
      * @param action событие на основе которого отправляется сообщение в 1С Аптеку
+     * @param status
      * @return возвращает класс готовый к отправке в 1С Аптеку
      * @throws MessageProcessException проблемы при создании сообщения
      */
-    public Request createRequest(final Action action, final ToLog toLog)
+    public Request createRequest(final Action action, PharmacyStatus status, final ToLog toLog)
             throws MessageProcessException, SkipMessageProcessException, NoSuchOrgStructureException {
 
         final ActionType actionType = action.getActionType();
 
+        if(status == PharmacyStatus.RESEND) {
+            final OrgStructure structure = getReceivedOrgStructure(action);
+            toLog.addN("receive orgStructure [#], [#]", structure.getId(), structure.getName());
+            return HL7PacketBuilder.processUpdateReceived(action, structure, getFinaceType(action));
+        }
         if (FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             final OrgStructure structure = getReceivedOrgStructure(action);
             toLog.addN("receive orgStructure [#], [#]", structure.getId(), structure.getName());
