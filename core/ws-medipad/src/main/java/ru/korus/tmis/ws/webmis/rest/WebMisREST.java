@@ -7,7 +7,7 @@ import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.entity.model.RbPrintTemplate;
 import ru.korus.tmis.core.exception.CoreException;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.Cookie;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -419,7 +419,12 @@ public interface WebMisREST extends Serializable {
      */
     OrganizationContainer getOrganizationById(int id, AuthData authData) throws CoreException;
 
-    AuthData checkTokenCookies(HttpServletRequest srvletRequest);
+    /**
+     * Проверка аутентификации
+     * @param cookies Cookies, передаваемые в запросе
+     * @return Данные аутентификации пользователя
+     */
+    AuthData checkTokenCookies(Iterable<Cookie> cookies);
 
     AuthData getStorageAuthData(AuthToken token);
 
@@ -427,7 +432,6 @@ public interface WebMisREST extends Serializable {
      * Пометить action как удаленный
      *
      * @param actionId Идентификатор удаляемого действия
-     * @return false если удаление не удалось и true  случае успеха
      */
     void removeAction(int actionId) throws CoreException;
 
