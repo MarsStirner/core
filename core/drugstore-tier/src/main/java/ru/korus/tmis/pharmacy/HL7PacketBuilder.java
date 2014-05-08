@@ -160,7 +160,7 @@ public final class HL7PacketBuilder {
         final String uuidOrgStructure = orgStructure.getUuid().getUuid();
         final String uuidClient = client.getUuid().getUuid();
 
-        final Request request = FACTORY_MIS.createPRPAIN402001UV02();
+        final Request request = FACTORY_MIS.createPRPAIN402002UV02();
 
         final PRPAIN402002UV022 prpain402002UV022 = FACTORY_HL7.createPRPAIN402002UV022();
         prpain402002UV022.setITSVersion(XML_1_0);
