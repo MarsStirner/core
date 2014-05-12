@@ -27,3 +27,4 @@ INSERT INTO `Event`
   (841695, '2014-03-05 15:44:43', 37, '2014-03-05 15:44:44', 37, 0, '2014/474', 2, NULL, 2, 61, NULL, '2014-03-05 15:44:43', 37, NULL, 37, 2, 1, NULL, NULL, 0, NULL, ' ', NULL, NULL, 0, NULL, NULL, NULL, 2, 0, 0, NULL, 984138, NULL);
 
 UPDATE `ActionType` SET `defaultPlannedEndDate`=0 WHERE  `id`=3911;
+UPDATE `Contract` SET `endDate`='2020-12-31' WHERE  `id`=61;
