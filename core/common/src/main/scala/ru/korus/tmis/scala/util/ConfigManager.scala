@@ -26,6 +26,9 @@ object ConfigManager extends Configuration {
 
   class CommonClass extends Configuration {
     var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
+    var DebugTestMode = "off"
+
+    def isDebugTestMode = "on".equals(DebugTestMode)
   }
 
   var RbManagerSetting = new RbManagerClass

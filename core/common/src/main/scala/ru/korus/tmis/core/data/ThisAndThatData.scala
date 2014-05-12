@@ -65,7 +65,7 @@ class ListDataRequest {
     }
     this.limit = limit
     this.page = if (page > 1) page else 1
-    this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
+    this.coreVersion = if (ConfigManager.Common.isDebugTestMode) "1.0.0-TEST" else ConfigManager.Messages("misCore.assembly.version")
     this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 

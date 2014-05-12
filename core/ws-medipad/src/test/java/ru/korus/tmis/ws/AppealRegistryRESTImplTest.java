@@ -25,6 +25,7 @@ import ru.korus.tmis.core.database.common.DbSettingsBean;
 import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.patient.AppealBeanLocal;
+import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.testutil.DbUtil;
 import ru.korus.tmis.util.*;
 import scala.actors.threadpool.Arrays;
@@ -247,6 +248,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     {
         System.out.println("**************************** testCreateAndDeleteAction() started...");
         try {
+            ConfigManager.Common().DebugTestMode_$eq("on");
             //http://webmis/data/dir/actionTypes/?filter[view]=tree&
             //                                    filter[mnem]=EXAM&filter[mnem]=EPI&filter[mnem]=JOUR&filter[mnem]=ORD&filter[mnem]=NOT&filter[mnem]=OTH&
             //                                    callback=jQuery182004028293350711465_1399548976777&

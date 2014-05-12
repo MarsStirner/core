@@ -662,6 +662,6 @@
     "recordsCount": 0,
     "sortingField": "id",
     "sortingMethod": "asc",
-    "coreVersion": "2.5.30-SNAPSHOT",
+    "coreVersion": "1.0.0-TEST",
     "page": 1
 }}
