@@ -696,7 +696,7 @@ class DirectoryInfoRESTTest {
   def testGetActionTypesByGroupId = {
 
     val mnemonics = new util.LinkedList[String]
-    val filter = new ActionTypesListRequestDataFilter("", 1, null, mnemonics, null, true)
+    val filter = new ActionTypesListRequestDataFilter("", 1, null, mnemonics, null, true, null)
     val request = new ListDataRequest("id", "asc", 10, 1, filter)
     val list = new util.LinkedList[ActionType]()
 
@@ -726,7 +726,7 @@ class DirectoryInfoRESTTest {
   def testGetActionTypesByCode= {
 
     val mnemonics = new util.LinkedList[String]
-    val filter = new ActionTypesListRequestDataFilter("testCode", 0, null, mnemonics, null, true)
+    val filter = new ActionTypesListRequestDataFilter("testCode", 0, null, mnemonics, null, true, null)
     val request = new ListDataRequest("id", "asc", 10, 1, filter)
     val list = new util.LinkedList[ActionType]()
 
@@ -755,7 +755,7 @@ class DirectoryInfoRESTTest {
   def testGetActionTypesWithoutFilters = {
 
     val mnemonics = new util.LinkedList[String]
-    val filter = new ActionTypesListRequestDataFilter("", 0, null, mnemonics, null, true)
+    val filter = new ActionTypesListRequestDataFilter("", 0, null, mnemonics, null, true, null)
     val request = new ListDataRequest("id", "asc", 10, 1, filter)
     val list = new util.LinkedList[ActionType]()
 
@@ -773,7 +773,7 @@ class DirectoryInfoRESTTest {
   def testGetActionTypesFlatView = {
 
     val mnemonics = new util.LinkedList[String]
-    val filter = new ActionTypesListRequestDataFilter("", 1, null, mnemonics, "all", true)
+    val filter = new ActionTypesListRequestDataFilter("", 1, null, mnemonics, "all", true, null)
     val request = new ListDataRequest("id", "asc", 10, 1, filter)
     val list = new util.LinkedList[ActionType]()
     list.add(new ActionType(11, 1, "test code 1", "test flatCode 1", "test name 1"))
