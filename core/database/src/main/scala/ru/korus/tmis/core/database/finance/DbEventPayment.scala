@@ -36,6 +36,9 @@ with I18nable {
     val servList = em.createNamedQuery("rbService.findByCode", classOf[RbService]).setParameter("code", servicePaidFinanceInfo.getCodeService).getResultList
     eventPayment.setService( if (servList.isEmpty) { null } else {servList.get(0)} )
     eventPayment.setEventLocalContract(eventLocalContract)
+    if (action != null)
+      action.setPayStatus(1)
+    em.merge(action)
     em.persist(eventPayment)
   }
 }

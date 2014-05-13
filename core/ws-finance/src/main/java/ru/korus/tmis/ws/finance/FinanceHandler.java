@@ -32,7 +32,17 @@ public class FinanceHandler implements SOAPHandler<SOAPMessageContext> {
     @Override
     public boolean handleMessage(SOAPMessageContext smc) {
         Boolean outboundProperty = (Boolean) smc.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY);
-        if (!outboundProperty.booleanValue()) {
+        if (outboundProperty.booleanValue()) {
+            SOAPMessage message = smc.getMessage();
+            try {
+                SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
+                addNamespace(envelope);
+                message.saveChanges();
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+        else {
             SOAPMessage message = smc.getMessage();
             try {
                 SOAPEnvelope envelope = message.getSOAPPart().getEnvelope();
@@ -61,6 +71,28 @@ public class FinanceHandler implements SOAPHandler<SOAPMessageContext> {
         Element nodeSetPaymentInfo = getElementByName(parentNode.getChildNodes(), "setPaymentInfo");
         Element nodeWithNameSpace = getElementByName(nodeSetPaymentInfo.getChildNodes(), "inParam");// элемент /inParam
         removeNamespace(nodeWithNameSpace);
+    }
+
+    private void addNamespace(SOAPEnvelope envelope) throws SOAPException {
+        SOAPBody body = envelope.getBody();
+       // final org.w3c.dom.Node firstChild = body.getFirstChild();
+       // final org.w3c.dom.Node parentNode = firstChild.getParentNode();
+       // Element response = getElementByName(parentNode.getChildNodes(), "getServiceListResponse");
+       // Element returnNode = getElementByName(parentNode.getChildNodes(), "return");
+        addNamespace(body);
+    }
+
+    private void addNamespace(Element nodeWithNameSpace) {
+        if(nodeWithNameSpace.getNamespaceURI() == null) {
+            nodeWithNameSpace.getOwnerDocument().renameNode(nodeWithNameSpace, "http://korus.ru/tmis/ws/finance", nodeWithNameSpace.getLocalName() );
+        }
+        NodeList nodeList = nodeWithNameSpace.getChildNodes();
+        for (int i = 0; i < nodeList.getLength(); ++i) {
+            final org.w3c.dom.Node item = nodeList.item(i);
+            if(item instanceof Element)
+                addNamespace((Element) item);
+        }
+
     }
 
     private void removeNamespace(Element nodeWithNameSpace) {
