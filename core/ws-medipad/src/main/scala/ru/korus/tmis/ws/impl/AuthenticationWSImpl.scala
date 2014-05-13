@@ -3,7 +3,7 @@ package ru.korus.tmis.ws.impl
 import ru.korus.tmis.core.exception.{CoreException, AuthenticationException}
 import ru.korus.tmis.ws.medipad.AuthenticationWebService
 import java.lang.String
-import javax.ejb.EJB
+import javax.ejb.{Stateless, EJB}
 import javax.jws.{HandlerChain, WebService}
 import scala.collection.JavaConversions._
 import javax.inject.Named
@@ -21,6 +21,7 @@ import ru.korus.tmis.scala.util.I18nable
   portName = "authentication",
   name = "authentication"
 )
+@Stateless
 @HandlerChain(file = "tmis-ws-logging-handlers.xml")
 class AuthenticationWSImpl
   extends AuthenticationWebService

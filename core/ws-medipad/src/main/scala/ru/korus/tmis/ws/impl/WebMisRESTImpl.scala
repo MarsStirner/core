@@ -11,7 +11,7 @@ import collection.mutable
 import java.util.{Date, LinkedList}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.WebMisREST
-import javax.ejb.EJB
+import javax.ejb.{LocalBean, Stateless, EJB}
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.patient._
@@ -30,15 +30,7 @@ import org.joda.time.DateTime
  * Time: 11:53 AM
  */
 
-/*@Named
-@WebService(
-  endpointInterface = "ru.korus.tmis.ws.medipad.WebMisService",
-  targetNamespace = "http://korus.ru/tmis/webmis",
-  serviceName = "tmis-webmis",
-  portName = "webmis",
-  name = "webmis"
-)
-@HandlerChain(file = "tmis-ws-logging-handlers.xml") */
+@Stateless
 class WebMisRESTImpl  extends WebMisREST
                       with Logging
                       with I18nable

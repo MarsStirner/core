@@ -3,8 +3,8 @@ package ru.korus.tmis.ws.webmis.rest;
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
-import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import java.util.ArrayList;
@@ -20,12 +20,12 @@ import java.util.List;
 public class DiagnosticsRegistryExRESTImpl {
 
     //protected static final String PATH = AppealsInfoRESTImpl.PATH + "{eventId}/diagnostics/";
-    private WebMisRESTImpl wsImpl;
+    private WebMisREST wsImpl;
     private int eventId;
     private AuthData auth;
     private String callback;
 
-    public DiagnosticsRegistryExRESTImpl(WebMisRESTImpl wsImpl, int eventId, String callback, AuthData auth) {
+    public DiagnosticsRegistryExRESTImpl(WebMisREST wsImpl, int eventId, String callback, AuthData auth) {
         this.eventId = eventId;
         this.auth = auth;
         this.wsImpl = wsImpl;
@@ -80,7 +80,7 @@ public class DiagnosticsRegistryExRESTImpl {
                                                                      @QueryParam("filter[statusId]")int  statusId,
                                                                      @QueryParam("filter[office]")String  office,
                                                                      @QueryParam("filter[urgent]")Boolean  urgent,
-                                                                     @QueryParam("filter[class]")Short  clazz) {
+                                                                     @QueryParam("filter[class]")Short  clazz) throws CoreException {
 
 
         DirectoryInfoRESTImpl.ActionTypesSubType atst_lab = DirectoryInfoRESTImpl.ActionTypesSubType.getType("laboratory");
@@ -157,7 +157,7 @@ public class DiagnosticsRegistryExRESTImpl {
                                                              @QueryParam("filter[statusId]")int  statusId,
                                                              @QueryParam("filter[office]")String  office,
                                                              @QueryParam("filter[urgent]")Boolean  urgent,
-                                                             @QueryParam("filter[class]")Short  clazz) {
+                                                             @QueryParam("filter[class]")Short  clazz) throws CoreException {
 
         final DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("instrumental");
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
@@ -227,7 +227,7 @@ public class DiagnosticsRegistryExRESTImpl {
                                                                @QueryParam("filter[statusId]")int  statusId,
                                                                @QueryParam("filter[office]")String  office,
                                                                @QueryParam("filter[urgent]")Boolean  urgent,
-                                                               @QueryParam("filter[class]")Short  clazz) {
+                                                               @QueryParam("filter[class]")Short  clazz) throws CoreException {
 
         final DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("consultations");
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
@@ -260,7 +260,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/laboratory")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object insertLaboratoryStudies(JSONCommonData data) {
+    public Object insertLaboratoryStudies(JSONCommonData data) throws CoreException {
         //DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType(var);
         CommonData com_data = new CommonData();
         com_data.setEntity(data.getData());
@@ -279,7 +279,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/instrumental")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object insertInstrumental(JSONCommonData data) {
+    public Object insertInstrumental(JSONCommonData data) throws CoreException {
         CommonData com_data = new CommonData();
         com_data.setEntity(data.getData());
         return new JSONWithPadding(wsImpl.insertInstrumentalStudies(this.eventId, com_data, this.auth), this.callback);
@@ -297,7 +297,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/consultations")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object insertConsultation(ConsultationRequestData data) {
+    public Object insertConsultation(ConsultationRequestData data) throws CoreException {
         //ConsultationRequestData request = new ConsultationRequestData(eventId, actionTypeId, executorId, patientId, beginDate, endDate, urgent);
         return new JSONWithPadding(wsImpl.insertConsultation(data.rewriteDefault(data), this.auth), callback);
     }
@@ -351,7 +351,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object modifyLaboratoryStudy(JSONCommonData data,
-                                          @PathParam("actionId")int actionId) {   //TODO: insert actionId (сейчас из коммондаты)
+                                          @PathParam("actionId")int actionId) throws CoreException {   //TODO: insert actionId (сейчас из коммондаты)
 
         CommonData com_data = new CommonData();
         com_data.setEntity(data.getData());
@@ -370,7 +370,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object modifyInstrumentalStudy(JSONCommonData data,
-                                          @PathParam("actionId")int actionId) {
+                                          @PathParam("actionId")int actionId) throws CoreException {
 
         CommonData com_data = new CommonData();
         com_data.setEntity(data.getData());
@@ -389,7 +389,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object modifyConsultationStudy(ConsultationRequestData data,
-                                          @PathParam("actionId")int actionId) {
+                                          @PathParam("actionId")int actionId) throws CoreException {
         /*
         CommonData com_data = new CommonData();
         com_data.setEntity(data.getData());
@@ -419,7 +419,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/laboratory")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object removeLaboratoryStudies(AssignmentsToRemoveDataList data) {
+    public Object removeLaboratoryStudies(AssignmentsToRemoveDataList data) throws CoreException {
         return new JSONWithPadding(wsImpl.removeDirection(data, "laboratory", this.auth), this.callback);
     }
 
@@ -434,7 +434,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/instrumental")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object removeInstrumentalStudies(AssignmentsToRemoveDataList data) {
+    public Object removeInstrumentalStudies(AssignmentsToRemoveDataList data) throws CoreException {
         return new JSONWithPadding(wsImpl.removeDirection(data, "instrumental", this.auth), this.callback);
     }
 
@@ -449,7 +449,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @Path("/consultations")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object removeConsultationsStudies(AssignmentsToRemoveDataList data) {
+    public Object removeConsultationsStudies(AssignmentsToRemoveDataList data) throws CoreException {
         return new JSONWithPadding(wsImpl.removeDirection(data, "consultations", this.auth), this.callback);
     }
 
@@ -462,7 +462,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @DELETE
     @Path("/laboratory/{actionId}")
     @Produces("application/x-javascript")
-    public Object removeLaboratoryStudy(@PathParam("actionId")int actionId) {
+    public Object removeLaboratoryStudy(@PathParam("actionId")int actionId) throws CoreException {
         AssignmentsToRemoveDataList data = new AssignmentsToRemoveDataList();
         data.getData().add(new AssignmentToRemoveDataEntry(actionId));
         return new JSONWithPadding(wsImpl.removeDirection(data, "laboratory", this.auth), this.callback);
@@ -477,7 +477,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @DELETE
     @Path("/instrumental/{actionId}")
     @Produces("application/x-javascript")
-    public Object removeInstrumentalStudy(@PathParam("actionId")int actionId) {
+    public Object removeInstrumentalStudy(@PathParam("actionId")int actionId) throws CoreException {
         AssignmentsToRemoveDataList data = new AssignmentsToRemoveDataList();
         data.getData().add(new AssignmentToRemoveDataEntry(actionId));
         return new JSONWithPadding(wsImpl.removeDirection(data, "instrumental", this.auth), this.callback);
@@ -492,7 +492,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @DELETE
     @Path("/consultations/{actionId}")
     @Produces("application/x-javascript")
-    public Object removeConsultationsStudy(@PathParam("actionId")int actionId) {
+    public Object removeConsultationsStudy(@PathParam("actionId")int actionId) throws CoreException {
         AssignmentsToRemoveDataList data = new AssignmentsToRemoveDataList();
         data.getData().add(new AssignmentToRemoveDataEntry(actionId));
         return new JSONWithPadding(wsImpl.removeDirection(data, "consultations", this.auth), this.callback);
@@ -508,7 +508,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @GET
     @Path("/laboratory/{actionId}")
     @Produces("application/x-javascript")
-    public Object getInfoAboutDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
+    public Object getInfoAboutDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId, this.auth), this.callback);
     }
 
@@ -522,7 +522,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @GET
     @Path("/instrumental/{actionId}")
     @Produces("application/x-javascript")
-    public Object getInfoAboutInstrumentalDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
+    public Object getInfoAboutInstrumentalDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId, this.auth), this.callback);
     }
 
@@ -536,7 +536,7 @@ public class DiagnosticsRegistryExRESTImpl {
     @GET
     @Path("/consultations/{actionId}")
     @Produces("application/x-javascript")
-    public Object getInfoAboutConsultationDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) {
+    public Object getInfoAboutConsultationDiagnosticsForPatientByEvent(@PathParam("actionId")int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.getInfoAboutDiagnosticsForPatientByEvent(actionId, this.auth), this.callback);
     }
 

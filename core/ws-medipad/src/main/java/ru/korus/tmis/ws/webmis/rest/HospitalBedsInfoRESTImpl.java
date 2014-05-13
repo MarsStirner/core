@@ -2,8 +2,8 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
-import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 
@@ -17,11 +17,11 @@ import javax.ws.rs.*;
 public class HospitalBedsInfoRESTImpl {
 
     //protected static final String PATH = BaseRegistryRESTImpl.PATH + "hospitalbed/";
-    private WebMisRESTImpl wsImpl;
+    private WebMisREST wsImpl;
     private AuthData auth;
     private String callback;
 
-    public HospitalBedsInfoRESTImpl(WebMisRESTImpl wsImpl, String callback, AuthData auth) {
+    public HospitalBedsInfoRESTImpl(WebMisREST wsImpl, String callback, AuthData auth) {
         this.auth = auth;
         this.wsImpl = wsImpl;
         this.callback = callback;
@@ -37,7 +37,7 @@ public class HospitalBedsInfoRESTImpl {
     @GET
     @Path("/vacant/")
     @Produces("application/x-javascript")
-    public Object getVacantHospitalBeds(@QueryParam("filter[departmentId]") int departmentId) {
+    public Object getVacantHospitalBeds(@QueryParam("filter[departmentId]") int departmentId) throws CoreException {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
         int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
         return new JSONWithPadding(wsImpl.getVacantHospitalBeds(depId, this.auth), this.callback);
@@ -51,7 +51,7 @@ public class HospitalBedsInfoRESTImpl {
      @GET
      @Path("/avaliable_profiles")
      @Produces("application/x-javascript")
-     public Object getAvailableProfiles() {
+     public Object getAvailableProfiles() throws CoreException {
          return new JSONWithPadding(wsImpl.getAllAvailableBedProfiles(auth), this.callback);
      }
 
@@ -64,7 +64,7 @@ public class HospitalBedsInfoRESTImpl {
     @GET
     @Path("/profile_by_id/")
     @Produces("application/x-javascript")
-    public Object getProfileNameById(@QueryParam("id")int profileId) {
+    public Object getProfileNameById(@QueryParam("id")int profileId) throws CoreException {
         return new JSONWithPadding(wsImpl.getBedProfileById(profileId, auth), this.callback);
     }
 

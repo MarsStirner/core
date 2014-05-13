@@ -3,8 +3,8 @@ package ru.korus.tmis.ws.webmis.rest;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
-import ru.korus.tmis.ws.impl.WebMisRESTImpl;
-import javax.inject.Inject;
+
+import javax.ejb.EJB;
 import javax.inject.Singleton;
 import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
@@ -35,8 +35,8 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     private boolean testConstruct = false;
 
-    @Inject
-    WebMisRESTImpl wsImpl;
+    @EJB
+    WebMisREST wsImpl;
 
     @Context
     HttpServletRequest servRequest;

@@ -4,9 +4,8 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.HospitalBedData;
 import ru.korus.tmis.core.data.HospitalBedDataListFilter;
-//import ru.korus.tmis.core.data.HospitalBedDataRequest;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
-import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 
@@ -19,12 +18,12 @@ import javax.ws.rs.*;
 @Interceptors(ServicesLoggingInterceptor.class)
 public class HospitalBedRegistryRESTImpl {
 
-    private WebMisRESTImpl wsImpl;
+    private WebMisREST wsImpl;
     private int eventId;
     private AuthData auth;
     private String callback;
 
-    public HospitalBedRegistryRESTImpl(WebMisRESTImpl wsImpl, int eventId, String callback, AuthData auth) {
+    public HospitalBedRegistryRESTImpl(WebMisREST wsImpl, int eventId, String callback, AuthData auth) {
        this.eventId = eventId;
        this.auth = auth;
        this.wsImpl = wsImpl;
@@ -41,7 +40,7 @@ public class HospitalBedRegistryRESTImpl {
     @POST
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public  Object registryPatientToHospitalBed (HospitalBedData data) {
+    public  Object registryPatientToHospitalBed (HospitalBedData data) throws CoreException {
         return new JSONWithPadding(wsImpl.registryPatientToHospitalBed(this.eventId, data, this.auth), this.callback);
     }
 
@@ -59,7 +58,7 @@ public class HospitalBedRegistryRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public  Object modifyPatientToHospitalBed(HospitalBedData data,
-                                              @PathParam("actionId") int actionId) {
+                                              @PathParam("actionId") int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.modifyPatientToHospitalBed(actionId, data, this.auth), this.callback);
     }
 
@@ -71,7 +70,7 @@ public class HospitalBedRegistryRESTImpl {
      */
     @GET
     @Produces("application/x-javascript")
-    public Object getMovingListForEvent() {
+    public Object getMovingListForEvent() throws CoreException {
 
         HospitalBedDataListFilter filter = new HospitalBedDataListFilter(this.eventId);
         //HospitalBedDataRequest request= new HospitalBedDataRequest(sortingField, sortingMethod, limit, page, filter);
@@ -91,7 +90,7 @@ public class HospitalBedRegistryRESTImpl {
     @Path("/moving/")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public  Object movingPatientToDepartment(HospitalBedData data) {
+    public  Object movingPatientToDepartment(HospitalBedData data) throws CoreException {
         return new JSONWithPadding(wsImpl.movingPatientToDepartment(this.eventId, data, this.auth), this.callback);
     }
 
@@ -105,7 +104,7 @@ public class HospitalBedRegistryRESTImpl {
     @GET
     @Path("/{actionId}")
     @Produces("application/x-javascript")
-    public Object getInfoHospitalBedForPatient(@PathParam("actionId") int actionId) {
+    public Object getInfoHospitalBedForPatient(@PathParam("actionId") int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.getPatientToHospitalBedById(actionId, this.auth), this.callback);
     }
 
@@ -119,7 +118,7 @@ public class HospitalBedRegistryRESTImpl {
     @DELETE
     @Path("/{actionId}")
     @Produces("application/x-javascript")
-    public Object callOffHospitalBedForPatient(@PathParam("actionId") int actionId) {
+    public Object callOffHospitalBedForPatient(@PathParam("actionId") int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.callOffHospitalBedForPatient(actionId, this.auth), this.callback);
     }
 }

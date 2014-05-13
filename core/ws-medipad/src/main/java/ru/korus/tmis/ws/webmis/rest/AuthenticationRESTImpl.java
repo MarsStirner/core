@@ -1,6 +1,6 @@
 package ru.korus.tmis.ws.webmis.rest;
 
-import javax.inject.Inject;
+import javax.ejb.EJB;
 import javax.inject.Singleton;
 import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
@@ -10,10 +10,9 @@ import javax.ws.rs.core.Context;
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.*;
 import ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor;
-import ru.korus.tmis.ws.impl.AuthenticationWSImpl;
-import  ru.korus.tmis.core.data.RoleData;
+import ru.korus.tmis.core.data.RoleData;
 import ru.korus.tmis.core.exception.AuthenticationException;
-import ru.korus.tmis.ws.impl.WebMisRESTImpl;
+import ru.korus.tmis.ws.medipad.AuthenticationWebService;
 
 import java.util.Arrays;
 
@@ -27,11 +26,11 @@ import java.util.Arrays;
 public class AuthenticationRESTImpl   {
 
 	
-	@Inject
-	AuthenticationWSImpl wsImpl;
+	@EJB
+    AuthenticationWebService wsImpl;
 
-    @Inject
-    WebMisRESTImpl webmisImpl;
+    @EJB
+    WebMisREST webmisImpl;
 
     /**
      * Сервис по получению доступных ролей для пользователя (первичная авторизация)
@@ -46,7 +45,7 @@ public class AuthenticationRESTImpl   {
     @Path("/roles")
     @Produces("application/json")
     public Object getRoles( @QueryParam("login")String login,
-    		                @QueryParam("passwd")String password) {
+    		                @QueryParam("passwd")String password) throws AuthenticationException {
     	return wsImpl.getRoles(login, password);
     }
 
@@ -65,7 +64,7 @@ public class AuthenticationRESTImpl   {
     @Produces("application/json")
     public Object authenticate( @QueryParam("login")String userName,
     		@QueryParam("passwd")String password,
-    		@QueryParam("role")int roleId){
+    		@QueryParam("role")int roleId) throws AuthenticationException {
     	return wsImpl.authenticate(userName, password, roleId);
     }
 
@@ -84,7 +83,7 @@ public class AuthenticationRESTImpl   {
     @Consumes({"application/json", "application/xml"})
     @Produces({"application/x-javascript","application/xml"})
     public Object getRoles2(AuthEntry request,
-                            @QueryParam("callback") String callback) {
+                            @QueryParam("callback") String callback) throws AuthenticationException {
         return new JSONWithPadding(wsImpl.getRoles(request.login(), request.password()), callback);
     }
 
@@ -103,7 +102,7 @@ public class AuthenticationRESTImpl   {
     @Consumes({"application/json", "application/xml"})
     @Produces({"application/x-javascript","application/xml"})
     public Object authenticate2(AuthEntry request,
-                               @QueryParam("callback") String callback) {
+                               @QueryParam("callback") String callback) throws AuthenticationException {
         return new JSONWithPadding(wsImpl.authenticate(request.login(), request.password(), request.roleId()), callback);
     }
 
@@ -122,9 +121,10 @@ public class AuthenticationRESTImpl   {
     @Produces("application/x-javascript")
     public Object authenticate3(@Context HttpServletRequest servRequest,
                                 @QueryParam("roleId") int roleId,
-                                @QueryParam("callback") String callback) {
+                                @QueryParam("callback") String callback) throws AuthenticationException {
         AuthData auth = webmisImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
-        return new JSONWithPadding(wsImpl.authenticate(auth.getUser().getLogin(), auth.getUser().getPassword(), roleId), callback);
+        return new JSONWithPadding(wsImpl
+                .authenticate(auth.getUser().getLogin(), auth.getUser().getPassword(), roleId), callback);
     }
 
 }

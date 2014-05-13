@@ -7,6 +7,7 @@ import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.entity.model.RbPrintTemplate;
 import ru.korus.tmis.core.exception.CoreException;
 
+import javax.ejb.Local;
 import javax.servlet.http.Cookie;
 import java.io.Serializable;
 import java.util.Date;
@@ -17,6 +18,7 @@ import java.util.List;
  * Date: 3/19/13
  * Time: 12:05 PM
  */
+@Local
 public interface WebMisREST extends Serializable {
 
     PatientCardData insertPatient(PatientCardData patientData, AuthData auth) throws CoreException;
