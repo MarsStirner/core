@@ -200,6 +200,13 @@
                 <project.build.jdk>1.7</project.build.jdk>
                 <version.javaee.api>7.0</version.javaee.api>
             </properties>
+            <dependencies>
+                <dependency>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-json</artifactId>
+                    <version>1.18.1</version>
+                </dependency>
+            </dependencies>
         </profile>
 
         <!-- Профиль для установки на стандартный Linux-сервер -->
