@@ -451,7 +451,7 @@ public class DirectoryInfoRESTImpl {
             for(String mnem: mnems)
                 if(mnem != null && !mnem.equals("")) mnemonics.add(mnem);
 
-        Integer orgStructId = auth.getUser() == null || orgStructFilterEnable == 0  ? null : auth.getUser().getOrgId();
+        Integer orgStructId = (auth.getUser() == null && auth.getUser().getOrgStructure().getId() != null) || orgStructFilterEnable == 0  ? null : auth.getUser().getOrgStructure().getId();
 
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, mnemonics, view, showHidden == 1, orgStructId);
 
