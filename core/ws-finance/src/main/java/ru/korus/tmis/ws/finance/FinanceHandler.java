@@ -69,8 +69,12 @@ public class FinanceHandler implements SOAPHandler<SOAPMessageContext> {
         final org.w3c.dom.Node firstChild = body.getFirstChild();
         final org.w3c.dom.Node parentNode = firstChild.getParentNode();
         Element nodeSetPaymentInfo = getElementByName(parentNode.getChildNodes(), "setPaymentInfo");
-        Element nodeWithNameSpace = getElementByName(nodeSetPaymentInfo.getChildNodes(), "inParam");// элемент /inParam
-        removeNamespace(nodeWithNameSpace);
+        if(nodeSetPaymentInfo != null) {
+            Element nodeWithNameSpace = getElementByName(nodeSetPaymentInfo.getChildNodes(), "inParam");// элемент /inParam
+            if(nodeWithNameSpace != null) {
+                removeNamespace(nodeWithNameSpace);
+            }
+        }
     }
 
     private void addNamespace(SOAPEnvelope envelope) throws SOAPException {
