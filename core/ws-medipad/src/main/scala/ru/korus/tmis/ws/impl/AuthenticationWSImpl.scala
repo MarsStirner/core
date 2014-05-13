@@ -13,7 +13,6 @@ import ru.korus.tmis.core.data.{DoctorSpecsContainer, StaffEntity, RoleData}
 import ru.korus.tmis.scala.util.I18nable
 
 
-@Named
 @WebService(
   endpointInterface = "ru.korus.tmis.ws.medipad.AuthenticationWebService",
   targetNamespace = "http://korus.ru/tmis/authentication",
@@ -36,22 +35,18 @@ class AuthenticationWSImpl
     try {
       authStorage.createToken(userName, password, roleId)
     } catch {
-      case e: CoreException => {
-        throw new AuthenticationException(e.getId, e.getMessage())
-      }
+      case e: CoreException =>
+        throw new AuthenticationException(e.getId, e.getMessage)
     }
   }
 
-  def getRoles(login: String, password: String) = {
-    try {
-      val roles = authStorage.getRoles(login, password).filter(_.getCode != "")
-      val staff = dbStaff.getStaffByLogin(login)
+  def getRoles(login: String, password: String) = try {
+    val roles = authStorage.getRoles(login, password).filter(_.getCode != "")
+    val staff = dbStaff.getStaffByLogin(login)
 
-      new RoleData(staff, roles)
-    } catch {
-      case e: CoreException => {
-        throw new AuthenticationException(e.getId, e.getMessage())
-      }
-    }
+    new RoleData(staff, roles)
+  } catch {
+    case e: CoreException =>
+      throw new AuthenticationException(e.getId, e.getMessage)
   }
 }
