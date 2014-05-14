@@ -78,9 +78,16 @@ class DbRlsBean
   }
 
   def getRlsById(id: Int) = {
-    val n = em.find(classOf[NomenclatureNew], id)
-    em.detach(n)
-    n
+    try {
+      if(id < 1)
+        throw new IllegalArgumentException("Invalid id value id=" + id)
+
+      val n = em.find(classOf[NomenclatureNew], id)
+      em.detach(n)
+      n
+    } catch {
+      case e: Throwable => throw new CoreException(e.getMessage, e)
+    }
   }
 
   def getRlsByText(text: String) = {
