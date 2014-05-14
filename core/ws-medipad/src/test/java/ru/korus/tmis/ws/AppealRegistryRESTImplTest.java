@@ -310,7 +310,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     private AuthData auth() throws CoreException {
         // авторизация пользователм  'test' с ролью "медсестра приемного отделения”
-        return authStorageBeanLocal.createToken("test", "098f6bcd4621d373cade4e832627b4f6" /*MD5 for 'test'*/, 29);
+        return authStorageBeanLocal.createToken("utest", "098f6bcd4621d373cade4e832627b4f6" /*MD5 for 'test'*/, 29);
     }
 
     private void toPostStream(String input, HttpURLConnection conn) throws IOException {
