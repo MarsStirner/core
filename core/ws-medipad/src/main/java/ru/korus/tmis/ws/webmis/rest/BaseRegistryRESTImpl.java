@@ -94,13 +94,18 @@ public class BaseRegistryRESTImpl implements Serializable {
     }
 
     @Path("/autosave")
-    public AutoSaveStorageREST getAutoSaveStarage(
-                                                @Context HttpServletRequest servRequest,
-                                                @QueryParam("token") String token,
-                                                @QueryParam("callback") String callback) {
+    public AutoSaveStorageREST getAutoSaveStorage(@Context HttpServletRequest servRequest,
+                                                  @QueryParam("token") String token,
+                                                  @QueryParam("callback") String callback) {
         return new AutoSaveStorageREST(wsImpl, makeAuth(token, servRequest), callback);
     }
 
+    @Path("/rls")
+    public RlsDataImpl getRlsDataImpl(@Context HttpServletRequest servRequest,
+                                      @QueryParam("token") String token,
+                                      @QueryParam("callback") String callback) {
+        return new RlsDataImpl(wsImpl, makeAuth(token, servRequest), callback);
+    }
 
     //__________________________________________________________________________________________________________________
 

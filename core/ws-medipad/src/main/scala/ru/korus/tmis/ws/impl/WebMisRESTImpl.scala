@@ -11,7 +11,7 @@ import collection.mutable
 import java.util.{Date, LinkedList}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.WebMisREST
-import javax.ejb.{LocalBean, Stateless, EJB}
+import javax.ejb.{Stateless, EJB}
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.patient._
@@ -1486,4 +1486,11 @@ class WebMisRESTImpl  extends WebMisREST
    dbAutoSaveStorageLocal.delete(id, auth.getUserId)
   }
 
+  override def getRlsById(id: Int): NomenclatureNew = {
+    dbRlsBean.getRlsById(id)
+  }
+
+  override def getRlsByText(text: String): ju.List[NomenclatureNew] = {
+    dbRlsBean.getRlsByText(text)
+  }
 }

@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.Nomenclature
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging
@@ -9,8 +8,9 @@ import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.entity.model.Nomenclature
+import ru.korus.tmis.core.entity.model.{NomenclatureNew, RlsNomen, Nomenclature}
 import ru.korus.tmis.core.data.{RlsDataListFilter, QueryDataStructure}
+import ru.korus.tmis.core.exception.CoreException
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -71,10 +71,32 @@ class DbRlsBean
     val result = typed.getResultList
     result.size() match {
       case 0 => null
-      case _ => {
+      case _ =>
         result.foreach(em.detach(_))
         result
-      }
+    }
+  }
+
+  def getRlsById(id: Int) = {
+    val n = em.find(classOf[NomenclatureNew], id)
+    em.detach(n)
+    n
+  }
+
+  def getRlsByText(text: String) = {
+    try {
+      if(text == null || text.isEmpty)
+        throw new IllegalArgumentException("Find request cannot be empty")
+
+      val findText = if(text.length < 3) text + "%" else "%" + text + "%"
+      val l = em.
+        createQuery(rlsByTextContainingQuery, classOf[NomenclatureNew]).
+        setParameter("value", findText).
+        getResultList
+      l.foreach(em.detach(_))
+      l
+    } catch {
+      case e: Throwable => throw new CoreException(e.getMessage, e)
     }
   }
 
@@ -95,4 +117,10 @@ class DbRlsBean
     FROM Nomenclature n
   %s
                      """
+
+  val rlsByTextContainingQuery =
+    """
+       SELECT r FROM NomenclatureNew r WHERE r.tradeLocalName LIKE :value
+    """
+
 }

@@ -3,8 +3,7 @@ package ru.korus.tmis.ws.webmis.rest;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
-import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
-import ru.korus.tmis.core.entity.model.RbPrintTemplate;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -462,5 +461,9 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     void deleteAutoSaveField(String id, AuthData auth) throws CoreException;
+
+    NomenclatureNew getRlsById(int id) throws CoreException;
+
+    List<NomenclatureNew> getRlsByText(String text) throws CoreException;
 
 }
