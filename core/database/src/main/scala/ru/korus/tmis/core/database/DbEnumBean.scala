@@ -30,22 +30,16 @@ class DbEnumBean
 
   var enums: List[(String, Class[_ <: DbEnumerable])] =
     List[(String, Class[_ <: DbEnumerable])](
-      ("s11r64", classOf[RbAnalysisStatus]),
-      ("rls", classOf[Nomenclature])
+      ("s11r64", classOf[RbAnalysisStatus])
     )
 
   @PostConstruct
   def init() = {
     syncEnums_s11r64()
-    syncEnums_rls()
   }
 
   def syncEnums_s11r64() = {
     syncEnums(s11r64, "s11r64")
-  }
-
-  def syncEnums_rls() = {
-    syncEnums(s11r64, "rls")
   }
 
   def syncEnums(em: EntityManager, EmId: String) = {

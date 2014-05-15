@@ -13,7 +13,7 @@ import java.util.Date
 @Entity
 @Table(name = "vNomen")
 @NamedQueries(Array(new NamedQuery(name = "Nomenclature.findAll", query = "SELECT n FROM Nomenclature n")))
-class NomenclatureNew {
+class Nomenclature {
 
   @Id
   @GeneratedValue(strategy = GenerationType.IDENTITY)

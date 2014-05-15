@@ -4,7 +4,6 @@ import ru.korus.tmis.core.assessment.AssessmentBeanLocal
 import ru.korus.tmis.core.diagnostic.DiagnosticBeanLocal
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal
-import ru.korus.tmis.core.treatment.TreatmentBeanLocal
 import ru.korus.tmis.ws.medipad.MedipadWebService
 import javax.inject.Named
 import grizzled.slf4j.Logging
@@ -16,9 +15,7 @@ import org.apache.shiro.SecurityUtils
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common.{DbOrgStructureBeanLocal, DbEventPersonBeanLocal, DbContractBeanLocal}
-import ru.korus.tmis.util._
-import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
-import javax.servlet.http.HttpServletRequest
+import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.patient._
 import java.util._
 import ru.korus.tmis.scala.util.{Defaultible, I18nable, ConfigManager}
@@ -42,9 +39,6 @@ class MedipadWSImpl
   var ctx: WebServiceContext = _
 
   @EJB
-  private var authStorage: AuthStorageBeanLocal = _
-
-  @EJB
   private var dbVersionBean: DbVersionBeanLocal = _
 
   @EJB
@@ -58,9 +52,6 @@ class MedipadWSImpl
 
   @EJB
   private var thesaurusBean: ThesaurusBeanLocal = _
-
-  @EJB
-  private var treatmentBean: TreatmentBeanLocal = _
 
   @EJB
   var dbEventPerson: DbEventPersonBeanLocal = _
@@ -136,8 +127,6 @@ class MedipadWSImpl
   }
 
   private implicit val commonDataDefault = setDefault(new CommonData)
-  private implicit val rlsDataDefault = setDefault(new RlsData)
-  private implicit val crlsDataDefault = setDefault(new CompactRlsData)
   private implicit val thesaurusDefault = setDefault(new ThesaurusData)
     
   //////////////////////////////////////////////////////////////////////////////
@@ -242,63 +231,6 @@ class MedipadWSImpl
 
   def getMkb(globalVersion: String) = checkingVersion(globalVersion){
     thesaurusBean.getMkb
-  }
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  def getRlsList(globalVersion: String) = checkingVersion(globalVersion) { treatmentBean.getRlsList }
-
-  def getCompactRlsList(globalVersion: String) = checkingVersion(globalVersion) { treatmentBean.getCompactRlsList }
-
-  def getTreatmentTypes(globalVersion: String, eventId: Int) = checkingVersion(globalVersion) {
-    treatmentBean.getTreatmentTypes(eventId, currentAuthData)
-  }
-
-  def getAllTreatmentTypes(globalVersion: String) = checkingVersion(globalVersion) {
-    treatmentBean.getAllTreatmentTypes
-  }
-
-  def createTreatmentForPatient(eventId: Int,
-                                treatment: CommonData) = {
-    requiresPermissions(Array("clientTreatmentCreate"))
-    treatmentBean.createTreatmentForEventId(eventId,
-                                            treatment,
-                                            currentAuthData)
-  }
-
-  def modifyTreatmentForPatient(eventId: Int,
-                                treatmentId: Int,
-                                treatment: CommonData) = {
-    requiresPermissions(Array("clientTreatmentUpdate"))
-    treatmentBean.modifyTreatmentById(treatmentId,
-                                      treatment,
-                                      currentAuthData)
-  }
-
-  def getTreatmentInfo(eventId: Int,
-                       actionTypeId: java.lang.Integer,
-                       beginDate: Date,
-                       endTime: Date) = {
-    requiresPermissions(Array("clientTreatmentRead"))
-    treatmentBean.getTreatmentInfo(eventId, actionTypeId, beginDate, endTime);
-  }
-
-  def getTreatmentForPatient(eventId: Int,
-                             treatmentId: Int) = {
-    requiresPermissions(Array("clientTreatmentRead"))
-    treatmentBean.getTreatmentById(treatmentId);
-  }
-
-  def verifyDrugTreatment(eventId: Int,
-                          actionId: Int,
-                          drugId: Int) = {
-    requiresPermissions(Array("clientTreatmentRead"))
-    treatmentBean.verifyDrugTreatment(eventId, actionId, drugId)
-  }
-
-  def revokeTreatment(eventId: Int, actionId: Int) = {
-    requiresPermissions(Array("clientTreatmentUpdate"))
-    treatmentBean.revokeTreatment(eventId, actionId)
   }
 
   def getAllDepartmentsByHasBeds(hasBeds: String, hasPatients: String) = { //Для медипада

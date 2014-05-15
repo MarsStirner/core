@@ -234,14 +234,6 @@ public interface WebMisREST extends Serializable {
      */
     AssignmentData getAssignmentById(int actionId, AuthData auth) throws CoreException;
 
-    /**
-     * Получение справочника Rls
-     * @param request Данные из запроса как RlsDataListRequestData
-     * @return Список Rls как RlsDataList
-     * @throws CoreException
-     * @see RlsDataList
-     */
-    RlsDataList getFilteredRlsList(RlsDataListRequestData request) throws CoreException;
 
     /**
      * Сервис на получения списка типов обращений.
@@ -462,8 +454,8 @@ public interface WebMisREST extends Serializable {
      */
     void deleteAutoSaveField(String id, AuthData auth) throws CoreException;
 
-    NomenclatureNew getRlsById(int id) throws CoreException;
+    Nomenclature getRlsById(int id) throws CoreException;
 
-    List<NomenclatureNew> getRlsByText(String text) throws CoreException;
+    List<Nomenclature> getRlsByText(String text) throws CoreException;
 
 }

@@ -1299,18 +1299,6 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getAssignmentById(actionId: Int, auth: AuthData) = assignmentBean.getAssignmentById(actionId)
 
-  def getFilteredRlsList(request: RlsDataListRequestData) = {
-    request.setRecordsCount(dbRlsBean.getCountOfRlsRecordsWithFilter(request.filter))
-    val list = dbRlsBean.getRlsListWithFilter(request.page,
-      request.limit,
-      request.sortingFieldInternal,
-      request.sortingMethod,
-      request.filter)
-    if (list!=null)
-      new RlsDataList(list, request)
-    else
-      new RlsDataList()
-  }
 
   def getEventTypes(request: ListDataRequest, authData: AuthData) = {
     val mapper: ObjectMapper = new ObjectMapper()
@@ -1486,11 +1474,11 @@ class WebMisRESTImpl  extends WebMisREST
    dbAutoSaveStorageLocal.delete(id, auth.getUserId)
   }
 
-  override def getRlsById(id: Int): NomenclatureNew = {
+  override def getRlsById(id: Int): Nomenclature = {
     dbRlsBean.getRlsById(id)
   }
 
-  override def getRlsByText(text: String): ju.List[NomenclatureNew] = {
+  override def getRlsByText(text: String): ju.List[Nomenclature] = {
     dbRlsBean.getRlsByText(text)
   }
 }
