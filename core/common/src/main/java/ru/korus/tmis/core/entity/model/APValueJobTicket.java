@@ -39,6 +39,11 @@ public class APValueJobTicket extends AbstractAPValue implements Serializable, A
     }
 
     @Override
+    public String getValueAsId() {
+        return value.toString();
+    }
+
+    @Override
     public Integer getValue() {
         return value;
     }
@@ -88,11 +93,8 @@ public class APValueJobTicket extends AbstractAPValue implements Serializable, A
             return false;
         }
 
-        if ((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id))) {
-            return false;
-        }
+        return !((this.id == null && other.id != null) || (this.id != null && !this.id.equals(other.id)));
 
-        return true;
     }
 
     @Override

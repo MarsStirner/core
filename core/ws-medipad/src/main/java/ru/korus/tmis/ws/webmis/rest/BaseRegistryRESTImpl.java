@@ -107,6 +107,13 @@ public class BaseRegistryRESTImpl implements Serializable {
         return new RlsDataImpl(wsImpl, makeAuth(token, servRequest), callback);
     }
 
+    @Path("/job")
+    public JobImpl getJobImpl(@Context HttpServletRequest servRequest,
+                              @QueryParam("token") String token,
+                              @QueryParam("callback") String callback) {
+        return new JobImpl(wsImpl, makeAuth(token, servRequest), callback);
+    }
+
     //__________________________________________________________________________________________________________________
 
     private AuthData makeAuth(String token, HttpServletRequest servRequest) {

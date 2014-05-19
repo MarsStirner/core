@@ -298,6 +298,15 @@ public interface WebMisREST extends Serializable {
     TakingOfBiomaterialData getTakingOfBiomaterial(TakingOfBiomaterialRequesData request, AuthData authData) throws CoreException;
 
     /**
+     * Получение объекта JobTicket по идентификатору
+     * @param id Идентификатор
+     * @param authData Данные авторизации
+     * @return Detached-объект JobTicket
+     * @throws CoreException
+     */
+    JobTicket getJobTicketById(int id, AuthData authData) throws CoreException;
+
+    /**
      * Сервис по обновлению статусов JobTicket
      * @param data Список статусов JobTicket как JobTicketStatusDataList
      * @param authData Авторизационные данные как AuthData

@@ -290,14 +290,14 @@ class WebMisRESTImpl  extends WebMisREST
         map,
         street,
         null,
-        actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
-        dbClientRelation.getClientRelationByRelativeId _,
+        actionBean.getLastActionByActionTypeIdAndEventId,  //havePrimary
+        dbClientRelation.getClientRelationByRelativeId,
         null,
         if (positionA._1.getContractId != null) {
           dbContractBean.getContractById(positionA._1.getContractId.intValue())
         } else {null},
         currentDepartment,
-        dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _,
+        dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
         dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
       ))
     } else {
@@ -1358,6 +1358,11 @@ class WebMisRESTImpl  extends WebMisREST
                                 hospitalBedBean.getLastMovingActionForEventId _,
                                 actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
                                 request)
+  }
+
+
+  override def getJobTicketById(id: Int, authData: AuthData): JobTicket = {
+    dbJobTicketBean getJobTicketById id
   }
 
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
