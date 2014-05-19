@@ -13,13 +13,10 @@ import ru.korus.tmis.core.data.JobTicketContainer
  */
 class JobImpl(val wsImpl: WebMisREST, val authData: AuthData, val callback: String) {
 
-
-
   @GET
   @Path("/jobTicket/{id}")
   @Produces(Array("application/x-javascript", MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON))
   def load(@PathParam("id") id: Int) = {
     new JSONWithPadding(new JobTicketContainer(wsImpl.getJobTicketById(id, authData)))
   }
-
 }
