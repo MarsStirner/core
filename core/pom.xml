@@ -568,15 +568,15 @@
         </dependency>
 
         <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${version.logging.logback}</version>
-        </dependency>
-
-        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${version.logging.jcl}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${version.logging.logback}</version>
         </dependency>
 
         <!--Java EE-->
@@ -625,19 +625,6 @@
             <artifactId>spock-core</artifactId>
             <version>${version.test.spock}</version>
             <scope>test</scope>
-        </dependency>
-
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${version.logging.slf4j}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${version.logging.jcl}</version>
         </dependency>
 
         <!-- The org.codehaus.janino:commons-compiler:2.6.1 dependency -->
