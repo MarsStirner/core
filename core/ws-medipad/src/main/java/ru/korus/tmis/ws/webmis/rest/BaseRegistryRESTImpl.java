@@ -5,7 +5,7 @@ import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 
 import javax.ejb.EJB;
-import javax.inject.Singleton;
+import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -22,7 +22,7 @@ import java.util.Arrays;
  * Since: 1.0.0.74
  */
 @Interceptors(ServicesLoggingInterceptor.class)
-@Singleton
+@Stateless
 @Path("/tms-registry/")
 @Produces("application/json")
 public class BaseRegistryRESTImpl implements Serializable {
@@ -37,6 +37,9 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     @EJB
     WebMisREST wsImpl;
+
+    @EJB
+    JobImpl jobImpl;
 
     @Path("/")
     public CustomInfoRESTImpl getCustomInfoRESTImpl(@Context HttpServletRequest servRequest,
@@ -108,11 +111,7 @@ public class BaseRegistryRESTImpl implements Serializable {
     }
 
     @Path("/job")
-    public JobImpl getJobImpl(@Context HttpServletRequest servRequest,
-                              @QueryParam("token") String token,
-                              @QueryParam("callback") String callback) {
-        return new JobImpl(wsImpl, makeAuth(token, servRequest), callback);
-    }
+    public JobImpl getJobImpl() { return jobImpl; }
 
     //__________________________________________________________________________________________________________________
 
@@ -123,9 +122,5 @@ public class BaseRegistryRESTImpl implements Serializable {
          return this.wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
        }
     }
-
-    /*protected JSONWithPadding convertToJson(Object in, String callback) {
-      return new JSONWithPadding(in, callback);
-    }*/
 
 }
