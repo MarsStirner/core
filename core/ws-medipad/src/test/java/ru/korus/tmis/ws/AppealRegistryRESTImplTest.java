@@ -37,6 +37,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 
@@ -244,8 +245,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
     @Test
-    private void testGetActionTypes()
-    {
+    private void testGetActionTypes() {
         System.out.println("**************************** testCreateAndDeleteAction() started...");
         try {
             ConfigManager.Common().DebugTestMode_$eq("on");
@@ -276,6 +276,35 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             ex.printStackTrace();
         } finally {
             restore();
+        }
+    }
+
+    @Test
+    public void testCreateLabResearch() throws CoreException {
+        try {
+            System.out.println("**************************** testCreateLabResearch() started...");
+            Assert.assertNotNull(authStorageBeanLocal);
+            createTestUser();
+            AuthData auth = auth();
+            System.out.println(auth);
+            URL url = new URL(BASE_URL + "/tms-registry/appeals/189/diagnostics/laboratory");
+            HttpURLConnection conn = openConnection(url, auth, "POST");
+            OutputStream outputStream = conn.getOutputStream();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String nowDate = sdf.format(new Date());
+            String data = new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createLabRequestBloodMakro.json")));
+            data = data.replace("2014-05-29 18:00:00", nowDate);
+            System.out.println("I am going to send create lab research request:");
+            System.out.println(data);
+            outputStream.write(data.getBytes());
+            outputStream.flush();
+            int code = getResponseCode(conn);
+            Assert.assertTrue(code == 200);
+            String res = getResponseData(conn, code);
+            System.out.println(res);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert(false);
         }
     }
 
@@ -320,24 +349,20 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
     private HttpURLConnection openConnectionPost(URL url, AuthData authData) throws IOException {
-        HttpURLConnection conn = openConnection(url, authData, "POST");
-        return conn;
+        return openConnection(url, authData, "POST");
     }
 
 
     private HttpURLConnection openConnectionGet(URL url, AuthData authData) throws IOException {
-        HttpURLConnection conn = openConnection(url, authData, "GET");
-        return conn;
+        return openConnection(url, authData, "GET");
     }
 
     private HttpURLConnection openConnectionPut(URL url, AuthData authData) throws IOException {
-        HttpURLConnection conn = openConnection(url, authData, "PUT");
-        return conn;
+        return openConnection(url, authData, "PUT");
     }
 
     private HttpURLConnection openConnectionDel(URL url, AuthData authData) throws IOException {
-        HttpURLConnection conn = openConnection(url, authData, "DELETE");
-        return conn;
+        return openConnection(url, authData, "DELETE");
     }
 
     private HttpURLConnection openConnection(URL url, AuthData authData, String method) throws IOException {
