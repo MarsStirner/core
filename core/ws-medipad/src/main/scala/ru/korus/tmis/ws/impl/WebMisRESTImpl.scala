@@ -11,7 +11,7 @@ import collection.mutable
 import java.util.{Date, LinkedList}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.WebMisREST
-import javax.ejb.{LocalBean, Stateless, EJB}
+import javax.ejb.{Stateless, EJB}
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.patient._
@@ -290,14 +290,14 @@ class WebMisRESTImpl  extends WebMisREST
         map,
         street,
         null,
-        actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
-        dbClientRelation.getClientRelationByRelativeId _,
+        actionBean.getLastActionByActionTypeIdAndEventId,  //havePrimary
+        dbClientRelation.getClientRelationByRelativeId,
         null,
         if (positionA._1.getContractId != null) {
           dbContractBean.getContractById(positionA._1.getContractId.intValue())
         } else {null},
         currentDepartment,
-        dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _,
+        dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
         dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
       ))
     } else {
@@ -1299,18 +1299,6 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getAssignmentById(actionId: Int, auth: AuthData) = assignmentBean.getAssignmentById(actionId)
 
-  def getFilteredRlsList(request: RlsDataListRequestData) = {
-    request.setRecordsCount(dbRlsBean.getCountOfRlsRecordsWithFilter(request.filter))
-    val list = dbRlsBean.getRlsListWithFilter(request.page,
-      request.limit,
-      request.sortingFieldInternal,
-      request.sortingMethod,
-      request.filter)
-    if (list!=null)
-      new RlsDataList(list, request)
-    else
-      new RlsDataList()
-  }
 
   def getEventTypes(request: ListDataRequest, authData: AuthData) = {
     val mapper: ObjectMapper = new ObjectMapper()
@@ -1370,6 +1358,11 @@ class WebMisRESTImpl  extends WebMisREST
                                 hospitalBedBean.getLastMovingActionForEventId _,
                                 actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
                                 request)
+  }
+
+
+  override def getJobTicketById(id: Int, authData: AuthData): JobTicket = {
+    dbJobTicketBean getJobTicketById id
   }
 
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
@@ -1486,4 +1479,11 @@ class WebMisRESTImpl  extends WebMisREST
    dbAutoSaveStorageLocal.delete(id, auth.getUserId)
   }
 
+  override def getRlsById(id: Int): Nomenclature = {
+    dbRlsBean.getRlsById(id)
+  }
+
+  override def getRlsByText(text: String): ju.List[Nomenclature] = {
+    dbRlsBean.getRlsByText(text)
+  }
 }

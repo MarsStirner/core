@@ -345,35 +345,6 @@ public class DirectoryInfoRESTImpl {
     }
 
     /**
-     * Получение данных из справочника медицинских препоратов (rls).
-     * <pre>
-     * &#15; Возможные значения для сортировки:
-     * &#15; "name" | "tradeName" - по торговому наименованию препората (значение по умолчанию);
-     * &#15; "code" - по коду препората;
-     * &#15; "dosage" - по номинальной дозировке препората;
-     * &#15; "form" - по форме комплектования препората;</pre>
-     * @param name  Фильтр по обозначению препората. (В url: filter[name]=...)<pre>
-     * &#15; Проверяется сперва торговое обозначение, после латинское обозначение препората.</pre>
-     * @param code Фильтр по коду медицинского препората. (В url: filter[code]=...)
-     * @param dosage Фильтр по дозировке. (В url: filter[dosage]=...)
-     * @param form Фильтр по форме выпуска препората. (В url: filter[form]=...)
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws CoreException
-     * @see CoreException
-     */
-    @GET
-    @Path("/rls")
-    @Produces("application/x-javascript")
-    public Object getRlsList( @QueryParam("filter[name]")String name,
-                              @QueryParam("filter[code]")int code,
-                              @QueryParam("filter[dosage]")String dosage,
-                              @QueryParam("filter[form]")String form) throws CoreException {
-        RlsDataListFilter filter = new RlsDataListFilter(code, name, dosage, form);
-        RlsDataListRequestData request = new RlsDataListRequestData(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getFilteredRlsList(request),this.callback);
-    }
-
-    /**
      * Сервис по получению списка обращений <br>
      * Путь: ../tms-registry/eventTypes
      * <pre>

@@ -570,7 +570,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     // Изменяем статус действия на "Закончено"
     if (finished) {
       a.setStatus(ActionStatus.FINISHED.getCode)
-      entities += a
     }
 
     // Сохраняем изменившиеся сущности в БД

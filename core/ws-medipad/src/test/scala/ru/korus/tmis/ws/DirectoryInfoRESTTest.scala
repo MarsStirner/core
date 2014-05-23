@@ -585,68 +585,6 @@ class DirectoryInfoRESTTest {
   }
 
   //______________________________________________________________________________________________________
-  //****************************************   GetRlsList Tests   ********************************
-  //______________________________________________________________________________________________________
-
-  //Тест: непустая выборка из БД
-  @Test
-  def testGetRlsList = {
-
-    val list = new util.LinkedList[Nomenclature]()
-    list.add(new Nomenclature(1, 11, "тестовое наименование 1","test trade name 1", "dosage 1", "form 1"))
-    list.add(new Nomenclature(2, 21, "тестовое наименование 2","test trade name 2", "dosage 2", "form 2"))
-    list.add(new Nomenclature(3, 31, "тестовое наименование 3","test trade name 3", "dosage 3", "form 3"))
-
-    logger.warn("Start of GetRlsList test:")
-    this.subTestGetRlsList(list)
-    logger.warn("Successful end of GetRlsList test")
-  }
-
-  //Тест: не найдены записи в БД
-  @Test
-  def testGetRlsListCaseNullResponse  = {
-
-    logger.warn("Start of GetRlsList with null db response:")
-    this.subTestGetRlsList(null)
-    logger.warn("Successful end of GetRlsList test with null db response")
-  }
-
-  private def subTestGetRlsList(list: util.LinkedList[Nomenclature])  = {
-
-    val mapper: ObjectMapper = new ObjectMapper()
-    val filter = new RlsDataListFilter(0, null, null, null)
-    val request = new RlsDataListRequestData("id", "asc", 10, 1, filter)
-
-    logger.info("Request data for method is: {}", mapper.writeValueAsString(request))
-
-    try {
-      val size = if(list!=null)list.size() else 0
-      when(dbRlsBean.getCountOfRlsRecordsWithFilter(request.filter)).thenReturn(size)
-      when(dbRlsBean.getRlsListWithFilter(anyInt(), anyInt(), anyString(), anyObject(), anyObject())).thenReturn(list)
-      val result = wsImpl.getFilteredRlsList(request)
-      verify(dbRlsBean).getCountOfRlsRecordsWithFilter(request.filter)
-      verify(dbRlsBean).getRlsListWithFilter(anyInt(), anyInt(), anyString(), anyObject(), anyObject())
-
-      Assert.assertNotNull(result)
-      Assert.assertEquals(result.data.size(), size)
-      for(i <- 0 until size){
-        Assert.assertEquals(result.data.get(i).id, list.get(i).getId)
-        Assert.assertEquals(result.data.get(i).code, list.get(i).getCode)
-        Assert.assertEquals(result.data.get(i).tradeName, list.get(i).getTradeName)
-        Assert.assertEquals(result.data.get(i).tradeNameLatin, list.get(i).getTradeNameLat)
-        Assert.assertEquals(result.data.get(i).dosage, list.get(i).getDosage)
-        Assert.assertEquals(result.data.get(i).form, list.get(i).getForm)
-      }
-      validateMockitoUsage()
-      logger.info("The method has been successfully completed. Result is: {}", mapper.writeValueAsString(result))
-    } catch {
-      case ex: CoreException => {
-        logger.error("GetRlsList test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
-      }
-    }
-  }
-
-  //______________________________________________________________________________________________________
   //****************************************   GetEventTypes Tests   ********************************
   //______________________________________________________________________________________________________
 

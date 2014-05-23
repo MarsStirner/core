@@ -51,12 +51,11 @@ class AuthStorageBean
 
     // Если роль не найдена в БД, отказываем
     val initRole = staffRole match {
-      case None => {
+      case None =>
         throw new NoSuchUserException(
           ConfigManager.TmisAuth.ErrorCodes.RoleNotAllowed,
           login,
           i18n("error.roleNotAllowed").format(login))
-      }
       case Some(r) => r
     }
 
@@ -171,7 +170,7 @@ class AuthStorageBean
     }
     var authData: AuthData = null
     if (token != null) {
-      var authToken: AuthToken = new AuthToken(token)
+      val authToken: AuthToken = new AuthToken(token)
       //данные об авторизации
 
       authData = this.getAuthData(authToken)
@@ -204,7 +203,6 @@ class AuthStorageBean
           ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
           i18n("error.invalidToken"))
       }
-      //currentUser.login(new TmisShiroToken(authData))
       logTmis.setValueForKey(logTmis.LoggingKeys.User, authData.getUser.getId, logTmis.StatusKeys.Success)
       logTmis.setValueForKey(logTmis.LoggingKeys.Role, authData.getUserRole.getId, logTmis.StatusKeys.Success)
     }

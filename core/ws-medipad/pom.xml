@@ -3,7 +3,6 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-ws-medipad</artifactId>
     <version>${version.tmis.core}</version>
     <packaging>war</packaging>
@@ -29,7 +28,13 @@
             <version>${version.tmis.core}</version>
             <type>jar</type>
         </dependency>
-
+        <dependency>
+            <groupId>ru.korus.tmis.laboratory</groupId>
+            <artifactId>tmis-ws-laboratory</artifactId>
+            <version>${version.tmis.core}</version>
+            <classifier>classes</classifier>
+            <scope>test</scope>
+        </dependency>
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-json</artifactId>

@@ -3,8 +3,7 @@ package ru.korus.tmis.ws.webmis.rest;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
-import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
-import ru.korus.tmis.core.entity.model.RbPrintTemplate;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -235,14 +234,6 @@ public interface WebMisREST extends Serializable {
      */
     AssignmentData getAssignmentById(int actionId, AuthData auth) throws CoreException;
 
-    /**
-     * Получение справочника Rls
-     * @param request Данные из запроса как RlsDataListRequestData
-     * @return Список Rls как RlsDataList
-     * @throws CoreException
-     * @see RlsDataList
-     */
-    RlsDataList getFilteredRlsList(RlsDataListRequestData request) throws CoreException;
 
     /**
      * Сервис на получения списка типов обращений.
@@ -305,6 +296,15 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     TakingOfBiomaterialData getTakingOfBiomaterial(TakingOfBiomaterialRequesData request, AuthData authData) throws CoreException;
+
+    /**
+     * Получение объекта JobTicket по идентификатору
+     * @param id Идентификатор
+     * @param authData Данные авторизации
+     * @return Detached-объект JobTicket
+     * @throws CoreException
+     */
+    JobTicket getJobTicketById(int id, AuthData authData) throws CoreException;
 
     /**
      * Сервис по обновлению статусов JobTicket
@@ -462,5 +462,9 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     void deleteAutoSaveField(String id, AuthData auth) throws CoreException;
+
+    Nomenclature getRlsById(int id) throws CoreException;
+
+    List<Nomenclature> getRlsByText(String text) throws CoreException;
 
 }
