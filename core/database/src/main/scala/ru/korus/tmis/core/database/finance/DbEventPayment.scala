@@ -33,7 +33,10 @@ with I18nable {
     eventPayment.setSumDisc(servicePaidFinanceInfo.getSumDisc)
     eventPayment.setCashBox("")
     eventPayment.setAction(action)
-    val servList = em.createNamedQuery("rbService.findByCode", classOf[RbService]).setParameter("code", servicePaidFinanceInfo.getCodeService).getResultList
+    val servList = em.createNamedQuery("rbService.findByCodeAndName", classOf[RbService])
+      .setParameter("date", date)
+      .setParameter("code", servicePaidFinanceInfo.getCodeService)
+      .getResultList
     eventPayment.setService( if (servList.isEmpty) { null } else {servList.get(0)} )
     eventPayment.setEventLocalContract(eventLocalContract)
     if (action != null) {

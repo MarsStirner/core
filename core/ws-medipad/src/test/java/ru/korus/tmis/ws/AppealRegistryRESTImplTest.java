@@ -50,8 +50,8 @@ import java.util.List;
 public class AppealRegistryRESTImplTest extends Arquillian {
 
     private static final String TST_CALLBACK = "tstCallback";
-    final String BASE_URL_REST = "http://localhost:7713/test/rest";
     final String BASE_URL_SOAP = "http://localhost:7713/test/";
+    final String BASE_URL_REST = "http://localhost:7713/test/rest";
 
     final int TEST_PATIENT_ID = 2; // id пациента, для которого создается госпитализация
 
@@ -290,7 +290,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             AuthData authData = auth();
             //ttp://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
             final Integer eventId = 189;
-            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/");
+            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/");
             url = addGetParam(url, "eventId", String.valueOf(eventId));
             url = addGetParam(url, "callback", TST_CALLBACK);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
@@ -327,7 +327,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             // pacientName=P&
             // setPersonName=V&
             // departmentId=26&_=1400734043649
-            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/");
+            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/");
             url = addGetParam(url, "callback", TST_CALLBACK);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
             url = addGetParam(url, "dateRangeMin", "1400745600");
@@ -358,7 +358,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             save();
             AuthData authData = auth();
             //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
-            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/types/");
+            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/types/");
             url = addGetParam(url, "callback", TST_CALLBACK);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
             System.out.println("Send GET to..." + url.toString());
@@ -387,7 +387,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             AuthData authData = auth();
             //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
             Integer actionTypeId = 123;
-            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/template/" + actionTypeId);
+            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/template/" + actionTypeId);
             url = addGetParam(url, "callback", TST_CALLBACK);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
             System.out.println("Send GET to..." + url.toString());
@@ -414,7 +414,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         try {
             AuthData authData = auth();
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
-            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/");
+            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/");
             final String tstCallback = "tstCallback";
             url = addGetParam(url, "callback", tstCallback);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
@@ -445,7 +445,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         try {
             AuthData authData = auth();
             //http://10.128.51.85/api/v1/prescriptions/983378?callback=jQuery182040639712987467647_1400594935328
-            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/" + actionId);
+            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/" + actionId);
             final String tstCallback = "tstCallback";
             url = addGetParam(url, "callback", tstCallback);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
