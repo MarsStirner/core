@@ -16,6 +16,7 @@ import ru.korus.tmis.core.treatment.TreatmentBeanLocal;
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal;
 import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal;
 import ru.korus.tmis.schedule.PersonScheduleBeanLocal;
+import ru.korus.tmis.prescription.PrescriptionBeanLocal;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -34,6 +35,7 @@ public class TestUtilBusiness implements TestUtil {
                 DiagnosticBeanLocal.class.getPackage(),       // ru.korus.tmis.core.diagnostic
                 ThesaurusBeanLocal.class.getPackage(),        // ru.korus.tmis.core.thesaurus
                 TreatmentBeanLocal.class.getPackage(),        // ru.korus.tmis.core.treatment
+                PrescriptionBeanLocal.class.getPackage()      // ru.korus.tmis.prescription
         };
         return res;
     }

@@ -65,7 +65,7 @@ public class FinancePullBeanTest extends Arquillian {
     private static final double TEST_SERVICE_SUM = 10000.0;
     private static final double TEST_SERVICE_SUM_DISC = 1000.0;
     private static final int TEST_SERVICE_PATIENT_ID = 347610;
-    private static final String CODE_CONTRACT = "2201-п1";
+    private static final String CODE_CONTRACT = "2201-п";
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em;
 

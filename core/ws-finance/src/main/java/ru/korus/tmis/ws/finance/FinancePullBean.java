@@ -105,7 +105,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     public void sendClosedActions(Event event, List<Action> actionList) {
         assert event != null;
         assert !actionList.isEmpty();
-        EventLocalContract eventLocalContract = dbEventLocalContractLocal.getByEventId(event.getId());
+        EventLocalContract eventLocalContract = event.getEventLocalContract();
         final TableName paidName = odvdObjectFactory.createTableName();
         final RowTableName paidRowName = odvdObjectFactory.createRowTableName();
         paidName.getPatientName().add(paidRowName);

@@ -35,7 +35,7 @@ object ConfigManager extends Configuration {
 
   class RbManagerClass extends Configuration {
     /**
-     * URL сервиса управления справочниками
+     * URL сервиса подсистемы управления справочниками
      */
     var ServiceUrl = "http://192.168.1.123:5005"
 
@@ -154,7 +154,7 @@ object ConfigManager extends Configuration {
     var ServiceUrlSda = new URL("http://37.139.9.166:57772/csp/healthshare/ehr/isc.emr.EMRReceiverService.cls")
 
     /**
-     * URL сервиса по обмену информацией об пациентах
+     * URL сервиса по интеграции с ЕМК
      */
     var ServiceUrlEhr = new URL("http://37.139.9.166:57772/csp/healthshare/hsedgesda/isc.emr.EMRReceiverService.cls")
 

@@ -154,7 +154,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             final URL url = new URL(BASE_URL + "/tms-auth/roles/");
             System.out.println("Send POST to..." + url.toString());
             //TODO move to resource file!
-            final String input = "{\"login\":\"test\",\"password\":\"098f6bcd4621d373cade4e832627b4f6\",\"roleId\":0}";
+            final String input = "{\"login\":\"utest\",\"password\":\"098f6bcd4621d373cade4e832627b4f6\",\"roleId\":0}";
             HttpURLConnection conn = openConnectionPost(url, null);
             toPostStream(input, conn);
             int code = getResponseCode(conn);
@@ -244,7 +244,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
     @Test
-    private void testGetActionTypes()
+    public void testGetActionTypes()
     {
         System.out.println("**************************** testCreateAndDeleteAction() started...");
         try {
@@ -274,6 +274,196 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             Assert.assertEquals(resJson, expected);
         } catch (Exception ex) {
             ex.printStackTrace();
+        } finally {
+            restore();
+        }
+    }
+
+    @Test
+    public void testGetPrescriptionByEvent() {
+        System.out.println("**************************** testGetPrscriptionByEvent() started...");
+        try {
+            save();
+            AuthData authData = auth();
+            //ttp://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
+            final Integer eventId = 189;
+            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/");
+            url = addGetParam(url, "eventId", String.valueOf(eventId));
+            url = addGetParam(url, "callback", TST_CALLBACK);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            System.out.println("Send GET to..." + url.toString());
+            HttpURLConnection conn = openConnectionGet(url, authData);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            res = removePadding(res, TST_CALLBACK);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getPrescriptionByEventResp.json"))));
+            Assert.assertEquals(resJson, expected);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        } finally {
+            restore();
+        }
+    }
+
+    //@Test
+    public void testGetPrescriptionByTime() {
+        System.out.println("**************************** testGetPrescriptionByTime() started...");
+        try {
+            save();
+            AuthData authData = auth();
+            //http://webmis/api/v1/prescriptions/?callback=jQuery18205942272304091603_1400733998545&
+            // groupBy=interval&
+            // dateRangeMin=1400745600&
+            // dateRangeMax=1400832000&
+            // administrationId=2&
+            // drugName=a&
+            // pacientName=P&
+            // setPersonName=V&
+            // departmentId=26&_=1400734043649
+            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/");
+            url = addGetParam(url, "callback", TST_CALLBACK);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            url = addGetParam(url, "dateRangeMin", "1400745600");
+            url = addGetParam(url, "dateRangeMax", "1400832000");
+            System.out.println("Send GET to..." + url.toString());
+            HttpURLConnection conn = openConnectionGet(url, authData);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            res = removePadding(res, TST_CALLBACK);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getPrescriptionByEventResp.json"))));
+            Assert.assertEquals(resJson, expected);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        } finally {
+            restore();
+        }
+    }
+
+
+    @Test
+    public void testPrescriptionTypeList() {
+        System.out.println("**************************** testPrscriptionTypeList() started...");
+        try {
+            save();
+            AuthData authData = auth();
+            //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
+            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/types/");
+            url = addGetParam(url, "callback", TST_CALLBACK);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            System.out.println("Send GET to..." + url.toString());
+            HttpURLConnection conn = openConnectionGet(url, authData);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            res = removePadding(res, TST_CALLBACK);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getPrescriptionTypeListResp.json"))));
+            Assert.assertEquals(resJson, expected);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        } finally {
+            restore();
+        }
+    }
+
+    @Test
+    public void testGetPrescriptionTemplate() {
+        System.out.println("**************************** testGetPrescriptionTemplate() started...");
+        try {
+            save();
+            AuthData authData = auth();
+            //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
+            Integer actionTypeId = 123;
+            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/template/" + actionTypeId);
+            url = addGetParam(url, "callback", TST_CALLBACK);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            System.out.println("Send GET to..." + url.toString());
+            HttpURLConnection conn = openConnectionGet(url, authData);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            res = removePadding(res, TST_CALLBACK);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getPrescriptionTemplateResp.json"))));
+            Assert.assertEquals(resJson, expected);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        } finally {
+            restore();
+        }
+    }
+
+    @Test
+    public void testCreatePrescription() {
+        System.out.println("**************************** testCreatePrescription() started...");
+        try {
+            AuthData authData = auth();
+            //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
+            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/");
+            final String tstCallback = "tstCallback";
+            url = addGetParam(url, "callback", tstCallback);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            System.out.println("Send POST to..." + url.toString());
+            HttpURLConnection conn = openConnectionPost(url, authData);
+            toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createPrescriptionReq.json"))), conn);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            res = removePadding(res, tstCallback);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createPrescriptionResp.json"))));
+            //TODO перед тестом почистить БД!
+            //Assert.assertEquals(resJson, expected);
+            Assert.assertTrue(res.contains("\"valueDomain\":\"rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER\""));
+            //testUpdatePrescription(259);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        } finally {
+            restore();
+        }
+    }
+
+    public void testUpdatePrescription(Integer actionId) {
+        System.out.println("**************************** testCreatePrescription() started...");
+        try {
+            AuthData authData = auth();
+            //http://10.128.51.85/api/v1/prescriptions/983378?callback=jQuery182040639712987467647_1400594935328
+            URL url = new URL(BASE_URL + "/tms-registry/prescriptions/" + actionId);
+            final String tstCallback = "tstCallback";
+            url = addGetParam(url, "callback", tstCallback);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            System.out.println("Send PUT to..." + url.toString());
+            HttpURLConnection conn = openConnectionPut(url, authData);
+            toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/updatePrescriptionReq.json"))), conn);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            res = removePadding(res, tstCallback);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/updatePrescriptionReq.json"))));
+            //Assert.assertEquals(resJson, expected);
+            //TODO перед тестом почистить БД!
+            //Assert.assertEquals(resJson, expected);
+            Assert.assertTrue(res.contains("\"valueDomain\":\"rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER\""));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
         } finally {
             restore();
         }

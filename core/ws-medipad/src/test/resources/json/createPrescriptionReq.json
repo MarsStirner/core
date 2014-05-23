@@ -1,0 +1,104 @@
+{"requestData": {}, "data": {
+    "actionTypeId": 123,
+    "eventId": 841695,
+    "note": "",
+    "properties": [
+        {
+            "actionPropertyTypeId": 1810,
+            "mandatory": true,
+            "name": "Наименование",
+            "value": "",
+            "valueDomain": "",
+            "type": "RLS",
+            "code": "nomen"
+        },
+        {
+            "actionPropertyTypeId": 1811,
+            "mandatory": false,
+            "name": "Скорость введения",
+            "value": "",
+            "valueDomain": "",
+            "type": "String",
+            "code": "voa"
+        },
+        {
+            "actionPropertyTypeId": 5176,
+            "mandatory": false,
+            "name": "Способ введения",
+            "value": "",
+            "valueDomain": "rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER",
+            "type": "ReferenceRb",
+            "code": "moa"
+        },
+        {
+            "actionPropertyTypeId": 11848,
+            "mandatory": false,
+            "name": "Единицы",
+            "value": "",
+            "valueDomain": "'мг','мкг','гр','мл',*",
+            "type": "String",
+            "code": "units"
+        },
+        {
+            "actionPropertyTypeId": 24638,
+            "mandatory": false,
+            "name": "Примечания",
+            "value": "",
+            "valueDomain": "",
+            "type": "String",
+            "code": null
+        },
+        {
+            "actionPropertyTypeId": 24642,
+            "mandatory": false,
+            "name": "Дозировка",
+            "value": "",
+            "valueDomain": "",
+            "type": "String",
+            "code": "dosage"
+        },
+        {
+            "actionPropertyTypeId": 24643,
+            "mandatory": false,
+            "name": "Доза",
+            "value": "",
+            "valueDomain": "",
+            "type": "Double",
+            "code": null
+        }
+    ],
+    "drugs": [
+        {
+            "nomen": 6060,
+            "name": "Анальгин",
+            "dose": "111",
+            "unit": 327,
+            "units": [
+                {
+                    "id": 327,
+                    "code": "мг"
+                },
+                {
+                    "id": 9,
+                    "code": "мл"
+                }
+            ]
+        }
+    ],
+    "assigmentIntervals": [
+        {
+            "beginDateTime": 1400252400000,
+            "endDateTime": null,
+            "status": 0,
+            "stateName": "Не исполнено",
+            "backgroundColor": "#b2a7c9",
+            "cid": "c555",
+            "intervalString": "16.05.2014 19:00 - 19:01",
+            "canBeEdited": true,
+            "canBeCanceled": false,
+            "canBeExecuted": true,
+            "canBeCanceledExecution": false,
+            "canBeAddedStop": true
+        }
+    ]
+}}

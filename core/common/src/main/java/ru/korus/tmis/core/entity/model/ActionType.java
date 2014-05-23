@@ -15,8 +15,8 @@ import javax.xml.bind.annotation.XmlType;
 @NamedQueries(
         {
                 @NamedQuery(name = "ActionType.findAll", query = "SELECT a FROM ActionType a"),
-                @NamedQuery(name = "ActionType.getQueueActionType",
-                        query = "SELECT a FROM ActionType a WHERE a.code = 'queue'")
+                @NamedQuery(name = "ActionType.getQueueActionType", query = "SELECT a FROM ActionType a WHERE a.code = 'queue'"),
+                @NamedQuery(name = "ActionType.findByFlatCodes", query = "SELECT a FROM ActionType a WHERE a.flatCode IN :flatCodes" )
         })
 @XmlType(name = "actionType")
 @XmlRootElement(name = "actionType")

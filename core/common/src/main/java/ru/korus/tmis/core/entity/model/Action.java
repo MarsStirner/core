@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.*;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 
 @Entity
 @Table(name = "Action")
@@ -15,7 +16,8 @@ import java.util.*;
                 @NamedQuery(name = "Action.findNewByFlatCode", query = "SELECT a FROM Action a WHERE a.status = 0 AND a.actionType.flatCode = :flatCode AND a.event IS NOT NULL AND a.event.patient IS NOT NULL AND a.deleted = 0 "),
                 @NamedQuery(name = "Action.ActionsByFlatCode", query = "SELECT a FROM Action a WHERE a.actionType.flatCode IN :codes AND a.event.id = :id AND a.deleted = 0"),
                 @NamedQuery(name = "Action.ServiceList", query = "SELECT a FROM Action a WHERE a.actionType.service IS NOT NULL AND a.event.id = :eventId AND a.deleted = 0"),
-                @NamedQuery(name = "Action.findByEventId", query = "SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0")
+                @NamedQuery(name = "Action.findByEventId", query = "SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0"),
+                @NamedQuery(name = "Action.findByFlatCodesAndEventId", query = "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCodes AND a.event.id = :eventId AND a.deleted = 0")
 })
 @XmlType(name = "action")
 @XmlRootElement(name = "action")
@@ -183,7 +185,6 @@ public class Action
 
     @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
-//    @Transient
     private UUID uuid;
 
     @Basic(optional = false)

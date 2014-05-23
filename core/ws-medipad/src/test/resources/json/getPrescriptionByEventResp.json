@@ -1,0 +1,167 @@
+{"message": null, "data": [
+    {
+        "properties": [
+            {
+                "name": "Наименование",
+                "value": null,
+                "id": 1445,
+                "type": "RLS",
+                "code": "nomen",
+                "valueId": null,
+                "valueDomain": ""
+            },
+            {
+                "name": "Способ введения",
+                "value": null,
+                "id": 1447,
+                "type": "ReferenceRb",
+                "code": "moa",
+                "valueId": null,
+                "valueDomain": "rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER"
+            },
+            {
+                "name": "Дозировка",
+                "value": null,
+                "id": 1442,
+                "type": "String",
+                "code": "dosage",
+                "valueId": null,
+                "valueDomain": ""
+            },
+            {
+                "name": "Доза",
+                "value": null,
+                "id": 1443,
+                "type": "Double",
+                "code": null,
+                "valueId": null,
+                "valueDomain": ""
+            },
+            {
+                "name": "Единицы",
+                "value": null,
+                "id": 1444,
+                "type": "String",
+                "code": "units",
+                "valueId": null,
+                "valueDomain": "'мг','мкг','гр','мл',*"
+            },
+            {
+                "name": "Скорость введения",
+                "value": null,
+                "id": 1446,
+                "type": "String",
+                "code": "voa",
+                "valueId": null,
+                "valueDomain": ""
+            },
+            {
+                "name": "Примечания",
+                "value": null,
+                "id": 1448,
+                "type": "String",
+                "code": null,
+                "valueId": null,
+                "valueDomain": ""
+            }
+        ],
+        "name": "Терапия",
+        "id": 259,
+        "doctor": {
+            "id": 6,
+            "lastName": "Самарин",
+            "firstName": "Алексей",
+            "birthDate": null,
+            "middleName": "Алексеевич"
+        },
+        "createPerson": {
+            "id": 1,
+            "lastName": "Админ",
+            "firstName": "",
+            "birthDate": null,
+            "middleName": ""
+        },
+        "note": "",
+        "urgent": false,
+        "client": {
+            "id": 2,
+            "lastName": "Милонов",
+            "firstName": "Сергей",
+            "birthDate": 649454400000,
+            "middleName": "Игоревич"
+        },
+        "assigmentIntervals": [
+            {
+                "id": 1,
+                "status": 1,
+                "endDateTime": null,
+                "actionId": 259,
+                "note": "",
+                "beginDateTime": 1379520600000,
+                "executionIntervals": [
+                    {
+                        "id": 2,
+                        "status": 1,
+                        "endDateTime": null,
+                        "actionId": 259,
+                        "note": "",
+                        "beginDateTime": 1379520600000,
+                        "executionIntervals": [],
+                        "bdt": "2013-09-18 20:10:00",
+                        "edt": null,
+                        "masterId": 1
+                    }
+                ],
+                "bdt": "2013-09-18 20:10:00",
+                "edt": null,
+                "masterId": null
+            },
+            {
+                "id": 3,
+                "status": 0,
+                "endDateTime": 1379530200000,
+                "actionId": 259,
+                "note": "",
+                "beginDateTime": 1379524200000,
+                "executionIntervals": [
+                    {
+                        "id": 4,
+                        "status": 0,
+                        "endDateTime": 1379530200000,
+                        "actionId": 259,
+                        "note": "",
+                        "beginDateTime": 1379524200000,
+                        "executionIntervals": [],
+                        "bdt": "2013-09-18 21:10:00",
+                        "edt": "2013-09-18 22:50:00",
+                        "masterId": 3
+                    }
+                ],
+                "bdt": "2013-09-18 21:10:00",
+                "edt": "2013-09-18 22:50:00",
+                "masterId": null
+            }
+        ],
+        "actionTypeId": 123,
+        "modifyPerson": {
+            "id": 41,
+            "lastName": "test",
+            "firstName": "test",
+            "birthDate": null,
+            "middleName": "test"
+        },
+        "eventId": 189,
+        "setPerson": null,
+        "drugs": [
+            {
+                "name": "Анальгин",
+                "id": 1,
+                "unitName": null,
+                "unit": null,
+                "units": [],
+                "dose": 10.0,
+                "nomen": 1
+            }
+        ]
+    }
+]}

@@ -1,10 +1,14 @@
 package ru.korus.tmis.core.pharmacy;
 
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.RbUnit;
+import ru.korus.tmis.core.entity.model.RlsNomen;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -27,4 +31,21 @@ public class DbDrugComponentBean implements DbDrugComponentBeanLocal {
                 .setParameter("ACTIONID", prescriptionActionId)
                 .getResultList();
     }
+
+    @Override
+    public DrugComponent create(final Action action, final Integer nomen, final String name, final Double dose, final Integer unit) {
+        DrugComponent res = new DrugComponent();
+        res.setAction(action);
+        res.setCreateDateTime(new Date());
+        res.setDose(dose);
+        res.setName(name);
+        final RlsNomen rlsNomen = em.find(RlsNomen.class, nomen);
+        res.setNomen(rlsNomen);
+        final RbUnit rbUnit = em.find(RbUnit.class, unit);
+        res.setUnit(rbUnit);
+        em.persist(res);
+        return res;
+    }
+
+
 }
