@@ -5,6 +5,7 @@
 package ru.korus.tmis.ws;
 
 import com.google.gson.*;
+import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.persistence.PersistenceTest;
 import org.jboss.arquillian.testng.Arquillian;
@@ -19,10 +20,8 @@ import ru.korus.tmis.core.auth.*;
 import ru.korus.tmis.core.common.CommonDataProcessorBean;
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal;
 import ru.korus.tmis.core.data.*;
-import ru.korus.tmis.core.database.common.DbActionBeanLocal;
-import ru.korus.tmis.core.database.common.DbEventBeanLocal;
-import ru.korus.tmis.core.database.common.DbSettingsBean;
-import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
+import ru.korus.tmis.core.database.common.*;
+import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.patient.AppealBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
@@ -39,6 +38,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 
 /**
@@ -50,7 +50,8 @@ import java.util.Date;
 public class AppealRegistryRESTImplTest extends Arquillian {
 
     private static final String TST_CALLBACK = "tstCallback";
-    final String BASE_URL = "http://localhost:7713/test/rest";
+    final String BASE_URL_REST = "http://localhost:7713/test/rest";
+    final String BASE_URL_SOAP = "http://localhost:7713/test/";
 
     final int TEST_PATIENT_ID = 2; // id пациента, для которого создается госпитализация
 
@@ -83,6 +84,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         wa.addPackages(false, (new TestUtilLaboratory()).getPackagesForTest());
         // --------------------------------------------------------------------------
 
+        wa.addPackages(true, (new TestUtilWsLaboratory()).getPackagesForTest());
         wa.addPackages(true, (new TestUtilWsMedipad()).getPackagesForTest());
         wa.addClass(AuthStorageBeanLocal.class);
         wa.addClass(AuthStorageBean.class);
@@ -152,7 +154,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         System.out.println("**************************** testAuth() started...");
         try {
             createTestUser();
-            final URL url = new URL(BASE_URL + "/tms-auth/roles/");
+            final URL url = new URL(BASE_URL_REST + "/tms-auth/roles/");
             System.out.println("Send POST to..." + url.toString());
             //TODO move to resource file!
             final String input = "{\"login\":\"test\",\"password\":\"098f6bcd4621d373cade4e832627b4f6\",\"roleId\":0}";
@@ -180,7 +182,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             final String transfusionTherapyActionId = "3911";
             final Integer eventId = 841695;
             //final Integer eventId = appealBean.insertAppealForPatient(initAppealData(), TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
-            URL url = new URL(BASE_URL + "/tms-registry/dir/actionTypes/" + transfusionTherapyActionId);
+            URL url = new URL(BASE_URL_REST + "/tms-registry/dir/actionTypes/" + transfusionTherapyActionId);
             url = addGetParam(url, "eventId", String.valueOf(eventId));
             url = addGetParam(url, "callback", TST_CALLBACK);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
@@ -209,7 +211,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             AuthData authData = auth();
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
             final Integer eventId = 841695;
-            URL url = new URL(BASE_URL + String.format("/tms-registry/appeals/%s/documents/", eventId));
+            URL url = new URL(BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/", eventId));
             final String tstCallback = "tstCallback";
             url = addGetParam(url, "callback", tstCallback);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
@@ -254,7 +256,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             //                                    callback=jQuery182004028293350711465_1399548976777&
             //                                    sortingField=id&sortingMethod=asc&limit=10&page=1&recordsCount=0&_=1399556929592
             AuthData authData = auth();
-            URL url = new URL(BASE_URL + "/tms-registry/dir/actionTypes/");
+            URL url = new URL(BASE_URL_REST + "/tms-registry/dir/actionTypes/");
             url = addGetParam(url, "callback", TST_CALLBACK);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
             final String mnems[] = {"EXAM","EPI","JOUR","ORD","NOT","OTH"};
@@ -279,33 +281,121 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         }
     }
 
+
+
+    private static int labTestLabResearchId;
+    private static int labTestBarcode;
+    private static AuthData labTestAuthData;
+
     @Test
-    public void testCreateLabResearch() throws CoreException {
+    public void testCreateLabResearch() {
         try {
-            System.out.println("**************************** testCreateLabResearch() started...");
-            Assert.assertNotNull(authStorageBeanLocal);
             createTestUser();
-            AuthData auth = auth();
-            System.out.println(auth);
-            URL url = new URL(BASE_URL + "/tms-registry/appeals/189/diagnostics/laboratory");
-            HttpURLConnection conn = openConnection(url, auth, "POST");
-            OutputStream outputStream = conn.getOutputStream();
+            labTestAuthData = auth();
+            System.out.println(labTestAuthData);
+            URL url = new URL(BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory");
+            HttpURLConnection createLabResearchConnection = openConnection(url, labTestAuthData, "POST");
+            OutputStream createLabResearchOutputStream = createLabResearchConnection.getOutputStream();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String nowDate = sdf.format(new Date());
             String data = new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createLabRequestBloodMakro.json")));
             data = data.replace("2014-05-29 18:00:00", nowDate);
             System.out.println("I am going to send create lab research request:");
             System.out.println(data);
-            outputStream.write(data.getBytes());
-            outputStream.flush();
-            int code = getResponseCode(conn);
+            createLabResearchOutputStream.write(data.getBytes());
+            createLabResearchOutputStream.flush();
+            int code = getResponseCode(createLabResearchConnection);
             Assert.assertTrue(code == 200);
-            String res = getResponseData(conn, code);
+            String res = getResponseData(createLabResearchConnection, code);
+            res = res.substring(9, res.length() - 1);
             System.out.println(res);
+            ObjectMapper mapper = new ObjectMapper();
+            JSONCommonData commonData = mapper.readValue(res, JSONCommonData.class);
+            System.out.println("Action id is " + commonData.getData().get(0).getId());
+            Action a = dbActionBean.getActionById(commonData.getData().get(0).getId());
+
+            labTestLabResearchId = a.getId();
+            labTestBarcode = a.getTakenTissue().getBarcode();
         } catch (Exception e) {
             e.printStackTrace();
             assert(false);
         }
+    }
+
+    @Test(dependsOnMethods = "testCreateLabResearch")
+    public void testGetLisAcrossResults() {
+        try {
+            URL url = new URL(BASE_URL_SOAP + "/service-across-results");
+            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/makroBloodResult.xml")));
+            postData = postData.replace("983410", Integer.toString(labTestLabResearchId));
+            postData = postData.replace("609520", Integer.toString(labTestBarcode));
+            System.out.println("I am going to send lab result request:");
+            System.out.println(postData);
+            HttpURLConnection connection = openConnection(url, labTestAuthData, "POST");
+            connection.setRequestProperty("Content-Type", "text/xml");
+            OutputStream outStream = connection.getOutputStream();
+            outStream.write(postData.getBytes());
+            outStream.flush();
+            int code = getResponseCode(connection);
+            Assert.assertTrue(code == 200);
+            getResponseData(connection, code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert(false);
+        }
+    }
+
+    @Test(dependsOnMethods = "testGetLisAcrossResults")
+    public void testGetLabResearchResult() {
+        try {
+            URL url = new URL(BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory/" + labTestLabResearchId);
+            HttpURLConnection connection = openConnection(url, labTestAuthData, "GET");
+            connection.setRequestProperty("Accept", "application/x-javascript");
+            int code = getResponseCode(connection);
+            Assert.assertTrue(code == 200);
+            String res = getResponseData(connection, code);
+            res = res.substring(9, res.length() - 1);
+            ObjectMapper mapper = new ObjectMapper();
+            JSONCommonData commonData = mapper.readValue(res, JSONCommonData.class);
+            List<CommonAttribute> atrs = commonData.getData().get(0).getGroup().get(1).attribute();
+            Assert.assertEquals("50", getCommonAttributeValueByName(atrs, "Альбумин"));
+            Assert.assertEquals("60", getCommonAttributeValueByName(atrs, "Общий белок"));
+            Assert.assertEquals("10", getCommonAttributeValueByName(atrs, "Билирубин общий"));
+            Assert.assertEquals("1", getCommonAttributeValueByName(atrs, "Билирубин прямой"));
+            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "Мочевина"));
+            Assert.assertEquals("4", getCommonAttributeValueByName(atrs, "Глюкоза"));
+            Assert.assertEquals("4", getCommonAttributeValueByName(atrs, "Калий"));
+            Assert.assertEquals("153", getCommonAttributeValueByName(atrs, "Натрий"));
+            Assert.assertEquals("20", getCommonAttributeValueByName(atrs, "АЛТ"));
+            Assert.assertEquals("30", getCommonAttributeValueByName(atrs, "АСТ"));
+            Assert.assertEquals("80", getCommonAttributeValueByName(atrs, "ЛДГ"));
+            Assert.assertEquals("50", getCommonAttributeValueByName(atrs, "ГГТ"));
+            Assert.assertEquals("100", getCommonAttributeValueByName(atrs, "ЩФ"));
+            Assert.assertEquals("50", getCommonAttributeValueByName(atrs, "Альфа-амилаза"));
+            Assert.assertEquals("20", getCommonAttributeValueByName(atrs, "П-амилаза"));
+            Assert.assertEquals("4", getCommonAttributeValueByName(atrs, "Холестерин"));
+            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "Триглицериды"));
+            Assert.assertEquals("20", getCommonAttributeValueByName(atrs, "Липаза"));
+            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "ЛПНП"));
+            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "ЛПВП"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert(false);
+        }
+    }
+
+
+    private String getCommonAttributeValueByName(List<CommonAttribute> attributes, String name) {
+        for(CommonAttribute ca : attributes) {
+            if(ca.getName().equals(name)) {
+                for(PropertyPair pp : ca.getProperties()) {
+                    if (pp.getName().equals("value")) {
+                        return pp.getValue();
+                    }
+                }
+            }
+        }
+        return "";
     }
 
     private void deleteAction(int actionId) {
@@ -315,7 +405,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
             final Integer transfusionTherapyActionId = 3911;
             final Integer eventId = 841695;
-            URL url = new URL(BASE_URL + String.format("/tms-registry/appeals/%s/documents/%s", eventId, actionId));
+            URL url = new URL(BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/%s", eventId, actionId));
             final String tstCallback = "tstCallback";
             url = addGetParam(url, "callback", tstCallback);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
