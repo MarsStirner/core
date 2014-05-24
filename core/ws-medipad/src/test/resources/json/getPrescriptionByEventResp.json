@@ -144,11 +144,11 @@
         ],
         "actionTypeId": 123,
         "modifyPerson": {
-            "id": 41,
-            "lastName": "test",
-            "firstName": "test",
+            "id": 1,
             "birthDate": null,
-            "middleName": "test"
+            "firstName": "",
+            "middleName": "",
+            "lastName": "Админ"
         },
         "eventId": 189,
         "setPerson": null,
