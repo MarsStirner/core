@@ -1,5 +1,7 @@
 package ru.korus.tmis.prescription;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.database.DbActionTypeBeanLocal;
 import ru.korus.tmis.core.database.DbRbUnitBeanLocal;
@@ -32,6 +34,8 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em;
+
+    private static final Logger logger = LoggerFactory.getLogger(PrescriptionBean.class);
 
     @EJB
     private DbEventBeanLocal dbEventBeanLocal;
@@ -159,7 +163,13 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         action.setIsUrgent(data.getIsUrgent());
         action.setModifyPerson(em.merge(auth.getUser()));
         for (ActionPropertyTypeData prop : data.getProperties()) {
-            ActionProperty ap = dbActionPropertyBeanLocal.getActionPropertyById(prop.getId());
+            ActionProperty ap = null;
+            try {
+                ap = dbActionPropertyBeanLocal.getActionPropertyById(prop.getId());
+            } catch (CoreException ex) {
+                logger.info("wrong property id : " + prop.getId(), ex);
+            }
+
             //TODO fix in Front-end : "этот тип экшен проперти пока не поддерживается"
             if (ap != null && prop.getValue() != null && !"этот тип экшен проперти пока не поддерживается".equals(prop.getValue())) {
                 APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, prop.getValue(), 0);

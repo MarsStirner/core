@@ -192,8 +192,10 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
 
     @Override
     public List<Action> getPrescriptionForTimeInterval(Date begDate, Date endDate) {
-        return em.createQuery("SELECT DISTINCT dc.action FROM DrugChart dc WHERE (dc.begDateTime < :begDate AND :begDate < dc.endDateTime)" +
-                "OR (dc.begDateTime < :endDate AND :endDate < dc.endDateTime)", Action.class)
+        return em.createQuery("SELECT DISTINCT dc.action FROM DrugChart dc WHERE (dc.begDateTime < :begDate AND :begDate < dc.endDateTime) " +
+                "OR (dc.begDateTime < :endDate AND :endDate < dc.endDateTime) " +
+                "OR (:begDate < dc.begDateTime AND dc.endDateTime < :endDate) " +
+                "OR (dc.begDateTime < :begDate AND :endDate < dc.endDateTime)", Action.class)
                 .setParameter("begDate", begDate)
                 .setParameter("endDate", endDate)
                 .getResultList();

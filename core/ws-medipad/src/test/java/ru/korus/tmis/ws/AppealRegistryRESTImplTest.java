@@ -312,7 +312,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         }
     }
 
-    //@Test
+    @Test
     public void testGetPrescriptionByTime() {
         System.out.println("**************************** testGetPrescriptionByTime() started...");
         try {
@@ -330,8 +330,8 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/");
             url = addGetParam(url, "callback", TST_CALLBACK);
             url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            url = addGetParam(url, "dateRangeMin", "1400745600");
-            url = addGetParam(url, "dateRangeMax", "1400832000");
+            url = addGetParam(url, "dateRangeMin", "1379524000");
+            url = addGetParam(url, "dateRangeMax", "1379530400");
             System.out.println("Send GET to..." + url.toString());
             HttpURLConnection conn = openConnectionGet(url, authData);
             int code = getResponseCode(conn);
@@ -431,7 +431,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             //TODO перед тестом почистить БД!
             //Assert.assertEquals(resJson, expected);
             Assert.assertTrue(res.contains("\"valueDomain\":\"rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER\""));
-            //testUpdatePrescription(259);
+            testUpdatePrescription(259);
         } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();

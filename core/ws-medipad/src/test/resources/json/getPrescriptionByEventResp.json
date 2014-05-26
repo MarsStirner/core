@@ -6,8 +6,8 @@
                 "value": null,
                 "id": 1445,
                 "type": "RLS",
-                "code": "nomen",
                 "valueId": null,
+                "code": "nomen",
                 "valueDomain": ""
             },
             {
@@ -15,8 +15,8 @@
                 "value": null,
                 "id": 1447,
                 "type": "ReferenceRb",
-                "code": "moa",
                 "valueId": null,
+                "code": "moa",
                 "valueDomain": "rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER"
             },
             {
@@ -24,8 +24,8 @@
                 "value": null,
                 "id": 1442,
                 "type": "String",
-                "code": "dosage",
                 "valueId": null,
+                "code": "dosage",
                 "valueDomain": ""
             },
             {
@@ -33,8 +33,8 @@
                 "value": null,
                 "id": 1443,
                 "type": "Double",
-                "code": null,
                 "valueId": null,
+                "code": null,
                 "valueDomain": ""
             },
             {
@@ -42,8 +42,8 @@
                 "value": null,
                 "id": 1444,
                 "type": "String",
-                "code": "units",
                 "valueId": null,
+                "code": "units",
                 "valueDomain": "'мг','мкг','гр','мл',*"
             },
             {
@@ -51,8 +51,8 @@
                 "value": null,
                 "id": 1446,
                 "type": "String",
-                "code": "voa",
                 "valueId": null,
+                "code": "voa",
                 "valueDomain": ""
             },
             {
@@ -60,107 +60,107 @@
                 "value": null,
                 "id": 1448,
                 "type": "String",
-                "code": null,
                 "valueId": null,
+                "code": null,
                 "valueDomain": ""
             }
         ],
         "name": "Терапия",
         "id": 259,
+        "modifyPerson": {
+            "id": 41,
+            "birthDate": null,
+            "middleName": "test",
+            "lastName": "test",
+            "firstName": "test"
+        },
+        "setPerson": null,
         "doctor": {
             "id": 6,
-            "lastName": "Самарин",
-            "firstName": "Алексей",
             "birthDate": null,
-            "middleName": "Алексеевич"
+            "middleName": "Алексеевич",
+            "lastName": "Самарин",
+            "firstName": "Алексей"
         },
+        "urgent": false,
         "createPerson": {
             "id": 1,
-            "lastName": "Админ",
-            "firstName": "",
             "birthDate": null,
-            "middleName": ""
+            "middleName": "",
+            "lastName": "Админ",
+            "firstName": ""
         },
-        "note": "",
-        "urgent": false,
         "client": {
             "id": 2,
-            "lastName": "Милонов",
-            "firstName": "Сергей",
             "birthDate": 649454400000,
-            "middleName": "Игоревич"
+            "middleName": "Игоревич",
+            "lastName": "Милонов",
+            "firstName": "Сергей"
         },
+        "note": "",
         "assigmentIntervals": [
             {
                 "id": 1,
                 "status": 1,
+                "bdt": "2013-09-18 20:10:00",
+                "edt": null,
                 "endDateTime": null,
-                "actionId": 259,
                 "note": "",
                 "beginDateTime": 1379520600000,
                 "executionIntervals": [
                     {
                         "id": 2,
                         "status": 1,
+                        "bdt": "2013-09-18 20:10:00",
+                        "edt": null,
                         "endDateTime": null,
-                        "actionId": 259,
                         "note": "",
                         "beginDateTime": 1379520600000,
                         "executionIntervals": [],
-                        "bdt": "2013-09-18 20:10:00",
-                        "edt": null,
-                        "masterId": 1
+                        "masterId": 1,
+                        "actionId": 259
                     }
                 ],
-                "bdt": "2013-09-18 20:10:00",
-                "edt": null,
-                "masterId": null
+                "masterId": null,
+                "actionId": 259
             },
             {
                 "id": 3,
                 "status": 0,
+                "bdt": "2013-09-18 21:10:00",
+                "edt": "2013-09-18 22:50:00",
                 "endDateTime": 1379530200000,
-                "actionId": 259,
                 "note": "",
                 "beginDateTime": 1379524200000,
                 "executionIntervals": [
                     {
                         "id": 4,
                         "status": 0,
+                        "bdt": "2013-09-18 21:10:00",
+                        "edt": "2013-09-18 22:50:00",
                         "endDateTime": 1379530200000,
-                        "actionId": 259,
                         "note": "",
                         "beginDateTime": 1379524200000,
                         "executionIntervals": [],
-                        "bdt": "2013-09-18 21:10:00",
-                        "edt": "2013-09-18 22:50:00",
-                        "masterId": 3
+                        "masterId": 3,
+                        "actionId": 259
                     }
                 ],
-                "bdt": "2013-09-18 21:10:00",
-                "edt": "2013-09-18 22:50:00",
-                "masterId": null
+                "masterId": null,
+                "actionId": 259
             }
         ],
         "actionTypeId": 123,
-        "modifyPerson": {
-            "id": 1,
-            "birthDate": null,
-            "firstName": "",
-            "middleName": "",
-            "lastName": "Админ"
-        },
         "eventId": 189,
-        "setPerson": null,
         "drugs": [
             {
                 "name": "Анальгин",
                 "id": 1,
                 "unitName": null,
                 "unit": null,
-                "units": [],
                 "dose": 10.0,
-                "nomen": 1
+                "nomen": 1,
+                "units": []
             }
         ]
     }
