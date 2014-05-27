@@ -161,7 +161,7 @@ public class DbAccountBean implements DbAccountBeanLocal {
                 .setParameter("begDate", beginDate)
                 .setParameter("endDate", endDate)
                 .setParameter("contractId", contractId)
-                .getSingleResult()).intValue() + 1;
+                .getSingleResult()).intValue();
     }
 
     @Override

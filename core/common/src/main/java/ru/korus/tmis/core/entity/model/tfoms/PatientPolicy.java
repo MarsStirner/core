@@ -42,6 +42,9 @@ public class PatientPolicy implements Informationable {
     @Column(name = "SMO_NAM")
     private String SMO_NAM;
 
+    @Column(name = "InsurerArea")
+    private String insurerArea;
+
     public PatientPolicy(Object[] args) {
         if(args.length >= 9){
             this.policy = (Integer) args[0];
@@ -54,6 +57,32 @@ public class PatientPolicy implements Informationable {
             this.SMO_OK = (String) args[7];
             this.SMO_NAM = (String) args[8];
         }
+    }
+
+    public PatientPolicy(final Integer id,
+                         final String VPOLIS,
+                         final String SPOLIS,
+                         final String NPOLIS,
+                         final String SMO,
+                         final String SMO_NAM,
+                         final String SMO_OGRN,
+                         final String SMO_OK,
+                         final String insurerArea
+    ) {
+       this.policy = id;
+        this.VPOLIS = VPOLIS;
+        this.SPOLIS = SPOLIS;
+        this.NPOLIS = NPOLIS;
+        this.SMO = SMO;
+        this.SMO_NAM = SMO_NAM;
+        this.SMO_OGRN = SMO_OGRN;
+        this.SMO_OK = SMO_OK;
+        this.insurerArea = insurerArea;
+    }
+
+    @Override
+    public String toString(){
+        return getInfo();
     }
 
     @Override
@@ -69,6 +98,7 @@ public class PatientPolicy implements Informationable {
             result.append(" SMO_OGRN=").append(SMO_OGRN);
             result.append(" SMO_OK=").append(SMO_OK);
             result.append(" SMO_NAM=").append(SMO_NAM);
+            result.append(" InsurerArea=").append(insurerArea);
         }
         result.append(" ]");
         return result.toString();
@@ -149,5 +179,11 @@ public class PatientPolicy implements Informationable {
         this.SMO_NAM = SMO_NAM;
     }
 
+    public String getInsurerArea() {
+        return insurerArea;
+    }
 
+    public void setInsurerArea(String insurerArea) {
+        this.insurerArea = insurerArea;
+    }
 }
