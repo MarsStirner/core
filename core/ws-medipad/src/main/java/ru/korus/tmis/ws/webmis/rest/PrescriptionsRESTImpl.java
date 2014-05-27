@@ -3,7 +3,9 @@ package ru.korus.tmis.ws.webmis.rest;
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.prescription.AssigmentIntervalDataArray;
 import ru.korus.tmis.prescription.CreatePrescriptionReqData;
+import ru.korus.tmis.prescription.ExecuteIntervalsData;
 import ru.korus.tmis.prescription.PrescriptionBeanLocal;
 import ru.korus.tmis.prescription.PrescriptionGroupBy;
 
@@ -74,6 +76,34 @@ public class PrescriptionsRESTImpl {
         return new JSONWithPadding(prescriptionBeanLocal.update(actionId, createPrescriptionReqData, auth), callback);
     }
 
+    @PUT
+    @Path("/intervals")
+    @Produces("application/x-javascript")
+    public Object updateIntervals(AssigmentIntervalDataArray assigmentIntervalDataArray)throws CoreException {
+        return new JSONWithPadding(prescriptionBeanLocal.updateIntervals(assigmentIntervalDataArray), callback);
+    }
+
+    @PUT
+    @Path("/executeIntervals/")
+    @Produces("application/x-javascript")
+    public Object executeIntervals(ExecuteIntervalsData executeIntervalsData)throws CoreException {
+        return new JSONWithPadding(prescriptionBeanLocal.executeIntervals(executeIntervalsData), callback);
+    }
+
+    @PUT
+    @Path("/cancelIntervals/")
+    @Produces("application/x-javascript")
+    public Object cancelIntervals(ExecuteIntervalsData executeIntervalsData)throws CoreException {
+        return new JSONWithPadding(prescriptionBeanLocal.cancelIntervals(executeIntervalsData), callback);
+    }
+
+    @PUT
+    @Path("/cancelIntervalsExecution/")
+    @Produces("application/x-javascript")
+    public Object cancelIntervalsExecution(ExecuteIntervalsData executeIntervalsData)throws CoreException {
+        return new JSONWithPadding(prescriptionBeanLocal.cancelIntervalsExecution(executeIntervalsData), callback);
+    }
+
 
     @GET
     @Path("/types/")
@@ -88,6 +118,7 @@ public class PrescriptionsRESTImpl {
     public Object getTemplate(@PathParam("actionTypeId") Integer actionTypeId)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.getTemplate(actionTypeId), callback);
     }
+
 
 
 }

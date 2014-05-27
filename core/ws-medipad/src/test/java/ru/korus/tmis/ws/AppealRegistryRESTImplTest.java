@@ -441,7 +441,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
     public void testUpdatePrescription(Integer actionId) {
-        System.out.println("**************************** testCreatePrescription() started...");
+        System.out.println("**************************** testUpdatePrescription() started...");
         try {
             AuthData authData = auth();
             //http://10.128.51.85/api/v1/prescriptions/983378?callback=jQuery182040639712987467647_1400594935328
