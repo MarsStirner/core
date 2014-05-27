@@ -19,7 +19,8 @@ import java.util.List;
 @NamedQueries(
         {
                 @NamedQuery(name = "DrugChart.findByEvent", query = "SELECT i FROM DrugChart i WHERE i.action.event.id = :eventId"),
-                @NamedQuery(name = "DrugChart.getPrescriptionList", query = "SELECT dc FROM DrugChart dc WHERE dc.action.event.id = :eventId")
+                @NamedQuery(name = "DrugChart.getPrescriptionList", query = "SELECT dc FROM DrugChart dc WHERE dc.action.event.id = :eventId"),
+                @NamedQuery(name = "DrugChart.updateStatus", query = "UPDATE DrugChart dc SET dc.status = :status WHERE dc.id IN :intervalIds")
         })
 @Entity
 @Table(name = "DrugChart")

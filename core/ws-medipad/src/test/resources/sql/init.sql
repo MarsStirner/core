@@ -28,3 +28,7 @@ INSERT INTO `Event`
 
 UPDATE `ActionType` SET `defaultPlannedEndDate`=0 WHERE  `id`=3911;
 UPDATE `Contract` SET `endDate`='2020-12-31' WHERE  `id`=61;
+
+INSERT IGNORE INTO `DrugChart` (`id`, `action_id`, `master_id`, `begDateTime`, `endDateTime`, `status`, `statusDateTime`, `note`, `uuid`, `version`) VALUES (14, 264, NULL, '2014-06-11 15:00:00', '2014-06-13 15:01:00', 0, '2014-05-21 14:26:58', NULL, 'b5ae2f0f-0c3f-4e88-addc-7c702672fe52', NULL);
+INSERT IGNORE INTO `DrugChart` (`id`, `action_id`, `master_id`, `begDateTime`, `endDateTime`, `status`, `statusDateTime`, `note`, `uuid`, `version`) VALUES (15, 263, 14, '2014-05-22 15:02:00', '2014-05-30 15:03:00', 0, '2014-05-21 14:05:41', '', '6c296380-6026-4b48-b414-450999b29379', NULL);
+

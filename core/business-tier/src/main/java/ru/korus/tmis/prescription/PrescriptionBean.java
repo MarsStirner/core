@@ -11,6 +11,7 @@ import ru.korus.tmis.core.database.common.DbActionPropertyTypeBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.pharmacy.DbDrugChartBeanLocal;
 import ru.korus.tmis.core.pharmacy.DbDrugComponentBeanLocal;
@@ -126,8 +127,70 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
             updateInterval(action, data, interval, masterId);
         }
 
+        updateDrugs(action, data.getDrugs());
+
         PrescriptionsData res = new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
         return res;
+    }
+
+
+    @Override
+    public ExecuteIntervalsData executeIntervals(ExecuteIntervalsData executeIntervalsData) {
+        dbDrugChartBeanLocal.updateStatus(executeIntervalsData.getData(), (short)1);
+        return executeIntervalsData;
+    }
+
+    @Override
+    public ExecuteIntervalsData cancelIntervals(ExecuteIntervalsData executeIntervalsData) {
+        dbDrugChartBeanLocal.updateStatus(executeIntervalsData.getData(), (short)2);
+        return executeIntervalsData;
+    }
+
+    @Override
+    public ExecuteIntervalsData cancelIntervalsExecution(ExecuteIntervalsData executeIntervalsData) {
+        dbDrugChartBeanLocal.updateStatus(executeIntervalsData.getData(), (short)0);
+        return executeIntervalsData;
+    }
+
+    @Override
+    public AssigmentIntervalData updateIntervals(AssigmentIntervalDataArray assigmentIntervalDataArray) {
+        for(AssigmentIntervalData intervalData : assigmentIntervalDataArray.getData()) {
+            DrugChart interval = em.find( DrugChart.class, intervalData.getId());
+            if(interval == null) {
+                createNewInterval(intervalData);
+            } else {
+                updateInterval(interval,
+                        intervalData.getBeginDateTime(),
+                        intervalData.getEndDateTime(),
+                        intervalData.getMasterId(),
+                        intervalData.getStatus(),
+                        intervalData.getNote());
+            }
+        }
+        return new AssigmentIntervalData();
+    }
+
+    private void updateInterval(DrugChart interval, Long beginDateTime, Long endDateTime, Integer masterId, Short status, String note) {
+        interval.setBegDateTime(new Date(beginDateTime));
+        interval.setEndDateTime(new Date(endDateTime));
+        if(masterId != null) {
+            interval.setMaster(em.find(DrugChart.class, masterId));
+        }
+        interval.setStatus(status);
+        interval.setNote(note);
+    }
+
+    private void createNewInterval(AssigmentIntervalData intervalData) {
+        DrugChart interval = new DrugChart();
+        Action action = em.find(Action.class, intervalData.getActionId());
+        if(action != null) {
+            dbDrugChartBeanLocal.create(action,
+                    intervalData.getMasterId(),
+                    new Date(intervalData.getBeginDateTime()),
+                    new Date(intervalData.getEndDateTime()),
+                    intervalData.getStatus(),
+                    intervalData.getNote());
+        }
     }
 
     private void updateInterval(Action action, CreatePrescriptionData data, AssigmentIntervalData interval, Integer masterId) throws CoreException {
@@ -141,7 +204,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         } else {
             DrugChart drugChart = em.find(DrugChart.class, interval.getId());
             if (drugChart == null) {
-                throw new CoreException("Интервал назначения не найден");
+                throw new CoreException("Интервал назначения не найден id = " + interval.getId());
             } else {
                 updateInterval(drugChart, interval);
                 for (AssigmentIntervalData execInterval : interval.getExecutionIntervals()) {
@@ -184,6 +247,35 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
             dbDrugChartBeanLocal.create(action, interval.getMasterId(), new Date(interval.getBeginDateTime()), endDateTime, interval.getStatus(), note);
         }
     }
+
+    private void updateDrugs(Action action, List<DrugData> drugs) {
+        for (DrugData drugData : drugs) {
+            DrugComponent drugComponent = drugData.getId() == null ? null : em.find(DrugComponent.class, drugData.getId());
+            if(drugComponent == null) {
+                dbDrugComponentBeanLocal.create(action, drugData.getNomen(), drugData.getName(), drugData.getDose(), drugData.getUnit());
+            } else {
+                drugComponent.setAction(action);
+                em.persist(drugComponent);
+            }
+        }
+        List<DrugComponent> curDrugs = dbDrugComponentBeanLocal.getComponentsByPrescriptionAction(action.getId());
+        final Date now = new Date();
+        for(DrugComponent drugComp : curDrugs) {
+            if(!isPresrent(drugComp, drugs)) {
+                drugComp.setCancelDateTime(now);
+            }
+        }
+    }
+
+    private boolean isPresrent(DrugComponent drugComp, List<DrugData> drugs) {
+        for (DrugData drugData : drugs) {
+            if(drugComp.getId().equals(drugData.getId())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private void saveDrugs(Action action, List<DrugData> drugs) {
         for (DrugData drugData : drugs) {

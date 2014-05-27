@@ -12,6 +12,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.List;
 
@@ -80,4 +81,10 @@ public class DbDrugChartBean implements DbDrugChartBeanLocal {
 
         return res;
     }
+
+    @Override
+    public void updateStatus(List<Integer> data, Short status) {
+        em.createNamedQuery("DrugChart.updateStatus", DrugChart.class).setParameter("status", status).setParameter("intervalIds", data).executeUpdate();
+    }
+
 }
