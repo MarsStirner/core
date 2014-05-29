@@ -10,11 +10,11 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.scala.util.{StringId, I18nable, ConfigManager}
 import ConfigManager.APWI
-import java.util.{Calendar, LinkedList, HashSet, Date}
+import java.util.{LinkedList, HashSet, Date}
 import ru.korus.tmis.core.database._
 import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.data._
-import collection.immutable.HashMap
+import scala.collection.JavaConverters._
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -123,12 +123,18 @@ class PrimaryAssessmentBean
         apvs.size match {
           case 0 => {
             val ca = apw.get(null, List(APWI.Unit, APWI.Norm))
-            group add new CommonAttributeWithLayout(ca, dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList)
+            group add new CommonAttributeWithLayout(
+              ca,
+              dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
+              ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava)
           }
           case _ => {
             apvs.foreach((apv) => {
               val ca = apw.get(apv, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
-              group add new CommonAttributeWithLayout(ca, dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList)
+              group add new CommonAttributeWithLayout(
+                ca,
+                dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
+                ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava)
             })
           }
         }
