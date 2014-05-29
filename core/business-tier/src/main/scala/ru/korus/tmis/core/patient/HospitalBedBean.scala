@@ -661,7 +661,7 @@ with TmisLogging {
     catch {
       case e: Exception => {
         error("createActionPropertyWithValue >> Ошибка при создании новой записи в ActionProperty: %s".format(e.getMessage))
-        throw new CoreException("Ошибка при создании записи в ActionProperty")
+        throw new CoreException("Ошибка при создании записи в ActionProperty", e)
       }
       dbManager.removeAll(Set(ap))
     }
