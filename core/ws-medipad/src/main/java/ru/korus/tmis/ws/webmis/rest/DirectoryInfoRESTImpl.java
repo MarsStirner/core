@@ -412,6 +412,8 @@ public class DirectoryInfoRESTImpl {
                                         @QueryParam("filter[view]")String view,
                                         @QueryParam("showHidden") int showHidden,
                                         @QueryParam("filter[orgStruct]")int orgStructFilterEnable) throws CoreException {
+        if(patientId < 1)
+            throw new CoreException("GET-параметр patientId обязателен и не может быть меньше 1");
 
         java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
         java.util.List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
