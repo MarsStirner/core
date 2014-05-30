@@ -179,8 +179,8 @@ public final class XMLHelper {
         final long startTime = System.currentTimeMillis();
         for (AdditionalUploadRow item : itemList) {
             //RSLT = "304"
-            if (Constants.ADDITIONAL_SKIP_RESULT.equals(item.getRSLT())) {
-                logger.debug("Stop grouping at item[{}] (RSLT={})", item.getId(), Constants.ADDITIONAL_SKIP_RESULT);
+            if (!Constants.ADDITIONAL_SKIP_RESULT.equals(item.getRSLT())) {
+                logger.debug("Stop grouping at item[{}] (RSLT<>{})[{}]", item.getId(), Constants.ADDITIONAL_SKIP_RESULT, item.getRSLT());
                 break;
             }
             int currentItemAction = item.getAction();
@@ -276,7 +276,7 @@ public final class XMLHelper {
             final boolean needForSpokesman) {
         final List<UploadRow> itemList;
         try {
-            itemList = TFOMSServer.getQueryChache().executeNamedQuery(
+            itemList = TFOMSServer.getQueryChache().executeNamedQueryWithMap(
                     Constants.QUERY_NAME_STATIONARY_MAIN,
                     UploadRow.class,
                     null,

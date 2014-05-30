@@ -37,6 +37,8 @@ public class ObjectParser {
         if(arg != null) {
             if (arg instanceof String) {
                 return (String) arg;
+            } else {
+                return arg.toString();
             }
         }
         return null;

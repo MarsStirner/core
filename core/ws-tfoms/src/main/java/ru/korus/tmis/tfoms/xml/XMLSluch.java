@@ -90,7 +90,7 @@ public class XMLSluch implements Informationable {
             paramMap.put(Constants.PARAM_NAME_ACTION_ID, String.valueOf(action));
             return true;
         } else {
-            return true;
+            return false;
         }
     }
 
