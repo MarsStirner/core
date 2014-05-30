@@ -24,4 +24,12 @@ public interface PrescriptionBeanLocal {
     PrescriptionsData create(CreatePrescriptionReqData createPrescriptionReqData, AuthData authData) throws CoreException;
 
     PrescriptionsData update(Integer actionId, CreatePrescriptionReqData createPrescriptionReqData, AuthData auth) throws CoreException;
+
+    ExecuteIntervalsData executeIntervals(ExecuteIntervalsData executeIntervalsData);
+
+    ExecuteIntervalsData cancelIntervals(ExecuteIntervalsData executeIntervalsData);
+
+    ExecuteIntervalsData cancelIntervalsExecution(ExecuteIntervalsData executeIntervalsData);
+
+    AssigmentIntervalData updateIntervals(AssigmentIntervalDataArray assigmentIntervalDataArray);
 }

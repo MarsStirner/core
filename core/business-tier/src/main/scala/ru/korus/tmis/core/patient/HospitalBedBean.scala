@@ -108,7 +108,6 @@ with TmisLogging {
 
     if (date == null) {
       throw new CoreException("Регистрация пациента невозможна. \nНе заданы дата и время поступления")
-      return null
     }
 
     //Инициализируем новый action
@@ -205,6 +204,7 @@ with TmisLogging {
         if (apv != null) entities += apv
       })
       dbManager.persistAll(entities)
+      entities.foreach(dbManager.refresh(_))
       /** ** По доработанной спеке https://docs.google.com/document/d/1wkIKuMt3UQ5PMHVlsE2NVweE-n1zkfKyBQbTrjYwuRo/edit#
         * Пункт 3.3
         */
@@ -528,7 +528,7 @@ with TmisLogging {
       var bed: OrgStructureHospitalBed = null
       var flgEdit: Short = 0 //0 - оставляем как есть, 1 - редактируем значения, 2 - удаляем значения
 
-      val listMovAP = JavaConversions.asJavaSet(Set(
+      val listMovAP = JavaConversions.setAsJavaSet(Set(
         i18n("db.apt.moving.codes.hospitalBed"),
         i18n("db.apt.moving.codes.orgStructTransfer"),
         i18n("db.apt.moving.codes.timeLeaved")
@@ -661,7 +661,7 @@ with TmisLogging {
     catch {
       case e: Exception => {
         error("createActionPropertyWithValue >> Ошибка при создании новой записи в ActionProperty: %s".format(e.getMessage))
-        throw new CoreException("Ошибка при создании записи в ActionProperty")
+        throw new CoreException("Ошибка при создании записи в ActionProperty", e)
       }
       dbManager.removeAll(Set(ap))
     }
@@ -684,7 +684,7 @@ with TmisLogging {
     catch {
       case e: Exception => {
         error("createActionPropertyWithValue >> Ошибка при записи значения ActionPropertyValue: %s".format(e.getMessage))
-        throw new CoreException("Ошибка при записи значения ActionPropertyValue")
+        throw new CoreException("Ошибка при записи значения ActionPropertyValue", e)
       }
     }
     null
@@ -703,7 +703,7 @@ with TmisLogging {
    * (Когда нибудь код здесь надо будет поправить, надо посмотреть, где еще используются
    * методы и аккуратно поправить поиск не по движениям а по движениям и поступлениям в 1 запрос).
    * Если ты пришел править этот метод - то задача по рефакторингу ложится на тебя.
-   * @param id Идентификатор госпитализации
+   * @param eventId Идентификатор госпитализации
    * @return Экземпляр класса, описывающего организационную структуру в БД
    */
   def getCurrentDepartmentForAppeal(eventId: Int) = {
@@ -723,7 +723,7 @@ with TmisLogging {
     var department: OrgStructure = null
     if (moving != null) {
       val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(moving.getId.intValue,
-        JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
+        JavaConversions.seqAsJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
       if (bedValues != null && bedValues.size() > 0) {
         val values = bedValues.iterator.next()._2
         if (values != null && values.size() > 0) {
@@ -734,7 +734,7 @@ with TmisLogging {
     } else {
       val receiving = getReceivingActionByCondition(eventId, "ORDER BY a.createDatetime desc")
       if (receiving != null) {
-        val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(receiving.getId.intValue, JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
+        val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(receiving.getId.intValue, JavaConversions.seqAsJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
         if (bedValues != null && bedValues.size() > 0) {
           val values = bedValues.iterator.next()._2
           if (values != null && values.size() > 0) {

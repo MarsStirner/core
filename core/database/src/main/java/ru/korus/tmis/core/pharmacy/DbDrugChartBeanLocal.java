@@ -24,4 +24,6 @@ public interface DbDrugChartBeanLocal {
     Iterable<DrugChart> getIntervalsByEvent(Event event);
 
     DrugChart create(final Action action, Integer masterId, Date begDateTime, Date endDateTime, Short status, String note);
+
+    void updateStatus(List<Integer> data, Short status);
 }

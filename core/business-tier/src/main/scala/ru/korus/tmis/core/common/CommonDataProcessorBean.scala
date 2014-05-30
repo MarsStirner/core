@@ -27,6 +27,7 @@ import scala.Some
 import ru.korus.tmis.core.entity.model.ActionStatus
 import javax.persistence.{EntityManager, PersistenceContext}
 import scala.List
+import scala.collection.JavaConverters._
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -696,6 +697,7 @@ class CommonDataProcessorBean
       typeName,
       dbActionProperty.convertScope(apt), //apt.getConstructorValueDomain,
       map,
+      (for(r <- apt.getActionPropertyRelation) yield new ActionPropertyRelationWrapper(r)).toList.asJava,
       dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList,
       apt.isMandatory.toString,
       apt.isReadOnly.toString)

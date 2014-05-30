@@ -18,4 +18,6 @@ public interface DbDrugComponentBeanLocal {
     public List<DrugComponent> getComponentsByPrescriptionAction(int prescriptionActionId);
 
     DrugComponent create(final Action action, final Integer nomen, final String name, final Double dose, final Integer unit);
+
+    DrugComponent update(Action action, DrugComponent res, Integer nomen, String name, Double dose, Integer unit);
 }
