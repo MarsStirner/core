@@ -108,7 +108,6 @@ with TmisLogging {
 
     if (date == null) {
       throw new CoreException("Регистрация пациента невозможна. \nНе заданы дата и время поступления")
-      return null
     }
 
     //Инициализируем новый action
@@ -205,6 +204,7 @@ with TmisLogging {
         if (apv != null) entities += apv
       })
       dbManager.persistAll(entities)
+      entities.foreach(dbManager.refresh(_))
       /** ** По доработанной спеке https://docs.google.com/document/d/1wkIKuMt3UQ5PMHVlsE2NVweE-n1zkfKyBQbTrjYwuRo/edit#
         * Пункт 3.3
         */
@@ -684,7 +684,7 @@ with TmisLogging {
     catch {
       case e: Exception => {
         error("createActionPropertyWithValue >> Ошибка при записи значения ActionPropertyValue: %s".format(e.getMessage))
-        throw new CoreException("Ошибка при записи значения ActionPropertyValue")
+        throw new CoreException("Ошибка при записи значения ActionPropertyValue", e)
       }
     }
     null
@@ -703,7 +703,7 @@ with TmisLogging {
    * (Когда нибудь код здесь надо будет поправить, надо посмотреть, где еще используются
    * методы и аккуратно поправить поиск не по движениям а по движениям и поступлениям в 1 запрос).
    * Если ты пришел править этот метод - то задача по рефакторингу ложится на тебя.
-   * @param id Идентификатор госпитализации
+   * @param eventId Идентификатор госпитализации
    * @return Экземпляр класса, описывающего организационную структуру в БД
    */
   def getCurrentDepartmentForAppeal(eventId: Int) = {
