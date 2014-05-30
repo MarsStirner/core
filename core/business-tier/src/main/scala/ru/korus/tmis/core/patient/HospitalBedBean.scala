@@ -528,7 +528,7 @@ with TmisLogging {
       var bed: OrgStructureHospitalBed = null
       var flgEdit: Short = 0 //0 - оставляем как есть, 1 - редактируем значения, 2 - удаляем значения
 
-      val listMovAP = JavaConversions.asJavaSet(Set(
+      val listMovAP = JavaConversions.setAsJavaSet(Set(
         i18n("db.apt.moving.codes.hospitalBed"),
         i18n("db.apt.moving.codes.orgStructTransfer"),
         i18n("db.apt.moving.codes.timeLeaved")
@@ -723,7 +723,7 @@ with TmisLogging {
     var department: OrgStructure = null
     if (moving != null) {
       val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(moving.getId.intValue,
-        JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
+        JavaConversions.seqAsJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
       if (bedValues != null && bedValues.size() > 0) {
         val values = bedValues.iterator.next()._2
         if (values != null && values.size() > 0) {
@@ -734,7 +734,7 @@ with TmisLogging {
     } else {
       val receiving = getReceivingActionByCondition(eventId, "ORDER BY a.createDatetime desc")
       if (receiving != null) {
-        val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(receiving.getId.intValue, JavaConversions.asJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
+        val bedValues = actionPropertyBean.getActionPropertiesByActionIdAndTypeCodes(receiving.getId.intValue, JavaConversions.seqAsJavaList(List(i18n("db.apt.moving.codes.hospOrgStruct"))))
         if (bedValues != null && bedValues.size() > 0) {
           val values = bedValues.iterator.next()._2
           if (values != null && values.size() > 0) {
