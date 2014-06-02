@@ -123,16 +123,14 @@ with I18nable {
       p => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-        if (commonDataProcessor.checkActionPropertyTypeForPatientAgeAndSex(direction.getEvent.getPatient, ap.getType)) {
+        if (
+          commonDataProcessor.checkActionPropertyTypeForPatientAgeAndSex(direction.getEvent.getPatient, ap.getType)
+        ||
+            apvs.size > 0   // Отдаем совойство со значением, даже если оно не подходит по типу
+        ) {
           apvs.size match {
-            case 0 => {
-              group add apw.get(null, List(APWI.Unit, APWI.Norm, APWI.IsAssignable, APWI.IsAssigned))
-            }
-            case _ => {
-              apvs.foreach((apv) => {
-                group add apw.get(apv, attributes)
-              })
-            }
+            case 0 => group add apw.get(null, List(APWI.Unit, APWI.Norm, APWI.IsAssignable, APWI.IsAssigned))
+            case _ => apvs.foreach((apv) => { group add apw.get(apv, attributes) })
           }
         }
       }
