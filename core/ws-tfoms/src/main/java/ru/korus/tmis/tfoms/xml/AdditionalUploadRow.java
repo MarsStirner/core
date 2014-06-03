@@ -3,6 +3,7 @@ package ru.korus.tmis.tfoms.xml;
 import ru.korus.tmis.core.entity.model.tfoms.Informationable;
 
 import java.util.Date;
+import java.util.Iterator;
 import java.util.Map;
 
 import static ru.korus.tmis.core.entity.model.tfoms.ObjectParser.*;
@@ -14,7 +15,7 @@ import static ru.korus.tmis.core.entity.model.tfoms.ObjectParser.*;
  * Description: <br>
  */
 public class AdditionalUploadRow implements Informationable {
-    private static int nextIdentifier=0;
+    private static int nextIdentifier = 1;
 
     private enum FieldNames {
         ID("ID"),
@@ -52,10 +53,12 @@ public class AdditionalUploadRow implements Informationable {
             this.value = value;
         }
 
-        public String getValue(){return value;}
+        public String getValue() {
+            return value;
+        }
 
         @Override
-        public String toString(){
+        public String toString() {
             return getValue();
         }
     }
@@ -97,33 +100,64 @@ public class AdditionalUploadRow implements Informationable {
 
     public AdditionalUploadRow(final Map args) {
         this.id = nextIdentifier++;
-        this.action = getIntegerValue(args.get(FieldNames.ACTION.getValue()));
-        this.event = getIntegerValue(args.get(FieldNames.EVENT.getValue()));
-        this.rbService = getIntegerValue(args.get(FieldNames.RB_SERVICE.getValue()));
-        this.rbServiceInfis = getStringValue(args.get(FieldNames.RB_SERVICE_INFIS.getValue()));
-        this.rbServiceFinance = getIntegerValue(args.get(FieldNames.RB_SERVICE_FINANCE.getValue()));
-        this.rbMedicalKindCode = getStringValue(args.get(FieldNames.RB_MEDICAL_KIND_CODE.getValue()));
-        this.rbMedicalAidUnitId  = getIntegerValue(args.get(FieldNames.RB_MEDICAL_AID_UNIT.getValue()));
-        this.rbMedicalAidUnitCode = getStringValue(args.get(FieldNames.RB_MEDICAL_AID_UNIT_CODE.getValue()));
-        this.EXTR = getIntegerValue(args.get(FieldNames.EXTR.getValue()));
-        this.DET = getIntegerValue(args.get(FieldNames.DET.getValue()));
-        this.DATE_1 = getDateValue(args.get(FieldNames.DATE_1.getValue()));
-        this.DATE_2 = getDateValue(args.get(FieldNames.DATE_2.getValue()));
-        this.DS0 = getStringValue(args.get(FieldNames.DS0.getValue()));
-        this.DS1 = getStringValue(args.get(FieldNames.DS1.getValue()));
-        this.DS2 = getStringValue(args.get(FieldNames.DS2.getValue()));
-        this.RSLT = getStringValue(args.get(FieldNames.RSLT.getValue()));
-        this.ISHOD = getStringValue(args.get(FieldNames.ISHOD.getValue()));
-        this.PRVS = getStringValue(args.get(FieldNames.PRVS.getValue()));
-        this.IDDOKT = getStringValue(args.get(FieldNames.IDDOKT.getValue()));
-        this.OS_SLUCH = getStringValue(args.get(FieldNames.OS_SLUCH.getValue()));
-        this.PODR = getStringValue(args.get(FieldNames.PODR.getValue()));
-        this.PROFIL = getStringValue(args.get(FieldNames.PROFIL.getValue()));
-        this.CODE_USL = getStringValue(args.get(FieldNames.CODE_USL.getValue()));
-        this.TARIF = getDoubleValue(args.get(FieldNames.TARIF.getValue()));
-        this.tariffId = getIntegerValue(args.get(FieldNames.TARIFF_ID.getValue()));
-        this.ED_COL = getDoubleValue(args.get(FieldNames.ED_COL.getValue()));
-        this.RSLTRegionalCode = getStringValue(args.get(FieldNames.RSLT_REGIONAL_CODE.getValue()));
+        for (Map.Entry entry : (Iterable<Map.Entry>) args.entrySet()) {
+            String key = entry.getKey().toString();
+            if (FieldNames.ACTION.getValue().equalsIgnoreCase(key)) {
+                this.action = getIntegerValue(entry.getValue());
+            } else if (FieldNames.EVENT.getValue().equalsIgnoreCase(key)) {
+                this.event = getIntegerValue(entry.getValue());
+            } else if (FieldNames.RB_SERVICE.getValue().equalsIgnoreCase(key)) {
+                this.rbService = getIntegerValue(entry.getValue());
+            } else if (FieldNames.RB_SERVICE_INFIS.getValue().equalsIgnoreCase(key)) {
+                this.rbServiceInfis = getStringValue(entry.getValue());
+            } else if (FieldNames.RB_SERVICE_FINANCE.getValue().equalsIgnoreCase(key)) {
+                this.rbServiceFinance = getIntegerValue(entry.getValue());
+            } else if (FieldNames.RB_MEDICAL_KIND_CODE.getValue().equalsIgnoreCase(key)) {
+                this.rbMedicalKindCode = getStringValue(entry.getValue());
+            } else if (FieldNames.RB_MEDICAL_AID_UNIT.getValue().equalsIgnoreCase(key)) {
+                this.rbMedicalAidUnitId = getIntegerValue(entry.getValue());
+            } else if (FieldNames.RB_MEDICAL_AID_UNIT_CODE.getValue().equalsIgnoreCase(key)) {
+                this.rbMedicalAidUnitCode = getStringValue(entry.getValue());
+            } else if (FieldNames.EXTR.getValue().equalsIgnoreCase(key)) {
+                this.EXTR = getIntegerValue(entry.getValue());
+            } else if (FieldNames.DET.getValue().equalsIgnoreCase(key)) {
+                this.DET = getIntegerValue(entry.getValue());
+            } else if (FieldNames.DATE_1.getValue().equalsIgnoreCase(key)) {
+                this.DATE_1 = getDateValue(entry.getValue());
+            } else if (FieldNames.DATE_2.getValue().equalsIgnoreCase(key)) {
+                this.DATE_2 = getDateValue(entry.getValue());
+            } else if (FieldNames.DS0.getValue().equalsIgnoreCase(key)) {
+                this.DS0 = getStringValue(entry.getValue());
+            } else if (FieldNames.DS1.getValue().equalsIgnoreCase(key)) {
+                this.DS1 = getStringValue(entry.getValue());
+            } else if (FieldNames.DS2.getValue().equalsIgnoreCase(key)) {
+                this.DS2 = getStringValue(entry.getValue());
+            } else if (FieldNames.RSLT.getValue().equalsIgnoreCase(key)) {
+                this.RSLT = getStringValue(entry.getValue());
+            } else if (FieldNames.ISHOD.getValue().equalsIgnoreCase(key)) {
+                this.ISHOD = getStringValue(entry.getValue());
+            } else if (FieldNames.PRVS.getValue().equalsIgnoreCase(key)) {
+                this.PRVS = getStringValue(entry.getValue());
+            } else if (FieldNames.IDDOKT.getValue().equalsIgnoreCase(key)) {
+                this.IDDOKT = getStringValue(entry.getValue());
+            } else if (FieldNames.OS_SLUCH.getValue().equalsIgnoreCase(key)) {
+                this.OS_SLUCH = getStringValue(entry.getValue());
+            } else if (FieldNames.PODR.getValue().equalsIgnoreCase(key)) {
+                this.PODR = getStringValue(entry.getValue());
+            } else if (FieldNames.PROFIL.getValue().equalsIgnoreCase(key)) {
+                this.PROFIL = getStringValue(entry.getValue());
+            } else if (FieldNames.CODE_USL.getValue().equalsIgnoreCase(key)) {
+                this.CODE_USL = getStringValue(entry.getValue());
+            } else if (FieldNames.TARIF.getValue().equalsIgnoreCase(key)) {
+                this.TARIF = getDoubleValue(entry.getValue());
+            } else if (FieldNames.TARIFF_ID.getValue().equalsIgnoreCase(key)) {
+                this.tariffId = getIntegerValue(entry.getValue());
+            } else if (FieldNames.ED_COL.getValue().equalsIgnoreCase(key)) {
+                this.ED_COL = getDoubleValue(entry.getValue());
+            }   else if (FieldNames.RSLT_REGIONAL_CODE.getValue().equalsIgnoreCase(key)) {
+                this.RSLTRegionalCode = getStringValue(entry.getValue());
+            }
+        }
     }
 
     @Override

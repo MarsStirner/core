@@ -2,6 +2,8 @@ package ru.korus.tmis.core.entity.model.tfoms;
 
 
 import java.util.Date;
+import java.util.Iterator;
+import java.util.Map;
 
 import static ru.korus.tmis.core.entity.model.tfoms.ObjectParser.*;
 
@@ -14,6 +16,93 @@ import static ru.korus.tmis.core.entity.model.tfoms.ObjectParser.*;
 
 
 public class UploadRow implements Informationable {
+
+    private enum FieldNames {
+        ID("ID"),
+        EVENT("EventId"),
+        EVENT_TYPE("EventTypeId"),
+        ACTION("ActionId"),
+        RB_SERVICE_FINANCE("rbServiceFinanceId"),
+        CLIENT("ClientId"),
+        FAM("FAM"),
+        IM("IM"),
+        OT("OT"),
+        W("W"),
+        DR("DR"),
+        MR("MR"),
+        SNILS("SNILS"),
+        VNOV_D("VNOV_D"),
+        SPOKESMAN("spokesmanId"),
+        FAM_P("FAM_P"),
+        IM_P("IM_P"),
+        OT_P("OT_P"),
+        W_P("W_P"),
+        DR_P("DR_P"),
+        DOCUMENT("DocumentId"),
+        DOCTYPE("DOCTYPE"),
+        DOCSER("DOCSER"),
+        DOCNUM("DOCNUM"),
+        POLICY("PolicyId"),
+        VPOLIS("VPOLIS"),
+        SPOLIS("SPOLIS"),
+        NPOLIS("NPOLIS"),
+        SMO("SMO"),
+        SMO_NAM("SMO_NAM"),
+        SMO_OGRN("SMO_OGRN"),
+        SMO_OK("SMO_OK"),
+        INSURER_AREA("SMO_AREA"),
+        NOVOR("NOVOR"),
+        USL_OK("USL_OK"),
+        VIDPOM("VIDPOM"),
+        FOR_POM("FOR_POM"),
+        EXTR("EXTR"),
+        LPU_1("LPU_1"),
+        PODR("PODR"),
+        PROFIL("PROFIL"),
+        DET("DET"),
+        NHISTORY("NHISTORY"),
+        DATE_1("DATE_1"),
+        DATE_2("DATE_2"),
+        DS0("DS0"),
+        DS1("DS1"),
+        DS2("DS2"),
+        CODE_MES1("CODE_MES1"),
+        CODE_MES2("CODE_MES2"),
+        RSLT("RSLT"),
+        ISHOD("ISHOD"),
+        PRVS("PRVS"),
+        IDDOKT("IDDOKT"),
+        OS_SLUCH("OS_SLUCH"),
+        IDSP("IDSP"),
+        ED_COL("ED_COL"),
+        CODE_USL("CODE_USL"),
+        TARIF("TARIF"),
+        TARIFF_ID("tariffId"),
+        RB_MEDICAL_AID_UNIT("rbMedicalAidUnitId"),
+        RB_MEDICAL_AID_UNIT_CODE("rbMedicalAidUnitCode"),
+        RB_MEDICAL_KIND_CODE("rbMedicalKindCode"),
+        AMOUNT("ActionAmount"),
+        RB_SERVICE("rbServiceId"),
+        RB_SERVICE_INFIS("rbServiceInfis"),
+        RSLT_REGIONAL_CODE("RSLTRegionalCode"),
+        VID_HMP("VID_HMP"),
+        METOD_HMP("METOD_HMP");
+
+        private final String value;
+
+        private FieldNames(final String value) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        @Override
+        public String toString() {
+            return getValue();
+        }
+    }
 
     private Integer id;
 
@@ -151,11 +240,147 @@ public class UploadRow implements Informationable {
             this.amount = getDoubleValue(args[63]);
             this.rbService = getIntegerValue(args[64]);
             this.rbServiceInfis = getStringValue(args[65]);
-            this.RSLTRegionalCode  = getStringValue(args[66]);
+            this.RSLTRegionalCode = getStringValue(args[66]);
             this.VID_HMP = getStringValue(args[67]);
             this.METOD_HMP = getStringValue(args[68]);
         } else {
             throw new InstantiationException("Invalid param count");
+        }
+    }
+
+    public UploadRow(final Map args) {
+        for (Iterator<Map.Entry> iterator = args.entrySet().iterator(); iterator.hasNext(); ) {
+            Map.Entry entry = iterator.next();
+            String key = entry.getKey().toString();
+            if (FieldNames.ID.getValue().equalsIgnoreCase(key)) {
+                this.id = getIntegerValue(entry.getValue());
+            } else if (FieldNames.EVENT.getValue().equalsIgnoreCase(key)) {
+                this.event = getIntegerValue(entry.getValue());
+            } else if (FieldNames.EVENT_TYPE.getValue().equalsIgnoreCase(key)) {
+                this.eventType = getIntegerValue(entry.getValue());
+            } else if (FieldNames.ACTION.getValue().equalsIgnoreCase(key)) {
+                this.action = getIntegerValue(entry.getValue());
+            } else if (FieldNames.RB_SERVICE_FINANCE.getValue().equalsIgnoreCase(key)) {
+                this.rbServiceFinance = getIntegerValue(entry.getValue());
+            } else if (FieldNames.CLIENT.getValue().equalsIgnoreCase(key)) {
+                this.client = new PatientProperties(
+                        getIntegerValue(entry.getValue()), //ID
+                        getStringValue(args.get(FieldNames.FAM.getValue())), //FAM
+                        getStringValue(args.get(FieldNames.IM.getValue())), //IM
+                        getStringValue(args.get(FieldNames.OT.getValue())), //OT
+                        getIntegerValue(args.get(FieldNames.W.getValue())), //sex
+                        getDateValue(args.get(FieldNames.DR.getValue())),  //DR
+                        getStringValue(args.get(FieldNames.MR.getValue())), //MR
+                        getStringValue(args.get(FieldNames.SNILS.getValue())), //SNILS
+                        getStringValue(args.get(FieldNames.VNOV_D.getValue())) //VNOV_D
+                );
+            } else if (FieldNames.SPOKESMAN.getValue().equalsIgnoreCase(key)) {
+                if (entry.getValue() != null) {
+                    this.spokesman = new PatientProperties(
+                            getIntegerValue(entry.getValue()),//ID
+                            getStringValue(args.get(FieldNames.FAM_P.getValue())), //FAM
+                            getStringValue(args.get(FieldNames.IM_P.getValue())), //IM
+                            getStringValue(args.get(FieldNames.OT_P.getValue())), //OT
+                            getIntegerValue(args.get(FieldNames.W_P.getValue())), //SEX
+                            getDateValue(args.get(FieldNames.DR_P.getValue()))   //DR
+                    );
+                }
+            } else if (FieldNames.DOCUMENT.getValue().equalsIgnoreCase(key)) {
+                if (entry.getValue() != null) {
+                    this.document = new PatientDocument(
+                            getIntegerValue(entry.getValue()),//ID
+                            getStringValue(args.get(FieldNames.DOCTYPE.getValue())),
+                            getStringValue(args.get(FieldNames.DOCSER.getValue())),
+                            getStringValue(args.get(FieldNames.DOCNUM.getValue()))
+                    );
+                }
+            } else if (FieldNames.POLICY.getValue().equalsIgnoreCase(key)) {
+                if (entry.getValue() != null) {
+                    this.policy = new PatientPolicy(
+                            getIntegerValue(entry.getValue()),//ID
+                            getStringValue(args.get(FieldNames.VPOLIS.getValue())),
+                            getStringValue(args.get(FieldNames.SPOLIS.getValue())),
+                            getStringValue(args.get(FieldNames.NPOLIS.getValue())),
+                            getStringValue(args.get(FieldNames.SMO.getValue())),
+                            getStringValue(args.get(FieldNames.SMO_NAM.getValue())),
+                            getStringValue(args.get(FieldNames.SMO_OGRN.getValue())),
+                            getStringValue(args.get(FieldNames.SMO_OK.getValue())),
+                            getStringValue(args.get(FieldNames.INSURER_AREA.getValue()))
+                    );
+                }
+            } else if (FieldNames.NOVOR.getValue().equalsIgnoreCase(key)) {
+                this.NOVOR = getStringValue(entry.getValue());
+            } else if (FieldNames.USL_OK.getValue().equalsIgnoreCase(key)) {
+                this.USL_OK = getStringValue(entry.getValue());
+            } else if (FieldNames.VIDPOM.getValue().equalsIgnoreCase(key)) {
+                this.VIDPOM = getStringValue(entry.getValue());
+            } else if (FieldNames.FOR_POM.getValue().equalsIgnoreCase(key)) {
+                this.FOR_POM = getIntegerValue(entry.getValue());
+            } else if (FieldNames.EXTR.getValue().equalsIgnoreCase(key)) {
+                this.EXTR = getIntegerValue(entry.getValue());
+            } else if (FieldNames.LPU_1.getValue().equalsIgnoreCase(key)) {
+                this.LPU_1 = getStringValue(entry.getValue());
+            } else if (FieldNames.PODR.getValue().equalsIgnoreCase(key)) {
+                this.PODR = getStringValue(entry.getValue());
+            } else if (FieldNames.PROFIL.getValue().equalsIgnoreCase(key)) {
+                this.PROFIL = getStringValue(entry.getValue());
+            } else if (FieldNames.DET.getValue().equalsIgnoreCase(key)) {
+                this.DET = getIntegerValue(entry.getValue());
+            } else if (FieldNames.NHISTORY.getValue().equalsIgnoreCase(key)) {
+                this.NHISTORY = getStringValue(entry.getValue());
+            } else if (FieldNames.DATE_1.getValue().equalsIgnoreCase(key)) {
+                this.DATE_1 = getDateValue(entry.getValue());
+            } else if (FieldNames.DATE_2.getValue().equalsIgnoreCase(key)) {
+                this.DATE_2 = getDateValue(entry.getValue());
+            } else if (FieldNames.DS0.getValue().equalsIgnoreCase(key)) {
+                this.DS0 = getStringValue(entry.getValue());
+            } else if (FieldNames.DS1.getValue().equalsIgnoreCase(key)) {
+                this.DS1 = getStringValue(entry.getValue());
+            } else if (FieldNames.DS2.getValue().equalsIgnoreCase(key)) {
+                this.DS2 = getStringValue(entry.getValue());
+            } else if (FieldNames.CODE_MES1.getValue().equalsIgnoreCase(key)) {
+                this.CODE_MES1 = getStringValue(entry.getValue());
+            } else if (FieldNames.CODE_MES2.getValue().equalsIgnoreCase(key)) {
+                this.CODE_MES2 = getStringValue(entry.getValue());
+            } else if (FieldNames.RSLT.getValue().equalsIgnoreCase(key)) {
+                this.RSLT = getStringValue(entry.getValue());
+            } else if (FieldNames.ISHOD.getValue().equalsIgnoreCase(key)) {
+                this.ISHOD = getStringValue(entry.getValue());
+            } else if (FieldNames.PRVS.getValue().equalsIgnoreCase(key)) {
+                this.PRVS = getStringValue(entry.getValue());
+            } else if (FieldNames.IDDOKT.getValue().equalsIgnoreCase(key)) {
+                this.IDDOKT = getStringValue(entry.getValue());
+            } else if (FieldNames.OS_SLUCH.getValue().equalsIgnoreCase(key)) {
+                this.OS_SLUCH = getStringValue(entry.getValue());
+            } else if (FieldNames.IDSP.getValue().equalsIgnoreCase(key)) {
+                this.IDSP = getStringValue(entry.getValue());
+            } else if (FieldNames.ED_COL.getValue().equalsIgnoreCase(key)) {
+                this.ED_COL = getDoubleValue(entry.getValue());
+            } else if (FieldNames.CODE_USL.getValue().equalsIgnoreCase(key)) {
+                this.CODE_USL = getStringValue(entry.getValue());
+            } else if (FieldNames.TARIF.getValue().equalsIgnoreCase(key)) {
+                this.TARIF = getDoubleValue(entry.getValue());
+            } else if (FieldNames.TARIFF_ID.getValue().equalsIgnoreCase(key)) {
+                this.tariffId = getIntegerValue(entry.getValue());
+            } else if (FieldNames.RB_MEDICAL_AID_UNIT.getValue().equalsIgnoreCase(key)) {
+                this.rbMedicalAidUnitId = getIntegerValue(entry.getValue());
+            } else if (FieldNames.RB_MEDICAL_AID_UNIT_CODE.getValue().equalsIgnoreCase(key)) {
+                this.rbMedicalAidUnitCode = getStringValue(entry.getValue());
+            } else if (FieldNames.RB_MEDICAL_KIND_CODE.getValue().equalsIgnoreCase(key)) {
+                this.rbMedicalKindCode = getStringValue(entry.getValue());
+            } else if (FieldNames.AMOUNT.getValue().equalsIgnoreCase(key)) {
+                this.amount = getDoubleValue(entry.getValue());
+            } else if (FieldNames.RB_SERVICE.getValue().equalsIgnoreCase(key)) {
+                this.rbService = getIntegerValue(entry.getValue());
+            } else if (FieldNames.RB_SERVICE_INFIS.getValue().equalsIgnoreCase(key)) {
+                this.rbServiceInfis = getStringValue(entry.getValue());
+            }  else if (FieldNames.RSLT_REGIONAL_CODE.getValue().equalsIgnoreCase(key)) {
+                this.RSLTRegionalCode = getStringValue(entry.getValue());
+            } else if (FieldNames.VID_HMP.getValue().equalsIgnoreCase(key)) {
+                this.VID_HMP = getStringValue(entry.getValue());
+            } else if (FieldNames.METOD_HMP.getValue().equalsIgnoreCase(key)) {
+                this.METOD_HMP = getStringValue(entry.getValue());
+            }
         }
     }
 
