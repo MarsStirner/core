@@ -6,7 +6,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import javax.persistence.{PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.{HospitalBedDataListFilter, HospitalBedData}
-import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.database._
 import common._
@@ -35,7 +35,7 @@ with TmisLogging {
   var em: EntityManager = _
 
   @EJB
-  var appLock: AppLockBeanLocal = _
+  var appLock: AuthStorageBeanLocal = _
 
   @EJB
   private var eventBean: DbEventBeanLocal = _

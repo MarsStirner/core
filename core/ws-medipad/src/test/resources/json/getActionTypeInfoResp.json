@@ -5,8 +5,6 @@
         "id": 3911,
         "type": "Document",
         "status": null,
-        "isEditable": true,
-        "mnem": "",
         "version": 0,
         "group": [
             {
@@ -33,8 +31,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -56,8 +54,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -79,8 +77,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -102,8 +100,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -125,8 +123,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -148,8 +146,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -171,8 +169,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -194,8 +192,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -217,8 +215,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -240,8 +238,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -263,8 +261,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -286,8 +284,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -309,8 +307,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -332,8 +330,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -355,8 +353,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -378,8 +376,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "properties": [
@@ -401,8 +399,8 @@
                         },
                         "calculatedValue": null,
                         "tableValues": null,
-                        "mandatory": null,
-                        "typeId": null
+                        "typeId": null,
+                        "mandatory": null
                     }
                 ],
                 "version": null
@@ -413,6 +411,7 @@
                 "attribute": [
                     {
                         "layoutAttributeValues": [],
+                        "attributeRelations": [],
                         "properties": [
                             {
                                 "name": "value",
@@ -443,15 +442,16 @@
                             "traversableAgain": true
                         },
                         "calculatedValue": {
-                            "valueAsId": null,
-                            "valueAsString": null
+                            "valueAsString": null,
+                            "valueAsId": null
                         },
                         "tableValues": null,
-                        "mandatory": "false",
-                        "typeId": 1602607
+                        "typeId": 1602607,
+                        "mandatory": "false"
                     },
                     {
                         "layoutAttributeValues": [],
+                        "attributeRelations": [],
                         "properties": [
                             {
                                 "name": "value",
@@ -482,15 +482,16 @@
                             "traversableAgain": true
                         },
                         "calculatedValue": {
-                            "valueAsId": null,
-                            "valueAsString": null
+                            "valueAsString": null,
+                            "valueAsId": null
                         },
                         "tableValues": null,
-                        "mandatory": "true",
-                        "typeId": 1602602
+                        "typeId": 1602602,
+                        "mandatory": "true"
                     },
                     {
                         "layoutAttributeValues": [],
+                        "attributeRelations": [],
                         "properties": [
                             {
                                 "name": "value",
@@ -521,15 +522,16 @@
                             "traversableAgain": true
                         },
                         "calculatedValue": {
-                            "valueAsId": null,
-                            "valueAsString": null
+                            "valueAsString": null,
+                            "valueAsId": null
                         },
                         "tableValues": null,
-                        "mandatory": "true",
-                        "typeId": 1602603
+                        "typeId": 1602603,
+                        "mandatory": "true"
                     },
                     {
                         "layoutAttributeValues": [],
+                        "attributeRelations": [],
                         "properties": [
                             {
                                 "name": "value",
@@ -560,15 +562,16 @@
                             "traversableAgain": true
                         },
                         "calculatedValue": {
-                            "valueAsId": null,
-                            "valueAsString": null
+                            "valueAsString": null,
+                            "valueAsId": null
                         },
                         "tableValues": null,
-                        "mandatory": "false",
-                        "typeId": 1602604
+                        "typeId": 1602604,
+                        "mandatory": "false"
                     },
                     {
                         "layoutAttributeValues": [],
+                        "attributeRelations": [],
                         "properties": [
                             {
                                 "name": "value",
@@ -599,15 +602,16 @@
                             "traversableAgain": true
                         },
                         "calculatedValue": {
-                            "valueAsId": null,
-                            "valueAsString": null
+                            "valueAsString": null,
+                            "valueAsId": null
                         },
                         "tableValues": null,
-                        "mandatory": "false",
-                        "typeId": 1602605
+                        "typeId": 1602605,
+                        "mandatory": "false"
                     },
                     {
                         "layoutAttributeValues": [],
+                        "attributeRelations": [],
                         "properties": [
                             {
                                 "name": "value",
@@ -638,15 +642,16 @@
                             "traversableAgain": true
                         },
                         "calculatedValue": {
-                            "valueAsId": null,
-                            "valueAsString": null
+                            "valueAsString": null,
+                            "valueAsId": null
                         },
                         "tableValues": null,
-                        "mandatory": "true",
-                        "typeId": 1602606
+                        "typeId": 1602606,
+                        "mandatory": "true"
                     },
                     {
                         "layoutAttributeValues": [],
+                        "attributeRelations": [],
                         "properties": [
                             {
                                 "name": "value",
@@ -677,15 +682,16 @@
                             "traversableAgain": true
                         },
                         "calculatedValue": {
-                            "valueAsId": null,
-                            "valueAsString": null
+                            "valueAsString": null,
+                            "valueAsId": null
                         },
                         "tableValues": null,
-                        "mandatory": "true",
-                        "typeId": 1602601
+                        "typeId": 1602601,
+                        "mandatory": "true"
                     },
                     {
                         "layoutAttributeValues": [],
+                        "attributeRelations": [],
                         "properties": [
                             {
                                 "name": "value",
@@ -716,15 +722,16 @@
                             "traversableAgain": true
                         },
                         "calculatedValue": {
-                            "valueAsId": null,
-                            "valueAsString": null
+                            "valueAsString": null,
+                            "valueAsId": null
                         },
                         "tableValues": null,
-                        "mandatory": "false",
-                        "typeId": 1602608
+                        "typeId": 1602608,
+                        "mandatory": "false"
                     },
                     {
                         "layoutAttributeValues": [],
+                        "attributeRelations": [],
                         "properties": [
                             {
                                 "name": "value",
@@ -755,15 +762,16 @@
                             "traversableAgain": true
                         },
                         "calculatedValue": {
-                            "valueAsId": null,
-                            "valueAsString": null
+                            "valueAsString": null,
+                            "valueAsId": null
                         },
                         "tableValues": null,
-                        "mandatory": "false",
-                        "typeId": 1602609
+                        "typeId": 1602609,
+                        "mandatory": "false"
                     },
                     {
                         "layoutAttributeValues": [],
+                        "attributeRelations": [],
                         "properties": [
                             {
                                 "name": "value",
@@ -794,12 +802,12 @@
                             "traversableAgain": true
                         },
                         "calculatedValue": {
-                            "valueAsId": null,
-                            "valueAsString": null
+                            "valueAsString": null,
+                            "valueAsId": null
                         },
                         "tableValues": null,
-                        "mandatory": "false",
-                        "typeId": 1602615
+                        "typeId": 1602615,
+                        "mandatory": "false"
                     }
                 ],
                 "version": null
@@ -807,6 +815,8 @@
         ],
         "code": "3_02",
         "flatCode": "TransfusionTherapy",
+        "isEditable": true,
+        "mnem": "",
         "editable": true,
         "typeId": 3911
     }

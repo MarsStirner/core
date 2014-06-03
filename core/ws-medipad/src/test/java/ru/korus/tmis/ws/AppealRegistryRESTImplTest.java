@@ -50,6 +50,7 @@ import java.util.List;
 public class AppealRegistryRESTImplTest extends Arquillian {
 
     private static final String TST_CALLBACK = "tstCallback";
+    private static final Integer TEST_EVENT_ID = 189;
     final String BASE_URL_SOAP = "http://localhost:7713/test/";
     final String BASE_URL_REST = "http://localhost:7713/test/rest";
 
@@ -253,9 +254,9 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         try {
             ConfigManager.Common().DebugTestMode_$eq("on");
             //http://webmis/data/dir/actionTypes/?filter[view]=tree&
-            //                                    filter[mnem]=EXAM&filter[mnem]=EPI&filter[mnem]=JOUR&filter[mnem]=ORD&filter[mnem]=NOT&filter[mnem]=OTH&
-            //                                    callback=jQuery182004028293350711465_1399548976777&
-            //                                    sortingField=id&sortingMethod=asc&limit=10&page=1&recordsCount=0&_=1399556929592
+            // filter[mnem]=EXAM&filter[mnem]=EPI&filter[mnem]=JOUR&filter[mnem]=ORD&filter[mnem]=NOT&filter[mnem]=OTH&
+            // callback=jQuery182004028293350711465_1399548976777&
+            // sortingField=id&sortingMethod=asc&limit=10&page=1&recordsCount=0&_=1399556929592
             AuthData authData = auth();
             URL url = new URL(BASE_URL_REST + "/tms-registry/dir/actionTypes/");
             url = addGetParam(url, "callback", TST_CALLBACK);
@@ -288,8 +289,8 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         try {
             save();
             AuthData authData = auth();
-            //ttp://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
-            final Integer eventId = 189;
+            //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
+            final Integer eventId = TEST_EVENT_ID;
             URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/");
             url = addGetParam(url, "eventId", String.valueOf(eventId));
             url = addGetParam(url, "callback", TST_CALLBACK);
@@ -352,6 +353,107 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         } finally {
             restore();
         }
+    }
+
+    @Test
+    public void testGetDocumentsList() {
+        System.out.println("**************************** testGetDocumentsList() started...");
+        try {
+            save();
+            AuthData authData = auth();
+            String res = getDocumentsList(authData);
+
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getDocumentsList.json"))));
+            Assert.assertEquals(resJson, expected);
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        } finally {
+            restore();
+        }
+    }
+
+    private String getDocumentsList(AuthData authData) throws IOException {
+        //http://webmis/data/appeals/189/documents?
+        // filter[mnem]=EXAM&filter[mnem]=EPI&filter[mnem]=JOUR&filter[mnem]=ORD&filter[mnem]=NOT&filter[mnem]=OTH&filter[mnem]=EXAM_OLD&filter[mnem]=JOUR_OLD
+        // &sortingField=assesmentDate
+        // &sortingMethod=desc
+        // &limit=10
+        // &page=1
+        // &recordsCount=0
+        // &_=1401344705743
+        URL url = new URL(BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/", TEST_EVENT_ID));
+        url = addGetParam(url, "callback", TST_CALLBACK);
+        url = addGetParam(url, "_" , authData.getAuthToken().getId());
+        url = addGetParam(url, "filter[mnem]", Arrays.asList(new String[]{"THER", "EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH", "EXAM_OLD", "JOUR_OLD"}));
+        url = addGetParam(url, "sortingField", "assesmentDate");
+        url = addGetParam(url, "sortingMethod", "desc");
+        url = addGetParams(url, "&limit=10&page=1&recordsCount=0");
+        System.out.println("Send GET to..." + url.toString());
+        HttpURLConnection conn = openConnectionGet(url, authData);
+        int code = getResponseCode(conn);
+        String res = getResponseData(conn, code);
+        Assert.assertTrue(code == 200);
+        res = removePadding(res, TST_CALLBACK);
+        return res;
+    }
+
+    @Test
+    public void testLockDocument() {
+        System.out.println("**************************** testLockDocument() started...");
+        try {
+            save();
+            //lock Action
+            AuthData authData = auth();
+            URL url = new URL(BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/%s/lock", TEST_EVENT_ID, 259));
+            url = addGetParam(url, "callback", TST_CALLBACK);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            HttpURLConnection conn = openConnectionGet(url, authData);
+            int code = getResponseCode(conn);
+            String lockRes = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            lockRes = removePadding(lockRes, TST_CALLBACK);
+            Assert.assertTrue(lockRes.contains("\"id\""));
+            //prolong lock Action
+            HttpURLConnection connPut = openConnectionPut(url, authData);
+            code = getResponseCode(connPut);
+            lockRes = getResponseData(connPut, code);
+            Assert.assertTrue(code == 200);
+            lockRes = removePadding(lockRes, TST_CALLBACK);
+            Assert.assertTrue(lockRes.contains("\"id\""));
+
+            String res = getDocumentsList(authData);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getDocumentsListLock.json"))));
+            Assert.assertEquals(resJson, expected);
+
+            //unlock Action
+            HttpURLConnection connDel = openConnectionDel(url, authData);
+            code = getResponseCode(connDel);
+            Assert.assertTrue(code == 204);
+
+            String resUnlock = getDocumentsList(authData);
+            JsonElement resJsonUnlock = parser.parse(resUnlock);
+            JsonElement expectedUnlock = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getDocumentsList.json"))));
+            Assert.assertEquals(resJsonUnlock, expectedUnlock);
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        } finally {
+            restore();
+        }
+    }
+
+
+    private URL addGetParam(URL url, String name, List<String> valueList) throws MalformedURLException {
+        for(String value : valueList) {
+           url = addGetParam(url, name, value);
+        }
+        return url;
     }
 
 
@@ -443,6 +545,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             restore();
         }
     }
+
 
     public void testUpdatePrescription(Integer actionId) {
         System.out.println("**************************** testUpdatePrescription() started...");

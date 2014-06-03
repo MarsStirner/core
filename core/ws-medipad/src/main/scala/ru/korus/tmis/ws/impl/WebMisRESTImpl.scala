@@ -10,7 +10,7 @@ import ru.korus.tmis.core.entity.model._
 import collection.mutable
 import java.util.{Date, LinkedList}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.ws.webmis.rest.WebMisREST
+import ru.korus.tmis.ws.webmis.rest.{LockData, WebMisREST}
 import javax.ejb.{Stateless, EJB}
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
@@ -23,6 +23,8 @@ import scala.Predef._
 import ru.korus.tmis.scala.util._
 import ru.korus.tmis.core.database.bak.{DbBbtResultOrganismBeanLocal, DbBbtResponseBeanLocal, DbBbtResultTextBeanLocal}
 import org.joda.time.DateTime
+import ru.korus.tmis.core.lock.ActionWithLockInfo
+import ru.korus.tmis.scala.util.StringId
 
 /**
  * User: idmitriev
@@ -185,6 +187,9 @@ class WebMisRESTImpl  extends WebMisREST
 
   @EJB
   var dbAutoSaveStorageLocal: DbAutoSaveStorageLocal = _
+
+  @EJB
+  var appLockBeanLocal: AppLockBeanLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -645,6 +650,12 @@ class WebMisRESTImpl  extends WebMisREST
     patientBean.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, auth)
   }
 
+  def getActionWithLockInfoList(list: java.util.List[Action]) : java.util.List[ActionWithLockInfo] =  {
+    val res :  java.util.List[ActionWithLockInfo] = new java.util.LinkedList[ActionWithLockInfo]
+    list.foreach(action => res.add(authStorage.getLockInfo(action)))
+    res
+  }
+
   //Возвращает список осмотров по пациенту и обращению с фильтрацией по типу действия
   def getListOfAssessmentsForPatientByEvent(requestData: AssessmentsListRequestData, auth: AuthData) = {
     val action_list = actionBean.getActionsWithFilter(requestData.limit,
@@ -653,8 +664,9 @@ class WebMisRESTImpl  extends WebMisREST
                                                       requestData.filter.unwrap(),
                                                       requestData.rewriteRecordsCount _,
                                                       auth)
+    val actionWithLockInfoList = getActionWithLockInfoList(action_list);
     //actionBean.getActionsByEventIdWithFilter(requestData.eventId, auth, requestData)
-    val assessments: AssessmentsListData = new AssessmentsListData(action_list, requestData)
+    val assessments: AssessmentsListData = new AssessmentsListData(actionWithLockInfoList, requestData)
     assessments
   }
 
@@ -1486,4 +1498,20 @@ class WebMisRESTImpl  extends WebMisREST
   override def getRlsByText(text: String): ju.List[Nomenclature] = {
     dbRlsBean.getRlsByText(text)
   }
+
+
+  def lock(actionId: Int, auth: AuthData): LockData = {
+    val appLockDetail: AppLockDetail = authStorage.getAppLock(auth.getAuthToken, "Action", actionId)
+    return new LockData(appLockDetail.getId.getMasterId)
+  }
+
+  def prolongLock(actionId: Int, auth: AuthData): LockData = {
+    val appLockDetail: AppLockDetail = authStorage.prolongAppLock(auth.getAuthToken, "Action", actionId)
+    return new LockData(appLockDetail.getId.getMasterId)
+  }
+
+  def releaseLock(actionId: Int, auth: AuthData) {
+    authStorage.releaseAppLock(auth.getAuthToken, "Action", actionId)
+  }
+
 }

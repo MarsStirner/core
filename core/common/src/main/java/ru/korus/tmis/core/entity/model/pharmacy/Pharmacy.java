@@ -61,7 +61,7 @@ public class Pharmacy implements Serializable {
     }
 
     public void setErrorString(String errorString) {
-        this.errorString = errorString;
+        this.errorString = errorString.substring(0, Math.min(errorString.length(), 254));
     }
 
     public int getActionId() {
