@@ -412,8 +412,9 @@ public class DirectoryInfoRESTImpl {
                                         @QueryParam("filter[view]")String view,
                                         @QueryParam("showHidden") int showHidden,
                                         @QueryParam("filter[orgStruct]")int orgStructFilterEnable) throws CoreException {
-        if(patientId < 1)
-            throw new CoreException("GET-параметр patientId обязателен и не может быть меньше 1");
+
+        if(patientId < 1 && view != null && view.equals("tree"))
+            throw new CoreException("GET-параметр patientId обязателен и не может быть меньше 1 если используется filter[view]=tree");
 
         java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
         java.util.List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
@@ -429,7 +430,7 @@ public class DirectoryInfoRESTImpl {
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, mnemonics, view, showHidden == 1, orgStructId);
 
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-        final Object res = (view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
+        final Object res = (view != null && view.equals("tree")) ? wsImpl.getListOfActionTypes(request)
                 : wsImpl.getListOfActionTypeIdNames(request, patientId);
         return new JSONWithPadding(res, this.callback);
     }
