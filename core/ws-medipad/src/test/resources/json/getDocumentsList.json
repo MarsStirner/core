@@ -74,6 +74,6 @@
     "recordsCount": 2,
     "sortingField": "assesmentDate",
     "sortingMethod": "desc",
-    "coreVersion": "2.5.32-SNAPSHOT",
+    "coreVersion": "2.5.33-SNAPSHOT",
     "page": 1
 }}

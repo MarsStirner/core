@@ -29,6 +29,8 @@ object ConfigManager extends Configuration {
     var DebugTestMode = "off"
 
     def isDebugTestMode = "on".equals(DebugTestMode)
+
+    var lockTimeoutSec = 60 // время таймаута в секундах, после которого снимется лок документа
   }
 
   var RbManagerSetting = new RbManagerClass

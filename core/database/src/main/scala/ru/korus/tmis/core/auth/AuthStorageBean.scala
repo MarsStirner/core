@@ -218,7 +218,15 @@ class AuthStorageBean
     authData
   }
 
+  def clearAppLock() {
+    val timeout: Date = new Date((new Date()).getTime - ConfigManager.Common.lockTimeoutSec * 1000)
+    lockMap.filter((tuple) => tuple._1.getAppLock.getRetTime.before(timeout)).foreach((tuple) =>
+      releaseAppLock(tuple._2, tuple._1.getId.getTableName, tuple._1.getId.getRecordId)
+    )
+  }
+
   def getAppLock(token: AuthToken, tableName: String, id: Integer): AppLockDetail = {
+    clearAppLock();
     val authData = getAuthData(token)
     if (authData == null) {
       throw new CoreException("Пользователь не найден. Токен: %s".format(token))
@@ -280,7 +288,7 @@ class AuthStorageBean
    * @param tableName - имя таблицы
    * @param id - ИД записи в таблицы
    * @return - информацию о локе,если запись редактируется в данный момент;
-   * <code>null</code>, если записль не залочена
+   *         <code>null</code>, если записль не залочена
    */
   def checkAppLock(tableName: String, id: Integer): AppLockDetail = {
     val appLock: AppLockDetail = new AppLockDetail(tableName, id)
@@ -308,10 +316,10 @@ class AuthStorageBean
   }
 
   def acquireLock(table: String, recordId: Int, recordIndex: Int, userData: AuthData): Integer = {
-    val appLockDetail : AppLockDetail = checkAppLock(table, recordId)
+    val appLockDetail: AppLockDetail = checkAppLock(table, recordId)
     if (appLockDetail == null) {
       val appLockStatus = appLockBeanLocal.getAppLock(table, recordId, recordIndex, userData)
-      if (appLockStatus.getStatus != AppLockStatusType.lock ) {
+      if (appLockStatus.getStatus != AppLockStatusType.lock) {
         throw new CoreException(i18n("error.entryIsLocked"))
       }
       return appLockStatus.getId

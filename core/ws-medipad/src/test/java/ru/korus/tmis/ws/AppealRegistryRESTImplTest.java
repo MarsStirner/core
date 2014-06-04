@@ -265,7 +265,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             for(String mnem : mnems) {
                 url = addGetParam(url, "filter[mnem]", mnem);
             }
-            url = addGetParams(url, "filter[view]=tree&sortingField=id&sortingMethod=asc&limit=10&page=1&recordsCount=0&filter[orgStruct]=1");
+            url = addGetParams(url,  "filter[view]=tree&sortingField=id&sortingMethod=asc&limit=10&page=1&recordsCount=0&filter[orgStruct]=1");
             System.out.println("Send GET to..." + url.toString());
             HttpURLConnection conn = openConnectionGet(url, authData);
             int code = getResponseCode(conn);
