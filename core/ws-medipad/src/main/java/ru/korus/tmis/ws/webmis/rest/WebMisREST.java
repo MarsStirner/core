@@ -467,4 +467,17 @@ public interface WebMisREST extends Serializable {
 
     List<Nomenclature> getRlsByText(String text) throws CoreException;
 
+    /**
+     * Залочить действие
+     *
+     * @param actionId - Идентификатор действия
+     * @param auth - Данные авторизации пользователя
+     * @return - Информацию о новом локе
+     * @throws CoreException
+     */
+    LockData lock(int actionId, AuthData auth) throws CoreException;
+
+    LockData prolongLock(int actionId, AuthData auth) throws CoreException;
+
+    void releaseLock(int actionId, AuthData auth);
 }

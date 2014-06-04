@@ -6,9 +6,6 @@ import ru.korus.tmis.core.common.CommonDataProcessorBean;
 import ru.korus.tmis.core.diagnostic.DiagnosticBeanLocal;
 import ru.korus.tmis.core.patient.AppealBean;
 import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal;
-import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal;
-import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal;
-import ru.korus.tmis.schedule.PersonScheduleBeanLocal;
 import ru.korus.tmis.prescription.PrescriptionBeanLocal;
 
 /**

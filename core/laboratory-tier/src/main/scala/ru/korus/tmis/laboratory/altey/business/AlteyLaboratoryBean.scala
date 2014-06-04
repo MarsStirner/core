@@ -36,6 +36,7 @@ import org.apache.axis.client.{Stub => AxisStub}
 import scala.collection.mutable
 import ru.korus.tmis.scala.util.{General, I18nable, ConfigManager}
 import scala.Some
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 //@Remote(Array(classOf[LaboratoryBeanLocal]))
@@ -57,7 +58,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
   var dbCustomQuery: DbCustomQueryLocal = _
 
   @EJB
-  var appLock: AppLockBeanLocal = _
+  var appLock: AuthStorageBeanLocal = _
 
   @EJB
   var dbManager: DbManagerBeanLocal = _

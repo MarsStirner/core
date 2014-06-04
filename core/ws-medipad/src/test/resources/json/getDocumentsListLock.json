@@ -1,0 +1,82 @@
+{"data": [
+    {
+        "id": 259,
+        "readOnly": true,
+        "doctor": {
+            "name": {
+                "first": "",
+                "last": "Админ",
+                "raw": "Админ  ",
+                "middle": ""
+            },
+            "id": 1,
+            "department": null,
+            "specs": null
+        },
+        "assessmentName": {
+            "name": "Терапия",
+            "id": 123,
+            "code": "3_1_05"
+        },
+        "lockInfo": {
+            "personId": 41,
+            "personInfo": "test test test"
+        },
+        "flatCode": "prescription",
+        "mnemonic": "THER",
+        "closeDate": null,
+        "assessmentDate": 1379520679000,
+        "typeId": 123,
+        "beginDate": 1379520617000
+    },
+    {
+        "id": 207,
+        "readOnly": false,
+        "doctor": {
+            "name": {
+                "first": "",
+                "last": "Админ",
+                "raw": "Админ  ",
+                "middle": ""
+            },
+            "id": 1,
+            "department": null,
+            "specs": null
+        },
+        "assessmentName": {
+            "name": "Осмотр врача приемного отделения (первичная госпитализация)",
+            "id": 139,
+            "code": "1_1_01"
+        },
+        "lockInfo": null,
+        "flatCode": "feed",
+        "mnemonic": "EXAM",
+        "closeDate": 1373006699000,
+        "assessmentDate": 1373006759000,
+        "typeId": 139,
+        "beginDate": 1373006699000
+    }
+], "requestData": {
+    "filter": {
+        "type": "AssessmentsListRequestDataFilter",
+        "speciality": null,
+        "begDate": null,
+        "endDate": null,
+        "doctorName": null,
+        "assessmentName": null,
+        "departmentName": null,
+        "eventId": 189,
+        "patientId": 0,
+        "doctorId": 0,
+        "flatCodes": [],
+        "codes": [],
+        "mnemonics": ["THER", "EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH", "EXAM_OLD", "JOUR_OLD"],
+        "actionTypeId": 0
+    },
+    "coreVersion": "2.5.32-SNAPSHOT",
+    "sortingField": "assesmentDate",
+    "sortingMethod": "desc",
+    "limit": 10,
+    "recordsCount": 2,
+    "page": 1
+}}

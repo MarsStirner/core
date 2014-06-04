@@ -158,6 +158,27 @@ public class ExaminationsRegistryRESTImpl {
         wsImpl.removeAction(actionId);
     }
 
+    @GET
+    @Path("/{actionId}/lock")
+    @Produces({"application/x-javascript", "application/xml"})
+    public Object lockAction(@PathParam("actionId")int actionId) throws CoreException {
+        return new JSONWithPadding(wsImpl.lock(actionId, this.auth), this.callback);
+    }
+
+    @PUT
+    @Path("/{actionId}/lock")
+    @Produces({"application/x-javascript", "application/xml"})
+    public Object prolongLockAction(@PathParam("actionId")int actionId) throws CoreException {
+        return new JSONWithPadding(wsImpl.prolongLock(actionId, this.auth), this.callback);
+    }
+
+    @DELETE
+    @Path("/{actionId}/lock")
+    public void releaseLockAction(@PathParam("actionId")int actionId) throws CoreException {
+        wsImpl.releaseLock(actionId, this.auth);
+    }
+
+
 
     /**
      * Запрос на структуру для первичного осмотра с копированием данных из предыдущего первичного осмотра ПРЕДЫДУЩЕЙ госпитализации

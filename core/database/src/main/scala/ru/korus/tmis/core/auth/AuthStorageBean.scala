@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.auth
 
-import ru.korus.tmis.core.database.DbStaffBeanLocal
+import ru.korus.tmis.core.database.{AppLockStatusType, AppLockStatus, AppLockBeanLocal, DbStaffBeanLocal}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging
@@ -11,11 +11,13 @@ import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import javax.servlet.http.Cookie
 import scala.None
-import ru.korus.tmis.core.exception.{AuthenticationException, NoSuchUserException}
+import ru.korus.tmis.core.exception.{CoreException, AuthenticationException, NoSuchUserException}
 import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import java.util
 import java.lang
+import ru.korus.tmis.core.entity.model.{Action, AppLockDetailPK, AppLockDetail, AppLock}
+import ru.korus.tmis.core.lock.{EntityLockInfo, ActionWithLockInfo}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
@@ -27,12 +29,16 @@ class AuthStorageBean
   with I18nable {
 
   @EJB
+  var appLockBeanLocal: AppLockBeanLocal = _
+
+  @EJB
   var dbStaff: DbStaffBeanLocal = _
 
   // Отображение токена в кортеж из данных аутентификации и даты окончания
   // срока действия токена
   val authMap: util.Map[AuthToken, (AuthData, Date)] = new util.LinkedHashMap()
 
+  val lockMap: util.Map[AppLockDetail, AuthToken] = new util.concurrent.ConcurrentHashMap()
 
   @Lock(LockType.WRITE)
   def createToken(login: String, password: String, roleId: Int): AuthData = {
@@ -210,5 +216,110 @@ class AuthStorageBean
       throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.invalidToken"))
     }
     authData
+  }
+
+  def getAppLock(token: AuthToken, tableName: String, id: Integer): AppLockDetail = {
+    val authData = getAuthData(token)
+    if (authData == null) {
+      throw new CoreException("Пользователь не найден. Токен: %s".format(token))
+    }
+    val appLockStatus: AppLockStatus = appLockBeanLocal.getAppLock(tableName, id, 0, authData);
+    if (appLockStatus.getStatus == AppLockStatusType.busy) {
+      throw new CoreException(i18n("error.entryIsLocked"))
+    }
+    var lock: AppLockDetail = null
+    lockMap.synchronized {
+      lock = checkAppLock(tableName, id)
+      if (lock == null) {
+        val lockNew = new AppLockDetail()
+        val appLock: AppLock = new AppLock()
+        lockNew.setAppLock(appLock)
+        lockNew.setId(new AppLockDetailPK())
+        val now = new Date()
+        appLock.setId(appLockStatus.getId)
+        appLock.setLockTime(now)
+        appLock.setRetTime(now)
+        appLock.setPerson(authData.getUser)
+        lockNew.getId.setMasterId(appLockStatus.getId)
+        lockNew.getId.setTableName(tableName)
+        lockNew.getId.setRecordId(id)
+        lockMap.put(lockNew, token)
+        return lockNew
+      }
+    }
+    appLockBeanLocal.releaseAppLock(appLockStatus.getId)
+    throw new CoreException("Документ уже редактируется. ФИО: %s".format(lock.getAppLock.getPerson.getFullName))
+  }
+
+  def prolongAppLock(token: AuthToken, tableName: String, id: Integer): AppLockDetail = {
+    lockMap.synchronized {
+      val lock = checkAppLock(tableName, id)
+      if (lock != null) {
+        appLockBeanLocal.prolongAppLock(lock.getId.getMasterId)
+        lock.getAppLock.setLockTime(new Date())
+        return lock
+      }
+    }
+    throw new CoreException("Запись не залочена. Таблица: %s id: %s".format(tableName, id))
+  }
+
+  def releaseAppLock(token: AuthToken, tableName: String, id: Integer) {
+    lockMap.synchronized {
+      val lock = checkAppLock(tableName, id)
+      if (lock != null) {
+        appLockBeanLocal.releaseAppLock(lock.getId.getMasterId)
+        lockMap.remove(lock)
+        return
+      }
+    }
+    throw new CoreException("Запись не залочена. Таблица: %s id: %s".format(tableName, id))
+  }
+
+  /**
+   * Проверка лока записи для редактирования
+   * @param tableName - имя таблицы
+   * @param id - ИД записи в таблицы
+   * @return - информацию о локе,если запись редактируется в данный момент;
+   * <code>null</code>, если записль не залочена
+   */
+  def checkAppLock(tableName: String, id: Integer): AppLockDetail = {
+    val appLock: AppLockDetail = new AppLockDetail(tableName, id)
+    if (lockMap.get(appLock) == null) {
+      null
+    } else {
+      for (res <- lockMap.keySet()) {
+        if (res.equals(appLock)) {
+          return res
+        }
+      }
+      return null
+    }
+  }
+
+  def getLockInfo(action: Action): ActionWithLockInfo = {
+    var res = appLockBeanLocal.getLockInfo(action);
+    if (res.lockInfo == null) {
+      val appLockDetail = checkAppLock("Action", action.getId)
+      if (appLockDetail != null) {
+        res = new ActionWithLockInfo(action, new EntityLockInfo(appLockDetail.getId.getMasterId.toInt, appLockDetail.getAppLock.getPerson, "NTK"))
+      }
+    }
+    return res;
+  }
+
+  def acquireLock(table: String, recordId: Int, recordIndex: Int, userData: AuthData): Integer = {
+    val appLockDetail : AppLockDetail = checkAppLock(table, recordId)
+    if (appLockDetail == null) {
+      val appLockStatus = appLockBeanLocal.getAppLock(table, recordId, recordIndex, userData)
+      if (appLockStatus.getStatus != AppLockStatusType.lock ) {
+        throw new CoreException(i18n("error.entryIsLocked"))
+      }
+      return appLockStatus.getId
+    }
+    return appLockDetail.getId.getMasterId
+  }
+
+  def releaseLock(id: Integer) {
+    appLockBeanLocal.releaseAppLock(id)
   }
 }

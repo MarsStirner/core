@@ -7,7 +7,7 @@ import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.database._
 import common._
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import javax.persistence.{PersistenceContext, EntityManager}
 import java.util.{ArrayList, Date, LinkedList}
 import ru.korus.tmis.core.exception.CoreException
@@ -32,7 +32,7 @@ with CAPids {
   var organizationBeanLocal: DbOrganizationBeanLocal = _
 
   @EJB
-  var appLock: AppLockBeanLocal = _
+  var appLock: AuthStorageBeanLocal = _
 
   @EJB
   private var dbEventBean: DbEventBeanLocal = _
@@ -158,7 +158,7 @@ with CAPids {
 
     var oldAction: Action = null // Action.clone(temp)
     var oldValues = Map.empty[ActionProperty, java.util.List[APValue]] //actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue)
-    var lockId: Int = -1 //appLock.acquireLock("Action", temp.getId.intValue(), oldAction.getIdx, authData)
+    var lockId: Int = -1
 
     val temp = actionBean.getAppealActionByEventId(newEvent.getId.intValue(), i18n("db.actionType.hospitalization.primary").toInt)
     var action: Action = null

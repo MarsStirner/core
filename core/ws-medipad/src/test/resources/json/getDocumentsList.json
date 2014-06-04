@@ -1,0 +1,79 @@
+{"data": [
+    {
+        "id": 259,
+        "readOnly": false,
+        "assessmentDate": 1379520679000,
+        "doctor": {
+            "name": {
+                "first": "",
+                "last": "Админ",
+                "middle": "",
+                "raw": "Админ  "
+            },
+            "id": 1,
+            "specs": null,
+            "department": null
+        },
+        "beginDate": 1379520617000,
+        "typeId": 123,
+        "lockInfo": null,
+        "assessmentName": {
+            "name": "Терапия",
+            "id": 123,
+            "code": "3_1_05"
+        },
+        "flatCode": "prescription",
+        "mnemonic": "THER",
+        "closeDate": null
+    },
+    {
+        "id": 207,
+        "readOnly": false,
+        "assessmentDate": 1373006759000,
+        "doctor": {
+            "name": {
+                "first": "",
+                "last": "Админ",
+                "middle": "",
+                "raw": "Админ  "
+            },
+            "id": 1,
+            "specs": null,
+            "department": null
+        },
+        "beginDate": 1373006699000,
+        "typeId": 139,
+        "lockInfo": null,
+        "assessmentName": {
+            "name": "Осмотр врача приемного отделения (первичная госпитализация)",
+            "id": 139,
+            "code": "1_1_01"
+        },
+        "flatCode": "feed",
+        "mnemonic": "EXAM",
+        "closeDate": 1373006699000
+    }
+], "requestData": {
+    "filter": {
+        "type": "AssessmentsListRequestDataFilter",
+        "mnemonics": ["THER", "EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH", "EXAM_OLD", "JOUR_OLD"],
+        "endDate": null,
+        "codes": [],
+        "doctorId": 0,
+        "flatCodes": [],
+        "begDate": null,
+        "speciality": null,
+        "doctorName": null,
+        "assessmentName": null,
+        "departmentName": null,
+        "eventId": 189,
+        "patientId": 0,
+        "actionTypeId": 0
+    },
+    "limit": 10,
+    "recordsCount": 2,
+    "sortingField": "assesmentDate",
+    "sortingMethod": "desc",
+    "coreVersion": "2.5.32-SNAPSHOT",
+    "page": 1
+}}

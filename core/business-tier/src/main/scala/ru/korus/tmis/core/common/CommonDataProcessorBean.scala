@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.common
 
-import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
@@ -45,7 +45,7 @@ class CommonDataProcessorBean
   var em: EntityManager = _
 
   @EJB
-  var appLock: AppLockBeanLocal = _
+  var appLock: AuthStorageBeanLocal = _
 
   @EJB
   var dbAction: DbActionBeanLocal = _
