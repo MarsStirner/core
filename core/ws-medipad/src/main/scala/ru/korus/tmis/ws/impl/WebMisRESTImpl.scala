@@ -562,9 +562,40 @@ class WebMisRESTImpl  extends WebMisREST
       null
     }
 
+    // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
+    def getPropertyCustom1(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
+
+      def getTherapyPhaseEndDate(action: Action): Date = {
+        action.getActionProperties.foreach(p =>
+          if (p.getType.getCode != null && p.getType.getCode.equals("therapyPhaseEndDate"))
+          actionPropertyBean.getActionPropertyValue(p).foreach {
+            case d: Date => return d
+            case _ =>
+          }
+        )
+        null
+      }
+
+      if(oldDocumentCodes.contains(at.getCode)) {
+        val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
+        if(pastActions != null && !pastActions.isEmpty && getTherapyPhaseEndDate(pastActions.head) != null)
+          pastActions.head.getActionProperties.foreach(e => {
+            if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
+              val values = actionPropertyBean.getActionPropertyValue(e)
+              if(actionTypeCodes.contains(e.getType.getCode)) {
+                if(values.size() > 0)
+                  return values.head
+              }
+            }
+          })
+        null
+      }
+      null
+    }
+
     at.getCode match {
       case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag","mainDiagMkb")) // Заключительный эпикриз
-      case "1_2_18" => getProperty(Set("1_2_18"), Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")) // Дневниковый осмотр
+      case "1_2_18" => getPropertyCustom1(Set("1_2_18"), Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")) // Дневниковый осмотр
       case _ => null
     }
   }
