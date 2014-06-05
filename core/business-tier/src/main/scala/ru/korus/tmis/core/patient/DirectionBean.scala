@@ -207,10 +207,11 @@ with I18nable {
         if (jobTicket != null && jobTicket.getJob != null) {
           val fromList = list.find((p) => p._1.getId != null && p._1.getId.intValue() == jobTicket.getJob.getId.intValue()).getOrElse(null)
           if (fromList == null) {
-            val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
-            val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
-            if (takenTissue != null) a.setTakenTissue(takenTissue)
-            list.add(j, jt, takenTissue, a)
+            val j = dbJobBean.insertOrUpdateJob(0, a, department)
+            val jt = dbJobTicketBean.insertOrUpdateJobTicket(0, a, j)
+            val tt = dbTakenTissue.insertOrUpdateTakenTissue(0, a)
+            if (tt != null) a.setTakenTissue(tt)
+            list.add(j, jt, tt, a)
             jtForAp = jt
           } else {
             val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
@@ -220,19 +221,6 @@ with I18nable {
             jtForAp = jt
           }
 
-        }
-        //*****
-        //Проверка, есть ли подобный action за текущие сутки c другим временем
-        //по коментарию Алехиной https://korusconsulting.atlassian.net/browse/WEBMIS-711
-        val filter = new ActionsListDataFilter(a.getEvent.getId.intValue(), //ид обращения в теле запроса
-          a.getActionType.getId.intValue(), //действия только данного типа
-          -1,
-          -1,
-          false,
-          true) //за текущий день
-        val last = actionBean.getActionsWithFilter(0, 0, "", filter.unwrap(), null, null)
-        if (last != null && last.size() > 0 && jobTicket.getStatus == 2 && !a.getIsUrgent) {
-          a.setStatus(2)
         }
       }
 
