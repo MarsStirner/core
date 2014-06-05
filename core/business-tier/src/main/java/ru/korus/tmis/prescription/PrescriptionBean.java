@@ -291,6 +291,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
             ActionProperty ap = dbActionPropertyBeanLocal.createActionProperty(action, prop.getActionPropertyTypeId(), authData);
             em.persist(ap);
             if (prop.getValue() != null && !prop.getValue().isEmpty()) {
+                em.flush();
                 APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, prop.getValue(), 0);
                 em.persist(apv);
             }
