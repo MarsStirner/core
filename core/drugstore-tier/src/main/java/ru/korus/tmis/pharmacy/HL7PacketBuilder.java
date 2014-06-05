@@ -43,6 +43,7 @@ public final class HL7PacketBuilder {
     private static final String PROCESSING_CODE_P = "P";
     private static final String PROCESSING_MODE_T = "T";
     private static final String STATUS_COMPLETED = "completed";
+    private static final String STATUS_ACTIVE = "active";
 
 
     private static boolean isTestMode = false;  //TODO: убрать!
@@ -127,7 +128,7 @@ public final class HL7PacketBuilder {
         uv02Location1.setTypeCode(ParticipationTargetLocation.LOC);
         uv02Location1.setTime(time);
         final CS statusCode1 = FACTORY_HL7.createCS();
-        statusCode1.setCode("active");
+        statusCode1.setCode(STATUS_ACTIVE);
         uv02Location1.setStatusCode(statusCode1);
 
         final PRPAMT402001UV02ServiceDeliveryLocation deliveryLocation = FACTORY_HL7.createPRPAMT402001UV02ServiceDeliveryLocation();
@@ -187,7 +188,7 @@ public final class HL7PacketBuilder {
         inpatientEncounterEvent.getId().add(createII(uuidExternalId, externalId));
         inpatientEncounterEvent.getId().add(createIIEx(financeId));
         inpatientEncounterEvent.setCode(createEncounterCode());
-        inpatientEncounterEvent.setStatusCode(createCS(STATUS_COMPLETED));
+        inpatientEncounterEvent.setStatusCode(createCS(STATUS_ACTIVE));
         inpatientEncounterEvent.setEffectiveTime(createIVLTS(action.getCreateDatetime(), DATE_FORMAT));
 
         final PRPAMT402002UV02Subject subject = FACTORY_HL7.createPRPAMT402002UV02Subject();
