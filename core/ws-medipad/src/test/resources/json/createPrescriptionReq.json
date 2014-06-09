@@ -16,7 +16,7 @@
             "actionPropertyTypeId": 1811,
             "mandatory": false,
             "name": "Скорость введения",
-            "value": "",
+            "value": "1",
             "valueDomain": "",
             "type": "String",
             "code": "voa"

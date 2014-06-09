@@ -88,9 +88,14 @@ with CAPids {
   @EJB
   private var dbContractBean: DbContractBeanLocal = _
 
+  @EJB
+  var dbTempInvalidBean: DbTempInvalidBeanLocal = _
+
+/*
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
+*/
 
   private class IndexOf[T](seq: Seq[T]) {
     def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
@@ -141,12 +146,16 @@ with CAPids {
     val newEvent = this.verificationData(patientId, authData, appealData, true)
     dbManager.persist(newEvent)
     dbManager.detach(newEvent)
-    insertOrModifyAppeal(appealData, newEvent, true, authData)
+    val res = insertOrModifyAppeal(appealData, newEvent, true, authData)
+    updateTempInvalid(newEvent, appealData.data.tempInvalid, authData)
+    res
   }
 
   def updateAppeal(appealData: AppealData, eventId: Int, authData: AuthData) = {
     val newEvent = this.verificationData(eventId, authData, appealData, false)
-    insertOrModifyAppeal(appealData, newEvent, false, authData)
+    val res = insertOrModifyAppeal(appealData, newEvent, false, authData)
+    updateTempInvalid(newEvent, appealData.data.tempInvalid, authData)
+    res
   }
 
   def insertOrModifyAppeal(appealData: AppealData, event: Event, flgCreate: Boolean, authData: AuthData) = {
@@ -567,6 +576,32 @@ with CAPids {
     val years: Int = Years.yearsBetween(new DateTime(datePeriod.getStart), new DateTime()).getYears;
     if (Math.abs(years) > maxDiffYears - 1) {
       throw new CoreException(i18n("error.appeal.create.InvalidPeriod.StartDate", maxDiffYears))
+    }
+  }
+
+  def updateTempInvalid(event: Event, tempInvalidCont: TempInvalidAppealContainer, authDate: AuthData) {
+    if (tempInvalidCont != null) {
+
+      var tempInvalid = if(event.getId == null) new TempInvalid() else dbTempInvalidBean.getTempInvalidByEventId(event.getId)
+      if (tempInvalid == null) {
+        tempInvalid = new TempInvalid()
+      }
+      tempInvalid.setEvent(event)
+      dbTempInvalidBean.insertOrUpdateTempInvalid(tempInvalid,
+        tempInvalidCont.begDate,//Date beginDate,
+        tempInvalidCont.endDate, //Date endDate,
+        0,//short docType,
+        if (tempInvalidCont.isByService) "09" else "01",//int reasonId,
+        tempInvalidCont.begDate,//Date caseBegDate,
+        tempInvalidCont.serial, //String serial,
+        tempInvalidCont.number, //String number,
+        0,//short sex,
+        0,//byte age,
+        0,//int duration,
+        0,//short closed,
+        event.getPatient,// Patient patient,
+        authDate.getUser//Staff sessionUser)
+      )
     }
   }
 
