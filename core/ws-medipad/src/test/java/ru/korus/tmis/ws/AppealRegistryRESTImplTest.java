@@ -683,6 +683,45 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
 
+    private static String labTestBakLabResearchUUID;
+    private static int labTestBakBarcode;
+    private static AuthData bakLabTestAuthData;
+
+    @Test
+    public void testCreateBakLabResearch() {
+        try {
+            createTestUser();
+            bakLabTestAuthData = auth();
+            System.out.println(labTestAuthData);
+            URL url = new URL(BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory");
+            HttpURLConnection createLabResearchConnection = openConnection(url, labTestAuthData, "POST");
+            OutputStream createLabResearchOutputStream = createLabResearchConnection.getOutputStream();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String nowDate = sdf.format(new Date());
+            String data = new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createLabRequestBak.json")));
+            data = data.replace("2014-06-11 16:00:00", nowDate);
+            System.out.println("I am going to send create lab research request:");
+            System.out.println(data);
+            createLabResearchOutputStream.write(data.getBytes());
+            createLabResearchOutputStream.flush();
+            int code = getResponseCode(createLabResearchConnection);
+            Assert.assertTrue(code == 200);
+            String res = getResponseData(createLabResearchConnection, code);
+            res = res.substring(9, res.length() - 1);
+            ObjectMapper mapper = new ObjectMapper();
+            JSONCommonData commonData = mapper.readValue(res, JSONCommonData.class);
+            System.out.println("Action id is " + commonData.getData().get(0).getId());
+            Action a = dbActionBean.getActionById(commonData.getData().get(0).getId());
+
+            labTestBakLabResearchUUID = a.getUuid().getUuid();
+            labTestBakBarcode = a.getTakenTissue().getBarcode();
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert(false);
+        }
+    }
+
+
     private String getCommonAttributeValueByName(List<CommonAttribute> attributes, String name) {
         for(CommonAttribute ca : attributes) {
             if(ca.getName().equals(name)) {
