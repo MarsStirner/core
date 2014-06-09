@@ -11,7 +11,8 @@ import javax.persistence.*;
 @Table(name = "rbTempInvalidDocument")
 @NamedQueries(
         {
-                @NamedQuery(name = "RbTempInvalidDocument.findAll", query = "SELECT r FROM RbTempInvalidDocument r")
+                @NamedQuery(name = "RbTempInvalidDocument.findAll", query = "SELECT r FROM RbTempInvalidDocument r"),
+                @NamedQuery(name = "RbTempInvalidDocument.findByCode", query = "SELECT r FROM RbTempInvalidDocument r WHERE r.code = :code")
         })
 public class RbTempInvalidDocument implements Serializable {
     private static final long serialVersionUID = 1L;

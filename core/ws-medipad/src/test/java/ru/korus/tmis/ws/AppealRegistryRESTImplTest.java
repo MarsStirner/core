@@ -51,6 +51,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     private static final String TST_CALLBACK = "tstCallback";
     private static final Integer TEST_EVENT_ID = 189;
+    private static final Integer TEST_CLIENT_ID = 2;
     final String BASE_URL_SOAP = "http://localhost:7713/test/";
     final String BASE_URL_REST = "http://localhost:7713/test/rest";
 
@@ -72,6 +73,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     private DbEventBeanLocal eventBeanLocal = null;
 
     private DbUtil dbUtil;
+    static private int createdActionId;
 
     @Deployment
     public static Archive createTestArchive() {
@@ -206,8 +208,8 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
     @Test
-    public void testCreateAndDeleteAction() {
-        System.out.println("**************************** testCreateAndDeleteAction() started...");
+    public void testCreateAction() {
+        System.out.println("**************************** testCreateAction() started...");
         try {
             AuthData authData = auth();
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
@@ -236,8 +238,71 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             Assert.assertTrue(jsonActionInfoArray.size() > 0);
             final JsonPrimitive jsonActionId = jsonActionInfoArray.get(0).getAsJsonObject().getAsJsonPrimitive("id");
             Assert.assertNotNull(jsonActionId);
-            int actionId = jsonActionId.getAsInt();
-            deleteAction(actionId);
+            createdActionId = jsonActionId.getAsInt();
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        } finally {
+            restore();
+        }
+    }
+
+    @Test(dependsOnMethods = "testCreateAction")
+    public void testDeleteAction() {
+        final int actionId = createdActionId;
+        System.out.println("**************************** deleteAction(actionId) started...");
+        try {
+            AuthData authData = auth();
+            //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
+            final Integer transfusionTherapyActionId = 3911;
+            final Integer eventId = 841695;
+            URL url = new URL(BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/%s", eventId, actionId));
+            final String tstCallback = "tstCallback";
+            url = addGetParam(url, "callback", tstCallback);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            System.out.println("Send DELETE to..." + url.toString());
+            HttpURLConnection conn = openConnectionDel(url, authData);
+            //toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionReq.json"))), conn);
+            int code = getResponseCode(conn);
+            //  String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 204);
+
+            // res = removePadding(res, tstCallback);
+            //Assert.assertEquals(resJson, expected);
+            // Assert.assertEquals(res, "true");
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        } finally {
+            restore();
+        }
+    }
+
+    @Test
+    public void testCreateEvent() {
+        System.out.println("**************************** testCreateEvent() started...");
+        try {
+            AuthData authData = auth();
+            //http://webmis/data/patients/2/appeals/?callback=jQuery1820959072473924607_1402042407315
+            final Integer eventId = 841695;
+            URL url = new URL(BASE_URL_REST + String.format("/tms-registry/patients/%s/appeals/", TEST_CLIENT_ID));
+            final String tstCallback = "tstCallback";
+            url = addGetParam(url, "callback", tstCallback);
+            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            System.out.println("Send POST to..." + url.toString());
+            HttpURLConnection conn = openConnectionPost(url, authData);
+            toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createAppealsReq.json"))), conn);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            res = removePadding(res, tstCallback);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createAppealsResp.json"))));
+            //TODO remove id  from json or clear DB
+            //Assert.assertEquals(resJson, expected);
+            Assert.assertTrue(res.contains("\"number\":\"NUMBER__\""));
 
         } catch (Exception ex) {
             ex.printStackTrace();
@@ -250,7 +315,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test
     public void testGetActionTypes()
     {
-        System.out.println("**************************** testCreateAndDeleteAction() started...");
+        System.out.println("**************************** testGetActionTypes() started...");
         try {
             ConfigManager.Common().DebugTestMode_$eq("on");
             //http://webmis/data/dir/actionTypes/?filter[view]=tree&
@@ -527,6 +592,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             System.out.println("Send POST to..." + url.toString());
             HttpURLConnection conn = openConnectionPost(url, authData);
             toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createPrescriptionReq.json"))), conn);
+            //toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/tmp.json"))), conn);
             int code = getResponseCode(conn);
             String res = getResponseData(conn, code);
             Assert.assertTrue(code == 200);
@@ -545,7 +611,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             restore();
         }
     }
-
 
     public void testUpdatePrescription(Integer actionId) {
         System.out.println("**************************** testUpdatePrescription() started...");
@@ -682,7 +747,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         }
     }
 
-
     private String getCommonAttributeValueByName(List<CommonAttribute> attributes, String name) {
         for(CommonAttribute ca : attributes) {
             if(ca.getName().equals(name)) {
@@ -696,34 +760,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         return "";
     }
 
-    private void deleteAction(int actionId) {
-        System.out.println("**************************** deleteAction(actionId) started...");
-        try {
-            AuthData authData = auth();
-            //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
-            final Integer transfusionTherapyActionId = 3911;
-            final Integer eventId = 841695;
-            URL url = new URL(BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/%s", eventId, actionId));
-            final String tstCallback = "tstCallback";
-            url = addGetParam(url, "callback", tstCallback);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            System.out.println("Send DELETE to..." + url.toString());
-            HttpURLConnection conn = openConnectionDel(url, authData);
-            //toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionReq.json"))), conn);
-            int code = getResponseCode(conn);
-          //  String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 204);
-
-           // res = removePadding(res, tstCallback);
-            //Assert.assertEquals(resJson, expected);
-           // Assert.assertEquals(res, "true");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
 
     private AuthData auth() throws CoreException {
         // авторизация пользователм  'test' с ролью "медсестра приемного отделения”

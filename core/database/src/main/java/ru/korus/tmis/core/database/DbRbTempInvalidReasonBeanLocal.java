@@ -12,4 +12,5 @@ public interface DbRbTempInvalidReasonBeanLocal {
 
     RbTempInvalidReason getRbTempInvalidReasonById(int id);
 
+    RbTempInvalidReason getRbTempInvalidReasonByCode(String code);
 }

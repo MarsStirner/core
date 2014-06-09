@@ -271,7 +271,7 @@ class WebMisRESTImpl  extends WebMisREST
     constructAppealData(ide)
   }
 
-  private def constructAppealData(ide: Int) = {
+  private def constructAppealData(ide: Int): java.lang.String = {
     if(ide>0) {
       val result = appealBean.getAppealById(ide)
 
@@ -280,7 +280,7 @@ class WebMisRESTImpl  extends WebMisREST
       val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
 
       val mapper: ObjectMapper = new ObjectMapper()
-      mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsStandartForm])
+      //mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsStandartForm])
       val patient = positionE._1.getPatient
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
