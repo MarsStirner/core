@@ -24,6 +24,7 @@
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
             <property name="eclipselink.id-validation" value="NULL"/>
+            <property name="eclipselink.weaving" value="false"/>
            <!-- <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>-->
         </properties>
     </persistence-unit>
@@ -40,6 +41,7 @@
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
             <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
+            <property name="eclipselink.weaving" value="false"/>
         </properties>
     </persistence-unit>
 
