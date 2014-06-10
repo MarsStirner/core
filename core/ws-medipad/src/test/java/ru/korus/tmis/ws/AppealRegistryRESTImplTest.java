@@ -759,14 +759,15 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         try {
             createTestUser();
             bakLabTestAuthData = auth();
-            System.out.println(labTestAuthData);
+            System.out.println(bakLabTestAuthData);
             URL url = new URL(BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory");
-            HttpURLConnection createLabResearchConnection = openConnection(url, labTestAuthData, "POST");
+            HttpURLConnection createLabResearchConnection = openConnection(url, bakLabTestAuthData, "POST");
             OutputStream createLabResearchOutputStream = createLabResearchConnection.getOutputStream();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String nowDate = sdf.format(new Date());
             String data = new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createLabRequestBak.json")));
             data = data.replace("2014-06-11 16:00:00", nowDate);
+            data = data.replace("205", "41"); // Current user
             System.out.println("I am going to send create lab research request:");
             System.out.println(data);
             createLabResearchOutputStream.write(data.getBytes());
@@ -787,6 +788,30 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             assert(false);
         }
     }
+
+    @Test(dependsOnMethods = "testCreateBakLabResearch")
+    public void testGetLisBakResults() {
+        try {
+            URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
+            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-success-receive-data.xml")));
+            postData = postData.replace("2014-06-05 11:50:33", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            postData = postData.replace("1000529970", Integer.toString(labTestBakBarcode + 1000*1000*1000));
+            System.out.println("I am going to send lab result request:");
+            System.out.println(postData);
+            HttpURLConnection connection = openConnection(url, labTestAuthData, "POST");
+            connection.setRequestProperty("Content-Type", "text/xml");
+            OutputStream outStream = connection.getOutputStream();
+            outStream.write(postData.getBytes());
+            outStream.flush();
+            int code = getResponseCode(connection);
+            Assert.assertTrue(code == 200);
+            getResponseData(connection, code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert(false);
+        }
+    }
+
 
 
     private String getCommonAttributeValueByName(List<CommonAttribute> attributes, String name) {
