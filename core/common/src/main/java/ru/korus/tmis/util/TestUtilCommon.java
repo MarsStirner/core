@@ -2,6 +2,7 @@ package ru.korus.tmis.util;
 
 import org.custommonkey.xmlunit.Diff;
 import ru.korus.tmis.core.entity.model.RbFinance;
+import ru.korus.tmis.core.entity.model.bak.BbtResponse;
 import ru.korus.tmis.core.entity.model.fd.FDRecord;
 import ru.korus.tmis.core.entity.model.kladr.Kladr;
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue;
@@ -30,7 +31,8 @@ public class TestUtilCommon implements TestUtil {
                 FDRecord.class.getPackage(),
                 LayoutAttributeValue.class.getPackage(),
                 Kladr.class.getPackage(),
-                DrugChart.class.getPackage()};
+                DrugChart.class.getPackage(),
+                BbtResponse.class.getPackage()};
         return res;
     }
 

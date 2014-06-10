@@ -31,6 +31,7 @@
             <property name="eclipselink.query-results-cache" value="false"/>
             <property name="javax.persistence.validation.mode" value="NONE" />
             <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
+            <property name="eclipselink.weaving" value="false"/>
         </properties>
     </persistence-unit>
 
@@ -47,6 +48,7 @@
             <property name="eclipselink.query-results-cache" value="false"/>
             <property name="javax.persistence.validation.mode" value="NONE" />
             <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
+            <property name="eclipselink.weaving" value="false"/>
         </properties>
     </persistence-unit>
 
@@ -63,6 +65,7 @@
             <property name="eclipselink.query-results-cache" value="false"/>
             <property name="javax.persistence.validation.mode" value="NONE" />
             <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
+            <property name="eclipselink.weaving" value="false"/>
         </properties>
     </persistence-unit>
 
@@ -77,6 +80,7 @@
             <property name="eclipselink.logging.level" value="WARNING"/>
             <property name="javax.persistence.validation.mode" value="NONE" />
             <property name="eclipselink.cache.shared.default" value="false"/>
+            <property name="eclipselink.weaving" value="false"/>
         </properties>
     </persistence-unit>
 
