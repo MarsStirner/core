@@ -188,7 +188,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             URL url = new URL(BASE_URL_REST + "/tms-registry/dir/actionTypes/" + transfusionTherapyActionId);
             url = addGetParam(url, "eventId", String.valueOf(eventId));
             url = addGetParam(url, "callback", TST_CALLBACK);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
+            url = addGetParam(url, "_", authData.getAuthToken().getId());
             System.out.println("Send GET to..." + url.toString());
             HttpURLConnection conn = openConnectionGet(url, authData);
             int code = getResponseCode(conn);
@@ -750,7 +750,9 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
 
-    private static String labTestBakLabResearchUUID;
+
+
+    private static int labTestBakLabResearchId;
     private static int labTestBakBarcode;
     private static AuthData bakLabTestAuthData;
 
@@ -779,9 +781,10 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             ObjectMapper mapper = new ObjectMapper();
             JSONCommonData commonData = mapper.readValue(res, JSONCommonData.class);
             System.out.println("Action id is " + commonData.getData().get(0).getId());
+            Thread.sleep(1000);
             Action a = dbActionBean.getActionById(commonData.getData().get(0).getId());
 
-            labTestBakLabResearchUUID = a.getUuid().getUuid();
+            labTestBakLabResearchId = a.getId();
             labTestBakBarcode = a.getTakenTissue().getBarcode();
         } catch (Exception e) {
             e.printStackTrace();
@@ -790,13 +793,38 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     }
 
     @Test(dependsOnMethods = "testCreateBakLabResearch")
-    public void testGetLisBakResults() {
+    public void testGetLisBakReceived() {
         try {
             URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
             String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-success-receive-data.xml")));
             postData = postData.replace("2014-06-05 11:50:33", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
             postData = postData.replace("1000529970", Integer.toString(labTestBakBarcode + 1000*1000*1000));
-            System.out.println("I am going to send lab result request:");
+            System.out.println("I am going to send lab bak success received:");
+            System.out.println(postData);
+            HttpURLConnection connection = openConnection(url, labTestAuthData, "POST");
+            connection.setRequestProperty("Content-Type", "text/xml");
+            OutputStream outStream = connection.getOutputStream();
+            outStream.write(postData.getBytes());
+            outStream.flush();
+            int code = getResponseCode(connection);
+            Assert.assertTrue(code == 200);
+            getResponseData(connection, code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert(false);
+        }
+    }
+
+    @Test(dependsOnMethods = "testGetLisBakReceived")
+    public void testGetLisBakResults() {
+        try {
+            URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
+            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-full-data.xml")));
+            postData = postData.replace("1113481", String.valueOf(labTestBakLabResearchId));
+            postData = postData.replace("201406051155", String.valueOf(new Date().getTime()));
+            postData = postData.replace("201406051052", String.valueOf(new Date().getTime()));
+            postData = postData.replace("239", "41");
+            System.out.println("I am going to send lab bak result request:");
             System.out.println(postData);
             HttpURLConnection connection = openConnection(url, labTestAuthData, "POST");
             connection.setRequestProperty("Content-Type", "text/xml");
