@@ -12,6 +12,7 @@ import java.util.List;
  * The persistent class for the TempInvalid database table.
  */
 @Entity
+@Table(name = "TempInvalid")
 public class TempInvalid implements Serializable {
     private static final long serialVersionUID = 1L;
 
