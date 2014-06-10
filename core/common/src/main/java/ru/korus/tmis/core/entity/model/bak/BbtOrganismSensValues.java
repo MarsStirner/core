@@ -19,7 +19,7 @@ public class BbtOrganismSensValues implements Serializable {
     @Column(name = "id")
     private Integer id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne
     @JoinColumn(name = "bbtResult_Organism_id")
     private BbtResultOrganism bbtResultOrganism;
 
