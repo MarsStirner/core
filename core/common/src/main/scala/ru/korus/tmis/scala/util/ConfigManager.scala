@@ -25,7 +25,8 @@ object ConfigManager extends Configuration {
   var Common = new CommonClass
 
   class CommonClass extends Configuration {
-    var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
+    var OrgId = 3479
+    // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
     var DebugTestMode = "off"
 
     def isDebugTestMode = "on".equals(DebugTestMode)
@@ -49,6 +50,7 @@ object ConfigManager extends Configuration {
     def isDebugDemoMode = "on".equals(DebugDemoMode)
 
   }
+
   /**
    *
    *
@@ -190,7 +192,7 @@ object ConfigManager extends Configuration {
 
 
     /**
-     *  URL сервиса 1С ОДВД
+     * URL сервиса 1С ОДВД
      */
     var ServiceUrl = "http://10.128.51.67/buh1/ws/wsPoliclinic.1cws"
 
@@ -214,7 +216,7 @@ object ConfigManager extends Configuration {
     def isFinanceActive = "on".equals(FinanceActive)
   }
 
-   /**
+  /**
    *
    *
    * Настройки для Система-Софт (вызов отправки назначения на анализ в ЛИС)
@@ -445,13 +447,17 @@ object ConfigManager extends Configuration {
       Utf8ResourceBundleControl.Singleton)
 
     def apply(msg: String, params: Any*) = {
-      bundle.getString(msg) match {
-        case null => "<EMPTY>"
-        case result => if (params.isEmpty) result
-        else try {
-          result.format(params: _*)
-        } catch {
-          case e: Throwable => error("Could not format pattern " + msg + ". Using it as-is."); msg
+      if ("misCore.assembly.version".equals(msg) && ConfigManager.Common.isDebugTestMode) {
+        "1.0.0-TEST"
+      } else {
+        bundle.getString(msg) match {
+          case null => "<EMPTY>"
+          case result => if (params.isEmpty) result
+          else try {
+            result.format(params: _*)
+          } catch {
+            case e: Throwable => error("Could not format pattern " + msg + ". Using it as-is."); msg
+          }
         }
       }
     }
@@ -602,15 +608,18 @@ object ConfigManager extends Configuration {
 
   class Codes extends Configuration {
     val bundle = ResourceBundle.getBundle("codes", Utf8ResourceBundleControl.Singleton)
-    def getValue(key : String) : java.lang.String = {
+
+    def getValue(key: String): java.lang.String = {
       bundle.getString(key)
     }
-    def getValueList(key: String) : java.util.List[String] = {
-      val l : java.util.ArrayList[String] = new util.ArrayList[String]()
+
+    def getValueList(key: String): java.util.List[String] = {
+      val l: java.util.ArrayList[String] = new util.ArrayList[String]()
       bundle.getString(key).split(",").foreach(e => l.add(e))
       l
     }
   }
+
   val codes = new Codes
 
 }

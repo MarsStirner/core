@@ -73,7 +73,7 @@
         "mnemonics": ["THER", "EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH", "EXAM_OLD", "JOUR_OLD"],
         "actionTypeId": 0
     },
-    "coreVersion": "2.5.33-SNAPSHOT",
+    "coreVersion": "1.0.0-TEST",
     "sortingField": "assesmentDate",
     "sortingMethod": "desc",
     "limit": 10,

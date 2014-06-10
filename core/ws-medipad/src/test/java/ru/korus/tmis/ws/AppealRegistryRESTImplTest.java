@@ -603,7 +603,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             //TODO перед тестом почистить БД!
             //Assert.assertEquals(resJson, expected);
             Assert.assertTrue(res.contains("\"valueDomain\":\"rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER\""));
-            testUpdatePrescription(259);
+
         } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();
@@ -612,8 +612,10 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         }
     }
 
-    public void testUpdatePrescription(Integer actionId) {
+    @Test(dependsOnMethods = "testCreatePrescription")
+    public void testUpdatePrescription() {
         System.out.println("**************************** testUpdatePrescription() started...");
+        final Integer actionId = 259;
         try {
             AuthData authData = auth();
             //http://10.128.51.85/api/v1/prescriptions/983378?callback=jQuery182040639712987467647_1400594935328
