@@ -53,7 +53,7 @@ class DbRlsBean
 
   val rlsByTextContainingQuery =
     """
-       SELECT r FROM NomenclatureNew r WHERE r.tradeLocalName LIKE :value
+       SELECT r FROM Nomenclature r WHERE r.tradeLocalName LIKE :value
     """
 
 }
