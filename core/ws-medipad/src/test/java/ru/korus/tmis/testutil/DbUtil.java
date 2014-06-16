@@ -1,5 +1,7 @@
 package ru.korus.tmis.testutil;
 
+import ru.korus.tmis.util.TestUtilCommon;
+
 import java.sql.*;
 import java.util.HashMap;
 import java.util.Map;
@@ -40,48 +42,70 @@ public class DbUtil {
             "`ActionProperty_String`",
             "`ActionProperty_Time`",
             "`ActionProperty`",
+            "`DrugChart`",
+            "`DrugComponent`",
             "`Event`",
-            "`Action`",};
-    final Map<String, Integer> maxIndexMap = new HashMap<String, Integer>();
+            "`Action`",
+            "`Person`"};
 
-    public DbUtil() {
+    final Map<String, Integer> maxIndexMap = new HashMap<String, Integer>() {{
+        put("`DrugChart`", 4);
+        put("`DrugComponent`", 1);
+        put("`Event`", 254);
+        put("`Action`", 259);
+        put("`ActionProperty`", 1456);
+        put("`ActionProperty_Action`", 1456);
+        put("`ActionProperty_Date`", 1456);
+        put("`ActionProperty_Double`", 1456);
+        put("`ActionProperty_FDRecord`", 1456);
+        put("`ActionProperty_HospitalBed`", 1456);
+        put("`ActionProperty_HospitalBedProfile`", 1456);
+        put("`ActionProperty_Image`", 1456);
+        put("`ActionProperty_ImageMap`", 1456);
+        put("`ActionProperty_Integer`", 1456);
+        put("`ActionProperty_Job_Ticket`", 1456);
+        put("`ActionProperty_MKB`", 1456);
+        put("`ActionProperty_Organisation`", 1456);
+        put("`ActionProperty_OtherLPURecord`", 1456);
+        put("`ActionProperty_Person`", 1456);
+        put("`ActionProperty_rbBloodComponentType`", 1456);
+        put("`ActionProperty_rbFinance`", 1456);
+        put("`ActionProperty_rbReasonOfAbsence`", 1456);
+        put("`ActionProperty_String`", 1456);
+        put("`ActionProperty_Time`", 1456);
+        put("`Person`", 25);
+    }};
+
+
+    public void prepare() {
         initConnection();
         System.out.println("Database connection established");
-        saveState();
-        close();
-    }
-
-    public void saveState() {
         try {
-            for (final String tableName : tables) {
-                final Statement s = conn.createStatement();
-                final String sql = "SELECT max(`id`) FROM " + tableName;
-                s.executeQuery(sql);
-                final ResultSet rs = s.getResultSet();
-                if (rs.next()) {
-                    maxIndexMap.put(tableName, rs.getInt("max(`id`)"));
-                    System.out.println("Table: " + tableName + " max index: " + maxIndexMap.get(tableName) );
-                } else {
-                    throw new SQLException(String.format("Cannot init max index. SQL: %s", sql));
-                }
-            }
-        } catch (final Exception e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void restore() {
-        initConnection();
-        try {
-            final Statement s = conn.createStatement();
-            for (String tableName : tables) {
-                s.executeUpdate("DELETE FROM " + tableName + " WHERE `id` >= " + maxIndexMap.get(tableName));
-                System.out.println("A rows with has been removed. Table: " + tableName + " max index: " + maxIndexMap.get(tableName) );
-            }
+            clear();
+            initDb("./src/test/resources/sql/init.sql");
+            initDb("./src/test/resources/sql/OrgStructure_ActionType.sql");
         } catch (final Exception e) {
             e.printStackTrace();
         } finally {
             close();
+        }
+    }
+
+    private void initDb(String fileName) throws SQLException {
+        final Statement s = conn.createStatement();
+        String[] sqlList = TestUtilCommon.getSqlFromFile(fileName);
+        for(String sql : sqlList) {
+            s.executeUpdate(sql);
+        }
+
+    }
+
+    private void clear() throws SQLException {
+        final Statement s = conn.createStatement();
+        for (String tableName : tables) {
+            System.out.print("Clear table" + tableName);
+            s.executeUpdate("DELETE FROM " + tableName + " WHERE `id` > " + maxIndexMap.get(tableName));
+            System.out.println("A rows with has been removed. Table: " + tableName + " max index: " + maxIndexMap.get(tableName));
         }
     }
 
@@ -103,7 +127,7 @@ public class DbUtil {
         }
     }
 
-    public void close() {
+    private void close() {
         if (conn != null) {
             try {
                 conn.close();

@@ -4,35 +4,33 @@
  */
 package ru.korus.tmis.ws;
 
-import com.google.gson.*;
+import com.google.gson.JsonElement;
+import com.google.gson.JsonParser;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.persistence.PersistenceTest;
 import org.jboss.arquillian.testng.Arquillian;
 import org.jboss.shrinkwrap.api.Archive;
-import org.jboss.shrinkwrap.api.ArchivePaths;
-import org.jboss.shrinkwrap.api.ShrinkWrap;
-import org.jboss.shrinkwrap.api.asset.EmptyAsset;
-import org.jboss.shrinkwrap.api.spec.WebArchive;
 import org.testng.Assert;
 import org.testng.annotations.Test;
-import ru.korus.tmis.core.auth.*;
-import ru.korus.tmis.core.common.CommonDataProcessorBean;
-import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal;
+import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
+import ru.korus.tmis.core.auth.JsonPerson;
+import ru.korus.tmis.core.auth.UsersMgrLocal;
 import ru.korus.tmis.core.data.*;
-import ru.korus.tmis.core.database.common.*;
+import ru.korus.tmis.core.database.common.DbActionBeanLocal;
+import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.patient.AppealBeanLocal;
-import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.testutil.DbUtil;
-import ru.korus.tmis.util.*;
+import ru.korus.tmis.testutil.WebMisBase;
 import scala.actors.threadpool.Arrays;
 
 import javax.ejb.EJB;
-import java.io.*;
+import java.io.IOException;
+import java.io.OutputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
 import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -49,11 +47,7 @@ import java.util.List;
 //@Transactional(value = TransactionMode.ROLLBACK)
 public class AppealRegistryRESTImplTest extends Arquillian {
 
-    private static final String TST_CALLBACK = "tstCallback";
-    private static final Integer TEST_EVENT_ID = 189;
-    private static final Integer TEST_CLIENT_ID = 2;
-    final String BASE_URL_SOAP = "http://localhost:7713/test/";
-    final String BASE_URL_REST = "http://localhost:7713/test/rest";
+    final static String BASE_URL_SOAP = "http://localhost:7713/test/";
 
     final int TEST_PATIENT_ID = 2; // id пациента, для которого создается госпитализация
 
@@ -73,52 +67,24 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     private DbEventBeanLocal eventBeanLocal = null;
 
     private DbUtil dbUtil;
-    static private int createdActionId;
+
 
     @Deployment
     public static Archive createTestArchive() {
-        final WebArchive wa = ShrinkWrap.create(WebArchive.class, "test.war");
-        wa.addAsWebInfResource(new File("../common/src/test/resources/META-INF/persistence.xml"), "classes/META-INF/persistence.xml");
-
-        // common -------------------------------------------------------------------
-        wa.addPackages(false, (new TestUtilCommon()).getPackagesForTest());
-        wa.addPackages(false, (new TestUtilBusiness()).getPackagesForTest());
-        wa.addPackages(false, (new TestUtilDatabase()).getPackagesForTest());
-        wa.addPackages(false, (new TestUtilLaboratory()).getPackagesForTest());
-        // --------------------------------------------------------------------------
-
-        wa.addPackages(true, (new TestUtilWsLaboratory()).getPackagesForTest());
-        wa.addPackages(true, (new TestUtilWsMedipad()).getPackagesForTest());
-        wa.addClass(AuthStorageBeanLocal.class);
-        wa.addClass(AuthStorageBean.class);
-
-        wa.addClass(CommonDataProcessorBeanLocal.class);
-        wa.addClass(CommonDataProcessorBean.class);
-
-        wa.addClass(DbSettingsBeanLocal.class);
-        wa.addClass(DbSettingsBean.class);
-
-     /*   wa.addPackage(ru.korus.tmis.ws.webmis.rest.servlet.RestServlet.class.getPackage());
-        wa.addPackage(ru.korus.tmis.ws.webmis.rest.WebMisREST.class.getPackage());
-        wa.addPackage(ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage.class.getPackage());*/
-
-        wa.addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
-        wa.addAsWebInfResource(new File("./target/test-classes/WEB-INF/web.xml"), "web.xml");
-        System.out.println("**************************** createTestArchive medipad");
-        return wa;
+        return WebMisBase.createArchive();
     }
 
 
     //@BeforeTest
     public void save() {
-      //  dbUtil = new DbUtil();
+        //  dbUtil = new DbUtil();
     }
 
     //TODO: выяснить, почему не выполняется после каждого теста
     //@AfterTest
     public void restore() {
         //dbUtil.restore();
-      //  dbUtil.close();
+        //  dbUtil.close();
     }
 
     @Test
@@ -138,10 +104,10 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     public void testInsertAppealForPatient() {
         System.out.println("**************************** testInsertAppealForPatient() started...");
         try {
-            AppealData appealData =initAppealData(); // инициализация параметров госпитализации
+            AppealData appealData = initAppealData(); // инициализация параметров госпитализации
             int countEvent = eventBeanLocal.getEventsForPatient(TEST_PATIENT_ID).size();  // количетово обращений пациента ДО
             createTestUser(); // создание тестового пользователя с ролью "медсестра приемного отделения”. Login: 'test'
-            AuthData authData = auth();
+            AuthData authData = WebMisBase.auth(authStorageBeanLocal);
             appealBean.insertAppealForPatient(appealData, TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
             int countEventNew = eventBeanLocal.getEventsForPatient(TEST_PATIENT_ID).size(); // количетово обращений пациента ПОСЛЕ
             Assert.assertEquals(countEventNew, countEvent + 1); // количетово обращений пациента ПОСЛЕ должно быть на один больше
@@ -151,805 +117,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             Assert.fail();
         }
     }
-
-    @Test
-    public void testAuth() {
-        System.out.println("**************************** testAuth() started...");
-        try {
-            createTestUser();
-            final URL url = new URL(BASE_URL_REST + "/tms-auth/roles/");
-            System.out.println("Send POST to..." + url.toString());
-            //TODO move to resource file!
-            final String input = "{\"login\":\"utest\",\"password\":\"098f6bcd4621d373cade4e832627b4f6\",\"roleId\":0}";
-            HttpURLConnection conn = openConnectionPost(url, null);
-            toPostStream(input, conn);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            //TODO move to resource file!
-            //final String goodRes = "callback({\"version\":\"2.5.24-SNAPSHOT\",\"roles\":[{\"id\":29,\"name\":\"Медсестра приемного отделения\",\"withDep\":0,\"right\":[{\"permitted\":false,\"code\":\"clientTreatmentDelete\",\"isPermitted\":false},{\"permitted\":false,\"code\":\"clientDiagnosticCreate\",\"isPermitted\":false},{\"permitted\":true,\"code\":\"clientAssessmentRead\",\"isPermitted\":true},{\"permitted\":false,\"code\":\"clientDiagnosticUpdate\",\"isPermitted\":false},{\"permitted\":true,\"code\":\"clientTreatmentRead\",\"isPermitted\":true},{\"permitted\":true,\"code\":\"clientTreatmentCreate\",\"isPermitted\":true},{\"permitted\":false,\"code\":\"clientDiagnosticRead\",\"isPermitted\":false},{\"permitted\":true,\"code\":\"clientTreatmentUpdate\",\"isPermitted\":true},{\"permitted\":false,\"code\":\"clientAssessmentDelete\",\"isPermitted\":false},{\"permitted\":false,\"code\":\"clientAssessmentCreate\",\"isPermitted\":false},{\"permitted\":true,\"code\":\"clientAssessmentUpdate\",\"isPermitted\":true},{\"permitted\":false,\"code\":\"clientDiagnosticDelete\",\"isPermitted\":false}],\"code\":\"admNurse\"}],\"doctor\":{\"id\":34,\"name\":{\"last\":\"test\",\"first\":\"test\",\"middle\":\"test\",\"raw\":\"test test test\"},\"department\":null,\"specs\":{\"id\":1,\"name\":\"специальность\"}}})";
-            Assert.assertTrue(res.contains("\"raw\":\"test test test\""));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        }
-    }
-
-    @Test
-    public void testGetActionTypeInfo() {
-        System.out.println("**************************** testGetActionTypeInfo() started...");
-        try {
-            save();
-            AuthData authData = auth();
-            //http://webmis/data/dir/actionTypes/3911?eventId=325&callback=jQuery18202118265349417925_1394181799283&_=1394182983004
-            final String transfusionTherapyActionId = "3911";
-            final Integer eventId = 841695;
-            //final Integer eventId = appealBean.insertAppealForPatient(initAppealData(), TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
-            URL url = new URL(BASE_URL_REST + "/tms-registry/dir/actionTypes/" + transfusionTherapyActionId);
-            url = addGetParam(url, "eventId", String.valueOf(eventId));
-            url = addGetParam(url, "callback", TST_CALLBACK);
-            url = addGetParam(url, "_", authData.getAuthToken().getId());
-            System.out.println("Send GET to..." + url.toString());
-            HttpURLConnection conn = openConnectionGet(url, authData);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            res = removePadding(res, TST_CALLBACK);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getActionTypeInfoResp.json"))));
-            Assert.assertEquals(resJson, expected);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-    @Test
-    public void testCreateAction() {
-        System.out.println("**************************** testCreateAction() started...");
-        try {
-            AuthData authData = auth();
-            //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
-            final Integer eventId = 841695;
-            URL url = new URL(BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/", eventId));
-            final String tstCallback = "tstCallback";
-            url = addGetParam(url, "callback", tstCallback);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            System.out.println("Send POST to..." + url.toString());
-            HttpURLConnection conn = openConnectionPost(url, authData);
-            toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionReq.json"))), conn);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            res = removePadding(res, tstCallback);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionResp.json"))));
-            //TODO remove id  from json or clear DB
-            //Assert.assertEquals(resJson, expected);
-            Assert.assertTrue(res.contains("\"typeId\":3911"));
-            final JsonElement jsonData = resJson.getAsJsonObject().get("data");
-            Assert.assertNotNull(jsonData);
-            final JsonArray jsonActionInfoArray = jsonData.getAsJsonArray();
-            Assert.assertNotNull(jsonActionInfoArray);
-            Assert.assertTrue(jsonActionInfoArray.size() > 0);
-            final JsonPrimitive jsonActionId = jsonActionInfoArray.get(0).getAsJsonObject().getAsJsonPrimitive("id");
-            Assert.assertNotNull(jsonActionId);
-            createdActionId = jsonActionId.getAsInt();
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-    @Test(dependsOnMethods = "testCreateAction")
-    public void testDeleteAction() {
-        final int actionId = createdActionId;
-        System.out.println("**************************** deleteAction(actionId) started...");
-        try {
-            AuthData authData = auth();
-            //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
-            final Integer transfusionTherapyActionId = 3911;
-            final Integer eventId = 841695;
-            URL url = new URL(BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/%s", eventId, actionId));
-            final String tstCallback = "tstCallback";
-            url = addGetParam(url, "callback", tstCallback);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            System.out.println("Send DELETE to..." + url.toString());
-            HttpURLConnection conn = openConnectionDel(url, authData);
-            //toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionReq.json"))), conn);
-            int code = getResponseCode(conn);
-            //  String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 204);
-
-            // res = removePadding(res, tstCallback);
-            //Assert.assertEquals(resJson, expected);
-            // Assert.assertEquals(res, "true");
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-    @Test
-    public void testCreateEvent() {
-        System.out.println("**************************** testCreateEvent() started...");
-        try {
-            AuthData authData = auth();
-            //http://webmis/data/patients/2/appeals/?callback=jQuery1820959072473924607_1402042407315
-            final Integer eventId = 841695;
-            URL url = new URL(BASE_URL_REST + String.format("/tms-registry/patients/%s/appeals/", TEST_CLIENT_ID));
-            final String tstCallback = "tstCallback";
-            url = addGetParam(url, "callback", tstCallback);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            System.out.println("Send POST to..." + url.toString());
-            HttpURLConnection conn = openConnectionPost(url, authData);
-            toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createAppealsReq.json"))), conn);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            res = removePadding(res, tstCallback);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createAppealsResp.json"))));
-            //TODO remove id  from json or clear DB
-            //Assert.assertEquals(resJson, expected);
-            Assert.assertTrue(res.contains("\"number\":\"NUMBER__\""));
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-    @Test
-    public void testGetActionTypes()
-    {
-        System.out.println("**************************** testGetActionTypes() started...");
-        try {
-            ConfigManager.Common().DebugTestMode_$eq("on");
-            //http://webmis/data/dir/actionTypes/?filter[view]=tree&
-            // filter[mnem]=EXAM&filter[mnem]=EPI&filter[mnem]=JOUR&filter[mnem]=ORD&filter[mnem]=NOT&filter[mnem]=OTH&
-            // callback=jQuery182004028293350711465_1399548976777&
-            // sortingField=id&sortingMethod=asc&limit=10&page=1&recordsCount=0&_=1399556929592
-            AuthData authData = auth();
-            URL url = new URL(BASE_URL_REST + "/tms-registry/dir/actionTypes/");
-            url = addGetParam(url, "callback", TST_CALLBACK);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            final String mnems[] = {"EXAM","EPI","JOUR","ORD","NOT","OTH"};
-            for(String mnem : mnems) {
-                url = addGetParam(url, "filter[mnem]", mnem);
-            }
-            url = addGetParams(url,  "filter[view]=tree&sortingField=id&sortingMethod=asc&limit=10&page=1&recordsCount=0&filter[orgStruct]=1");
-            System.out.println("Send GET to..." + url.toString());
-            HttpURLConnection conn = openConnectionGet(url, authData);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            res = removePadding(res, TST_CALLBACK);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getListActionTypesResp.json"))));
-            Assert.assertEquals(resJson, expected);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        } finally {
-            restore();
-        }
-    }
-
-    @Test
-    public void testGetPrescriptionByEvent() {
-        System.out.println("**************************** testGetPrscriptionByEvent() started...");
-        try {
-            save();
-            AuthData authData = auth();
-            //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
-            final Integer eventId = TEST_EVENT_ID;
-            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/");
-            url = addGetParam(url, "eventId", String.valueOf(eventId));
-            url = addGetParam(url, "callback", TST_CALLBACK);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            System.out.println("Send GET to..." + url.toString());
-            HttpURLConnection conn = openConnectionGet(url, authData);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            res = removePadding(res, TST_CALLBACK);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getPrescriptionByEventResp.json"))));
-            //TODO перед тестом почистить БД!
-            //Assert.assertEquals(resJson, expected);
-            Assert.assertTrue(res.contains("\"valueDomain\":\"rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER\""));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-    @Test
-    public void testGetPrescriptionByTime() {
-        System.out.println("**************************** testGetPrescriptionByTime() started...");
-        try {
-            save();
-            AuthData authData = auth();
-            //http://webmis/api/v1/prescriptions/?callback=jQuery18205942272304091603_1400733998545&
-            // groupBy=interval&
-            // dateRangeMin=1400745600&
-            // dateRangeMax=1400832000&
-            // administrationId=2&
-            // drugName=a&
-            // pacientName=P&
-            // setPersonName=V&
-            // departmentId=26&_=1400734043649
-            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/");
-            url = addGetParam(url, "callback", TST_CALLBACK);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            url = addGetParam(url, "dateRangeMin", "1379524000");
-            url = addGetParam(url, "dateRangeMax", "1379530400");
-            System.out.println("Send GET to..." + url.toString());
-            HttpURLConnection conn = openConnectionGet(url, authData);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            res = removePadding(res, TST_CALLBACK);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getPrescriptionByEventResp.json"))));
-            //TODO перед тестом почистить БД!
-            //Assert.assertEquals(resJson, expected);
-            Assert.assertTrue(res.contains("\"valueDomain\":\"rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER\""));
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-    @Test
-    public void testGetDocumentsList() {
-        System.out.println("**************************** testGetDocumentsList() started...");
-        try {
-            save();
-            AuthData authData = auth();
-            String res = getDocumentsList(authData);
-
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getDocumentsList.json"))));
-            Assert.assertEquals(resJson, expected);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-    private String getDocumentsList(AuthData authData) throws IOException {
-        //http://webmis/data/appeals/189/documents?
-        // filter[mnem]=EXAM&filter[mnem]=EPI&filter[mnem]=JOUR&filter[mnem]=ORD&filter[mnem]=NOT&filter[mnem]=OTH&filter[mnem]=EXAM_OLD&filter[mnem]=JOUR_OLD
-        // &sortingField=assesmentDate
-        // &sortingMethod=desc
-        // &limit=10
-        // &page=1
-        // &recordsCount=0
-        // &_=1401344705743
-        URL url = new URL(BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/", TEST_EVENT_ID));
-        url = addGetParam(url, "callback", TST_CALLBACK);
-        url = addGetParam(url, "_" , authData.getAuthToken().getId());
-        url = addGetParam(url, "filter[mnem]", Arrays.asList(new String[]{"THER", "EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH", "EXAM_OLD", "JOUR_OLD"}));
-        url = addGetParam(url, "sortingField", "assesmentDate");
-        url = addGetParam(url, "sortingMethod", "desc");
-        url = addGetParams(url, "&limit=10&page=1&recordsCount=0");
-        System.out.println("Send GET to..." + url.toString());
-        HttpURLConnection conn = openConnectionGet(url, authData);
-        int code = getResponseCode(conn);
-        String res = getResponseData(conn, code);
-        Assert.assertTrue(code == 200);
-        res = removePadding(res, TST_CALLBACK);
-        return res;
-    }
-
-    @Test
-    public void testLockDocument() {
-        System.out.println("**************************** testLockDocument() started...");
-        try {
-            save();
-            //lock Action
-            AuthData authData = auth();
-            URL url = new URL(BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/%s/lock", TEST_EVENT_ID, 259));
-            url = addGetParam(url, "callback", TST_CALLBACK);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            HttpURLConnection conn = openConnectionGet(url, authData);
-            int code = getResponseCode(conn);
-            String lockRes = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            lockRes = removePadding(lockRes, TST_CALLBACK);
-            Assert.assertTrue(lockRes.contains("\"id\""));
-            //prolong lock Action
-            HttpURLConnection connPut = openConnectionPut(url, authData);
-            code = getResponseCode(connPut);
-            lockRes = getResponseData(connPut, code);
-            Assert.assertTrue(code == 200);
-            lockRes = removePadding(lockRes, TST_CALLBACK);
-            Assert.assertTrue(lockRes.contains("\"id\""));
-
-            String res = getDocumentsList(authData);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getDocumentsListLock.json"))));
-            Assert.assertEquals(resJson, expected);
-
-            //unlock Action
-            HttpURLConnection connDel = openConnectionDel(url, authData);
-            code = getResponseCode(connDel);
-            Assert.assertTrue(code == 204);
-
-            String resUnlock = getDocumentsList(authData);
-            JsonElement resJsonUnlock = parser.parse(resUnlock);
-            JsonElement expectedUnlock = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getDocumentsList.json"))));
-            Assert.assertEquals(resJsonUnlock, expectedUnlock);
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-
-    private URL addGetParam(URL url, String name, List<String> valueList) throws MalformedURLException {
-        for(String value : valueList) {
-           url = addGetParam(url, name, value);
-        }
-        return url;
-    }
-
-
-    @Test
-    public void testPrescriptionTypeList() {
-        System.out.println("**************************** testPrscriptionTypeList() started...");
-        try {
-            save();
-            AuthData authData = auth();
-            //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
-            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/types/");
-            url = addGetParam(url, "callback", TST_CALLBACK);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            System.out.println("Send GET to..." + url.toString());
-            HttpURLConnection conn = openConnectionGet(url, authData);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            res = removePadding(res, TST_CALLBACK);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getPrescriptionTypeListResp.json"))));
-            Assert.assertEquals(resJson, expected);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-    @Test
-    public void testGetPrescriptionTemplate() {
-        System.out.println("**************************** testGetPrescriptionTemplate() started...");
-        try {
-            save();
-            AuthData authData = auth();
-            //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
-            Integer actionTypeId = 123;
-            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/template/" + actionTypeId);
-            url = addGetParam(url, "callback", TST_CALLBACK);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            System.out.println("Send GET to..." + url.toString());
-            HttpURLConnection conn = openConnectionGet(url, authData);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            res = removePadding(res, TST_CALLBACK);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getPrescriptionTemplateResp.json"))));
-            Assert.assertEquals(resJson, expected);
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-    @Test
-    public void testCreatePrescription() {
-        System.out.println("**************************** testCreatePrescription() started...");
-        try {
-            AuthData authData = auth();
-            //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
-            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/");
-            final String tstCallback = "tstCallback";
-            url = addGetParam(url, "callback", tstCallback);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            System.out.println("Send POST to..." + url.toString());
-            HttpURLConnection conn = openConnectionPost(url, authData);
-            toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createPrescriptionReq.json"))), conn);
-            //toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/tmp.json"))), conn);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            res = removePadding(res, tstCallback);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createPrescriptionResp.json"))));
-            //TODO перед тестом почистить БД!
-            //Assert.assertEquals(resJson, expected);
-            Assert.assertTrue(res.contains("\"valueDomain\":\"rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER\""));
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-    @Test(dependsOnMethods = "testCreatePrescription")
-    public void testUpdatePrescription() {
-        System.out.println("**************************** testUpdatePrescription() started...");
-        final Integer actionId = 259;
-        try {
-            AuthData authData = auth();
-            //http://10.128.51.85/api/v1/prescriptions/983378?callback=jQuery182040639712987467647_1400594935328
-            URL url = new URL(BASE_URL_REST + "/tms-registry/prescriptions/" + actionId);
-            final String tstCallback = "tstCallback";
-            url = addGetParam(url, "callback", tstCallback);
-            url = addGetParam(url, "_" , authData.getAuthToken().getId());
-            System.out.println("Send PUT to..." + url.toString());
-            HttpURLConnection conn = openConnectionPut(url, authData);
-            toPostStream( new String(Files.readAllBytes(Paths.get("./src/test/resources/json/updatePrescriptionReq.json"))), conn);
-            int code = getResponseCode(conn);
-            String res = getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
-            res = removePadding(res, tstCallback);
-            JsonParser parser = new JsonParser();
-            JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/updatePrescriptionReq.json"))));
-            //Assert.assertEquals(resJson, expected);
-            //TODO перед тестом почистить БД!
-            //Assert.assertEquals(resJson, expected);
-            Assert.assertTrue(res.contains("\"valueDomain\":\"rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER\""));
-
-        } catch (Exception ex) {
-            ex.printStackTrace();
-            Assert.fail();
-        } finally {
-            restore();
-        }
-    }
-
-
-
-    private static int labTestLabResearchId;
-    private static int labTestBarcode;
-    private static AuthData labTestAuthData;
-
-    @Test
-    public void testCreateLabResearch() {
-        try {
-            createTestUser();
-            labTestAuthData = auth();
-            System.out.println(labTestAuthData);
-            URL url = new URL(BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory");
-            HttpURLConnection createLabResearchConnection = openConnection(url, labTestAuthData, "POST");
-            OutputStream createLabResearchOutputStream = createLabResearchConnection.getOutputStream();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String nowDate = sdf.format(new Date());
-            String data = new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createLabRequestBloodMakro.json")));
-            data = data.replace("2014-05-29 18:00:00", nowDate);
-            System.out.println("I am going to send create lab research request:");
-            System.out.println(data);
-            createLabResearchOutputStream.write(data.getBytes());
-            createLabResearchOutputStream.flush();
-            int code = getResponseCode(createLabResearchConnection);
-            Assert.assertTrue(code == 200);
-            String res = getResponseData(createLabResearchConnection, code);
-            res = res.substring(9, res.length() - 1);
-            System.out.println(res);
-            ObjectMapper mapper = new ObjectMapper();
-            JSONCommonData commonData = mapper.readValue(res, JSONCommonData.class);
-            System.out.println("Action id is " + commonData.getData().get(0).getId());
-            Action a = dbActionBean.getActionById(commonData.getData().get(0).getId());
-
-            labTestLabResearchId = a.getId();
-            labTestBarcode = a.getTakenTissue().getBarcode();
-        } catch (Exception e) {
-            e.printStackTrace();
-            assert(false);
-        }
-    }
-
-    @Test(dependsOnMethods = "testCreateLabResearch")
-    public void testGetLisAcrossResults() {
-        try {
-            URL url = new URL(BASE_URL_SOAP + "/service-across-results");
-            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/makroBloodResult.xml")));
-            postData = postData.replace("983410", Integer.toString(labTestLabResearchId));
-            postData = postData.replace("609520", Integer.toString(labTestBarcode));
-            System.out.println("I am going to send lab result request:");
-            System.out.println(postData);
-            HttpURLConnection connection = openConnection(url, labTestAuthData, "POST");
-            connection.setRequestProperty("Content-Type", "text/xml");
-            OutputStream outStream = connection.getOutputStream();
-            outStream.write(postData.getBytes());
-            outStream.flush();
-            int code = getResponseCode(connection);
-            Assert.assertTrue(code == 200);
-            getResponseData(connection, code);
-        } catch (Exception e) {
-            e.printStackTrace();
-            assert(false);
-        }
-    }
-
-    @Test(dependsOnMethods = "testGetLisAcrossResults")
-    public void testGetLabResearchResult() {
-        try {
-            URL url = new URL(BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory/" + labTestLabResearchId);
-            HttpURLConnection connection = openConnection(url, labTestAuthData, "GET");
-            connection.setRequestProperty("Accept", "application/x-javascript");
-            int code = getResponseCode(connection);
-            Assert.assertTrue(code == 200);
-            String res = getResponseData(connection, code);
-            res = res.substring(9, res.length() - 1);
-            ObjectMapper mapper = new ObjectMapper();
-            JSONCommonData commonData = mapper.readValue(res, JSONCommonData.class);
-            List<CommonAttribute> atrs = commonData.getData().get(0).getGroup().get(1).attribute();
-            Assert.assertEquals("50", getCommonAttributeValueByName(atrs, "Альбумин"));
-            Assert.assertEquals("60", getCommonAttributeValueByName(atrs, "Общий белок"));
-            Assert.assertEquals("10", getCommonAttributeValueByName(atrs, "Билирубин общий"));
-            Assert.assertEquals("1", getCommonAttributeValueByName(atrs, "Билирубин прямой"));
-            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "Мочевина"));
-            Assert.assertEquals("4", getCommonAttributeValueByName(atrs, "Глюкоза"));
-            Assert.assertEquals("4", getCommonAttributeValueByName(atrs, "Калий"));
-            Assert.assertEquals("153", getCommonAttributeValueByName(atrs, "Натрий"));
-            Assert.assertEquals("20", getCommonAttributeValueByName(atrs, "АЛТ"));
-            Assert.assertEquals("30", getCommonAttributeValueByName(atrs, "АСТ"));
-            Assert.assertEquals("80", getCommonAttributeValueByName(atrs, "ЛДГ"));
-            Assert.assertEquals("50", getCommonAttributeValueByName(atrs, "ГГТ"));
-            Assert.assertEquals("100", getCommonAttributeValueByName(atrs, "ЩФ"));
-            Assert.assertEquals("50", getCommonAttributeValueByName(atrs, "Альфа-амилаза"));
-            Assert.assertEquals("20", getCommonAttributeValueByName(atrs, "П-амилаза"));
-            Assert.assertEquals("4", getCommonAttributeValueByName(atrs, "Холестерин"));
-            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "Триглицериды"));
-            Assert.assertEquals("20", getCommonAttributeValueByName(atrs, "Липаза"));
-            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "ЛПНП"));
-            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "ЛПВП"));
-        } catch (Exception e) {
-            e.printStackTrace();
-            assert(false);
-        }
-    }
-
-
-
-
-    private static int labTestBakLabResearchId;
-    private static int labTestBakBarcode;
-    private static AuthData bakLabTestAuthData;
-
-    @Test
-    public void testCreateBakLabResearch() {
-        try {
-            createTestUser();
-            bakLabTestAuthData = auth();
-            System.out.println(bakLabTestAuthData);
-            URL url = new URL(BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory");
-            HttpURLConnection createLabResearchConnection = openConnection(url, bakLabTestAuthData, "POST");
-            OutputStream createLabResearchOutputStream = createLabResearchConnection.getOutputStream();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String nowDate = sdf.format(new Date());
-            String data = new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createLabRequestBak.json")));
-            data = data.replace("2014-06-11 16:00:00", nowDate);
-            data = data.replace("205", "41"); // Current user
-            System.out.println("I am going to send create lab research request:");
-            System.out.println(data);
-            createLabResearchOutputStream.write(data.getBytes());
-            createLabResearchOutputStream.flush();
-            int code = getResponseCode(createLabResearchConnection);
-            Assert.assertTrue(code == 200);
-            String res = getResponseData(createLabResearchConnection, code);
-            res = res.substring(9, res.length() - 1);
-            ObjectMapper mapper = new ObjectMapper();
-            JSONCommonData commonData = mapper.readValue(res, JSONCommonData.class);
-            System.out.println("Action id is " + commonData.getData().get(0).getId());
-            Thread.sleep(1000);
-            Action a = dbActionBean.getActionById(commonData.getData().get(0).getId());
-
-            labTestBakLabResearchId = a.getId();
-            labTestBakBarcode = a.getTakenTissue().getBarcode();
-        } catch (Exception e) {
-            e.printStackTrace();
-            assert(false);
-        }
-    }
-
-    @Test(dependsOnMethods = "testCreateBakLabResearch")
-    public void testGetLisBakReceived() {
-        try {
-            URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
-            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-success-receive-data.xml")));
-            postData = postData.replace("2014-06-05 11:50:33", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-            postData = postData.replace("1000529970", Integer.toString(labTestBakBarcode + 1000*1000*1000));
-            System.out.println("I am going to send lab bak success received:");
-            System.out.println(postData);
-            HttpURLConnection connection = openConnection(url, labTestAuthData, "POST");
-            connection.setRequestProperty("Content-Type", "text/xml");
-            OutputStream outStream = connection.getOutputStream();
-            outStream.write(postData.getBytes());
-            outStream.flush();
-            int code = getResponseCode(connection);
-            Assert.assertTrue(code == 200);
-            getResponseData(connection, code);
-        } catch (Exception e) {
-            e.printStackTrace();
-            assert(false);
-        }
-    }
-
-    @Test(dependsOnMethods = "testGetLisBakReceived")
-    public void testGetLisBakResults() {
-        try {
-            URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
-            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-full-data.xml")));
-            postData = postData.replace("1113481", String.valueOf(labTestBakLabResearchId));
-            postData = postData.replace("201406051155", String.valueOf(new Date().getTime()));
-            postData = postData.replace("201406051052", String.valueOf(new Date().getTime()));
-            postData = postData.replace("239", "41");
-            System.out.println("I am going to send lab bak result request:");
-            System.out.println(postData);
-            HttpURLConnection connection = openConnection(url, labTestAuthData, "POST");
-            connection.setRequestProperty("Content-Type", "text/xml");
-            OutputStream outStream = connection.getOutputStream();
-            outStream.write(postData.getBytes());
-            outStream.flush();
-            int code = getResponseCode(connection);
-            Assert.assertTrue(code == 200);
-            getResponseData(connection, code);
-        } catch (Exception e) {
-            e.printStackTrace();
-            assert(false);
-        }
-    }
-
-
-
-    private String getCommonAttributeValueByName(List<CommonAttribute> attributes, String name) {
-        for(CommonAttribute ca : attributes) {
-            if(ca.getName().equals(name)) {
-                for(PropertyPair pp : ca.getProperties()) {
-                    if (pp.getName().equals("value")) {
-                        return pp.getValue();
-                    }
-                }
-            }
-        }
-        return "";
-    }
-
-
-    private AuthData auth() throws CoreException {
-        // авторизация пользователм  'test' с ролью "медсестра приемного отделения”
-        return authStorageBeanLocal.createToken("utest", "098f6bcd4621d373cade4e832627b4f6" /*MD5 for 'test'*/, 29);
-    }
-
-    private void toPostStream(String input, HttpURLConnection conn) throws IOException {
-        OutputStream outputStream = conn.getOutputStream();
-        outputStream.write(input.getBytes());
-        outputStream.flush();
-    }
-
-    private HttpURLConnection openConnectionPost(URL url, AuthData authData) throws IOException {
-        return openConnection(url, authData, "POST");
-    }
-
-
-    private HttpURLConnection openConnectionGet(URL url, AuthData authData) throws IOException {
-        return openConnection(url, authData, "GET");
-    }
-
-    private HttpURLConnection openConnectionPut(URL url, AuthData authData) throws IOException {
-        return openConnection(url, authData, "PUT");
-    }
-
-    private HttpURLConnection openConnectionDel(URL url, AuthData authData) throws IOException {
-        return openConnection(url, authData, "DELETE");
-    }
-
-    private HttpURLConnection openConnection(URL url, AuthData authData, String method) throws IOException {
-        HttpURLConnection conn = openConnection(url);
-        if(authData != null) {
-            conn.setRequestProperty("Cookie", "authToken=" + authData.getAuthToken().getId());
-        }
-        conn.setRequestMethod(method);
-        return conn;
-    }
-
-
-    private String removePadding(String res, String tstCallback) {
-        final String prefix = tstCallback + "(";
-        Assert.assertTrue(res.startsWith(prefix));
-        final String suffix = ")";
-        Assert.assertTrue(res.endsWith(suffix));
-        return res.substring(prefix.length()).substring(0, res.length() - suffix.length() - prefix.length());
-    }
-
-    private URL addGetParam(final URL url, final String name, String value) throws MalformedURLException {
-        final String beg = url.toString().indexOf('?') < 0 ? "?" : "&";
-        return new URL(url + beg + name + "=" + value);
-    }
-
-    private URL addGetParams(final URL url, final String params) throws MalformedURLException {
-        final String beg = url.toString().indexOf('?') < 0 ? "?" : "&";
-        return new URL(url + beg + params);
-    }
-
-
-    private HttpURLConnection openConnection(URL url) throws IOException {
-        HttpURLConnection conn = (HttpURLConnection) url.openConnection();
-        conn.setDoOutput(true);
-        conn.setRequestProperty("Content-Type", "application/json");
-        return conn;
-    }
-
-    private int getResponseCode(HttpURLConnection conn) throws IOException {
-        int code = conn.getResponseCode();
-        System.out.println("Response code: " + code);
-        String msg = conn.getResponseMessage();
-        System.out.println("Response message: " + msg);
-        return code;
-    }
-
-    /**
-     * @param conn
-     * @param code
-     * @return
-     * @throws IOException
-     */
-    private String getResponseData(HttpURLConnection conn, int code) throws IOException {
-        final InputStream inputStream = code == 200 ? conn.getInputStream() : conn.getErrorStream();
-        BufferedReader br = new BufferedReader(new InputStreamReader(
-                inputStream));
-
-        String output;
-        System.out.println("Output from Server .... \n");
-        String res = "";
-        while ((output = br.readLine()) != null) {
-            System.out.println(output);
-            res += output;
-        }
-        br.close();
-        return res;
-    }
-
 
     private AppealData initAppealData() {
         AppealData appealData = new AppealData();
@@ -991,6 +158,237 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         return appealData;
     }
 
+    @Test
+    public void testAuth() {
+        System.out.println("**************************** testAuth() started...");
+        try {
+            createTestUser();
+            final URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-auth/roles/");
+            System.out.println("Send POST to..." + url.toString());
+            //TODO move to resource file!
+            final String input = "{\"login\":\"utest\",\"password\":\"098f6bcd4621d373cade4e832627b4f6\",\"roleId\":0}";
+            HttpURLConnection conn = WebMisBase.openConnectionPost(url, null);
+            WebMisBase.toPostStream(input, conn);
+            int code = WebMisBase.getResponseCode(conn);
+            String res = WebMisBase.getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            //TODO move to resource file!
+            //final String goodRes = "callback({\"version\":\"2.5.24-SNAPSHOT\",\"roles\":[{\"id\":29,\"name\":\"Медсестра приемного отделения\",\"withDep\":0,\"right\":[{\"permitted\":false,\"code\":\"clientTreatmentDelete\",\"isPermitted\":false},{\"permitted\":false,\"code\":\"clientDiagnosticCreate\",\"isPermitted\":false},{\"permitted\":true,\"code\":\"clientAssessmentRead\",\"isPermitted\":true},{\"permitted\":false,\"code\":\"clientDiagnosticUpdate\",\"isPermitted\":false},{\"permitted\":true,\"code\":\"clientTreatmentRead\",\"isPermitted\":true},{\"permitted\":true,\"code\":\"clientTreatmentCreate\",\"isPermitted\":true},{\"permitted\":false,\"code\":\"clientDiagnosticRead\",\"isPermitted\":false},{\"permitted\":true,\"code\":\"clientTreatmentUpdate\",\"isPermitted\":true},{\"permitted\":false,\"code\":\"clientAssessmentDelete\",\"isPermitted\":false},{\"permitted\":false,\"code\":\"clientAssessmentCreate\",\"isPermitted\":false},{\"permitted\":true,\"code\":\"clientAssessmentUpdate\",\"isPermitted\":true},{\"permitted\":false,\"code\":\"clientDiagnosticDelete\",\"isPermitted\":false}],\"code\":\"admNurse\"}],\"doctor\":{\"id\":34,\"name\":{\"last\":\"test\",\"first\":\"test\",\"middle\":\"test\",\"raw\":\"test test test\"},\"department\":null,\"specs\":{\"id\":1,\"name\":\"специальность\"}}})";
+            Assert.assertTrue(res.contains("\"raw\":\"test test test\""));
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+
+
+    private static int labTestLabResearchId;
+    private static int labTestBarcode;
+    private static AuthData labTestAuthData;
+
+    @Test
+    public void testCreateLabResearch() {
+        try {
+            createTestUser();
+            labTestAuthData = WebMisBase.auth(authStorageBeanLocal);
+            System.out.println(labTestAuthData);
+            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory");
+            HttpURLConnection createLabResearchConnection = WebMisBase.openConnection(url, labTestAuthData, "POST");
+            OutputStream createLabResearchOutputStream = createLabResearchConnection.getOutputStream();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String nowDate = sdf.format(new Date());
+            String data = new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createLabRequestBloodMakro.json")));
+            data = data.replace("2014-05-29 18:00:00", nowDate);
+            System.out.println("I am going to send create lab research request:");
+            System.out.println(data);
+            createLabResearchOutputStream.write(data.getBytes());
+            createLabResearchOutputStream.flush();
+            int code = WebMisBase.getResponseCode(createLabResearchConnection);
+            Assert.assertTrue(code == 200);
+            String res = WebMisBase.getResponseData(createLabResearchConnection, code);
+            res = res.substring(9, res.length() - 1);
+            System.out.println(res);
+            ObjectMapper mapper = new ObjectMapper();
+            JSONCommonData commonData = mapper.readValue(res, JSONCommonData.class);
+            System.out.println("Action id is " + commonData.getData().get(0).getId());
+            Action a = dbActionBean.getActionById(commonData.getData().get(0).getId());
+
+            labTestLabResearchId = a.getId();
+            labTestBarcode = a.getTakenTissue().getBarcode();
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert (false);
+        }
+    }
+
+    @Test(dependsOnMethods = "testCreateLabResearch")
+    public void testGetLisAcrossResults() {
+        try {
+            URL url = new URL(BASE_URL_SOAP + "/service-across-results");
+            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/makroBloodResult.xml")));
+            postData = postData.replace("983410", Integer.toString(labTestLabResearchId));
+            postData = postData.replace("609520", Integer.toString(labTestBarcode));
+            System.out.println("I am going to send lab result request:");
+            System.out.println(postData);
+            HttpURLConnection connection = WebMisBase.openConnection(url, labTestAuthData, "POST");
+            connection.setRequestProperty("Content-Type", "text/xml");
+            OutputStream outStream = connection.getOutputStream();
+            outStream.write(postData.getBytes());
+            outStream.flush();
+            int code = WebMisBase.getResponseCode(connection);
+            Assert.assertTrue(code == 200);
+            WebMisBase.getResponseData(connection, code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert (false);
+        }
+    }
+
+    @Test(dependsOnMethods = "testGetLisAcrossResults")
+    public void testGetLabResearchResult() {
+        try {
+            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory/" + labTestLabResearchId);
+            HttpURLConnection connection = WebMisBase.openConnection(url, labTestAuthData, "GET");
+            connection.setRequestProperty("Accept", "application/x-javascript");
+            int code = WebMisBase.getResponseCode(connection);
+            Assert.assertTrue(code == 200);
+            String res = WebMisBase.getResponseData(connection, code);
+            res = res.substring(9, res.length() - 1);
+            ObjectMapper mapper = new ObjectMapper();
+            JSONCommonData commonData = mapper.readValue(res, JSONCommonData.class);
+            List<CommonAttribute> atrs = commonData.getData().get(0).getGroup().get(1).attribute();
+            Assert.assertEquals("50", getCommonAttributeValueByName(atrs, "Альбумин"));
+            Assert.assertEquals("60", getCommonAttributeValueByName(atrs, "Общий белок"));
+            Assert.assertEquals("10", getCommonAttributeValueByName(atrs, "Билирубин общий"));
+            Assert.assertEquals("1", getCommonAttributeValueByName(atrs, "Билирубин прямой"));
+            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "Мочевина"));
+            Assert.assertEquals("4", getCommonAttributeValueByName(atrs, "Глюкоза"));
+            Assert.assertEquals("4", getCommonAttributeValueByName(atrs, "Калий"));
+            Assert.assertEquals("153", getCommonAttributeValueByName(atrs, "Натрий"));
+            Assert.assertEquals("20", getCommonAttributeValueByName(atrs, "АЛТ"));
+            Assert.assertEquals("30", getCommonAttributeValueByName(atrs, "АСТ"));
+            Assert.assertEquals("80", getCommonAttributeValueByName(atrs, "ЛДГ"));
+            Assert.assertEquals("50", getCommonAttributeValueByName(atrs, "ГГТ"));
+            Assert.assertEquals("100", getCommonAttributeValueByName(atrs, "ЩФ"));
+            Assert.assertEquals("50", getCommonAttributeValueByName(atrs, "Альфа-амилаза"));
+            Assert.assertEquals("20", getCommonAttributeValueByName(atrs, "П-амилаза"));
+            Assert.assertEquals("4", getCommonAttributeValueByName(atrs, "Холестерин"));
+            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "Триглицериды"));
+            Assert.assertEquals("20", getCommonAttributeValueByName(atrs, "Липаза"));
+            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "ЛПНП"));
+            Assert.assertEquals("2", getCommonAttributeValueByName(atrs, "ЛПВП"));
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert (false);
+        }
+    }
+
+
+    private static int labTestBakLabResearchId;
+    private static int labTestBakBarcode;
+    private static AuthData bakLabTestAuthData;
+
+    @Test
+    public void testCreateBakLabResearch() {
+        try {
+            createTestUser();
+            bakLabTestAuthData = WebMisBase.auth(authStorageBeanLocal);
+            System.out.println(bakLabTestAuthData);
+            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory");
+            HttpURLConnection createLabResearchConnection = WebMisBase.openConnection(url, bakLabTestAuthData, "POST");
+            OutputStream createLabResearchOutputStream = createLabResearchConnection.getOutputStream();
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            String nowDate = sdf.format(new Date());
+            String data = new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createLabRequestBak.json")));
+            data = data.replace("2014-06-11 16:00:00", nowDate);
+            data = data.replace("205", "41"); // Current user
+            System.out.println("I am going to send create lab research request:");
+            System.out.println(data);
+            createLabResearchOutputStream.write(data.getBytes());
+            createLabResearchOutputStream.flush();
+            int code = WebMisBase.getResponseCode(createLabResearchConnection);
+            Assert.assertTrue(code == 200);
+            String res = WebMisBase.getResponseData(createLabResearchConnection, code);
+            res = res.substring(9, res.length() - 1);
+            ObjectMapper mapper = new ObjectMapper();
+            JSONCommonData commonData = mapper.readValue(res, JSONCommonData.class);
+            System.out.println("Action id is " + commonData.getData().get(0).getId());
+            Thread.sleep(1000);
+            Action a = dbActionBean.getActionById(commonData.getData().get(0).getId());
+
+            labTestBakLabResearchId = a.getId();
+            labTestBakBarcode = a.getTakenTissue().getBarcode();
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert (false);
+        }
+    }
+
+    @Test(dependsOnMethods = "testCreateBakLabResearch")
+    public void testGetLisBakReceived() {
+        try {
+            URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
+            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-success-receive-data.xml")));
+            postData = postData.replace("2014-06-05 11:50:33", new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+            postData = postData.replace("1000529970", Integer.toString(labTestBakBarcode + 1000 * 1000 * 1000));
+            System.out.println("I am going to send lab bak success received:");
+            System.out.println(postData);
+            HttpURLConnection connection = WebMisBase.openConnection(url, labTestAuthData, "POST");
+            connection.setRequestProperty("Content-Type", "text/xml");
+            OutputStream outStream = connection.getOutputStream();
+            outStream.write(postData.getBytes());
+            outStream.flush();
+            int code = WebMisBase.getResponseCode(connection);
+            Assert.assertTrue(code == 200);
+            WebMisBase.getResponseData(connection, code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert (false);
+        }
+    }
+
+    @Test(dependsOnMethods = "testGetLisBakReceived")
+    public void testGetLisBakResults() {
+        try {
+            URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
+            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-full-data.xml")));
+            postData = postData.replace("1113481", String.valueOf(labTestBakLabResearchId));
+            postData = postData.replace("201406051155", String.valueOf(new Date().getTime()));
+            postData = postData.replace("201406051052", String.valueOf(new Date().getTime()));
+            postData = postData.replace("239", "41");
+            System.out.println("I am going to send lab bak result request:");
+            System.out.println(postData);
+            HttpURLConnection connection = WebMisBase.openConnection(url, labTestAuthData, "POST");
+            connection.setRequestProperty("Content-Type", "text/xml");
+            OutputStream outStream = connection.getOutputStream();
+            outStream.write(postData.getBytes());
+            outStream.flush();
+            int code = WebMisBase.getResponseCode(connection);
+            Assert.assertTrue(code == 200);
+            WebMisBase.getResponseData(connection, code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert (false);
+        }
+    }
+
+
+    private String getCommonAttributeValueByName(List<CommonAttribute> attributes, String name) {
+        for (CommonAttribute ca : attributes) {
+            if (ca.getName().equals(name)) {
+                for (PropertyPair pp : ca.getProperties()) {
+                    if (pp.getName().equals("value")) {
+                        return pp.getValue();
+                    }
+                }
+            }
+        }
+        return "";
+    }
+
+
+
     private void createTestUser() {
         JsonPerson personInfo = new JsonPerson();
         personInfo.setFname("test");
@@ -1002,5 +400,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         final String res = usersMgr.create(personInfo);
         System.out.println("AppealRegistryRESTImplTest.createTestUser: " + res);
     }
+
 
 }
