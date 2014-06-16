@@ -3,12 +3,14 @@ package ru.korus.tmis.ws.webmis.rest;
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.prescription.AssigmentIntervalDataArray;
 import ru.korus.tmis.prescription.CreatePrescriptionReqData;
 import ru.korus.tmis.prescription.ExecuteIntervalsData;
 import ru.korus.tmis.prescription.PrescriptionBeanLocal;
 import ru.korus.tmis.prescription.PrescriptionGroupBy;
 
+import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 
 /**
@@ -17,6 +19,7 @@ import javax.ws.rs.*;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
+@Interceptors(ServicesLoggingInterceptor.class)
 public class PrescriptionsRESTImpl {
 
     final private PrescriptionBeanLocal prescriptionBeanLocal;
