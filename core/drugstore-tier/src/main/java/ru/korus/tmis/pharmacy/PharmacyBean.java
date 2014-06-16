@@ -36,7 +36,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private static final Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
 
-    private static final int LAST_ACTIONS = 10;
+    private static final int LAST_ACTIONS = 100;
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
