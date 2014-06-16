@@ -37,9 +37,9 @@ public class WebMisBase {
 
     private static DbUtil dbUtil = new DbUtil();
 
-    public static Archive createArchive() {
+    public static Archive createArchive(String archiveName) {
         dbUtil.prepare();
-        final WebArchive wa = ShrinkWrap.create(WebArchive.class, "test.war");
+        final WebArchive wa = ShrinkWrap.create(WebArchive.class, archiveName + ".war");
         wa.addAsWebInfResource(new File("../common/src/test/resources/META-INF/persistence.xml"), "classes/META-INF/persistence.xml");
 
         // common -------------------------------------------------------------------

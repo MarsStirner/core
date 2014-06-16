@@ -71,7 +71,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     @Deployment
     public static Archive createTestArchive() {
-        return WebMisBase.createArchive();
+        return WebMisBase.createArchive("AppealRegistryRESTImplTest");
     }
 
 

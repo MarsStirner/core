@@ -39,7 +39,7 @@ public class WebMisCommonTest extends Arquillian  {
 
     @Deployment
     public static Archive createTestArchive() {
-        return WebMisBase.createArchive();
+        return WebMisBase.createArchive("WebMisCommonTest");
     }
 
     @Test

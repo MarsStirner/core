@@ -32,7 +32,7 @@ public class PrescriptionTest extends Arquillian {
 
     @Deployment
     public static Archive createTestArchive() {
-        return WebMisBase.createArchive();
+        return WebMisBase.createArchive("PrescriptionTest");
     }
 
    @Test
