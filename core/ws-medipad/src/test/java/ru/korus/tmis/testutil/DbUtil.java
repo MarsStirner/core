@@ -2,9 +2,10 @@ package ru.korus.tmis.testutil;
 
 import ru.korus.tmis.util.TestUtilCommon;
 
-import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -17,65 +18,50 @@ import java.util.Map;
  *
  */
 public class DbUtil {
+    private static class TableMaxIndex {
+        final private String tableName;
+        final private int maxIndex;
+
+        private TableMaxIndex(String tableName, int maxIndex) {
+            this.tableName = tableName;
+            this.maxIndex = maxIndex;
+        }
+    }
+
     private static final String HOST = "localhost";// "10.128.225.66"
     protected static final String JDBC_MYSQL_URL = "jdbc:mysql://" + HOST + "/core_test";
 
     private Connection conn = null;
-    final String tables[] = {
-            "`ActionProperty_Action`",
-            "`ActionProperty_Date`",
-            "`ActionProperty_Double`",
-            "`ActionProperty_FDRecord`",
-            "`ActionProperty_HospitalBed`",
-            "`ActionProperty_HospitalBedProfile`",
-            "`ActionProperty_Image`",
-            "`ActionProperty_ImageMap`",
-            "`ActionProperty_Integer`",
-            "`ActionProperty_Job_Ticket`",
-            "`ActionProperty_MKB`",
-            "`ActionProperty_Organisation`",
-            "`ActionProperty_OtherLPURecord`",
-            "`ActionProperty_Person`",
-            "`ActionProperty_rbBloodComponentType`",
-            "`ActionProperty_rbFinance`",
-            "`ActionProperty_rbReasonOfAbsence`",
-            "`ActionProperty_String`",
-            "`ActionProperty_Time`",
-            "`ActionProperty`",
-            "`DrugChart`",
-            "`DrugComponent`",
-            "`Event`",
-            "`Action`",
-            "`Person`"};
-
-    final Map<String, Integer> maxIndexMap = new HashMap<String, Integer>() {{
-        put("`DrugChart`", 4);
-        put("`DrugComponent`", 1);
-        put("`Event`", 254);
-        put("`Action`", 259);
-        put("`ActionProperty`", 1456);
-        put("`ActionProperty_Action`", 1456);
-        put("`ActionProperty_Date`", 1456);
-        put("`ActionProperty_Double`", 1456);
-        put("`ActionProperty_FDRecord`", 1456);
-        put("`ActionProperty_HospitalBed`", 1456);
-        put("`ActionProperty_HospitalBedProfile`", 1456);
-        put("`ActionProperty_Image`", 1456);
-        put("`ActionProperty_ImageMap`", 1456);
-        put("`ActionProperty_Integer`", 1456);
-        put("`ActionProperty_Job_Ticket`", 1456);
-        put("`ActionProperty_MKB`", 1456);
-        put("`ActionProperty_Organisation`", 1456);
-        put("`ActionProperty_OtherLPURecord`", 1456);
-        put("`ActionProperty_Person`", 1456);
-        put("`ActionProperty_rbBloodComponentType`", 1456);
-        put("`ActionProperty_rbFinance`", 1456);
-        put("`ActionProperty_rbReasonOfAbsence`", 1456);
-        put("`ActionProperty_String`", 1456);
-        put("`ActionProperty_Time`", 1456);
-        put("`Person`", 25);
-    }};
-
+    final TableMaxIndex tables[] = {
+            new TableMaxIndex("`ActionProperty`", 1456),
+            new TableMaxIndex("`ActionProperty_Action`", 1456),
+            new TableMaxIndex("`ActionProperty_Date`", 1456),
+            new TableMaxIndex("`ActionProperty_Double`", 1456),
+            new TableMaxIndex("`ActionProperty_FDRecord`", 1456),
+            new TableMaxIndex("`ActionProperty_HospitalBed`", 1456),
+            new TableMaxIndex("`ActionProperty_HospitalBedProfile`", 1456),
+            new TableMaxIndex("`ActionProperty_Image`", 1456),
+            new TableMaxIndex("`ActionProperty_ImageMap`", 1456),
+            new TableMaxIndex("`ActionProperty_Integer`", 1456),
+            new TableMaxIndex("`ActionProperty_Job_Ticket`", 1456),
+            new TableMaxIndex("`ActionProperty_MKB`", 1456),
+            new TableMaxIndex("`ActionProperty_Organisation`", 1456),
+            new TableMaxIndex("`ActionProperty_OtherLPURecord`", 1456),
+            new TableMaxIndex("`ActionProperty_Person`", 1456),
+            new TableMaxIndex("`ActionProperty_rbBloodComponentType`", 1456),
+            new TableMaxIndex("`ActionProperty_rbFinance`", 1456),
+            new TableMaxIndex("`ActionProperty_rbReasonOfAbsence`", 1456),
+            new TableMaxIndex("`ActionProperty_String`", 1456),
+            new TableMaxIndex("`ActionProperty_Time`", 1456),
+            new TableMaxIndex("`rbBloodComponentType`", 0),
+            new TableMaxIndex("`bbtResult_Organism`", 0),
+            new TableMaxIndex("`bbtResponse`", 0),
+            new TableMaxIndex("`DrugChart`", 4),
+            new TableMaxIndex("`DrugComponent`", 1),
+            new TableMaxIndex("`Action`", 259),
+            new TableMaxIndex("`Event`", 254),
+            new TableMaxIndex("`Person`", 25),
+    };
 
     public void prepare() {
         initConnection();
@@ -94,8 +80,8 @@ public class DbUtil {
     private void initDb(String fileName) throws SQLException {
         final Statement s = conn.createStatement();
         String[] sqlList = TestUtilCommon.getSqlFromFile(fileName);
-        for(String sql : sqlList) {
-            if(!sql.trim().isEmpty()) {
+        for (String sql : sqlList) {
+            if (!sql.trim().isEmpty()) {
                 System.out.println("update DB: " + sql);
                 s.executeUpdate(sql);
             }
@@ -105,10 +91,10 @@ public class DbUtil {
 
     private void clear() throws SQLException {
         final Statement s = conn.createStatement();
-        for (String tableName : tables) {
-            System.out.print("Clear table" + tableName);
-            s.executeUpdate("DELETE FROM " + tableName + " WHERE `id` > " + maxIndexMap.get(tableName));
-            System.out.println("A rows with has been removed. Table: " + tableName + " max index: " + maxIndexMap.get(tableName));
+        for (TableMaxIndex table : tables) {
+            System.out.print("Clear table" + table.tableName);
+            s.executeUpdate("DELETE FROM " + table.tableName + " WHERE `id` > " + table.maxIndex);
+            System.out.println("A rows with has been removed. Table: " + table.tableName + " max index: " + table.maxIndex);
         }
     }
 
