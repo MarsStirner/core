@@ -32,6 +32,7 @@ import java.nio.file.Paths;
 @PersistenceTest
 public class WebMisCommonTest extends Arquillian  {
 
+    private static final String WAR_NAME = "WebMisCommonTest";
     static private int createdActionId;
 
     @EJB
@@ -39,7 +40,7 @@ public class WebMisCommonTest extends Arquillian  {
 
     @Deployment
     public static Archive createTestArchive() {
-        return WebMisBase.createArchive("WebMisCommonTest");
+        return WebMisBase.createArchive(WAR_NAME);
     }
 
     @Test
@@ -49,7 +50,7 @@ public class WebMisCommonTest extends Arquillian  {
             AuthData authData =WebMisBase.auth(authStorageBeanLocal);
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
             final Integer eventId = 841695;
-            URL url = new URL(WebMisBase.BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/", eventId));
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + String.format("/tms-registry/appeals/%s/documents/", eventId));
             final String tstCallback = "tstCallback";
             url = WebMisBase.addGetParam(url, "callback", tstCallback);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
@@ -90,7 +91,7 @@ public class WebMisCommonTest extends Arquillian  {
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
             final Integer transfusionTherapyActionId = 3911;
             final Integer eventId = 841695;
-            URL url = new URL(WebMisBase.BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/%s", eventId, actionId));
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + String.format("/tms-registry/appeals/%s/documents/%s", eventId, actionId));
             final String tstCallback = "tstCallback";
             url = WebMisBase.addGetParam(url, "callback", tstCallback);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
@@ -117,7 +118,7 @@ public class WebMisCommonTest extends Arquillian  {
             AuthData authData =WebMisBase.auth(authStorageBeanLocal);
             //http://webmis/data/patients/2/appeals/?callback=jQuery1820959072473924607_1402042407315
             final Integer eventId = 841695;
-            URL url = new URL(WebMisBase.BASE_URL_REST + String.format("/tms-registry/patients/%s/appeals/",  WebMisBase.TEST_CLIENT_ID));
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + String.format("/tms-registry/patients/%s/appeals/",  WebMisBase.TEST_CLIENT_ID));
             final String tstCallback = "tstCallback";
             url = WebMisBase.addGetParam(url, "callback", tstCallback);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
@@ -150,7 +151,7 @@ public class WebMisCommonTest extends Arquillian  {
             final String transfusionTherapyActionId = "3911";
             final Integer eventId = 841695;
             //final Integer eventId = appealBean.insertAppealForPatient(initAppealData(), TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/dir/actionTypes/" + transfusionTherapyActionId);
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/dir/actionTypes/" + transfusionTherapyActionId);
             url = WebMisBase.addGetParam(url, "eventId", String.valueOf(eventId));
             url = WebMisBase.addGetParam(url, "callback", WebMisBase.TST_CALLBACK);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
@@ -181,7 +182,7 @@ public class WebMisCommonTest extends Arquillian  {
             // callback=jQuery182004028293350711465_1399548976777&
             // sortingField=id&sortingMethod=asc&limit=10&page=1&recordsCount=0&_=1399556929592
             AuthData authData =WebMisBase.auth(authStorageBeanLocal);
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/dir/actionTypes/");
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/dir/actionTypes/");
             url = WebMisBase.addGetParam(url, "callback", WebMisBase.TST_CALLBACK);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
             final String mnems[] = {"EXAM","EPI","JOUR","ORD","NOT","OTH"};
@@ -227,7 +228,7 @@ public class WebMisCommonTest extends Arquillian  {
         try {
             //lock Action
             AuthData authData = WebMisBase.auth(authStorageBeanLocal);
-            URL url = new URL(WebMisBase.BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/%s/lock", WebMisBase.TEST_EVENT_ID, 259));
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + String.format("/tms-registry/appeals/%s/documents/%s/lock", WebMisBase.TEST_EVENT_ID, 259));
             url = WebMisBase.addGetParam(url, "callback", WebMisBase.TST_CALLBACK);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
             HttpURLConnection conn = WebMisBase.openConnectionGet(url, authData);
@@ -275,7 +276,7 @@ public class WebMisCommonTest extends Arquillian  {
         // &page=1
         // &recordsCount=0
         // &_=1401344705743
-        URL url = new URL(WebMisBase.BASE_URL_REST + String.format("/tms-registry/appeals/%s/documents/", WebMisBase.TEST_EVENT_ID));
+        URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + String.format("/tms-registry/appeals/%s/documents/", WebMisBase.TEST_EVENT_ID));
         url = WebMisBase.addGetParam(url, "callback", WebMisBase.TST_CALLBACK);
         url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
         url = WebMisBase.addGetParam(url, "filter[mnem]", Arrays.asList(new String[]{"THER", "EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH", "EXAM_OLD", "JOUR_OLD"}));

@@ -27,12 +27,13 @@ import java.nio.file.Paths;
 @PersistenceTest
 public class PrescriptionTest extends Arquillian {
 
+    private static final String WAR_NAME = "PrescriptionTest";
     @EJB
     private AuthStorageBeanLocal authStorageBeanLocal = null;
 
     @Deployment
     public static Archive createTestArchive() {
-        return WebMisBase.createArchive("PrescriptionTest");
+        return WebMisBase.createArchive(WAR_NAME);
     }
 
    @Test
@@ -41,7 +42,7 @@ public class PrescriptionTest extends Arquillian {
         try {
             AuthData authData = WebMisBase.auth(authStorageBeanLocal);
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/prescriptions/");
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/prescriptions/");
             final String tstCallback = "tstCallback";
             url = WebMisBase.addGetParam(url, "callback", tstCallback);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
@@ -73,7 +74,7 @@ public class PrescriptionTest extends Arquillian {
         try {
             AuthData authData = WebMisBase.auth(authStorageBeanLocal);
             //http://10.128.51.85/api/v1/prescriptions/983378?callback=jQuery182040639712987467647_1400594935328
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/prescriptions/" + actionId);
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/prescriptions/" + actionId);
             final String tstCallback = "tstCallback";
             url = WebMisBase.addGetParam(url, "callback", tstCallback);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
@@ -105,7 +106,7 @@ public class PrescriptionTest extends Arquillian {
             AuthData authData =WebMisBase.auth(authStorageBeanLocal);
             //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
             final Integer eventId = WebMisBase.TEST_EVENT_ID;
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/prescriptions/");
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/prescriptions/");
             url = WebMisBase.addGetParam(url, "eventId", String.valueOf(eventId));
             url = WebMisBase.addGetParam(url, "callback", WebMisBase.TST_CALLBACK);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
@@ -141,7 +142,7 @@ public class PrescriptionTest extends Arquillian {
             // pacientName=P&
             // setPersonName=V&
             // departmentId=26&_=1400734043649
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/prescriptions/");
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/prescriptions/");
             url = WebMisBase.addGetParam(url, "callback", WebMisBase.TST_CALLBACK);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
             url = WebMisBase.addGetParam(url, "dateRangeMin", "1379524000");
@@ -170,7 +171,7 @@ public class PrescriptionTest extends Arquillian {
         try {
             AuthData authData =WebMisBase.auth(authStorageBeanLocal);
             //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/prescriptions/types/");
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/prescriptions/types/");
             url = WebMisBase.addGetParam(url, "callback", WebMisBase.TST_CALLBACK);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
             System.out.println("Send GET to..." + url.toString());
@@ -196,7 +197,7 @@ public class PrescriptionTest extends Arquillian {
             AuthData authData =WebMisBase.auth(authStorageBeanLocal);
             //http://webmis/api/v1/prescriptions/?callback=jQuery18209323157030157745_1400232225690&eventId=189&_=1400232242804
             Integer actionTypeId = 123;
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/prescriptions/template/" + actionTypeId);
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/prescriptions/template/" + actionTypeId);
             url = WebMisBase.addGetParam(url, "callback", WebMisBase.TST_CALLBACK);
             url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
             System.out.println("Send GET to..." + url.toString());

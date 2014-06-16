@@ -95,7 +95,10 @@ public class DbUtil {
         final Statement s = conn.createStatement();
         String[] sqlList = TestUtilCommon.getSqlFromFile(fileName);
         for(String sql : sqlList) {
-            s.executeUpdate(sql);
+            if(!sql.trim().isEmpty()) {
+                System.out.println("update DB: " + sql);
+                s.executeUpdate(sql);
+            }
         }
 
     }

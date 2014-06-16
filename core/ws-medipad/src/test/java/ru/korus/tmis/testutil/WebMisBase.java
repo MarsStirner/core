@@ -30,7 +30,7 @@ import java.util.List;
  * Description:  <br>
  */
 public class WebMisBase {
-    public final static String BASE_URL_REST = "http://localhost:7713/test/rest";
+    private final static String BASE_URL_REST = "http://localhost:7713/%s/rest";
     public static final String TST_CALLBACK = "tstCallback";
     public static final Integer TEST_EVENT_ID = 189;
     public static final Integer TEST_CLIENT_ID = 2;
@@ -68,6 +68,10 @@ public class WebMisBase {
         wa.addAsWebInfResource(new File("./target/test-classes/WEB-INF/web.xml"), "web.xml");
         System.out.println("**************************** createTestArchive medipad");
         return wa;
+    }
+
+    public static String getBaseUrlRest(String archName){
+        return String.format(BASE_URL_REST, archName);
     }
 
     public static URL addGetParam(final URL url, final String name, String value) throws MalformedURLException {

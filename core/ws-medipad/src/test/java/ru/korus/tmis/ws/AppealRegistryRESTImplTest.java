@@ -47,7 +47,9 @@ import java.util.List;
 //@Transactional(value = TransactionMode.ROLLBACK)
 public class AppealRegistryRESTImplTest extends Arquillian {
 
-    final static String BASE_URL_SOAP = "http://localhost:7713/test/";
+    final static String WAR_NAME = "AppealRegistryRESTImplTest";
+    
+    final static String BASE_URL_SOAP = String.format("http://localhost:7713/%s/", WAR_NAME);
 
     final int TEST_PATIENT_ID = 2; // id пациента, для которого создается госпитализация
 
@@ -71,20 +73,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     @Deployment
     public static Archive createTestArchive() {
-        return WebMisBase.createArchive("AppealRegistryRESTImplTest");
-    }
-
-
-    //@BeforeTest
-    public void save() {
-        //  dbUtil = new DbUtil();
-    }
-
-    //TODO: выяснить, почему не выполняется после каждого теста
-    //@AfterTest
-    public void restore() {
-        //dbUtil.restore();
-        //  dbUtil.close();
+        return WebMisBase.createArchive(WAR_NAME);
     }
 
     @Test
@@ -106,7 +95,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         try {
             AppealData appealData = initAppealData(); // инициализация параметров госпитализации
             int countEvent = eventBeanLocal.getEventsForPatient(TEST_PATIENT_ID).size();  // количетово обращений пациента ДО
-            createTestUser(); // создание тестового пользователя с ролью "медсестра приемного отделения”. Login: 'test'
             AuthData authData = WebMisBase.auth(authStorageBeanLocal);
             appealBean.insertAppealForPatient(appealData, TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
             int countEventNew = eventBeanLocal.getEventsForPatient(TEST_PATIENT_ID).size(); // количетово обращений пациента ПОСЛЕ
@@ -162,8 +150,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     public void testAuth() {
         System.out.println("**************************** testAuth() started...");
         try {
-            createTestUser();
-            final URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-auth/roles/");
+            final URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-auth/roles/");
             System.out.println("Send POST to..." + url.toString());
             //TODO move to resource file!
             final String input = "{\"login\":\"utest\",\"password\":\"098f6bcd4621d373cade4e832627b4f6\",\"roleId\":0}";
@@ -190,10 +177,10 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test
     public void testCreateLabResearch() {
         try {
-            createTestUser();
+            //createTestUser();
             labTestAuthData = WebMisBase.auth(authStorageBeanLocal);
             System.out.println(labTestAuthData);
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory");
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/appeals/189/diagnostics/laboratory");
             HttpURLConnection createLabResearchConnection = WebMisBase.openConnection(url, labTestAuthData, "POST");
             OutputStream createLabResearchOutputStream = createLabResearchConnection.getOutputStream();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -248,7 +235,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test(dependsOnMethods = "testGetLisAcrossResults")
     public void testGetLabResearchResult() {
         try {
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory/" + labTestLabResearchId);
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/appeals/189/diagnostics/laboratory/" + labTestLabResearchId);
             HttpURLConnection connection = WebMisBase.openConnection(url, labTestAuthData, "GET");
             connection.setRequestProperty("Accept", "application/x-javascript");
             int code = WebMisBase.getResponseCode(connection);
@@ -292,10 +279,10 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test
     public void testCreateBakLabResearch() {
         try {
-            createTestUser();
+            //createTestUser();
             bakLabTestAuthData = WebMisBase.auth(authStorageBeanLocal);
             System.out.println(bakLabTestAuthData);
-            URL url = new URL(WebMisBase.BASE_URL_REST + "/tms-registry/appeals/189/diagnostics/laboratory");
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/appeals/189/diagnostics/laboratory");
             HttpURLConnection createLabResearchConnection = WebMisBase.openConnection(url, bakLabTestAuthData, "POST");
             OutputStream createLabResearchOutputStream = createLabResearchConnection.getOutputStream();
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -385,20 +372,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             }
         }
         return "";
-    }
-
-
-
-    private void createTestUser() {
-        JsonPerson personInfo = new JsonPerson();
-        personInfo.setFname("test");
-        personInfo.setLname("test");
-        personInfo.setPname("test");
-        personInfo.setLogin("test");
-        personInfo.setPassword("test");
-        personInfo.setRoles(Arrays.asList(new String[]{"admNurse"}));
-        final String res = usersMgr.create(personInfo);
-        System.out.println("AppealRegistryRESTImplTest.createTestUser: " + res);
     }
 
 
