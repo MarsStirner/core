@@ -29,7 +29,7 @@ public class DbUtil {
     }
 
     private static final String HOST = "localhost";// "10.128.225.66"
-    protected static final String JDBC_MYSQL_URL = "jdbc:mysql://" + HOST + "/core_test";
+    protected static final String JDBC_MYSQL_URL = "jdbc:mysql://" + HOST + "/core_test?characterEncoding=utf8";
 
     private Connection conn = null;
     final TableMaxIndex tables[] = {
