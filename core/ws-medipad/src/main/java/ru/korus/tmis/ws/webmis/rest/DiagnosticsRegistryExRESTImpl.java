@@ -230,6 +230,7 @@ public class DiagnosticsRegistryExRESTImpl {
                                                                @QueryParam("filter[class]")Short  clazz) throws CoreException {
 
         final DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("consultations");
+        final DirectoryInfoRESTImpl.ActionTypesSubType atst_poly = DirectoryInfoRESTImpl.ActionTypesSubType.getType("consultations_poly");
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
                 this.eventId,
                 //diagnosticDate,
@@ -242,7 +243,7 @@ public class DiagnosticsRegistryExRESTImpl {
                 statusId,
                 (urgent==null) ? -1 : (urgent) ? 1 : 0,
                 atst.getSubType(),
-                new ArrayList<String>(){{this.add(atst.getMnemonic());}},
+                new ArrayList<String>(){{this.add(atst.getMnemonic());this.add(atst_poly.getMnemonic());}},
                 (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);

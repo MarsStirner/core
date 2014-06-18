@@ -516,6 +516,10 @@ public class DirectoryInfoRESTImpl {
             public String getSubType() { return "consultations";}
             public String getMnemonic() { return "CONS";}
         },
+        CONSULTATIONS_POLY("consultations"){
+            public String getSubType() { return "consultations_poly";}
+            public String getMnemonic() { return "CONS_POLY";}
+        },
         LAB("lab"){
             public String getSubType() { return "laboratory";}
             public String getMnemonic() { return "LAB";}

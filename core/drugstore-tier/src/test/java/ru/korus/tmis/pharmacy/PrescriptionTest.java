@@ -123,6 +123,7 @@ public class PrescriptionTest extends Arquillian {
 
     @Test
     public void testPrescriptions() {
+        System.out.println("**************************** testGetActionTypeInfo() started...");
         try {
             createPrescriptions();
         } catch (CoreException ex) {
