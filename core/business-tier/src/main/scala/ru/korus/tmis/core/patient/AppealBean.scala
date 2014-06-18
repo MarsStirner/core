@@ -580,7 +580,11 @@ with CAPids {
   }
 
   def updateTempInvalid(event: Event, tempInvalidCont: TempInvalidAppealContainer, authDate: AuthData) {
-    if (tempInvalidCont != null) {
+    if (tempInvalidCont != null &&
+        tempInvalidCont.begDate != null &&
+        tempInvalidCont.endDate != null &&
+        tempInvalidCont.serial != null &&
+        tempInvalidCont.number != null) {
 
       var tempInvalid = if(event.getId == null) new TempInvalid() else dbTempInvalidBean.getTempInvalidByEventId(event.getId)
       if (tempInvalid == null) {
