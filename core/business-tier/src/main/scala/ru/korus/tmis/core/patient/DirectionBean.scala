@@ -2,7 +2,7 @@ package ru.korus.tmis.core.patient
 
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
+import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data._
@@ -14,7 +14,7 @@ import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import ConfigManager._
 import ru.korus.tmis.core.database._
 import common._
-import java.{lang, util}
+import java.{util}
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
@@ -23,6 +23,8 @@ import ru.korus.tmis.schedule.{QueueActionParam, PersonScheduleBeanLocal, Person
 import PersonScheduleBean.PersonSchedule
 
 import util.Date
+
+import scala.collection.mutable.ListBuffer
 
 
 /**
@@ -172,6 +174,9 @@ with I18nable {
     val apvList = new java.util.LinkedList[(ActionProperty, JobTicket)]
     val apvMKBList = new java.util.LinkedList[(ActionProperty, Mkb)]
     var jtForAp: JobTicket = null
+
+    val actionsSendToLIS = ListBuffer[(Action, Int)]()
+
     actions.foreach((a) => {
       val jobAndTicket = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a.getEvent.getId.intValue(),
         a.getActionType.getId.intValue(),
@@ -212,6 +217,7 @@ with I18nable {
             if (takenTissue != null) a.setTakenTissue(takenTissue)
             list.add(j, jt, takenTissue, a)
             jtForAp = jt
+            actionsSendToLIS += Tuple2(a, jt.getId)
           } else {
             val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
             j.setQuantity(j.getQuantity + 1)
@@ -283,6 +289,47 @@ with I18nable {
       actions.map(em.merge)
       em.flush()
     }
+
+
+    actionsSendToLIS.foreach(p => {
+      val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(p._1.getId.intValue())
+      if (labCode != null && labCode.compareTo("0101") == 0) {
+        // отправка назначения в Акросс
+        try {
+          //todo должен быть вызов веб-сервиса с передачей actionId
+          lisAcross.sendAnalysisRequestToAcross(p._1.getId.intValue())
+          // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
+          actionBean.updateActionStatusWithFlush(p._1.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+        }
+        catch {
+          case e: Exception => {
+            val jt = dbJobTicketBean.getJobTicketById(p._2)
+            jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString))
+            jt.setLabel("##Ошибка отправки в ЛИС##")
+            jt.setStatus(1)
+            em.merge(jt)
+          }
+        }
+      } else if (labCode != null && labCode.compareTo("0102") == 0) {
+        // Отправка назначения в Bak CGM
+        try {
+          //todo должен быть вызов веб-сервиса с передачей actionId
+          lisBak.sendLisAnalysisRequest(p._1.getId.intValue())
+          // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
+          actionBean.updateActionStatusWithFlush(p._1.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+        }
+        catch {
+          case e: Exception => {
+            val jt = dbJobTicketBean.getJobTicketById(p._2)
+            jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString))
+            jt.setLabel("##Ошибка отправки в ЛИС##")
+            jt.setStatus(1)
+            em.merge(jt)
+          }
+        }
+      }
+    })
+
     actions
   }
 
