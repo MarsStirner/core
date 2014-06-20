@@ -56,15 +56,8 @@ public class SpecialVariablesPreferencesQueryCache {
         cacheQuery(Constants.QUERY_NAME_ACCOUNTITEM_CHECK_ADDITIONAL);
         cacheQuery(Constants.QUERY_NAME_ACCOUNTITEM_CHECK_PRIMARY);
         // Свойства пациента
-        cacheQuery(Constants.QUERY_NAME_PATIENT_PROPERTIES);
-        cacheQuery(Constants.QUERY_NAME_PATIENT_DOCUMENT);
-        cacheQuery(Constants.QUERY_NAME_PATIENT_POLICY);
         cacheQuery(Constants.QUERY_NAME_PATIENT_OKATOG);
         cacheQuery(Constants.QUERY_NAME_PATIENT_OKATOP);
-        cacheQuery(Constants.QUERY_NAME_PATIENT_SPOKESMAN);
-
-        cacheQuery(Constants.OS_SLUCH);
-
         // PreSelect queries
         cacheQuery(Constants.QUERY_NAME_MOVING_ACTION_TYPE);
     }

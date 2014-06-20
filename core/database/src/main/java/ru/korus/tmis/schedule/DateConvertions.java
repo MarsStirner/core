@@ -1,7 +1,6 @@
 package ru.korus.tmis.schedule;
 
-import org.joda.time.DateTimeZone;
-import org.joda.time.LocalDateTime;
+import org.joda.time.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -15,6 +14,9 @@ import java.util.TimeZone;
 public final class DateConvertions {
 
     private static final Logger logger = LoggerFactory.getLogger(DateConvertions.class);
+    private static final LocalDateTime JAN_1_1970 = new LocalDateTime(1970, 1, 1, 0, 0);
+
+    //////////////////// Даты в миллисекунды
     /**
      * конвертация локальной даты в миллисекунды от начала эпохи
      *
@@ -22,21 +24,62 @@ public final class DateConvertions {
      * @return
      */
     public static long convertDateToUTCMilliseconds(final Date date) {
-        if (date == null) {
-            logger.warn("Date convert method get \"null\" as param. Return \"0\" (Type: java.util.long)");
-            return 0l;
-        } else {
-            //Возвращаем кол-во UTC миллисекунд из даты (преобразованной к локальному часовому поясу)
-            return new LocalDateTime(date).toDateTime(DateTimeZone.UTC).getMillis();
-        }
+        //Возвращаем кол-во UTC миллисекунд из даты (преобразованной к локальному часовому поясу)
+        return new LocalDateTime(date).toDateTime(DateTimeZone.UTC).getMillis();
+    }
+
+    public static long convertLocalDateToUTCMilliseconds(final LocalDate date) {
+        return date.toDateTimeAtStartOfDay(DateTimeZone.UTC).getMillis();
+    }
+
+    public static long convertLocalTimeToUTCMilliseconds(final LocalTime time) {
+        return time.getMillisOfDay();
+    }
+
+    public static long convertLocalDateTimeToUTCMilliseconds(final LocalDateTime dateTime) {
+        return dateTime.toDateTime(DateTimeZone.UTC).getMillis();
+    }
+
+    //////////////////// миллисекунды в Даты
+    /**
+     * Конвертация миллисекунд от начала эпохи в локальную дату
+     *
+     * @param millisecondsCount Миллисекунды от полночи 1-го января 1970 года
+     * @return util.Date дата соответствующая миллисекундам от начала эпохи
+     */
+    public static Date convertUTCMillisecondsToDate(final long millisecondsCount) {
+        return new LocalDateTime(millisecondsCount, DateTimeZone.UTC).toDate();
     }
 
     /**
      * Конвертация миллисекунд от начала эпохи в локальную дату
+     *
      * @param millisecondsCount Миллисекунды от полночи 1-го января 1970 года
-     * @return
+     * @return jodatime LocalDate дата соответствующая миллисекундам от начала эпохи
      */
-    public static Date convertUTCMillisecondsToLocalDate(final long millisecondsCount) {
-        return new LocalDateTime(millisecondsCount, DateTimeZone.UTC).toDate();
+    public static LocalDate convertUTCMillisecondsToLocalDate(final long millisecondsCount) {
+        return new LocalDate(millisecondsCount, DateTimeZone.UTC);
     }
+
+    /**
+     * Конвертация миллисекунд от начала эпохи в локальную дату
+     *
+     * @param millisecondsCount Миллисекунды от полночи 1-го января 1970 года
+     * @return jodatime LocalDateTime дата+время соответствующая миллисекундам от начала эпохи
+     */
+    public static LocalDateTime convertUTCMillisecondsToLocalDateTime(final long millisecondsCount) {
+        return new LocalDateTime(millisecondsCount, DateTimeZone.UTC);
+    }
+
+    /**
+     * Конвертация миллисекунд от начала эпохи в локальное время
+     *
+     * @param millisecondsCount Миллисекунды от полночи 1-го января 1970 года
+     * @return jodatime LocalTime время соответствующее миллисекундам от начала эпохи
+     */
+    public static LocalTime convertUTCMillisecondsToLocalTime(final long millisecondsCount){
+        return new LocalTime(millisecondsCount, DateTimeZone.UTC);
+    }
+
+
 }

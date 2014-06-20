@@ -106,7 +106,6 @@ public enum CommunicationErrors {
      */
     msgItemNotFound(704, "Ничего не найдено"),
 
-
     /**
      * Метод не реализован (заглушка)
      */
@@ -123,7 +122,11 @@ public enum CommunicationErrors {
 
     msgMaxCito(1000, "Исчерпана квота срочной записи"),
 
-    msgMaxOverQueue(1001, "Исчерпана квота по записи сверх очереди");
+    msgMaxOverQueue(1001, "Исчерпана квота по записи сверх очереди"),
+
+    msgInvalidClientId( 1002, "номер амбулаторной карты некорректен (должен быть целым положительным числом до  2,147,483,647)"),
+
+    msgNoFreeTicket(1003, "Свободный талон к врачу не найден");
 
     private final int id;
     private final String message;

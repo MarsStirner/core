@@ -9,7 +9,8 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "rbSpeciality")
 @NamedQueries(
         {
-                @NamedQuery(name = "Speciality.findAll", query = "SELECT s FROM Speciality s")
+                @NamedQuery(name = "Speciality.findAll", query = "SELECT s FROM Speciality s"),
+                @NamedQuery(name = "Speciality.getUnquoted", query = " SELECT s FROM Speciality s WHERE s.quotingEnabled = false")
         })
 @XmlType(name = "speciality")
 @XmlRootElement(name = "speciality")
@@ -57,6 +58,9 @@ public class Speciality implements Serializable {
     @Basic(optional = false)
     @Column(name = "regionalCode")
     private String regionalCode;
+
+    @Column(name = "quotingEnabled", nullable = true)
+    Boolean quotingEnabled;
 
     public Speciality() {
     }
@@ -143,6 +147,14 @@ public class Speciality implements Serializable {
 
     public void setRegionalCode(String regionalCode) {
         this.regionalCode = regionalCode;
+    }
+
+    public Boolean getQuotingEnabled() {
+        return quotingEnabled;
+    }
+
+    public void setQuotingEnabled(Boolean quotingEnabled) {
+        this.quotingEnabled = quotingEnabled;
     }
 
     @Override

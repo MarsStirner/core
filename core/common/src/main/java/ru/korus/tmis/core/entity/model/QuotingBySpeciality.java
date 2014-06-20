@@ -24,7 +24,9 @@ import java.io.Serializable;
                 @NamedQuery(name = "QuotingBySpeciality.findBySpeciality",
                         query = "SELECT o FROM QuotingBySpeciality o WHERE o.speciality = :speciality"),
                 @NamedQuery(name = "QuotingBySpeciality.findByOrganizationInfisAndSpeciality",
-                        query = "SELECT o FROM QuotingBySpeciality o where o.organisation.infisCode = :infisCode AND o.speciality = :speciality")
+                        query = "SELECT o FROM QuotingBySpeciality o where o.organisation.infisCode = :infisCode AND o.speciality = :speciality"),
+                @NamedQuery(name = "QuotingBySpeciality.findByOrganisationAndSpeciality",
+                        query = "SELECT o FROM QuotingBySpeciality o where o.organisation = :organisation AND o.speciality = :speciality")
         })
 @XmlType(name = "QuotingBySpeciality")
 @XmlRootElement(name = "QuotingBySpeciality")

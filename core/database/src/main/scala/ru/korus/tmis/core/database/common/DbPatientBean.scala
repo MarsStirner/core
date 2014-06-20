@@ -17,6 +17,7 @@ import util.{TimeZone, Date, Calendar, GregorianCalendar}
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import ru.korus.tmis.core.database.common.DbRbBloodTypeBeanLocal
+import ru.korus.tmis.schedule.DateConvertions
 
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
@@ -504,7 +505,7 @@ class DbPatientBean
     WHERE patient.deleted = 0
     AND patient.lastName LIKE :LASTNAME
     AND patient.firstName LIKE      :FIRSTNAME
-    AND patient.patrName      LIKE      :PATRNAME
+    AND patient.patrName  LIKE      :PATRNAME
     AND patient.birthDate =   :BIRTHDATE
     AND patient.sex = :SEX
                            """
@@ -518,19 +519,15 @@ class DbPatientBean
       )
       AND identifier='%s'
         AND ClientIdentification.deleted=0
-      )""".format(params.get("identifierType"), params.get("identifier"));
+      )""".format(params.get("identifierType"), params.get("identifier"))
     }
-
-    val millisecondsCount: java.lang.Long = java.lang.Long.parseLong(params.get("birthDate"));
     val resultQuery = em.createQuery(findPatientQuery, classOf[Patient])
       .setParameter("LASTNAME", params.get("lastName"))
       .setParameter("FIRSTNAME", params.get("firstName"))
       .setParameter("PATRNAME", params.get("patrName"))
       .setParameter("SEX", java.lang.Short.parseShort(params.get("sex")))
-      .setParameter("BIRTHDATE", new java.util.Date(
-      millisecondsCount.longValue() - TimeZone.getDefault.getOffset(millisecondsCount.longValue())))
-    commlogger.debug("SQL =" + resultQuery.toString)
-    commlogger.debug("BirthDate param is {}", resultQuery.getParameterValue("BIRTHDATE"))
+      .setParameter("BIRTHDATE", DateConvertions.convertUTCMillisecondsToDate(java.lang.Long.parseLong(params.get("birthDate"))))
+    commlogger.debug(resultQuery.toString)
     resultQuery.getResultList
   }
 

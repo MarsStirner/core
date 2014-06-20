@@ -31,6 +31,7 @@ import java.util.List;
 public class Patient implements Serializable, Cloneable {
 
     private static final long serialVersionUID = 1L;
+    private static SimpleDateFormat dateForamt =  new SimpleDateFormat("yyyy-MM-dd");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -653,7 +654,15 @@ public class Patient implements Serializable, Cloneable {
                 .append(' ').append(firstName)
                 .append(' ').append(patrName)
                 .append(" sex:").append(sex)
-                .append(" birthDate:").append(new SimpleDateFormat("yyyy-MM-dd").format(birthDate))
+                .append(" birthDate:").append(dateForamt.format(birthDate))
                 .append(']').toString();
+    }
+
+    /**
+     * Возвращает ФИО пациента
+     * @return   ФИО ('null' если часть ФИО отсутствует : 'Иванов null Иванович')
+     */
+    public String getFullName() {
+        return new StringBuilder(lastName).append(' ').append(firstName).append(' ').append(patrName).toString();
     }
 }

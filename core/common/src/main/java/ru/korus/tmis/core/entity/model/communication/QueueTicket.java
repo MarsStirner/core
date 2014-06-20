@@ -2,6 +2,7 @@ package ru.korus.tmis.core.entity.model.communication;
 
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.ScheduleClientTicket;
 import ru.korus.tmis.core.entity.model.Staff;
 
 import javax.persistence.*;
@@ -37,27 +38,8 @@ public class QueueTicket implements Serializable {
     private Integer id;
 
     @ManyToOne
-    @JoinColumn(name = "personId")
-    private Staff person;
-
-    @ManyToOne
-    @JoinColumn(name = "clientId")
-    private Patient patient;
-
-    @ManyToOne
-    @JoinColumn(name = "queueId")
-    private Action queueAction;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "begDateTime")
-    private Date begDateTime;
-
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "endDateTime")
-    private Date endDateTime;
-
-    @Column(name = "office")
-    private String office;
+    @JoinColumn(name = "scheduleClientTicket_id")
+    private ScheduleClientTicket ticket;
 
     @Column(name = "status")
     private String status;
@@ -70,26 +52,11 @@ public class QueueTicket implements Serializable {
     public QueueTicket() {
     }
 
-    public QueueTicket(Staff person, Patient patient, Action queueAction, Date begDateTime, Date endDateTime, String office) {
-        this.person = person;
-        this.patient = patient;
-        this.queueAction = queueAction;
-        this.begDateTime = begDateTime;
-        this.endDateTime = endDateTime;
-        this.office = office;
-        this.status = QueueTicket.Status.NEW.toString();
-        this.lastModificationDate = new Date();
-    }
-
-    public String getInfoString() {
+     public String getInfoString() {
         return new StringBuilder("QueueTicket[ id=").append(id)
                 .append(" STATUS=").append(status)
-                .append(" personId=").append(person != null ? person.getId() : "null")
-                .append(" patientId=").append(patient != null ? patient.getId() : "null")
-                .append(" actionId=").append(queueAction != null ? queueAction.getId() : "null")
-                .append(" begTime=").append(begDateTime != null ? begDateTime.toString() : "null")
-                .append(" endTime=").append(endDateTime != null ? endDateTime.toString() : "null")
-                .append(" office=").append(office).append("]").toString();
+                .append(" ticket=").append(ticket.getId())
+                .append("]").toString();
     }
 
     /**
@@ -107,11 +74,7 @@ public class QueueTicket implements Serializable {
         /**
          * Отправлено на ГП
          */
-        SENDED("SND"),
-        /**
-         * Удалено (дубликат [успели записать и отменить запись до отправки на ГП])
-         */
-        DELETED("DEL");
+        SENDED("SND");
 
         private Status(final String text) {
             this.text = text;
@@ -134,52 +97,12 @@ public class QueueTicket implements Serializable {
         this.id = id;
     }
 
-    public Staff getPerson() {
-        return person;
+    public ScheduleClientTicket getTicket() {
+        return ticket;
     }
 
-    public void setPerson(Staff person) {
-        this.person = person;
-    }
-
-    public Patient getPatient() {
-        return patient;
-    }
-
-    public void setPatient(Patient patient) {
-        this.patient = patient;
-    }
-
-    public Action getQueueAction() {
-        return queueAction;
-    }
-
-    public void setQueueAction(Action queueAction) {
-        this.queueAction = queueAction;
-    }
-
-    public Date getBegDateTime() {
-        return begDateTime;
-    }
-
-    public void setBegDateTime(Date begDateTime) {
-        this.begDateTime = begDateTime;
-    }
-
-    public Date getEndDateTime() {
-        return endDateTime;
-    }
-
-    public void setEndDateTime(Date endDateTime) {
-        this.endDateTime = endDateTime;
-    }
-
-    public String getOffice() {
-        return office;
-    }
-
-    public void setOffice(String office) {
-        this.office = office;
+    public void setTicket(ScheduleClientTicket ticket) {
+        this.ticket = ticket;
     }
 
     public String getStatus() {

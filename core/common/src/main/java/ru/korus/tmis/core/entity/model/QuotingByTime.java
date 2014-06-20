@@ -4,6 +4,7 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 
 /**
@@ -17,12 +18,19 @@ import java.util.Date;
 @Table(name = "QuotingByTime")
 @NamedQueries(
         {
-                @NamedQuery(name = "QuotingByTime.findAll", query = "SELECT cq FROM QuotingByTime cq")
+                @NamedQuery(name = "QuotingByTime.findAll", query = "SELECT cq FROM QuotingByTime cq"),
+                @NamedQuery(name = "QuotingByTime.findByPersonAndDate",
+                        query = "SELECT q FROM QuotingByTime q WHERE q.doctor = :person AND q.quotingDate = :date"),
+                @NamedQuery(name = "QuotingByTime.findByPersonAndDateAndType",
+                        query = "SELECT q FROM QuotingByTime q WHERE q.doctor = :person AND q.quotingDate = :date AND q.quotingType = :quotingType")
         })
 @XmlType(name = "quotingByTime")
 @XmlRootElement(name = "quotingByTime")
 public class QuotingByTime implements Serializable {
     private static final long serialVersionUID = 1L;
+    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("YYYY-MM-dd");
+    private static final SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm:ss");
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,9 +58,9 @@ public class QuotingByTime implements Serializable {
     @Temporal(TemporalType.TIME)
     private Date quotingTimeEnd;
 
-    @Basic(optional = false)
-    @Column(name = "QuotingType")
-    private Integer quotingType;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "QuotingType")
+    private RbTimeQuotingType quotingType;
 
     public QuotingByTime() {
     }
@@ -97,11 +105,11 @@ public class QuotingByTime implements Serializable {
         this.quotingTimeEnd = quotingTimeEnd;
     }
 
-    public Integer getQuotingType() {
+    public RbTimeQuotingType getQuotingType() {
         return quotingType;
     }
 
-    public void setQuotingType(Integer quotingType) {
+    public void setQuotingType(RbTimeQuotingType quotingType) {
         this.quotingType = quotingType;
     }
 
@@ -131,5 +139,16 @@ public class QuotingByTime implements Serializable {
     @Override
     public String toString() {
         return "ru.korus.tmis.core.database.model.QuotingByTime[id=" + id + "]";
+    }
+
+    public String getInfo() {
+        return new StringBuilder("QuotingByTime[").append(id).append("]{")
+                .append("Person=").append(doctor.getId()).append(' ')
+                .append(dateFormat.format(quotingDate)).append(' ')
+                .append(timeFormat.format(quotingTimeStart)).append(' ')
+                .append(timeFormat.format(quotingTimeEnd))
+                .append(" type=").append(quotingType)
+                .append('}')
+                .toString();
     }
 }
