@@ -16,7 +16,7 @@ INSERT IGNORE INTO `ActionProperty` (`id`, `createDatetime`, `createPerson_id`, 
 INSERT IGNORE INTO `ActionProperty` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `action_id`, `type_id`, `unit_id`, `norm`, `isAssigned`, `evaluation`, `version`) VALUES (1517, '2014-06-22 10:08:18', 1, '2014-06-22 10:08:18', 1, 0, 267, 24643, NULL, '', 0, NULL, 0);
 INSERT IGNORE INTO `ActionProperty` (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `action_id`, `type_id`, `unit_id`, `norm`, `isAssigned`, `evaluation`, `version`) VALUES (1516, '2014-06-22 10:08:18', 1, '2014-06-22 10:08:18', 1, 0, 267, 24642, NULL, '', 0, NULL, 0);
 
-INSERT IGNORE INTO `ActionProperty_integer` (`id`, `index`, `value`) VALUES (1521, 0, 3);
+INSERT IGNORE INTO `ActionProperty_Integer` (`id`, `index`, `value`) VALUES (1521, 0, 3);
 
 INSERT IGNORE INTO `DrugChart` (`id`, `action_id`, `master_id`, `begDateTime`, `endDateTime`, `status`, `statusDateTime`, `note`, `uuid`, `version`) VALUES (14, 267, NULL, '2014-06-22 11:00:00', NULL, 0, '2014-06-22 10:08:05', '', NULL, NULL);
 INSERT IGNORE INTO `DrugChart` (`id`, `action_id`, `master_id`, `begDateTime`, `endDateTime`, `status`, `statusDateTime`, `note`, `uuid`, `version`) VALUES (15, 267, 14, '2014-06-22 11:00:00', NULL, 0, '2014-06-22 10:08:05', '', NULL, NULL);
