@@ -964,7 +964,8 @@ with CAPids {
       lockId = appLock.acquireLock("Client_Quoting", oldQuota.getId.intValue(), oldQuota.getId.intValue(), auth)
     }
     try {
-      val patient = dbEventBean.getEventById(eventId).getPatient
+      val event: Event = dbEventBean.getEventById(eventId)
+      val patient = event.getPatient
       var mkb: Mkb = null
       try {
         mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
@@ -980,12 +981,13 @@ with CAPids {
         dataEntry.getQuotaType.getId,
         dataEntry.getStatus.getId,
         dataEntry.getDepartment.getId,
-        dataEntry.getAppealNumber,
+        event.getExternalId,
         dataEntry.getTalonNumber,
         dataEntry.getStage.getId,
         dataEntry.getRequest.getId,
         mkb,
         patient,
+        event,
         auth.getUser)
       if (isPersist) dbManager.persist(clientQuoting) else dbManager.merge(clientQuoting)
     } finally {

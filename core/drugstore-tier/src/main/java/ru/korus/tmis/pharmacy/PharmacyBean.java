@@ -1,6 +1,7 @@
 package ru.korus.tmis.pharmacy;
 
 import misexchange.MISExchange;
+import misexchange.MISExchangePortType;
 import misexchange.Request;
 import org.hl7.v3.*;
 import org.joda.time.DateTime;
@@ -86,6 +87,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private static final int PS_NEW = 0;
 
+    private MISExchangePortType misExchangeSoap = null;
+
     /**
      * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
      */
@@ -164,7 +167,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
             toLog.addN("prepare message... \n\n #", HL7PacketBuilder.marshallMessage(request, "misexchange"));
             // отправка сообщения в 1С
             // final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
-            final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+            final MISExchangePortType misExchangeSoap = getMisExchangeSoap();
+            final MCCIIN000002UV012 result = misExchangeSoap.processHL7V3Message(request);
             if (result != null) {
                 // обработка результата
                 toLog.addN("Connection successful. Result: # \n\n #",
@@ -212,6 +216,18 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
         }
+    }
+
+    public void setMisExchangeSoap(MISExchangePortType misExchangeSoap) {
+        this.misExchangeSoap = misExchangeSoap;
+    }
+
+    private MISExchangePortType getMisExchangeSoap() {
+
+        if(misExchangeSoap == null) {
+            misExchangeSoap = new MISExchange().getMISExchangeSoap();
+        }
+        return misExchangeSoap;
     }
 
     private StringBuilder getAckString(MCCIMT000200UV01Acknowledgement ack) {
@@ -560,9 +576,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         prescription.setErrCount(prescription.getErrCount() + 1);
                         toLog.add("prepare message... \n\n # \n", HL7PacketBuilder.marshallMessage(request, "misexchange"));
                         if (!HL7PacketBuilder.isTestMode()) {
-                            final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
-                            toLog.add("Connection successful. Result: # \n\n # \n",
-                                    result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
+                            final MCCIIN000002UV012 result = getMisExchangeSoap().processHL7V3Message(request);
+                            if(result != null) {
+                                toLog.add("Connection successful. Result: # \n\n # \n",
+                                        result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
+                            }
 
                             if (isOk(result)) {
                                 prescriptionSendingRes.setUuid(prescriptionInfo.getPrescrUUID());
@@ -608,6 +626,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
     private boolean isOk(MCCIIN000002UV012 result) throws CoreException {
+        if ( result == null ) {
+            return false;
+        }
         boolean res = false;
         for (MCCIMT000200UV01Acknowledgement ack : result.getAcknowledgement()) {
             if (AcknowledgementType.AA.equals(ack.getTypeCode())) {

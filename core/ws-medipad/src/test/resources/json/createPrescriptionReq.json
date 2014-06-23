@@ -28,7 +28,8 @@
             "value": "",
             "valueDomain": "rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER",
             "type": "ReferenceRb",
-            "code": "moa"
+            "code": "moa",
+            "value": "3"
         },
         {
             "actionPropertyTypeId": 11848,
