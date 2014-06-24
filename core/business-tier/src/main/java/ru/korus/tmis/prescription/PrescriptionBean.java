@@ -197,10 +197,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         if (interval.getId() == null || interval.getId().equals(0)) {
             dbDrugChartBeanLocal.create(action,
                     masterId,
-                    new Date(interval.getBeginDateTime()),
-                    new Date(interval.getEndDateTime()),
+                    interval.getBeginDateTime() == null ? null : new Date(interval.getBeginDateTime()),
+                    interval.getEndDateTime() == null ? null : new Date(interval.getEndDateTime()),
                     interval.getStatus(),
-                    data.getNote());
+                    interval.getNote());
         } else {
             DrugChart drugChart = em.find(DrugChart.class, interval.getId());
             if (drugChart == null) {
