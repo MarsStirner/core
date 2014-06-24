@@ -23,4 +23,4 @@ INSERT IGNORE INTO `DrugChart` (`id`, `action_id`, `master_id`, `begDateTime`, `
 
 INSERT IGNORE INTO `DrugComponent` (`id`, `action_id`, `nomen`, `name`, `dose`, `unit`, `createDateTime`, `cancelDateTime`) VALUES (8, 267, 19040, 'Анальгин', 11, 327, '2014-06-22 10:08:18', NULL);
 
-UPDATE `pharmacy` SET `status`='COMPLETE';
+UPDATE `Pharmacy` SET `status`='COMPLETE';
