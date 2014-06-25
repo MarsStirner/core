@@ -1075,19 +1075,6 @@
             </plugin>
 
 
-            <!--<plugin>-->
-            <!--<groupId>org.glassfish</groupId>-->
-            <!--<artifactId>maven-embedded-glassfish-plugin</artifactId>-->
-            <!--<version>${version.maven.plugin.embedded.glassfish}</version>-->
-            <!--<configuration>-->
-            <!--<app>${project.build.directory}/${project.build.finalName}.ear</app>-->
-            <!--<port>8080</port>-->
-            <!--<contextRoot>${project.build.finalName}</contextRoot>-->
-            <!--<name>${project.build.finalName}</name>-->
-            <!--</configuration>-->
-            <!--</plugin>-->
-
-
             <!--  <plugin>
                 <groupId>org.glassfish.maven.plugin</groupId>
                 <artifactId>maven-glassfish-plugin</artifactId>
