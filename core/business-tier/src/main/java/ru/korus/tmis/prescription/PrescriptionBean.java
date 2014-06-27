@@ -233,9 +233,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
                 logger.info("wrong property id : " + prop.getId(), ex);
             }
 
-            //TODO fix in Front-end : "этот тип экшен проперти пока не поддерживается"
-            if (ap != null && prop.getValue() != null && !"этот тип экшен проперти пока не поддерживается".equals(prop.getValue())) {
-                APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, prop.getValue(), 0);
+            String  value =  prop.getValueId() == null ? prop.getValue() : (prop.getValueId() == null ? null :String.valueOf(prop.getValueId()));
+
+            if (ap != null && value != null && !"этот тип экшен проперти пока не поддерживается".equals(prop.getValue())) {
+                APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, value, 0);
                 em.persist(apv);
             }
         }
