@@ -29,7 +29,6 @@
         <module>ws-tfoms</module>
     </modules>
 
-
     <properties>
         <!-- Версия ядра-->
         <version.tmis.core>2.5.37.1</version.tmis.core>
