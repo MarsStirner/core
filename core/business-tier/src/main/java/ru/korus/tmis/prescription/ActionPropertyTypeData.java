@@ -21,6 +21,7 @@ public class ActionPropertyTypeData {
     private String type;
     private String code;
     private String value;
+    private Integer valueId;
     private Integer id = null;
 
     public ActionPropertyTypeData(ActionPropertyType actionPropertyType) {
@@ -105,5 +106,13 @@ public class ActionPropertyTypeData {
 
     public void setId(Integer id) {
         this.id = id;
+    }
+
+    public Integer getValueId() {
+        return valueId;
+    }
+
+    public void setValueId(Integer valueId) {
+        this.valueId = valueId;
     }
 }
