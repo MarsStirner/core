@@ -309,7 +309,7 @@ class DbActionPropertyBean
     val apvs = em.createQuery(query)
       .setParameter("id", id)
       .getResultList
-    apvs.foreach(v => em.detach(v))
+  //  apvs.foreach(v => em.detach(v))
     apvs
   }
 

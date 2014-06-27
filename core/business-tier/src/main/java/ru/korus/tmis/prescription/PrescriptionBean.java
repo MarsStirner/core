@@ -67,7 +67,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
 
     @Override
     public PrescriptionsData getPrescriptions(Integer eventId, Long dateRangeMin, Long dateRangeMax, PrescriptionGroupBy groupBy, String admissionId, String drugName, String patientName, String setPersonName, String departmentId, AuthData auth) throws CoreException {
-        if(eventId != null ) {
+        if (eventId != null) {
             return getPrescriptionsData(eventId);
         }
 
@@ -136,27 +136,27 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
 
     @Override
     public ExecuteIntervalsData executeIntervals(ExecuteIntervalsData executeIntervalsData) {
-        dbDrugChartBeanLocal.updateStatus(executeIntervalsData.getData(), (short)1);
+        dbDrugChartBeanLocal.updateStatus(executeIntervalsData.getData(), (short) 1);
         return executeIntervalsData;
     }
 
     @Override
     public ExecuteIntervalsData cancelIntervals(ExecuteIntervalsData executeIntervalsData) {
-        dbDrugChartBeanLocal.updateStatus(executeIntervalsData.getData(), (short)2);
+        dbDrugChartBeanLocal.updateStatus(executeIntervalsData.getData(), (short) 2);
         return executeIntervalsData;
     }
 
     @Override
     public ExecuteIntervalsData cancelIntervalsExecution(ExecuteIntervalsData executeIntervalsData) {
-        dbDrugChartBeanLocal.updateStatus(executeIntervalsData.getData(), (short)0);
+        dbDrugChartBeanLocal.updateStatus(executeIntervalsData.getData(), (short) 0);
         return executeIntervalsData;
     }
 
     @Override
     public AssigmentIntervalData updateIntervals(AssigmentIntervalDataArray assigmentIntervalDataArray) {
-        for(AssigmentIntervalData intervalData : assigmentIntervalDataArray.getData()) {
-            DrugChart interval = em.find( DrugChart.class, intervalData.getId());
-            if(interval == null) {
+        for (AssigmentIntervalData intervalData : assigmentIntervalDataArray.getData()) {
+            DrugChart interval = em.find(DrugChart.class, intervalData.getId());
+            if (interval == null) {
                 createNewInterval(intervalData);
             } else {
                 updateInterval(interval,
@@ -173,7 +173,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     private void updateInterval(DrugChart interval, Long beginDateTime, Long endDateTime, Integer masterId, Short status, String note) {
         interval.setBegDateTime(new Date(beginDateTime));
         interval.setEndDateTime(new Date(endDateTime));
-        if(masterId != null) {
+        if (masterId != null) {
             interval.setMaster(em.find(DrugChart.class, masterId));
         }
         interval.setStatus(status);
@@ -183,7 +183,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     private void createNewInterval(AssigmentIntervalData intervalData) {
         DrugChart interval = new DrugChart();
         Action action = em.find(Action.class, intervalData.getActionId());
-        if(action != null) {
+        if (action != null) {
             dbDrugChartBeanLocal.create(action,
                     intervalData.getMasterId(),
                     new Date(intervalData.getBeginDateTime()),
@@ -197,10 +197,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         if (interval.getId() == null || interval.getId().equals(0)) {
             dbDrugChartBeanLocal.create(action,
                     masterId,
-                    new Date(interval.getBeginDateTime()),
-                    new Date(interval.getEndDateTime()),
+                    interval.getBeginDateTime() == null ? null : new Date(interval.getBeginDateTime()),
+                    interval.getEndDateTime() == null ? null : new Date(interval.getEndDateTime()),
                     interval.getStatus(),
-                    data.getNote());
+                    interval.getNote());
         } else {
             DrugChart drugChart = em.find(DrugChart.class, interval.getId());
             if (drugChart == null) {
@@ -233,9 +233,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
                 logger.info("wrong property id : " + prop.getId(), ex);
             }
 
-            //TODO fix in Front-end : "этот тип экшен проперти пока не поддерживается"
-            if (ap != null && prop.getValue() != null && !"этот тип экшен проперти пока не поддерживается".equals(prop.getValue())) {
-                APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, prop.getValue(), 0);
+            String  value =  prop.getValueId() == null ? prop.getValue() : (prop.getValueId() == null ? null :String.valueOf(prop.getValueId()));
+
+            if (ap != null && value != null && !"этот тип экшен проперти пока не поддерживается".equals(prop.getValue())) {
+                APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, value, 0);
                 em.persist(apv);
             }
         }
@@ -251,7 +252,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     private void updateDrugs(Action action, List<DrugData> drugs) {
         for (DrugData drugData : drugs) {
             DrugComponent drugComponent = drugData.getId() == null ? null : em.find(DrugComponent.class, drugData.getId());
-            if(drugComponent == null) {
+            if (drugComponent == null) {
                 dbDrugComponentBeanLocal.create(action, drugData.getNomen(), drugData.getName(), drugData.getDose(), drugData.getUnit());
             } else {
                 drugComponent.setAction(action);
@@ -260,8 +261,8 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         }
         List<DrugComponent> curDrugs = dbDrugComponentBeanLocal.getComponentsByPrescriptionAction(action.getId());
         final Date now = new Date();
-        for(DrugComponent drugComp : curDrugs) {
-            if(!isPresrent(drugComp, drugs)) {
+        for (DrugComponent drugComp : curDrugs) {
+            if (!isPresrent(drugComp, drugs)) {
                 drugComp.setCancelDateTime(now);
             }
         }
@@ -269,7 +270,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
 
     private boolean isPresrent(DrugComponent drugComp, List<DrugData> drugs) {
         for (DrugData drugData : drugs) {
-            if(drugComp.getId().equals(drugData.getId())) {
+            if (drugComp.getId().equals(drugData.getId())) {
                 return true;
             }
         }
@@ -290,9 +291,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         for (ActionPropertyTypeData prop : data.getProperties()) {
             ActionProperty ap = dbActionPropertyBeanLocal.createActionProperty(action, prop.getActionPropertyTypeId(), authData);
             em.persist(ap);
-            if (prop.getValue() != null && !prop.getValue().isEmpty()) {
+            final String value = prop.getValue() == null ? (prop.getValueId() == null ? null : String.valueOf(prop.getValueId())) : prop.getValue();
+            if (value != null && !value.isEmpty()) {
                 em.flush();
-                APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, prop.getValue(), 0);
+                APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, value, 0);
                 em.persist(apv);
             }
         }
