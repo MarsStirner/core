@@ -492,7 +492,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private boolean sendPrescription(PrescriptionsTo1C prescription) throws CoreException {
         boolean res = false;
         try {
-            final Action action = prescription.getDrugChart().getAction();
+            final DrugChart drugChart = prescription.getDrugChart();
+            if (drugChart == null) {
+                return true;
+            }
+            final Action action = drugChart.getAction();
             final Event event = action.getEvent();
             // Пациент
             final Patient client = action.getEvent().getPatient();
@@ -529,8 +533,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
             for (DrugComponent comp : drugComponents) {
                 ToLog toLog = new ToLog("PRESCRIPTION");
                 try {
-                    final PrescriptionSendingRes prescriptionSendingRes = dbPrescriptionSendingResBeanLocal.getPrescriptionSendingRes(prescription.getDrugChart(), comp);
-                    prescriptionInfo.setPrescrUUID(this.dbPrescriptionSendingResBeanLocal.getIntervalUUID(prescription.getDrugChart(), comp));
+                    final PrescriptionSendingRes prescriptionSendingRes = dbPrescriptionSendingResBeanLocal.getPrescriptionSendingRes(drugChart, comp);
+                    prescriptionInfo.setPrescrUUID(this.dbPrescriptionSendingResBeanLocal.getIntervalUUID(drugChart, comp));
                     if (prescription.isPrescription()) { // передача нового / отмена назначения
                         prescriptionInfo.setAssignmentType(AssignmentType.ASSIGNMENT)
                                 .setNegationInd(prescription.getNewStatus().equals(PrescriptionStatus.PS_CANCELED));
