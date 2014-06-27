@@ -134,6 +134,7 @@ public class PrescriptionTest extends Arquillian {
     public void pullDb() throws Exception {
         ConfigManager.RbManagerSetting().DebugDemoMode_$eq("on");
         ConfigManager.Common().OrgId_$eq(3479);
+        ConfigManager.Drugstore().Active_$eq("on");
         System.out.println("**************************** PrescriptionTest.pullDb");
         initDb();
         Assert.assertNotNull(pharmacyBean);
