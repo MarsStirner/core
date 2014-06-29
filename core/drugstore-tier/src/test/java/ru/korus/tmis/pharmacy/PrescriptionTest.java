@@ -143,9 +143,9 @@ public class PrescriptionTest extends Arquillian {
         ArgumentCaptor<MISExchangePortType> captor = ArgumentCaptor.forClass(MISExchangePortType.class);
         pharmacyBean.pooling();
         ArgumentCaptor<Request> argument = ArgumentCaptor.forClass(Request.class);
-        verify(mockPort, times(1)).processHL7V3Message(argument.capture());
+        verify(mockPort, times(7)).processHL7V3Message(argument.capture());
         final String contextPath = "misexchange";
-        final Request msg = argument.getAllValues().get(0);
+        final Request msg = argument.getAllValues().get(6);
         String docText = null;
         if (msg instanceof  RCMRIN000002UV02) {
             ((RCMRIN000002UV02)msg).getMessage().getId().setRoot("TEST");
@@ -154,6 +154,7 @@ public class PrescriptionTest extends Arquillian {
             if(docBase64 instanceof String) {
                 docText = new String(javax.xml.bind.DatatypeConverter.parseBase64Binary(((String) docBase64)), "UTF-8");
                 docText = docText.replaceAll("root=\".{8}-.{4}-.{4}-.{4}-.{12}\"", "root=\"TEST\"");
+                docText = docText.replaceAll("time value=\".{8}\"", "time value=\"20140623\"");
             }
             ((RCMRIN000002UV02)msg).getMessage().getControlActProcess().setText(null);
         }
