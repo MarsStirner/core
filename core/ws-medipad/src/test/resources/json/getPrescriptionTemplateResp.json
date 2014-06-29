@@ -1,80 +1,87 @@
-{"message": "templateAction", "data": {
-    "properties": [
-        {
-            "name": "Наименование",
-            "value": null,
-            "id": null,
-            "type": "RLS",
-            "code": "nomen",
-            "mandatory": true,
-            "valueDomain": "",
-            "actionPropertyTypeId": 1810
-        },
-        {
-            "name": "Скорость введения",
-            "value": null,
-            "id": null,
-            "type": "String",
-            "code": "voa",
-            "mandatory": false,
-            "valueDomain": "",
-            "actionPropertyTypeId": 1811
-        },
-        {
-            "name": "Способ введения",
-            "value": null,
-            "id": null,
-            "type": "ReferenceRb",
-            "code": "moa",
-            "mandatory": false,
-            "valueDomain": "rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER",
-            "actionPropertyTypeId": 5176
-        },
-        {
-            "name": "Единицы",
-            "value": null,
-            "id": null,
-            "type": "String",
-            "code": "units",
-            "mandatory": false,
-            "valueDomain": "'мг','мкг','гр','мл',*",
-            "actionPropertyTypeId": 11848
-        },
-        {
-            "name": "Примечания",
-            "value": null,
-            "id": null,
-            "type": "String",
-            "code": null,
-            "mandatory": false,
-            "valueDomain": "",
-            "actionPropertyTypeId": 24638
-        },
-        {
-            "name": "Дозировка",
-            "value": null,
-            "id": null,
-            "type": "String",
-            "code": "dosage",
-            "mandatory": false,
-            "valueDomain": "",
-            "actionPropertyTypeId": 24642
-        },
-        {
-            "name": "Доза",
-            "value": null,
-            "id": null,
-            "type": "Double",
-            "code": null,
-            "mandatory": false,
-            "valueDomain": "",
-            "actionPropertyTypeId": 24643
-        }
-    ],
-    "note": null,
-    "assigmentIntervals": [],
+{"data": {
     "actionTypeId": 123,
     "eventId": null,
+    "properties": [
+        {
+            "actionPropertyTypeId": 1810,
+            "mandatory": true,
+            "name": "Наименование",
+            "valueDomain": "",
+            "type": "RLS",
+            "code": "nomen",
+            "value": null,
+            "valueId": null,
+            "id": null
+        },
+        {
+            "actionPropertyTypeId": 1811,
+            "mandatory": false,
+            "name": "Скорость введения",
+            "valueDomain": "",
+            "type": "String",
+            "code": "voa",
+            "value": null,
+            "valueId": null,
+            "id": null
+        },
+        {
+            "actionPropertyTypeId": 5176,
+            "mandatory": false,
+            "name": "Способ введения",
+            "valueDomain": "rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER",
+            "type": "ReferenceRb",
+            "code": "moa",
+            "value": null,
+            "valueId": null,
+            "id": null
+        },
+        {
+            "actionPropertyTypeId": 11848,
+            "mandatory": false,
+            "name": "Единицы",
+            "valueDomain": "'мг','мкг','гр','мл',*",
+            "type": "String",
+            "code": "units",
+            "value": null,
+            "valueId": null,
+            "id": null
+        },
+        {
+            "actionPropertyTypeId": 24638,
+            "mandatory": false,
+            "name": "Примечания",
+            "valueDomain": "",
+            "type": "String",
+            "code": null,
+            "value": null,
+            "valueId": null,
+            "id": null
+        },
+        {
+            "actionPropertyTypeId": 24642,
+            "mandatory": false,
+            "name": "Дозировка",
+            "valueDomain": "",
+            "type": "String",
+            "code": "dosage",
+            "value": null,
+            "valueId": null,
+            "id": null
+        },
+        {
+            "actionPropertyTypeId": 24643,
+            "mandatory": false,
+            "name": "Доза",
+            "valueDomain": "",
+            "type": "Double",
+            "code": null,
+            "value": null,
+            "valueId": null,
+            "id": null
+        }
+    ],
     "drugs": [],
+    "assigmentIntervals": [],
+    "note": null,
     "isUrgent": false
-}}
+}, "message": "templateAction"}
