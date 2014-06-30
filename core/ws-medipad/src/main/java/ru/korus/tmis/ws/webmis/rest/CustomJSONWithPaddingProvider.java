@@ -92,7 +92,7 @@ public class CustomJSONWithPaddingProvider extends JSONWithPaddingProvider {
 
             if (mediaType.equals(MediaType.APPLICATION_XML_TYPE)) {
                 try {
-                    JAXBContext context = JAXBContext.newInstance(type);
+                    JAXBContext context = JAXBContext.newInstance(t.getJsonSource().getClass());
                     Marshaller m = context.createMarshaller();
                     m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
                     m.marshal(t.getJsonSource(), entityStream);
