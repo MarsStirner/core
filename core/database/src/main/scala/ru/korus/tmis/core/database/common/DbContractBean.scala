@@ -131,7 +131,7 @@ class DbContractBean
     val root = q.from(classOf[Contract])
 
     val sq = q.subquery(classOf[ContractSpecification])
-    val subRoot = q.from(classOf[ContractSpecification])
+    val subRoot = sq.from(classOf[ContractSpecification])
 
     var subQueryConditions = List(
       cb.equal(subRoot.get("master"), root),
