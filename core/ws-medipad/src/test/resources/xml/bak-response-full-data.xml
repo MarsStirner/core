@@ -1,91 +1,167 @@
-<SOAP-ENV:Envelope
- xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
- xmlns:urn="http://www.korusconsulting.ru"
- xmlns:xsd="http://www.w3.org/1999/XMLSchema"
- xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"
- SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/" xmlns:urn="http://www.korusconsulting.ru" xmlns:xsd="http://www.w3.org/1999/XMLSchema" xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance" SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
 <SOAP-ENV:Body>
-<urn:setAnalysisResults>
-<POLB_IN224100UV01 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ./processable/multicacheschemas/POLB_IN224100UV01.xsd" ITSVersion="XML_1.0">
-<id root="68daa814-86a9-48ee-b513-f23bc63b0acc"/>
-<creationTime value="201406051155"/>
-<interactionId extension="POLB_IN224100UV01" root="2.16.840.1.113883.1.6"/>
-<processingCode code="P"/>
-<processingModeCode code="T"/>
-<acceptAckCode code="AL"/>
-<receiver typeCode="RCV">
-<device classCode="DEV" determinerCode="INSTANCE">
-<id nullFlavor="NI"/>
-</device>
-</receiver>
-<sender typeCode="SND">
-<device classCode="DEV" determinerCode="INSTANCE">
-<id nullFlavor="NI"/>
-</device>
-</sender>
-<controlActProcess classCode="CACT" moodCode="APT">
-<authorOrPerformer typeCode="PRF" contextControlCode="AN">
-<assignedPerson classCode="ASSIGNED">
-<representedOrganization classCode="ORG" determinerCode="INSTANCE">
-<code code="22"/>
-</representedOrganization>
-</assignedPerson>
-</authorOrPerformer>
-<subject typeCode="SUBJ">
-<observationReport classCode="GROUPER" moodCode="EVN">
-<id root="1113481"/>
-<code code="15.44_1" displayName="КРОВЬ-(БАКПОСЕВ)_АЭРОБЫ"/>
-<specimen typeCode="SPC" contextControlCode="OP">
-<specimen classCode="SPEC">
-<id root="1000529968AR"/>
-</specimen>
-</specimen>
-<author typeCode="AUT">
-<assignedEntity classCode="ASSIGNED">
-<code code="239" displayName="Цvrigt Гунин Юра"/>
-</assignedEntity>
-</author>
-</observationReport>
-</subject>
-<subject typeCode="SUBJ">
-<observationBattery classCode="BATTERY" moodCode="EVN">
-<code displayName="КРОВЬ-(БАКПОСЕВ)_АЭРОБЫ"/>
-<inFulfillmentOf typeCode="FLFS">
-<placerOrder classCode="ACT" moodCode="RQO">
-<id extension="1113481"/>
-</placerOrder>
-</inFulfillmentOf>
-<component1 typeCode="COMP" contextControlCode="ON">
-<observationEvent classCode="OBS" moodCode="EVN">
-<code code="15.44_1" displayName="КРОВЬ-(БАКПОСЕВ)_АЭРОБЫ" codeSystemName=""/>
-<statusCode code="true"/>
-<effectiveTime value="201406051052"/>
-<confidentialityCode code="" displayName=""/>
-<component1 typeCode="COMP" contextControlCode="ON">
-<observationEvent classCode="OBS" moodCode="EVN">
-<code code="ACHRB" displayName="Achromobacter sp." codeSystem=""/>
-</observationEvent>
-</component1>
-</observationEvent>
-</component1>
-</observationBattery>
-</subject>
-<subject typeCode="SUBJ">
-<specimenObservationCluster classCode="CLUSTER" moodCode="EVN">
-<specimen typeCode="SPC" contextControlCode="ON">
-<specimen classCode="SPEC">
-<code code="ACHRB" displayName="Achromobacter sp." codeSystem="1113481"/>
-</specimen>
-</specimen>
-<component1 typeCode="COMP" contextControlCode="ON">
-<observationBattery classCode="BATTERY" moodCode="EVN">
-</observationBattery>
-</component1>
-</specimenObservationCluster>
-</subject>
-</controlActProcess>
-</POLB_IN224100UV01>
-</urn:setAnalysisResults>
-
+    <urn:setAnalysisResults>
+        <POLB_IN224100UV01 xmlns="urn:hl7-org:v3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="urn:hl7-org:v3 ./processable/multicacheschemas/POLB_IN224100UV01.xsd" ITSVersion="XML_1.0">
+            <id root="c788bac6-d595-43d9-9769-1c7e8731bf4f"/>
+            <creationTime value="201406111625"/>
+            <interactionId extension="POLB_IN224100UV01" root="2.16.840.1.113883.1.6"/>
+            <processingCode code="P"/>
+            <processingModeCode code="T"/>
+            <acceptAckCode code="AL"/>
+            <receiver typeCode="RCV">
+                <device classCode="DEV" determinerCode="INSTANCE">
+                    <id nullFlavor="NI"/>
+                </device>
+            </receiver>
+            <sender typeCode="SND">
+                <device classCode="DEV" determinerCode="INSTANCE">
+                    <id nullFlavor="NI"/>
+                </device>
+            </sender>
+            <controlActProcess classCode="CACT" moodCode="APT">
+                <authorOrPerformer typeCode="PRF" contextControlCode="AN">
+                    <assignedPerson classCode="ASSIGNED">
+                        <representedOrganization classCode="ORG" determinerCode="INSTANCE">
+                            <code code="22"/>
+                        </representedOrganization>
+                    </assignedPerson>
+                </authorOrPerformer>
+                <subject typeCode="SUBJ">
+                    <observationReport classCode="GROUPER" moodCode="EVN">
+                        <id root="1137602"/>
+                        <code code="15.44_1" displayName="КРОВЬ-(БАКПОСЕВ)_АЭРОБЫ"/>
+                        <specimen typeCode="SPC" contextControlCode="OP">
+                            <specimen classCode="SPEC">
+                                <id root="1000533724AR"/>
+                            </specimen>
+                        </specimen>
+                        <author typeCode="AUT">
+                            <assignedEntity classCode="ASSIGNED">
+                                <code code="239" displayName="Цvrigt Гунин Юра"/>
+                            </assignedEntity>
+                        </author>
+                    </observationReport>
+                </subject>
+                <subject typeCode="SUBJ">
+                    <observationBattery classCode="BATTERY" moodCode="EVN">
+                        <code displayName="КРОВЬ-(БАКПОСЕВ)_АЭРОБЫ"/>
+                        <inFulfillmentOf typeCode="FLFS">
+                            <placerOrder classCode="ACT" moodCode="RQO">
+                                <id extension="1137602"/>
+                            </placerOrder>
+                        </inFulfillmentOf>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationEvent classCode="OBS" moodCode="EVN">
+                                <code code="15.44_1" displayName="КРОВЬ-(БАКПОСЕВ)_АЭРОБЫ" codeSystemName=""/>
+                                <statusCode code="true"/>
+                                <effectiveTime value="201406111616"/>
+                                <confidentialityCode code="" displayName=""/>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code code="STR" displayName="Streptococcus sp" codeSystem="комментарий к стрептококку"/>
+                                    </observationEvent>
+                                </component1>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code code="TRICHD" displayName="Trichoderma spp" codeSystem="комментарий к триходерме"/>
+                                    </observationEvent>
+                                </component1>
+                            </observationEvent>
+                        </component1>
+                    </observationBattery>
+                </subject>
+                <subject typeCode="SUBJ">
+                    <specimenObservationCluster classCode="CLUSTER" moodCode="EVN">
+                        <specimen typeCode="SPC" contextControlCode="ON">
+                            <specimen classCode="SPEC">
+                                <code code="STR" displayName="Streptococcus sp" codeSystem="1137602"/>
+                            </specimen>
+                        </specimen>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationBattery classCode="BATTERY" moodCode="EVN">
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code code="AK" displayName="АМИКАЦИН" codeSystem="Z">
+                                            <translation code="S"/>
+                                        </code>
+                                        <statusCode code=""/>
+                                    </observationEvent>
+                                </component1>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code code="AMC" displayName="АМОКСИЛИЛЛИН/КЛАВУЛОНАТ" codeSystem="M">
+                                            <translation code="I"/>
+                                        </code>
+                                        <statusCode code=""/>
+                                    </observationEvent>
+                                </component1>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code code="ATM" displayName="АЗТРЕОНАМ" codeSystem="Z">
+                                            <translation code="R"/>
+                                        </code>
+                                        <statusCode code="комментарий к азтреонаму"/>
+                                    </observationEvent>
+                                </component1>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code code="AZM" displayName="АЗИТРОМИЦИН" codeSystem="Z">
+                                            <translation code="R"/>
+                                        </code>
+                                        <statusCode code="комментарий к азитромицину"/>
+                                    </observationEvent>
+                                </component1>
+                            </observationBattery>
+                        </component1>
+                    </specimenObservationCluster>
+                </subject>
+                <subject typeCode="SUBJ">
+                    <specimenObservationCluster classCode="CLUSTER" moodCode="EVN">
+                        <specimen typeCode="SPC" contextControlCode="ON">
+                            <specimen classCode="SPEC">
+                                <code code="TRICHD" displayName="Trichoderma spp" codeSystem="1137602"/>
+                            </specimen>
+                        </specimen>
+                        <component1 typeCode="COMP" contextControlCode="ON">
+                            <observationBattery classCode="BATTERY" moodCode="EVN">
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code code="AB" displayName="АМФОТЕРИЦИН B" codeSystem="Z">
+                                            <translation code="S"/>
+                                        </code>
+                                        <statusCode code=""/>
+                                    </observationEvent>
+                                </component1>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code code="AMP" displayName="АМПИЦИЛИН" codeSystem="Z">
+                                            <translation code="R"/>
+                                        </code>
+                                        <statusCode code=""/>
+                                    </observationEvent>
+                                </component1>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code code="AND" displayName="АНИДУЛАФУНГИН" codeSystem="M">
+                                            <translation code="I"/>
+                                        </code>
+                                        <statusCode code=""/>
+                                    </observationEvent>
+                                </component1>
+                                <component1 typeCode="COMP" contextControlCode="ON">
+                                    <observationEvent classCode="OBS" moodCode="EVN">
+                                        <code code="SAM" displayName="АМПИЦИЛЛИН/СУЛЬБАКТАМ" codeSystem="Z">
+                                            <translation code="S"/>
+                                        </code>
+                                        <statusCode code=""/>
+                                    </observationEvent>
+                                </component1>
+                            </observationBattery>
+                        </component1>
+                    </specimenObservationCluster>
+                </subject>
+            </controlActProcess>
+        </POLB_IN224100UV01>
+    </urn:setAnalysisResults>
 </SOAP-ENV:Body>
 </SOAP-ENV:Envelope>

@@ -343,9 +343,9 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         try {
             URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
             String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-full-data.xml")));
-            postData = postData.replace("1113481", String.valueOf(labTestBakLabResearchId));
-            postData = postData.replace("201406051155", String.valueOf(new Date().getTime()));
-            postData = postData.replace("201406051052", String.valueOf(new Date().getTime()));
+            postData = postData.replace("1137602", String.valueOf(labTestBakLabResearchId));
+            postData = postData.replace("201406111625", String.valueOf(new Date().getTime()));
+            postData = postData.replace("201406111616", String.valueOf(new Date().getTime()));
             postData = postData.replace("239", "41");
             System.out.println("I am going to send lab bak result request:");
             System.out.println(postData);
@@ -362,6 +362,33 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             assert (false);
         }
     }
+
+    @Test(dependsOnMethods = "testGetLisBakResults")
+    public void testSecondGetLisBakResults() {
+        try {
+            URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
+            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-full-data.xml")));
+            postData = postData.replace("1137602", String.valueOf(labTestBakLabResearchId));
+            postData = postData.replace("201406111625", String.valueOf(new Date().getTime()));
+            postData = postData.replace("201406111616", String.valueOf(new Date().getTime()));
+            postData = postData.replace("239", "41");
+            System.out.println("I am going to send lab bak result request:");
+            System.out.println(postData);
+            HttpURLConnection connection = WebMisBase.openConnection(url, labTestAuthData, "POST");
+            connection.setRequestProperty("Content-Type", "text/xml");
+            OutputStream outStream = connection.getOutputStream();
+            outStream.write(postData.getBytes());
+            outStream.flush();
+            int code = WebMisBase.getResponseCode(connection);
+            Assert.assertTrue(code == 200);
+            WebMisBase.getResponseData(connection, code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert (false);
+        }
+    }
+
+
 
 
     private String getCommonAttributeValueByName(List<CommonAttribute> attributes, String name) {
