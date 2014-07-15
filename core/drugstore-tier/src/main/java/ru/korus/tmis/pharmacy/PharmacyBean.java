@@ -182,29 +182,29 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     } else {
                         final StringBuilder sb = getAckString(ack);
                         pharmacy.setErrorString(sb.toString());
-                        pharmacy.setStatus(PharmacyStatus.ERROR);
+                        setErrorStatus(pharmacy);
                     }
                 }
             } else {
                 toLog.add("Error connection with 1C Pharmacy. Message was set in ERROR status");
-                pharmacy.setStatus(PharmacyStatus.ERROR);
+                setErrorStatus(pharmacy);
             }
         } catch (NoSuchOrgStructureException e) {
             if (pharmacy != null) {
                 pharmacy.setErrorString("NoSuchOrgStructureException " + e);
-                pharmacy.setStatus(PharmacyStatus.ERROR);
+                setErrorStatus(pharmacy);
             }
             toLog.add("OrgStructure not found. Skip message: " + e);
         } catch (SkipMessageProcessException e) {
             if (pharmacy != null) {
                 pharmacy.setErrorString("SkipMessageProcessException " + e);
-                pharmacy.setStatus(PharmacyStatus.ERROR);
+                setErrorStatus(pharmacy);
             }
             toLog.add("Skip message: " + e);
         } catch (Exception e) {
             if (pharmacy != null) {
                 pharmacy.setErrorString("Exception " + e);
-                pharmacy.setStatus(PharmacyStatus.ERROR);
+                setErrorStatus(pharmacy);
             }
             toLog.add("Exception: " + e, e);
         } finally {
@@ -215,6 +215,12 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     toLog.add("CoreException on set Pharmacy in error! " + ce, ce);
                 }
             }
+        }
+    }
+
+    private void setErrorStatus(Pharmacy pharmacy) {
+        if (pharmacy.getStatus() != PharmacyStatus.RESEND ) {
+            pharmacy.setStatus(PharmacyStatus.ERROR);
         }
     }
 

@@ -2,6 +2,7 @@ package ru.korus.tmis.admin;
 
 import com.vaadin.annotations.Theme;
 import com.vaadin.annotations.VaadinServletConfiguration;
+import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinRequest;
 import com.vaadin.server.VaadinServlet;
@@ -16,10 +17,13 @@ import javax.servlet.annotation.WebServlet;
 public class AdminUI extends UI implements Button.ClickListener {
     //GridLayout root = new GridLayout(3, 3);
 
-    CssLayout root = new CssLayout();
-    GridLayout loginLayout;
-    Button signinButton;
-    CssLayout menu = new CssLayout();
+    private CssLayout root = new CssLayout();
+    private GridLayout loginLayout;
+    private Button signinButton;
+    private CssLayout menu = new CssLayout();
+    private CssLayout content = new CssLayout();
+
+    private TextField username;
 
 
     @Override
@@ -101,7 +105,7 @@ public class AdminUI extends UI implements Button.ClickListener {
         fields.addStyleName("fields");
 
         final String width = "250px";
-        final TextField username = new TextField("Логин");
+        username = new TextField("Логин");
         username.setWidth(width);
         username.focus();
         fields.addComponent(username);
@@ -112,12 +116,12 @@ public class AdminUI extends UI implements Button.ClickListener {
         fields.addComponent(password);
         fields.setComponentAlignment(password, Alignment.TOP_CENTER);
 
-        Button signin = new Button("Войти");
-        signin.setWidth(width);
-        signin.addStyleName("default");
-        initSigninLisener(signin);
-        fields.addComponent(signin);
-        fields.setComponentAlignment(signin, Alignment.TOP_CENTER);
+        signinButton = new Button("Войти");
+        signinButton.setWidth(width);
+        signinButton.addStyleName("default");
+        initSigninLisener(signinButton);
+        fields.addComponent(signinButton);
+        fields.setComponentAlignment(signinButton, Alignment.TOP_CENTER);
 
         loginPanel.addComponent(fields);
 
@@ -140,6 +144,9 @@ public class AdminUI extends UI implements Button.ClickListener {
     }
 
     private void buildMainView() {
+        Navigator nav = new Navigator(this, content);
+        nav.addView("setting", SettingsView.class);
+        nav.navigateTo("setting");
         root.addComponent(new HorizontalLayout() {
             {
                 setSizeFull();
@@ -156,7 +163,7 @@ public class AdminUI extends UI implements Button.ClickListener {
                             {
                                 addStyleName("branding");
                                 Label logo = new Label(
-                                        "<span>QuickTickets</span> Dashboard",
+                                        "<span><center>ФНКЦ</center></span> Панель управления",
                                         ContentMode.HTML);
                                 logo.setSizeUndefined();
                                 addComponent(logo);
@@ -170,6 +177,7 @@ public class AdminUI extends UI implements Button.ClickListener {
                         addComponent(menu);
                         setExpandRatio(menu, 1);
 
+
                         // User menu
                         addComponent(new VerticalLayout() {
                             {
@@ -178,21 +186,23 @@ public class AdminUI extends UI implements Button.ClickListener {
                                 Image profilePic = new Image(
                                         null,
                                         new ThemeResource("img/profile-pic.png"));
-                                profilePic.setWidth("34px");
+                                //profilePic.setWidth("34px");
+                                profilePic.setWidth("100%");
                                 addComponent(profilePic);
                                 Label userName = new Label("User Name");
+                                userName.setWidth("100%");
                                 userName.setSizeUndefined();
                                 addComponent(userName);
 
-                                MenuBar.Command cmd = new MenuBar.Command() {
+                                /*MenuBar.Command cmd = new MenuBar.Command() {
                                     @Override
                                     public void menuSelected(
                                             MenuBar.MenuItem selectedItem) {
                                         Notification
                                                 .show("Not implemented in this demo");
                                     }
-                                };
-                                MenuBar settings = new MenuBar();
+                                };*/
+                                /*MenuBar settings = new MenuBar();
                                 MenuBar.MenuItem settingsMenu = settings.addItem("",
                                         null);
                                 settingsMenu.setStyleName("icon-cog");
@@ -200,20 +210,32 @@ public class AdminUI extends UI implements Button.ClickListener {
                                 settingsMenu.addItem("Preferences", cmd);
                                 settingsMenu.addSeparator();
                                 settingsMenu.addItem("My Account", cmd);
-                                addComponent(settings);
+                                addComponent(settings);*/
+
 
                                 Button exit = new NativeButton("Exit");
                                 exit.addStyleName("icon-cancel");
                                 exit.setDescription("Sign Out");
+                                exit.setWidth("100%");
                                 addComponent(exit);
-
                             }
                         });
                     }
                 });
                 // Content
+                root.addComponent(content);
             }
         });
+        Button info = new NativeButton("Инфо");
+        //info.addStyleName("icon-cog");
+        menu.addComponent(info);
+
+        Button settings = new NativeButton("Настройки");
+        settings.addStyleName("icon-cog");
+        menu.addComponent(settings);
+        menu.addStyleName("menu");
+        menu.setHeight("100%");
+
     }
 
 }

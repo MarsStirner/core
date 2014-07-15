@@ -645,7 +645,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             WebMisBase.toPostStream(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createAppealsReq.json")), "UTF-8"), conn);
             int code = WebMisBase.getResponseCode(conn);
             String res = WebMisBase.getResponseData(conn, code);
-            Assert.assertTrue(code == 200);
+            Assert.assertEquals(code, 200);
             res = WebMisBase.removePadding(res, tstCallback);
             JsonParser parser = new JsonParser();
             JsonElement resJson = parser.parse(res);
