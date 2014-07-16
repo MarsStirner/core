@@ -474,11 +474,11 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
 
         final PatientRoleInfo patientRole = new PatientRoleInfo();
         patientRole.setClassCode("PAT");
-        patientRole.setAddr(patientInfo.getClientAddresses().get(0).getFreeInput());
+        patientRole.setAddr(patientInfo.getClientAddresses().get(0).getFreeInput()); // Bug, адрес может быть через КЛАДР
 
         final PatientIDInfo patientId = new PatientIDInfo();
         patientId.setExtension(String.valueOf(patientInfo.getId()));
-        patientId.setRoot(GUID);
+        patientId.setRoot(GUID); // LOL WUT
         patientRole.setId(patientId);
 
         final PatientInfo patient = new PatientInfo();
@@ -679,6 +679,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
 
             final SpUnitInfo spUnitInfo = new SpUnitInfo();
             final RbTissueType tissueType = takenTissue.getType();
+            // it could be the bug
             if (tissueType != null) {
                 spCodeInfo.setCode(tissueType.getName());
             }
