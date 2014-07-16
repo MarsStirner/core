@@ -543,6 +543,10 @@ class WebMisRESTImpl  extends WebMisREST
    */
   private def calculateActionPropertyValue(event: Event, at: ActionType, ap: ActionPropertyType): APValue = {
 
+    val infectionPropsSet = Set("infectFever", "infectBacteremia", "infectSepsis", "infectSepticShok", "infectLocal", "infectDocumental", "infectCephalopyosis", "infectMeningitis", "infectMeningoencephalitis", "infectEncephalitis", "infectCNSComment", "infectConjunctivitis", "infectPeriorbital", "infectBlepharitis", "infectChorioretinitis", "infectEyeComment", "infectSkinLight", "infectSkinHard", "infectSkinComment", "infectMucositis12", "infectMucositis34", "infectEsophagitis", "infectGingivitis", "infectMucousComment", "infectRhinitis", "infectTonsillitis", "infectOtitis", "infectDefeatPPN", "infectLORComment", "infectBronchitis", "infectInterstitialPneumonia", "infectLobarPneumonia", "infectPleurisy", "infectLungsComment", "infectPericarditis", "infectMioardit", "infectEndocarditis", "infectHeartComment", "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis", "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectAbdomenComment", "infectGlomerulonephritis", "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis", "infectUrogenitalComment", "infectOsteomyelitis", "infectMyositis", "infectMusculoskeletalComment", "infectEtiologyBacterial", "infectEtiologyFungal", "infectEtiologyVirus", "infectEtiologyUnknown")
+
+    val therapySet = Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")
+
     // Получение значения свойства у предыдущих действий
     def getProperty(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
         if(oldDocumentCodes.contains(at.getCode)) {
@@ -593,9 +597,72 @@ class WebMisRESTImpl  extends WebMisREST
       null
     }
 
+    // Получение значений свойств по свойствам инфекционного контроля
+    def getPropertyCustom2(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
+
+      if(!(actionTypeCodes contains ap.getCode) || !(oldDocumentCodes contains at.getCode))
+        return null
+
+      //Получаем последний дневниковый осмотр из всех историй болезни
+      def getLastAction(): Action = {
+        val patientId = event.getPatient.getId
+        val events = dbEventBean.getEventsForPatient(patientId)
+        val list = events.flatMap(e => actionBean.getActionsByEvent(e.getId))
+          .filter(a => oldDocumentCodes.contains(a.getActionType.getCode))
+          .sortBy(_.getCreateDatetime)
+
+        if(!list.isEmpty)
+          list.last
+        else
+          null
+
+      }
+
+      val lastAction = getLastAction()
+      val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectEndDate"))
+
+      val endDateValue: Date = {
+        if (endDateProperty.isDefined) {
+          val ap = endDateProperty.get
+          actionPropertyBean.getActionPropertyValue(ap).head match {
+            case p: APValueDate => p.getValue
+            case _ => null
+          }
+        } else
+          null
+      }
+
+      // Даты конца нет, нужно подтянуть значения
+      if(endDateValue == null) {
+        lastAction.getActionProperties.foreach(p => {
+          if(p.getType.getCode != null && p.getType.getCode.equals(ap.getCode)) {
+            val values = actionPropertyBean.getActionPropertyValue(p)
+            if(values.size() > 0)
+              return values.head
+          }
+        })
+        null
+      } else
+        null
+
+    }
+
     at.getCode match {
-      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag","mainDiagMkb")) // Заключительный эпикриз
-      case "1_2_18" => getPropertyCustom1(Set("1_2_18"), Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")) // Дневниковый осмотр
+
+      // Заключительный эпикриз
+      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag","mainDiagMkb"))
+
+      // Дневниковый осмотр
+      case "1_2_18" => {
+        if(therapySet.contains(at.getCode()))
+          getPropertyCustom1(Set("1_2_18"), therapySet)
+        else if(infectionPropsSet.contains(at.getCode())) {
+          getPropertyCustom1(Set("1_2_18"), infectionPropsSet)
+        }
+        else
+          null
+
+      }
       case _ => null
     }
   }
