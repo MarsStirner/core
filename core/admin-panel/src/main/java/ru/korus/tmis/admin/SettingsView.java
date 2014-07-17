@@ -1,9 +1,11 @@
 package ru.korus.tmis.admin;
 
+import com.vaadin.data.Container;
+
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.ui.Table;
-import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.*;
+
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -16,14 +18,60 @@ public class SettingsView extends VerticalLayout implements View {
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
         setSizeFull();
-        //addStyleName("transactions");
+        addStyleName("transactions");
         Table table = new Table();
 
-        for( String colName : new String[] {"Параметр", "Значение", "Краткое описание"} ) {
+        final String[] columnNames = {"Параметр", "Значение", "Краткое описание"};
+        for( String colName : columnNames) {
             table.addContainerProperty(colName, String.class, null);
         }
-        //table.setVisibleColumns(new Object[] {"Параметр", "Значение", "Краткое описание"});
-        //table.setValidationVisible(true);
+        table.setSizeFull();
+        table.addStyleName("borderless");
+      //  table.setVisibleColumns(columnNames);
+       // table.setValidationVisible(true);
+        table.setColumnAlignment("Параметр", Table.Align.LEFT);
+        table.setImmediate(true);
+//        t.setColumnAlignment("Price", Table.Align.RIGHT);
+
+      // table.setSelectable(true);
+        table.setEditable(true);
+        table.setTableFieldFactory(new DefaultFieldFactory  () {
+            public Field createField(Container container, Object itemId,
+                                     Object propertyId, Component uiContext) {
+                Field field = super.createField(container,itemId,propertyId, uiContext);
+                field.setReadOnly(!"Значение".equals(propertyId));
+                return field;
+            }
+        });
+        HorizontalLayout toolbar = new HorizontalLayout();
+        toolbar.setWidth("100%");
+        toolbar.setSpacing(true);
+        toolbar.setMargin(true);
+        toolbar.addStyleName("toolbar");
+        addComponent(toolbar);
+        final Label title = new Label("Параметры работы МИС:");
+        title.setSizeUndefined();
+        title.addStyleName("h1");
+        title.setSizeUndefined();
+        toolbar.addComponent(title);
+        HorizontalLayout toolbar1 = new HorizontalLayout();
+        toolbar1.setSizeUndefined();
+        final Button buttonSave = new Button("Сохранить");
+        final Button buttonApply = new Button("Применить");
+        final Button buttonCancel = new Button("Отмена");
+        for(Button button : new Button[] {buttonApply, buttonSave, buttonCancel}) {
+            toolbar1.addComponent(button);
+          //  button.setSizeUndefined();
+            toolbar1.setComponentAlignment(button, Alignment.TOP_LEFT);
+        }
+        addComponent(toolbar1);
         addComponent(table);
+        setExpandRatio(table, 1);
+        restTemplate = new RestTemplate();
+        initData(table);
+    }
+
+    private void initData(Table table) {
+        table.addItem(new Object[]{"Common.OrgId", "3479", "ИД организации"}, new Integer(1));
     }
 }

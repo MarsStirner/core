@@ -2,6 +2,7 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthToken;
+import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import ru.korus.tmis.prescription.PrescriptionBeanLocal;
 
@@ -41,6 +42,9 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     @EJB
     private PrescriptionBeanLocal prescriptionnBeanLocal;
+
+    @EJB
+    private DbSettingsBeanLocal dbSettingsBeanLocal;
 
     @EJB
     JobImpl jobImpl;
@@ -113,6 +117,7 @@ public class BaseRegistryRESTImpl implements Serializable {
                                       @QueryParam("callback") String callback) {
         return new RlsDataImpl(wsImpl, makeAuth(token, servRequest), callback);
     }
+
     @Path("/prescriptions")
     public PrescriptionsRESTImpl getPrescriptions(
             @Context HttpServletRequest servRequest,
@@ -122,8 +127,16 @@ public class BaseRegistryRESTImpl implements Serializable {
     }
 
     @Path("/job")
-    public JobImpl getJobImpl() { return jobImpl; }
+    public JobImpl getJobImpl() {
+        return jobImpl;
+    }
 
+    @Path("/settings")
+    public SettingsRESTImpl getSettings(@Context HttpServletRequest servRequest,
+                                        @QueryParam("token") String token,
+                                        @QueryParam("callback") String callback) {
+        return new SettingsRESTImpl(dbSettingsBeanLocal, makeAuth(token, servRequest), callback);
+    }
     //__________________________________________________________________________________________________________________
 
     private AuthData makeAuth(String token, HttpServletRequest servRequest) {

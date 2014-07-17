@@ -186,8 +186,8 @@ public class AdminUI extends UI implements Button.ClickListener {
                                 Image profilePic = new Image(
                                         null,
                                         new ThemeResource("img/profile-pic.png"));
-                                //profilePic.setWidth("34px");
-                                profilePic.setWidth("100%");
+                                profilePic.setWidth("34px");
+                                //profilePic.setWidth("100%");
                                 addComponent(profilePic);
                                 Label userName = new Label("User Name");
                                 userName.setWidth("100%");
@@ -223,14 +223,16 @@ public class AdminUI extends UI implements Button.ClickListener {
                     }
                 });
                 // Content
-                root.addComponent(content);
+                addComponent(content);
+                content.setSizeFull();
+                content.addStyleName("view-content");
+                setExpandRatio(content, 1);
             }
         });
         Button info = new NativeButton("Инфо");
-        //info.addStyleName("icon-cog");
         menu.addComponent(info);
 
-        Button settings = new NativeButton("Настройки");
+        Button settings = new NativeButton("Все настройки");
         settings.addStyleName("icon-cog");
         menu.addComponent(settings);
         menu.addStyleName("menu");
