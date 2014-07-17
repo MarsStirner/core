@@ -657,7 +657,7 @@ class WebMisRESTImpl  extends WebMisREST
         if(therapySet.contains(at.getCode()))
           getPropertyCustom1(Set("1_2_18"), therapySet)
         else if(infectionPropsSet.contains(at.getCode())) {
-          getPropertyCustom1(Set("1_2_18"), infectionPropsSet)
+          getPropertyCustom2(Set("1_2_18"), infectionPropsSet)
         }
         else
           null
