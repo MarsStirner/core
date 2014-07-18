@@ -539,11 +539,11 @@ class WebMisRESTImpl  extends WebMisREST
    * Метод костылен по своей природе, т.к. костыльна сама поставленная задача.
    * @param event Экземпляр события, для которого создается документ
    * @param at Тип создаваемого документа
-   * @param ap Свойство создаваемого документа
+   * @param apt Свойство создаваемого документа
    */
-  private def calculateActionPropertyValue(event: Event, at: ActionType, ap: ActionPropertyType): APValue = {
+  private def calculateActionPropertyValue(event: Event, at: ActionType, apt: ActionPropertyType): APValue = {
 
-    val infectionPropsSet = Set("infectFever", "infectBacteremia", "infectSepsis", "infectSepticShok", "infectLocal", "infectDocumental", "infectCephalopyosis", "infectMeningitis", "infectMeningoencephalitis", "infectEncephalitis", "infectCNSComment", "infectConjunctivitis", "infectPeriorbital", "infectBlepharitis", "infectChorioretinitis", "infectEyeComment", "infectSkinLight", "infectSkinHard", "infectSkinComment", "infectMucositis12", "infectMucositis34", "infectEsophagitis", "infectGingivitis", "infectMucousComment", "infectRhinitis", "infectTonsillitis", "infectOtitis", "infectDefeatPPN", "infectLORComment", "infectBronchitis", "infectInterstitialPneumonia", "infectLobarPneumonia", "infectPleurisy", "infectLungsComment", "infectPericarditis", "infectMioardit", "infectEndocarditis", "infectHeartComment", "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis", "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectAbdomenComment", "infectGlomerulonephritis", "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis", "infectUrogenitalComment", "infectOsteomyelitis", "infectMyositis", "infectMusculoskeletalComment", "infectEtiologyBacterial", "infectEtiologyFungal", "infectEtiologyVirus", "infectEtiologyUnknown")
+    val infectionPropsSet = Set("isInfect", "infectFever", "infectBacteremia", "infectSepsis", "infectSepticShok", "infectLocal", "infectDocumental", "infectCephalopyosis", "infectMeningitis", "infectMeningoencephalitis", "infectEncephalitis", "infectCNSComment", "infectConjunctivitis", "infectPeriorbital", "infectBlepharitis", "infectChorioretinitis", "infectEyeComment", "infectSkinLight", "infectSkinHard", "infectSkinComment", "infectMucositis12", "infectMucositis34", "infectEsophagitis", "infectGingivitis", "infectMucousComment", "infectRhinitis", "infectTonsillitis", "infectOtitis", "infectDefeatPPN", "infectLORComment", "infectBronchitis", "infectInterstitialPneumonia", "infectLobarPneumonia", "infectPleurisy", "infectLungsComment", "infectPericarditis", "infectMioardit", "infectEndocarditis", "infectHeartComment", "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis", "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectAbdomenComment", "infectGlomerulonephritis", "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis", "infectUrogenitalComment", "infectOsteomyelitis", "infectMyositis", "infectMusculoskeletalComment", "infectEtiologyBacterial", "infectEtiologyFungal", "infectEtiologyVirus", "infectEtiologyUnknown")
 
     val therapySet = Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")
 
@@ -553,7 +553,7 @@ class WebMisRESTImpl  extends WebMisREST
           val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
           if(pastActions != null && !pastActions.isEmpty)
             pastActions.head.getActionProperties.foreach(e => {
-              if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
+              if(e.getType.getCode != null && e.getType.getCode.equals(apt.getCode)) {
                 val values = actionPropertyBean.getActionPropertyValue(e)
                 if(actionTypeCodes.contains(e.getType.getCode)) {
                   if(values.size() > 0)
@@ -584,7 +584,7 @@ class WebMisRESTImpl  extends WebMisREST
         val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
         if(pastActions != null && !pastActions.isEmpty && getTherapyPhaseEndDate(pastActions.head) != null)
           pastActions.head.getActionProperties.foreach(e => {
-            if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
+            if(e.getType.getCode != null && e.getType.getCode.equals(apt.getCode)) {
               val values = actionPropertyBean.getActionPropertyValue(e)
               if(actionTypeCodes.contains(e.getType.getCode)) {
                 if(values.size() > 0)
@@ -600,7 +600,7 @@ class WebMisRESTImpl  extends WebMisREST
     // Получение значений свойств по свойствам инфекционного контроля
     def getPropertyCustom2(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
 
-      if(!(actionTypeCodes contains ap.getCode) || !(oldDocumentCodes contains at.getCode))
+      if(!(actionTypeCodes contains apt.getCode) || !(oldDocumentCodes contains at.getCode))
         return null
 
       //Получаем последний дневниковый осмотр из всех историй болезни
@@ -619,15 +619,23 @@ class WebMisRESTImpl  extends WebMisREST
       }
 
       val lastAction = getLastAction()
+
+      // Ничего не возвращем, если в прошлом не было дневникового осмотра
+      if(lastAction == null)
+        return null
+
       val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectEndDate"))
 
       val endDateValue: Date = {
         if (endDateProperty.isDefined) {
           val ap = endDateProperty.get
-          actionPropertyBean.getActionPropertyValue(ap).head match {
+          val value = actionPropertyBean.getActionPropertyValue(ap)
+          if(!value.isEmpty)
+            value.head match {
             case p: APValueDate => p.getValue
             case _ => null
-          }
+          } else
+            null
         } else
           null
       }
@@ -635,7 +643,7 @@ class WebMisRESTImpl  extends WebMisREST
       // Даты конца нет, нужно подтянуть значения
       if(endDateValue == null) {
         lastAction.getActionProperties.foreach(p => {
-          if(p.getType.getCode != null && p.getType.getCode.equals(ap.getCode)) {
+          if(p.getType.getCode != null && p.getType.getCode.equals(apt.getCode)) {
             val values = actionPropertyBean.getActionPropertyValue(p)
             if(values.size() > 0)
               return values.head
@@ -647,6 +655,7 @@ class WebMisRESTImpl  extends WebMisREST
 
     }
 
+
     at.getCode match {
 
       // Заключительный эпикриз
@@ -654,9 +663,9 @@ class WebMisRESTImpl  extends WebMisREST
 
       // Дневниковый осмотр
       case "1_2_18" => {
-        if(therapySet.contains(at.getCode()))
+        if(therapySet.contains(at.getCode()))                        // Подтягивания значений для полей терапии
           getPropertyCustom1(Set("1_2_18"), therapySet)
-        else if(infectionPropsSet.contains(at.getCode())) {
+        else if(infectionPropsSet.contains(apt.getCode())) {         // или для полей инфекционного контроля
           getPropertyCustom2(Set("1_2_18"), infectionPropsSet)
         }
         else
