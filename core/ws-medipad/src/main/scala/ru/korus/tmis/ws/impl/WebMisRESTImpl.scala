@@ -8,7 +8,7 @@ import ru.korus.tmis.core.exception.CoreException
 import java.{util => ju, lang}
 import ru.korus.tmis.core.entity.model._
 import collection.mutable
-import java.util.{Date, LinkedList}
+import java.util.{Calendar, Date, LinkedList}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.{LockData, WebMisREST}
 import javax.ejb.{Stateless, EJB}
@@ -592,6 +592,14 @@ class WebMisRESTImpl  extends WebMisREST
         null
     }
 
+    def addDays(date: Date, days: Int): Date =
+    {
+      val cal = Calendar.getInstance()
+      cal.setTime(date)
+      cal.add(Calendar.DATE, days); //minus number would decrement the days
+      cal.getTime
+    }
+
     // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
     def getPropertyCustom1(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
 
@@ -638,13 +646,13 @@ class WebMisRESTImpl  extends WebMisREST
 
       val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectEndDate"))
 
-      val endDateValue: Date = {
+      var endDateValue: Date = {
         if (endDateProperty.isDefined) {
           val ap = endDateProperty.get
           val value = actionPropertyBean.getActionPropertyValue(ap)
           if(!value.isEmpty)
             value.head match {
-            case p: APValueDate => p.getValue
+            case p: APValueDate => addDays(p.getValue, 1) // Добавляем 1 день, т.к. в БД время сохраняется как 00.00.00
             case _ => null
           } else
             null
@@ -685,7 +693,7 @@ class WebMisRESTImpl  extends WebMisREST
           val value = actionPropertyBean.getActionPropertyValue(ap)
           if(!value.isEmpty)
             value.head match {
-              case p: APValueDate => p.getValue
+              case p: APValueDate => addDays(p.getValue, 1) // Добавляем 1 день, т.к. в БД время сохраняется как 00.00.00
               case _ => null
             } else
             null
