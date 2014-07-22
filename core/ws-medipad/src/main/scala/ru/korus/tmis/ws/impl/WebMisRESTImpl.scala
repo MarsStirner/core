@@ -543,6 +543,8 @@ class WebMisRESTImpl  extends WebMisREST
    */
   private def calculateActionPropertyValue(event: Event, at: ActionType, apt: ActionPropertyType): APValue = {
 
+    val patientId = event.getPatient.getId
+
     val infectionPropsSet = Set("isInfect", "infectFever", "infectBacteremia", "infectSepsis", "infectSepticShok", "infectLocal", "infectDocumental", "infectCephalopyosis", "infectMeningitis", "infectMeningoencephalitis", "infectEncephalitis", "infectCNSComment", "infectConjunctivitis", "infectPeriorbital", "infectBlepharitis", "infectChorioretinitis", "infectEyeComment", "infectSkinLight", "infectSkinHard", "infectSkinComment", "infectMucositis12", "infectMucositis34", "infectEsophagitis", "infectGingivitis", "infectMucousComment", "infectRhinitis", "infectTonsillitis", "infectOtitis", "infectDefeatPPN", "infectLORComment", "infectBronchitis", "infectInterstitialPneumonia", "infectLobarPneumonia", "infectPleurisy", "infectLungsComment", "infectPericarditis", "infectMioardit", "infectEndocarditis", "infectHeartComment", "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis", "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectAbdomenComment", "infectGlomerulonephritis", "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis", "infectUrogenitalComment", "infectOsteomyelitis", "infectMyositis", "infectMusculoskeletalComment", "infectEtiologyBacterial", "infectEtiologyFungal", "infectEtiologyVirus", "infectEtiologyUnknown")
 
     val infectDrugPropsSet = Set(
@@ -579,6 +581,16 @@ class WebMisRESTImpl  extends WebMisREST
       null
     }
 
+    def getLastActionByTypeCodes(typeCode:  Iterable[String]) : Action = {
+      val list = actionBean.getActionsByEvent(event.getId)
+        .filter(a => typeCode.contains(a.getActionType.getCode))
+        .sortBy(_.getCreateDatetime)
+
+      if(!list.isEmpty)
+        list.last
+      else
+        null
+    }
 
     // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
     def getPropertyCustom1(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
@@ -617,22 +629,8 @@ class WebMisRESTImpl  extends WebMisREST
       if(!(actionTypeCodes contains apt.getCode) || !(oldDocumentCodes contains at.getCode))
         return null
 
-      //Получаем последний дневниковый осмотр из всех историй болезни
-      def getLastAction(): Action = {
-        val patientId = event.getPatient.getId
-        val events = dbEventBean.getEventsForPatient(patientId)
-        val list = events.flatMap(e => actionBean.getActionsByEvent(e.getId))
-          .filter(a => oldDocumentCodes.contains(a.getActionType.getCode))
-          .sortBy(_.getCreateDatetime)
-
-        if(!list.isEmpty)
-          list.last
-        else
-          null
-
-      }
-
-      val lastAction = getLastAction()
+      // Последний дневниковый осмотр из всех историй болезни
+      val lastAction = getLastActionByTypeCodes(oldDocumentCodes)
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
       if(lastAction == null)
@@ -672,22 +670,8 @@ class WebMisRESTImpl  extends WebMisREST
     // Получения значений для лекарственных назначений
     def getPropertyCustom3(oldDocumentCodes: Set[String]): APValue = {
 
-      //Получаем последний дневниковый осмотр из всех историй болезни
-      def getLastAction(): Action = {
-        val patientId = event.getPatient.getId
-        val events = dbEventBean.getEventsForPatient(patientId)
-        val list = events.flatMap(e => actionBean.getActionsByEvent(e.getId))
-          .filter(a => oldDocumentCodes.contains(a.getActionType.getCode))
-          .sortBy(_.getCreateDatetime)
-
-        if(!list.isEmpty)
-          list.last
-        else
-          null
-
-      }
-
-      val lastAction = getLastAction()
+      // Последний дневниковый осмотр из всех историй болезни
+      val lastAction = getLastActionByTypeCodes(oldDocumentCodes)
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
       if(lastAction == null)
@@ -723,28 +707,25 @@ class WebMisRESTImpl  extends WebMisREST
         null
     }
 
-    if(apt.getCode != null)
-      at.getCode match {
+    at.getCode match {
 
-        // Заключительный эпикриз
-        case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag","mainDiagMkb"))
+      // Заключительный эпикриз
+      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag","mainDiagMkb"))
 
-        // Дневниковый осмотр
-        case "1_2_18" => {
-          if(therapySet.contains(at.getCode()))                        // Подтягивания значений для полей терапии
-            getPropertyCustom1(Set("1_2_18"), therapySet)
-          else if(infectionPropsSet.contains(apt.getCode()))          // или для полей инфекционного контроля
-            getPropertyCustom2(Set("1_2_18"), infectionPropsSet)
-          else if(infectDrugPropsSet.contains(apt.getCode()))
-            getPropertyCustom3(Set("1_2_18"))
-          else
-            null
+      // Дневниковый осмотр
+      case "1_2_18" => {
+        if(therapySet.contains(at.getCode()))                        // Подтягивания значений для полей терапии
+          getPropertyCustom1(Set("1_2_18"), therapySet)
+        else if(infectionPropsSet.contains(apt.getCode()))          // или для полей инфекционного контроля
+          getPropertyCustom2(Set("1_2_18"), infectionPropsSet)
+        else if(infectDrugPropsSet.contains(apt.getCode()))
+          getPropertyCustom3(Set("1_2_18"))
+        else
+          null
 
-        }
-        case _ => null
       }
-    else
-      null
+      case _ => null
+    }
   }
 
   //создание первичного мед. осмотра
