@@ -653,7 +653,7 @@ class WebMisRESTImpl  extends WebMisREST
       }
 
       // Даты конца нет, нужно подтянуть значения
-      if(endDateValue == null) {
+      if(endDateValue == null  || endDateValue.after(new Date())) {
         lastAction.getActionProperties.foreach(p => {
           if(p.getType.getCode != null && p.getType.getCode.equals(apt.getCode)) {
             val values = actionPropertyBean.getActionPropertyValue(p)
