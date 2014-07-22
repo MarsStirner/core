@@ -545,7 +545,20 @@ class WebMisRESTImpl  extends WebMisREST
 
     val infectionPropsSet = Set("isInfect", "infectFever", "infectBacteremia", "infectSepsis", "infectSepticShok", "infectLocal", "infectDocumental", "infectCephalopyosis", "infectMeningitis", "infectMeningoencephalitis", "infectEncephalitis", "infectCNSComment", "infectConjunctivitis", "infectPeriorbital", "infectBlepharitis", "infectChorioretinitis", "infectEyeComment", "infectSkinLight", "infectSkinHard", "infectSkinComment", "infectMucositis12", "infectMucositis34", "infectEsophagitis", "infectGingivitis", "infectMucousComment", "infectRhinitis", "infectTonsillitis", "infectOtitis", "infectDefeatPPN", "infectLORComment", "infectBronchitis", "infectInterstitialPneumonia", "infectLobarPneumonia", "infectPleurisy", "infectLungsComment", "infectPericarditis", "infectMioardit", "infectEndocarditis", "infectHeartComment", "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis", "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectAbdomenComment", "infectGlomerulonephritis", "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis", "infectUrogenitalComment", "infectOsteomyelitis", "infectMyositis", "infectMusculoskeletalComment", "infectEtiologyBacterial", "infectEtiologyFungal", "infectEtiologyVirus", "infectEtiologyUnknown")
 
+    val infectDrugPropsSet = Set(
+      "infectDrugName_1", "infectDrugBeginDate_1", "infectDrugEndDate_1",
+      "infectDrugName_2", "infectDrugBeginDate_2", "infectDrugEndDate_2",
+      "infectDrugName_3", "infectDrugBeginDate_3", "infectDrugEndDate_3",
+      "infectDrugName_4", "infectDrugBeginDate_4", "infectDrugEndDate_4",
+      "infectDrugName_5", "infectDrugBeginDate_5", "infectDrugEndDate_5",
+      "infectDrugName_6", "infectDrugBeginDate_6", "infectDrugEndDate_6",
+      "infectDrugName_7", "infectDrugBeginDate_7", "infectDrugEndDate_7",
+      "infectDrugName_8", "infectDrugBeginDate_8", "infectDrugEndDate_8"
+    )
+
     val therapySet = Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")
+
+
 
     // Получение значения свойства у предыдущих действий
     def getProperty(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
@@ -565,6 +578,7 @@ class WebMisRESTImpl  extends WebMisREST
         }
       null
     }
+
 
     // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
     def getPropertyCustom1(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
@@ -655,25 +669,82 @@ class WebMisRESTImpl  extends WebMisREST
 
     }
 
+    // Получения значений для лекарственных назначений
+    def getPropertyCustom3(oldDocumentCodes: Set[String]): APValue = {
 
-    at.getCode match {
+      //Получаем последний дневниковый осмотр из всех историй болезни
+      def getLastAction(): Action = {
+        val patientId = event.getPatient.getId
+        val events = dbEventBean.getEventsForPatient(patientId)
+        val list = events.flatMap(e => actionBean.getActionsByEvent(e.getId))
+          .filter(a => oldDocumentCodes.contains(a.getActionType.getCode))
+          .sortBy(_.getCreateDatetime)
 
-      // Заключительный эпикриз
-      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag","mainDiagMkb"))
-
-      // Дневниковый осмотр
-      case "1_2_18" => {
-        if(therapySet.contains(at.getCode()))                        // Подтягивания значений для полей терапии
-          getPropertyCustom1(Set("1_2_18"), therapySet)
-        else if(infectionPropsSet.contains(apt.getCode())) {         // или для полей инфекционного контроля
-          getPropertyCustom2(Set("1_2_18"), infectionPropsSet)
-        }
+        if(!list.isEmpty)
+          list.last
         else
           null
 
       }
-      case _ => null
+
+      val lastAction = getLastAction()
+
+      // Ничего не возвращем, если в прошлом не было дневникового осмотра
+      if(lastAction == null)
+        return null
+
+      val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectDrugEndDate_" + apt.getCode.last))
+
+      val endDateValue: Date = {
+        if (endDateProperty.isDefined) {
+          val ap = endDateProperty.get
+          val value = actionPropertyBean.getActionPropertyValue(ap)
+          if(!value.isEmpty)
+            value.head match {
+              case p: APValueDate => p.getValue
+              case _ => null
+            } else
+            null
+        } else
+          null
+      }
+
+      // Даты конца нет или она в будущем,  нужно подтянуть значения
+      if(endDateValue == null || endDateValue.after(new Date())) {
+        lastAction.getActionProperties.foreach(p => {
+          if(p.getType.getCode != null && p.getType.getCode.equals(apt.getCode)) {
+            val values = actionPropertyBean.getActionPropertyValue(p)
+            if(values.size() > 0)
+              return values.head
+          }
+        })
+        null
+      } else
+        null
     }
+
+    if(apt.getCode != null)
+      at.getCode match {
+
+        // Заключительный эпикриз
+        case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag","mainDiagMkb"))
+
+        // Дневниковый осмотр
+        case "1_2_18" => {
+          if(therapySet.contains(at.getCode()))                        // Подтягивания значений для полей терапии
+            getPropertyCustom1(Set("1_2_18"), therapySet)
+          else if(infectionPropsSet.contains(apt.getCode()))          // или для полей инфекционного контроля
+            getPropertyCustom2(Set("1_2_18"), infectionPropsSet)
+          else if(infectDrugPropsSet.contains(apt.getCode()))
+            getPropertyCustom3(Set("1_2_18"))
+          else
+            null
+
+        }
+        case _ => null
+      }
+    else
+      null
   }
 
   //создание первичного мед. осмотра
