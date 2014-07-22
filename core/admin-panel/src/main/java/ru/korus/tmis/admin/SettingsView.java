@@ -4,7 +4,10 @@ import com.vaadin.data.Container;
 
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener;
+import com.vaadin.server.VaadinSession;
 import com.vaadin.ui.*;
+import org.springframework.web.client.RestTemplate;
+import ru.korus.tmis.ws.webmis.rest.SettingsInfo;
 
 
 /**
@@ -14,6 +17,8 @@ import com.vaadin.ui.*;
  * Description:  <br>
  */
 public class SettingsView extends VerticalLayout implements View {
+
+    private RestTemplate restTemplate;
 
     @Override
     public void enter(ViewChangeListener.ViewChangeEvent viewChangeEvent) {
@@ -72,6 +77,11 @@ public class SettingsView extends VerticalLayout implements View {
     }
 
     private void initData(Table table) {
-        table.addItem(new Object[]{"Common.OrgId", "3479", "ИД организации"}, new Integer(1));
+        final VaadinSession session = getSession();
+        Object token = session == null ? null : session.getAttribute("token");
+        if (token instanceof String) {
+            restTemplate.getForObject("http://127.0.0.1:8080/tmis-ws-medipad/rest/tms-registry/settings/?_={token}", SettingsInfo.class, token);
+            //table.addItem(new Object[]{"Common.OrgId", "3479", "ИД организации"}, new Integer(1));
+        }
     }
 }

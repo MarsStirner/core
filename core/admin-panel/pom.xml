@@ -4,10 +4,11 @@
 	<parent>
     <artifactId>tmis-core</artifactId>
     <groupId>ru.korus.tmis</groupId>
-    <version>${version.tmis.core}</version>
+    <version>2.5.37</version>
   </parent>
 	<groupId>ru.korus.tmis.admin</groupId>
 	<artifactId>admin-panel</artifactId>
+    <version>2.5.37</version>
 	<packaging>war</packaging>
 	<name>MIS Admin Panel</name>
 
@@ -43,7 +44,24 @@
 		</pluginRepository>
 	</pluginRepositories>
 	<dependencies>
-		<dependency>
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-common</artifactId>
+            <version>2.5.37</version>
+            <type>jar</type>
+        </dependency>
+       <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-database</artifactId>
+            <version>2.5.37</version>
+           <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>3.0.7.RELEASE</version>
+        </dependency>
+        <dependency>
 			<groupId>com.vaadin</groupId>
 			<artifactId>vaadin-server</artifactId>
 			<version>${vaadin.version}</version>
@@ -174,51 +192,6 @@
                 </configuration>
 			</plugin>
 		</plugins>
-		<pluginManagement>
-			<plugins>
-				<!--This plugin's configuration is used to store Eclipse m2e settings only. It has no influence on the Maven build itself.-->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>com.vaadin</groupId>
-										<artifactId>vaadin-maven-plugin</artifactId>
-										<versionRange>[7.2.3,)</versionRange>
-										<goals>
-											<goal>resources</goal>
-											<goal>update-widgetset</goal>
-											<goal>compile</goal>
-											<goal>update-theme</goal>
-											<goal>compile-theme</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<ignore></ignore>
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-				<plugin>
-					<artifactId>maven-eclipse-plugin</artifactId>
-					<configuration>
-						<wtpversion>2.0</wtpversion>
-						<additionalProjectnatures>
-							<projectnature>com.vaadin.integration.eclipse.widgetsetNature</projectnature>
-						</additionalProjectnatures>
-						<additionalBuildcommands>
-							<buildcommand>com.vaadin.integration.eclipse.widgetsetBuilder</buildcommand>
-							<buildcommand>com.vaadin.integration.eclipse.addonStylesBuilder</buildcommand>
-						</additionalBuildcommands>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
+
 	</build>
 </project>
