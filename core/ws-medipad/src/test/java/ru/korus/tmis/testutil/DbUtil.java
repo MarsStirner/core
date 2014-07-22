@@ -56,6 +56,7 @@ public class DbUtil {
             new TableMaxIndex("`rbBloodComponentType`", 0),
             new TableMaxIndex("`bbtOrganism_SensValues`", 0),
             new TableMaxIndex("`bbtResult_Organism`", 0),
+            new TableMaxIndex("`bbtResult_Text`", 0),
             new TableMaxIndex("`bbtResponse`", 0),
             new TableMaxIndex("`DrugChart`", 4),
             new TableMaxIndex("`DrugComponent`", 1),
