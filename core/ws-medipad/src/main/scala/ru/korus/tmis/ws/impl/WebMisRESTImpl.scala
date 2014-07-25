@@ -1511,11 +1511,11 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
 
-    val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
+    val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request, request.filter)
     //пересоберем мапу и сгруппируем по жобТикету
     var actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
     var map = new mutable.LinkedHashMap[JobTicket, LinkedList[(Action, ActionTypeTissueType)]]
-    if (res != null) {
+    if (!res.isEmpty) {
       request.rewriteRecordsCount(res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].size())
       var firstJobTicket = res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].iterator.next()._3
       res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].foreach(f => {

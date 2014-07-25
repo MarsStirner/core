@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Created with IntelliJ IDEA.
@@ -65,6 +66,9 @@ public class JobTicket implements Serializable {
     @Column(name = "endDateTime")
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDateTime;
+
+    @OneToMany(mappedBy = "jobTicket")
+    private List<APValueJobTicket> propertiesValues;
 
     @Column(name = "label")
     private String label;
@@ -185,5 +189,9 @@ public class JobTicket implements Serializable {
     public static JobTicket clone(JobTicket self) throws CloneNotSupportedException {
         JobTicket newJobTicket = (JobTicket) self.clone();
         return newJobTicket;
+    }
+
+    public List<APValueJobTicket> getPropertiesValues() {
+        return propertiesValues;
     }
 }

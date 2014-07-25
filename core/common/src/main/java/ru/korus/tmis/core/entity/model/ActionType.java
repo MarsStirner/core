@@ -232,6 +232,10 @@ public class ActionType implements Serializable {
             inverseJoinColumns = {@JoinColumn(name = "master_id")})
     private Set<RbTissueType> tissueTypes = new LinkedHashSet<RbTissueType>();
 
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id", referencedColumnName = "master_id", insertable = false, updatable = false)
+    private ActionTypeTissueType actionTypeTissueType;
+
     ////////////////////////////////////////////////////////////////////////////
 
     @PostLoad
@@ -631,4 +635,7 @@ public class ActionType implements Serializable {
         return "ru.korus.tmis.core.entity.model.ActionType[id=" + id + "]";
     }
 
+    public ActionTypeTissueType getActionTypeTissueType() {
+        return actionTypeTissueType;
+    }
 }

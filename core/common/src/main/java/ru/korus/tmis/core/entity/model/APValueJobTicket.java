@@ -4,11 +4,7 @@ import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.util.TextUtils;
 
 import java.io.Serializable;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 
@@ -26,6 +22,15 @@ public class APValueJobTicket extends AbstractAPValue implements Serializable, A
 
     @Column(name = "value")
     private Integer value;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id", insertable = false, updatable = false)
+    private ActionProperty actionProperty;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "value", insertable = false, updatable = false)
+    private JobTicket jobTicket;
+
 
     public APValueJobTicket() {
     }
@@ -100,5 +105,21 @@ public class APValueJobTicket extends AbstractAPValue implements Serializable, A
     @Override
     public String toString() {
         return "ru.korus.tmis.core.entity.model.APValueJobTicket[id=" + id + "]";
+    }
+
+    public ActionProperty getActionProperty() {
+        return actionProperty;
+    }
+
+    public void setActionProperty(ActionProperty actionProperty) {
+        this.actionProperty = actionProperty;
+    }
+
+    public JobTicket getJobTicket() {
+        return jobTicket;
+    }
+
+    public void setJobTicket(JobTicket jobTicket) {
+        this.jobTicket = jobTicket;
     }
 }
