@@ -226,14 +226,8 @@ public class ActionType implements Serializable {
         return nonDeletedActionPropertyTypes;
     }
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "ActionType_TissueType",
-            joinColumns = {@JoinColumn(name = "tissueType_id")},
-            inverseJoinColumns = {@JoinColumn(name = "master_id")})
-    private Set<RbTissueType> tissueTypes = new LinkedHashSet<RbTissueType>();
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "id", referencedColumnName = "master_id", insertable = false, updatable = false)
+    @OneToOne(mappedBy="actionType")
     private ActionTypeTissueType actionTypeTissueType;
 
     ////////////////////////////////////////////////////////////////////////////
@@ -570,14 +564,6 @@ public class ActionType implements Serializable {
         this.isRequiredTissue = isRequiredTissue;
     }
 
-    public Set<RbTissueType> getTissueTypes() {
-        return tissueTypes;
-    }
-
-    public void setTissueTypes(Set<RbTissueType> tissueTypes) {
-        this.tissueTypes = tissueTypes;
-    }
-
     public String getMnemonic() {
         return mnemonic;
     }
@@ -637,5 +623,9 @@ public class ActionType implements Serializable {
 
     public ActionTypeTissueType getActionTypeTissueType() {
         return actionTypeTissueType;
+    }
+
+    public void setActionTypeTissueType(ActionTypeTissueType actionTypeTissueType) {
+        this.actionTypeTissueType = actionTypeTissueType;
     }
 }

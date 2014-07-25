@@ -29,8 +29,8 @@ public class ActionTypeTissueType implements Serializable {
     @Column(name = "id")
     private Integer id;
 
-    @ManyToOne
-    @JoinColumn(name = "master_id")
+    @OneToOne(fetch=FetchType.LAZY)
+    @JoinColumn(name="master_id", updatable = false, insertable = false)
     private ActionType actionType;
 
     @Basic(optional = false)
