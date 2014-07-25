@@ -46,15 +46,11 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
                    .getResultList
 
     result.size match {
-      case 0 => {
-        throw new CoreException(
-          ConfigManager.ErrorCodes.JobTicketNotFound,
-          i18n("error.jobTicketNotFound").format(id))
-      }
-      case size => {
+      case 0 =>
+        throw new CoreException( ConfigManager.ErrorCodes.JobTicketNotFound, i18n("error.jobTicketNotFound").format(id))
+      case size =>
         result.foreach(em.detach(_))
         result(0)
-      }
     }
   }
 
@@ -96,7 +92,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       case _ => "asc"
     }
 
-    val orderField = request.getSortingField.toLowerCase() match {
+    val orderField = request.getSortingField.toLowerCase match {
       case "sex"                              => "research.event.patient.sex"
       case "actiontype"                       => "research.actionType.name"
       case "urgent"                           => "research.isUrgent"
@@ -125,8 +121,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
 
     queryResult.size() match {
       case 0 => outList
-      case size => {
-        val directions = queryResult.foldLeft(outList)(
+      case size => queryResult.foldLeft(outList)(
           (list, aj) => {
             if(
             (filter.getStatus < 0 || aj(1).asInstanceOf[JobTicket].getStatus == filter.getStatus)
@@ -143,8 +138,6 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
             list
           }
         )
-        directions
-      }
     }
   }
 
@@ -167,7 +160,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     } else {
       LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
       LoggingManager.warning("code " + ConfigManager.ErrorCodes.JobTicketNotFound +
-        "Невозможно отредактировать" + ConfigManager.Messages("error.jobTicketNotFound".format(id)))
+        "Невозможно отредактировать" + ConfigManager.Messages("error.jobTicketNotFound").format(id))
     }
     isComplete
   }
@@ -187,13 +180,12 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val result = query.getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         null /*
         throw new CoreException(
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.jobNotFound").format(id))          */
-      }
-      case size => {
+      case size =>
         /*val jobAndJobTicket = result.foldLeft(new java.util.LinkedList[(JobTicket, TakenTissue)])(
           (list, aj) => {
             em.detach(aj(0))
@@ -208,7 +200,6 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
         em.detach(jt)
         em.detach(tt)
         (jt, tt)
-      }
     }
   }
 
@@ -219,16 +210,14 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val result = query.getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         null /*
         throw new CoreException(
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.jobNotFound").format(id))          */
-      }
-      case size => {
+      case size =>
         result.foreach(em.detach(_))
         result(0)
-      }
     }
   }
 
@@ -248,16 +237,14 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val result = query.getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         null /*
         throw new CoreException(
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.jobNotFound").format(id))          */
-      }
-      case size => {
+      case size =>
         result.foreach(jt => em.detach(jt))
         result.get(0)
-      }
     }
   }
 
@@ -268,14 +255,13 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val result = query.getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         new util.LinkedList[Action]
         /*
         throw new CoreException(
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.ActionsForJobTicketNotFound").format(jobTicketId))
           */
-      }
       case size => {
         result.foreach(a => {em.detach(a)})
       }
