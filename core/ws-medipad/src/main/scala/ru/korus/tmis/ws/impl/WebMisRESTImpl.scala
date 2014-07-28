@@ -1516,9 +1516,9 @@ class WebMisRESTImpl  extends WebMisREST
     var actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
     var map = new mutable.LinkedHashMap[JobTicket, LinkedList[(Action, ActionTypeTissueType)]]
     if (!res.isEmpty) {
-      request.rewriteRecordsCount(res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].size())
-      var firstJobTicket = res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].iterator.next()._3
-      res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].foreach(f => {
+      request.rewriteRecordsCount(res.size())
+      var firstJobTicket = res.iterator.next()._3
+      res.foreach(f => {
         if (firstJobTicket.getId.intValue() == f._3.getId.intValue()) {
           actions.add((f._1, f._2))
         } else {
