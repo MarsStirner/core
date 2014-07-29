@@ -1,0 +1,173 @@
+@charset "UTF-8";
+/*
+*	FONTS
+*/
+/* line 5, ../../sass/modules/aside.scss */
+aside h3 {
+  margin-bottom: 0.5em;
+}
+/* line 8, ../../sass/modules/aside.scss */
+aside h4 {
+  font-size: 1.1em;
+}
+
+/* line 12, ../../sass/modules/aside.scss */
+.CheckList {
+  padding-left: 0.4em;
+}
+/* line 14, ../../sass/modules/aside.scss */
+.CheckList li {
+  display: table;
+  margin-bottom: 0.2em;
+}
+/* line 18, ../../sass/modules/aside.scss */
+.CheckList li label {
+  display: table-row;
+  color: #000;
+  font-size: 1.3em;
+}
+/* line 23, ../../sass/modules/aside.scss */
+.CheckList li label span {
+  display: table-cell;
+  padding-left: 0.3em;
+}
+/* line 27, ../../sass/modules/aside.scss */
+.CheckList li label input {
+  display: table-cell;
+}
+/* line 31, ../../sass/modules/aside.scss */
+.CheckList li:last-child {
+  margin-bottom: 0;
+}
+
+/* line 37, ../../sass/modules/aside.scss */
+.DatePeriod .Field {
+  width: 44%;
+  vertical-align: middle;
+}
+
+/* line 42, ../../sass/modules/aside.scss */
+.FormSubmit {
+  padding-top: 0.7em;
+}
+
+/*Навигация*/
+/* line 48, ../../sass/modules/aside.scss */
+.AsideNav > li {
+  font-size: 1.4em;
+}
+/* line 50, ../../sass/modules/aside.scss */
+.AsideNav > li ul {
+  padding-left: 1.2em;
+  padding-bottom: 0.2em;
+}
+/* line 53, ../../sass/modules/aside.scss */
+.AsideNav > li ul li {
+  font-size: 0.93em;
+}
+
+/* line 58, ../../sass/modules/aside.scss */
+.AsideNav a {
+  display: inline-block;
+  padding: 0.4em 0.8em;
+  border-radius: 0.3em;
+  position: relative;
+  text-decoration: none;
+  margin-bottom: 0.1em;
+}
+/* line 65, ../../sass/modules/aside.scss */
+.AsideNav a span {
+  text-decoration: underline;
+}
+/* line 68, ../../sass/modules/aside.scss */
+.AsideNav a .DoneIcon {
+  position: absolute;
+  left: -0.4em;
+  top: 0.6em;
+}
+
+/* line 75, ../../sass/modules/aside.scss */
+.AsideNav li > a:hover, .AsideNav li.Active > a {
+  color: #fff;
+  background: #118CDA;
+  text-decoration: none;
+}
+
+/* line 80, ../../sass/modules/aside.scss */
+.AsideNav li > a:hover > span, .AsideNav li.Active > a > span {
+  text-decoration: none;
+}
+
+/* line 83, ../../sass/modules/aside.scss */
+.AsideNav li > a > .Quant {
+  color: #000;
+}
+
+/* line 86, ../../sass/modules/aside.scss */
+.AsideNav li > a:hover > .Quant, .AsideNav li.Active > a > .Quant {
+  color: #fff;
+}
+
+/* line 89, ../../sass/modules/aside.scss */
+.AsideNav li > a:hover > .DoneIcon, .AsideNav li.Active > a > .DoneIcon {
+  display: none;
+}
+
+/* line 92, ../../sass/modules/aside.scss */
+.AsideNav li.Active {
+  font-weight: bold;
+}
+
+/* line 96, ../../sass/modules/aside.scss */
+.AsideNav li.Disabled > a > span {
+  text-decoration: none;
+  color: #F5F4F4;
+}
+
+/*История обращений*/
+/* line 104, ../../sass/modules/aside.scss */
+.TreatmentHistory > li {
+  margin-bottom: 1.5em;
+  line-height: 1.2em;
+}
+/* line 108, ../../sass/modules/aside.scss */
+.TreatmentHistory > li > a, .TreatmentHistory > li span {
+  display: block;
+  font-size: 1.2em;
+  margin-bottom: .3em;
+}
+/* line 113, ../../sass/modules/aside.scss */
+.TreatmentHistory > li > .Label {
+  margin-bottom: .3em;
+}
+
+/* line 117, ../../sass/modules/aside.scss */
+.AllTreatments {
+  font-size: 1.3em;
+}
+
+/*Фильтр диагностики*/
+/* line 122, ../../sass/modules/aside.scss */
+.Type a.Actions {
+  color: #000;
+  cursor: pointer;
+}
+/* line 125, ../../sass/modules/aside.scss */
+.Type a.Actions:hover {
+  color: #DD1111;
+  border-bottom: 1px dashed #DD1111;
+}
+
+/* line 131, ../../sass/modules/aside.scss */
+.TypeList {
+  font-size: 1.2em;
+  white-space: nowrap;
+}
+/* line 134, ../../sass/modules/aside.scss */
+.TypeList li {
+  margin-bottom: 0.3em;
+}
+/* line 136, ../../sass/modules/aside.scss */
+.TypeList li .Num {
+  color: #6C6C71;
+}
