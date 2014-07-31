@@ -191,6 +191,40 @@ function create_db_pool {
 
 }
 
+function create_jms_connection_factory {
+    print_header "Create JMS ConnectionFactory - ${CONNECTION_FACTORY}"
+
+    CREATE_CONNECTION_FACTORY="${ASADMIN}/asadmin
+        --user ${ADMIN_LOGIN}
+        --passwordfile ${GF_PASSWD_FILE}
+        --port ${ADMIN_PORT}
+        create-jms-resource
+        --restype javax.jms.ConnectionFactory
+        ${CONNECTION_FACTORY}"
+
+        echo "$CREATE_CONNECTION_FACTORY"
+        if ! $CREATE_CONNECTION_FACTORY; then
+            exit 8
+        fi
+}
+
+function create_jms_laboratory_topic {
+    print_header "Create JMS Topic - ${LABORATORY_TOPIC}"
+
+    CREATE_JMS_TOPIC="${ASADMIN}/asadmin
+        --user ${ADMIN_LOGIN}
+        --passwordfile ${GF_PASSWD_FILE}
+        --port ${ADMIN_PORT}
+        create-jms-resource
+        --restype javax.jms.Topic
+        ${LABORATORY_TOPIC}"
+
+        echo "$CREATE_JMS_TOPIC"
+        if ! $CREATE_JMS_TOPIC; then
+            exit 9
+        fi
+}
+
 function start_stop_domain {
     print_header "Stop&Start domain ${DOMAIN}"
     STOP_CMD="${ASADMIN}/asadmin stop-domain --passwordfile ${GF_PASSWD_FILE} --domaindir ${DOMAIN_DIR} ${DOMAIN}"
@@ -232,4 +266,6 @@ create_jvm_opts CREATE_JVM_OPTIONS[@] "server-config"
 create_jvm_opts CREATE_JVM_OPTIONS[@] "default-config"
 create_db_pool $MYSQL_DB_MIS $MYSQL_DB_MIS_POOL $MYSQL_DB_JNDI_MIS
 create_db_pool $MYSQL_DB_TMIS_CORE $MYSQL_DB_TMIS_CORE_POOL $MYSQL_DB_JNDI_TMIS_CORE
+create_jms_connection_factory
+create_jms_laboratory_topic
 start_stop_domain
