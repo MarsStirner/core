@@ -46,7 +46,6 @@ public class WebMisBase {
         wa.addPackages(false, (new TestUtilCommon()).getPackagesForTest());
         wa.addPackages(false, (new TestUtilBusiness()).getPackagesForTest());
         wa.addPackages(false, (new TestUtilDatabase()).getPackagesForTest());
-        wa.addPackages(false, (new TestUtilLaboratory()).getPackagesForTest());
         // --------------------------------------------------------------------------
 
         wa.addPackages(true, (new TestUtilWsLaboratory()).getPackagesForTest());
