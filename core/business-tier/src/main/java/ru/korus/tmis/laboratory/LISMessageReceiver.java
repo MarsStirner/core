@@ -1,7 +1,7 @@
-package ru.korus.tmis.lis.jms;
+package ru.korus.tmis.laboratory;
 
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.lis.data.LaboratoryCreateRequestData;
+import ru.korus.tmis.laboratory.data.LaboratoryCreateRequestData;
 
 import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;

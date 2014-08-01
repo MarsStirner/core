@@ -1,6 +1,7 @@
 package ru.korus.tmis.laboratory.bak.model;
 
 import org.joda.time.DateTime;
+import ru.korus.tmis.core.entity.model.Staff;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -24,6 +25,7 @@ public class DiagnosticRequestInfo {
     private String orderDoctorName;
     private String orderDoctorPatronum;
     private int orderDoctorMisId;
+    private Staff orderDoctorMis;
 
     public DiagnosticRequestInfo() {
     }
@@ -168,5 +170,13 @@ public class DiagnosticRequestInfo {
         sb.append(", orderDoctorMisId=").append(orderDoctorMisId);
         sb.append('}');
         return sb.toString();
+    }
+
+    public Staff getOrderDoctorMis() {
+        return orderDoctorMis;
+    }
+
+    public void setOrderDoctorMis(Staff orderDoctorMis) {
+        this.orderDoctorMis = orderDoctorMis;
     }
 }

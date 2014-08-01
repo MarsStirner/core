@@ -1,29 +1,36 @@
 package ru.korus.tmis.core.patient
 
-import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+import java.util
+import java.util.{Collections, Date}
+import javax.annotation.Resource
 import javax.ejb.{EJB, Stateless}
-import grizzled.slf4j.Logging
+import javax.interceptor.Interceptors
+import javax.jms._
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.data._
+
+import grizzled.slf4j.Logging
+import org.joda.time.DateTime
 import ru.korus.tmis.core.auth.AuthData
-import ru.korus.tmis.core.entity.model._
-import scala.collection.JavaConversions._
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
-import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
-import ConfigManager._
+import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
-import common._
-import java.{util}
-import ru.korus.tmis.core.filter.ActionsListDataFilter
+import ru.korus.tmis.core.database.bak.BakDiagnosis
+import ru.korus.tmis.core.database.common._
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.core.filter.ActionsListDataFilter
+import ru.korus.tmis.core.logging.LoggingInterceptor
+import ru.korus.tmis.laboratory.LISMessageReceiver
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
 import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal
-import ru.korus.tmis.schedule.{QueueActionParam, PersonScheduleBeanLocal, PersonScheduleBean, PacientInQueueType}
-import PersonScheduleBean.PersonSchedule
+import ru.korus.tmis.laboratory.bak.model.{OrderInfo, BiomaterialInfo, DiagnosticRequestInfo, IndicatorMetodic}
+import ru.korus.tmis.laboratory.data.LaboratoryCreateRequestData
+import ru.korus.tmis.scala.util.ConfigManager._
+import ru.korus.tmis.scala.util.{CAPids, ConfigManager, I18nable}
+import ru.korus.tmis.schedule.PersonScheduleBean.PersonSchedule
+import ru.korus.tmis.schedule.{PacientInQueueType, PersonScheduleBeanLocal, QueueActionParam}
 
-import util.Date
-
+import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 
 
@@ -71,6 +78,15 @@ with I18nable {
   private var patientBean: DbPatientBeanLocal = _
   @EJB
   private var dbActionProperty: DbActionPropertyBeanLocal = _
+  @EJB
+  private var dbCustomQuery: DbCustomQueryLocal = _
+  @EJB
+  private var dbActionTypeBean: DbActionTypeBeanLocal = _
+
+  @Resource(lookup = "DefaultConnectionFactory")
+  private var connectionFactory: ConnectionFactory = _
+  @Resource(lookup = "LaboratoryTopic")
+  private var topic: Topic = _
 
 
   //todo должен быть вызов веб-сервиса с передачей actionId
@@ -699,5 +715,173 @@ with I18nable {
         }
       }
     }
+  }
+
+  private def sendJMSLabRequest(actionId: Int) = {
+    val action = actionBean.getActionById(actionId)
+    em.detach(action)
+
+    if(action == null)
+      throw new Exception("Action ")
+
+    var connection: Connection = null
+    var session: Session = null
+    try {
+      val actionType: ActionType = getActionType(action)
+      val eventInfo: Event = action.getEvent
+      val patientInfo: Patient = eventInfo.getPatient
+      val requestInfo: DiagnosticRequestInfo = getDiagnosticRequestInfo(action)
+      val biomaterialInfo: BiomaterialInfo = getBiomaterialInfo(action)
+      val orderInfo: OrderInfo = getOrderInfo(action, actionType)
+
+      em.detach(actionType)
+      em.detach(eventInfo)
+      em.detach(patientInfo)
+
+      val requestObject = new LaboratoryCreateRequestData(action, requestInfo, patientInfo, eventInfo, biomaterialInfo, orderInfo)
+      connection = connectionFactory.createConnection()
+      session = connection.createSession(true, 0)
+      val publisher = session.createProducer(topic)
+      val message = session.createObjectMessage()
+      message.setJMSType(LISMessageReceiver.JMS_TYPE)
+      message.setStringProperty(LISMessageReceiver.JMS_LAB_PROPERTY_NAME, "bak") // Получение значения должно быть из БД
+      message.setObject(requestObject)
+      publisher.send(message)
+    }
+    catch {
+      case t: Throwable => t.printStackTrace();
+    }
+    finally {
+      if (session != null) {
+        try {
+          session.close()
+        }
+        catch {
+          case e: JMSException =>
+        }
+      }
+
+      if (connection != null) {
+        try {
+          connection.close()
+        }
+        catch {
+          case e: Exception => e.printStackTrace()
+        }
+      }
+    }
+  }
+
+  private def getActionType(action: Action): ActionType = {
+    val actionType: ActionType = action.getActionType
+    if (actionType.getId == -1) {
+      throw new CoreException("Error no Type For Action" + action.getId)
+    }
+    actionType
+  }
+
+  private def getDiagnosticRequestInfo(action: Action): DiagnosticRequestInfo = {
+    val diag: DiagnosticRequestInfo = new DiagnosticRequestInfo
+    val id: Int = action.getId
+    diag.setOrderMisId(id)
+    val orderCaseId: String = "" + action.getEvent.getExternalId
+    diag.setOrderCaseId(orderCaseId)
+    val orderFinanceId: Int = dbCustomQuery.getFinanceId(action.getEvent)
+    diag.setOrderFinanceId(orderFinanceId)
+    val date: DateTime = new DateTime(action.getCreateDatetime)
+    diag.setOrderMisDate(date)
+    val pregMin: Int = action.getEvent.getPregnancyWeek * 7
+    val pregMax: Int = action.getEvent.getPregnancyWeek * 7
+    diag.setOrderPregnatMin(pregMin)
+    diag.setOrderPregnatMax(pregMax)
+    val diagnosisBak: BakDiagnosis = null //dbCustomQueryBean.getBakDiagnosis(action)
+    if (diagnosisBak != null) {
+      diag.setOrderDiagCode(diagnosisBak.getCode)
+      diag.setOrderDiagText(diagnosisBak.getName)
+    }
+    val comment: String = action.getNote
+    diag.setOrderComment(comment)
+    val department: OrgStructure = getOrgStructureByEvent(action.getEvent)
+    if (department != null) {
+      diag.setOrderDepartmentMisCode(String.valueOf(department.getId))
+      diag.setOrderDepartmentName(department.getName)
+    }
+    val doctorLastname: String = action.getAssigner.getLastName
+    val doctorFirstname: String = action.getAssigner.getFirstName
+    val doctorPartname: String = action.getAssigner.getPatrName
+    val doctorCode: Int = action.getAssigner.getId
+    diag.setOrderDoctorFamily(doctorLastname)
+    diag.setOrderDoctorName(doctorFirstname)
+    diag.setOrderDoctorPatronum(doctorPartname)
+    diag.setOrderDoctorMisId(action.getAssigner.getId)
+    diag.setOrderDoctorMis(action.getAssigner)
+    diag
+  }
+
+  private def getBiomaterialInfo(action: Action): BiomaterialInfo = {
+    val tt: TakenTissue = action.getTakenTissue
+    val `type`: RbTissueType = tt.getType
+    if (`type` != null) {
+      val bi: BiomaterialInfo = new BiomaterialInfo(`type`.getCode, `type`.getName, String.valueOf(tt.getBarcode), tt.getPeriod, 0, new DateTime(tt.getDatetimeTaken), tt.getNote)
+      return bi
+    }
+    throw new CoreException("Не найден RbTissueType для actionId " + action.getId)
+  }
+
+  private def getOrderInfo(action: Action, actionType: ActionType): OrderInfo = {
+    val orderInfo: OrderInfo = new OrderInfo
+    val code: String = actionType.getCode
+    orderInfo.setDiagnosticCode(code)
+    val name: String = actionType.getName
+    orderInfo.setDiagnosticName(name)
+    val priority: OrderInfo.Priority = if (action.getIsUrgent) OrderInfo.Priority.URGENT else OrderInfo.Priority.NORMAL
+    orderInfo.setOrderPriority(priority)
+    var aa: ActionPropertyType = null
+    val apts: util.List[ActionPropertyType] = dbActionTypeBean.getActionTypePropertiesById(actionType.getId)
+    import scala.collection.JavaConversions._
+    for (apt <- apts) {
+      if (apt.getTest != null) {
+        aa = apt
+      }
+    }
+    if (aa == null) {
+      throw new CoreException("не определены показатели из rbTest, не нужно отправлять анализ в ЛИС actionId: " + action.getId)
+    }
+    val aptsSet: util.Set[ActionPropertyType] = new util.HashSet[ActionPropertyType]
+    import scala.collection.JavaConversions._
+    for (apt <- apts) {
+      aptsSet.add(apt)
+    }
+    val apsMap: util.Map[ActionPropertyType, ActionProperty] = action.getActionPropertiesByTypes(aptsSet)
+    import scala.collection.JavaConversions._
+    for (entry <- apsMap.entrySet) {
+      val ap: ActionProperty = entry.getValue
+      val apt: ActionPropertyType = entry.getKey
+      if (apt.getTest != null && (!apt.getIsAssignable || ap.getIsAssigned)) {
+        orderInfo.addIndicatorList(new IndicatorMetodic(apt.getTest.getName, apt.getTest.getCode))
+      }
+    }
+    orderInfo
+  }
+
+  private def getOrgStructureByEvent(e: Event): OrgStructure = {
+    val hospitalBeds: util.Map[Event, ActionProperty] = dbCustomQuery.getHospitalBedsByEvents(Collections.singletonList(e))
+    if (hospitalBeds == null) {
+      return null
+    }
+    import scala.collection.JavaConversions._
+    for (event <- hospitalBeds.keySet) {
+      val actionProperty: ActionProperty = hospitalBeds.get(event)
+      val actionPropertyValue: util.List[APValue] = dbActionProperty.getActionPropertyValue(actionProperty)
+      import scala.collection.JavaConversions._
+      for (apValue <- actionPropertyValue) {
+        apValue.getValue match {
+          case bed: OrgStructureHospitalBed =>
+            return bed.getMasterDepartment
+          case _ =>
+        }
+      }
+    }
+    null
   }
 }

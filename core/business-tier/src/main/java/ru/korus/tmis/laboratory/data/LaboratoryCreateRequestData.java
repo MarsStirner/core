@@ -1,8 +1,11 @@
-package ru.korus.tmis.lis.data;
+package ru.korus.tmis.laboratory.data;
 
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.laboratory.bak.model.BiomaterialInfo;
+import ru.korus.tmis.laboratory.bak.model.DiagnosticRequestInfo;
+import ru.korus.tmis.laboratory.bak.model.OrderInfo;
 
 import java.io.Serializable;
 
