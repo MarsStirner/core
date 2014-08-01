@@ -251,7 +251,7 @@ public class Patient implements Serializable, Cloneable {
         }
     }
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, fetch = FetchType.EAGER) // Не менять на Lazy пока этот класс передается в модули лабораторий
     private List<ClientAddress> clientAddresses = new LinkedList<ClientAddress>();
 
     public List<ClientAddress> getActiveClientAddresses() {
