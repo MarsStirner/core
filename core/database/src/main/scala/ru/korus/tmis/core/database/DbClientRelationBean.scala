@@ -10,7 +10,7 @@ import java.lang.Iterable
 import java.util.Date
 import ru.korus.tmis.core.exception.NoSuchClientRelationException
 import ru.korus.tmis.core.data.{RelationEntryContainer, ClientContactContainer}
-import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientRelation}
+import ru.korus.tmis.core.entity.model.{BloodKell, Staff, Patient, ClientRelation}
 import scala.collection.JavaConversions._
 import scala.util.control.Breaks._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
@@ -138,7 +138,9 @@ class DbClientRelationBean
       "", //height, required
       "", //TODO: надо бы забирать из интерфейса при вводе данных родственника
       null, //bloodDate//TODO: надо бы забирать из интерфейса при вводе данных родственника
-      1, //blood type//TODO: надо бы забирать из интерфейса при вводе данных родственника
+      0, //blood type//TODO: надо бы забирать из интерфейса при вводе данных родственника
+      null,
+      BloodKell.NOT_DEFINED,
       "", //bloodnotes required
       "", //notes, required
       null, //sessionUser - AuthData.user

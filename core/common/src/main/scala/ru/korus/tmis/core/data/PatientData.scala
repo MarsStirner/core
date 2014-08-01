@@ -7,7 +7,7 @@ import fd.ClientSocStatus
 import kladr.{Street, Kladr}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import java.util.{Date, LinkedList}
-import scala.beans.BeanProperty
+import beans.BeanProperty
 import scala.Predef._
 import java.util
 import ru.korus.tmis.core.filter.AbstractListDataFilter
@@ -386,12 +386,43 @@ class BloodInfoContainer {
   var group: String = _
   @BeanProperty
   var checkingDate: Date = _
+  @BeanProperty
+  var bloodPhenotype: BloodPhenoTypeContainer = _
+  @BeanProperty
+  var bloodKell: String = _
+
 
   def this(patient: Patient) {
     this()
     this.id = patient.getBloodType().getId().intValue()
     this.group = patient.getBloodType().getName()
     this.checkingDate = patient.getBloodDate()
+    if (patient.getRbBloodPhenotype != null) {
+      this.bloodPhenotype = new BloodPhenoTypeContainer(patient.getRbBloodPhenotype)
+    }
+    if (patient.getBloodKell != null ) {
+      this.bloodKell = patient.getBloodKell.name()
+    }
+
+  }
+}
+
+@XmlType(name = "bloodInfoContainer")
+@XmlRootElement(name = "bloodInfoContainer")
+@JsonIgnoreProperties(ignoreUnknown = true)
+class BloodPhenoTypeContainer {
+  @BeanProperty
+  var id: Int = _
+  @BeanProperty
+  var phenotype: String = _
+  @BeanProperty
+  var code: String = _
+
+  def this(rbBloodPhenotype: RbBloodPhenotype) {
+    this()
+    this.id = rbBloodPhenotype.getId()
+    this.phenotype = rbBloodPhenotype.getName()
+    this.code = rbBloodPhenotype.getCode()
   }
 }
 

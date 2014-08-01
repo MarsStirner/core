@@ -93,6 +93,11 @@ public class Patient implements Serializable, Cloneable {
     @JoinColumn(name = "bloodType_id")
     private RbBloodType bloodType;
 
+    @Basic(optional = false)
+    @Enumerated(EnumType.STRING)
+    @Column(name = "bloodKell")
+    private BloodKell bloodKell;
+
     @Column(name = "bloodDate")
     @Temporal(TemporalType.DATE)
     private Date bloodDate;
@@ -125,6 +130,9 @@ public class Patient implements Serializable, Cloneable {
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<ClientSocStatus> clientSocStatuses = new LinkedList<ClientSocStatus>();
 
+    @ManyToOne
+    @JoinColumn(name="bloodPhenotype_id")
+    private RbBloodPhenotype rbBloodPhenotype;
 
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
@@ -566,6 +574,22 @@ public class Patient implements Serializable, Cloneable {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    public RbBloodPhenotype getRbBloodPhenotype() {
+        return rbBloodPhenotype;
+    }
+
+    public void setRbBloodPhenotype(RbBloodPhenotype rbBloodPhenotype) {
+        this.rbBloodPhenotype = rbBloodPhenotype;
+    }
+
+    public ru.korus.tmis.core.entity.model.BloodKell getBloodKell() {
+        return bloodKell;
+    }
+
+    public void setBloodKell(ru.korus.tmis.core.entity.model.BloodKell bloodKell) {
+        this.bloodKell = bloodKell;
     }
 
     @Override

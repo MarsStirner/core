@@ -27,6 +27,30 @@ public interface TransfusionMedicalService {
 
     /**
      * 
+     * @return
+     *     returns java.util.List<ru.korus.tmis.ws.transfusion.efive.ComponentType>
+     */
+    @WebMethod(action = "urn:getComponentTypes")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getComponentTypes", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetComponentTypes")
+    @ResponseWrapper(localName = "getComponentTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetComponentTypesResponse")
+    @Action(input = "urn:getComponentTypes", output = "http://www.korusconsulting.ru/transfusionMedicalService/getComponentTypesResponse")
+    public List<ComponentType> getComponentTypes();
+
+    /**
+     * 
+     * @return
+     *     returns java.util.List<ru.korus.tmis.ws.transfusion.efive.LaboratoryMeasureType>
+     */
+    @WebMethod(action = "urn:getLaboratoryMeasureTypes")
+    @WebResult(targetNamespace = "")
+    @RequestWrapper(localName = "getLaboratoryMeasureTypes", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetLaboratoryMeasureTypes")
+    @ResponseWrapper(localName = "getLaboratoryMeasureTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetLaboratoryMeasureTypesResponse")
+    @Action(input = "urn:getLaboratoryMeasureTypes", output = "http://www.korusconsulting.ru/transfusionMedicalService/getLaboratoryMeasureTypesResponse")
+    public List<LaboratoryMeasureType> getLaboratoryMeasureTypes();
+
+    /**
+     * 
      * @param patientCredentials
      * @param orderInformation
      * @return
@@ -67,7 +91,7 @@ public interface TransfusionMedicalService {
     /**
      * 
      * @return
-     *     returns java.dbutil.List<ru.korus.tmis.ws.transfusion.efive.ProcedureType>
+     *     returns java.util.List<ru.korus.tmis.ws.transfusion.efive.ProcedureType>
      */
     @WebMethod(action = "urn:getProcedureTypes")
     @WebResult(targetNamespace = "")
@@ -75,29 +99,5 @@ public interface TransfusionMedicalService {
     @ResponseWrapper(localName = "getProcedureTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetProcedureTypesResponse")
     @Action(input = "urn:getProcedureTypes", output = "http://www.korusconsulting.ru/transfusionMedicalService/getProcedureTypesResponse")
     public List<ProcedureType> getProcedureTypes();
-
-    /**
-     * 
-     * @return
-     *     returns java.dbutil.List<ru.korus.tmis.ws.transfusion.efive.LaboratoryMeasureType>
-     */
-    @WebMethod(action = "urn:getLaboratoryMeasureTypes")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getLaboratoryMeasureTypes", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetLaboratoryMeasureTypes")
-    @ResponseWrapper(localName = "getLaboratoryMeasureTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetLaboratoryMeasureTypesResponse")
-    @Action(input = "urn:getLaboratoryMeasureTypes", output = "http://www.korusconsulting.ru/transfusionMedicalService/getLaboratoryMeasureTypesResponse")
-    public List<LaboratoryMeasureType> getLaboratoryMeasureTypes();
-
-    /**
-     * 
-     * @return
-     *     returns java.dbutil.List<ru.korus.tmis.ws.transfusion.efive.ComponentType>
-     */
-    @WebMethod(action = "urn:getComponentTypes")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "getComponentTypes", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetComponentTypes")
-    @ResponseWrapper(localName = "getComponentTypesResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.GetComponentTypesResponse")
-    @Action(input = "urn:getComponentTypes", output = "http://www.korusconsulting.ru/transfusionMedicalService/getComponentTypesResponse")
-    public List<ComponentType> getComponentTypes();
 
 }

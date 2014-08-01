@@ -6,7 +6,7 @@ import grizzled.slf4j.Logging
 import java.lang.Iterable
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.exception.{CoreException, NoSuchPatientException}
-import ru.korus.tmis.core.entity.model.{Staff, Patient}
+import ru.korus.tmis.core.entity.model.{RbBloodPhenotype, BloodKell, Staff, Patient}
 import javax.persistence.{TemporalType, TypedQuery, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.PatientRequestData
 import javax.ejb.{EJB, Stateless}
@@ -153,6 +153,8 @@ class DbPatientBean
                              snils: String,
                              bloodDate: Date,
                              rbBloodTypeId: Int,
+                             rbBloodPhenotype: java.lang.Integer,
+                             bloodKell: BloodKell,
                              bloodNotes: String,
                              notes: String,
                              sessionUser: Staff,
@@ -202,6 +204,12 @@ class DbPatientBean
     }
     p.setBloodNotes(bloodNotes)
     p.setNotes(notes)
+
+    if (rbBloodPhenotype != null) {
+      p.setRbBloodPhenotype(em.find(classOf[RbBloodPhenotype], rbBloodPhenotype))
+    }
+
+    p.setBloodKell(bloodKell);
 
     p.setDeleted(false)
     p.setModifyPerson(sessionUser)
@@ -548,4 +556,5 @@ class DbPatientBean
       .setParameter("sex", sex)
       .setParameter("birthDate", birthDate, TemporalType.DATE).getResultList
   }
+
 }

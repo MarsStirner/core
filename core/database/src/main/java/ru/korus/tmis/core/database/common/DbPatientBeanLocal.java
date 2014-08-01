@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database.common;
 
+import ru.korus.tmis.core.entity.model.BloodKell;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
@@ -34,6 +35,8 @@ public interface DbPatientBeanLocal {
                                   String snils,
                                   Date bloodDate,
                                   int rbBloodTypeId,
+                                  Integer rbBloodPhenotypeId,
+                                  BloodKell bloodKell,
                                   String bloodNotes,
                                   String notes,
                                   Staff sessionUser,

@@ -52,7 +52,10 @@ public class TrfuOrderIssueResult implements Serializable {
 	@JoinColumn(name="blood_type_id")
 	private RbBloodType rbBloodType;
 
-	public TrfuOrderIssueResult() {
+    @Column(name="stickerUrl")
+    private String stickerUrl;
+
+    public TrfuOrderIssueResult() {
 	}
 
 	public int getId() {
@@ -132,7 +135,13 @@ public class TrfuOrderIssueResult implements Serializable {
     public void setTrfuDonorId(Integer trfuDonorId) {
         this.trfuDonorId = trfuDonorId;
     }
-	
-	
 
+
+    public void setStickerUrl(String stickerUrl) {
+        this.stickerUrl = stickerUrl;
+    }
+
+    public String getStickerUrl() {
+        return stickerUrl;
+    }
 }

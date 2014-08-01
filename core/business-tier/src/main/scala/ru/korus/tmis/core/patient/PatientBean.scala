@@ -422,6 +422,8 @@ class PatientBean
       val medInfo: MedicalInfoContainer = patientEntry.getMedicalInfo()
       var bloodDate: Date = new Date()
       var bloodType: Int = 0
+      var bloodPhenotypeId: java.lang.Integer = null
+      var bloodKell: BloodKell = BloodKell.NOT_DEFINED
 
       medInfo match {
         case null => {}
@@ -431,10 +433,13 @@ class PatientBean
             case blood: BloodInfoContainer => {
               bloodDate = blood.getCheckingDate()
               bloodType = blood.getId()
+              bloodPhenotypeId = if (blood.getBloodPhenotype == null) null else blood.getBloodPhenotype.getId
+              bloodKell = if (blood.getBloodKell == null || blood.getBloodKell.isEmpty) BloodKell.NOT_DEFINED else BloodKell.valueOf(blood.getBloodKell)
             }
           }
         }
       }
+
 
       patient = dbPatient.insertOrUpdatePatient(
         id,
@@ -449,6 +454,8 @@ class PatientBean
         patientEntry.getSnils(),
         bloodDate, //bloodDate
         bloodType, //blood type
+        bloodPhenotypeId,
+        bloodKell,
         "",   //bloodnotes required
         "",   //notes, required
         usver,
