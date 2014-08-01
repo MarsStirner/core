@@ -49,13 +49,6 @@
 
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
-            <artifactId>tmis-laboratory-tier</artifactId>
-            <version>${version.tmis.core}</version>
-            <type>ejb</type>
-        </dependency>
-
-        <dependency>
-            <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-ws-laboratory</artifactId>
             <version>${version.tmis.core}</version>
             <type>war</type>

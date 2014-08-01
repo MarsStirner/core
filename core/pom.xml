@@ -15,7 +15,6 @@
         <module>common</module>
         <module>database</module>
         <module>drugstore-tier</module>
-        <module>laboratory-tier</module>
         <module>server</module>
         <module>ws-medipad</module>
         <module>ws-laboratory</module>
@@ -69,6 +68,9 @@
         <version.maven.plugin.ejb>2.3</version.maven.plugin.ejb>
         <version.maven.gmaven.plugin>1.4</version.maven.gmaven.plugin>
         <version.maven.plugin.dependency>2.8</version.maven.plugin.dependency>
+        <!-- Параменты сущностей JMS -->
+        <jms.ConnectionFactory.name>DefaultConnectionFactory</jms.ConnectionFactory.name>
+        <jms.LaboratoryTopic.name>LaboratoryTopic</jms.LaboratoryTopic.name>
 
         <version.jersey.servlet>com.sun.jersey.spi.container.servlet.ServletContainer</version.jersey.servlet>
 

@@ -1,45 +1,33 @@
 package ru.korus.tmis.laboratory.across.business
 
+import java.net.{Authenticator, PasswordAuthentication}
+import java.text.SimpleDateFormat
+import java.util
+import java.util.{Collections, Date, GregorianCalendar}
+import javax.ejb.{EJB, Stateless}
+import javax.interceptor.Interceptors
+import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
+import javax.xml.namespace.QName
+import javax.xml.rpc.Stub
+
+import grizzled.slf4j.Logging
+import org.apache.axis.client.{Stub => AxisStub}
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import ru.korus.tmis.core.database._
-import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal}
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import java.util
-import ru.korus.tmis.core.auth.AuthStorageBeanLocal
-
-//import ru.korus.tmis.laboratory.data.lis.accept.{AnalysisResult => AResult1}
-
+import ru.korus.tmis.core.logging.LoggingInterceptor
+import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
+import ru.korus.tmis.laboratory.across.accept.AnalysisResultAcross
 import ru.korus.tmis.laboratory.across.accept2.{AnalysisResult => AResult2}
-
-//import ru.korus.tmis.laboratory.across.accept2.AnalysisResult
-
+import ru.korus.tmis.laboratory.across.request._
 import ru.korus.tmis.laboratory.across.{ws => lab2}
-
-import grizzled.slf4j.Logging
-import java.lang.String
-import javax.ejb.{Stateless, EJB}
-import javax.interceptor.Interceptors
-import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
+import ru.korus.tmis.scala.util.Types.JList
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+import ru.korus.tmis.util.CompileTimeConfigManager
 
 import scala.collection.JavaConversions._
-import java.text.SimpleDateFormat
-import scala.Some
-import ru.korus.tmis.scala.util.Types.JList
-import java.util.{ArrayList, GregorianCalendar, Collections}
-import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
-import ru.korus.tmis.util.CompileTimeConfigManager
-import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
-import javax.xml.namespace.QName
-import java.net.{PasswordAuthentication, Authenticator}
-import java.util.Date
-import ru.korus.tmis.laboratory.across.request._
-import ru.korus.tmis.laboratory.across.accept.AnalysisResultAcross
-import ru.korus.tmis.core.logging.LoggingInterceptor
-import javax.xml.rpc.Stub
-
-import org.apache.axis.client.{Stub => AxisStub}
-
 import scala.collection.mutable
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -69,7 +57,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
 
   def getAcrossLab: lab2.IAcrossIntf_FNKC = {
-    import lab2._
+    import ru.korus.tmis.laboratory.across.ws._
     try {
       // Вызываем удаленный веб-сервис
       if (ConfigManager.Laboratory2.User != null && ConfigManager.Laboratory2.Password != null) {
