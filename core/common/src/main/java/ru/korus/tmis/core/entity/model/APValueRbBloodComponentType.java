@@ -2,10 +2,7 @@ package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -14,6 +11,10 @@ import ru.korus.tmis.core.exception.CoreException;
 public class APValueRbBloodComponentType extends AbstractAPValue implements Serializable, APValue {
 
     private static final long serialVersionUID = 1L;
+
+    @Basic(optional = false)
+    @Column(name = "value")
+    private Integer valueId;
 
     @OneToOne
     @JoinColumn(name = "value", insertable = false, updatable = false)
@@ -46,7 +47,13 @@ public class APValueRbBloodComponentType extends AbstractAPValue implements Seri
 
     @Override
     public boolean setValueFromString(final String value) throws CoreException {
-       return false;
+        try {
+            this.valueId = Integer.valueOf(value);
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override

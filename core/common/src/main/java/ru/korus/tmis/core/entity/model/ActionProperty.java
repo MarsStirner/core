@@ -188,7 +188,15 @@ public class ActionProperty
         if (valueTypeMap.containsKey(propertyType)) {
             valueClass = valueTypeMap.get(propertyType);
         } else if (isRef || "ReferenceRb".equals(propertyType)) {
-            valueClass = valueTypeMap.get("Integer");
+            if(propertyType.equals("rbBloodComponentType")) {
+                valueClass = APValueRbBloodComponentType.class;
+            } else if (propertyType.equals("Action")) {
+                valueClass = APValueAction.class;
+            } else if (propertyType.equals("rbReasonOfAbsence")) {
+                valueClass = APValueRbReasonOfAbsence.class;
+            } else {
+                valueClass = valueTypeMap.get("Integer");
+            }
         } else {
             valueClass = null;
         }
