@@ -1,12 +1,16 @@
 package ru.korus.tmis.laboratory.bak.model;
 
+import java.io.Serializable;
+
 /**
  * Author:      Dmitriy E. Nosov <br>
  * Date:        20.11.13, 19:58 <br>
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-public class IndicatorMetodic {
+public class IndicatorMetodic implements Serializable {
+
+    public static final long serialVersionUID = 1L;
 
     private String name;
     private String code;
