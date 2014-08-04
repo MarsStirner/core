@@ -12,12 +12,9 @@ public class APValueRbBloodComponentType extends AbstractAPValue implements Seri
 
     private static final long serialVersionUID = 1L;
 
-    @Basic(optional = false)
-    @Column(name = "value")
-    private Integer valueId;
 
     @OneToOne
-    @JoinColumn(name = "value", insertable = false, updatable = false)
+    @JoinColumn(name = "value")
     private RbTrfuBloodComponentType value;
 
     public APValueRbBloodComponentType() {
@@ -42,13 +39,14 @@ public class APValueRbBloodComponentType extends AbstractAPValue implements Seri
 
     @Override
     public String getValueAsString() {
-        return value != null ? value.getName() : null;
+        return value == null ? null : String.valueOf(value.getId());
     }
 
     @Override
     public boolean setValueFromString(final String value) throws CoreException {
         try {
-            this.valueId = Integer.valueOf(value);
+            this.value = new RbTrfuBloodComponentType();
+            this.value.setId(Integer.valueOf(value));
         } catch (NumberFormatException ex) {
             ex.printStackTrace();
             return false;
