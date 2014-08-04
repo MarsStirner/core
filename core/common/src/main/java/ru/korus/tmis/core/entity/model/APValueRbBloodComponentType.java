@@ -43,6 +43,16 @@ public class APValueRbBloodComponentType extends AbstractAPValue implements Seri
     }
 
     @Override
+    public boolean setValue(Object value) {
+        Boolean res = false;
+        if (value instanceof RbTrfuBloodComponentType) {
+            this.value = (RbTrfuBloodComponentType)value;
+            res = true;
+        }
+        return res;
+    }
+
+    @Override
     public boolean setValueFromString(final String value) throws CoreException {
         try {
             this.value = new RbTrfuBloodComponentType();

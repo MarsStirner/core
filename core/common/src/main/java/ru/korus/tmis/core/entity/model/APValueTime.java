@@ -65,8 +65,9 @@ public class APValueTime extends AbstractAPValue implements Serializable, APValu
 
     
     @Override
-    public void setValue(Object value) throws CoreException {
+    public boolean setValue(Object value) throws CoreException {
         this.value = (Date)value;
+        return true;
     }
     
     @Override

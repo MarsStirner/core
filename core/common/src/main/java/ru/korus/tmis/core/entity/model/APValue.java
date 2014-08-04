@@ -13,6 +13,9 @@ public interface APValue {
     boolean setValueFromString(String value)
             throws CoreException;
 
+    boolean setValue(Object value)
+            throws CoreException;
+
     APValue unwrap();
 
     void linkToActionProperty(ActionProperty ap, int index);

@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
+import ru.korus.tmis.core.exception.CoreException;
+
 import java.io.Serializable;
 
 public class APValueRLSWrapper implements Serializable, APValue {
@@ -35,6 +37,11 @@ public class APValueRLSWrapper implements Serializable, APValue {
 
     @Override
     public boolean setValueFromString(String value) {
+        return false;
+    }
+
+    @Override
+    public boolean setValue(Object value) throws CoreException {
         return false;
     }
 
