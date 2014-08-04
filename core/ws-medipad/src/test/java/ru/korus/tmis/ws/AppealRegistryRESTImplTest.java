@@ -30,7 +30,10 @@ import ru.korus.tmis.testutil.DbUtil;
 import ru.korus.tmis.testutil.WebMisBase;
 import scala.actors.threadpool.Arrays;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.jms.ConnectionFactory;
+import javax.jms.Topic;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -55,6 +58,13 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     final static String BASE_URL_SOAP = String.format("http://localhost:7713/%s/", WAR_NAME);
 
     final int TEST_PATIENT_ID = 2; // id пациента, для которого создается госпитализация
+
+    @Resource(mappedName = "LaboratoryTopic")
+    private Topic dlq;
+
+
+    @Resource(mappedName = "DefaultConnectionFactory")
+    private ConnectionFactory factory;
 
     @EJB
     private AppealBeanLocal appealBean = null;
