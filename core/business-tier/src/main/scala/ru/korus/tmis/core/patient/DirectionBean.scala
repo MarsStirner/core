@@ -373,8 +373,8 @@ with I18nable {
         // то помечаем действие лабораторного исследования как удаленное
         case e: Throwable => {
           actions.foreach(a => {
-            em.find(classOf[Action], a.getId).setDeleted(true)
-            em.flush()
+            val act = em.find(classOf[Action], a.getId)
+            if(act != null) { act.setDeleted(true); em.flush() }
           })
           throw e
         }
