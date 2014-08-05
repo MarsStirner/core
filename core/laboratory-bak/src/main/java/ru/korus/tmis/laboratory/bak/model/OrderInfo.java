@@ -14,7 +14,6 @@ public class OrderInfo implements Serializable {
 
     public static final long serialVersionUID = 1L;
 
-
     private String diagnosticCode;
     private String diagnosticName;
     private Priority orderPriority;

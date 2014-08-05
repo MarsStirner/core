@@ -15,12 +15,6 @@ import javax.jms.ObjectMessage;
  * Date: 7/31/14
  * Time: 7:59 PM
  */
-@MessageDriven(
-        mappedName = "LaboratoryTopic",
-        activationConfig = {
-                @ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic")
-        }
-)
 public abstract class LISMessageReceiver implements MessageListener {
 
     public final static String JMS_TYPE = "LabResearchRequest";
