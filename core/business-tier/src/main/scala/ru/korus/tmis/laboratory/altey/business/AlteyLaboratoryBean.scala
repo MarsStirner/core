@@ -682,7 +682,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
       labws.queryAnalysis(patientInfo, requestInfo, biomaterialInfo, orderInfo)
       info("successfully interacted with LIS webservice...")
     } catch {
-      case e => error("Error responce from LIS webservice", e)
+      case e: Throwable => error("Error responce from LIS webservice", e)
     }
   }
 
