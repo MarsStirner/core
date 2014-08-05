@@ -5,7 +5,6 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.event._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
@@ -70,14 +69,6 @@ class CommonDataProcessorBean
 
   @EJB
   var dbLayoutAttributeValueBean: DbLayoutAttributeValueBeanLocal = _
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  @Inject
-  @Any
-  var actionEvent: Event[Notification] = _
-
-  //////////////////////////////////////////////////////////////////////////////
 
   def createActionForEventFromCommonData(eventId: Int,
                                          data: CommonData,
@@ -282,12 +273,7 @@ class CommonDataProcessorBean
     })
 
     val r = dbManager.detachAll[Action](result).toList
-    /*
-    r.foreach(a => {
-      val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
-      actionEvent.fire(new CreateActionNotification(a, values))
-    })
-    */
+
     r
   }
 
@@ -521,15 +507,7 @@ class CommonDataProcessorBean
         entities.filter(_.isInstanceOf[APValue]).map(_.asInstanceOf[APValue]).toList,
         userData))
 
-      /*
-      r.foreach(newAction => {
-        val newValues = dbActionProperty.getActionPropertiesByActionId(newAction.getId.intValue)
-        actionEvent.fire(new ModifyActionNotification(oldAction,
-          oldValues,
-          newAction,
-          newValues))
-      })
-      */
+
       r
 
     } finally {
@@ -617,19 +595,7 @@ class CommonDataProcessorBean
 
     val ActionStatus = ConfigManager.ActionStatus.immutable
 
-    status match {
-      case ActionStatus.Canceled => {
-        /*
-        r.foreach(a => {
-          val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
-          actionEvent.fire(new CancelActionNotification(a, values))
-        })
-        */
-      }
-      case _ => {
 
-      }
-    }
     true
   }
 

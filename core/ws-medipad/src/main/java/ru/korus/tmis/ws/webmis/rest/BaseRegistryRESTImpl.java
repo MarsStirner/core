@@ -13,6 +13,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -44,6 +45,7 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     @EJB
     JobImpl jobImpl;
+
 
     @Path("/")
     public CustomInfoRESTImpl getCustomInfoRESTImpl(@Context HttpServletRequest servRequest,

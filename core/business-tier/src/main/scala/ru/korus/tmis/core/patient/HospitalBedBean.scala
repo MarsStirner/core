@@ -13,7 +13,6 @@ import common._
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConversions._
 import java.text.{SimpleDateFormat, DateFormat}
-import ru.korus.tmis.core.event.Notification
 import javax.inject.Inject
 import javax.enterprise.event.Event
 import javax.enterprise.inject.Any
@@ -66,10 +65,6 @@ with TmisLogging {
 
   @EJB
   var dbOrgStructureHospitalBed: DbOrgStructureHospitalBedBeanLocal = _
-
-  @Inject
-  @Any
-  var actionEvent: Event[Notification] = _
 
   private class IndexOf[T](seq: Seq[T]) {
     def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
@@ -302,15 +297,7 @@ with TmisLogging {
       }
       result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
       val r = dbManager.detachAll[Action](result).toList
-      /*
-      r.foreach(newAction => {
-      val newValues = actionPropertyBean.getActionPropertiesByActionId(newAction.getId.intValue)
-      actionEvent.fire(new ModifyActionNotification(oldAction,
-                                                    oldValues,
-                                                    newAction,
-                                                    newValues))
-      })
-      */
+
       return r.get(0)
     }
     finally {
@@ -485,14 +472,6 @@ with TmisLogging {
       del_movingAction.setParentActionId(action.getId.intValue())
       dbManager.persist(del_movingAction)
 
-      /*
-      val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
-      actionEvent.fire( new ModifyActionNotification(oldAction,
-                        oldValues,
-                        action,
-                        newValues))
-      */
-
       /** ** По доработанной спеке https://docs.google.com/document/d/1wkIKuMt3UQ5PMHVlsE2NVweE-n1zkfKyBQbTrjYwuRo/edit#
         * Пункт 3.3
         */
@@ -609,15 +588,6 @@ with TmisLogging {
         resultA = dbManager.mergeAll(entities).filter(resultA.contains(_)).map(_.asInstanceOf[Action]).toList
         val r = dbManager.detachAll[Action](resultA).toList
 
-        /*
-        r.foreach(newAction => {
-          val newValues = actionPropertyBean.getActionPropertiesByActionId(newAction.getId.intValue)
-          actionEvent.fire(new ModifyActionNotification(oldLastAction,
-            oldLastValues,
-            newAction,
-            newValues))
-        })
-        */
       }
       finally {
         appLock.releaseLock(lockLastId)

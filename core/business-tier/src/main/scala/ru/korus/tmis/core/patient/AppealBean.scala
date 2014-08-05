@@ -12,7 +12,7 @@ import javax.persistence.{PersistenceContext, EntityManager}
 import java.util.{ArrayList, Date, LinkedList}
 import ru.korus.tmis.core.exception.CoreException
 import collection.JavaConversions
-import ru.korus.tmis.core.event.Notification
+
 import javax.inject.Inject
 import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}

@@ -7,11 +7,11 @@ import org.codehaus.jackson.map.ObjectMapper
 import ru.korus.tmis.core.exception.CoreException
 import java.{util => ju, lang}
 import ru.korus.tmis.core.entity.model._
-import collection.mutable
+import collection.{immutable, mutable}
 import java.util.{Calendar, Date, LinkedList}
 import grizzled.slf4j.Logging
 import ru.korus.tmis.ws.webmis.rest.{LockData, WebMisREST}
-import javax.ejb.{Stateless, EJB}
+import javax.ejb.{Stateful, Stateless, EJB}
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.patient._
@@ -19,12 +19,16 @@ import scala.collection.JavaConversions._
 import com.google.common.collect.Lists
 import javax.servlet.http.Cookie
 import scala.Predef._
+import scala.collection.JavaConversions._
 
 import ru.korus.tmis.scala.util._
 import ru.korus.tmis.core.database.bak.{DbBbtResultOrganismBeanLocal, DbBbtResponseBeanLocal, DbBbtResultTextBeanLocal}
 import org.joda.time.DateTime
 import ru.korus.tmis.core.lock.ActionWithLockInfo
 import ru.korus.tmis.scala.util.StringId
+import ru.korus.tmis.core.pharmacy.FlatCode
+import java.net.{URL, HttpURLConnection, URI}
+import scala.Predef.String
 
 /**
  * User: idmitriev
@@ -190,6 +194,8 @@ with CAPids {
 
   @EJB
   var appLockBeanLocal: AppLockBeanLocal = _
+
+  private var baseUri: URI = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -500,6 +506,33 @@ with CAPids {
 
   }
 
+  private def isNotifableAction(at: ActionType): Boolean = {
+    var notifiableFlatCodes = Array("TransfusionTherapy", "moving", "received", "del_moving", "del_received")
+    notifiableFlatCodes :+ FlatCode.getPrescriptionCodeList // append prescriptions flat codes
+    return at.getFlatCode.startsWith("trfuProcedure_trfu") || notifiableFlatCodes.contains(at.getFlatCode)
+  }
+
+  private def sendNotification(s: String) = {
+    //TODO: use asynch REST client
+    new Thread(new Runnable {
+      def run() {
+        if (baseUri != null) {
+          val urlPath: String = (baseUri.toString).replace("rest/", "notification/") + s
+          logger.info("notify URL: " + urlPath)
+          val url: URL = new URL(urlPath)
+          val conn: HttpURLConnection = url.openConnection.asInstanceOf[HttpURLConnection]
+          conn.setDoOutput(true)
+          conn.setRequestProperty("Content-Type", "application/json")
+          conn.setRequestMethod("PUT")
+          val code: Int = conn.getResponseCode
+          logger.info("Response code: " + code)
+          val msg: String = conn.getResponseMessage
+          logger.info("Response message: " + msg)
+        }
+      }
+    }).start
+  }
+
   private def postProcessing(event: Event = null)(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
     jData.data.get(0).group.get(1).attribute.foreach(ap => {
       if (ap.typeId == null || ap.typeId.intValue() <= 0) {
@@ -517,20 +550,39 @@ with CAPids {
           case e: Throwable => null
         }
         val at = try {
-          actionTypeBean.getActionTypeById(jData.getData.get(0).getId())
+          actionTypeBean.getActionTypeById(jData.getData.get(0).getId()) //TODO: jData.getData.get(0).getId() это Action.id, но не ActionType.id
         } catch {
           case e: Throwable => null
         }
 
-        if (aProp != null && at != null)
+        if (aProp != null && at != null) {
           ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp))
+        }
       }
     }
     )
-
-
-
     jData
+  }
+
+  private def notify(jData: JSONCommonData) = {
+    var notify = immutable.Set[String]()
+    jData.data.toList.foreach(commonEntity => {
+      try {
+        val action = actionBean.getActionById(commonEntity.getId())
+        if (isNotifableAction(action.getActionType)) {
+          notify += action.getActionType.getFlatCode
+        }
+      } catch {
+        case e: Throwable => null
+      }
+
+    }
+    )
+
+    notify.foreach(flatCode => {
+      sendNotification(flatCode)
+    })
+
   }
 
   private def postProcessingForDiagnosis(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
@@ -748,8 +800,9 @@ with CAPids {
   }
 
   //создание первичного мед. осмотра
-  def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData) = {
+  def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI) = {
 
+    this.baseUri = baseUri;
     validateDocumentsAvailability(eventId)
 
     val isPrimary = (data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt) == 0).getOrElse(null) != null) //Врач прописывается только для первичного осмотра  (ид=139)
@@ -763,12 +816,14 @@ with CAPids {
       authData,
       /*preProcessing _*/ null,
       postProcessing() _)
+    notify(data)
     returnValue
   }
 
   //редактирование первичного мед. осмотра
-  def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData) = {
+  def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI) = {
 
+    this.baseUri = baseUri;
     validateDocumentsAvailability(actionBean.getActionById(actionId).getEvent.getId)
 
     //создаем ответственного, если до этого был другой
@@ -782,6 +837,7 @@ with CAPids {
       authData,
       /*preProcessing _*/ null,
       postProcessing() _)
+    notify(data)
     returnValue
   }
 
@@ -1645,10 +1701,12 @@ with CAPids {
           if (!fields.contains(f.getName)) {
             f.getType match {
               case t if (t.equals(classOf[String])) => {
-                f.setAccessible(true); f.set(template, null)
+                f.setAccessible(true);
+                f.set(template, null)
               }
               case t if (t.equals(classOf[Integer])) => {
-                f.setAccessible(true); f.set(template, null)
+                f.setAccessible(true);
+                f.set(template, null)
               }
               case _ => {}
             }
@@ -1720,4 +1778,7 @@ with CAPids {
     authStorage.releaseAppLock(auth.getAuthToken, "Action", actionId)
   }
 
+  def setBaseUrl(baseUri: URI) {
+    this.baseUri = baseUri
+  }
 }
