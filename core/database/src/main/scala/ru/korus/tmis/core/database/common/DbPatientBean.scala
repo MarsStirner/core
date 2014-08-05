@@ -1,22 +1,17 @@
 package ru.korus.tmis.core.database.common
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
-
 import grizzled.slf4j.Logging
 import java.lang.Iterable
-import javax.interceptor.Interceptors
 import ru.korus.tmis.core.exception.{CoreException, NoSuchPatientException}
 import ru.korus.tmis.core.entity.model.{RbBloodPhenotype, BloodKell, Staff, Patient}
 import javax.persistence.{TemporalType, TypedQuery, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.data.PatientRequestData
 import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
 import java.util
 import org.slf4j.{LoggerFactory, Logger}
-import util.{TimeZone, Date, Calendar, GregorianCalendar}
+import util.{TimeZone, Date}
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import ru.korus.tmis.core.database.common.DbRbBloodTypeBeanLocal
 
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
