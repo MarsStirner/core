@@ -1,61 +1,73 @@
 package ru.korus.tmis.lis.data;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Collection;
+import java.io.Serializable;
+import java.util.LinkedList;
+import java.util.List;
 
-public class OrderInfo {
-    /**
-     * Код исследования (Тип исследования идентифицируется кодом)
-     */
-    private String code;
+/**
+ * Author:      Dmitriy E. Nosov <br>
+ * Date:        20.11.13, 19:52 <br>
+ * Company:     Korus Consulting IT<br>
+ * Description:  <br>
+ */
+public class OrderInfo implements Serializable {
 
-    /**
-     * Название исследования (Вспомогательная информация)
-     */
-    private String name;
+    public static final long serialVersionUID = 1L;
 
-    /**
-     * Флаг срочности
-     */
-    private Integer urgent;
 
-    /**
-     * Показатель/метод исследования
-     */
-    private Collection<Indicator> indicators;
+    private String diagnosticCode;
+    private String diagnosticName;
+    private Priority orderPriority;
 
-    public String getName() {
-        return name;
+    public enum Priority {
+        NORMAL, URGENT
     }
 
-    public void setName(String name) {
-        this.name = name;
+    private List<IndicatorMetodic> indicatorList = new LinkedList<IndicatorMetodic>();
+
+    public OrderInfo() {
     }
 
-    @XmlElement(name = "diagnosticCode", required = true)
-    public String getCode() {
-        return code;
+    public String getDiagnosticCode() {
+        return diagnosticCode;
     }
 
-    public void setCode(String code) {
-        this.code = code;
+    public void setDiagnosticCode(String diagnosticCode) {
+        this.diagnosticCode = diagnosticCode;
     }
 
-    @XmlElement(name = "orderPriority")
-    public int getUrgent() {
-        return urgent;
+    public String getDiagnosticName() {
+        return diagnosticName;
     }
 
-    public void setUrgent(int urgent) {
-        this.urgent = urgent;
+    public void setDiagnosticName(String diagnosticName) {
+        this.diagnosticName = diagnosticName;
     }
 
-    @XmlElement(name = "indicators")
-    public Collection<Indicator> getIndicators() {
-        return indicators;
+    public Priority getOrderPriority() {
+        return orderPriority;
     }
 
-    public void setIndicators(Collection<Indicator> indicators) {
-        this.indicators = indicators;
+    public void setOrderPriority(Priority orderPriority) {
+        this.orderPriority = orderPriority;
+    }
+
+    public List<IndicatorMetodic> getIndicatorList() {
+        return indicatorList;
+    }
+
+    public void addIndicatorList(IndicatorMetodic indicator) {
+        this.indicatorList.add(indicator);
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("OrderInfo{");
+        sb.append("diagnosticCode='").append(diagnosticCode).append('\'');
+        sb.append(", diagnosticName='").append(diagnosticName).append('\'');
+        sb.append(", orderPriority='").append(orderPriority).append('\'');
+        sb.append(", indicatorList=").append(indicatorList);
+        sb.append('}');
+        return sb.toString();
     }
 }

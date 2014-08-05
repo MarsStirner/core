@@ -12,11 +12,11 @@ import org.slf4j.{Logger, LoggerFactory}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.bak.BakSendService
-import ru.korus.tmis.laboratory.bak.model.{BiomaterialInfo, DiagnosticRequestInfo, IndicatorMetodic, OrderInfo}
 import ru.korus.tmis.laboratory.bak.service._
 import ru.korus.tmis.laboratory.bak.ws.client.BakSend
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver
-import ru.korus.tmis.laboratory.data.LaboratoryCreateRequestData
+import ru.korus.tmis.lis.data.{BiomaterialInfo, DiagnosticRequestInfo, IndicatorMetodic, LaboratoryCreateRequestData, OrderInfo}
+
 import scala.collection.JavaConverters._
 
 /**
