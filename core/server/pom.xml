@@ -148,6 +148,14 @@
                 </includes>
             </resource>
             <resource>
+                <directory>scripts/</directory>
+                <targetPath>../</targetPath>
+                <filtering>true</filtering>
+                <includes>
+                    <include>**/*.war</include>
+                </includes>
+            </resource>
+            <resource>
                 <directory>scripts/lib/</directory>
                 <targetPath>../lib/</targetPath>
                 <filtering>false</filtering>
