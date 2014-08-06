@@ -148,7 +148,7 @@
                 </includes>
             </resource>
             <resource>
-                <directory>scripts/</directory>
+                <directory>../laboratory-bak/target/</directory>
                 <targetPath>../</targetPath>
                 <filtering>true</filtering>
                 <includes>
