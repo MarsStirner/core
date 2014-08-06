@@ -10,6 +10,11 @@ import javax.xml.ws.WebServiceException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+
 import ru.korus.tmis.core.notification.NotificationBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService;
@@ -28,6 +33,8 @@ import ru.korus.tmis.ws.transfusion.procedure.SendProcedureRequest;
  * Периодический опрос БД
  */
 @Singleton
+@Controller
+@RequestMapping("/")
 public class TransfusionBean {
 
     public static final String MODULE_PATH = "tmis-ws-transfusion/transfusion";
@@ -70,5 +77,10 @@ public class TransfusionBean {
         } catch (final Exception ex) {
             logger.error("General exception in trfu integration: {}", ex.getMessage());
         }
+    }
+
+    @RequestMapping(value = "/{name}", method = RequestMethod.PUT)
+    public String getMovie(@PathVariable String name) {
+        return "hello:" + name;
     }
 }

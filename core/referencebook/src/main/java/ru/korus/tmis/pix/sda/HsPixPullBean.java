@@ -219,17 +219,22 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
         } catch (SOAPFaultException ex) {
             hsIntegration.setStatus(HSIntegration.Status.ERROR);
             hsIntegration.setInfo(ex.getMessage());
-            ex.printStackTrace();
+            logger.error("Sending event info. HS integration internal error. Event.Id = " + event.getId(), ex);
             em.flush();
         } catch (WebServiceException ex) {
             hsIntegration.setInfo(ex.getMessage());
-            ex.printStackTrace();
+            logger.error("Sending event info. HS integration internal error. Event.Id = " + event.getId(), ex);
             em.flush();
-        } catch (CoreException e) {
+        } catch (CoreException ex) {
             hsIntegration.setInfo(e.getMessage());
-            e.printStackTrace();
+            logger.error("Sending event info. HS integration internal error. Event.Id = " + event.getId(), ex);
+            em.flush();
+        } catch (Exception ex) {
+            hsIntegration.setInfo(ex.getMessage());
+            logger.error("Sending event info. HS integration internal error. Event.Id = " + event.getId(), ex);
             em.flush();
         }
+
     }
 
     private List<ServiceInfo> getServices(final Event event, final Multimap<String, Action> actionsByTypeCode) {

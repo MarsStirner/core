@@ -74,7 +74,7 @@
 
         <version.jersey.servlet>com.sun.jersey.spi.container.servlet.ServletContainer</version.jersey.servlet>
 
-        <spring.version>3.2.0.RELEASE</spring.version>
+        <spring.version>3.2.4.RELEASE</spring.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <project.build.jdk>1.6</project.build.jdk>
