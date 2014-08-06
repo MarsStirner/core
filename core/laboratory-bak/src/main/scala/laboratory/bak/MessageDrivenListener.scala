@@ -1,8 +1,9 @@
 package laboratory.bak
 
 import java.util.{Date, GregorianCalendar}
+import javax.annotation.Resource
 import javax.ejb.{ActivationConfigProperty, MessageDriven}
-import javax.jms.{Message, MessageListener, ObjectMessage}
+import javax.jms._
 import javax.xml.bind.JAXBElement
 import javax.xml.datatype.{DatatypeConfigurationException, DatatypeFactory, XMLGregorianCalendar}
 import javax.xml.namespace.QName
@@ -15,6 +16,7 @@ import ru.korus.tmis.laboratory.bak.BakSendService
 import ru.korus.tmis.laboratory.bak.service._
 import ru.korus.tmis.laboratory.bak.ws.client.BakSend
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver
+import ru.korus.tmis.lis.data.jms.LabModuleSendingResponse
 import ru.korus.tmis.lis.data.{BiomaterialInfo, DiagnosticRequestInfo, IndicatorMetodic, LaboratoryCreateRequestData, OrderInfo}
 
 import scala.collection.JavaConverters._
@@ -37,28 +39,74 @@ class MessageDrivenListener extends MessageListener {
   private final val CUSTODIAN_NAME: String = "ФГБУ &quot;ФНКЦ ДГОИ им. Дмитрия Рогачева&quot; Минздрава России"
   final val DATE_FORMAT: String = "YYYY-MM-dd HH:mm"
 
+  @Resource(lookup = "DefaultConnectionFactory")
+  private var connectionFactory: ConnectionFactory = _
+  @Resource(lookup = "LaboratoryTopic")
+  private var topic: Topic = _
+
   override def onMessage(message: Message) =
     Option(message) collect {
       case m: ObjectMessage => Option(m.getObject) collect {
         case o: LaboratoryCreateRequestData => Option(message.getJMSType) collect {
-          case "LabResearchRequest"  =>
-            if(message.getStringProperty("labName").equals("bak"))
-              sendRequestToLIS(o)
+          case LaboratoryCreateRequestData.JMS_TYPE  =>
+            if(message.getStringProperty("labName").equals("bak")) {
+              val response = new LabModuleSendingResponse
+              response setActionId o.getAction.getId
+              try {
+                sendRequestToLIS(o)
+                response setSuccess true
+              } catch {
+                case t: Throwable => {
+                  response setSuccess false
+                  response setThrowable t
+                }
+              } finally {
+                var connection: Connection = null
+                var session: Session = null
+                try {
+                  connection = connectionFactory.createConnection()
+                  session = connection.createSession(true, 0)
+                  val publisher = session.createProducer(topic)
+                  val message = session.createObjectMessage()
+                  message.setJMSType(LabModuleSendingResponse.JMS_TYPE)
+                  message.setObject(response)
+                  publisher.send(message)
+                  publisher.send(session.createMessage());
+                }
+                catch {
+                  case t: Throwable => t.printStackTrace();
+                }
+                finally {
+                  if (session != null) {
+                    try {
+                      session.close()
+                    }
+                    catch {
+                      case e: Throwable => e.printStackTrace()
+                    }
+                  }
+                  if (connection != null) {
+                    try {
+                      connection.close()
+                    }
+                    catch {
+                      case e: Throwable => e.printStackTrace()
+                    }
+                  }
+                }
+              }
             }
-          }
         }
+      }
+    }
 
   private def sendRequestToLIS(a: LaboratoryCreateRequestData) {
-    try {
       val document = createDocument(a)
       val service: BakSendService = createCGMService
       val id: Holder[Integer] = new Holder[Integer](1)
       val guid: Holder[String] = new Holder[String](GUID)
       service.queryAnalysis(document, id, guid)
-    } catch {
-      case e: Throwable => e.printStackTrace();
-    }
-    System.out.println("Oh, hello!")
+      System.out.println("Oh, hello!")
   }
 
   private def createDocument(data: LaboratoryCreateRequestData): HL7Document = {

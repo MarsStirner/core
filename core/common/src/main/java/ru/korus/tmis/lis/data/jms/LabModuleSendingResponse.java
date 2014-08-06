@@ -19,8 +19,6 @@ public class LabModuleSendingResponse implements Serializable {
 
     private int actionId;
 
-    private int jobTicketId;
-
     public Throwable getThrowable() {
         return throwable;
     }
@@ -45,11 +43,8 @@ public class LabModuleSendingResponse implements Serializable {
         this.actionId = actionId;
     }
 
-    public int getJobTicketId() {
-        return jobTicketId;
-    }
-
-    public void setJobTicketId(int jobTicketId) {
-        this.jobTicketId = jobTicketId;
+    @Override
+    public String toString() {
+        return actionId + " " + isSuccess + " " + throwable;
     }
 }

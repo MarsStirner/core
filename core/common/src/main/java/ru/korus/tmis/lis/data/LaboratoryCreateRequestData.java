@@ -13,6 +13,8 @@ import java.io.Serializable;
  */
 public class LaboratoryCreateRequestData implements Serializable {
 
+    public final static String JMS_TYPE = "LabResearchRequest";
+
     public static final long serialVersionUID = 1L;
 
     private Action action;
