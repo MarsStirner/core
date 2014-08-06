@@ -32,6 +32,8 @@ object ConfigManager extends Configuration {
     def isDebugTestMode = "on".equals(DebugTestMode)
 
     var lockTimeoutSec = 60 // время таймаута в секундах, после которого снимется лок документа
+
+    var ServerUrl = "http://localhost:8080/"
   }
 
   var RbManagerSetting = new RbManagerClass
