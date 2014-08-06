@@ -3,8 +3,6 @@ package ru.korus.tmis.pix.sda;
 import com.google.common.collect.Multimap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
-import ru.korus.tmis.core.transmit.Sender;
 import ru.korus.tmis.core.database.DbQueryBeanLocal;
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.database.RbMedicalAidProfileBeanLocal;
@@ -14,11 +12,13 @@ import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
+import ru.korus.tmis.core.transmit.Sender;
+import ru.korus.tmis.core.transmit.TransmitterLocal;
 import ru.korus.tmis.hs.HsPixPullTimerBeanLocal;
 import ru.korus.tmis.pix.sda.ws.EMRReceiverService;
 import ru.korus.tmis.pix.sda.ws.EMRReceiverServiceSoap;
 import ru.korus.tmis.scala.util.ConfigManager;
-import ru.korus.tmis.core.transmit.TransmitterLocal;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -165,7 +165,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
         List<EpicrisisInfo> emptyEpi = new LinkedList<EpicrisisInfo>();
         port.container(
                 SdaBuilder.toSda(new ClientInfo(
-                        ((PatientsToHs)patientToHs).getPatient(),
+                        ((PatientsToHs) patientToHs).getPatient(),
                         dbSchemeKladrBeanLocal),
                         new EventInfo(getDefOrgName()),
                         emptyAllergy,
@@ -184,7 +184,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
                         "hsi.event.eventType.requestType.code = 'stationary' OR " +
                         "hsi.event.eventType.requestType.code = 'policlinic' OR " +
                         "hsi.event.eventType.requestType.code = '4' OR " +
-                        "hsi.event.eventType.requestType.code = '6' )", Event.class).setParameter("newEvent", HSIntegration.Status.NEW).getResultList();
+                        "hsi.event.eventType.requestType.code = '6' )", Event.class).setParameter("newEvent", HSIntegration.Status.NEW).setMaxResults(50).getResultList();
 
         for (Event event : newEvents) {
             try {
@@ -219,15 +219,19 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
         } catch (SOAPFaultException ex) {
             hsIntegration.setStatus(HSIntegration.Status.ERROR);
             hsIntegration.setInfo(ex.getMessage());
-            ex.printStackTrace();
+            logger.error("HS integration SOAP error. Event.Id = " + event.getId(), ex);
             em.flush();
         } catch (WebServiceException ex) {
             hsIntegration.setInfo(ex.getMessage());
-            ex.printStackTrace();
+            logger.error("HS integration web service error. Event.Id = " + event.getId(), ex);
             em.flush();
-        } catch (CoreException e) {
-            hsIntegration.setInfo(e.getMessage());
-            e.printStackTrace();
+        } catch (CoreException ex) {
+            hsIntegration.setInfo(ex.getMessage());
+            logger.error("HS integration core error. Event.Id = " + event.getId(), ex);
+            em.flush();
+        } catch (CoreException ex) {
+            hsIntegration.setInfo(ex.getMessage());
+            logger.error("HS integration internal error. Event.Id = " + event.getId(), ex);
             em.flush();
         }
     }
