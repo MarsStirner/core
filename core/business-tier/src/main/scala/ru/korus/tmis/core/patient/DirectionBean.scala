@@ -23,8 +23,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.laboratory.LISMessageReceiver
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
 import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal
-import ru.korus.tmis.laboratory.bak.model.{OrderInfo, BiomaterialInfo, DiagnosticRequestInfo, IndicatorMetodic}
-import ru.korus.tmis.laboratory.data.LaboratoryCreateRequestData
+import ru.korus.tmis.lis.data._
 import ru.korus.tmis.scala.util.ConfigManager._
 import ru.korus.tmis.scala.util.{CAPids, ConfigManager, I18nable}
 import ru.korus.tmis.schedule.PersonScheduleBean.PersonSchedule
