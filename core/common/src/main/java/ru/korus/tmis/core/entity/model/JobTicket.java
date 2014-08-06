@@ -27,6 +27,10 @@ public class JobTicket implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public final static int STATUS_WAITING = 0;
+    public final static int STATUS_IN_PROGRESS = 1;
+    public final static int STATUS_IS_FINISHED = 2;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
