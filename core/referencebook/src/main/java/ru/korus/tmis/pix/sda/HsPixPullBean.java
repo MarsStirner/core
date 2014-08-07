@@ -222,14 +222,17 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
             logger.error("HS integration SOAP error. Event.Id = " + event.getId(), ex);
             em.flush();
         } catch (WebServiceException ex) {
+            hsIntegration.setStatus(HSIntegration.Status.ERROR);
             hsIntegration.setInfo(ex.getMessage());
             logger.error("HS integration web service error. Event.Id = " + event.getId(), ex);
             em.flush();
         } catch (CoreException ex) {
+            hsIntegration.setStatus(HSIntegration.Status.ERROR);
             hsIntegration.setInfo(ex.getMessage());
             logger.error("HS integration core error. Event.Id = " + event.getId(), ex);
             em.flush();
-        } catch (CoreException ex) {
+        } catch (Exception ex) {
+            hsIntegration.setStatus(HSIntegration.Status.ERROR);
             hsIntegration.setInfo(ex.getMessage());
             logger.error("HS integration internal error. Event.Id = " + event.getId(), ex);
             em.flush();
