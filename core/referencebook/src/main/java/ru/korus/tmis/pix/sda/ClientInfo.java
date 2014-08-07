@@ -396,7 +396,7 @@ public class ClientInfo {
     private CodeNameSystem initCitizenship(Patient client) {
         CodeNameSystem res = null;
         for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
-            if( CITIZENSHIP_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
+            if( clientSocStatus.getSocStatusClass() != null && CITIZENSHIP_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
                 RbSocStatusType socStatusType = clientSocStatus.getSocStatusType();
                 res = new CodeNameSystem(null, socStatusType.getName());
             }
