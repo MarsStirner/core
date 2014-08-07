@@ -258,7 +258,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
     private List<DisabilitiesInfo> getDisabilities(Patient patient) {
         List<DisabilitiesInfo> res = new LinkedList<DisabilitiesInfo>();
         for (ClientSocStatus clientSocStatus : patient.getClientSocStatuses()) {
-            if (ClientSocStatus.DISABILITY_CODE.equals(clientSocStatus.getSocStatusClass().getCode())) {
+            if (clientSocStatus.getSocStatusClass() != null && ClientSocStatus.DISABILITY_CODE.equals(clientSocStatus.getSocStatusClass().getCode())) {
                 final DisabilitiesInfo disability = new DisabilitiesInfo(clientSocStatus);
                 res.add(disability);
             }
