@@ -182,7 +182,7 @@ with I18nable {
     json_data
   }
 
-  private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) = {
+  private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int, auth: AuthData) = {
 
     val department = hospitalBedBean.getCurrentDepartmentForAppeal(eventId)
     val list = new java.util.LinkedList[(Job, JobTicket, TakenTissue, Action)]
@@ -321,24 +321,22 @@ with I18nable {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
             jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString))
             jt.setLabel("##Ошибка отправки в ЛИС##")
-            jt.setStatus(1)
+            jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
           }
         }
-      } else if (labCode != null && labCode.compareTo("0102") == 0) {
-        // Отправка назначения в Bak CGM
+      } else if (labCode != null) {
+        // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
         try {
-          //todo должен быть вызов веб-сервиса с передачей actionId
-          lisBak.sendLisAnalysisRequest(p._1.getId.intValue())
-          // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
-          actionBean.updateActionStatusWithFlush(p._1.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+          sendJMSLabRequest(p._1.getId.intValue(), labCode)
+          dbJobTicketBean.modifyJobTicketStatus(p._2, JobTicket.STATUS_SENDING, auth)
         }
         catch {
           case e: Exception => {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
             jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString))
             jt.setLabel("##Ошибка отправки в ЛИС##")
-            jt.setStatus(1)
+            jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
           }
         }
@@ -366,7 +364,7 @@ with I18nable {
     //Для лабораторных исследований отработаем с JobTicket
     if (mnem.toUpperCase.equals("LAB") || mnem.toUpperCase.equals("BAK_LAB")) {
       try {
-        actions = createJobTicketsForActions(actions, eventId)
+        actions = createJobTicketsForActions(actions, eventId, userData)
       } catch {
         // Если произошла ошибка в процессе проставления JobTickets -
         // то помечаем действие лабораторного исследования как удаленное
@@ -419,7 +417,7 @@ with I18nable {
          userRole.compareTo("strHead")==0*/ ) {
         actions = commonDataProcessor.modifyActionFromCommonData(action.getId.intValue(), directions, userData)
         if (flgLab) {
-          actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue())
+          actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue(), userData)
           //редактирование или удаление старого жобТикета
           val jobTicket = if (oldJT > 0) dbJobTicketBean.getJobTicketById(oldJT) else null
           if (jobTicket != null) {
@@ -654,13 +652,12 @@ with I18nable {
                 em.merge(jt)
               }
             }
-          } else if (labCode != null && labCode.compareTo("0102") == 0) {
-            // Отправка назначения в Bak CGM
+          } else if (labCode != null) {
+            // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
             try {
-              //todo должен быть вызов веб-сервиса с передачей actionId
-              lisBak.sendLisAnalysisRequest(a.getId.intValue())
-              // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
-              actionBean.updateActionStatusWithFlush(a.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+              sendJMSLabRequest(a.getId.intValue(), labCode)
+              isAllActionSent = false // Статус проставляется автоматически по возвращению сообщения JMS
+              dbJobTicketBean.modifyJobTicketStatus(f.getId, JobTicket.STATUS_SENDING, authData)
             }
             catch {
               case e: Exception => {
@@ -716,7 +713,7 @@ with I18nable {
     }
   }
 
-  private def sendJMSLabRequest(actionId: Int) = {
+  private def sendJMSLabRequest(actionId: Int, labCode: String) = {
     val action = actionBean.getActionById(actionId)
     em.detach(action)
 
@@ -739,11 +736,11 @@ with I18nable {
 
       val requestObject = new LaboratoryCreateRequestData(action, requestInfo, patientInfo, eventInfo, biomaterialInfo, orderInfo)
       connection = connectionFactory.createConnection()
-      session = connection.createSession(true, 0)
+      session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
       val publisher = session.createProducer(topic)
       val message = session.createObjectMessage()
       message.setJMSType(LISMessageReceiver.JMS_TYPE)
-      message.setStringProperty(LISMessageReceiver.JMS_LAB_PROPERTY_NAME, "bak") // Получение значения должно быть из БД
+      message.setStringProperty(LISMessageReceiver.JMS_LAB_PROPERTY_NAME, labCode)
       message.setObject(requestObject)
       publisher.send(message)
     }

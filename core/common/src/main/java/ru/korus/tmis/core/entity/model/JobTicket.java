@@ -30,6 +30,7 @@ public class JobTicket implements Serializable {
     public final static int STATUS_WAITING = 0;
     public final static int STATUS_IN_PROGRESS = 1;
     public final static int STATUS_IS_FINISHED = 2;
+    public final static int STATUS_SENDING = 3;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

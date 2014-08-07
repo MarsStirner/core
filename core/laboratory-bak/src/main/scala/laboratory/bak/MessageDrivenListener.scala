@@ -37,7 +37,8 @@ class MessageDrivenListener extends MessageListener {
   private final val GUID: String = String.valueOf(System.currentTimeMillis / 1000)
   private final val FACTORY_BAK: ObjectFactory = new ObjectFactory
   private final val CUSTODIAN_NAME: String = "ФГБУ &quot;ФНКЦ ДГОИ им. Дмитрия Рогачева&quot; Минздрава России"
-  final val DATE_FORMAT: String = "YYYY-MM-dd HH:mm"
+  private final val DATE_FORMAT: String = "YYYY-MM-dd HH:mm"
+  private final val LAB_CODE: String = "0102"
 
   @Resource(lookup = "DefaultConnectionFactory")
   private var connectionFactory: ConnectionFactory = _
@@ -49,7 +50,7 @@ class MessageDrivenListener extends MessageListener {
       case m: ObjectMessage => Option(m.getObject) collect {
         case o: LaboratoryCreateRequestData => Option(message.getJMSType) collect {
           case LaboratoryCreateRequestData.JMS_TYPE  =>
-            if(message.getStringProperty("labName").equals("bak")) {
+            if(message.getStringProperty("labName").equals(LAB_CODE)) {
               val response = new LabModuleSendingResponse
               response setActionId o.getAction.getId
               try {

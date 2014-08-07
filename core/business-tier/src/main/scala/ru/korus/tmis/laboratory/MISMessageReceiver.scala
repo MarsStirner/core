@@ -56,8 +56,6 @@ class MISMessageReceiver extends MessageListener {
               t.printStackTrace()
             }
           }
-          //TODO Processing: set action and JobTicket status
-          System.out.println("Thanks god!")
         }
       }
     }

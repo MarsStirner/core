@@ -61,6 +61,14 @@
             <type>war</type>
         </dependency>
 
+        <dependency>
+            <groupId>ru.korus.tmis</groupId>
+            <artifactId>laboratory-bak</artifactId>
+            <version>${version.tmis.core}</version>
+            <scope>provided</scope>
+            <type>war</type>
+        </dependency>
+
         <!--<dependency>-->
             <!--<groupId>ru.korus.tmis.drugstore</groupId>-->
             <!--<artifactId>tmis-ws-drugstore</artifactId>-->
