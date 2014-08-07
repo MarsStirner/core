@@ -26,6 +26,8 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.xml.ws.WebServiceException;
 import javax.xml.ws.soap.SOAPFaultException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.util.*;
 
 /**
@@ -233,7 +235,10 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
             em.flush();
         } catch (Exception ex) {
             hsIntegration.setStatus(HSIntegration.Status.ERROR);
-            hsIntegration.setInfo(ex.getMessage());
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            hsIntegration.setInfo(ex.toString() + " " +  sw.toString());
             logger.error("HS integration internal error. Event.Id = " + event.getId(), ex);
             em.flush();
         }

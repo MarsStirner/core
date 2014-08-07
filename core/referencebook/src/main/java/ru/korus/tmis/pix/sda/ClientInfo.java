@@ -229,7 +229,7 @@ public class ClientInfo {
 
         public SocialStatus(ru.korus.tmis.core.entity.model.fd.ClientSocStatus clientSocStatus) {
             RbSocStatusType socStatusType = clientSocStatus.getSocStatusType();
-            codeAndName = RbManager.get(RbManager.RbType.rbSocStatusType,
+            codeAndName = socStatusType == null ? null : RbManager.get(RbManager.RbType.rbSocStatusType,
                     CodeNameSystem.newInstance(socStatusType.getCode(), socStatusType.getName(), "1.2.643.5.1.13.2.1.1.366"));
         }
     }
@@ -418,7 +418,7 @@ public class ClientInfo {
     private Iterable<Privilege> initPriveleges(Patient client) {
         List<Privilege> res = new LinkedList<Privilege>();
         for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
-            if( ClientSocStatus.PRIVILEGE_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
+            if(clientSocStatus.getSocStatusClass() != null && ClientSocStatus.PRIVILEGE_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
                 final Privilege privelege = new Privilege(clientSocStatus);
                 if(privelege.getCategory() != null) {
                     res.add(privelege);
@@ -431,7 +431,7 @@ public class ClientInfo {
     private Iterable<SocialStatus> initSocialStatus(Patient client) {
         List<SocialStatus> res = new LinkedList<SocialStatus>();
         for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
-            if( ClientSocStatus.SOCIAL_STATUS_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
+            if( clientSocStatus.getSocStatusClass() != null && ClientSocStatus.SOCIAL_STATUS_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
                 final SocialStatus socStatus = new SocialStatus(clientSocStatus);
                 res.add(socStatus);
             }
@@ -638,7 +638,10 @@ public class ClientInfo {
             //  [17:46:19] Сергей Загребельный: в БД может быть несколько
             //  [17:47:47] Сергей Загребельный: как быть? какую вредность передавать?
             //  [17:48:21] Александр Мартынов: любую... сомневаюсь что вообще кто то это заполняет
-            this.harmful = clientWork.getClientWorkHurts().isEmpty() ? null : clientWork.getClientWorkHurts().get(0).getHurtType().getName();
+            this.harmful = (clientWork.getClientWorkHurts() == null ||
+                            clientWork.getClientWorkHurts().isEmpty() ||
+                            clientWork.getClientWorkHurts().get(0).getHurtType() == null ) ? null :
+                                clientWork.getClientWorkHurts().get(0).getHurtType().getName();
 
             this.okved = clientWork.getOkved() == null ? null :
                     RbManager.get(RbManager.RbType.rbOKVED,
@@ -725,14 +728,14 @@ public class ClientInfo {
 
         public InsuranceInfo(ClientPolicy clientPolicy) {
             final Organisation insurer = clientPolicy.getInsurer();
-            organization = RbManager.get(RbManager.RbType.MDN366,
+            organization = insurer == null ? null : RbManager.get(RbManager.RbType.MDN366,
                     CodeNameSystem.newInstance(insurer.getInfisCode(), insurer.getShortName(), "1.2.643.5.1.13.2.1.1.635"));
             serial = clientPolicy.getSerial();
             number = clientPolicy.getNumber();
             begDate = getXmlGregorianCalendar(clientPolicy.getBegDate());
             endDate = getXmlGregorianCalendar(clientPolicy.getEndDate());
-            area = RbManager.get(RbManager.RbType.KLD116, CodeNameSystem.newInstance(insurer.getArea(), null, "1.2.643.5.1.13.2.1.1.635"));
-            okato = insurer.getOkato();
+            area = insurer == null ? null : RbManager.get(RbManager.RbType.KLD116, CodeNameSystem.newInstance(insurer.getArea(), null, "1.2.643.5.1.13.2.1.1.635"));
+            okato = insurer == null ? null : insurer.getOkato();
             final RbPolicyType policyType = clientPolicy.getPolicyType();
             policyTypeName = policyType == null ? null : new CodeNameSystem(null, policyType.getName());
         }

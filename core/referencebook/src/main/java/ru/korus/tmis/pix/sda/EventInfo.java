@@ -176,7 +176,7 @@ public class EventInfo {
             return UNKNOWN_ORG;
         } else {
             CodeNameSystem res = RbManager.get(RbManager.RbType.Organisation, CodeNameSystem.newInstance(organisation.getInfisCode(), organisation.getShortName(), null));
-            if(res.getName() == null || res.getName().isEmpty()) {
+            if(res == null || res.getName() == null || res.getName().isEmpty()) {
                 return UNKNOWN_ORG;
             }
             return res;
