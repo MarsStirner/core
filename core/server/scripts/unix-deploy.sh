@@ -63,7 +63,6 @@ DEPLOY_CMD_ANY_FILE="${ASADMIN}/asadmin --host ${HOST} \
         --echo=true \
         --terse=true \
         deploy \
-        --name ${APP_NAME} \
         --force=true \
         --precompilejsp=false \
         --verify=false \
