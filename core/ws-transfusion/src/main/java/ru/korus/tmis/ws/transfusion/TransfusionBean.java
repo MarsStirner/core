@@ -5,15 +5,14 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 import javax.ejb.Stateless;
+import javax.ws.rs.GET;
+import javax.ws.rs.PUT;
+import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.xml.ws.WebServiceException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 
 import ru.korus.tmis.core.notification.NotificationBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
@@ -33,8 +32,7 @@ import ru.korus.tmis.ws.transfusion.procedure.SendProcedureRequest;
  * Периодический опрос БД
  */
 @Singleton
-@Controller
-@RequestMapping("/")
+@Path("/transfusion")
 public class TransfusionBean {
 
     public static final String MODULE_PATH = "tmis-ws-transfusion/transfusion";
@@ -79,8 +77,15 @@ public class TransfusionBean {
         }
     }
 
-    @RequestMapping(value = "/{name}", method = RequestMethod.PUT)
-    public String getMovie(@PathVariable String name) {
-        return "hello:" + name;
+    @PUT
+    @Path(value = "/{flatCode}/{actionId}")
+    public String getMovie(@PathParam(value = "flatCode") String name,
+                           @PathParam(value = "actionId") Integer actionId) {
+        final String msg = "request param: flatCode = " + name + " actionId = " + actionId;
+        logger.info(msg + " pullDB...");
+        pullDB();
+        logger.info("...pullDB is completed");
+        return msg;
     }
+
 }

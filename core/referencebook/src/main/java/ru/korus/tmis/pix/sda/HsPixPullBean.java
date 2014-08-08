@@ -226,7 +226,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
             logger.error("Sending event info. HS integration internal error. Event.Id = " + event.getId(), ex);
             em.flush();
         } catch (CoreException ex) {
-            hsIntegration.setInfo(e.getMessage());
+            hsIntegration.setInfo(ex.getMessage());
             logger.error("Sending event info. HS integration internal error. Event.Id = " + event.getId(), ex);
             em.flush();
         } catch (Exception ex) {
