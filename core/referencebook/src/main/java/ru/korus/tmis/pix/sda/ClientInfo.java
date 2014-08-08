@@ -486,7 +486,7 @@ public class ClientInfo {
     private String getEnp(Patient client) throws CoreException {
         ClientPolicy clientPolicyEnp = getClientPolicyByCode(client, CMI_COMMON_ELECTRON);
        if(clientPolicyEnp == null || clientPolicyEnp.getNumber() == null ) {
-           throw new CoreException("Не задан номер полиса ОМС единого образца");
+          return null;
        } else if (!clientPolicyEnp.getNumber().matches("(\\d){16}")) {
            throw new CoreException("Недопустимый номер полиса ОМС единого образца '" + clientPolicyEnp.getNumber() +
                    "'. Ожидается строка из 16 цифр. ClientPolicy.id: " + clientPolicyEnp.getId());
