@@ -10,6 +10,7 @@ import javax.xml.ws.WebServiceException
 import scala.collection.JavaConversions._
 import javax.ejb.Stateless
 import ru.korus.tmis.core.transmit.{Transmittable, Sender, TransmitterLocal}
+import ru.korus.tmis.core.exception.CoreException
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -50,9 +51,14 @@ class Transmitter extends TransmitterLocal with Logging {
       em.flush()
     }
     catch {
+      case ex: CoreException => {
+        transmittable.setInfo(ex.getMessage)
+        logger.error(ex)
+        em.flush
+      }
       case ex: Exception => {
         transmittable.setInfo(ex.getMessage)
-        ex.printStackTrace
+        logger.error(ex)
         em.flush
       }
     }

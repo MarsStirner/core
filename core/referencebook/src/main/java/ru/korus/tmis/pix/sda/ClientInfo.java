@@ -4,6 +4,7 @@ import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.fd.ClientSocStatus;
+import ru.korus.tmis.core.exception.CoreException;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -297,7 +298,7 @@ public class ClientInfo {
     private final AddrInfo actualAddr;
 
 
-    public ClientInfo(Patient client, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal) {
+    public ClientInfo(Patient client, DbSchemeKladrBeanLocal dbSchemeKladrBeanLocal) throws CoreException {
         AddrInfo regAddr = null;
         AddrInfo actualAddr = null;
         String dwellingType = null;
@@ -331,8 +332,7 @@ public class ClientInfo {
 
         this.tmisId = client.getId();
         this.snils = EmployeeInfo.toHsSnils(notEmpty(client.getSnils()));
-        ClientPolicy clientPolicyEnp = getEnp(client);
-        this.enpNumber = clientPolicyEnp == null ? null : clientPolicyEnp.getNumber();
+        this.enpNumber = getEnp(client);
 
         ClientPolicy clientPolicyOms = getOMS(client);
         this.omsInfo = clientPolicyOms == null ? null : new InsuranceInfo(clientPolicyOms);
@@ -483,8 +483,15 @@ public class ClientInfo {
     }
 
 
-    private ClientPolicy getEnp(Patient client) {
-        return getClientPolicyByCode(client, CMI_COMMON_ELECTRON);
+    private String getEnp(Patient client) throws CoreException {
+        ClientPolicy clientPolicyEnp = getClientPolicyByCode(client, CMI_COMMON_ELECTRON);
+       if(clientPolicyEnp == null || clientPolicyEnp.getNumber() == null ) {
+           throw new CoreException("Не задан номер полиса ОМС единого образца");
+       } else if (!clientPolicyEnp.getNumber().matches("(\\d){16}")) {
+           throw new CoreException("Недопустимый номер полиса ОМС единого образца '" + clientPolicyEnp.getNumber() +
+                   "'. Ожидается строка из 16 цифр. ClientPolicy.id: " + clientPolicyEnp.getId());
+       }
+        return clientPolicyEnp.getNumber();
     }
 
     private ClientPolicy getClientPolicyByCode(Patient client, String code) {

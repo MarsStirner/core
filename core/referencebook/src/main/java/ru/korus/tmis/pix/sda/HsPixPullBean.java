@@ -159,7 +159,7 @@ public class HsPixPullBean implements HsPixPullTimerBeanLocal, Sender {
         }
     }*/
 
-    public void sendEntity(Object patientToHs) {
+    public void sendEntity(Object patientToHs) throws CoreException {
         assert patientToHs instanceof PatientsToHs;
         EMRReceiverServiceSoap port = getEmrReceiverServiceSoap();
         final LinkedList<AllergyInfo> emptyAllergy = new LinkedList<AllergyInfo>();
