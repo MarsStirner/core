@@ -57,10 +57,9 @@ class MessageDrivenListener extends MessageListener {
                 sendRequestToLIS(o)
                 response setSuccess true
               } catch {
-                case t: Throwable => {
+                case t: Throwable =>
                   response setSuccess false
                   response setThrowable t
-                }
               } finally {
                 var connection: Connection = null
                 var session: Session = null
@@ -195,9 +194,7 @@ class MessageDrivenListener extends MessageListener {
       xmlBirthTime = DatatypeFactory.newInstance.newXMLGregorianCalendar(c)
     }
     catch {
-      case e: DatatypeConfigurationException => {
-        logger.error(e.getMessage)
-      }
+      case e: DatatypeConfigurationException => logger.error(e.getMessage)
     }
     birthTime.setValue(xmlBirthTime)
     patient.setBirthTime(birthTime)
@@ -228,9 +225,7 @@ class MessageDrivenListener extends MessageListener {
         xmlTime = DatatypeFactory.newInstance.newXMLGregorianCalendar(c1)
       }
       catch {
-        case e: DatatypeConfigurationException => {
-          logger.error(e.getMessage)
-        }
+        case e: DatatypeConfigurationException => logger.error(e.getMessage)
       }
       time.setValue(xmlTime)
       author.setTime(time)
@@ -341,7 +336,7 @@ class MessageDrivenListener extends MessageListener {
       codeInfo.setDisplayName(displayName)
       observation.setCode(codeInfo)
       entry.setObservation(observation)
-      return entry
+      entry
     }
 
     private[bak] def createEntryPregnat(code: String, requestInfo: DiagnosticRequestInfo): EntryInfo = {
@@ -360,7 +355,7 @@ class MessageDrivenListener extends MessageListener {
       value.setValue(requestInfo.getOrderPregnatMin + " ~ " + requestInfo.getOrderPregnatMax)
       observation.setValue(value)
       entry.setObservation(observation)
-      return entry
+      entry
     }
 
     private[bak] def createEntryComment(code: String, comment: String): EntryInfo = {
@@ -378,7 +373,7 @@ class MessageDrivenListener extends MessageListener {
       value.setValue(comment)
       observation.setValue(value)
       entry.setObservation(observation)
-      return entry
+      entry
     }
 
     private[bak] def createEntryBiomaterial(biomaterialInfo: BiomaterialInfo, action: Action): EntryInfo = {
@@ -394,8 +389,7 @@ class MessageDrivenListener extends MessageListener {
         xmlTime2 = DatatypeFactory.newInstance.newXMLGregorianCalendar(c2)
       }
       catch {
-        case e: DatatypeConfigurationException => {
-        }
+        case e: DatatypeConfigurationException => // Why is it empty?
       }
       effectiveTime.setValue(xmlTime2)
       observation.setEffectiveTime(effectiveTime)
@@ -432,7 +426,7 @@ class MessageDrivenListener extends MessageListener {
       specimen.setSpecimenRole(specimenRole)
       observation.setSpecimen(specimen)
       entry.setObservation(observation)
-      return entry
+      entry
     }
   }
 
