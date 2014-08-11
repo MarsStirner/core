@@ -55,6 +55,26 @@ DEPLOY_CMD="${ASADMIN}/asadmin --host ${HOST} \
         --upload=true \
         ${APP_NAME}.ear"
 
+DEPLOY_CMD_ANY_FILE="${ASADMIN}/asadmin --host ${HOST} \
+        --port ${ADMIN_PORT} \
+        --user ${ADMIN_LOGIN} \
+        --passwordfile ${GF_PASSWD_FILE} \
+        --interactive=false \
+        --echo=true \
+        --terse=true \
+        deploy \
+        --force=true \
+        --precompilejsp=false \
+        --verify=false \
+        --generatermistubs=false \
+        --availabilityenabled=false \
+        --asyncreplication=true \
+        --keepreposdir=false \
+        --keepfailedstubs=false \
+        --isredeploy=false \
+        --logreportederrors=true \
+        --upload=true "
+
 # Создание файла с паролями
 echo "AS_ADMIN_PASSWORD="${ADMIN_PASSWORD} > $GF_PASSWD_FILE
 echo "AS_ADMIN_MASTERPASSWORD="${MASTER_PASSWORD} >> $GF_PASSWD_FILE
@@ -138,6 +158,17 @@ function deploy_application {
     fi
 }
 
+function deploy_all_wars {
+
+for i in $(ls *.war); do
+     print_header "Deploy ${i}"
+     if ! ${DEPLOY_CMD_ANY_FILE} ${i}; then
+        exit 4
+     fi
+  done
+}
+
+
 function print_tail {
     print_separator
     echo ""
@@ -163,4 +194,5 @@ stop_domain
 copy_config
 start_domain
 deploy_application
+deploy_all_wars
 print_tail

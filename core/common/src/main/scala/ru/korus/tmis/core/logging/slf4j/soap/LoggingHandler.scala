@@ -51,7 +51,6 @@ class LoggingHandler
         }
           getOrElse "Unknown host") +
         "]"
-      case _ => "???"
     }
 
     logMessageBody(context.getMessage, "SOAP" + strop + ":\n--\n" + "%s" + "\n--\n")

@@ -1,4 +1,4 @@
-package ru.korus.tmis.laboratory.bak.model;
+package ru.korus.tmis.lis.data;
 
 import java.io.Serializable;
 

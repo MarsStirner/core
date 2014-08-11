@@ -26,12 +26,13 @@
         <module>ws-users-mgr</module>
         <module>config</module>
         <module>ws-tfoms</module>
+        <module>laboratory-bak</module>
     </modules>
 
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.5.38-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>2.5.39-SNAPSHOT</version.tmis.core>
 
         <version.joda.time>2.3</version.joda.time>
         <version.apache.thrift>0.9.0</version.apache.thrift>
