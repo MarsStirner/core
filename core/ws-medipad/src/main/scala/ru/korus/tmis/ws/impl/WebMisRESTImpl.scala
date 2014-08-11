@@ -544,11 +544,13 @@ with CAPids {
     jData
   }
 
-  private def notify(jData: JSONCommonData, baseUri: URI) = {
+  private def notifyAction(actions:  java.util.List[Action], baseUri: URI): java.lang.Boolean = {
     val uri = URI.create(baseUri.toString.replace("/rest/", "/"))
-    jData.data.toList.foreach(commonEntity => {
-      notificationBeanLocal.sendNotification(actionBean.getActionById(commonEntity.getId()))
+    actions.toList.foreach(action => {
+      notificationBeanLocal.sendNotification(action)
     })
+
+    return true
   }
 
   private def postProcessingForDiagnosis(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
@@ -775,13 +777,14 @@ with CAPids {
       appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
-    val returnValue = primaryAssessmentBean createPrimaryAssessmentForEventId(eventId,
+    val returnValue = primaryAssessmentBean createOrUpdatePrimaryAssessmentForEventId(eventId,
       data,
-      "Document",
+      null,
       authData,
-      /*preProcessing _*/ null,
+      baseUri,
+      notifyAction,
       postProcessing() _)
-    notify(data, baseUri)
+
     returnValue
   }
 
@@ -796,13 +799,14 @@ with CAPids {
       appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
-    val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
+    val returnValue = primaryAssessmentBean createOrUpdatePrimaryAssessmentForEventId(null,
       data,
-      "Document",
+      actionId,
       authData,
-      /*preProcessing _*/ null,
+      baseUri,
+      notifyAction,
       postProcessing() _)
-    notify(data, baseUri)
+
     returnValue
   }
 

@@ -42,8 +42,12 @@ public class NotificationBean implements NotificationBeanLocal {
             for (String basePath : flatCodeListeners.get(flatCode)) {
                 send(basePath, flatCode, action);
             }
-        }
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+            }
 
+        }
     }
 
     private void send(final String basePath, final String flatCode, final Action action) {
