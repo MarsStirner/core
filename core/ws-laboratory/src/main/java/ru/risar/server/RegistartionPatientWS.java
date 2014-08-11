@@ -10,7 +10,7 @@ import javax.jws.WebResult;
 import javax.jws.WebService;
 
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
-import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
+import static ru.korus.tmis.lis.data.model.hl7.HL7Specification.NAMESPACE;
 
 /**
  * @author anosov

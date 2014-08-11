@@ -30,8 +30,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.UUID;
 
-import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
-import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.SUCCESS_ACCEPT_EVENT;
+import static ru.korus.tmis.lis.data.model.hl7.HL7Specification.NAMESPACE;
+import static ru.korus.tmis.lis.data.model.hl7.HL7Specification.SUCCESS_ACCEPT_EVENT;
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 
 /**

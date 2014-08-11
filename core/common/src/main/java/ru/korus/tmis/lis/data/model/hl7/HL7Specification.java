@@ -1,4 +1,4 @@
-package ru.korus.tmis.laboratory.bak.ws.server.model.hl7;
+package ru.korus.tmis.lis.data.model.hl7;
 
 /**
  * @author anosov

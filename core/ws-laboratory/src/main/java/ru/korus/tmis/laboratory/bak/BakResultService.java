@@ -9,8 +9,8 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 
-import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
-import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.SUCCESS_ACCEPT_EVENT;
+import static ru.korus.tmis.lis.data.model.hl7.HL7Specification.NAMESPACE;
+import static ru.korus.tmis.lis.data.model.hl7.HL7Specification.SUCCESS_ACCEPT_EVENT;
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 
 /**
