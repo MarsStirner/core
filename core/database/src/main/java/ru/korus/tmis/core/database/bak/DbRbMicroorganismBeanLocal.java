@@ -13,7 +13,7 @@ import javax.ejb.Local;
 @Local
 public interface DbRbMicroorganismBeanLocal {
 
-    void add(RbMicroorganism rbMicroorganism);
+    RbMicroorganism add(RbMicroorganism rbMicroorganism);
 
     RbMicroorganism get(String code);
 }

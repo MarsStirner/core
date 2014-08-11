@@ -23,14 +23,25 @@ public class DbRbMicroorganismBean implements DbRbMicroorganismBeanLocal {
     private EntityManager em = null;
 
     @Override
-    public void add(RbMicroorganism rbMicroorganism) {
-       final RbMicroorganism response = get(rbMicroorganism.getCode());
-        if (response == null) {
-            em.persist(rbMicroorganism);
-            logger.info("create RbMicroorganism {}", rbMicroorganism);
-        } else {
-            logger.info("find RbMicroorganism {}", response);
-       }
+    public RbMicroorganism add(RbMicroorganism rbMicroorganism) {
+        //     _________________
+        //    < Please kill me  >
+        //     -----------------
+        //            \   ^__^
+        //             \  (oo)\_______
+        //                (__)\       )\/\
+        //                    ||----w |
+        //                    ||     ||
+        //
+       // Скажите спасибо консультантам по интеграции БАК, не способным в анализ, документацию и еще во много чего
+       //final RbMicroorganism response = get(rbMicroorganism.getCode());
+       //if (response == null) {
+        em.persist(rbMicroorganism);
+        logger.info("create RbMicroorganism {}", rbMicroorganism);
+        return rbMicroorganism;
+       //} else {
+       //     logger.info("find RbMicroorganism {}", response);
+       //}
     }
 
     @Override

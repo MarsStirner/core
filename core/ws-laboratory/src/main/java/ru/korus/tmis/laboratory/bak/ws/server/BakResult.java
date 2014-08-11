@@ -355,9 +355,8 @@ public class BakResult implements BakResultService {
             }
 
             for (Microorganism microorganism : bakPosev.getMicroorganismList()) {
-                dbRbMicroorganismBean.add(new RbMicroorganism(microorganism.getCode(), microorganism.getName()));
+                final RbMicroorganism mic = dbRbMicroorganismBean.add(new RbMicroorganism(microorganism.getCode(), microorganism.getName()));
 
-                final RbMicroorganism mic = dbRbMicroorganismBean.get(microorganism.getCode());
                 final BbtResultOrganism resultOrganism = new BbtResultOrganism();
                 resultOrganism.setActionId(bakPosev.getActionId());
                 resultOrganism.setConcentration(microorganism.getComment());
