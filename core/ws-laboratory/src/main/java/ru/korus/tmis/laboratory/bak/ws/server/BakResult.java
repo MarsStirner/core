@@ -15,9 +15,9 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.bak.BakResultService;
+import ru.korus.tmis.lis.data.model.hl7.complex.*;
 import ru.korus.tmis.util.Utils;
 import ru.korus.tmis.laboratory.bak.ws.server.model.*;
-import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.*;
 import ru.korus.tmis.util.logs.ToLog;
 
 import javax.ejb.EJB;

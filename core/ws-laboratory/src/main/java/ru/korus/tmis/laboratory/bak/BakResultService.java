@@ -1,8 +1,8 @@
 package ru.korus.tmis.laboratory.bak;
 
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.MCCIIN000002UV01;
-import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.POLBIN224100UV01;
+import ru.korus.tmis.lis.data.model.hl7.complex.MCCIIN000002UV01;
+import ru.korus.tmis.lis.data.model.hl7.complex.POLBIN224100UV01;
 
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
