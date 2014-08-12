@@ -3,6 +3,7 @@ package ru.korus.tmis.core.notification;
 import ru.korus.tmis.core.entity.model.Action;
 
 import javax.ejb.Local;
+import javax.ejb.Remote;
 import java.net.URI;
 
 /**
@@ -11,10 +12,12 @@ import java.net.URI;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-@Local
+@Remote
 public interface NotificationBeanLocal {
 
     void addListener(String flatCode, String modulePath);
+
+    void addListenerMnem(String mnem, String modulePath);
 
     void sendNotification(Action action);
 

@@ -26,27 +26,47 @@ public class NotificationBean implements NotificationBeanLocal {
 
     private Map<String, Set<String>> flatCodeListeners = new HashMap<String, Set<String>>();
 
+    private Map<String, Set<String>> mnemListeners = new HashMap<String, Set<String>>();
+
+
     @Override
     public void addListener(String flatCode, String modulePath) {
-        if (flatCodeListeners.get(flatCode) == null) {
-            flatCodeListeners.put(flatCode, new HashSet<String>());
+        final Map<String, Set<String>> map = flatCodeListeners;
+        final String key = flatCode;
+        addToMap(key, modulePath, map);
+    }
+
+    private void addToMap(String key, String modulePath, Map<String, Set<String>> map) {
+        if (map.get(key) == null) {
+            map.put(key, new HashSet<String>());
         }
-        flatCodeListeners.get(flatCode).add(modulePath);
+        map.get(key).add(modulePath);
+    }
+
+    @Override
+    public void addListenerMnem(String mnem, String modulePath) {
+        addToMap(mnem, modulePath, mnemListeners);
     }
 
     @Override
     public void sendNotification(Action action) {
-        if (action != null && action.getActionType() != null &&
-                flatCodeListeners.get(action.getActionType().getFlatCode()) != null) {
-            final String flatCode = action.getActionType().getFlatCode();
-            for (String basePath : flatCodeListeners.get(flatCode)) {
-                send(basePath, flatCode, action);
+        if (action != null) {
+            if (action.getActionType() != null &&
+                    flatCodeListeners.get(action.getActionType().getFlatCode()) != null) {
+                final String flatCode = action.getActionType().getFlatCode();
+                final Set<String> strings = flatCodeListeners.get(flatCode);
+                sendToListeners(action, flatCode, strings);
             }
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-            }
+        }
+    }
 
+    private void sendToListeners(Action action, String code, Set<String> strings) {
+        for (String basePath : strings) {
+            send(basePath, code, action);
+        }
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
         }
     }
 
