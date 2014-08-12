@@ -1,7 +1,6 @@
-package ru.korus.tmis.laboratory.bak.ws.server.model;
+package ru.korus.tmis.lis.data.model;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 

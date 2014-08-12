@@ -1,4 +1,4 @@
-package ru.korus.tmis.laboratory.bak.ws.server.model;
+package ru.korus.tmis.lis.data.model;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
