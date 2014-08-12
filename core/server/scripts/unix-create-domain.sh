@@ -24,7 +24,7 @@ CREATE_JVM_OPTIONS=(
         '-agentlib\:jdwp=transport=dt_socket,server=y,suspend=n,address=5005'
         '-XX\:+UnlockExperimentalVMOptions'
         '-Xmx1024m'
-        '-XX\:MaxPermSize=256m'
+        '-XX\:MaxPermSize=512m'
 )
 
 # Получение расположения данного скрипта. Таким образом мы получаем возможность запускать его из любой директории.
