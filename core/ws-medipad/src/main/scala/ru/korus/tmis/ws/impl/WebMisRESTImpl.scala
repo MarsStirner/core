@@ -580,14 +580,14 @@ with CAPids {
     val infectionPropsSet = Set("infectBeginDate", "isInfect", "infectFever", "infectBacteremia", "infectSepsis", "infectSepticShok", "infectLocal", "infectDocumental", "infectCephalopyosis", "infectMeningitis", "infectMeningoencephalitis", "infectEncephalitis", "infectCNSComment", "infectConjunctivitis", "infectPeriorbital", "infectBlepharitis", "infectChorioretinitis", "infectEyeComment", "infectSkinLight", "infectSkinHard", "infectSkinComment", "infectMucositis12", "infectMucositis34", "infectEsophagitis", "infectGingivitis", "infectMucousComment", "infectRhinitis", "infectTonsillitis", "infectOtitis", "infectDefeatPPN", "infectLORComment", "infectBronchitis", "infectInterstitialPneumonia", "infectLobarPneumonia", "infectPleurisy", "infectLungsComment", "infectPericarditis", "infectMioardit", "infectEndocarditis", "infectHeartComment", "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis", "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectAbdomenComment", "infectGlomerulonephritis", "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis", "infectUrogenitalComment", "infectOsteomyelitis", "infectMyositis", "infectMusculoskeletalComment", "infectEtiologyBacterial", "infectEtiologyFungal", "infectEtiologyVirus", "infectEtiologyUnknown")
 
     val infectDrugPropsSet = Set(
-      "infectDrugName_1", "infectDrugBeginDate_1", "infectDrugEndDate_1",
-      "infectDrugName_2", "infectDrugBeginDate_2", "infectDrugEndDate_2",
-      "infectDrugName_3", "infectDrugBeginDate_3", "infectDrugEndDate_3",
-      "infectDrugName_4", "infectDrugBeginDate_4", "infectDrugEndDate_4",
-      "infectDrugName_5", "infectDrugBeginDate_5", "infectDrugEndDate_5",
-      "infectDrugName_6", "infectDrugBeginDate_6", "infectDrugEndDate_6",
-      "infectDrugName_7", "infectDrugBeginDate_7", "infectDrugEndDate_7",
-      "infectDrugName_8", "infectDrugBeginDate_8", "infectDrugEndDate_8"
+      "infectDrugName_1", "infectDrugBeginDate_1", "infectDrugEndDate_1", "infectTherapyType_1",
+      "infectDrugName_2", "infectDrugBeginDate_2", "infectDrugEndDate_2", "infectTherapyType_2",
+      "infectDrugName_3", "infectDrugBeginDate_3", "infectDrugEndDate_3", "infectTherapyType_3",
+      "infectDrugName_4", "infectDrugBeginDate_4", "infectDrugEndDate_4", "infectTherapyType_4",
+      "infectDrugName_5", "infectDrugBeginDate_5", "infectDrugEndDate_5", "infectTherapyType_5",
+      "infectDrugName_6", "infectDrugBeginDate_6", "infectDrugEndDate_6", "infectTherapyType_6",
+      "infectDrugName_7", "infectDrugBeginDate_7", "infectDrugEndDate_7", "infectTherapyType_7",
+      "infectDrugName_8", "infectDrugBeginDate_8", "infectDrugEndDate_8", "infectTherapyType_8"
     )
 
     val therapySet = Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")
