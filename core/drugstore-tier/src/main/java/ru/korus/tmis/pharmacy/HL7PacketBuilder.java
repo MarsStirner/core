@@ -217,7 +217,7 @@ public final class HL7PacketBuilder {
         uv02Location1.setTypeCode(ParticipationTargetLocation.LOC);
         uv02Location1.setTime(time);
         final CS statusCode1 = FACTORY_HL7.createCS();
-        statusCode1.setCode("active");
+        statusCode1.setCode(STATUS_ACTIVE);
         uv02Location1.setStatusCode(statusCode1);
 
         final PRPAMT402002UV02ServiceDeliveryLocation deliveryLocation = FACTORY_HL7.createPRPAMT402002UV02ServiceDeliveryLocation();
@@ -284,7 +284,7 @@ public final class HL7PacketBuilder {
         final COCTMT050000UV01Patient patient = FACTORY_HL7.createCOCTMT050000UV01Patient();
         patient.setClassCode(RoleClassPatient.PAT);
         patient.getId().add(createII(uuidClient));
-        patient.setStatusCode(createCS("active"));
+        patient.setStatusCode(createCS(STATUS_ACTIVE));
 
         final COCTMT030000UV09Person person = FACTORY_HL7.createCOCTMT030000UV09Person();
         final JAXBElement<COCTMT030000UV09Person> patientPerson = FACTORY_HL7.createCOCTMT050000UV01PatientPatientPerson(person);
@@ -418,7 +418,7 @@ public final class HL7PacketBuilder {
         final PRPAMT302011UV02Location1 location1 = FACTORY_HL7.createPRPAMT302011UV02Location1();
         location1.setTypeCode(ParticipationTargetLocation.LOC);
         location1.setTime(createIVLTSCenter(action.getCreateDatetime(), DATETIME_FORMAT));
-        location1.setStatusCode(createCS("active"));
+        location1.setStatusCode(createCS(STATUS_ACTIVE));
         location1.setServiceDeliveryLocation(createServiceDeliveryLocation(uuidLocationOut));
         encounterEvent.setLocation1(location1);
 
@@ -426,7 +426,7 @@ public final class HL7PacketBuilder {
         final PRPAMT302011UV02Location2 location2 = FACTORY_HL7.createPRPAMT302011UV02Location2();
         location2.setTypeCode(ParticipationTargetLocation.LOC);
         location2.setTime(createIVLTSCenter(action.getCreateDatetime(), DATE_FORMAT));
-        location2.setStatusCode(createCS("active"));
+        location2.setStatusCode(createCS(STATUS_ACTIVE));
         location2.setServiceDeliveryLocation(createServiceDeliveryLocation(uuidLocationIn));
         encounterEvent.setLocation2(location2);
 
@@ -491,7 +491,7 @@ public final class HL7PacketBuilder {
         final PRPAMT302012UV02Location1 location1 = FACTORY_HL7.createPRPAMT302012UV02Location1();
         location1.setTypeCode(ParticipationTargetLocation.LOC);
         location1.setTime(createIVLTSCenter(action.getCreateDatetime(), DATE_FORMAT));
-        location1.setStatusCode(createCS("active"));
+        location1.setStatusCode(createCS(STATUS_ACTIVE));
         location1.setServiceDeliveryLocation(createServiceDeliveryLocation2012(uuidLocationOut));
         encounterEvent.setLocation1(location1);
 
@@ -499,7 +499,7 @@ public final class HL7PacketBuilder {
         final PRPAMT302012UV02Location2 location2 = FACTORY_HL7.createPRPAMT302012UV02Location2();
         location2.setTypeCode(ParticipationTargetLocation.LOC);
         location2.setTime(createIVLTSCenter(action.getCreateDatetime(), DATE_FORMAT));
-        location2.setStatusCode(createCS("active"));
+        location2.setStatusCode(createCS(STATUS_ACTIVE));
         location2.setServiceDeliveryLocation(createServiceDeliveryLocation2012(uuidLocationIn));
         encounterEvent.setLocation2(location2);
 
