@@ -1,34 +1,33 @@
 package ru.korus.tmis.ws.impl
 
-import scala.collection.JavaConverters._
-import ru.korus.tmis.core.data._
-import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
-import org.codehaus.jackson.map.ObjectMapper
-import ru.korus.tmis.core.exception.CoreException
-import java.{util => ju, lang}
-import ru.korus.tmis.core.entity.model._
-import collection.mutable
+import java.net.URI
 import java.util.{Calendar, Date, LinkedList}
-import grizzled.slf4j.Logging
-import ru.korus.tmis.ws.webmis.rest.{LockData, WebMisREST}
-import javax.ejb.{Stateless, EJB}
-import ru.korus.tmis.core.database._
-import ru.korus.tmis.core.database.common._
-import ru.korus.tmis.core.patient._
-import com.google.common.collect.Lists
+import java.{lang, util => ju}
+import javax.ejb.{EJB, Stateless}
 import javax.servlet.http.Cookie
+
+import com.google.common.collect.Lists
+import grizzled.slf4j.Logging
+import org.codehaus.jackson.map.ObjectMapper
+import org.joda.time.DateTime
+import ru.korus.tmis.core.auth.{AuthData, AuthStorageBeanLocal, AuthToken}
+import ru.korus.tmis.core.data._
+import ru.korus.tmis.core.database._
+import ru.korus.tmis.core.database.bak.{DbBbtResponseBeanLocal, DbBbtResultOrganismBeanLocal, DbBbtResultTextBeanLocal}
+import ru.korus.tmis.core.database.common._
+import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.core.lock.ActionWithLockInfo
+import ru.korus.tmis.core.notification.NotificationBeanLocal
+import ru.korus.tmis.core.patient._
+import ru.korus.tmis.core.pharmacy.FlatCode
+import ru.korus.tmis.scala.util._
+import ru.korus.tmis.ws.webmis.rest.{LockData, WebMisREST}
+
 import scala.Predef._
 import scala.collection.JavaConversions._
-
-import ru.korus.tmis.scala.util._
-import ru.korus.tmis.core.database.bak.{DbBbtResultOrganismBeanLocal, DbBbtResponseBeanLocal, DbBbtResultTextBeanLocal}
-import org.joda.time.DateTime
-import ru.korus.tmis.core.lock.ActionWithLockInfo
-import ru.korus.tmis.scala.util.StringId
-import ru.korus.tmis.core.pharmacy.FlatCode
-import java.net.URI
-import scala.Predef.String
-import ru.korus.tmis.core.notification.NotificationBeanLocal
+import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 /**
  * User: idmitriev
@@ -577,8 +576,6 @@ with CAPids {
 
     val patientId = event.getPatient.getId
 
-    val infectionPropsSet = Set("infectBeginDate", "isInfect", "infectFever", "infectBacteremia", "infectSepsis", "infectSepticShok", "infectLocal", "infectDocumental", "infectCephalopyosis", "infectMeningitis", "infectMeningoencephalitis", "infectEncephalitis", "infectCNSComment", "infectConjunctivitis", "infectPeriorbital", "infectBlepharitis", "infectChorioretinitis", "infectEyeComment", "infectSkinLight", "infectSkinHard", "infectSkinComment", "infectMucositis12", "infectMucositis34", "infectEsophagitis", "infectGingivitis", "infectMucousComment", "infectRhinitis", "infectTonsillitis", "infectOtitis", "infectDefeatPPN", "infectLORComment", "infectBronchitis", "infectInterstitialPneumonia", "infectLobarPneumonia", "infectPleurisy", "infectLungsComment", "infectPericarditis", "infectMioardit", "infectEndocarditis", "infectHeartComment", "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis", "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectAbdomenComment", "infectGlomerulonephritis", "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis", "infectUrogenitalComment", "infectOsteomyelitis", "infectMyositis", "infectMusculoskeletalComment", "infectEtiologyBacterial", "infectEtiologyFungal", "infectEtiologyVirus", "infectEtiologyUnknown")
-
     val infectDrugPropsSet = Set(
       "infectDrugName_1", "infectDrugBeginDate_1", "infectDrugEndDate_1", "infectTherapyType_1",
       "infectDrugName_2", "infectDrugBeginDate_2", "infectDrugEndDate_2", "infectTherapyType_2",
@@ -588,6 +585,26 @@ with CAPids {
       "infectDrugName_6", "infectDrugBeginDate_6", "infectDrugEndDate_6", "infectTherapyType_6",
       "infectDrugName_7", "infectDrugBeginDate_7", "infectDrugEndDate_7", "infectTherapyType_7",
       "infectDrugName_8", "infectDrugBeginDate_8", "infectDrugEndDate_8", "infectTherapyType_8"
+    )
+
+    val infectPrefixes = Set(
+      "infectFever", "infectBacteremia", "infectSepsis",
+      "infectSepticShok"
+    )
+
+    val localInfectPrefixes = Set(
+      "infectCephalopyosis", "infectMeningitis",
+      "infectMeningoencephalitis", "infectEncephalitis", "infectConjunctivitis",
+      "infectPeriorbital", "infectBlepharitis", "infectChorioretinitis",
+      "infectSkinLight", "infectSkinHard", "infectMucositis12",
+      "infectMucositis34", "infectEsophagitis", "infectGingivitis",
+      "infectRhinitis", "infectTonsillitis", "infectOtitis",
+      "infectDefeatPPN", "infectBronchitis", "infectInterstitialPneumonia", "infectLobarPneumonia",
+      "infectPleurisy", "infectPericarditis", "infectMioardit", "infectEndocarditis",
+      "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis",
+      "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectGlomerulonephritis",
+      "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis",
+      "infectOsteomyelitis", "infectMyositis"
     )
 
     val therapySet = Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")
@@ -663,9 +680,9 @@ with CAPids {
     }
 
     // Получение значений свойств по свойствам инфекционного контроля
-    def getPropertyCustom2(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
+    def getPropertyCustom2(oldDocumentCodes: Set[String], actionTypeCodesPrefix: String): APValue = {
 
-      if (!(actionTypeCodes contains apt.getCode) || !(oldDocumentCodes contains at.getCode))
+      if (!apt.getCode.startsWith(actionTypeCodesPrefix) || !(oldDocumentCodes contains at.getCode))
         return null
 
       // Последний дневниковый осмотр из всех историй болезни
@@ -675,9 +692,10 @@ with CAPids {
       if (lastAction == null)
         return null
 
-      val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectEndDate"))
+      val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(actionTypeCodesPrefix + "-EndDate"))
+      val beginDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(actionTypeCodesPrefix + "-BeginDate"))
 
-      var endDateValue: Date = {
+      val endDateValue: Date = {
         if (endDateProperty.isDefined) {
           val ap = endDateProperty.get
           val value = actionPropertyBean.getActionPropertyValue(ap)
@@ -691,8 +709,22 @@ with CAPids {
           null
       }
 
-      // Даты конца нет, нужно подтянуть значения
-      if (endDateValue == null || endDateValue.after(new Date())) {
+      val beginDateValue: Date = {
+        if (beginDateProperty.isDefined) {
+          val ap = beginDateProperty.get
+          val value = actionPropertyBean.getActionPropertyValue(ap)
+          if (!value.isEmpty)
+            value.head match {
+              case p: APValueDate => p.getValue
+              case _ => null
+            } else
+            null
+        } else
+          null
+      }
+
+      // Даты конца нет или она в будущем,  нужно подтянуть значения
+      if ((endDateValue == null || endDateValue.after(new Date())) && (beginDateValue != null && beginDateValue.before(new Date()))) {
         lastAction.getActionProperties.foreach(p => {
           if (p.getType.getCode != null && p.getType.getCode.equals(apt.getCode)) {
             val values = actionPropertyBean.getActionPropertyValue(p)
@@ -703,7 +735,6 @@ with CAPids {
         null
       } else
         null
-
     }
 
     // Получения значений для лекарственных назначений
@@ -746,23 +777,71 @@ with CAPids {
         null
     }
 
+    // Получение значения поля "Локальная инфекция"
+    def getPropertyCustom4(oldDocumentCodes: Set[String]): APValue = {
+      // Последний дневниковый осмотр из всех историй болезни
+      val lastAction = getLastActionByTypeCodes(oldDocumentCodes)
+
+      // Ничего не возвращем, если в прошлом не было дневникового осмотра
+      if (lastAction == null)
+        return null
+
+      def getPropertyValue(prop: Option[ActionProperty]) = {
+        if (prop.isDefined) {
+          val ap = prop.get
+          val value = actionPropertyBean.getActionPropertyValue(ap)
+          if (!value.isEmpty)
+            value.head match {
+              case p: APValueString => p.getValue
+              case _ => null
+            } else
+            null
+        } else
+          null
+      }
+
+      val localInfectProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectLocal")).getOrElse(null)
+
+      for(prefix <- localInfectPrefixes) {
+
+        val values =
+        Set (
+          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + "-EndDate")),
+          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + "-BeginDate")),
+          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + "-Etiology")))
+        .collect({
+          case x: Some[ActionProperty] => getPropertyValue(x)
+        })
+
+        if(values.exists(_ != null))
+          return {
+            val v = actionPropertyBean.getActionPropertyValue(localInfectProperty)
+            if(v.size() > 0)
+              v.head
+            else
+              null
+          }
+      }
+      null
+    }
+
     at.getCode match {
 
       // Заключительный эпикриз
       case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"))
 
       // Дневниковый осмотр
-      case "1_2_18" => {
-        if (therapySet.contains(at.getCode())) // Подтягивания значений для полей терапии
+      case "1_2_18" =>
+        if (therapySet.contains(at.getCode)) // Подтягивания значений для полей терапии
           getPropertyCustom1(Set("1_2_18"), therapySet)
-        else if (infectionPropsSet.contains(apt.getCode())) // или для полей инфекционного контроля
-          getPropertyCustom2(Set("1_2_18"), infectionPropsSet)
-        else if (infectDrugPropsSet.contains(apt.getCode()))
+        else if ((infectPrefixes ++ localInfectPrefixes).exists(p => apt.getCode!= null && (apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)))) // или для полей инфекционного контроля
+          getPropertyCustom2(Set("1_2_18"), (infectPrefixes ++ localInfectPrefixes).find(p => apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)).get)
+        else if (apt.getCode!= null && apt.getCode.equals("infectLocal"))
+          getPropertyCustom4(Set("1_2_18"))
+        else if (infectDrugPropsSet.contains(apt.getCode))
           getPropertyCustom3(Set("1_2_18"))
         else
           null
-
-      }
       case _ => null
     }
   }
