@@ -1,7 +1,5 @@
 package ru.korus.tmis.core.database.bak;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.bak.BbtOrganismSensValues;
 
 import javax.ejb.Stateless;
@@ -41,9 +39,8 @@ public class DbBbtOrganismSensValuesBean implements DbBbtOrganismSensValuesBeanL
 
     @Override
     public void removeByResultOrganismId(Integer id) {
-        em.createQuery(
-                "DELETE FROM BbtOrganismSensValues a WHERE a.bbtResultOrganismId = :bbtResultOrganismId")
-                .setParameter("bbtResultOrganismId", id).executeUpdate();
+        em.createNamedQuery("BbtOrganismSensValues.deleteBy_bbtResultOrganismId")
+                .setParameter("id", id).executeUpdate();
         em.flush();
     }
 
