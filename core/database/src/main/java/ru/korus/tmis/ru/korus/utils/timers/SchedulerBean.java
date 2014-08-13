@@ -55,7 +55,7 @@ public class SchedulerBean implements  SchedulerBeanLocal {
     }
 
     @Schedule(hour = "*", minute = "*", second = "33")
-    public void removeOldAutoSaveEntries() {
+    public void sendNotification() {
          dbNotificationActionBeanLocal.pullDb();
     }
 }

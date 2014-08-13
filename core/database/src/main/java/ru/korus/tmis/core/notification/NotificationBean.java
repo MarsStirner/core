@@ -26,8 +26,7 @@ public class NotificationBean implements NotificationBeanLocal {
 
     private Map<String, Set<String>> flatCodeListeners = new HashMap<String, Set<String>>();
 
-    private Map<String, Set<String>> mnemListeners = new HashMap<String, Set<String>>();
-
+    private Map<Integer, Set<String>> actionTypeIdListeners = new HashMap<Integer, Set<String>>();
 
     @Override
     public void addListener(String flatCode, String modulePath) {
@@ -36,7 +35,7 @@ public class NotificationBean implements NotificationBeanLocal {
         addToMap(key, modulePath, map);
     }
 
-    private void addToMap(String key, String modulePath, Map<String, Set<String>> map) {
+    private<T> void addToMap(T key, String modulePath, Map<T, Set<String>> map) {
         if (map.get(key) == null) {
             map.put(key, new HashSet<String>());
         }
@@ -44,8 +43,13 @@ public class NotificationBean implements NotificationBeanLocal {
     }
 
     @Override
-    public void addListenerMnem(String mnem, String modulePath) {
-        addToMap(mnem, modulePath, mnemListeners);
+    public void addListener(Integer actionTypeId, String modulePath) {
+        addToMap(actionTypeId, modulePath, actionTypeIdListeners);
+    }
+
+    @Override
+    public Set<String> getListener(Integer actionTypeId) {
+        return actionTypeIdListeners.get(actionTypeId);
     }
 
     @Override
@@ -56,6 +60,11 @@ public class NotificationBean implements NotificationBeanLocal {
                 final String flatCode = action.getActionType().getFlatCode();
                 final Set<String> strings = flatCodeListeners.get(flatCode);
                 sendToListeners(action, flatCode, strings);
+            }
+            if (action.getActionType() != null &&
+                    actionTypeIdListeners.get(action.getActionType()) != null) {
+                final Set<String> strings = actionTypeIdListeners.get(action.getActionType());
+                sendToListeners(action, null, strings);
             }
         }
     }
@@ -75,7 +84,8 @@ public class NotificationBean implements NotificationBeanLocal {
         new Thread() {
             public void run() {
                 try {
-                    final String urlPath = ConfigManager.Common().ServerUrl() + basePath + "/" + flatCode + "/" + action.getId();
+                    final String flatCodePath = flatCode == null || "".equals(flatCode) ? "" : flatCode + "/";
+                    final String urlPath = ConfigManager.Common().ServerUrl() + basePath + "/" + flatCodePath + action.getId();
                     logger.info("Send notification to: " + urlPath);
                     final URL url = new URL(urlPath);
                     final HttpURLConnection conn = (HttpURLConnection) url.openConnection();

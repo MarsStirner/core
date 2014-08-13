@@ -5,6 +5,7 @@ import ru.korus.tmis.core.entity.model.Action;
 import javax.ejb.Local;
 import javax.ejb.Remote;
 import java.net.URI;
+import java.util.Set;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -17,7 +18,9 @@ public interface NotificationBeanLocal {
 
     void addListener(String flatCode, String modulePath);
 
-    void addListenerMnem(String mnem, String modulePath);
+    void addListener(Integer actionTypeId, String modulePath);
+
+    Set<String> getListener(Integer actionTypeId);
 
     void sendNotification(Action action);
 
