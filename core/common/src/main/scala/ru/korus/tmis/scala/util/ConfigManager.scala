@@ -33,6 +33,10 @@ object ConfigManager extends Configuration {
     var lockTimeoutSec = 60 // время таймаута в секундах, после которого снимется лок документа
 
     var ServerUrl = "http://localhost:8080/"
+
+    var notificationActive = "on"
+
+    def isNotificationActive = "on".equals(notificationActive)
   }
 
   var RbManagerSetting = new RbManagerClass

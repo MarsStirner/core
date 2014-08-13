@@ -1,15 +1,11 @@
 package ru.korus.tmis.core.transmit
 
-import ru.korus.tmis.core.entity.model.PatientsToHs
 import java.sql.Timestamp
 import java.util.Date
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import javax.xml.ws.soap.SOAPFaultException
-import javax.xml.ws.WebServiceException
 import scala.collection.JavaConversions._
 import javax.ejb.Stateless
-import ru.korus.tmis.core.transmit.{Transmittable, Sender, TransmitterLocal}
 import ru.korus.tmis.core.exception.CoreException
 
 /**
@@ -25,19 +21,19 @@ class Transmitter extends TransmitterLocal with Logging {
   var em: EntityManager = _
 
   def send(sender: Sender, entityClass: Class[_], namedQuery: String) {
-  val listEntity = em.createNamedQuery(namedQuery, entityClass).setParameter("now", new Timestamp((new Date).getTime)).setMaxResults(TransmitterLocal.MAX_RESULT).getResultList
-  for (entity <- listEntity) {
-    try {
-      val transmittable = entity.asInstanceOf[Transmittable];
-      logger.info("Sending %s info. Transmittable.getId = %d".format(transmittable.getClass.getCanonicalName, transmittable.getId))
-      sendEntity(sender, transmittable)
-    }
-    catch {
-      case ex: Exception => {
-        logger.error("Sending info. Integration internal error.", ex)
+    val listEntity = em.createNamedQuery(namedQuery, entityClass).setParameter("now", new Timestamp((new Date).getTime)).setMaxResults(TransmitterLocal.MAX_RESULT).getResultList
+    for (entity <- listEntity) {
+      try {
+        val transmittable = entity.asInstanceOf[Transmittable];
+        logger.info("Sending %s info. Transmittable.getId = %d".format(transmittable.getClass.getCanonicalName, transmittable.getId))
+        sendEntity(sender, transmittable)
+      }
+      catch {
+        case ex: Exception => {
+          logger.error("Sending info. Integration internal error.", ex)
+        }
       }
     }
-  }
   }
 
   private def sendEntity(sender: Sender, transmittable: Transmittable) {
