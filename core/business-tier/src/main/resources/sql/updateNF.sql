@@ -38,7 +38,7 @@ CREATE TABLE IF NOT EXISTS `ActionToODVD` (
   COLLATE='utf8_general_ci'
   ENGINE=InnoDB;
 
-INSERT INTO NotificationActionType (actionType_id, baseUrl) SELECT ActionType.id, "http://localhost:8080/ws-risar/new/exam/" FROM ActionType WHERE ActionType.MNEM like "EXAM"
+INSERT INTO NotificationActionType (actionType_id, baseUrl) SELECT ActionType.id, "http://localhost:8080/ws-risar//api/notification/new/exam/" FROM ActionType WHERE ActionType.MNEM like "EXAM"
 
 delimiter //
 CREATE TRIGGER `onInsertAction` AFTER INSERT ON `Action` FOR EACH ROW BEGIN

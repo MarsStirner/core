@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-core</artifactId>
     <packaging>pom</packaging>
-    <version>${version.tmis.core}</version>
+    <version>2.5.30.2-SNAPSHOT</version>
     <name>TMIS Root Project</name>
 
 

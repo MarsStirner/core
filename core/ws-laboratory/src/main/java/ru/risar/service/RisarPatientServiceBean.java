@@ -141,11 +141,11 @@ public class RisarPatientServiceBean implements RisarPatientService {
 
     private AccountingSystem findOrCreateAccountingSystem() {
         final TypedQuery<AccountingSystem> query =
-                em.createQuery("SELECT accountingSystem FROM AccountingSystem accountingSystem WHERE accountingSystem.code = 'risar'", AccountingSystem.class);
+                em.createQuery("SELECT accountingSystem FROM AccountingSystem accountingSystem WHERE accountingSystem.code = 'rs'", AccountingSystem.class);
         AccountingSystem accountingSystem = query.getResultList().size() > 0 ? query.getSingleResult() : null;
         if (accountingSystem == null) {
             accountingSystem = new AccountingSystem();
-            accountingSystem.setCode("risar");
+            accountingSystem.setCode("rs");
             accountingSystem.setName("Рисар");
             accountingSystem.setEditable(false);
             accountingSystem.setShowInClientInfo(false);
