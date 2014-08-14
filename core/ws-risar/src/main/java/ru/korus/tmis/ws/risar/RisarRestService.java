@@ -2,10 +2,15 @@ package ru.korus.tmis.ws.risar;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
+import org.springframework.web.client.RestTemplate;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ClientIdentification;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.ejb.EJB;
 import javax.persistence.EntityManager;
@@ -13,7 +18,11 @@ import javax.persistence.PersistenceContext;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import java.text.Format;
+import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -31,12 +40,18 @@ public class RisarRestService {
     private EntityManager em = null;
 
     @EJB
-    private DbActionBeanLocal dbActionBean = null;
+    private DbActionBeanLocal dbActionBean;
+
+    @EJB
+    DbOrganizationBeanLocal organizationBeanLocal;
+
+    @EJB
+    DbActionPropertyBeanLocal dbActionPropertyBeanLocal;
 
     @PUT
     @Path("/new/exam/{actionId}")
     public String newExam(@PathParam(value = "actionId") Integer actionId) throws CoreException {
-        logger.info("RISAR notification. new exam with actionId: " + actionId);
+        logger.info("RISAR notification. New exam with actionId: " + actionId);
         Action action = dbActionBean.getActionById(actionId);
 
         final Integer clientId = action.getEvent().getPatient().getId();
@@ -54,6 +69,54 @@ public class RisarRestService {
     }
 
     private void sendExamToRisar(Action action, ClientIdentification clientIdentification) {
+        RestTemplate rest = new RestTemplate();
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+        //diagnosisCode:O60
+        //recommendations:Чай с ромашкой.
+        map.add("inspectationID", String.valueOf(action.getId()));
+        map.add("patiendID", clientIdentification.getIdentifier());
+        final Staff staff = action.getModifyPerson();
+        if (staff != null) {
+            map.add("doctorFIO[surname]", staff.getLastName());
+            map.add("doctorFIO[name]", staff.getFirstName());
+            final String patrName = staff.getPatrName();
+            if (patrName != null && !patrName.isEmpty()) {
+                map.add("doctorFIO[middlename]", patrName);
+            }
+            final RbPost post = staff.getPost();
+            if(post != null) {
+                 map.add("position", post.getName());
+            }
+        }
+        try {
+            Organisation organization = organizationBeanLocal.getOrganizationById(ConfigManager.Common().OrgId());
+            map.add("inspectLPUName", organization.getShortName());
+            map.add("INN", organization.getInn());
+            Map<ActionProperty, List<APValue>> actionProp =
+                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList("diagnosis"));
+            if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
+                Object value = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
+                if (value instanceof APValueMKB) {
+                    map.add("diagnosisCode", ((APValueMKB)value).getMkb().getDiagID());
+                }
+            }
+            actionProp =
+                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList("recommended"));
+            if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
+                Object value = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
+                if (value instanceof APValue) {
+                    map.add("recommendations", ((APValue)value).getValueAsString());
+                }
+            }
+        } catch (CoreException e) {
+            logger.error("RISAR notification. Cannot set INN and title of organization.", e);
+        }
 
+        map.add("visitDate", (new SimpleDateFormat("yyyy-MM-dd")).format(action.getModifyDatetime()));
+        map.add("visitTime", (new SimpleDateFormat("HH:mm:ss")).format(action.getModifyDatetime()));
+
+        final String url = ConfigManager.Risar().ServiceUrl() + "/api/patient/v1/saveInspectionResults/";
+        String result = rest.postForObject(url, map, String.class);
+        logger.info("RISAR notification. Request url: " + url + " Request result: " + result);
     }
 }

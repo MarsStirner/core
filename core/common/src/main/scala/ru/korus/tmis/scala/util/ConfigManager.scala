@@ -398,6 +398,19 @@ object ConfigManager extends Configuration {
 
   }
 
+  /**
+   * Интеграция с РИСАР
+   */
+
+  var Risar = new RisarClass
+
+  class RisarClass extends Configuration {
+    /**
+     * URL сервиса РИСАР
+     */
+    var ServiceUrl: URL = new URL("http://10.1.2.214/risar2/api")
+  }
+
 
   /**
    * todo
