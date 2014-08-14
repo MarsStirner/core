@@ -15,7 +15,7 @@ see implementation details http://jersey.java.net/nonav/documentation/latest/jax
         </init-param>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
-            <param-value>laboratory.bak</param-value>
+            <param-value>ru.korus.tmis.laboratory.bak</param-value>
         </init-param>
         <load-on-startup>1</load-on-startup>
     </servlet>

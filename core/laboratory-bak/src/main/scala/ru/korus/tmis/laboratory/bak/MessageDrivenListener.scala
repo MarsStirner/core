@@ -1,4 +1,4 @@
-package laboratory.bak
+package ru.korus.tmis.laboratory.bak
 
 import java.util.{Date, GregorianCalendar}
 import javax.annotation.Resource
@@ -12,7 +12,6 @@ import javax.xml.ws.Holder
 import org.slf4j.{Logger, LoggerFactory}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.laboratory.bak.BakSendService
 import ru.korus.tmis.laboratory.bak.service._
 import ru.korus.tmis.laboratory.bak.ws.client.BakSend
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver
@@ -319,9 +318,9 @@ class MessageDrivenListener extends MessageListener {
     document.setComponent(component)
   }
 
-  private[bak] object EntryFactory {
+  private[laboratory] object EntryFactory {
 
-    private[bak] def createEntry(root: String, classCode: String, moodCode: String, code: String, displayName: String): EntryInfo = {
+    private[laboratory] def createEntry(root: String, classCode: String, moodCode: String, code: String, displayName: String): EntryInfo = {
       val entry: EntryInfo = new EntryInfo
       val observation: ObservationInfo = new ObservationInfo
       observation.setClassCode(classCode)
@@ -339,7 +338,7 @@ class MessageDrivenListener extends MessageListener {
       entry
     }
 
-    private[bak] def createEntryPregnat(code: String, requestInfo: DiagnosticRequestInfo): EntryInfo = {
+    private[laboratory] def createEntryPregnat(code: String, requestInfo: DiagnosticRequestInfo): EntryInfo = {
       val entry: EntryInfo = new EntryInfo
       val observation: ObservationInfo = new ObservationInfo
       observation.setClassCode("OBS")
@@ -358,7 +357,7 @@ class MessageDrivenListener extends MessageListener {
       entry
     }
 
-    private[bak] def createEntryComment(code: String, comment: String): EntryInfo = {
+    private[laboratory] def createEntryComment(code: String, comment: String): EntryInfo = {
       val entry: EntryInfo = new EntryInfo
       val observation: ObservationInfo = new ObservationInfo
       observation.setClassCode("OBS")
@@ -376,7 +375,7 @@ class MessageDrivenListener extends MessageListener {
       entry
     }
 
-    private[bak] def createEntryBiomaterial(biomaterialInfo: BiomaterialInfo, action: Action): EntryInfo = {
+    private[laboratory] def createEntryBiomaterial(biomaterialInfo: BiomaterialInfo, action: Action): EntryInfo = {
       val entry: EntryInfo = new EntryInfo
       val observation: ObservationInfo = new ObservationInfo
       observation.setClassCode("OBS")
