@@ -13,7 +13,7 @@ import java.util.Set;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-@Remote
+@Local
 public interface NotificationBeanLocal {
 
     void addListener(String flatCode, String modulePath);
