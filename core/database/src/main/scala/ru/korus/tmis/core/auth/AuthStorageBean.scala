@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.auth
 
+import ru.korus.tmis.core.database.common.DbSettingsBeanLocal
 import ru.korus.tmis.core.database.{AppLockStatusType, AppLockStatus, AppLockBeanLocal, DbStaffBeanLocal}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
@@ -33,6 +34,9 @@ class AuthStorageBean
 
   @EJB
   var dbStaff: DbStaffBeanLocal = _
+
+  @EJB
+  var dbSetting: DbSettingsBeanLocal = _
 
   // Отображение токена в кортеж из данных аутентификации и даты окончания
   // срока действия токена
@@ -91,7 +95,7 @@ class AuthStorageBean
     )
 
     val tokenEndTime =
-      new Date(new Date().getTime + ConfigManager.TmisAuth.AuthTokenPeriod)
+      new Date(new Date().getTime + getAuthTokenLifeTime)
 
     authMap.put(authData.authToken, (authData, tokenEndTime))
 
@@ -199,7 +203,7 @@ class AuthStorageBean
             i18n("error.tokenExceeded"))
         } else {
           info("Token is valid")
-          val tokenEndTimeNew = new Date(new Date().getTime + ConfigManager.TmisAuth.AuthTokenPeriod)
+          val tokenEndTimeNew = new Date(new Date().getTime + getAuthTokenLifeTime)
           authMap.remove(authToken)
           authMap.put(authToken, (authData, tokenEndTimeNew))
         }
@@ -330,4 +334,21 @@ class AuthStorageBean
   def releaseLock(id: Integer) {
     appLockBeanLocal.releaseAppLock(id)
   }
+
+  def getAuthTokenLifeTime: Int = {
+    val value = dbSetting.getSettingByPath(i18n("settings.path.authTokenLife")).getValue
+    if(value != null && !value.isEmpty) {
+      try {
+        return value.toInt
+      }
+      catch {
+        case e: Throwable => {
+          // TODO Log - incorrect setting value
+          ConfigManager.TmisAuth.AuthTokenPeriod
+        }
+      }
+    } else
+      ConfigManager.TmisAuth.AuthTokenPeriod
+  }
+
 }
