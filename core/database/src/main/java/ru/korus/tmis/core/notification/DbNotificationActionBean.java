@@ -48,7 +48,7 @@ public class DbNotificationActionBean implements DbNotificationActionBeanLocal, 
                 logger.info("Notifications is disabled...");
             }
         } catch (Exception ex) {
-            logger.error("1C ODVD integration internal error.", ex);
+            logger.error("Notifications internal error.", ex);
         }
     }
 

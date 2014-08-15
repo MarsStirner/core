@@ -62,8 +62,8 @@ public class NotificationBean implements NotificationBeanLocal {
                 sendToListeners(action, flatCode, strings);
             }
             if (action.getActionType() != null &&
-                    actionTypeIdListeners.get(action.getActionType()) != null) {
-                final Set<String> strings = actionTypeIdListeners.get(action.getActionType());
+                    actionTypeIdListeners.get(action.getActionType().getId()) != null) {
+                final Set<String> strings = actionTypeIdListeners.get(action.getActionType().getId());
                 sendToListeners(action, null, strings);
             }
         }
