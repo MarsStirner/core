@@ -65,12 +65,11 @@ class MessageDrivenListener extends MessageListener {
                 try {
                   connection = connectionFactory.createConnection()
                   session = connection.createSession(true, 0)
-                  val publisher = session.createProducer(topic)
+                  val publisher = session.createProducer(m.getJMSReplyTo)
                   val message = session.createObjectMessage()
                   message.setJMSType(LabModuleSendingResponse.JMS_TYPE)
                   message.setObject(response)
                   publisher.send(message)
-                  publisher.send(session.createMessage());
                 }
                 catch {
                   case t: Throwable => t.printStackTrace();

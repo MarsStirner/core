@@ -1,30 +1,34 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
-import javax.xml.bind.annotation.*;
+import java.io.Serializable;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlAttribute;
+import javax.xml.bind.annotation.XmlSeeAlso;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.CollapsedStringAdapter;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
-import java.util.ArrayList;
-import java.util.List;
 
 
 /**
- * Data that is primarily intended for human interpretation
- * or for further machine processing is outside the scope of
- * HL7. This includes unformatted or formatted written language,
- * multimedia data, or structured information as defined by a
- * different standard (e.g., XML-signatures.)  Instead of the
- * data itself, an ED may contain
- * only a reference (see TEL.) Note
- * that the ST data type is a
- * specialization of
- * when the  is text/plain.
- * <p/>
- * <p/>
+ * 
+ *             Data that is primarily intended for human interpretation
+ *             or for further machine processing is outside the scope of
+ *             HL7. This includes unformatted or formatted written language,
+ *             multimedia data, or structured information as defined by a
+ *             different standard (e.g., XML-signatures.)  Instead of the
+ *             data itself, an ED may contain 
+ *             only a reference (see TEL.) Note
+ *             that the ST data type is a
+ *             specialization of 
+ *             when the  is text/plain.
+ *          
+ * 
  * <p>Java class for ED complex type.
- * <p/>
+ * 
  * <p>The following schema fragment specifies the expected content contained within this class.
- * <p/>
+ * 
  * <pre>
  * &lt;complexType name="ED">
  *   &lt;complexContent>
@@ -42,28 +46,26 @@ import java.util.List;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
+ * 
+ * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-//@XmlRootElement
 @XmlType(name = "ED", propOrder = {
-        "reference",
-        "thumbnail",
-        "content"
+    "reference",
+    "thumbnail"
 })
 @XmlSeeAlso({
-        Thumbnail.class,
-        ST.class
+    Thumbnail.class,
+    ST.class
 })
 public class ED
-        extends BIN {
+    extends BIN
+    implements Serializable
+{
 
-
+    private final static long serialVersionUID = 1L;
     protected TEL reference;
     protected Thumbnail thumbnail;
-//    @XmlAnyElement
-    @XmlElement(nillable = true)
-    protected List<Object> content;
-
     @XmlAttribute(name = "mediaType")
     @XmlJavaTypeAdapter(CollapsedStringAdapter.class)
     protected String mediaType;
@@ -78,38 +80,12 @@ public class ED
     protected IntegrityCheckAlgorithm integrityCheckAlgorithm;
 
     /**
-     * Gets the value of the content property.
-     *
-     * <p>
-     * This accessor method returns a reference to the live list,
-     * not a snapshot. Therefore any modification you make to the
-     * returned list will be present inside the JAXB object.
-     * This is why there is not a <CODE>set</CODE> method for the content property.
-     *
-     * <p>
-     * For example, to add a new item, do as follows:
-     * <pre>
-     *    getContent().add(newItem);
-     * </pre>
-     *
-     *
-     * <p>
-     * Objects of the following type(s) are allowed in the list
-     * {@link Object }
-     *
-     *
-     */
-    public List<Object> getContent() {
-        if (content == null) {
-            content = new ArrayList<Object>();
-        }
-        return this.content;
-    }
-    /**
      * Gets the value of the reference property.
-     *
-     * @return possible object is
-     *         {@link TEL }
+     * 
+     * @return
+     *     possible object is
+     *     {@link TEL }
+     *     
      */
     public TEL getReference() {
         return reference;
@@ -117,9 +93,11 @@ public class ED
 
     /**
      * Sets the value of the reference property.
-     *
-     * @param value allowed object is
-     *              {@link TEL }
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link TEL }
+     *     
      */
     public void setReference(TEL value) {
         this.reference = value;
@@ -127,9 +105,11 @@ public class ED
 
     /**
      * Gets the value of the thumbnail property.
-     *
-     * @return possible object is
-     *         {@link Thumbnail }
+     * 
+     * @return
+     *     possible object is
+     *     {@link Thumbnail }
+     *     
      */
     public Thumbnail getThumbnail() {
         return thumbnail;
@@ -137,9 +117,11 @@ public class ED
 
     /**
      * Sets the value of the thumbnail property.
-     *
-     * @param value allowed object is
-     *              {@link Thumbnail }
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Thumbnail }
+     *     
      */
     public void setThumbnail(Thumbnail value) {
         this.thumbnail = value;
@@ -147,9 +129,11 @@ public class ED
 
     /**
      * Gets the value of the mediaType property.
-     *
-     * @return possible object is
-     *         {@link String }
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
     public String getMediaType() {
         if (mediaType == null) {
@@ -161,9 +145,11 @@ public class ED
 
     /**
      * Sets the value of the mediaType property.
-     *
-     * @param value allowed object is
-     *              {@link String }
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
      */
     public void setMediaType(String value) {
         this.mediaType = value;
@@ -171,9 +157,11 @@ public class ED
 
     /**
      * Gets the value of the language property.
-     *
-     * @return possible object is
-     *         {@link String }
+     * 
+     * @return
+     *     possible object is
+     *     {@link String }
+     *     
      */
     public String getLanguage() {
         return language;
@@ -181,9 +169,11 @@ public class ED
 
     /**
      * Sets the value of the language property.
-     *
-     * @param value allowed object is
-     *              {@link String }
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link String }
+     *     
      */
     public void setLanguage(String value) {
         this.language = value;
@@ -191,9 +181,11 @@ public class ED
 
     /**
      * Gets the value of the compression property.
-     *
-     * @return possible object is
-     *         {@link CompressionAlgorithm }
+     * 
+     * @return
+     *     possible object is
+     *     {@link CompressionAlgorithm }
+     *     
      */
     public CompressionAlgorithm getCompression() {
         return compression;
@@ -201,9 +193,11 @@ public class ED
 
     /**
      * Sets the value of the compression property.
-     *
-     * @param value allowed object is
-     *              {@link CompressionAlgorithm }
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link CompressionAlgorithm }
+     *     
      */
     public void setCompression(CompressionAlgorithm value) {
         this.compression = value;
@@ -211,9 +205,10 @@ public class ED
 
     /**
      * Gets the value of the integrityCheck property.
-     *
-     * @return possible object is
-     *         byte[]
+     * 
+     * @return
+     *     possible object is
+     *     byte[]
      */
     public byte[] getIntegrityCheck() {
         return integrityCheck;
@@ -221,9 +216,10 @@ public class ED
 
     /**
      * Sets the value of the integrityCheck property.
-     *
-     * @param value allowed object is
-     *              byte[]
+     * 
+     * @param value
+     *     allowed object is
+     *     byte[]
      */
     public void setIntegrityCheck(byte[] value) {
         this.integrityCheck = value;
@@ -231,9 +227,11 @@ public class ED
 
     /**
      * Gets the value of the integrityCheckAlgorithm property.
-     *
-     * @return possible object is
-     *         {@link IntegrityCheckAlgorithm }
+     * 
+     * @return
+     *     possible object is
+     *     {@link IntegrityCheckAlgorithm }
+     *     
      */
     public IntegrityCheckAlgorithm getIntegrityCheckAlgorithm() {
         if (integrityCheckAlgorithm == null) {
@@ -245,9 +243,11 @@ public class ED
 
     /**
      * Sets the value of the integrityCheckAlgorithm property.
-     *
-     * @param value allowed object is
-     *              {@link IntegrityCheckAlgorithm }
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link IntegrityCheckAlgorithm }
+     *     
      */
     public void setIntegrityCheckAlgorithm(IntegrityCheckAlgorithm value) {
         this.integrityCheckAlgorithm = value;

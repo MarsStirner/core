@@ -1,7 +1,8 @@
 package ru.korus.tmis.laboratory
 
+import javax.annotation.Resource
 import javax.ejb.{ActivationConfigProperty, EJB, MessageDriven}
-import javax.jms.{Message, MessageListener, ObjectMessage}
+import javax.jms._
 import javax.persistence.{EntityManager, PersistenceContext}
 
 import ru.korus.tmis.core.database.DbJobTicketBeanLocal
@@ -9,6 +10,7 @@ import ru.korus.tmis.core.database.common.{DbActionBeanLocal, DbActionPropertyBe
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.lis.data.jms.LabModuleSendingResponse
+import ru.korus.tmis.lis.data.model.hl7.complex.POLBIN224100UV01
 
 import scala.collection.JavaConverters._
 /**
@@ -17,9 +19,9 @@ import scala.collection.JavaConverters._
  * Time: 7:25 PM
  */
 @MessageDriven(
-  mappedName = "LaboratoryTopic",
+  mappedName = "LaboratoryQueue",
   activationConfig = Array(
-    new ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"))
+    new ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"))
 )
 class MISMessageReceiver extends MessageListener {
 
@@ -35,28 +37,41 @@ class MISMessageReceiver extends MessageListener {
   @EJB
   private var s: DbActionPropertyBeanLocal = _
 
-  override def onMessage(message: Message) = Option(message) collect {
-    case m: ObjectMessage => Option(m.getObject) collect {
-      case o: LabModuleSendingResponse => Option(message.getJMSType) collect {
-        case LabModuleSendingResponse.JMS_TYPE  => {
-          try {
-            val action = dbActionBean.getActionById(o.getActionId) // "Проверка" что такой Action существует
-            if (o.isSuccess) {
-              dbActionBean.updateActionStatusWithFlush(o.getActionId, ActionStatus.WAITING.getCode)
-              setJobTicketStatusOfResearch(action, JobTicket.STATUS_IS_FINISHED)
-            } else {
-              setJobTicketStatusOfResearch(action, JobTicket.STATUS_IN_PROGRESS)
-            }
-          } catch {
-            case e: CoreException => {
-              e.printStackTrace()
-            }
+  @Resource(lookup = "QueueConnectionFactory")
+  var qcf: QueueConnectionFactory = _
 
-            case t: Throwable => {
-              t.printStackTrace()
-            }
+  override def onMessage(message: Message) = {
+    try {
+      Option(message) collect {
+        case m: ObjectMessage => Option(m.getObject) collect {
+          case o: LabModuleSendingResponse => Option(message.getJMSType) collect {
+            case LabModuleSendingResponse.JMS_TYPE =>
+              try {
+                val action = dbActionBean.getActionById(o.getActionId) // "Проверка" что такой Action существует
+                if (o.isSuccess) {
+                  dbActionBean.updateActionStatusWithFlush(o.getActionId, ActionStatus.WAITING.getCode)
+                  setJobTicketStatusOfResearch(action, JobTicket.STATUS_IS_FINISHED)
+                } else {
+                  setJobTicketStatusOfResearch(action, JobTicket.STATUS_IN_PROGRESS)
+                }
+              } catch {
+                case e: CoreException => e.printStackTrace()
+
+                case t: Throwable => t.printStackTrace()
+              }
           }
+          case o: POLBIN224100UV01 =>
+
         }
+      }
+    } finally { // Always sending reply if possible
+      if (message.getJMSReplyTo != null) {
+        val c = qcf.createQueueConnection()
+        val s = c.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)
+        val p = s.createProducer(message.getJMSReplyTo)
+        val replyMessage = s.createTextMessage("Hello!")
+        replyMessage.setJMSCorrelationID(message.getJMSCorrelationID)
+        p.send(replyMessage)
       }
     }
   }

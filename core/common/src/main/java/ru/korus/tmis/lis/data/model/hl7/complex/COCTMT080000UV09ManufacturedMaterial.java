@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -65,8 +66,11 @@ import javax.xml.bind.annotation.XmlType;
     "derivedSpecimen",
     "additive"
 })
-public class COCTMT080000UV09ManufacturedMaterial {
+public class COCTMT080000UV09ManufacturedMaterial
+    implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;

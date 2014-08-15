@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -30,8 +31,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "MCCI_IN000002UV01")
 public class MCCIIN000002UV01
     extends MCCIMT000200UV01Message
+    implements Serializable
 {
 
+    private final static long serialVersionUID = 1L;
     @XmlAttribute(name = "ITSVersion", required = true)
     protected String itsVersion;
 

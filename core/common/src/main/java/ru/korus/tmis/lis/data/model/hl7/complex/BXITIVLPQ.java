@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
@@ -29,8 +30,10 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "BXIT_IVL_PQ")
 public class BXITIVLPQ
     extends IVLPQ
+    implements Serializable
 {
 
+    private final static long serialVersionUID = 1L;
     @XmlAttribute(name = "qty")
     protected BigInteger qty;
 

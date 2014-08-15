@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
@@ -53,8 +54,11 @@ import javax.xml.bind.annotation.XmlType;
     "pertinentInformation",
     "subjectOf"
 })
-public class COCTMT300000UV04SubstanceAdministrationIntent {
+public class COCTMT300000UV04SubstanceAdministrationIntent
+    implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;

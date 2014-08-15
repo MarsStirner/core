@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -49,8 +50,11 @@ import javax.xml.bind.annotation.XmlType;
     "addr",
     "asRelatedManufacturer"
 })
-public class COCTMT230100UVManufacturer {
+public class COCTMT230100UVManufacturer
+    implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;

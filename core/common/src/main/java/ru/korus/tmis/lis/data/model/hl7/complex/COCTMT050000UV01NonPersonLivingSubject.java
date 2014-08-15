@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
@@ -95,8 +96,11 @@ import javax.xml.bind.annotation.XmlType;
     "birthPlace",
     "guarantorRole"
 })
-public class COCTMT050000UV01NonPersonLivingSubject {
+public class COCTMT050000UV01NonPersonLivingSubject
+    implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;

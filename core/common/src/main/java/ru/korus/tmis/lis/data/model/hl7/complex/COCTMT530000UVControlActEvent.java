@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
@@ -55,8 +56,11 @@ import javax.xml.bind.annotation.XmlType;
     "responsibleParty",
     "author"
 })
-public class COCTMT530000UVControlActEvent {
+public class COCTMT530000UVControlActEvent
+    implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;

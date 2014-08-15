@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
@@ -51,13 +52,15 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class IVLTS
     extends SXCMTS
+    implements Serializable
 {
 
+    private final static long serialVersionUID = 1L;
     @XmlElementRefs({
-        @XmlElementRef(name = "low", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "center", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "width", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "high", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
+        @XmlElementRef(name = "high", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
+        @XmlElementRef(name = "low", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     })
     protected List<JAXBElement<? extends QTY>> rest;
 
@@ -67,8 +70,8 @@ public class IVLTS
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "High" is used by two different parts of a schema. See: 
-     * line 1758 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes-base.xsd
-     * line 1749 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes-base.xsd
+     * line 1758 of file:/home/user/hl7/processable/coreschemas/datatypes-base.xsd
+     * line 1749 of file:/home/user/hl7/processable/coreschemas/datatypes-base.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -89,9 +92,9 @@ public class IVLTS
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
-     * {@link JAXBElement }{@code <}{@link IVXBTS }{@code >}
      * {@link JAXBElement }{@code <}{@link TS }{@code >}
      * {@link JAXBElement }{@code <}{@link PQ }{@code >}
+     * {@link JAXBElement }{@code <}{@link IVXBTS }{@code >}
      * {@link JAXBElement }{@code <}{@link IVXBTS }{@code >}
      * 
      * 

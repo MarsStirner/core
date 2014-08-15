@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -49,8 +50,10 @@ import javax.xml.bind.annotation.XmlType;
     QTY.class,
     GLISTPQ.class
 })
-public abstract class ANY {
+public abstract class ANY implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     @XmlAttribute(name = "nullFlavor")
     protected NullFlavor nullFlavor;
 

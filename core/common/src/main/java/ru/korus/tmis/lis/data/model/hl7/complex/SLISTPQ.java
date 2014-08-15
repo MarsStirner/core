@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.ArrayList;
 import java.util.List;
@@ -40,8 +41,10 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class SLISTPQ
     extends ANY
+    implements Serializable
 {
 
+    private final static long serialVersionUID = 1L;
     @XmlElement(required = true)
     protected PQ origin;
     @XmlElement(required = true)

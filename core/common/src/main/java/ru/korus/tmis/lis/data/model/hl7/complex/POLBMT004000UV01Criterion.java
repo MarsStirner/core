@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -51,8 +52,11 @@ import javax.xml.bind.annotation.XmlType;
     "consumable1",
     "consumable2"
 })
-public class POLBMT004000UV01Criterion {
+public class POLBMT004000UV01Criterion
+    implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;

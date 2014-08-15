@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
@@ -71,8 +72,11 @@ import javax.xml.bind.annotation.XmlType;
     "player20",
     "player21"
 })
-public class COCTMT840000UV09ManagedEntity {
+public class COCTMT840000UV09ManagedEntity
+    implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;

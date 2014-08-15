@@ -86,6 +86,8 @@ with I18nable {
   private var connectionFactory: ConnectionFactory = _
   @Resource(lookup = "LaboratoryTopic")
   private var topic: Topic = _
+  @Resource(lookup = "LaboratoryQueue")
+  private var queue: Queue = _
 
 
   //todo должен быть вызов веб-сервиса с передачей actionId
@@ -742,6 +744,7 @@ with I18nable {
       message.setJMSType(LISMessageReceiver.JMS_TYPE)
       message.setStringProperty(LISMessageReceiver.JMS_LAB_PROPERTY_NAME, labCode)
       message.setObject(requestObject)
+      message.setJMSReplyTo(queue)
       publisher.send(message)
     }
     catch {

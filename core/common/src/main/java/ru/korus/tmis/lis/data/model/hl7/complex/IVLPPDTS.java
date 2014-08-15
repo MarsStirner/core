@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.JAXBElement;
@@ -51,12 +52,14 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class IVLPPDTS
     extends SXCMPPDTS
+    implements Serializable
 {
 
+    private final static long serialVersionUID = 1L;
     @XmlElementRefs({
+        @XmlElementRef(name = "center", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "high", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "low", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
-        @XmlElementRef(name = "center", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false),
         @XmlElementRef(name = "width", namespace = "urn:hl7-org:v3", type = JAXBElement.class, required = false)
     })
     protected List<JAXBElement<? extends QTY>> rest;
@@ -67,8 +70,8 @@ public class IVLPPDTS
      * <p>
      * You are getting this "catch-all" property because of the following reason: 
      * The field name "High" is used by two different parts of a schema. See: 
-     * line 453 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes.xsd
-     * line 444 of file:/C:/Users/anosov/Downloads/processable2011/processable/coreschemas/datatypes.xsd
+     * line 453 of file:/home/user/hl7/processable/coreschemas/datatypes.xsd
+     * line 444 of file:/home/user/hl7/processable/coreschemas/datatypes.xsd
      * <p>
      * To get rid of this property, apply a property customization to one 
      * of both of the following declarations to change their names: 
@@ -89,10 +92,10 @@ public class IVLPPDTS
      * 
      * <p>
      * Objects of the following type(s) are allowed in the list
+     * {@link JAXBElement }{@code <}{@link PPDPQ }{@code >}
      * {@link JAXBElement }{@code <}{@link IVXBPPDTS }{@code >}
      * {@link JAXBElement }{@code <}{@link IVXBPPDTS }{@code >}
      * {@link JAXBElement }{@code <}{@link PPDTS }{@code >}
-     * {@link JAXBElement }{@code <}{@link PPDPQ }{@code >}
      * 
      * 
      */

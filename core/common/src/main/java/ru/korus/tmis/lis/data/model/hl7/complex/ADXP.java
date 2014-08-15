@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
@@ -69,8 +70,10 @@ import javax.xml.bind.annotation.XmlType;
 })
 public class ADXP
     extends ST
+    implements Serializable
 {
 
+    private final static long serialVersionUID = 1L;
     @XmlAttribute(name = "partType")
     protected AddressPartType partType;
 

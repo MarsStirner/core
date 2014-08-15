@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -52,8 +53,11 @@ import javax.xml.bind.annotation.XmlType;
     "effectiveTime",
     "careGiverPerson"
 })
-public class COCTMT050000UV01CareGiver {
+public class COCTMT050000UV01CareGiver
+    implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;

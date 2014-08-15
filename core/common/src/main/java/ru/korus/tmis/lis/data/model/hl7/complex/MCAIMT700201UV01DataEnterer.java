@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -43,8 +44,11 @@ import javax.xml.bind.annotation.XmlType;
     "time",
     "assignedPerson"
 })
-public class MCAIMT700201UV01DataEnterer {
+public class MCAIMT700201UV01DataEnterer
+    implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;

@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlType;
@@ -27,7 +28,9 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "adxp.deliveryInstallationArea")
 public class AdxpDeliveryInstallationArea
     extends ADXP
+    implements Serializable
 {
 
+    private final static long serialVersionUID = 1L;
 
 }

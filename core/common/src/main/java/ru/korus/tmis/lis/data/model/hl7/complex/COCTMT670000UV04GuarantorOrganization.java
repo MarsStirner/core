@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.lis.data.model.hl7.complex;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -44,8 +45,11 @@ import javax.xml.bind.annotation.XmlType;
     "code",
     "name"
 })
-public class COCTMT670000UV04GuarantorOrganization {
+public class COCTMT670000UV04GuarantorOrganization
+    implements Serializable
+{
 
+    private final static long serialVersionUID = 1L;
     protected List<CS> realmCode;
     protected II typeId;
     protected List<II> templateId;
