@@ -18,7 +18,6 @@ import javax.persistence.PersistenceContext;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
-import java.text.Format;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -68,11 +67,9 @@ public class RisarRestService {
         return "ok";
     }
 
-    private void sendExamToRisar(Action action, ClientIdentification clientIdentification) {
+    private void sendExamToRisar(Action action, ClientIdentification clientIdentification) throws CoreException {
         RestTemplate rest = new RestTemplate();
         MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
-        //diagnosisCode:O60
-        //recommendations:Чай с ромашкой.
         map.add("inspectationID", String.valueOf(action.getId()));
         map.add("patiendID", clientIdentification.getIdentifier());
         final Staff staff = action.getModifyPerson();
@@ -84,28 +81,40 @@ public class RisarRestService {
                 map.add("doctorFIO[middlename]", patrName);
             }
             final RbPost post = staff.getPost();
-            if(post != null) {
-                 map.add("position", post.getName());
+            if (post != null) {
+                map.add("position", post.getName());
             }
         }
         try {
             Organisation organization = organizationBeanLocal.getOrganizationById(ConfigManager.Common().OrgId());
             map.add("inspectLPUName", organization.getShortName());
             map.add("INN", organization.getInn());
+            final String[] diagCode = {"diagnosis",
+                    "admissionMkb",
+                    "assocDiagMkb",
+                    "assocDiagMkbPat",
+                    "complDi1_1_01agMkbPat",
+                    "diagComplMkb",
+                    "diagReceivedMkb",
+                    "mainDiag",
+                    "mainDiagMkb",
+                    "mainDiagMkbPat",
+                    "mainReasonODMkb"};
+
             Map<ActionProperty, List<APValue>> actionProp =
-                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList("diagnosis"));
+                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList(diagCode));
             if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
                 Object value = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
                 if (value instanceof APValueMKB) {
-                    map.add("diagnosisCode", ((APValueMKB)value).getMkb().getDiagID());
+                    map.add("diagnosisCode", ((APValueMKB) value).getMkb().getDiagID());
                 }
             }
             actionProp =
-                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList("recommended"));
+                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList("recommended", "resort"));
             if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
                 Object value = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
                 if (value instanceof APValue) {
-                    map.add("recommendations", ((APValue)value).getValueAsString());
+                    map.add("recommendations", ((APValue) value).getValueAsString());
                 }
             }
         } catch (CoreException e) {
@@ -116,7 +125,10 @@ public class RisarRestService {
         map.add("visitTime", (new SimpleDateFormat("HH:mm:ss")).format(action.getModifyDatetime()));
 
         final String url = ConfigManager.Risar().ServiceUrl() + "/api/patient/v1/saveInspectionResults/";
-        String result = rest.postForObject(url, map, String.class);
+        RisarResponse result = rest.postForObject(url, map, RisarResponse.class);
         logger.info("RISAR notification. Request url: " + url + " Request result: " + result);
+        if (!result.isOk()) {
+            throw new CoreException(("RISAR notification error:" + result));
+        }
     }
 }

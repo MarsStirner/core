@@ -20,7 +20,7 @@ CREATE TABLE IF NOT EXISTS `NotificationAction` (
   `errCount` INT(11) NOT NULL DEFAULT '0' COMMENT 'Количество неудачных попыток',
   `info` VARCHAR(1024) NULL DEFAULT NULL COMMENT 'Сообщение об ошибке',
   PRIMARY KEY (`action_id`),
-  CONSTRAINT `FK__Action_id` FOREIGN KEY (`action_id`) REFERENCES `Action` (`id`)
+  CONSTRAINT `NotificationAction_Action_id` FOREIGN KEY (`action_id`) REFERENCES `Action` (`id`)
 )
 COMMENT='новые действия для нотификации'
 COLLATE='utf8_general_ci'
@@ -37,8 +37,6 @@ CREATE TABLE IF NOT EXISTS `ActionToODVD` (
   COMMENT='события для передачи в 1С ОДВД'
   COLLATE='utf8_general_ci'
   ENGINE=InnoDB;
-
-INSERT INTO NotificationActionType (actionType_id, baseUrl) SELECT ActionType.id, "http://localhost:8080/ws-risar//api/notification/new/exam/" FROM ActionType WHERE ActionType.MNEM like "EXAM"
 
 delimiter //
 CREATE TRIGGER `onInsertAction` AFTER INSERT ON `Action` FOR EACH ROW BEGIN
