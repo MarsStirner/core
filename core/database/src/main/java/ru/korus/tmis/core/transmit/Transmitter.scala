@@ -48,12 +48,14 @@ class Transmitter extends TransmitterLocal with Logging {
     }
     catch {
       case ex: CoreException => {
-        transmittable.setInfo(ex.getMessage)
+        val message: String = ex.getMessage.substring(0, Math.min(1024, ex.getMessage.length))
+        transmittable.setInfo(message)
         logger.error(ex)
         em.flush
       }
       case ex: Exception => {
-        transmittable.setInfo(ex.getMessage)
+        val message: String = ex.getMessage.substring(0, Math.min(1024, ex.getMessage.length))
+        transmittable.setInfo(message)
         logger.error(ex)
         em.flush
       }

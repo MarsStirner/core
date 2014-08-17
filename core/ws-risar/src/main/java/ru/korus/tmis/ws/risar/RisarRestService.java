@@ -13,6 +13,7 @@ import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.PUT;
@@ -30,6 +31,7 @@ import java.util.Map;
  * Description:  <br>
  */
 
+@Stateless
 @Path("/api/notification")
 public class RisarRestService {
 
@@ -125,10 +127,14 @@ public class RisarRestService {
         map.add("visitTime", (new SimpleDateFormat("HH:mm:ss")).format(action.getModifyDatetime()));
 
         final String url = ConfigManager.Risar().ServiceUrl() + "/api/patient/v1/saveInspectionResults/";
-        RisarResponse result = rest.postForObject(url, map, RisarResponse.class);
+        String result = rest.postForObject(url, map, String.class);
         logger.info("RISAR notification. Request url: " + url + " Request result: " + result);
-        if (!result.isOk()) {
-            throw new CoreException(("RISAR notification error:" + result));
+        if(result.contains("\"failed\"")) {
+            throw new CoreException("RISAR notification error:" + result);
         }
+        //RisarResponse result = rest.postForObject(url, map, RisarResponse.class);
+        /*\if (!result.isk()) {
+            throw new CoreException(("RISAR notification error:" + result));
+        }*/
     }
 }

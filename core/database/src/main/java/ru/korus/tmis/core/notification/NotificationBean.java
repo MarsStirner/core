@@ -102,7 +102,8 @@ public class NotificationBean implements NotificationBeanLocal {
     private void sendThread(String flatCode, String basePath, Action action) throws CoreException {
         try {
             final String flatCodePath = flatCode == null || "".equals(flatCode) ? "" : (flatCode + "/");
-            final String urlPath = (basePath.startsWith("http") ? "" : ConfigManager.Common().ServerUrl()) + basePath + "/" + flatCodePath + action.getId();
+            final String urlPath = (basePath.startsWith("http") ? "" : ConfigManager.Common().ServerUrl())
+                    + basePath + (basePath.endsWith("/") ? "" : "/") + flatCodePath + action.getId();
             logger.info("Send notification to: " + urlPath);
             final URL url;
             url = new URL(urlPath);
@@ -114,7 +115,7 @@ public class NotificationBean implements NotificationBeanLocal {
             logger.info("Response code: " + code);
             if (code != 200) {
                 String msg = conn.getResponseMessage();
-                throw new CoreException("Wrong response code: " + code + " + messege: " + msg);
+                throw new CoreException("Wrong response code: " + code + " url: " + urlPath + " + messege: " + msg);
             }
         } catch (ProtocolException e) {
             throw new CoreException(e);
