@@ -19,6 +19,7 @@ import javax.persistence.PersistenceContext;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.WebApplicationException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -51,20 +52,24 @@ public class RisarRestService {
 
     @PUT
     @Path("/new/exam/{actionId}")
-    public String newExam(@PathParam(value = "actionId") Integer actionId) throws CoreException {
-        logger.info("RISAR notification. New exam with actionId: " + actionId);
-        Action action = dbActionBean.getActionById(actionId);
+    public String newExam(@PathParam(value = "actionId") Integer actionId) {
+        try {
+            logger.info("RISAR notification. New exam with actionId: " + actionId);
+            Action action = dbActionBean.getActionById(actionId);
 
-        final Integer clientId = action.getEvent().getPatient().getId();
-        logger.info("RISAR notification. MIS patient id: " + clientId);
+            final Integer clientId = action.getEvent().getPatient().getId();
+            logger.info("RISAR notification. MIS patient id: " + clientId);
 
-        final List<ClientIdentification> clientIdentificationList =
-                em.createNamedQuery("ClientIdentification.findByPatientAndSystem").
-                        setParameter("clientId", clientId).setParameter("code", "rs").setMaxResults(100).getResultList();
-        logger.info("RISAR notification. RISAR identification count: " + clientIdentificationList.size());
-        for (ClientIdentification clientIdentification : clientIdentificationList) {
-            logger.info("RISAR notification. RISAR identifier: " + clientIdentification.getIdentifier());
-            sendExamToRisar(action, clientIdentification);
+            final List<ClientIdentification> clientIdentificationList =
+                    em.createNamedQuery("ClientIdentification.findByPatientAndSystem").
+                            setParameter("clientId", clientId).setParameter("code", "rs").setMaxResults(100).getResultList();
+            logger.info("RISAR notification. RISAR identification count: " + clientIdentificationList.size());
+            for (ClientIdentification clientIdentification : clientIdentificationList) {
+                logger.info("RISAR notification. RISAR identifier: " + clientIdentification.getIdentifier());
+                sendExamToRisar(action, clientIdentification);
+            }
+        } catch (CoreException ex) {
+            throw new WebApplicationException(ex);
         }
         return "ok";
     }
@@ -126,10 +131,11 @@ public class RisarRestService {
         map.add("visitDate", (new SimpleDateFormat("yyyy-MM-dd")).format(action.getModifyDatetime()));
         map.add("visitTime", (new SimpleDateFormat("HH:mm:ss")).format(action.getModifyDatetime()));
 
+        logger.info("RISAR notification. Request param: " + map);
         final String url = ConfigManager.Risar().ServiceUrl() + "/api/patient/v1/saveInspectionResults/";
         String result = rest.postForObject(url, map, String.class);
         logger.info("RISAR notification. Request url: " + url + " Request result: " + result);
-        if(result.contains("\"failed\"")) {
+        if (result.contains("\"failed\"")) {
             throw new CoreException("RISAR notification error:" + result);
         }
         //RisarResponse result = rest.postForObject(url, map, RisarResponse.class);

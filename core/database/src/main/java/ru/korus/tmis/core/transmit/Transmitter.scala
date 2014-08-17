@@ -41,7 +41,7 @@ class Transmitter extends TransmitterLocal with Logging {
       val errCount: Int = transmittable.getErrCount
       val step: Long = 89 * 1000
       transmittable.setErrCount(errCount + 1)
-      transmittable.setSendTime(new Timestamp(transmittable.getSendTime.getTime + (errCount).asInstanceOf[Long] * step))
+      transmittable.setSendTime(new Timestamp((new Date).getTime + (errCount).asInstanceOf[Long] * step))
       sender.sendEntity(transmittable)
       em.remove(transmittable)
       em.flush()
