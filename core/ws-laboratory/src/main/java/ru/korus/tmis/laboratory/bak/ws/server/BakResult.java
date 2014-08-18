@@ -373,8 +373,7 @@ public class BakResult implements BakResultService {
                 for (Antibiotic antibiotic : microorganism.getAntibioticList()) {
                     dbRbAntibioticBean.add(new RbAntibiotic(antibiotic.getCode(), antibiotic.getName()));
                     final RbAntibiotic rbAntibiotic = dbRbAntibioticBean.get(antibiotic.getCode());
-                    final RbMicroorganism rbMicroorganism = dbRbMicroorganismBean.get(microorganism.getCode());
-                    final BbtResultOrganism bbtResultOrganism = dbBbtResultOrganismBean.get(rbMicroorganism.getId(), bakPosev.getActionId());
+                    final BbtResultOrganism bbtResultOrganism = dbBbtResultOrganismBean.get(mic.getId(), bakPosev.getActionId());
 
                     final BbtOrganismSensValues bbtOrganismSens = new BbtOrganismSensValues();
                     bbtOrganismSens.setActivity(antibiotic.getSensitivity());
