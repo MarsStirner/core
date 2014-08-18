@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionStatus;
+import ru.korus.tmis.core.pharmacy.FlatCode;
 import ru.korus.tmis.pharmacy.rlsupdate.BalanceOfGoodsInfoBean;
 import ru.korus.tmis.util.logs.ToLog;
 
@@ -188,7 +189,7 @@ public final class HL7PacketBuilder {
         inpatientEncounterEvent.getId().add(createII(uuidExternalId, externalId));
         inpatientEncounterEvent.getId().add(createIIEx(financeId));
         inpatientEncounterEvent.setCode(createEncounterCode());
-        inpatientEncounterEvent.setStatusCode(createCS(STATUS_ACTIVE));
+        inpatientEncounterEvent.setStatusCode(createCS(getStatusByFlatCode(action)));
         inpatientEncounterEvent.setEffectiveTime(createIVLTS(action.getCreateDatetime(), DATE_FORMAT));
 
         final PRPAMT402002UV02Subject subject = FACTORY_HL7.createPRPAMT402002UV02Subject();
@@ -235,6 +236,17 @@ public final class HL7PacketBuilder {
 
         ((misexchange.PRPAIN402002UV02) request).setMessage(prpain402002UV022);
         return request;
+    }
+
+    private static String getStatusByFlatCode(Action action) {
+        String res = STATUS_ACTIVE;
+        if(action.getActionType() != null &&
+               (FlatCode.LEAVED.getCode().equals(action.getActionType().getFlatCode()) ||
+                FlatCode.DEL_RECEIVED.getCode().equals(action.getActionType().getFlatCode()
+                ))) {
+            res = STATUS_COMPLETED;
+        }
+        return res;
     }
 
     private static CD createEncounterCode() {
