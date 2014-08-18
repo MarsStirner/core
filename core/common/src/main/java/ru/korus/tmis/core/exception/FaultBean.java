@@ -1,8 +1,8 @@
 package ru.korus.tmis.core.exception;
 
-import javax.xml.bind.annotation.XmlElement;
+import java.io.Serializable;
 
-public class FaultBean {
+public class FaultBean implements Serializable {
 //    @XmlElement(name = "faultcode")
     private int id;
 //    @XmlElement(name = "faultstring")
