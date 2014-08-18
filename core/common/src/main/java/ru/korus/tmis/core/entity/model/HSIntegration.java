@@ -59,7 +59,7 @@ public class HSIntegration implements Serializable {
     }
 
     public void setInfo(String info) {
-        this.info = info;
+        this.info = info.substring(0, Math.min(info.length(), 1023));
     }
 
     public Status getStatus() {

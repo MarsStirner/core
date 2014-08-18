@@ -1253,7 +1253,6 @@
             <id>maven-repository.java.net</id>
             <name>Java.net Repository for Maven 1</name>
             <url>http://download.java.net/maven/1/</url>
-            <layout>legacy</layout>
         </repository>
 
         <repository>

@@ -25,8 +25,7 @@ object ConfigManager extends Configuration {
   var Common = new CommonClass
 
   class CommonClass extends Configuration {
-    var OrgId = 3479
-    // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
+    var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
     var DebugTestMode = "off"
 
     def isDebugTestMode = "on".equals(DebugTestMode)
@@ -34,6 +33,10 @@ object ConfigManager extends Configuration {
     var lockTimeoutSec = 60 // время таймаута в секундах, после которого снимется лок документа
 
     var ServerUrl = "http://localhost:8080/"
+
+    var notificationActive = "on"
+
+    def isNotificationActive = "on".equals(notificationActive)
   }
 
   var RbManagerSetting = new RbManagerClass
@@ -394,6 +397,19 @@ object ConfigManager extends Configuration {
      */
     var MaxThreads = 5
 
+  }
+
+  /**
+   * Интеграция с РИСАР
+   */
+
+  var Risar = new RisarClass
+
+  class RisarClass extends Configuration {
+    /**
+     * URL сервиса РИСАР
+     */
+    var ServiceUrl: URL = new URL("http://10.1.2.214/risar2/api")
   }
 
 

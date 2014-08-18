@@ -15,7 +15,6 @@
                 <include>/*.ear</include>
                 <include>/*.sh</include>
                 <include>/*.bat</include>
-                <include>/*.war</include>
                 <include>logback.xml</include>
             </includes>
         </fileSet>
