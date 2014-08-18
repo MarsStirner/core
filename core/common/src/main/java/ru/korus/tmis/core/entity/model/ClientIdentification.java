@@ -1,17 +1,6 @@
 package ru.korus.tmis.core.entity.model;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
@@ -25,6 +14,11 @@ import java.util.Date;
 @Table(name = "ClientIdentification")
 @XmlType(name = "clientidentification")
 @XmlRootElement(name = "clientidentification")
+@NamedQueries(
+        {
+                @NamedQuery(name = "ClientIdentification.findByPatientAndSystem",
+                        query = "SELECT c FROM ClientIdentification c WHERE c.client.id = :clientId AND c.accountingSystem.code = :code")
+        })
 public class ClientIdentification implements Serializable, Cloneable {
 
     @Id

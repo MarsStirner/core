@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ru.korus.tmis.ws.usersmngr</groupId>
-    <artifactId>tmis-ws-users-mgr</artifactId>
+    <groupId>ru.korus.tmis.risar</groupId>
+    <artifactId>ws-risar</artifactId>
     <version>2.5.30.2-SNAPSHOT</version>
     <packaging>war</packaging>
-    <name>TMIS WS Users</name>
+    <name>TMIS RISAR integration</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
@@ -16,17 +16,31 @@
         <relativePath>../</relativePath>
     </parent>
 
-    <properties>
-        <maven.test.skip>false</maven.test.skip>
-        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <jaxws.plugin.version>2.1</jaxws.plugin.version>
-    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-common</artifactId>
+            <version>2.5.30.2-SNAPSHOT</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-business</artifactId>
+            <version>2.5.30.2-SNAPSHOT</version>
+            <type>ejb</type>
+        </dependency>
+
+       <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-database</artifactId>
+            <version>2.5.30.2-SNAPSHOT</version>
+            <type>ejb</type>
+        </dependency>
+
+    </dependencies>
 
     <build>
-        <!-- Set the name of the war, used as the context root when the app is
-            deployed -->
-        <!--<finalName>tmis-ws-users</finalName>-->
-
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
@@ -41,6 +55,7 @@
                         </manifest>
                     </archive>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <attachClasses>true</attachClasses>
                     <webResources>
                         <resource>
                             <filtering>true</filtering>
@@ -52,28 +67,8 @@
                     </webResources>
                 </configuration>
             </plugin>
+
         </plugins>
     </build>
-
-    <dependencies>
-        <dependency>
-            <groupId>ru.korus.tmis.core</groupId>
-            <artifactId>tmis-core-database</artifactId>
-            <version>2.5.30.2-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.2</version>
-        </dependency>
-        <dependency>
-            <groupId>ru.korus.tmis.core</groupId>
-            <artifactId>tmis-core-business</artifactId>
-            <version>2.5.30.2-SNAPSHOT</version>
-            <type>ejb</type>
-        </dependency>
-
-    </dependencies>
 
 </project>
