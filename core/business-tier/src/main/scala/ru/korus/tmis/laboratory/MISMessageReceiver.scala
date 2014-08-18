@@ -9,8 +9,10 @@ import ru.korus.tmis.core.database.DbJobTicketBeanLocal
 import ru.korus.tmis.core.database.common.{DbActionBeanLocal, DbActionPropertyBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.lis.data.jms.{MISResultProcessingResponse, LabModuleSendingResponse}
+import ru.korus.tmis.laboratory.bak.business.BakResultBeanLocal
+import ru.korus.tmis.lis.data.jms.{LabModuleSendingResponse, MISResultProcessingResponse}
 import ru.korus.tmis.lis.data.model.hl7.complex.POLBIN224100UV01
+import ru.korus.tmis.util.logs.ToLog
 
 import scala.collection.JavaConverters._
 /**
@@ -36,6 +38,9 @@ class MISMessageReceiver extends MessageListener {
 
   @EJB
   private var s: DbActionPropertyBeanLocal = _
+
+  @EJB
+  private var bakResultBean: BakResultBeanLocal = _
 
   @Resource(lookup = "QueueConnectionFactory")
   var qcf: QueueConnectionFactory = _
@@ -71,14 +76,16 @@ class MISMessageReceiver extends MessageListener {
           }
           case o: POLBIN224100UV01 =>
             try {
-              throw new CoreException("No implementation")
-              val o = new MISResultProcessingResponse
+              val toLog: ToLog = new ToLog("setAnalysisResults")
+              bakResultBean.processRequest(o, toLog)
+              val obj = new MISResultProcessingResponse
               replyMessage setJMSType MISResultProcessingResponse.JMS_TYPE
-              o.setSuccess(true)
-              replyMessage setObject o
+              obj.setSuccess(true)
+              replyMessage setObject obj
             }
             catch  {
               case t: Throwable =>
+                t.printStackTrace()
                 val o = new MISResultProcessingResponse
                 replyMessage setJMSType MISResultProcessingResponse.JMS_TYPE
                 o.setThrowable(t)
