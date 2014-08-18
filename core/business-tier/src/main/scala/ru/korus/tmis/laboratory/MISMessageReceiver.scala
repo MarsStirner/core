@@ -9,7 +9,7 @@ import ru.korus.tmis.core.database.DbJobTicketBeanLocal
 import ru.korus.tmis.core.database.common.{DbActionBeanLocal, DbActionPropertyBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.lis.data.jms.LabModuleSendingResponse
+import ru.korus.tmis.lis.data.jms.{MISResultProcessingResponse, LabModuleSendingResponse}
 import ru.korus.tmis.lis.data.model.hl7.complex.POLBIN224100UV01
 
 import scala.collection.JavaConverters._
@@ -41,6 +41,15 @@ class MISMessageReceiver extends MessageListener {
   var qcf: QueueConnectionFactory = _
 
   override def onMessage(message: Message) = {
+    // Creating response
+    val c = qcf.createQueueConnection()
+    val s = c.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)
+    var p: MessageProducer = null
+    if (message.getJMSReplyTo != null)
+      p = s.createProducer(message.getJMSReplyTo)
+    val replyMessage = s.createObjectMessage()
+    replyMessage.setJMSCorrelationID(message.getJMSCorrelationID)
+
     try {
       Option(message) collect {
         case m: ObjectMessage => Option(m.getObject) collect {
@@ -61,18 +70,27 @@ class MISMessageReceiver extends MessageListener {
               }
           }
           case o: POLBIN224100UV01 =>
+            try {
+              throw new CoreException("No implementation")
+              val o = new MISResultProcessingResponse
+              replyMessage setJMSType MISResultProcessingResponse.JMS_TYPE
+              o.setSuccess(true)
+              replyMessage setObject o
+            }
+            catch  {
+              case t: Throwable =>
+                val o = new MISResultProcessingResponse
+                replyMessage setJMSType MISResultProcessingResponse.JMS_TYPE
+                o.setThrowable(t)
+                o.setSuccess(false)
+                replyMessage setObject o
+            }
 
         }
       }
     } finally { // Always sending reply if possible
-      if (message.getJMSReplyTo != null) {
-        val c = qcf.createQueueConnection()
-        val s = c.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)
-        val p = s.createProducer(message.getJMSReplyTo)
-        val replyMessage = s.createTextMessage("Hello!")
-        replyMessage.setJMSCorrelationID(message.getJMSCorrelationID)
+      if (p != null)
         p.send(replyMessage)
-      }
     }
   }
 
@@ -82,14 +100,13 @@ class MISMessageReceiver extends MessageListener {
         val values = s.getActionPropertyValue(l)
         if(values.size() == 1) {
           values.get(0) match {
-            case jtv: APValueJobTicket => {
+            case jtv: APValueJobTicket =>
               val jt = jtv.getJobTicket
               jt.setStatus(status)
               jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(action.getId))
               jt.setLabel("##Ошибка отправки в ЛИС##")
               em merge jt
               em.flush()
-            }
             case _ =>
           }
         } else {
