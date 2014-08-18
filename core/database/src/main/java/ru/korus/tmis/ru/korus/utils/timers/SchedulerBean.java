@@ -5,6 +5,7 @@ import ru.korus.tmis.core.database.DbAutoSaveStorageLocal;
 import ru.korus.tmis.core.database.DbEnumBeanLocal;
 import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
+import ru.korus.tmis.core.notification.DbNotificationActionBeanLocal;
 
 import javax.ejb.EJB;
 import javax.ejb.Schedule;
@@ -31,6 +32,10 @@ public class SchedulerBean implements  SchedulerBeanLocal {
     @EJB
     DbAutoSaveStorageLocal dbAutoSaveStorageLocal;
 
+    @EJB
+    DbNotificationActionBeanLocal dbNotificationActionBeanLocal;
+
+
     @Schedule(second = "0", minute = "0", hour = "4")
     public void nightlyUpdate() {
             dbSettingsBean.init();
@@ -49,4 +54,8 @@ public class SchedulerBean implements  SchedulerBeanLocal {
         dbAutoSaveStorageLocal.clean(new DateTime().minusDays(30).toDate());
     }
 
+    @Schedule(hour = "*", minute = "*", second = "33")
+    public void sendNotification() {
+         dbNotificationActionBeanLocal.pullDb();
+    }
 }
