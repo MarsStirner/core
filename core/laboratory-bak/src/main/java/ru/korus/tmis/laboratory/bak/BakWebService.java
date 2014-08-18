@@ -1,4 +1,4 @@
-package laboratory.bak;
+package ru.korus.tmis.laboratory.bak;
 
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;

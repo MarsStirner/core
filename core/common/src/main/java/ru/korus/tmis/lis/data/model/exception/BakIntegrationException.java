@@ -1,4 +1,4 @@
-package ru.korus.tmis.laboratory.bak.ws.server.model.exception;
+package ru.korus.tmis.lis.data.model.exception;
 
 import ru.korus.tmis.core.exception.SOAPFaultInfo;
 

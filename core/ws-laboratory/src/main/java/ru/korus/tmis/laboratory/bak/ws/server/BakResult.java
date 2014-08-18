@@ -15,9 +15,9 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.bak.BakResultService;
+import ru.korus.tmis.lis.data.model.*;
 import ru.korus.tmis.lis.data.model.hl7.complex.*;
 import ru.korus.tmis.util.Utils;
-import ru.korus.tmis.laboratory.bak.ws.server.model.*;
 import ru.korus.tmis.util.logs.ToLog;
 
 import javax.ejb.EJB;
@@ -297,7 +297,7 @@ public class BakResult implements BakResultService {
                             final String antibioticSensitivity = getValue(pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode());
                             final String antibioticComment = getValue(pp.getObservationEvent().getValue().getStatusCode().getCode());
 
-                            ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic antibiotic = new ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic(
+                            Antibiotic antibiotic = new Antibiotic(
                                     antibioticCode, antibioticName);
                             antibiotic.setConcentration(antibioticConcentration);
                             antibiotic.setSensitivity(antibioticSensitivity);
