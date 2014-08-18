@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database.common
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
-import javax.persistence.{EntityManager, PersistenceContext}
+import javax.persistence._
 import javax.annotation.PostConstruct
 import javax.ejb.{Schedule, TransactionManagementType, TransactionManagement, Startup, Singleton}
 import ru.korus.tmis.core.entity.model.Setting
@@ -54,11 +54,16 @@ with I18nable {
   def getSettingByPathInMainSettings(path: String): Setting = getSetting(s11r64, path)
 
   private def getSetting(em: EntityManager, path: String ): Setting = {
-    val result: Setting = em.createQuery("SELECT s FROM Setting s WHERE s.path = :path", classOf[Setting]).setParameter("path", path).getSingleResult
-    if (result == null) {
-      new Setting
+    val result = em.createQuery("SELECT s FROM Setting s WHERE s.path = :path", classOf[Setting]).setParameter("path", path)
+    var s: Setting = new Setting
+    try {
+      s = result.getSingleResult
+    } catch {
+      case e: NoResultException => // TODO Write log about lost entry
+      case e: NonUniqueResultException => // TODO Write log about invalid DB state
+      case e: QueryTimeoutException => new Setting // TODO Write log about DB timeout
     }
-    result
+    s
   }
 
   def getAllSettings: util.List[Setting] = {
