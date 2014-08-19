@@ -237,7 +237,7 @@ function create_jms_laboratory_queue {
         ${LABORATORY_QUEUE}"
 
         echo "CREATE_JMS_QUEUE"
-        if ! CREATE_JMS_QUEUE; then
+        if ! $CREATE_JMS_QUEUE; then
             exit 9
         fi
 }
@@ -254,7 +254,7 @@ function create_jms_queue_connection_factory {
         ${QUEUE_CONNECTION_FACTORY}"
 
         echo "CREATE_QUEUE_CONNECTION_FACTORY"
-        if ! CREATE_QUEUE_CONNECTION_FACTORY; then
+        if ! $CREATE_QUEUE_CONNECTION_FACTORY; then
             exit 8
         fi
 }
