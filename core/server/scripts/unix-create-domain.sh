@@ -225,6 +225,40 @@ function create_jms_laboratory_topic {
         fi
 }
 
+function create_jms_laboratory_queue {
+    print_header "Create JMS Queue - ${LABORATORY_QUEUE}"
+
+    CREATE_JMS_QUEUE="${ASADMIN}/asadmin
+        --user ${ADMIN_LOGIN}
+        --passwordfile ${GF_PASSWD_FILE}
+        --port ${ADMIN_PORT}
+        create-jms-resource
+        --restype javax.jms.Queue
+        ${LABORATORY_QUEUE}"
+
+        echo "CREATE_JMS_QUEUE"
+        if ! CREATE_JMS_QUEUE; then
+            exit 9
+        fi
+}
+
+function create_jms_queue_connection_factory {
+    print_header "Create JMS ConnectionFactory - ${QUEUE_CONNECTION_FACTORY}"
+
+    CREATE_QUEUE_CONNECTION_FACTORY="${ASADMIN}/asadmin
+        --user ${ADMIN_LOGIN}
+        --passwordfile ${GF_PASSWD_FILE}
+        --port ${ADMIN_PORT}
+        create-jms-resource
+        --restype javax.jms.QueueConnectionFactory
+        ${QUEUE_CONNECTION_FACTORY}"
+
+        echo "CREATE_QUEUE_CONNECTION_FACTORY"
+        if ! CREATE_QUEUE_CONNECTION_FACTORY; then
+            exit 8
+        fi
+}
+
 function start_stop_domain {
     print_header "Stop&Start domain ${DOMAIN}"
     STOP_CMD="${ASADMIN}/asadmin stop-domain --passwordfile ${GF_PASSWD_FILE} --domaindir ${DOMAIN_DIR} ${DOMAIN}"
