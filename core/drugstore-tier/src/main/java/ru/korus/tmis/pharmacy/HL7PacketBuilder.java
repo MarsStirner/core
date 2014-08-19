@@ -159,7 +159,7 @@ public final class HL7PacketBuilder {
         final String uuidExternalId = event.getUuid().getUuid();
         final String externalId = event.getExternalId();
         final String uuidDocument = UUID.randomUUID().toString();
-        final String uuidOrgStructure = orgStructure.getUuid().getUuid();
+        final String uuidOrgStructure = orgStructure == null ? null : orgStructure.getUuid().getUuid();
         final String uuidClient = client.getUuid().getUuid();
 
         final Request request = FACTORY_MIS.createPRPAIN402002UV02();
@@ -221,12 +221,14 @@ public final class HL7PacketBuilder {
         statusCode1.setCode(STATUS_ACTIVE);
         uv02Location1.setStatusCode(statusCode1);
 
-        final PRPAMT402002UV02ServiceDeliveryLocation deliveryLocation = FACTORY_HL7.createPRPAMT402002UV02ServiceDeliveryLocation();
-        deliveryLocation.setClassCode(RoleClassServiceDeliveryLocation.SDLOC);
-        final II typeId4 = FACTORY_HL7.createII();
-        typeId4.setRoot(uuidOrgStructure);
-        deliveryLocation.getId().add(typeId4);
-        uv02Location1.setServiceDeliveryLocation(deliveryLocation);
+        if (uuidOrgStructure != null) {
+            final PRPAMT402002UV02ServiceDeliveryLocation deliveryLocation = FACTORY_HL7.createPRPAMT402002UV02ServiceDeliveryLocation();
+            deliveryLocation.setClassCode(RoleClassServiceDeliveryLocation.SDLOC);
+            final II typeId4 = FACTORY_HL7.createII();
+            typeId4.setRoot(uuidOrgStructure);
+            deliveryLocation.getId().add(typeId4);
+            uv02Location1.setServiceDeliveryLocation(deliveryLocation);
+        }
 
         inpatientEncounterEvent.getLocation().add(uv02Location1);
 
