@@ -93,6 +93,9 @@ public class Pharmacy implements Serializable {
     }
 
     public void setStatus(PharmacyStatus status) {
+        if(status == PharmacyStatus.ERROR && this.status == PharmacyStatus.RESEND) {
+            return;
+        }
         this.status = status;
         if (status.equals(PharmacyStatus.COMPLETE)) {
             errorString = "";

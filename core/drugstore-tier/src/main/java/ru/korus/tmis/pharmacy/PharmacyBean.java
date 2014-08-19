@@ -269,8 +269,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
         final ActionType actionType = action.getActionType();
 
-        if(status == PharmacyStatus.RESEND) {
-            final OrgStructure structure = getReceivedOrgStructure(action);
+        if(PharmacyStatus.RESEND == status) {
+            final OrgStructure structure = FlatCode.LEAVED.getCode().equalsIgnoreCase(actionType.getFlatCode()) ||
+                    FlatCode.DEL_RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode()) ? null : getReceivedOrgStructure(action);
             toLog.addN("receive orgStructure [#], [#]", structure.getId(), structure.getName());
             return HL7PacketBuilder.processUpdateReceived(action, structure, getFinaceType(action));
         }
