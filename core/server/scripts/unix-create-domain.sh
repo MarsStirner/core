@@ -302,4 +302,6 @@ create_db_pool $MYSQL_DB_MIS $MYSQL_DB_MIS_POOL $MYSQL_DB_JNDI_MIS
 create_db_pool $MYSQL_DB_TMIS_CORE $MYSQL_DB_TMIS_CORE_POOL $MYSQL_DB_JNDI_TMIS_CORE
 create_jms_connection_factory
 create_jms_laboratory_topic
+create_jms_laboratory_queue
+create_jms_queue_connection_factory
 start_stop_domain
