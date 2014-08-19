@@ -228,9 +228,8 @@ public final class HL7PacketBuilder {
             typeId4.setRoot(uuidOrgStructure);
             deliveryLocation.getId().add(typeId4);
             uv02Location1.setServiceDeliveryLocation(deliveryLocation);
+            inpatientEncounterEvent.getLocation().add(uv02Location1);
         }
-
-        inpatientEncounterEvent.getLocation().add(uv02Location1);
 
         subject2.setInpatientEncounterEvent(inpatientEncounterEvent);
         controlActProcess.getSubject().add(subject2);
