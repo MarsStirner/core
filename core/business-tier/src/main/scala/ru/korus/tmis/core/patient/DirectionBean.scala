@@ -20,10 +20,10 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.core.logging.LoggingInterceptor
-import ru.korus.tmis.laboratory.LISMessageReceiver
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
 import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal
 import ru.korus.tmis.lis.data._
+import ru.korus.tmis.lis.data.jms.LISMessageReceiver
 import ru.korus.tmis.scala.util.ConfigManager._
 import ru.korus.tmis.scala.util.{CAPids, ConfigManager, I18nable}
 import ru.korus.tmis.schedule.PersonScheduleBean.PersonSchedule
@@ -210,7 +210,7 @@ with I18nable {
         val fromList = list.find((p) => p._1.getId == null &&
           p._2.getDatetime == a.getPlannedEndDate &&
           p._3.getType.getId == tissueType.getTissueType.getId &&
-          p._4.getIsUrgent == a.getIsUrgent).getOrElse(null) //срочные на одну дату и тип биоматериала должны создаваться с одним жобТикетом
+          p._4.getIsUrgent == a.getIsUrgent).orNull //срочные на одну дату и тип биоматериала должны создаваться с одним жобТикетом
         if (fromList != null) {
           val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
           j.setQuantity(j.getQuantity + 1)
@@ -227,7 +227,7 @@ with I18nable {
       } else {
         val (jobTicket, takenTissue) = jobAndTicket.asInstanceOf[(JobTicket, TakenTissue)]
         if (jobTicket != null && jobTicket.getJob != null) {
-          val fromList = list.find((p) => p._1.getId != null && p._1.getId.intValue() == jobTicket.getJob.getId.intValue()).getOrElse(null)
+          val fromList = list.find((p) => p._1.getId != null && p._1.getId.intValue() == jobTicket.getJob.getId.intValue()).orNull
           if (fromList == null) {
             val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
             val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)

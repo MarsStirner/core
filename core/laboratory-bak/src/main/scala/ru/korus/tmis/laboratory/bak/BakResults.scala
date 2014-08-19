@@ -9,7 +9,6 @@ import javax.jws.WebService
 import javax.xml.ws.WebServiceContext
 
 import ru.korus.tmis.lis.data.model.hl7.complex._
-import ru.korus.tmis.util.logs.ToLog
 
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
@@ -30,31 +29,35 @@ class BakResults extends BakResultService {
   private var context: WebServiceContext = _
 
   override def setAnalysisResults(data: POLBIN224100UV01): MCCIIN000002UV01 = {
-    val toLog: ToLog = new ToLog("setAnalysisResults")
     var response: MCCIIN000002UV01 = null
 
+    var c: QueueConnection = null
+    var s: QueueSession = null
     try {
-      val c: QueueConnection = qcf.createQueueConnection()
-      val s: QueueSession = c.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)
+      c = qcf.createQueueConnection()
+      s = c.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)
       val request = s.createObjectMessage()
       request.setObject(data)
       val tempq = s.createTemporaryQueue()
       request.setJMSReplyTo(tempq)
       s.createSender(labQueue).send(request)
       val consumer = s.createConsumer(tempq)
-
       c.start()
-      val reply = consumer.receive()
+      val reply = consumer.receive(20000)
+
+
       c.close()
+      if(reply == null)
+        throw new Exception("No response from core, timeout = " + 20000 + "ms")
       response = createSuccessResponse
     }
     catch {
       case e: Throwable => response = createErrorResponse
     }
     finally {
-      //TODO Close session & connection
+      if (s != null) try { s.close() } catch {case t: Throwable =>  t.printStackTrace() }
+      if (c != null) try { c.close() } catch {case t: Throwable =>  t.printStackTrace() }
     }
-
     response
   }
 
@@ -81,7 +84,6 @@ class BakResults extends BakResultService {
     sender.setTypeCode(CommunicationFunctionType.SND)
     val device: MCCIMT000200UV01Device = new MCCIMT000200UV01Device
     device.setClassCode(EntityClassDevice.DEV)
-    val id: II = new II
     sender.setDevice(device)
     val receiver: MCCIMT000200UV01Receiver = new MCCIMT000200UV01Receiver
     receiver.setTypeCode(CommunicationFunctionType.RCV)
@@ -139,7 +141,6 @@ class BakResults extends BakResultService {
     sender.setTypeCode(CommunicationFunctionType.SND)
     val device: MCCIMT000200UV01Device = new MCCIMT000200UV01Device
     device.setClassCode(EntityClassDevice.DEV)
-    val id: II = new II
     sender.setDevice(device)
     val receiver: MCCIMT000200UV01Receiver = new MCCIMT000200UV01Receiver
     receiver.setTypeCode(CommunicationFunctionType.RCV)
