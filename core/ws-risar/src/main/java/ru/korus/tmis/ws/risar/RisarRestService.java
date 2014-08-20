@@ -79,7 +79,7 @@ public class RisarRestService {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
         map.add("inspectationID", String.valueOf(action.getId()));
         map.add("patiendID", clientIdentification.getIdentifier());
-        final Staff staff = action.getModifyPerson();
+        final Staff staff = action.getExecutor();
         if (staff != null) {
             map.add("doctorFIO[surname]", staff.getLastName());
             map.add("doctorFIO[name]", staff.getFirstName());
@@ -117,7 +117,7 @@ public class RisarRestService {
                 }
             }
             actionProp =
-                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList("recommended", "resort"));
+                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList("recommendations", "resort"));
             if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
                 Object value = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
                 if (value instanceof APValue) {
@@ -133,8 +133,9 @@ public class RisarRestService {
 
         logger.info("RISAR notification. Request param: " + map);
         final String url = ConfigManager.Risar().ServiceUrl() + "/api/patient/v1/saveInspectionResults/";
+        logger.info("RISAR notification. Request url: " + url);
         String result = rest.postForObject(url, map, String.class);
-        logger.info("RISAR notification. Request url: " + url + " Request result: " + result);
+        logger.info("RISAR notification. Request result: " + result);
         if (result.contains("\"failed\"")) {
             throw new CoreException("RISAR notification error:" + result);
         }
