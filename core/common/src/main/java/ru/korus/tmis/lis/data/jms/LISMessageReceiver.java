@@ -4,7 +4,10 @@ import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.lis.data.LaboratoryCreateRequestData;
 
 import javax.annotation.Resource;
+import javax.ejb.ActivationConfigProperty;
+import javax.ejb.MessageDriven;
 import javax.jms.*;
+import java.lang.annotation.Annotation;
 
 /**
  * Абстактный класс для создания использования на стороне модулей интеграции лабораторий
@@ -19,12 +22,42 @@ public abstract class LISMessageReceiver implements MessageListener {
 
     @Resource(lookup = "DefaultConnectionFactory")
     protected ConnectionFactory connectionFactory;
-    @Resource(lookup = "LaboratoryTopic")
-    protected Topic topic;
 
+    /**
+     * Проверяем, что в классе-наследнике установленны именно те аннотации, которые нам нужны:
+     * @MessageDriven(
+     *   mappedName = "LaboratoryTopic",
+     *   activationConfig = Array(
+     *     new ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Topic"))
+     * )
+     */
     {
-        //TODO check @MessageDriven annotation: if no - throw exception
+        Annotation[] annotations =  this.getClass().getAnnotations();
+        boolean hasValidAnnotation = false;
+        for(Annotation a : annotations) {
+            System.out.println(a);
+            boolean hasDestinationTypeProperty = false;
+            if(a instanceof MessageDriven) {
+                MessageDriven m = (MessageDriven) a;
+                if(!m.mappedName().equals("LaboratoryTopic"))
+                    throw new CoreException("Invalid MessageDriven mappedName value - should be LaboratoryTopic");
+                for(ActivationConfigProperty p : m.activationConfig()) {
+                    if(p.propertyName().equals("destinationType")) {
+                        hasDestinationTypeProperty = true;
+                        if(!p.propertyValue().equals("javax.jms.Topic"))
+                            throw new CoreException("Invalid MessageDriven destinationType property value - should be javax.jms.Topic");
+                    }
+                }
+                if(!hasDestinationTypeProperty)
+                    throw new CoreException("There is no destinationType property - should be destinationType:javax.jms.Topic");
+                hasValidAnnotation = true;
+            }
+        }
+        if(!hasValidAnnotation)
+            throw new CoreException("Class " + this.getClass() + " has no @MessageDriven annotation - incorrect implementation");
     }
+
+    public LISMessageReceiver() throws CoreException {}
 
     /**
      * Метод обработки сообщений, должен отправлять ответ, во всех случаях, когда установленно, что сообщение
