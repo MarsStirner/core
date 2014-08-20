@@ -8,6 +8,8 @@ import javax.jms._
 import javax.jws.WebService
 import javax.xml.ws.WebServiceContext
 
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.lis.data.jms.MISResultProcessingResponse
 import ru.korus.tmis.lis.data.model.hl7.complex._
 
 /**
@@ -45,10 +47,9 @@ class BakResults extends BakResultService {
       c.start()
       val reply = consumer.receive(20000)
 
-
-      c.close()
       if(reply == null)
         throw new Exception("No response from core, timeout = " + 20000 + "ms")
+      replyProcess(reply)
       response = createSuccessResponse
     }
     catch {
@@ -60,6 +61,23 @@ class BakResults extends BakResultService {
     }
     response
   }
+
+  private def replyProcess(m : Message) = {
+    (m, m.getJMSType) match {
+      case (m: ObjectMessage, MISResultProcessingResponse.JMS_TYPE) =>
+        m.getObject match {
+          case o: MISResultProcessingResponse =>
+            if(!o.isSuccess) {
+              if (o.getThrowable != null) throw o.getThrowable
+              else throw new CoreException("Unknown error on core module side")
+            }
+
+          case _ => throw new CoreException("Invalid object type of ObjectMessage's object - " + m.getObject.getClass)
+        }
+      case _ => throw new CoreException("Invalid reply from core module - " + m + ", JMSType - " + m.getJMSType)
+    }
+  }
+
 
   /**
    * Создание ответного сообщения о успешном принятии результатов
