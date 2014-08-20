@@ -159,7 +159,7 @@ public final class HL7PacketBuilder {
         final String uuidExternalId = event.getUuid().getUuid();
         final String externalId = event.getExternalId();
         final String uuidDocument = UUID.randomUUID().toString();
-        final String uuidOrgStructure = orgStructure == null ? null : orgStructure.getUuid().getUuid();
+        final String uuidOrgStructure = orgStructure.getUuid().getUuid();
         final String uuidClient = client.getUuid().getUuid();
 
         final Request request = FACTORY_MIS.createPRPAIN402002UV02();
@@ -214,22 +214,20 @@ public final class HL7PacketBuilder {
 
         inpatientEncounterEvent.setAdmitter(admitter);
 
-        if (uuidOrgStructure != null) {
-            final PRPAMT402002UV02Location1 uv02Location1 = FACTORY_HL7.createPRPAMT402002UV02Location1();
-            uv02Location1.setTypeCode(ParticipationTargetLocation.LOC);
-            uv02Location1.setTime(time);
-            final CS statusCode1 = FACTORY_HL7.createCS();
-            statusCode1.setCode(STATUS_ACTIVE);
-            uv02Location1.setStatusCode(statusCode1);
+        final PRPAMT402002UV02Location1 uv02Location1 = FACTORY_HL7.createPRPAMT402002UV02Location1();
+        uv02Location1.setTypeCode(ParticipationTargetLocation.LOC);
+        uv02Location1.setTime(time);
+        final CS statusCode1 = FACTORY_HL7.createCS();
+        statusCode1.setCode(STATUS_ACTIVE);
+        uv02Location1.setStatusCode(statusCode1);
 
-            final PRPAMT402002UV02ServiceDeliveryLocation deliveryLocation = FACTORY_HL7.createPRPAMT402002UV02ServiceDeliveryLocation();
-            deliveryLocation.setClassCode(RoleClassServiceDeliveryLocation.SDLOC);
-            final II typeId4 = FACTORY_HL7.createII();
-            typeId4.setRoot(uuidOrgStructure);
-            deliveryLocation.getId().add(typeId4);
-            uv02Location1.setServiceDeliveryLocation(deliveryLocation);
-            inpatientEncounterEvent.getLocation().add(uv02Location1);
-        }
+        final PRPAMT402002UV02ServiceDeliveryLocation deliveryLocation = FACTORY_HL7.createPRPAMT402002UV02ServiceDeliveryLocation();
+        deliveryLocation.setClassCode(RoleClassServiceDeliveryLocation.SDLOC);
+        final II typeId4 = FACTORY_HL7.createII();
+        typeId4.setRoot(uuidOrgStructure);
+        deliveryLocation.getId().add(typeId4);
+        uv02Location1.setServiceDeliveryLocation(deliveryLocation);
+        inpatientEncounterEvent.getLocation().add(uv02Location1);
 
         subject2.setInpatientEncounterEvent(inpatientEncounterEvent);
         controlActProcess.getSubject().add(subject2);
@@ -241,10 +239,10 @@ public final class HL7PacketBuilder {
 
     private static String getStatusByFlatCode(Action action) {
         String res = STATUS_ACTIVE;
-        if(action.getActionType() != null &&
-               (FlatCode.LEAVED.getCode().equals(action.getActionType().getFlatCode()) ||
-                FlatCode.DEL_RECEIVED.getCode().equals(action.getActionType().getFlatCode()
-                ))) {
+        if (action.getActionType() != null &&
+                (FlatCode.LEAVED.getCode().equals(action.getActionType().getFlatCode()) ||
+                        FlatCode.DEL_RECEIVED.getCode().equals(action.getActionType().getFlatCode()
+                        ))) {
             res = STATUS_COMPLETED;
         }
         return res;

@@ -736,4 +736,9 @@ class DbActionBean
       .setParameter("flatCodes", flatCodeList)
       .getResultList
   }
+
+  def getLatestMove(event: Event): Action = {
+    val actions =  em.createNamedQuery("Action.findLatestMove", classOf[Action]).setParameter("eventId", event.getId).getResultList
+    return if(actions.isEmpty) null else actions.get(0);
+  }
 }

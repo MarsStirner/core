@@ -256,4 +256,11 @@ public interface DbActionBeanLocal {
      * @return
      */
     List<Action> getActionsByTypeFlatCodeAndEventId(Integer eventId, List<String> flatCodeList);
+
+    /**
+     * Получить новейшее движение пациента для обращения action.eventId
+     * @param action
+     * @return
+     */
+    Action getLatestMove(Event event);
 }
