@@ -17,7 +17,9 @@ import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
                 @NamedQuery(name = "Action.ActionsByFlatCode", query = "SELECT a FROM Action a WHERE a.actionType.flatCode IN :codes AND a.event.id = :id AND a.deleted = 0"),
                 @NamedQuery(name = "Action.ServiceList", query = "SELECT a FROM Action a WHERE a.actionType.service IS NOT NULL AND a.event.id = :eventId AND a.deleted = 0"),
                 @NamedQuery(name = "Action.findByEventId", query = "SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0"),
-                @NamedQuery(name = "Action.findByFlatCodesAndEventId", query = "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCodes AND a.event.id = :eventId AND a.deleted = 0")
+                @NamedQuery(name = "Action.findByFlatCodesAndEventId", query = "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCodes AND a.event.id = :eventId AND a.deleted = 0"),
+                @NamedQuery(name = "Action.findLatestMove", query = "SELECT a FROM Action a WHERE (a.actionType.flatCode = 'moving' OR a.actionType.flatCode = 'received')" +
+                        " AND a.event.id = :eventId AND a.deleted = 0 ORDER BY a.createDatetime DESC")
 })
 @XmlType(name = "action")
 @XmlRootElement(name = "action")

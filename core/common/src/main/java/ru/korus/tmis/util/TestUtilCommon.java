@@ -62,6 +62,7 @@ public class TestUtilCommon implements TestUtil {
     public static void executeQuery(final EntityManager em, String sqlFileName) {
         final String[] sqlFromFile = getSqlFromFile(sqlFileName);
         for(String sql : sqlFromFile) {
+            System.out.println("execute SQL : " + sql);
             em.createNativeQuery(sql).executeUpdate();
         }
     }

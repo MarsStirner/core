@@ -276,26 +276,6 @@
                 <name>заключительный</name>
             </diagnosisType>
             <acuteOrChronic>ACUTE</acuteOrChronic>
-            <dispensarySupervision>
-                <startDate>2014-01-21+04:00</startDate>
-                <startedBy>
-                    <code>1204</code>
-                    <specialty>
-                        <code>26</code>
-                        <name>педиатр</name>
-                        <codingSystem>rbSpeciality</codingSystem>
-                    </specialty>
-                    <role>
-                        <code>3042</code>
-                        <name>Врач-педиатр</name>
-                        <codingSystem>rbPost</codingSystem>
-                    </role>
-                    <snils>036-746-442 73</snils>
-                    <familyName>Власова</familyName>
-                    <givenName>Светлана</givenName>
-                    <middleName>Николаевна</middleName>
-                </startedBy>
-            </dispensarySupervision>
             <traumaType>
                 <code>02</code>
                 <name>Произв. на строительстве</name>
