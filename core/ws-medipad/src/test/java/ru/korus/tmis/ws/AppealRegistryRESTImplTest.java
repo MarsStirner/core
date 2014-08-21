@@ -28,7 +28,6 @@ import ru.korus.tmis.core.patient.AppealBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.testutil.DbUtil;
 import ru.korus.tmis.testutil.WebMisBase;
-import scala.actors.threadpool.Arrays;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -41,6 +40,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 

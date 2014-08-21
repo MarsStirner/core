@@ -605,41 +605,15 @@
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-library</artifactId>
             <version>${version.scala}</version>
+            <scope>provided</scope>
         </dependency>
 
         <dependency>
             <groupId>org.scala-lang</groupId>
             <artifactId>scala-compiler</artifactId>
             <version>${version.scala}</version>
+            <scope>provided</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-actors</artifactId>
-            <version>${version.scala}</version>
-        </dependency>
-
-        <!--Groovy-->
-        <dependency>
-            <groupId>org.codehaus.groovy</groupId>
-            <artifactId>groovy-all</artifactId>
-            <version>${version.groovy}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.spockframework</groupId>
-            <artifactId>spock-core</artifactId>
-            <version>${version.test.spock}</version>
-            <scope>test</scope>
-        </dependency>
-
-        <!-- The org.codehaus.janino:commons-compiler:2.6.1 dependency -->
-        <!-- will be automatically pulled in by Maven's transitivity rules -->
-        <!--<dependency>-->
-        <!--<groupId>org.codehaus.janino</groupId>-->
-        <!--<artifactId>janino</artifactId>-->
-        <!--<version>${version.logging.logback.janino}</version>-->
-        <!--</dependency>-->
 
         <!--JUnit-->
         <dependency>
@@ -811,85 +785,6 @@
                 </configuration>
             </plugin>
 
-            <!--
-               Groovy
-            -->
-            <!-- Mandatory plugins for using Spock -->
-            <plugin>
-                <groupId>org.codehaus.gmaven</groupId>
-                <artifactId>gmaven-plugin</artifactId>
-                <version>${version.maven.gmaven.plugin}</version>
-                <configuration>
-                    <source>src / test / groovy</source>
-                    <providerSelection>2.0</providerSelection>
-                </configuration>
-                <executions>
-                    <execution>
-                        <goals>
-                            <goal>generateStubs</goal>
-                            <goal>compile</goal>
-                            <goal>generateTestStubs</goal>
-                            <goal>testCompile</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.codehaus.gmaven.runtime</groupId>
-                        <artifactId>gmaven-runtime-2.0</artifactId>
-                        <version>${version.gmaven.runtime}</version>
-                        <exclusions>
-                            <exclusion>
-                                <groupId>org.codehaus.groovy</groupId>
-                                <artifactId>groovy-all</artifactId>
-                            </exclusion>
-                        </exclusions>
-                    </dependency>
-                    <dependency>
-                        <groupId>org.codehaus.groovy</groupId>
-                        <artifactId>groovy-all</artifactId>
-                        <version>${version.groovy}</version>
-                    </dependency>
-                </dependencies>
-            </plugin>
-            <!--<plugin>-->
-            <!--<groupId>org.codehaus.gmaven</groupId>-->
-            <!--<artifactId>gmaven-plugin</artifactId>-->
-            <!--<version>${version.maven.gmaven.plugin}</version>-->
-            <!--<configuration>-->
-            <!--<source>src / main / groovy</source>-->
-            <!--<providerSelection>2.0</providerSelection>-->
-            <!--</configuration>-->
-            <!--<executions>-->
-            <!--<execution>-->
-            <!--<goals>-->
-            <!--<goal>generateStubs</goal>-->
-            <!--<goal>compile</goal>-->
-            <!--<goal>generateTestStubs</goal>-->
-            <!--<goal>testCompile</goal>-->
-            <!--</goals>-->
-            <!--</execution>-->
-            <!--</executions>-->
-            <!--<dependencies>-->
-            <!--<dependency>-->
-            <!--<groupId>org.codehaus.gmaven.runtime</groupId>-->
-            <!--<artifactId>gmaven-runtime-2.0</artifactId>-->
-            <!--<version>${version.gmaven.runtime}</version>-->
-            <!--<exclusions>-->
-            <!--<exclusion>-->
-            <!--<groupId>org.codehaus.groovy</groupId>-->
-            <!--<artifactId>groovy-all</artifactId>-->
-            <!--</exclusion>-->
-            <!--</exclusions>-->
-            <!--</dependency>-->
-            <!--<dependency>-->
-            <!--<groupId>org.codehaus.groovy</groupId>-->
-            <!--<artifactId>groovy-all</artifactId>-->
-            <!--<version>${version.groovy}</version>-->
-            <!--</dependency>-->
-            <!--</dependencies>-->
-            <!--</plugin>-->
-
             <!-- Only required if default Surefire configuration is not satisfactory -->
             <plugin>
                 <artifactId>maven-surefire-plugin</artifactId>
@@ -1011,30 +906,6 @@
 
             </plugin>
 
-            <!--&lt;!&ndash; Checkstyle для классов на Scala &ndash;&gt;-->
-            <!--<plugin>-->
-            <!--<groupId>org.scalastyle</groupId>-->
-            <!--<artifactId>scalastyle-maven-plugin</artifactId>-->
-            <!--<version>0.2.0</version>-->
-            <!--<configuration>-->
-            <!--<verbose>false</verbose>-->
-            <!--<failOnViolation>true</failOnViolation>-->
-            <!--<includeTestSourceDirectory>true</includeTestSourceDirectory>-->
-            <!--<failOnWarning>false</failOnWarning>-->
-            <!--<sourceDirectory>src/main/scala</sourceDirectory>-->
-            <!--<testSourceDirectory>src/test/scala</testSourceDirectory>-->
-            <!--<configLocation>${basedir}/server/checkstyle/scalastyle_config.xml</configLocation>-->
-            <!--</configuration>-->
-            <!--&lt;!&ndash;<executions>&ndash;&gt;-->
-            <!--&lt;!&ndash;<execution>&ndash;&gt;-->
-            <!--&lt;!&ndash;<phase>package</phase>&ndash;&gt;-->
-            <!--&lt;!&ndash;<goals>&ndash;&gt;-->
-            <!--&lt;!&ndash;<goal>check</goal>&ndash;&gt;-->
-            <!--&lt;!&ndash;</goals>&ndash;&gt;-->
-            <!--&lt;!&ndash;</execution>&ndash;&gt;-->
-            <!--&lt;!&ndash;</executions>&ndash;&gt;-->
-            <!--</plugin>-->
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-pmd-plugin</artifactId>
@@ -1080,97 +951,6 @@
                 </configuration>
             </plugin>
 
-
-            <!--  <plugin>
-                <groupId>org.glassfish.maven.plugin</groupId>
-                <artifactId>maven-glassfish-plugin</artifactId>
-                <version>2.1</version>
-                <configuration>
-                    <glassfishDirectory>${glassfish.home}</glassfishDirectory>
-
-                    <user>${<profiles>
-                        <profile>
-                            <id>misCore</id>
-                            <properties>
-                                <my.build.directory>
-                                    /Users/rednekis/Documents/work/projects/misCore/build/${project.groupId}-${project.artifactId}
-                                </my.build.directory>
-                                <glassfish.home>/usr/local/glassfish3</glassfish.home>
-                                <glassfish.domain.name>testdomain</glassfish.domain.name>
-                                <glassfish.domain.adminPort>4848</glassfish.domain.adminPort>
-                                <glassfish.domain.httpPort>8080</glassfish.domain.httpPort>
-                                <glassfish.domain.httpsPort>8443</glassfish.domain.httpsPort>
-                                <glassfish.domain.iiopPort>3700</glassfish.domain.iiopPort>
-                                <glassfish.domain.jmsPort>7676</glassfish.domain.jmsPort>
-                                <glassfish.domain.host>localhost</glassfish.domain.host>
-                                <glassfish.domain.user>admin</glassfish.domain.user>
-                                <glassfish.domain.password>adminpassword</glassfish.domain.password>
-                                <glassfish.domain.passwordFile>${domain.dir}/${domain.name}/master-password
-                                </glassfish.domain.passwordFile>
-                            </properties>
-                        </profile>
-                    </profiles>
-                        <activeProfiles>
-                            <activeProfile>misCore</activeProfile>
-                        </activeProfiles>${glassfish.domain.user}</user>
-                    <passwordFile>${domain.passwordFile}</passwordFile>
-
-                    <debug>true</debug>
-                    <echo>true</echo>
-                    <terse>true</terse>
-
-                    <domainDirectory>${domain.dir}</domainDirectory>
-                    <autoCreate>false</autoCreate>
-                    <skip>false</skip>
-                    <domain>
-                        <host>${glassfish.domain.host}</host>
-                        <name>${glassfish.domain.name}</name>
-                        <adminPort>${glassfish.domain.adminPort}</adminPort>
-                        <httpPort>${glassfish.domain.httpPort}</httpPort>
-                        <httpsPort>${glassfish.domain.httpsPort}</httpsPort>
-                        <iiopPort>${glassfish.domain.iiopPort}</iiopPort>
-                        <jmsPort>${glassfish.domain.jmsPort}</jmsPort>
-                        <reuse>true</reuse>
-                    </domain>
-
-                    <components>
-                        <component>
-                            <name>${project.build.finalName}</name>
-                            <artifact>
-                                ${project.build.directory}/${project.build.finalName}.${project.packaging}
-                            </artifact>
-                        </component>
-                    </components>
-                </configuration>
-            </plugin>
-                 -->
-
-
-            <!--
-                Release management
-            -->
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-release-plugin</artifactId>
-                <version>${version.maven.plugin.release}</version>
-                <configuration>
-                    <useReleaseProfile>false</useReleaseProfile>
-                    <pushChanges>false</pushChanges>
-                </configuration>
-                <executions>
-                    <execution>
-                        <id>default</id>
-                        <goals>
-                            <goal>perform</goal>
-                        </goals>
-                        <configuration>
-                            <pomFileName>core/pom.xml</pomFileName>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-
-
         </plugins>
     </build>
 
@@ -1179,7 +959,7 @@
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>findbugs-maven-plugin</artifactId>
-                <version>2.5.2</version>
+                <version>2.5.5</version>
                 <configuration>
                     <findbugsXmlOutput>true</findbugsXmlOutput>
                 </configuration>
@@ -1207,18 +987,6 @@
                 <enabled>false</enabled>
             </snapshots>
         </repository>
-
-        <repository>
-            <id>scala-tools-releases</id>
-            <name>Scala-Tools Releases</name>
-            <url>http://scala-tools.org/repo-releases</url>
-        </repository>
-
-        <!--<repository>-->
-        <!--<id>eclipselink</id>-->
-        <!--<name>EclipseLink Repo</name>-->
-        <!--<url>http://www.eclipse.org/downloads/download.php?r=1&amp;nf=1&amp;file=/rt/eclipselink/maven.repo</url>-->
-        <!--</repository>-->
 
         <repository>
             <id>EclipseLink</id>
@@ -1317,26 +1085,6 @@
             <url>http://repository.sonarsource.org/content/groups/public</url>
         </pluginRepository>
     </pluginRepositories>
-
-    <!--
-        Release management
-    -->
-    <!--
-    <distributionManagement>
-        <repository>
-            <id>nexus-tiger</id>
-            <url>
-                http://tiger.ftk.spbstu.ru:8081/nexus/content/repositories/digitek-releases/
-            </url>
-        </repository>
-        <snapshotRepository>
-            <id>nexus-tiger</id>
-            <url>
-                http://tiger.ftk.spbstu.ru:8081/nexus/content/repositories/digitek-snapshots/
-            </url>
-        </snapshotRepository>
-    </distributionManagement>
-    -->
 
     <scm>
         <connection>scm:git:https://github.com/KorusConsulting/tmis-core.git</connection>

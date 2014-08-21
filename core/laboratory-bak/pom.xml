@@ -19,34 +19,16 @@
             <artifactId>tmis-core-common</artifactId>
             <version>${version.tmis.core}</version>
         </dependency>
-        <!--Scala-->
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-library</artifactId>
-            <version>${version.scala}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-compiler</artifactId>
-            <version>${version.scala}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.scala-lang</groupId>
-            <artifactId>scala-actors</artifactId>
-            <version>${version.scala}</version>
-        </dependency>
     </dependencies>
 
     <build>
+        <finalName>laboratory-bak</finalName>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>2.1.1</version>
                 <configuration>
-                    <!--<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>-->
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>

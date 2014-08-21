@@ -2,13 +2,7 @@ package ru.korus.tmis.core.auth;
 
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -25,8 +19,6 @@ import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.UUID;
 import ru.korus.tmis.scala.util.ConfigManager;
-import scala.actors.threadpool.Arrays;
-
 /**
  * Author: Sergey A. Zagrebelny <br>
  * Date: 23.04.13, 13:42 <br>
@@ -253,7 +245,7 @@ public class UsersMgr implements UsersMgrLocal {
             newStaff.setPassword(getMD5(jsonNewPerson.getPassword()).toLowerCase());
         }
         @SuppressWarnings("unchecked")
-        Set<Role> roles = getRoles(Arrays.asList(new String[] { ROLE_GUEST }));
+        Set<Role> roles = getRoles(Arrays.asList(ROLE_GUEST));
         if (jsonNewPerson.getRoles() != null && !jsonNewPerson.getRoles().isEmpty()) {
             final Set<Role> requestRoles = getRoles(jsonNewPerson.getRoles());
             if (!requestRoles.isEmpty()) {
