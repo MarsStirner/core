@@ -19,6 +19,7 @@ import javax.persistence.PersistenceContext;
 import javax.ws.rs.*;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -125,9 +126,10 @@ public class RisarRestService {
             logger.error("RISAR notification. Cannot set INN and title of organization.", e);
         }
 
-        if (action.getPlannedEndDate() != null) {
-            map.add("visitDate", (new SimpleDateFormat("yyyy-MM-dd")).format(action.getPlannedEndDate()));
-            map.add("visitTime", (new SimpleDateFormat("HH:mm:ss")).format(action.getPlannedEndDate()));
+        final Date date = action.getBegDate();
+        if (date != null) {
+            map.add("visitDate", (new SimpleDateFormat("yyyy-MM-dd")).format(date));
+            map.add("visitTime", (new SimpleDateFormat("HH:mm:ss")).format(date));
         }
 
         logger.info("RISAR notification. Request param: " + map);
