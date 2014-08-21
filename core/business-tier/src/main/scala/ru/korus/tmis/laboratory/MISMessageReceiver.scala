@@ -102,6 +102,7 @@ class MISMessageReceiver extends MessageListener {
   }
 
   private def setJobTicketStatusOfResearch(action: Action, status: Int) = {
+    var hasBeenUpdated = false
     for(l: ActionProperty <- action.getActionProperties.asScala) {
       if(l.getType.getCode != null && l.getType.getCode.equals("TAKINGTIME")) {
         val values = s.getActionPropertyValue(l)
@@ -114,6 +115,7 @@ class MISMessageReceiver extends MessageListener {
               jt.setLabel("##Ошибка отправки в ЛИС##")
               em merge jt
               em.flush()
+              hasBeenUpdated = true
             case _ =>
           }
         } else {
@@ -121,6 +123,9 @@ class MISMessageReceiver extends MessageListener {
         }
       }
     }
+    if(!hasBeenUpdated)
+      System.out.println("Не удалось проставить статус JobTicket-у. Возможно, у ActionType["
+        + action.getActionType.getId + "] нет свойства \"Время забора\" с кодом TAKINGTIME" ) //TODO Log
   }
 
 }
