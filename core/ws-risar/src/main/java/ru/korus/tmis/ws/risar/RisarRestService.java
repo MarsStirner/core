@@ -111,7 +111,7 @@ public class RisarRestService {
             Map<ActionProperty, List<APValue>> actionProp =
                     dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList(diagCode));
             if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
-                Object value = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
+                Object value = actionProp.entrySet().iterator().next().getValue().iterator().next();
                 if (value instanceof APValueMKB) {
                     map.add("diagnosisCode", ((APValueMKB) value).getMkb().getDiagID());
                 }
@@ -119,7 +119,7 @@ public class RisarRestService {
             actionProp =
                     dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList("recommendations", "resort"));
             if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
-                Object value = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
+                Object value = actionProp.entrySet().iterator().next().getValue().iterator().next();
                 if (value instanceof APValue) {
                     map.add("recommendations", ((APValue) value).getValueAsString());
                 }
