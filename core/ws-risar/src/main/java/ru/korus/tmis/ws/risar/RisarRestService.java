@@ -16,10 +16,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.List;
@@ -52,7 +49,7 @@ public class RisarRestService {
 
     @PUT
     @Path("/new/exam/{actionId}")
-    public String newExam(@PathParam(value = "actionId") Integer actionId) {
+    public String newExam(@PathParam(value = "actionId") Integer actionId) throws WebApplicationException {
         try {
             logger.info("RISAR notification. New exam with actionId: " + actionId);
             Action action = dbActionBean.getActionById(actionId);
@@ -128,8 +125,10 @@ public class RisarRestService {
             logger.error("RISAR notification. Cannot set INN and title of organization.", e);
         }
 
-        map.add("visitDate", (new SimpleDateFormat("yyyy-MM-dd")).format(action.getModifyDatetime()));
-        map.add("visitTime", (new SimpleDateFormat("HH:mm:ss")).format(action.getModifyDatetime()));
+        if (action.getPlannedEndDate() != null) {
+            map.add("visitDate", (new SimpleDateFormat("yyyy-MM-dd")).format(action.getPlannedEndDate()));
+            map.add("visitTime", (new SimpleDateFormat("HH:mm:ss")).format(action.getPlannedEndDate()));
+        }
 
         logger.info("RISAR notification. Request param: " + map);
         final String url = ConfigManager.Risar().ServiceUrl() + "/api/patient/v1/saveInspectionResults/";
@@ -144,4 +143,5 @@ public class RisarRestService {
             throw new CoreException(("RISAR notification error:" + result));
         }*/
     }
+
 }
