@@ -724,7 +724,7 @@ with CAPids {
       }
 
       // Даты конца нет или она в будущем,  нужно подтянуть значения
-      if ((endDateValue == null || endDateValue.after(new Date())) && (beginDateValue != null && beginDateValue.before(new Date()))) {
+      if (endDateValue == null || endDateValue.after(new Date())) {
         lastAction.getActionProperties.foreach(p => {
           if (p.getType.getCode != null && p.getType.getCode.equals(apt.getCode)) {
             val values = actionPropertyBean.getActionPropertyValue(p)
@@ -800,7 +800,7 @@ with CAPids {
           null
       }
 
-      val localInfectProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectLocal")).getOrElse(null)
+      val localInfectProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectLocal")).orNull
 
       for(prefix <- localInfectPrefixes) {
 
