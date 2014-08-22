@@ -77,6 +77,7 @@ public class RisarRestService {
             StringWriter sw = new StringWriter();
             PrintWriter pw = new PrintWriter(sw);
             ex.printStackTrace(pw);
+            logger.error(sw.toString());
             return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(sw.toString()).build();
         }
 
