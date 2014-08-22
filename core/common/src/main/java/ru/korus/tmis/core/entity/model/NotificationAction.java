@@ -69,7 +69,7 @@ public class NotificationAction implements Serializable, Transmittable {
 	}
 
 	public void setInfo(String info) {
-		this.info = info;
+		this.info = info == null ? null : info.substring(0, Math.min(info.length(), 1024));
 	}
 
 	public Timestamp getSendTime() {

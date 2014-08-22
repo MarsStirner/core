@@ -17,6 +17,10 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
@@ -50,7 +54,8 @@ public class RisarRestService {
 
     @PUT
     @Path("/new/exam/{actionId}")
-    public String newExam(@PathParam(value = "actionId") Integer actionId) throws WebApplicationException {
+    @Produces(MediaType.TEXT_HTML + ";charset=UTF-8")
+    public Response newExam(@PathParam(value = "actionId") Integer actionId) throws WebApplicationException {
         try {
             logger.info("RISAR notification. New exam with actionId: " + actionId);
             Action action = dbActionBean.getActionById(actionId);
@@ -67,9 +72,15 @@ public class RisarRestService {
                 sendExamToRisar(action, clientIdentification);
             }
         } catch (CoreException ex) {
-            throw new WebApplicationException(ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        }  catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(sw.toString()).build();
         }
-        return "ok";
+
+        return Response.ok().build();
     }
 
     private void sendExamToRisar(Action action, ClientIdentification clientIdentification) throws CoreException {
