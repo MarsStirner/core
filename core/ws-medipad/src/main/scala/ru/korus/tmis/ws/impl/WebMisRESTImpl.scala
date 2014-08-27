@@ -834,7 +834,7 @@ with CAPids {
 
       // Дневниковый осмотр
       case x if dnevnikoviiOsmotrSet.contains(x) =>
-        if (therapySet.contains(at.getCode)) // Подтягивания значений для полей терапии
+        if (therapySet.contains(x)) // Подтягивания значений для полей терапии
           getPropertyCustom1(dnevnikoviiOsmotrSet, therapySet)
         else if ((infectPrefixes ++ localInfectPrefixes).exists(p => apt.getCode!= null && (apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)))) // или для полей инфекционного контроля
           getPropertyCustom2(dnevnikoviiOsmotrSet, (infectPrefixes ++ localInfectPrefixes).find(p => apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)).get)
