@@ -10,8 +10,13 @@ import ru.korus.tmis.prescription.ExecuteIntervalsData;
 import ru.korus.tmis.prescription.PrescriptionBeanLocal;
 import ru.korus.tmis.prescription.PrescriptionGroupBy;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import java.util.Arrays;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -19,23 +24,22 @@ import javax.ws.rs.*;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
+@Stateless
 @Interceptors(ServicesLoggingInterceptor.class)
 public class PrescriptionsRESTImpl {
 
-    final private PrescriptionBeanLocal prescriptionBeanLocal;
-    final private AuthData auth;
-    final private String callback;
+    @EJB
+    private WebMisREST wsImpl;
 
-    public PrescriptionsRESTImpl(PrescriptionBeanLocal prescriptionBeanLocal, AuthData auth, String callback) {
-        this.prescriptionBeanLocal = prescriptionBeanLocal;
-        this.auth = auth;
-        this.callback = callback;
-    }
+    @EJB
+    private PrescriptionBeanLocal prescriptionBeanLocal;
 
     @GET
     @Path("/")
     @Produces("application/x-javascript")
-    public Object listAction(@QueryParam("eventId") Integer eventId,
+    public Object listAction(@Context HttpServletRequest servRequest,
+                             @QueryParam("callback") String callback,
+                             @QueryParam("eventId") Integer eventId,
                              @QueryParam("dateRangeMin") Long dateRangeMin,
                              @QueryParam("dateRangeMax") Long dateRangeMax,
                              @QueryParam("groupBy") PrescriptionGroupBy groupBy,
@@ -44,15 +48,6 @@ public class PrescriptionsRESTImpl {
                              @QueryParam("pacientName") String patientName,
                              @QueryParam("setPersonName") String setPersonName,
                              @QueryParam("departmentId") String departmentId)throws CoreException {
-        //http://webmis/api/v1/prescriptions/?callback=jQuery18205942272304091603_1400733998545&
-        // groupBy=interval&
-        // dateRangeMin=1400745600&
-        // dateRangeMax=1400832000&
-        // administrationId=2&
-        // drugName=a&
-        // pacientName=P&
-        // setPersonName=V&
-        // departmentId=26&_=1400734043649
         return new JSONWithPadding(prescriptionBeanLocal.getPrescriptions(eventId,
                 dateRangeMin,
                 dateRangeMax,
@@ -62,48 +57,48 @@ public class PrescriptionsRESTImpl {
                 patientName,
                 setPersonName,
                 departmentId,
-                auth), callback);
+                wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()))), callback);
     }
 
     @POST
     @Path("/")
     @Produces("application/x-javascript")
-    public Object listAction(CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
-        return new JSONWithPadding(prescriptionBeanLocal.create(createPrescriptionReqData, auth), callback);
+    public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
+        return new JSONWithPadding(prescriptionBeanLocal.create(createPrescriptionReqData, wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()))), callback);
     }
 
     @PUT
     @Path("/{prescriptionId}")
     @Produces("application/x-javascript")
-    public Object listAction(@PathParam("prescriptionId")Integer actionId, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
-        return new JSONWithPadding(prescriptionBeanLocal.update(actionId, createPrescriptionReqData, auth), callback);
+    public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, @PathParam("prescriptionId")Integer actionId, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
+        return new JSONWithPadding(prescriptionBeanLocal.update(actionId, createPrescriptionReqData, wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()))), callback);
     }
 
     @PUT
     @Path("/intervals")
     @Produces("application/x-javascript")
-    public Object updateIntervals(AssigmentIntervalDataArray assigmentIntervalDataArray)throws CoreException {
+    public Object updateIntervals(@QueryParam("callback") String callback, AssigmentIntervalDataArray assigmentIntervalDataArray)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.updateIntervals(assigmentIntervalDataArray), callback);
     }
 
     @PUT
     @Path("/executeIntervals/")
     @Produces("application/x-javascript")
-    public Object executeIntervals(ExecuteIntervalsData executeIntervalsData)throws CoreException {
+    public Object executeIntervals(@QueryParam("callback") String callback, ExecuteIntervalsData executeIntervalsData)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.executeIntervals(executeIntervalsData), callback);
     }
 
     @PUT
     @Path("/cancelIntervals/")
     @Produces("application/x-javascript")
-    public Object cancelIntervals(ExecuteIntervalsData executeIntervalsData)throws CoreException {
+    public Object cancelIntervals(@QueryParam("callback") String callback, ExecuteIntervalsData executeIntervalsData)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.cancelIntervals(executeIntervalsData), callback);
     }
 
     @PUT
     @Path("/cancelIntervalsExecution/")
     @Produces("application/x-javascript")
-    public Object cancelIntervalsExecution(ExecuteIntervalsData executeIntervalsData)throws CoreException {
+    public Object cancelIntervalsExecution(@QueryParam("callback") String callback, ExecuteIntervalsData executeIntervalsData)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.cancelIntervalsExecution(executeIntervalsData), callback);
     }
 
@@ -111,14 +106,14 @@ public class PrescriptionsRESTImpl {
     @GET
     @Path("/types/")
     @Produces("application/x-javascript")
-    public Object getTypes()throws CoreException {
+    public Object getTypes(@QueryParam("callback") String callback)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.getTypes(), callback);
     }
 
     @GET
     @Path("/template/{actionTypeId}/")
     @Produces("application/x-javascript")
-    public Object getTemplate(@PathParam("actionTypeId") Integer actionTypeId)throws CoreException {
+    public Object getTemplate(@QueryParam("callback") String callback, @PathParam("actionTypeId") Integer actionTypeId)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.getTemplate(actionTypeId), callback);
     }
 

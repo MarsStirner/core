@@ -46,6 +46,9 @@ public class BaseRegistryRESTImpl implements Serializable {
     @EJB
     JobImpl jobImpl;
 
+    @EJB
+    PrescriptionsRESTImpl prescriptionsRESTImpl;
+
 
     @Path("/")
     public CustomInfoRESTImpl getCustomInfoRESTImpl(@Context HttpServletRequest servRequest,
@@ -116,12 +119,7 @@ public class BaseRegistryRESTImpl implements Serializable {
         return new RlsDataImpl(wsImpl, makeAuth(token, servRequest), callback);
     }
     @Path("/prescriptions")
-    public PrescriptionsRESTImpl getPrescriptions(
-            @Context HttpServletRequest servRequest,
-            @QueryParam("token") String token,
-            @QueryParam("callback") String callback) {
-        return new PrescriptionsRESTImpl(prescriptionnBeanLocal, makeAuth(token, servRequest), callback);
-    }
+    public PrescriptionsRESTImpl getPrescriptions() { return prescriptionsRESTImpl; }
 
     @Path("/job")
     public JobImpl getJobImpl() { return jobImpl; }
