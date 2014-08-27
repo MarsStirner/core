@@ -576,6 +576,8 @@ with CAPids {
 
     val patientId = event.getPatient.getId
 
+    val dnevnikoviiOsmotrSet = Set("1_2_18", "1_2_19", "1_2_22", "1_2_23")
+
     val infectDrugPropsSet = Set(
       "infectDrugName_1", "infectDrugBeginDate_1", "infectDrugEndDate_1", "infectTherapyType_1",
       "infectDrugName_2", "infectDrugBeginDate_2", "infectDrugEndDate_2", "infectTherapyType_2",
@@ -831,15 +833,15 @@ with CAPids {
       case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"))
 
       // Дневниковый осмотр
-      case "1_2_18" =>
+      case x if dnevnikoviiOsmotrSet.contains(x) =>
         if (therapySet.contains(at.getCode)) // Подтягивания значений для полей терапии
-          getPropertyCustom1(Set("1_2_18"), therapySet)
+          getPropertyCustom1(dnevnikoviiOsmotrSet, therapySet)
         else if ((infectPrefixes ++ localInfectPrefixes).exists(p => apt.getCode!= null && (apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)))) // или для полей инфекционного контроля
-          getPropertyCustom2(Set("1_2_18"), (infectPrefixes ++ localInfectPrefixes).find(p => apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)).get)
+          getPropertyCustom2(dnevnikoviiOsmotrSet, (infectPrefixes ++ localInfectPrefixes).find(p => apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)).get)
         else if (apt.getCode!= null && apt.getCode.equals("infectLocal"))
-          getPropertyCustom4(Set("1_2_18"))
+          getPropertyCustom4(dnevnikoviiOsmotrSet)
         else if (infectDrugPropsSet.contains(apt.getCode))
-          getPropertyCustom3(Set("1_2_18"))
+          getPropertyCustom3(dnevnikoviiOsmotrSet)
         else
           null
       case _ => null
