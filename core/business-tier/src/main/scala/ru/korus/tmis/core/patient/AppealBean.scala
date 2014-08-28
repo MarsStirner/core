@@ -435,7 +435,7 @@ with CAPids {
     //запрос данных из Action
     val action = actionBean.getAppealActionByEventId(event.getId.intValue(), i18n("db.actionType.hospitalization.primary").toInt)
     if (action == null) {
-      throw new CoreException("Первичный осмотр для обращения с id=%d не найден в БД".format(id))
+      throw new CoreException(ConfigManager.ErrorCodes.ActionNotFound, "Невозможно открыть обращение[id=%d], т.к. в нем отсутствует действие Поступление".format(id))
     }
     //Запрос данных из ActionProperty
     val findMapActionProperty = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue())
