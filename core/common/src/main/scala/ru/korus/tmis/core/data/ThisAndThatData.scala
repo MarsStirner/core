@@ -339,7 +339,8 @@ class ActionTypesListData {
         this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].flatCodes,
         this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
         this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view,
-        true, null))
+        this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].showHidden,
+        null))
       var elem: ActionType = null
       if (at.getGroupId != null && requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
         elem = ats.find(at2 => at2.getId.intValue() == at.getGroupId.intValue()).getOrElse(null)
@@ -510,7 +511,8 @@ class ActionTypesListEntry {
           requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].flatCodes,
           requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
           requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view,
-          true, null)
+          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].showHidden,
+          null)
         val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter)
         this.groups.add(new ActionTypesListEntry(f, request, getAllActionTypeWithFilter))
       })
