@@ -1,20 +1,22 @@
 package ru.korus.tmis.core.data
 
-import reflect.BeanProperty
-import javax.xml.bind.annotation.{XmlRootElement, XmlType}
-import scala.collection.JavaConversions._
-import java.text.{DateFormat, SimpleDateFormat}
-import scala.Predef._
-import ru.korus.tmis.core.entity.model._
-import org.codehaus.jackson.annotate.{JsonTypeInfo, JsonSubTypes, JsonIgnoreProperties}
-import org.codehaus.jackson.map.annotate.JsonView
-import java.util
-import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
-import org.codehaus.jackson.map.ObjectMapper
 import java.io.IOException
-import util.{Calendar, ArrayList, Date}
+import java.text.{DateFormat, SimpleDateFormat}
+import java.util
+import java.util.{ArrayList, Calendar, Date}
+import javax.xml.bind.annotation.{XmlRootElement, XmlType}
+
+import org.codehaus.jackson.annotate.{JsonIgnoreProperties, JsonSubTypes, JsonTypeInfo}
+import org.codehaus.jackson.map.ObjectMapper
+import org.codehaus.jackson.map.annotate.JsonView
+import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.core.filter.{AbstractListDataFilter, ListDataFilter}
 import ru.korus.tmis.scala.util.ConfigManager
+
+import scala.Predef._
+import scala.beans.BeanProperty
+import scala.collection.JavaConversions._
 
 @XmlType(name = "listRequestData")
 @XmlRootElement(name = "listRequestData")
@@ -326,28 +328,21 @@ class ActionTypesListData {
   @BeanProperty
   var requestData: ListDataRequest = _
   @BeanProperty
-  var data: ArrayList[ActionTypesListEntry] = new ArrayList[ActionTypesListEntry]
+  var data: util.List[ActionTypesListEntry] = new util.ArrayList[ActionTypesListEntry]
 
   def this(requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, ListDataFilter) => java.util.List[ActionType]) = {
     this()
     this.requestData = requestData
-
-    var ats = getAllActionTypeWithFilter(0, 0, this.requestData.sortingFieldInternal, this.requestData.filter.unwrap())
-    ats.foreach(at => {
-      requestData.setFilter(new ActionTypesListRequestDataFilter("",
-        at.getId.intValue(),
-        this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].flatCodes,
-        this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
-        this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view,
-        this.requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].showHidden,
-        null))
-      var elem: ActionType = null
-      if (at.getGroupId != null && requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
-        elem = ats.find(at2 => at2.getId.intValue() == at.getGroupId.intValue()).getOrElse(null)
-      }
-      if (elem == null) {
-        this.data.add(new ActionTypesListEntry(at, requestData, getAllActionTypeWithFilter))
-      }
+    val ats = getAllActionTypeWithFilter(0, 0, this.requestData.sortingFieldInternal, this.requestData.filter.unwrap()).map(new ActionTypesListEntry(_))
+    val hashMap = ats.map(at => at.getId -> at).toMap
+    ats.foreach(e => {
+      if(e.getGroupId > 0)
+        hashMap.get(e.getGroupId) match {
+          case None => data.add(e)
+          case Some(x: ActionTypesListEntry) => x.getGroups.add(e)
+        }
+       else
+        data.add(e)
     })
   }
 }
@@ -400,29 +395,29 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
+  def toQueryStructure = {
     val qs = new QueryDataStructure()
     if (this.groupId > 0) {
-      qs.query += ("AND at.groupId = :groupId\n")
+      qs.query += "AND at.groupId = :groupId\n"
       qs.add("groupId", this.groupId: java.lang.Integer)
     }
     else if (this.code != null && !this.code.isEmpty) {
-      qs.query += ("AND at.groupId IN (SELECT at2.id FROM ActionType at2 WHERE at2.code = :code)\n")
+      qs.query += "AND at.groupId IN (SELECT at2.id FROM ActionType at2 WHERE at2.code = :code)\n"
       qs.add("code", this.code)
     }
     else if (this.flatCodes != null && this.flatCodes.size() > 0) {
-      qs.query += ("AND at.flatCode IN :flatCodes\n")
+      qs.query += "AND at.flatCode IN :flatCodes\n"
       qs.add("flatCodes", asJavaCollection(this.flatCodes))
     }
     if (this.mnemonics != null && this.mnemonics.size() > 0) {
-      qs.query += ("AND at.mnemonic IN :mnemonic\n")
+      qs.query += "AND at.mnemonic IN :mnemonic\n"
       qs.add("mnemonic", asJavaCollection(this.mnemonics))
     }
     if (!showHidden) {
-      qs.query += ("AND at.hidden = false\n")
+      qs.query += "AND at.hidden = false\n"
     }
     if (orgStructId != null) {
-      qs.query += ("AND at.id IN (SELECT sat.actionType.id FROM OrgStructureActionType sat WHERE sat.masterDepartment.id = :orgStructId)\n")
+      qs.query += "AND at.id IN (SELECT sat.actionType.id FROM OrgStructureActionType sat WHERE sat.masterDepartment.id = :orgStructId)\n"
       qs.add("orgStructId", this.orgStructId)
     }
     qs
@@ -488,12 +483,9 @@ class ActionTypesListEntry {
 
   @JsonView(Array(classOf[ActionTypesListDataViews.DefaultView]))
   @BeanProperty
-  var groups: java.util.LinkedList[ActionTypesListEntry] = new java.util.LinkedList[ActionTypesListEntry]
+  var groups: util.ArrayList[ActionTypesListEntry] = new util.ArrayList[ActionTypesListEntry]
 
-  //@BeanProperty
-  //var childrenCount: Long = _
-
-  def this(actionType: ActionType, requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, ListDataFilter) => java.util.List[ActionType]) {
+  def this(actionType: ActionType) {
     this()
     this.id = actionType.getId.intValue()
     this.groupId = if (actionType.getGroupId != null) {
@@ -504,20 +496,6 @@ class ActionTypesListEntry {
     this.code = actionType.getCode
     this.flatCode = actionType.getFlatCode
     this.name = actionType.getName
-    if (requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view.compareTo("tree") == 0) {
-      getAllActionTypeWithFilter(0, 0, requestData.sortingFieldInternal, requestData.filter.unwrap()).foreach(f => {
-        val filter = new ActionTypesListRequestDataFilter("",
-          f.getId.intValue(),
-          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].flatCodes,
-          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].mnemonics,
-          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].view,
-          requestData.filter.asInstanceOf[ActionTypesListRequestDataFilter].showHidden,
-          null)
-        val request = new ListDataRequest(requestData.sortingField, requestData.sortingMethod, requestData.limit, requestData.page, filter)
-        this.groups.add(new ActionTypesListEntry(f, request, getAllActionTypeWithFilter))
-      })
-    }
-    //this.childrenCount = actionType
   }
 }
 

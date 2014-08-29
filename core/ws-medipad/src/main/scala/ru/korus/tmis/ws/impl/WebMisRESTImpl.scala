@@ -1285,8 +1285,10 @@ with CAPids {
 
   def getListOfActionTypes(request: ListDataRequest) = {
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.DefaultView]); //дерево
-    mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter _))
+    mapper.getSerializationConfig.withView(classOf[ActionTypesListDataViews.DefaultView]); //дерево
+    // Данный параметр использовался в прошлой реализации, в текущей он не требуется
+    request.filter.asInstanceOf[ActionTypesListRequestDataFilter].setCode(null)
+    mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter))
   }
 
   //********* Диагнозтические исследования **********
