@@ -1,5 +1,6 @@
 package ru.korus.tmis.admin.controller;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -15,7 +16,7 @@ import ru.korus.tmis.admin.model.User;
 @Controller
 @RequestMapping(value = "/")
 @Scope("session")
-public class RegisterController {
+public class RegisterController implements Serializable {
     String displayError = "none";
 
 	@RequestMapping(method = RequestMethod.GET)
@@ -24,17 +25,18 @@ public class RegisterController {
         model.put("displayError", displayError);
 		model.put("userForm", userForm);
 		
-		List<String> professionList = new ArrayList<String>();
+		/*List<String> professionList = new ArrayList<String>();
 		professionList.add("Developer");
 		professionList.add("Designer");
 		professionList.add("IT Manager");
-		model.put("professionList", professionList);
+		model.put("professionList", professionList);*/
 		
 		return "login";
 	}
-	
+
+    //TODO Implement me!
 	@RequestMapping(method = RequestMethod.POST)
-	public String processRegistration(@ModelAttribute("userForm") User user, 
+	public String processRegistration(@ModelAttribute("userForm") User user,
 			Map<String, Object> model) {
 
         displayError = "yes";
@@ -45,6 +47,6 @@ public class RegisterController {
 		System.out.println("username: " + user.getUsername());
 		System.out.println("password: " + user.getPassword());
 
-		return "login";
+		return "Registration";
 	}
 }

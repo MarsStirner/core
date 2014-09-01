@@ -23,18 +23,18 @@
 					<td>Password:</td>
 					<td><form:password path="password" /></td>
 				</tr>
-				<tr>
+				<%--<tr>
 					<td>E-mail:</td>
 					<td><form:input path="email" /></td>
 				</tr>
 				<tr>
 					<td>Birthday (mm/dd/yyyy):</td>
 					<td><form:input path="birthDate" /></td>
-				</tr>
-				<tr>
+				</tr>--%>
+				<%--<tr>
 					<td>Profession:</td>
 					<td><form:select path="profession" items="${professionList}" /></td>
-				</tr>
+				</tr>--%>
 				<tr>
 					<td colspan="2" align="center"><input type="submit" value="Register" /></td>
 				</tr>

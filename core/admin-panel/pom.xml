@@ -61,7 +61,7 @@
 					<failOnMissingWebXml>false</failOnMissingWebXml>
 				</configuration>
 			</plugin>
-			<plugin>
+			<!--<plugin>
 				<groupId>org.mortbay.jetty</groupId>
 				<artifactId>jetty-maven-plugin</artifactId>
                 <configuration>
@@ -72,11 +72,11 @@
                     </connectors>
                     <stopKey>tst</stopKey>
                 </configuration>
-			</plugin>
+			</plugin>-->
             <plugin>
-                <groupId>org.glassfish</groupId>
+                <groupId>org.glassfish.embedded</groupId>
                 <artifactId>maven-embedded-glassfish-plugin</artifactId>
-                <version>3.1.2</version>
+                <version>3.1.2.2</version>
                 <configuration>
                     <!--<goalPrefix>embedded-glassfish</goalPrefix>-->
                     <app>target/${project.build.finalName}.war</app>
@@ -85,11 +85,11 @@
                     <autoDelete>true</autoDelete>
                 </configuration>
             </plugin>
-            <plugin>
+            <!--<plugin>
                 <groupId>org.apache.tomcat.maven</groupId>
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.0</version>
-            </plugin>
+            </plugin>-->
 		</plugins>
 
 	</build>
