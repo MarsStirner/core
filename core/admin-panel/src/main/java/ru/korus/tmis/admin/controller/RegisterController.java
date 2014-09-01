@@ -47,6 +47,6 @@ public class RegisterController implements Serializable {
 		System.out.println("username: " + user.getUsername());
 		System.out.println("password: " + user.getPassword());
 
-		return "Registration";
+		return "main";
 	}
 }

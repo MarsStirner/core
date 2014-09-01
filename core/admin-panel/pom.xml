@@ -81,7 +81,7 @@
                     <!--<goalPrefix>embedded-glassfish</goalPrefix>-->
                     <app>target/${project.build.finalName}.war</app>
                     <port>1111</port>
-                    <contextRoot>admin-panel</contextRoot>
+                    <contextRoot>/</contextRoot>
                     <autoDelete>true</autoDelete>
                 </configuration>
             </plugin>

@@ -5,7 +5,7 @@
 	"http://www.w3.org/TR/html4/loose.dtd">
 <html>
 <head>
-<meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 <title>Registration Success</title>
 </head>
 <body>
@@ -25,15 +25,7 @@
 			</tr>
 			<tr>
 				<td>E-mail:</td>
-				<td>${userForm.email}</td>
-			</tr>
-			<tr>
-				<td>Birthday:</td>
-				<td>${userForm.birthDate}</td>
-			</tr>
-			<tr>
-				<td>Profession:</td>
-				<td>${userForm.profession}</td>
+				<td>${userForm.password}</td>
 			</tr>
 
 		</table>
