@@ -606,7 +606,18 @@ with CAPids {
       "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis",
       "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectGlomerulonephritis",
       "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis",
-      "infectOsteomyelitis", "infectMyositis"
+      "infectOsteomyelitis", "infectMyositis",
+      "infectCNSComment",
+      "infectEyeComment",
+      "infectSkinComment",
+      "infectMucousComment",
+      "infectLORComment",
+      "infectLungsComment",
+      "infectHeartComment",
+      "infectAbdomenComment",
+      "infectUrogenitalComment",
+      "infectMusculoskeletalComment"
+
     )
 
     val therapySet = Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")
