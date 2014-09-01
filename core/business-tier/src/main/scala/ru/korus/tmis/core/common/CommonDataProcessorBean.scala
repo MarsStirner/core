@@ -406,18 +406,10 @@ class CommonDataProcessorBean
             case Some(x) => x.toInt
           }
         }
-        /*res = aps.find(p => p.name == AWI.toOrder.toString).getOrElse(null)
-        if (res != null) {
-          toOrder = res.properties.get(APWI.Value.toString) match {
-            case None | Some("") => false
-            case Some(x) => x.toBoolean
-          }
-        }*/
 
         if (beginDate != null) a.setBegDate(beginDate)
 
         if (finance > 0) a.setFinanceId(finance)
-        //a.setToOrder(toOrder)
         if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
         if (assignerId > 0) a.setAssigner(new Staff(assignerId))
         if (executorId > 0) a.setExecutor(new Staff(executorId))
@@ -433,7 +425,7 @@ class CommonDataProcessorBean
           } else {
             (attribute.getPropertiesMap.get("valueId"), attribute.getPropertiesMap.get("value")) match {
 
-              case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
+              case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
                 new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
