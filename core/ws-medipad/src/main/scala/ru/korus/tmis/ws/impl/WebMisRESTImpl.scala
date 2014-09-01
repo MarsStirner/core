@@ -703,7 +703,7 @@ with CAPids {
           val value = actionPropertyBean.getActionPropertyValue(ap)
           if (!value.isEmpty)
             value.head match {
-              case p: APValueDate => addDays(p.getValue, 1) // Добавляем 1 день, т.к. в БД время сохраняется как 00.00.00
+              case p: APValueDate => p.getValue // в БД время сохраняется как 00.00.00
               case _ => null
             } else
             null
@@ -757,7 +757,7 @@ with CAPids {
           val value = actionPropertyBean.getActionPropertyValue(ap)
           if (!value.isEmpty)
             value.head match {
-              case p: APValueDate => addDays(p.getValue, 1) // Добавляем 1 день, т.к. в БД время сохраняется как 00.00.00
+              case p: APValueDate => p.getValue // в БД время сохраняется как 00.00.00
               case _ => null
             } else
             null
@@ -876,7 +876,7 @@ with CAPids {
     validateDocumentsAvailability(actionBean.getActionById(actionId).getEvent.getId)
 
     //создаем ответственного, если до этого был другой
-    if (data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt) == 0).getOrElse(null) != null) //Врач прописывается только для первичного осмотра  (ид=139)
+    if (data.getData.find(ce => ce.getTypeId.compareTo(i18n("db.actionType.primary").toInt) == 0).orNull != null) //Врач прописывается только для первичного осмотра  (ид=139)
       appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
@@ -886,7 +886,7 @@ with CAPids {
       authData,
       baseUri,
       notifyAction,
-      postProcessing() _)
+      postProcessing())
 
     returnValue
   }
