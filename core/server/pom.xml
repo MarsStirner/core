@@ -191,6 +191,14 @@
                     <earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>
                     <!--<earSourceDirectory>${basedir}/src/main/webapps/</earSourceDirectory>-->
                     <earSourceIncludes>logback.xml</earSourceIncludes>
+                    <modules>
+                        <webModule>
+                            <groupId>ru.korus.tmis.admin</groupId>
+                            <artifactId>admin-panel</artifactId>
+                            <contextRoot>/</contextRoot>
+                        </webModule>
+                    </modules>
+
                 </configuration>
             </plugin>
             <plugin>
