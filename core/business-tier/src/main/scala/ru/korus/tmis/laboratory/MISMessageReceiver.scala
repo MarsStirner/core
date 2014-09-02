@@ -96,8 +96,14 @@ class MISMessageReceiver extends MessageListener {
         }
       }
     } finally { // Always sending reply if possible
-      if (p != null)
-        p.send(replyMessage)
+      if (p != null) {
+        try {
+          p.send(replyMessage)
+        } finally {
+          if (s != null) try { s.close() } catch {case t: Throwable =>  t.printStackTrace() }
+          if (c != null) try { c.close() } catch {case t: Throwable =>  t.printStackTrace() }
+        }
+      }
     }
   }
 

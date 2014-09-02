@@ -47,7 +47,7 @@ class BakResults extends BakResultService {
       val consumer = s.createConsumer(tempq)
       c.start()
       val reply = consumer.receive(20000)
-
+      consumer.close()
       if(reply == null)
         throw new Exception("No response from core, timeout = " + 20000 + "ms")
       replyProcess(reply)
