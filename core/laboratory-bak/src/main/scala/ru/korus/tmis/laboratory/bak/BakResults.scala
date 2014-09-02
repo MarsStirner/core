@@ -8,6 +8,7 @@ import javax.jms._
 import javax.jws.WebService
 import javax.xml.ws.WebServiceContext
 
+import org.slf4j.LoggerFactory
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.lis.data.jms.MISResultProcessingResponse
 import ru.korus.tmis.lis.data.model.hl7.complex._
@@ -196,11 +197,7 @@ class BakResults extends BakResultService {
 
 
   override def bakDelivered(orderBarCode: Integer, takenTissueJournal: String, tissueTime: String, orderBiomaterialName: String): Int = {
-
-    var i = 10
-
-    i += 1
-
+    LoggerFactory.getLogger(classOf[BakResults]).info("Bak Delivered [{}],[{}],[{}],[{}]", orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName)
     0
   }
 
