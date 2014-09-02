@@ -23,7 +23,6 @@ class RlsDataImpl(val wsImpl: WebMisREST, val authData: AuthData, val callback: 
   }
 
   @GET
-  @Path("/")
   def getRlsNomensByText(@QueryParam("text") text: String) = {
     new JSONWithPadding(wsImpl.getRlsByText(text))
   }

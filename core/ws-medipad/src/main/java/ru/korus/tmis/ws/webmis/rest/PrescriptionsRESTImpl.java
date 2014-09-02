@@ -35,7 +35,6 @@ public class PrescriptionsRESTImpl {
     private PrescriptionBeanLocal prescriptionBeanLocal;
 
     @GET
-    @Path("/")
     @Produces("application/x-javascript")
     public Object listAction(@Context HttpServletRequest servRequest,
                              @QueryParam("callback") String callback,
@@ -61,7 +60,6 @@ public class PrescriptionsRESTImpl {
     }
 
     @POST
-    @Path("/")
     @Produces("application/x-javascript")
     public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.create(createPrescriptionReqData, wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()))), callback);
