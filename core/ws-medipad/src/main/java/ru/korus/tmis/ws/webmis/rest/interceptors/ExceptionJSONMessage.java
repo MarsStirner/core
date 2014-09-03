@@ -44,10 +44,23 @@ public class ExceptionJSONMessage implements Serializable {
         if (rootException != null) {
             if (rootException instanceof AuthenticationException) {
                 this.errorCode = ((AuthenticationException) rootException).getId();
+                this.errorMessage = rootException.getMessage();
+            } else if (e instanceof AuthenticationException) {
+                this.errorCode = ((AuthenticationException) e).getId();
+                this.errorMessage = e.getMessage();
             } else if (rootException instanceof CoreException) {//instanceof CoreException
                 this.errorCode = ((CoreException) rootException).getId();
+                this.errorMessage = rootException.getMessage();
+            } else if (e instanceof CoreException) {//instanceof CoreException
+                this.errorCode = ((CoreException) e).getId();
+                this.errorMessage = e.getMessage();
             }
-            this.errorMessage = rootException.getMessage();
+        } if (e instanceof AuthenticationException) {
+            this.errorCode = ((AuthenticationException) e).getId();
+            this.errorMessage = e.getMessage();
+        } else if (e instanceof CoreException) {//instanceof CoreException
+            this.errorCode = ((CoreException) e).getId();
+            this.errorMessage = e.getMessage();
         }
         this.exception = e.toString();
         this.validationErrors = ""; //TODO Здесь должны быть ошибки клиента (например незаполненные или неправильно заполненные поля)

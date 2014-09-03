@@ -13,6 +13,7 @@ import ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor;
 import ru.korus.tmis.core.data.RoleData;
 import ru.korus.tmis.core.exception.AuthenticationException;
 import ru.korus.tmis.ws.medipad.AuthenticationWebService;
+import ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage;
 
 import java.util.Arrays;
 
@@ -73,7 +74,6 @@ public class AuthenticationRESTImpl   {
      * @param request Авторизационные данные пользователя в виде контейнера: AuthEntry.
      * @param callback callback запроса.
      * @return ru.korus.tmis.core.data.RoleData как Object. Контейнер с данными о пользователе и списком доступных ролей.
-     * @throws AuthenticationException
      * @see AuthenticationException
      * @see ru.korus.tmis.core.data.RoleData
      * @see AuthEntry
@@ -83,8 +83,12 @@ public class AuthenticationRESTImpl   {
     @Consumes({"application/json", "application/xml"})
     @Produces({"application/x-javascript","application/xml"})
     public Object getRoles2(AuthEntry request,
-                            @QueryParam("callback") String callback) throws AuthenticationException {
-        return new JSONWithPadding(wsImpl.getRoles(request.login(), request.password()), callback);
+                            @QueryParam("callback") String callback) {
+        try {
+            return new JSONWithPadding(wsImpl.getRoles(request.login(), request.password()), callback);
+        } catch (AuthenticationException e) {
+            return new ExceptionJSONMessage(e);
+        }
     }
 
     /**
