@@ -15,6 +15,9 @@ import ru.korus.tmis.laboratory.bak.ws.client.BakSend
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver
 import ru.korus.tmis.lis.data.jms.LISMessageReceiver
 import ru.korus.tmis.lis.data.{BiomaterialInfo, DiagnosticRequestInfo, IndicatorMetodic, LaboratoryCreateRequestData, OrderInfo}
+import ru.korus.tmis.scala.util.ConfigManager
+import ru.korus.tmis.util.Utils
+import ru.korus.tmis.util.logs.ToLog
 
 import scala.collection.JavaConverters._
 
@@ -45,12 +48,26 @@ class MessageDrivenListener extends LISMessageReceiver {
   override protected def getLaboratoryCode: String = LAB_CODE
 
   private def sendRequestToLIS(a: LaboratoryCreateRequestData) {
+    val toLog: ToLog = new ToLog("Analysis Request")
+    toLog.addN(ConfigManager.LaboratoryBak.ServiceUrl.toString)
+    try {
       val document = createDocument(a)
+      toLog.addN("Query: #", Utils.marshallMessage(document, "ru.korus.tmis.laboratory.bak.service"))
+      toLog.addN("Sending...")
       val service: BakSendService = createCGMService
       val id: Holder[Integer] = new Holder[Integer](1)
       val guid: Holder[String] = new Holder[String](GUID)
       service.queryAnalysis(document, id, guid)
-      System.out.println("Oh, hello!")
+      toLog.addN("Result id[#], guid [#]", id.value, guid.value)
+    } catch {
+      case e: Throwable =>
+        logger.error("Sending error:" + e.getMessage, e)
+        toLog.addN("Sending error: #", e.getMessage)
+        throw e
+    }
+    finally {
+      logger.info(toLog.releaseString())
+    }
   }
 
   private def createDocument(data: LaboratoryCreateRequestData): HL7Document = {

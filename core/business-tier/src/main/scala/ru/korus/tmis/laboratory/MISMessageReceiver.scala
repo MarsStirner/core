@@ -5,6 +5,7 @@ import javax.ejb.{ActivationConfigProperty, EJB, MessageDriven}
 import javax.jms._
 import javax.persistence.{EntityManager, PersistenceContext}
 
+import org.slf4j.{LoggerFactory, Logger}
 import ru.korus.tmis.core.database.DbJobTicketBeanLocal
 import ru.korus.tmis.core.database.common.{DbActionBeanLocal, DbActionPropertyBeanLocal}
 import ru.korus.tmis.core.entity.model._
@@ -26,6 +27,8 @@ import scala.collection.JavaConverters._
     new ActivationConfigProperty(propertyName = "destinationType", propertyValue = "javax.jms.Queue"))
 )
 class MISMessageReceiver extends MessageListener {
+
+  private final val logger: Logger = LoggerFactory.getLogger(classOf[MISMessageReceiver])
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -65,13 +68,14 @@ class MISMessageReceiver extends MessageListener {
                 if (o.isSuccess) {
                   dbActionBean.updateActionStatusWithFlush(o.getActionId, ActionStatus.WAITING.getCode)
                   setJobTicketStatusOfResearch(action, JobTicket.STATUS_IS_FINISHED)
+                  if(o.getThrowable != null)
+                    logger.error(o.getThrowable.toString)  // TODO to log
                 } else {
                   setJobTicketStatusOfResearch(action, JobTicket.STATUS_IN_PROGRESS)
                 }
               } catch {
-                case e: CoreException => e.printStackTrace()
-
-                case t: Throwable => t.printStackTrace()
+                case e: CoreException => logger.error(e.toString)
+                case t: Throwable => logger.error(t.toString)
               }
           }
           case o: POLBIN224100UV01 =>
@@ -85,7 +89,7 @@ class MISMessageReceiver extends MessageListener {
             }
             catch  {
               case t: Throwable =>
-                t.printStackTrace()
+                logger.error(t.toString)
                 val o = new MISResultProcessingResponse
                 replyMessage setJMSType MISResultProcessingResponse.JMS_TYPE
                 o.setThrowable(t)
@@ -100,8 +104,8 @@ class MISMessageReceiver extends MessageListener {
         try {
           p.send(replyMessage)
         } finally {
-          if (s != null) try { s.close() } catch {case t: Throwable =>  t.printStackTrace() }
-          if (c != null) try { c.close() } catch {case t: Throwable =>  t.printStackTrace() }
+          if (s != null) try { s.close() } catch {case t: Throwable =>  logger.error(t.toString) }
+          if (c != null) try { c.close() } catch {case t: Throwable =>  logger.error(t.toString) }
         }
       }
     }
@@ -117,8 +121,10 @@ class MISMessageReceiver extends MessageListener {
             case jtv: APValueJobTicket =>
               val jt = jtv.getJobTicket
               jt.setStatus(status)
-              jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(action.getId))
-              jt.setLabel("##Ошибка отправки в ЛИС##")
+              if(status.equals(JobTicket.STATUS_IN_PROGRESS)) { // Статус возвращается только в случае ошибки
+                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(action.getId))
+                jt.setLabel("##Ошибка отправки в ЛИС##")
+              }
               em merge jt
               em.flush()
               hasBeenUpdated = true
@@ -130,8 +136,8 @@ class MISMessageReceiver extends MessageListener {
       }
     }
     if(!hasBeenUpdated)
-      System.out.println("Не удалось проставить статус JobTicket-у. Возможно, у ActionType["
-        + action.getActionType.getId + "] нет свойства \"Время забора\" с кодом TAKINGTIME" ) //TODO Log
+      logger.error("Не удалось проставить статус JobTicket-у. Возможно, у ActionType["
+        + action.getActionType.getId + "] нет свойства \"Время забора\" с кодом TAKINGTIME" )
   }
 
 }
