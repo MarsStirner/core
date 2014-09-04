@@ -781,6 +781,10 @@
                         <jvmArg>-Xms512m</jvmArg>
                         <jvmArg>-Xmx1024m</jvmArg>
                     </jvmArgs>
+                    <args>
+                        <arg>-feature</arg>
+                        <arg>-deprecation</arg>
+                    </args>
                     <scalaVersion>${version.scala}</scalaVersion>
                 </configuration>
             </plugin>
