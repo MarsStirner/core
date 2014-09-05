@@ -1,5 +1,6 @@
 package ru.korus.tmis.admin.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -24,9 +25,12 @@ import java.util.Map;
 @Scope("session")
 public class AdminController implements Serializable {
 
+    @Autowired
+    AuthStorageBeanLocal authStorageBeanLocal;
+
     @RequestMapping(method = RequestMethod.GET)
-    public String viewRegistration(@ModelAttribute("userForm") User user, Map<String, Object> model) {
-        model.put("userForm", user);
+    public String viewRegistration(Map<String, Object> model) {
+        model.put("userForm", User.getCurUser());
         return "admin";
     }
 
