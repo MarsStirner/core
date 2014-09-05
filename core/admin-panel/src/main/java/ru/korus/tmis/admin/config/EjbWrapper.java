@@ -12,7 +12,7 @@ import javax.ejb.Stateless;
  * Description:  <br>
  */
 @Stateless
-public class EjbImpl implements EjbLocal {
+public class EjbWrapper implements EjbWrapperLocal {
 
     @EJB
     AuthStorageBeanLocal authStorageBeanLocal;

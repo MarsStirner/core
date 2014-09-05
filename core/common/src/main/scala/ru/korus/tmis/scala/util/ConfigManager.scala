@@ -31,6 +31,8 @@ object ConfigManager extends Configuration {
 
     def isDebugTestMode = "on".equals(DebugTestMode)
 
+    def version = ConfigManager.Messages("misCore.assembly.version")
+
     var lockTimeoutSec = 60 // время таймаута в секундах, после которого снимется лок документа
   }
 

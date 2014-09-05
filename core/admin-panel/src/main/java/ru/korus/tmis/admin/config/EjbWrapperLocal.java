@@ -12,6 +12,6 @@ import javax.ejb.Local;
  * Description:  <br>
  */
 @Local
-public interface EjbLocal {
+public interface EjbWrapperLocal {
     AuthStorageBeanLocal getAuthStorageBeanLocal();
 }

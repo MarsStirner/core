@@ -25,11 +25,8 @@ import java.util.Map;
 public class AdminController implements Serializable {
 
     @RequestMapping(method = RequestMethod.GET)
-    public String viewRegistration(Map<String, Object> model) {
-      /*  User userForm = new User();
-        model.put("displayError", displayError);
-        model.put("userForm", userForm);
-*/
+    public String viewRegistration(@ModelAttribute("userForm") User user, Map<String, Object> model) {
+        model.put("userForm", user);
         return "admin";
     }
 

@@ -24,7 +24,7 @@
 				<td>${userForm.username}</td>
 			</tr>
 			<tr>
-				<td>E-mail:</td>
+				<td>Password:</td>
 				<td>${userForm.password}</td>
 			</tr>
 
