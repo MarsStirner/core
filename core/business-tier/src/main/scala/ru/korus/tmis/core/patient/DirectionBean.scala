@@ -14,7 +14,7 @@ import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
-import ru.korus.tmis.core.database.bak.BakDiagnosis
+import ru.korus.tmis.core.database.bak.{DbBakCustomQueryBeanLocal, BakDiagnosis}
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
@@ -81,6 +81,9 @@ with I18nable {
   private var dbCustomQuery: DbCustomQueryLocal = _
   @EJB
   private var dbActionTypeBean: DbActionTypeBeanLocal = _
+  @EJB
+  private var dbBakCustomQueryBean: DbBakCustomQueryBeanLocal = _
+
 
   @Resource(lookup = "DefaultConnectionFactory")
   private var connectionFactory: ConnectionFactory = _
@@ -793,7 +796,7 @@ with I18nable {
     val pregMax: Int = action.getEvent.getPregnancyWeek * 7
     diag.setOrderPregnatMin(pregMin)
     diag.setOrderPregnatMax(pregMax)
-    val diagnosisBak: BakDiagnosis = null //dbCustomQueryBean.getBakDiagnosis(action)
+    val diagnosisBak: BakDiagnosis = dbBakCustomQueryBean.getBakDiagnosis(action)
     if (diagnosisBak != null) {
       diag.setOrderDiagCode(diagnosisBak.getCode)
       diag.setOrderDiagText(diagnosisBak.getName)
