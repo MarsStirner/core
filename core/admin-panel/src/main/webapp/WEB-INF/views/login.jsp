@@ -26,6 +26,7 @@
     <link href="resources/css/modules/treatment.css" rel="stylesheet" type="text/css">
     <link href="resources/css/modules/inspection.css" rel="stylesheet" type="text/css">
 
+
 </head>
 <body>
 <div id="wrapper">
@@ -39,7 +40,7 @@
                     <ul>
                         <li>
                             <div id="auth-error" class="ToolTip" style="width: 100%; margin-left: -1.2em; margin-bottom: 1em; display: ${displayError};"><span
-                                    class="Error">Введены недопустимые символы</span></div>
+                                    class="Error"> ${displayErrorMsg}</span></div>
                         </li>
                         <li><label>Логин</label> <form:input path="username" type="text" name="login" placeholder="Логин"/></li>
                         <li><label>Пароль</label> <form:input path="password" type="password" name="password" placeholder="Пароль"/></li>

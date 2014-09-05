@@ -66,6 +66,13 @@
             <version>${version.tmis.core}</version>
             <type>jar</type>
         </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.admin</groupId>
+            <artifactId>admin-panel</artifactId>
+            <version>${version.tmis.core}</version>
+            <classifier>classes</classifier>
+        </dependency>
     </dependencies>
 
 </project>

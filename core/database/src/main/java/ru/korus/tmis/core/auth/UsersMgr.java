@@ -1,7 +1,5 @@
 package ru.korus.tmis.core.auth;
 
-import java.security.MessageDigest;
-import java.security.NoSuchAlgorithmException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -12,7 +10,6 @@ import java.util.Set;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
 
 import org.joda.time.DateTime;
 import org.joda.time.Days;
@@ -25,6 +22,7 @@ import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.UUID;
 import ru.korus.tmis.scala.util.ConfigManager;
+import ru.korus.tmis.util.TextUtils;
 import scala.actors.threadpool.Arrays;
 
 /**
@@ -74,7 +72,7 @@ public class UsersMgr implements UsersMgrLocal {
         users =
                 database.getEntityMgr()
                         .createQuery("SELECT s FROM Staff s WHERE s.login  = :login AND s.password = :password AND s.deleted = 0", Staff.class)
-                        .setParameter("login", login).setParameter("password", getMD5(password))
+                        .setParameter("login", login).setParameter("password", TextUtils.getMD5(password))
                         .getResultList();
         if (users != null && !users.isEmpty()) {
             final String uuid = addToConnectionList(users.get(0));
@@ -250,7 +248,7 @@ public class UsersMgr implements UsersMgrLocal {
             newStaff.setPatrName(jsonNewPerson.getPname());
         }
         if (jsonNewPerson.getPassword() != null) {
-            newStaff.setPassword(getMD5(jsonNewPerson.getPassword()).toLowerCase());
+            newStaff.setPassword(TextUtils.getMD5(jsonNewPerson.getPassword()).toLowerCase());
         }
         @SuppressWarnings("unchecked")
         Set<Role> roles = getRoles(Arrays.asList(new String[] { ROLE_GUEST }));
@@ -294,16 +292,6 @@ public class UsersMgr implements UsersMgrLocal {
             }
         }
         return res;
-    }
-
-    private String getMD5(final String pass) {
-        try {
-            byte[] md5sum = MessageDigest.getInstance("MD5").digest(pass.getBytes());
-            return (new HexBinaryAdapter()).marshal(md5sum).toLowerCase();
-        } catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     private OrgStructure getOrgStrucureByUUID(String subdivisionUUID) {
