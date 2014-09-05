@@ -339,8 +339,8 @@ with I18nable {
         catch {
           case e: Exception => {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
-            jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString))
-            jt.setLabel("##Ошибка отправки в ЛИС##")
+            jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString)  + e.getMessage)
+            jt.setLabel("##Ошибка отправки в ЛИС## " + e.getMessage)
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
           }
@@ -651,7 +651,7 @@ with I18nable {
             catch {
               case e: Exception => {
                 val jt = dbJobTicketBean.getJobTicketById(f.getId)
-                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString))
+                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString)  + e.getMessage)
                 jt.setLabel("##Ошибка отправки в ЛИС##")
                 isAllActionSent = false
                 em.merge(jt)
@@ -667,7 +667,7 @@ with I18nable {
             catch {
               case e: Exception => {
                 val jt = dbJobTicketBean.getJobTicketById(f.getId)
-                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString))
+                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString)  + e.getMessage)
                 jt.setLabel("##Ошибка отправки в ЛИС##")
                 isAllActionSent = false
                 em.merge(jt)
@@ -724,6 +724,12 @@ with I18nable {
 
     if(action == null)
       throw new Exception("Action ")
+
+    val takingTime = action.getActionProperties.find(p => p.getType.getCode != null && p.getType.getCode.equals("TAKINGTIME"))
+    if(takingTime.isEmpty)
+      throw new CoreException("Невозможно сформировать запрос в лабораторию, т.к. не удалось найти свойство " +
+        "\"Время забора\" с кодом [TAKINGTIME] для исследования " + action.getActionType.getName + " [id=" +
+        action.getActionType.getId + "]")
 
     var connection: Connection = null
     var session: Session = null
