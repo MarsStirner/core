@@ -415,7 +415,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       WHERE
         jt.id = :jobTicketId
       AND
-        a.actionType.mnemonic = 'LAB'
+        (a.actionType.mnemonic = 'LAB' OR a.actionType.mnemonic = 'BAK_LAB')
       AND
         apval.id.id = ap.id
       AND
