@@ -7,21 +7,34 @@ package ru.korus.tmis.admin.controller;
  * Description:  <br>
  */
 public enum ViewState {
-    ROOT("/"),
-    AUTH("/auth"),
-    MAIN("/admin");
+    ROOT("/", ""),
+    AUTH("/auth", "Авторизация"),
+    MAIN("/admin", "Общая информация");
 
     private final String path;
 
-    ViewState(String path) {
+    private final String title;
+
+    ViewState(String path, String title) {
         this.path = path;
+        this.title = title;
     }
 
     public String getPath() {
         return path;
     }
 
+    public String getJspPath() {
+        return path.replace('/', '-');
+    }
+
+
     public String redirect() {
         return "redirect:" + path;
     }
+
+    public String getTitle() {
+        return title;
+    }
+
 }

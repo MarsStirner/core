@@ -7,6 +7,7 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.exception.CoreException;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Arrays;
@@ -32,14 +33,49 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         AuthData authData = null;
 
         try {
-            authData = authStorageBeanLocal.checkTokenCookies(Arrays.asList(request.getCookies()));
+            Cookie[] cookies = request.getCookies();
+            if (cookies != null) {
+                authData = authStorageBeanLocal.checkTokenCookies(Arrays.asList(cookies));
+            }
         } catch (CoreException ex) {
         }
 
+        boolean isAuth = authData != null;
         request.getSession().setAttribute(
-                AUTH_SESSION, authData != null);
+                AUTH_SESSION, isAuth);
+        String servletInfo = request.getServletPath();
+        if (!isAuth &&
+                !(ViewState.ROOT.getPath().equals(servletInfo) ||
+                 ViewState.AUTH.getPath().equals(servletInfo))) {
+            String path = serviceUrl(request, ViewState.AUTH.getPath());
+            response.sendRedirect(path);
+            return false;
+        }
 
         return super.preHandle(request, response, handler);
     }
+
+    private String serviceUrl(final HttpServletRequest request,
+                              final String page) {
+        final StringBuilder sb = new StringBuilder();
+
+        sb.append(request.getScheme());
+        sb.append("://");
+        sb.append(request.getServerName());
+
+        final int port = request.getServerPort();
+
+        if (port != 80) {
+            sb.append(":");
+            sb.append(port);
+        }
+
+        sb.append(request.getContextPath());
+
+        sb.append(page);
+
+        return (sb.toString());
+    }
+
 
 }

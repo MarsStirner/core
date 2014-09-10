@@ -7,7 +7,7 @@
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-    <title>Авторизация</title>
+    <title>ТМИС: Администрирование. Авторизация</title>
 
     <link href="resources/css/select2.css" rel="stylesheet" type="text/css">
 

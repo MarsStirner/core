@@ -49,7 +49,7 @@
 				<artifactId>maven-war-plugin</artifactId>
 				<version>2.3</version>
 				<configuration>
-                    <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
+                    <!--<packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>-->
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
@@ -59,6 +59,7 @@
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <attachClasses>true</attachClasses>
                     <classesClassifier>classes</classesClassifier>
+                    <contextRoot>/</contextRoot>
                     <webResources>
                         <resource>
                             <directory>src/main/webapp</directory>

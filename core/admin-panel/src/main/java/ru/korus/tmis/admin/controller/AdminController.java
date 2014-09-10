@@ -31,6 +31,7 @@ public class AdminController implements Serializable {
     @RequestMapping(method = RequestMethod.GET)
     public String viewRegistration(Map<String, Object> model) {
         model.put("userForm", User.getCurUser());
+        model.put("state", ViewState.MAIN);
         return "admin";
     }
 
