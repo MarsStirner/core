@@ -63,7 +63,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
     @Override
     public List<Pharmacy> getNonCompletedItems() {
 
-        final List<Pharmacy> nonCompleteList = em.createQuery("SELECT p FROM Pharmacy p WHERE p.status <> :status ORDER BY p.actionId DESC", Pharmacy.class)
+        final List<Pharmacy> nonCompleteList = em.createQuery("SELECT p FROM Pharmacy p WHERE p.status <> :status ORDER BY p.actionId ASC", Pharmacy.class)
                 .setParameter("status", PharmacyStatus.COMPLETE)
                 .getResultList();
 
