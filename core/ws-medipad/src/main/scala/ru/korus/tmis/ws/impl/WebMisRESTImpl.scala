@@ -513,6 +513,11 @@ with CAPids {
 
 
   private def postProcessing(event: Event = null)(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+
+    val cache = mutable.HashMap[Int, java.util.List[Action]]()
+    val APValueCache = mutable.HashMap[ActionProperty, java.util.List[APValue]]()
+    val pastActionsCache = mutable.HashMap[(Set[String], Int, String), java.util.List[Action]]()
+
     jData.data.get(0).group.get(1).attribute.foreach(ap => {
       if (ap.typeId == null || ap.typeId.intValue() <= 0) {
         if (reWriteId.booleanValue) //в id -> apt.id
@@ -524,18 +529,18 @@ with CAPids {
       // Вычисляем "подтягивающиеся" из прошлых документов значение
       if (event != null) {
         val aProp = try {
-          actionPropertyTypeBean.getActionPropertyTypeById(ap.getId())
+          actionPropertyTypeBean.getActionPropertyTypeById(ap.getId)
         } catch {
           case e: Throwable => null
         }
         val at = try {
-          actionTypeBean.getActionTypeById(jData.getData.get(0).getId()) //TODO: jData.getData.get(0).getId() это Action.id, но не ActionType.id
+          actionTypeBean.getActionTypeById(jData.getData.get(0).getId) //TODO: jData.getData.get(0).getId это Action.id, но не ActionType.id
         } catch {
           case e: Throwable => null
         }
 
         if (aProp != null && at != null) {
-          ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp))
+          ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp, cache, APValueCache, pastActionsCache))
         }
       }
     }
@@ -572,9 +577,10 @@ with CAPids {
    * @param at Тип создаваемого документа
    * @param apt Свойство создаваемого документа
    */
-  private def calculateActionPropertyValue(event: Event, at: ActionType, apt: ActionPropertyType): APValue = {
-
-    val patientId = event.getPatient.getId
+  private def calculateActionPropertyValue(event: Event, at: ActionType, apt: ActionPropertyType,
+                                           cache: mutable.HashMap[Int, java.util.List[Action]],
+                                           apValueCache: mutable.HashMap[ActionProperty, java.util.List[APValue]],
+                                           pastActionsCache: mutable.HashMap[(Set[String], Int, String), java.util.List[Action]]): APValue = {
 
     val dnevnikoviiOsmotrSet = Set("1_2_18", "1_2_19", "1_2_22", "1_2_23")
 
@@ -627,11 +633,11 @@ with CAPids {
     // Получение значения свойства у предыдущих действий
     def getProperty(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
       if (oldDocumentCodes.contains(at.getCode)) {
-        val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
+        val pastActions = pastActionsCache.getOrElseUpdate((oldDocumentCodes, event.getId, "a.begDate DESC"), actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null))
         if (pastActions != null && !pastActions.isEmpty)
           pastActions.head.getActionProperties.foreach(e => {
             if (e.getType.getCode != null && e.getType.getCode.equals(apt.getCode)) {
-              val values = actionPropertyBean.getActionPropertyValue(e)
+              val values = apValueCache.getOrElseUpdate(e, actionPropertyBean.getActionPropertyValue(e))
               if (actionTypeCodes.contains(e.getType.getCode)) {
                 if (values.size() > 0)
                   return values.head
@@ -644,21 +650,14 @@ with CAPids {
     }
 
     def getLastActionByTypeCodes(typeCode: Iterable[String]): Action = {
-      val list = actionBean.getActionsByEvent(event.getId)
-        .filter(a => typeCode.contains(a.getActionType.getCode))
+      val l = cache.getOrElseUpdate(event.getId, { actionBean.getActionsByEvent(event.getId) } )
+      val list = l.filter(a => typeCode.contains(a.getActionType.getCode))
         .sortBy(_.getCreateDatetime)
 
-      if (!list.isEmpty)
+      if (list.nonEmpty)
         list.last
       else
         null
-    }
-
-    def addDays(date: Date, days: Int): Date = {
-      val cal = Calendar.getInstance()
-      cal.setTime(date)
-      cal.add(Calendar.DATE, days); //minus number would decrement the days
-      cal.getTime
     }
 
     // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
@@ -667,7 +666,7 @@ with CAPids {
       def getTherapyPhaseEndDate(action: Action): Date = {
         action.getActionProperties.foreach(p =>
           if (p.getType.getCode != null && p.getType.getCode.equals("therapyPhaseEndDate"))
-            actionPropertyBean.getActionPropertyValue(p).foreach {
+            apValueCache.getOrElseUpdate(p, actionPropertyBean.getActionPropertyValue(p)).foreach {
               case d: Date => return d
               case _ =>
             }
@@ -676,11 +675,11 @@ with CAPids {
       }
 
       if (oldDocumentCodes.contains(at.getCode)) {
-        val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
+        val pastActions = pastActionsCache.getOrElseUpdate((oldDocumentCodes, event.getId, "a.begDate DESC"), actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null))
         if (pastActions != null && !pastActions.isEmpty && getTherapyPhaseEndDate(pastActions.head) != null)
           pastActions.head.getActionProperties.foreach(e => {
             if (e.getType.getCode != null && e.getType.getCode.equals(apt.getCode)) {
-              val values = actionPropertyBean.getActionPropertyValue(e)
+              val values = apValueCache.getOrElseUpdate(e, actionPropertyBean.getActionPropertyValue(e))
               if (actionTypeCodes.contains(e.getType.getCode)) {
                 if (values.size() > 0)
                   return values.head
@@ -706,29 +705,14 @@ with CAPids {
         return null
 
       val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(actionTypeCodesPrefix + "-EndDate"))
-      val beginDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(actionTypeCodesPrefix + "-BeginDate"))
 
       val endDateValue: Date = {
         if (endDateProperty.isDefined) {
           val ap = endDateProperty.get
-          val value = actionPropertyBean.getActionPropertyValue(ap)
+          val value = apValueCache.getOrElseUpdate(ap, actionPropertyBean.getActionPropertyValue(ap))
           if (!value.isEmpty)
             value.head match {
               case p: APValueDate => p.getValue // в БД время сохраняется как 00.00.00
-              case _ => null
-            } else
-            null
-        } else
-          null
-      }
-
-      val beginDateValue: Date = {
-        if (beginDateProperty.isDefined) {
-          val ap = beginDateProperty.get
-          val value = actionPropertyBean.getActionPropertyValue(ap)
-          if (!value.isEmpty)
-            value.head match {
-              case p: APValueDate => p.getValue
               case _ => null
             } else
             null
@@ -740,7 +724,7 @@ with CAPids {
       if (endDateValue == null || endDateValue.after(new Date())) {
         lastAction.getActionProperties.foreach(p => {
           if (p.getType.getCode != null && p.getType.getCode.equals(apt.getCode)) {
-            val values = actionPropertyBean.getActionPropertyValue(p)
+            val values = apValueCache.getOrElseUpdate(p, actionPropertyBean.getActionPropertyValue(p))
             if (values.size() > 0)
               return values.head
           }
@@ -765,7 +749,7 @@ with CAPids {
       val endDateValue: Date = {
         if (endDateProperty.isDefined) {
           val ap = endDateProperty.get
-          val value = actionPropertyBean.getActionPropertyValue(ap)
+          val value = apValueCache.getOrElseUpdate(ap, actionPropertyBean.getActionPropertyValue(ap))
           if (!value.isEmpty)
             value.head match {
               case p: APValueDate => p.getValue // в БД время сохраняется как 00.00.00
@@ -780,7 +764,7 @@ with CAPids {
       if (endDateValue == null || endDateValue.after(new Date())) {
         lastAction.getActionProperties.foreach(p => {
           if (p.getType.getCode != null && p.getType.getCode.equals(apt.getCode)) {
-            val values = actionPropertyBean.getActionPropertyValue(p)
+            val values = apValueCache.getOrElseUpdate(p, actionPropertyBean.getActionPropertyValue(p))
             if (values.size() > 0)
               return values.head
           }
@@ -802,7 +786,7 @@ with CAPids {
       def getPropertyValue(prop: Option[ActionProperty]) = {
         if (prop.isDefined) {
           val ap = prop.get
-          val value = actionPropertyBean.getActionPropertyValue(ap)
+          val value = apValueCache.getOrElseUpdate(ap, actionPropertyBean.getActionPropertyValue(ap))
           if (!value.isEmpty)
             value.head match {
               case p: APValueString => p.getValue
@@ -828,7 +812,7 @@ with CAPids {
 
         if(values.exists(_ != null))
           return {
-            val v = actionPropertyBean.getActionPropertyValue(localInfectProperty)
+            val v = apValueCache.getOrElseUpdate(localInfectProperty, actionPropertyBean.getActionPropertyValue(localInfectProperty))
             if(v.size() > 0)
               v.head
             else
@@ -857,6 +841,7 @@ with CAPids {
           null
       case _ => null
     }
+
   }
 
   //создание первичного мед. осмотра
