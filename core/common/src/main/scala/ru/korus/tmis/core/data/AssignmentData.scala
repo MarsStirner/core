@@ -4,7 +4,7 @@ import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import javax.xml.bind.annotation.XmlType._
 import javax.xml.bind.annotation.XmlRootElement._
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import ru.korus.tmis.core.entity.model._
 import java.util.{LinkedList, Date}
 import scala.collection.JavaConversions._

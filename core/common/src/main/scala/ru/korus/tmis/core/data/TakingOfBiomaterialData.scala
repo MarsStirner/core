@@ -2,7 +2,7 @@ package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.util.{Calendar, Date}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.reflect.{LoggingManager, TmisLogging}

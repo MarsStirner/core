@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlType, XmlRootElement}
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import scala.collection.JavaConversions._
 import java.util.{Calendar, Date, LinkedList}
 import ru.korus.tmis.core.entity.model._

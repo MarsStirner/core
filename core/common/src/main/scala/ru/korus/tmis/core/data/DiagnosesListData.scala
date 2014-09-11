@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import ru.korus.tmis.core.entity.model.Diagnostic
 import java.util.Date
 import org.codehaus.jackson.annotate.JsonIgnoreProperties

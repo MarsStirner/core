@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import javax.xml.bind.annotation.XmlType._
 import ru.korus.tmis.core.entity.model._
 import fd.FDRecord

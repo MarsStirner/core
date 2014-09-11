@@ -2,7 +2,7 @@ package ru.korus.tmis.core.auth
 
 import ru.korus.tmis.core.entity.model.{Staff, Role}
 
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import javax.xml.bind.annotation.{XmlType, XmlRootElement, XmlTransient}
 import ru.korus.tmis.core.data.DoctorSpecsContainer
 

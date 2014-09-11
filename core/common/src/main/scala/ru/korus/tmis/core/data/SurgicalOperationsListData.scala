@@ -2,7 +2,7 @@ package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.util.Date
 import ru.korus.tmis.core.entity.model.{ActionProperty, APValue, Action}
 import ru.korus.tmis.core.exception.CoreException
