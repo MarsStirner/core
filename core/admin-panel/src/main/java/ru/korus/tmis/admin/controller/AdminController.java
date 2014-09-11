@@ -7,7 +7,9 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import ru.korus.tmis.admin.model.User;
+import ru.korus.tmis.admin.service.DbInfoService;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.ejb.EJB;
 import javax.servlet.http.HttpServletRequest;
@@ -28,10 +30,15 @@ public class AdminController implements Serializable {
     @Autowired
     AuthStorageBeanLocal authStorageBeanLocal;
 
+    @Autowired
+    DbInfoService dbInfoService;
+
     @RequestMapping(method = RequestMethod.GET)
     public String viewRegistration(Map<String, Object> model) {
-        model.put("userForm", User.getCurUser());
+        model.put("s11r64Db", dbInfoService.getMainDbInfo());
+        model.put("tmisCoreDb", dbInfoService.getSettingsDbInfo());
         model.put("state", ViewState.MAIN);
+        model.put("version", ConfigManager.Common().version());
         return "admin";
     }
 

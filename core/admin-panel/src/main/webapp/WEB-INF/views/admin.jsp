@@ -14,46 +14,60 @@
     <link href="resources/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="resources/jquery/jquery-1.8.2.min.js"></script>
     <script type="text/javascript" src="resources/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-    .attr .lend{}
+    <style type="text/css">
+        .attr-title .lend {
+        }
+
+    </style>
+
 </head>
 
 <body>
-<div class="navbar navbar-default navbar-fixed-top" role="navigation">
-    <div class="container">
-
-        <ul class="nav navbar-left navbar-nav">
-            <li>
-                <a class="navbar-brand" href="/admin/info" title="Общая информация о системе">ФТМИС</a>
-            </li>
-            <li>
-                <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Настройка инеграции с другими подсистемами">Интеграции<b
-                        class="caret"></b></a>
-                <ul class="dropdown-menu global_nav">
-                    <li>
-                        <a href="/admin/integration/pharmacy">1C Аптека</a>
-                    </li>
-                    <li>
-                        <a href="/admin/integration/trfu">ТРФУ</a>
-                    </li>
-                    <li>
-                        <a href="/admin/integration/risar">РИСАР</a>
-                    </li>
-                </ul>
-            </li>
-            <li>
-                <a href="/admin/settings" title="Все настройки (из табл. tmis_core.setting)">Настройки</a>
-            </li>
-        </ul>
+<nav class="navbar navbar-default" role="navigation">
+    <div class="container-fluid">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="/admin/info" title="Общая информация о системе">ФТМИС</a>
+        </div>
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li>
+                    <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Настройка инеграции с другими подсистемами">Интеграции<b
+                            class="caret"></b></a>
+                    <ul class="dropdown-menu global_nav">
+                        <li>
+                            <a href="/admin/integration/pharmacy">1C Аптека</a>
+                        </li>
+                        <li>
+                            <a href="/admin/integration/trfu">ТРФУ</a>
+                        </li>
+                        <li>
+                            <a href="/admin/integration/risar">РИСАР</a>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="/admin/settings" title="Все настройки (из табл. tmis_core.setting)">Настройки</a>
+                </li>
+            </ul>
+        </div>
     </div>
-</div>
+</nav>
 <div class="container">
     <div class="row">
-        <div class="jumbotron">
-            <h3>${state.getTitle()}</h3>
+        <div class="col-lg-8">
+            <h1 class="page-header">
+                ${state.getTitle()}
+            </h1>
         </div>
     </div>
     <div class="row">
-        <jsp:include page="admin${state.getJspPath()}.jsp" />
+        <jsp:include page="admin${state.getJspPath()}.jsp"/>
     </div>
 </div>
 

@@ -46,12 +46,16 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
     @Bean
     public AuthStorageBeanLocal getAuthStorageBeanLocal() {
         try {
-            String jndi = String.format("java:app/admin-panel-%s/EjbWrapper", ConfigManager.Common().version());
-            EjbWrapperLocal ejbLocal = (EjbWrapperLocal)(new InitialContext()).lookup(jndi);
+            EjbWrapperLocal ejbLocal = getEjbWrapper();
             return ejbLocal.getAuthStorageBeanLocal();
         } catch (NamingException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
         return null;
+    }
+
+    private EjbWrapperLocal getEjbWrapper() throws NamingException {
+        String jndi = String.format("java:app/admin-panel-%s/EjbWrapper", ConfigManager.Common().version());
+        return (EjbWrapperLocal)(new InitialContext()).lookup(jndi);
     }
 }

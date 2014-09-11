@@ -6,7 +6,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import ru.korus.tmis.admin.model.User;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
@@ -37,7 +36,7 @@ public class AuthController implements Serializable {
 
     private String displayErrorMsg = "tst";
 
-    private User userForm = new User();
+    private User userForm = new User("", "");
 
     @RequestMapping(method = RequestMethod.GET)
     public String viewAuth(Map<String, Object> model) {
@@ -64,7 +63,6 @@ public class AuthController implements Serializable {
             request.getSession().setAttribute(RootController.VIEW_STATE, ViewState.MAIN);
             response.addCookie(new Cookie("authToken", authData.authToken().id()));
             request.getSession().setAttribute(AuthInterceptor.AUTH_SESSION, true);
-            User.setCurUser(user);
             displayError = "none";
         } catch (CoreException e) {
             displayErrorMsg = e.getMessage();
