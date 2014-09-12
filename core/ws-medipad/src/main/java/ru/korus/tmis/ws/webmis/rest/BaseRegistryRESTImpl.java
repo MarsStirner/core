@@ -13,7 +13,6 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 import java.io.Serializable;
 import java.util.Arrays;
 
@@ -48,6 +47,9 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     @EJB
     PrescriptionsRESTImpl prescriptionsRESTImpl;
+
+    @EJB
+    private AppealsInfoRESTImpl appealsInfoREST;
 
 
     @Path("/")
@@ -85,11 +87,7 @@ public class BaseRegistryRESTImpl implements Serializable {
     }
 
     @Path("/appeals/")
-    public AppealsInfoRESTImpl getAppealsInfoRESTImpl(@Context HttpServletRequest servRequest,
-                                                      @QueryParam("token") String token,
-                                                      @QueryParam("callback") String callback) {
-        return new AppealsInfoRESTImpl(wsImpl, callback, makeAuth(token, servRequest));
-    }
+    public AppealsInfoRESTImpl getAppealsInfoRESTImpl() { return appealsInfoREST; }
 
     @Path("/diagnostics/")
     public DiagnosticsInfoRESTImpl getDiagnosticsInfoRESTImpl(@Context HttpServletRequest servRequest,
