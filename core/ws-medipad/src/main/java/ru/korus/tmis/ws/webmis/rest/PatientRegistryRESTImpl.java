@@ -1,7 +1,10 @@
 package ru.korus.tmis.ws.webmis.rest;
 
 import java.util.*;
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -11,7 +14,6 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
@@ -22,25 +24,21 @@ import com.sun.jersey.api.json.JSONWithPadding;
 /**
  * Сервисы для работы с ядром TMIS посредством Web-клиента
  */
+@Stateless
 @Interceptors(ServicesLoggingInterceptor.class)
 public class PatientRegistryRESTImpl {
 
-    //public static final String PATH = BaseRegistryRESTImpl.PATH + "patients/";
+    @EJB
     private WebMisREST wsImpl;
-    private AuthData auth;
-    private String callback;
 
-
-    public PatientRegistryRESTImpl(WebMisREST wsImpl, String callback, AuthData auth) {
-        this.auth = auth;
-        this.wsImpl = wsImpl;
-        this.callback = callback;
-    }
-
+    @EJB
+    ExaminationsRegistryRESTImpl examinationsRegistryREST;
 
     @Path("/{patientId}/appeals/")
-    public AppealRegistryRESTImpl getAppealRegistryRESTImpl(@PathParam("patientId") int patientId){
-        return new AppealRegistryRESTImpl(wsImpl, patientId, callback, this.auth);
+    public AppealRegistryRESTImpl getAppealRegistryRESTImpl(@Context HttpServletRequest servRequest,
+                                                            @QueryParam("callback") String callback,
+                                                            @PathParam("patientId") int patientId){
+        return new AppealRegistryRESTImpl(wsImpl, patientId, callback, mkAuth(servRequest));
     }
 
 
@@ -55,8 +53,10 @@ public class PatientRegistryRESTImpl {
     @POST
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object insertPatient(PatientCardData patientData) throws CoreException {
-        return new JSONWithPadding(wsImpl.insertPatient(patientData,  this.auth), this.callback);
+    public Object insertPatient(@Context HttpServletRequest servRequest,
+                                @QueryParam("callback") String callback,
+                                PatientCardData patientData) throws CoreException {
+        return new JSONWithPadding(wsImpl.insertPatient(patientData,  mkAuth(servRequest)), callback);
     }
 
 
@@ -72,9 +72,11 @@ public class PatientRegistryRESTImpl {
     @Path("/{patientId}")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object updatePatient(PatientCardData patientData,
+    public Object updatePatient(@Context HttpServletRequest servRequest,
+                                @QueryParam("callback") String callback,
+                                PatientCardData patientData,
                                 @PathParam("patientId")int patientId) throws CoreException {
-        return new JSONWithPadding(wsImpl.updatePatient(patientId, patientData, this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.updatePatient(patientId, patientData, mkAuth(servRequest)), callback);
     }
 
 
@@ -83,7 +85,9 @@ public class PatientRegistryRESTImpl {
      */
     @GET
     @Produces({"application/x-javascript", "application/xml"})
-    public Object getAllPatientsP(@QueryParam("limit")int limit,
+    public Object getAllPatientsP(@Context HttpServletRequest servRequest,
+                                  @QueryParam("callback") String callback,
+                                  @QueryParam("limit")int limit,
                                   @QueryParam("page")int  page,
                                   @QueryParam("sortingField")String sortingField,
                                   @QueryParam("sortingMethod")String sortingMethod,
@@ -94,7 +98,7 @@ public class PatientRegistryRESTImpl {
                                   @QueryParam("filter[withRelations]")String withRelations) throws CoreException {
         Date bDate = (birthDate == null) ? null : new Date(birthDate);
         PatientRequestData requestData = new PatientRequestData(patientCode, fullName, bDate, document, withRelations, sortingField, sortingMethod, limit, page);
-        return new JSONWithPadding(wsImpl.getAllPatients(requestData, this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.getAllPatients(requestData, mkAuth(servRequest)), callback);
     }
 
 
@@ -109,8 +113,10 @@ public class PatientRegistryRESTImpl {
     @GET
     @Path("/{patientId}")
     @Produces("application/x-javascript")
-    public Object getPatientById(@PathParam("patientId")int patientId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getPatientById(patientId, this.auth), this.callback);
+    public Object getPatientById(@Context HttpServletRequest servRequest,
+                                 @QueryParam("callback") String callback,
+                                 @PathParam("patientId")int patientId) throws CoreException {
+        return new JSONWithPadding(wsImpl.getPatientById(patientId, mkAuth(servRequest)), callback);
     }
 
 
@@ -138,14 +144,16 @@ public class PatientRegistryRESTImpl {
     @GET
     @Path("/{patientId}/talons")
     @Produces("application/x-javascript")
-    public Object getAllTalonsForPatient(   @PathParam("patientId") int patientId,
-                                            @QueryParam("limit")int limit,
-                                            @QueryParam("page")int  page,
-                                            @QueryParam("sortingField")String sortingField,   //сортировки вкл.
-                                            @QueryParam("sortingMethod")String sortingMethod) throws CoreException {
+    public Object getAllTalonsForPatient(@Context HttpServletRequest servRequest,
+                                         @QueryParam("callback") String callback,
+                                         @PathParam("patientId") int patientId,
+                                         @QueryParam("limit")int limit,
+                                         @QueryParam("page")int  page,
+                                         @QueryParam("sortingField")String sortingField,   //сортировки вкл.
+                                         @QueryParam("sortingMethod")String sortingMethod) throws CoreException {
         TalonSPODataListFilter filter = new TalonSPODataListFilter(patientId, "33");
         TalonSPOListRequestData request = new TalonSPOListRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getAllTalonsForPatient(request), this.callback);
+        return new JSONWithPadding(wsImpl.getAllTalonsForPatient(request), callback);
     }
 
 
@@ -159,9 +167,11 @@ public class PatientRegistryRESTImpl {
     @Path("/{patientId}/bloodtypes")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object addBloodType( BloodHistoryData data,
-                                @PathParam("patientId") int patientId) throws CoreException {
-        return new JSONWithPadding(wsImpl.insertBloodTypeForPatient(patientId, data, this.auth), callback);
+    public Object addBloodType(@Context HttpServletRequest servRequest,
+                               @QueryParam("callback") String callback,
+                               BloodHistoryData data,
+                               @PathParam("patientId") int patientId) throws CoreException {
+        return new JSONWithPadding(wsImpl.insertBloodTypeForPatient(patientId, data, mkAuth(servRequest)), callback);
     }
 
 
@@ -173,13 +183,21 @@ public class PatientRegistryRESTImpl {
     @GET
     @Path("/{patientId}/bloodtypes")
     @Produces("application/x-javascript")
-    public Object getBloodTypesHistory(@PathParam("patientId") int patientId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getBloodTypesHistory(patientId, this.auth), callback);
+    public Object getBloodTypesHistory(@Context HttpServletRequest servRequest,
+                                       @QueryParam("callback") String callback,
+                                       @PathParam("patientId") int patientId) throws CoreException {
+        return new JSONWithPadding(wsImpl.getBloodTypesHistory(patientId, mkAuth(servRequest)), callback);
     }
 
     @Path("/{patientId}/documents")
-    public ExaminationsRegistryRESTImpl getExaminationsRegistryRESTImpl(@PathParam("patientId") int patientId) {
-        return new ExaminationsRegistryRESTImpl(wsImpl, 0, patientId, callback, auth);
+    public ExaminationsRegistryRESTImpl getExaminationsRegistryRESTImpl(@Context HttpServletRequest servRequest,
+                                                                        @QueryParam("callback") String callback,
+                                                                        @PathParam("patientId") int patientId) {
+        return examinationsRegistryREST;
+    }
+
+    private AuthData mkAuth(HttpServletRequest servRequest) {
+        return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
     }
 
 }

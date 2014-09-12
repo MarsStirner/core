@@ -43,6 +43,9 @@ public class BaseRegistryRESTImpl implements Serializable {
     private PrescriptionBeanLocal prescriptionnBeanLocal;
 
     @EJB
+    PatientRegistryRESTImpl patientRegistryREST;
+
+    @EJB
     JobImpl jobImpl;
 
     @EJB
@@ -83,7 +86,7 @@ public class BaseRegistryRESTImpl implements Serializable {
     public PatientRegistryRESTImpl getPatientRegistryRESTImpl(@Context HttpServletRequest servRequest,
                                                               @QueryParam("token") String token,
                                                               @QueryParam("callback") String callback) {
-        return new PatientRegistryRESTImpl(wsImpl, callback, makeAuth(token, servRequest));
+        return patientRegistryREST;
     }
 
     @Path("/appeals/")

@@ -31,6 +31,9 @@ public class AppealsInfoRESTImpl {
     @EJB
     private WebMisREST wsImpl;
 
+    @EJB
+    ExaminationsRegistryRESTImpl examinationsRegistryREST;
+
 
     @Path("/{eventId}/hospitalbed/")
     public HospitalBedRegistryRESTImpl getHospitalBedRegistryRESTImpl(@Context HttpServletRequest servRequest,
@@ -47,10 +50,8 @@ public class AppealsInfoRESTImpl {
     }
 
     @Path("/{eventId}/documents/")
-    public ExaminationsRegistryRESTImpl getExaminationsRegistryRESTImpl(@Context HttpServletRequest servRequest,
-                                                                        @PathParam("eventId") int eventId,
-                                                                        @QueryParam("callback") String callback) {
-            return new ExaminationsRegistryRESTImpl(wsImpl, eventId, 0, callback, mkAuth(servRequest)) ;
+    public ExaminationsRegistryRESTImpl getExaminationsRegistryRESTImpl() {
+            return examinationsRegistryREST;
     }
 
     @Path("/{eventId}/diagnostics/")

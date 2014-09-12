@@ -9,10 +9,14 @@ import ru.korus.tmis.core.data.QueryDataStructure;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.UriInfo;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -23,26 +27,13 @@ import java.util.Set;
  * Date: 3/20/13 6:34 PM
  * Since: 1.0.0.74
  */
+@Stateless
 @Interceptors(ServicesLoggingInterceptor.class)
 public class ExaminationsRegistryRESTImpl {
 
-    //protected static final String PATH = AppealsInfoRESTImpl.PATH + "{eventId}/examinations/";
+    @EJB
     private WebMisREST wsImpl;
-    private int eventId;
-    private int patientId;
-    private AuthData auth;
-    private String callback;
 
-
-
-    public ExaminationsRegistryRESTImpl(WebMisREST wsImpl, int eventId, int patientId, String callback, AuthData auth) {
-        this.eventId = eventId;
-        this.patientId = patientId;
-        this.auth = auth;
-        this.wsImpl = wsImpl;
-        this.callback = callback;
-
-    }
 
     /**
      * Создание первичного осмотра
@@ -55,10 +46,14 @@ public class ExaminationsRegistryRESTImpl {
     @POST
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public  Object insertPrimaryMedExamForPatient(@Context UriInfo uri, JSONCommonData data) throws CoreException {
+    public  Object insertPrimaryMedExamForPatient(@Context HttpServletRequest servRequest,
+                                                  @PathParam("eventId") int eventId,
+                                                  @QueryParam("callback") String callback,
+                                                  @PathParam("patientId") int patientId,
+                                                  @Context UriInfo uri, JSONCommonData data) throws CoreException {
         if(eventId < 1)
             throw new CoreException("This service cannot be used without Event id");
-        return new JSONWithPadding(wsImpl.insertPrimaryMedExamForPatient(this.eventId, data, this.auth, uri == null ? null : uri.getBaseUri()), this.callback);
+        return new JSONWithPadding(wsImpl.insertPrimaryMedExamForPatient(eventId, data, mkAuth(servRequest), uri == null ? null : uri.getBaseUri()), callback);
     }
 
     /**
@@ -75,10 +70,14 @@ public class ExaminationsRegistryRESTImpl {
     @Path("/{actionId}")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public  Object modifyPrimaryMedExamForPatient(@Context UriInfo uri, JSONCommonData data,
+    public  Object modifyPrimaryMedExamForPatient(@Context HttpServletRequest servRequest,
+                                                  @PathParam("eventId") int eventId,
+                                                  @QueryParam("callback") String callback,
+                                                  @PathParam("patientId") int patientId,
+                                                  @Context UriInfo uri, JSONCommonData data,
                                                   @PathParam("actionId") int actionId) throws CoreException {
 
-        return new JSONWithPadding(wsImpl.modifyPrimaryMedExamForPatient(actionId, data, this.auth, uri == null ? null : uri.getBaseUri()), this.callback);
+        return new JSONWithPadding(wsImpl.modifyPrimaryMedExamForPatient(actionId, data, mkAuth(servRequest), uri == null ? null : uri.getBaseUri()), callback);
     }
 
     /**
@@ -110,7 +109,11 @@ public class ExaminationsRegistryRESTImpl {
      */
     @GET
     @Produces({"application/x-javascript", "application/xml"})
-    public Object getListOfAssessmentsForPatientByEvent(@Context UriInfo info,
+    public Object getListOfAssessmentsForPatientByEvent(@Context HttpServletRequest servRequest,
+                                                        @PathParam("eventId") int eventId,
+                                                        @QueryParam("callback") String callback,
+                                                        @PathParam("patientId") int patientId,
+                                                        @Context UriInfo info,
                                                         @QueryParam("limit")int limit,
                                                         @QueryParam("page")int  page,
                                                         @QueryParam("sortingField")String sortingField,    //сортировки вкл.
@@ -136,9 +139,9 @@ public class ExaminationsRegistryRESTImpl {
                 mnemonics.add(atst.getMnemonic());
             }
         }
-        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, patientId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics, flatCodes);
+        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(eventId, patientId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics, flatCodes);
         AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
+        return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, mkAuth(servRequest)), callback);
     }
 
     /**
@@ -151,34 +154,54 @@ public class ExaminationsRegistryRESTImpl {
     @GET
     @Path("/{actionId}")
     @Produces({"application/x-javascript", "application/xml"})
-    public Object getPrimaryMedExamById(@PathParam("actionId")int actionId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getPrimaryAssessmentById(actionId,this.auth), this.callback);
+    public Object getPrimaryMedExamById(@Context HttpServletRequest servRequest,
+                                        @PathParam("eventId") int eventId,
+                                        @QueryParam("callback") String callback,
+                                        @PathParam("patientId") int patientId,
+                                        @PathParam("actionId")int actionId) throws CoreException {
+        return new JSONWithPadding(wsImpl.getPrimaryAssessmentById(actionId,mkAuth(servRequest)), callback);
     }
 
     @DELETE
     @Path("/{actionId}")
-    public void removeAction(@PathParam("actionId")int actionId) throws CoreException {
+    public void removeAction(@Context HttpServletRequest servRequest,
+                             @PathParam("eventId") int eventId,
+                             @QueryParam("callback") String callback,
+                             @PathParam("patientId") int patientId,
+                             @PathParam("actionId")int actionId) throws CoreException {
         wsImpl.removeAction(actionId);
     }
 
     @GET
     @Path("/{actionId}/lock")
     @Produces({"application/x-javascript", "application/xml"})
-    public Object lockAction(@PathParam("actionId")int actionId) throws CoreException {
-        return new JSONWithPadding(wsImpl.lock(actionId, this.auth), this.callback);
+    public Object lockAction(@Context HttpServletRequest servRequest,
+                             @PathParam("eventId") int eventId,
+                             @QueryParam("callback") String callback,
+                             @PathParam("patientId") int patientId,
+                             @PathParam("actionId")int actionId) throws CoreException {
+        return new JSONWithPadding(wsImpl.lock(actionId, mkAuth(servRequest)), callback);
     }
 
     @PUT
     @Path("/{actionId}/lock")
     @Produces({"application/x-javascript", "application/xml"})
-    public Object prolongLockAction(@PathParam("actionId")int actionId) throws CoreException {
-        return new JSONWithPadding(wsImpl.prolongLock(actionId, this.auth), this.callback);
+    public Object prolongLockAction(@Context HttpServletRequest servRequest,
+                                    @PathParam("eventId") int eventId,
+                                    @QueryParam("callback") String callback,
+                                    @PathParam("patientId") int patientId,
+                                    @PathParam("actionId")int actionId) throws CoreException {
+        return new JSONWithPadding(wsImpl.prolongLock(actionId, mkAuth(servRequest)), callback);
     }
 
     @DELETE
     @Path("/{actionId}/lock")
-    public void releaseLockAction(@PathParam("actionId")int actionId) throws CoreException {
-        wsImpl.releaseLock(actionId, this.auth);
+    public void releaseLockAction(@Context HttpServletRequest servRequest,
+                                  @PathParam("eventId") int eventId,
+                                  @QueryParam("callback") String callback,
+                                  @PathParam("patientId") int patientId,
+                                  @PathParam("actionId")int actionId) throws CoreException {
+        wsImpl.releaseLock(actionId, mkAuth(servRequest));
     }
 
 
@@ -192,11 +215,15 @@ public class ExaminationsRegistryRESTImpl {
     @GET
     @Path("/lastByType/{actionTypeId}")
     @Produces("application/x-javascript")
-    public Object getStructOfPrimaryMedExamWithCopy(@PathParam("actionTypeId") int actionTypeId) throws CoreException {
+    public Object getStructOfPrimaryMedExamWithCopy(@Context HttpServletRequest servRequest,
+                                                    @PathParam("eventId") int eventId,
+                                                    @QueryParam("callback") String callback,
+                                                    @PathParam("patientId") int patientId,
+                                                    @PathParam("actionTypeId") int actionTypeId) throws CoreException {
         if(eventId < 1)
             throw new CoreException("This service cannot be used without Event id");
 
-        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExamWithCopy(actionTypeId, this.auth, this.eventId), this.callback);
+        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExamWithCopy(actionTypeId, mkAuth(servRequest), eventId), callback);
     }
 
     /**
@@ -207,7 +234,11 @@ public class ExaminationsRegistryRESTImpl {
     @GET
     @Path("/custom1")
     @Produces({"application/x-javascript", "application/xml"})
-    public Object custom1(@Context UriInfo info,
+    public Object custom1(@Context HttpServletRequest servRequest,
+                          @PathParam("eventId") int eventId,
+                          @QueryParam("callback") String callback,
+                          @PathParam("patientId") int patientId,
+                          @Context UriInfo info,
                           @QueryParam("limit")int limit,
                           @QueryParam("page")int  page,
                           @QueryParam("sortingField")String sortingField,    //сортировки вкл.
@@ -231,7 +262,7 @@ public class ExaminationsRegistryRESTImpl {
             for(String mnem: mnems)
                 if(mnem != null && !mnem.equals("")) mnemonics.add(mnem);
 
-        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(this.eventId, patientId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics, flatCodes){
+        AssessmentsListRequestDataFilter filter = new AssessmentsListRequestDataFilter(eventId, patientId, actionTypeId, assessmentTypeCode, begDate, endDate, doctorId, doctorName, speciality, assessmentName, departmentName, mnemonics, flatCodes){
             @Override
             public QueryDataStructure toQueryStructure() {
                 QueryDataStructure qs = new QueryDataStructure();
@@ -298,6 +329,10 @@ public class ExaminationsRegistryRESTImpl {
             }
         };
         AssessmentsListRequestData alrd= new AssessmentsListRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, this.auth), this.callback);
+        return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, mkAuth(servRequest)), callback);
+    }
+
+    private AuthData mkAuth(HttpServletRequest servRequest) {
+        return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
     }
 }
