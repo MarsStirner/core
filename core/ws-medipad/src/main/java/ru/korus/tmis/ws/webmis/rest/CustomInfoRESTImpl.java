@@ -11,8 +11,13 @@ import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -21,28 +26,12 @@ import java.util.List;
  * Date: 4/3/13 2:06 PM
  * Since: 1.0.0.81
  */
+@Stateless
 @Interceptors(ServicesLoggingInterceptor.class)
 public class CustomInfoRESTImpl {
 
-    private WebMisREST wsImpl;
-    private int limit;
-    private int  page;
-    private String sortingField;
-    private String sortingMethod;
-    private AuthData auth;
-    private String callback;
+    @EJB private WebMisREST wsImpl;
 
-    public CustomInfoRESTImpl(WebMisREST wsImpl, String callback,
-                                 int limit, int  page, String sortingField, String sortingMethod,
-                                 AuthData auth) {
-        this.auth = auth;
-        this.wsImpl = wsImpl;
-        this.callback = callback;
-        this.limit = limit;
-        this.page = page;
-        this.sortingField = sortingField;
-        this.sortingMethod = sortingMethod;
-    }
 
     //__________________________________________________________________________________________________________________
     //***********************************   НЕФОРМАЛИЗОВАННЫЕ МЕТОДЫ И ЗАПРОСЫ  ***********************************
@@ -67,19 +56,25 @@ public class CustomInfoRESTImpl {
     @GET
     @Path("/reports/f007")
     @Produces("application/x-javascript")
-    public Object getForm007( @QueryParam("filter[departmentId]") int departmentId,
-                              @QueryParam("filter[beginDate]")long beginDate,
-                              @QueryParam("filter[endDate]")long endDate,
-                              @QueryParam("filter[profileBed]")List<Integer> profileBeds ) throws CoreException {
+    public Object getForm007(@Context HttpServletRequest servRequest,
+                             @QueryParam("callback") String callback,
+                             @QueryParam("limit") int limit,
+                             @QueryParam("page") int page,
+                             @QueryParam("sortingField") String sortingField,
+                             @QueryParam("sortingMethod") String sortingMethod,
+                             @QueryParam("filter[departmentId]") int departmentId,
+                             @QueryParam("filter[beginDate]")long beginDate,
+                             @QueryParam("filter[endDate]")long endDate,
+                             @QueryParam("filter[profileBed]")List<Integer> profileBeds ) throws CoreException {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
-        final int depId = getCurDepartamentOrDefault(departmentId);
+        final int depId = getCurDepartamentOrDefault(departmentId, mkAuth(servRequest));
         if(profileBeds.isEmpty()) { // если профили коек не заданы, то строим для всех
             Iterable<RbHospitalBedProfile> list = wsImpl.getAllAvailableBedProfiles();
             for(RbHospitalBedProfile curProfileBed : list) {
                 profileBeds.add(curProfileBed.getId());
             }
         }
-        return new JSONWithPadding(wsImpl.getForm007(depId, beginDate, endDate, profileBeds, this.auth),this.callback);
+        return new JSONWithPadding(wsImpl.getForm007(depId, beginDate, endDate, profileBeds, mkAuth(servRequest)),callback);
     }
 
     /**
@@ -102,11 +97,17 @@ public class CustomInfoRESTImpl {
     @GET
     @Path("/checkExistance/{name}")
     @Produces("application/x-javascript")
-    public Object checkAppealNumber(@PathParam("name") String name,
+    public Object checkAppealNumber(@Context HttpServletRequest servRequest,
+                                    @QueryParam("callback") String callback,
+                                    @QueryParam("limit") int limit,
+                                    @QueryParam("page") int page,
+                                    @QueryParam("sortingField") String sortingField,
+                                    @QueryParam("sortingMethod") String sortingMethod,
+                                    @PathParam("name") String name,
                                     @QueryParam("typeId")int typeId,
                                     @QueryParam("number")String number,
                                     @QueryParam("serial")String serial) throws CoreException {
-        return new JSONWithPadding(wsImpl.checkExistanceNumber(name, typeId, number, serial),this.callback);
+        return new JSONWithPadding(wsImpl.checkExistanceNumber(name, typeId, number, serial),callback);
     }
 
     /**
@@ -131,7 +132,13 @@ public class CustomInfoRESTImpl {
     @GET
     @Path("/biomaterial/info")
     @Produces("application/x-javascript")
-    public Object getTakingOfBiomaterial(@QueryParam("filter[jobTicketId]")int jobTicketId,
+    public Object getTakingOfBiomaterial(@Context HttpServletRequest servRequest,
+                                         @QueryParam("callback") String callback,
+                                         @QueryParam("limit") int limit,
+                                         @QueryParam("page") int page,
+                                         @QueryParam("sortingField") String sortingField,
+                                         @QueryParam("sortingMethod") String sortingMethod,
+                                         @QueryParam("filter[jobTicketId]")int jobTicketId,
                                          @QueryParam("filter[departmentId]")int departmentId,
                                          @QueryParam("filter[beginDate]")long beginDate,
                                          @QueryParam("filter[endDate]")long endDate,
@@ -139,7 +146,7 @@ public class CustomInfoRESTImpl {
                                          @QueryParam("filter[biomaterial]") int biomaterial) throws CoreException {
 
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
-        final int depId = getCurDepartamentOrDefault(departmentId);
+        final int depId = getCurDepartamentOrDefault(departmentId, mkAuth(servRequest));
         final short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
 
         TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(jobTicketId,
@@ -148,13 +155,13 @@ public class CustomInfoRESTImpl {
                                                                                             endDate,
                                                                                             statusS,
                                                                                             biomaterial);
-        TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(this.sortingField, this.sortingMethod, filter);
-        return new JSONWithPadding(wsImpl.getTakingOfBiomaterial(request, this.auth),this.callback);
+        TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, filter);
+        return new JSONWithPadding(wsImpl.getTakingOfBiomaterial(request, mkAuth(servRequest)),callback);
     }
 
-    private int getCurDepartamentOrDefault(int departmentId) {
-        final OrgStructure orgStructure = this.auth.getUser().getOrgStructure();
-        return (departmentId>0) ? departmentId : orgStructure != null? orgStructure.getId().intValue() : 1;
+    private int getCurDepartamentOrDefault(int departmentId, AuthData auth) {
+        final OrgStructure orgStructure = auth.getUser().getOrgStructure();
+        return (departmentId>0) ? departmentId : orgStructure != null? orgStructure.getId() : 1;
     }
 
     /**
@@ -165,8 +172,14 @@ public class CustomInfoRESTImpl {
     @PUT
     @Path("/jobTickets/status")
     @Produces("application/x-javascript")
-    public Object setStatusesForJobTickets(JobTicketStatusDataList data) throws CoreException {
-        return new JSONWithPadding(wsImpl.updateJobTicketsStatuses(data, this.auth),this.callback);
+    public Object setStatusesForJobTickets(@Context HttpServletRequest servRequest,
+                                           @QueryParam("callback") String callback,
+                                           @QueryParam("limit") int limit,
+                                           @QueryParam("page") int page,
+                                           @QueryParam("sortingField") String sortingField,
+                                           @QueryParam("sortingMethod") String sortingMethod,
+                                           JobTicketStatusDataList data) throws CoreException {
+        return new JSONWithPadding(wsImpl.updateJobTicketsStatuses(data, mkAuth(servRequest)),callback);
     }
 
     /**
@@ -195,20 +208,26 @@ public class CustomInfoRESTImpl {
     @GET
     @Path("/departments/patients")
     @Produces("application/x-javascript")
-    public Object getAllPatientsForDepartmentOrUserByPeriod(@QueryParam("filter[date]")long endDate,
+    public Object getAllPatientsForDepartmentOrUserByPeriod(@Context HttpServletRequest servRequest,
+                                                            @QueryParam("callback") String callback,
+                                                            @QueryParam("limit") int limit,
+                                                            @QueryParam("page") int page,
+                                                            @QueryParam("sortingField") String sortingField,
+                                                            @QueryParam("sortingMethod") String sortingMethod,
+                                                            @QueryParam("filter[date]")long endDate,
                                                             @QueryParam("filter[departmentId]") int departmentId,
                                                             @QueryParam("filter[doctorId]") int doctorId) throws CoreException {
-
-        final int depId = getCurDepartamentOrDefault(departmentId);
+        AuthData auth = mkAuth(servRequest);
+        final int depId = getCurDepartamentOrDefault(departmentId, auth);
         PatientsListRequestData requestData = new PatientsListRequestData ( depId,
                                                                             doctorId,//auth.getUser().getId().intValue(),           //WEBMIS-809: Если параметр doctorId не указан, то ищем всех пациентов отделения.
-                                                                            doctorId>0 ? 0 : auth.getUserRole().getId().intValue(), //Если указан доктор, то ищем пациентов доктора.
+                                                                            doctorId>0 ? 0 : auth.getUserRole().getId(),            //Если указан доктор, то ищем пациентов доктора.
                                                                             endDate,
                                                                             sortingField,
                                                                             sortingMethod,
                                                                             limit,
                                                                             page);
-        return new JSONWithPadding(wsImpl.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, this.auth),this.callback);
+        return new JSONWithPadding(wsImpl.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, auth),callback);
     }
 
 
@@ -225,14 +244,19 @@ public class CustomInfoRESTImpl {
 
 
     @Path("/printTemplate")
-    public Object getPrintTemplate() {
-        return new PrintTemplateImpl(wsImpl, auth, callback);
+    public Object getPrintTemplate(@Context HttpServletRequest servRequest,
+                                   @QueryParam("callback") String callback) {
+        return new PrintTemplateImpl(wsImpl, mkAuth(servRequest), callback);
     }
 
 
     @Path("/organization")
-    public Object getOrganizationById() {
-        return new OrganizationImpl(wsImpl, auth, callback);
+    public Object getOrganizationById(@Context HttpServletRequest servRequest,
+                                      @QueryParam("callback") String callback) {
+        return new OrganizationImpl(wsImpl, mkAuth(servRequest), callback);
     }
 
+    private AuthData mkAuth(HttpServletRequest servRequest) {
+        return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+    }
 }

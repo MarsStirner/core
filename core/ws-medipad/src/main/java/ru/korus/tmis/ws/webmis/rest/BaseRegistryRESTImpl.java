@@ -48,27 +48,16 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     @EJB private DiagnosticsInfoRESTImpl diagnosticsInfoREST;
 
+    @EJB private DirectoryInfoRESTImpl directoryInfoREST;
+
+    @EJB private CustomInfoRESTImpl customInfoREST;
+
 
     @Path("/")
-    public CustomInfoRESTImpl getCustomInfoRESTImpl(@Context HttpServletRequest servRequest,
-                                                    @QueryParam("callback") String callback,
-                                                    @QueryParam("limit") int limit,
-                                                    @QueryParam("page") int page,
-                                                    @QueryParam("sortingField") String sortingField,
-                                                    @QueryParam("sortingMethod") String sortingMethod) {
-        return new CustomInfoRESTImpl(wsImpl, callback, limit, page, sortingField, sortingMethod, makeAuth(servRequest));
-    }
+    public CustomInfoRESTImpl getCustomInfoRESTImpl() { return customInfoREST; }
 
     @Path("/dir/")
-    public DirectoryInfoRESTImpl getDirectoryInfoRESTImpl(@Context HttpServletRequest servRequest,
-                                                          @QueryParam("test") String test,
-                                                          @QueryParam("callback") String callback,
-                                                          @QueryParam("limit") int limit,
-                                                          @QueryParam("page") int page,
-                                                          @QueryParam("sortingField") String sortingField,
-                                                          @QueryParam("sortingMethod") String sortingMethod) {
-        return new DirectoryInfoRESTImpl(wsImpl, servRequest, callback, limit, page, sortingField, sortingMethod, makeAuth(servRequest));
-    }
+    public DirectoryInfoRESTImpl getDirectoryInfoRESTImpl() { return directoryInfoREST; }
 
     @Path("/patients/")
     public PatientRegistryRESTImpl getPatientRegistryRESTImpl() { return patientRegistryREST; }
@@ -87,14 +76,11 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     @Path("/rls")
     public RlsDataImpl getRlsDataImpl() { return rlsData; }
+
     @Path("/prescriptions")
     public PrescriptionsRESTImpl getPrescriptions() { return prescriptionsRESTImpl; }
 
     @Path("/job")
     public JobImpl getJobImpl() { return jobImpl; }
-
-    private AuthData makeAuth(HttpServletRequest servRequest) {
-        return this.wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
-    }
 
 }
