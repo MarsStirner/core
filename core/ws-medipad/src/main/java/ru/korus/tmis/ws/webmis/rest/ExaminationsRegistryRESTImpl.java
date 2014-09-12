@@ -332,6 +332,14 @@ public class ExaminationsRegistryRESTImpl {
         return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, mkAuth(servRequest)), callback);
     }
 
+    @Path("{typeId}/calculate/{APTypeCode}")
+    public Object calculate(@Context HttpServletRequest servRequest,
+                            @PathParam("eventId") int eventId,
+                            @QueryParam("callback") String callback,
+                            @QueryParam("query") String query) {
+        return null;
+    }
+
     private AuthData mkAuth(HttpServletRequest servRequest) {
         return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
     }

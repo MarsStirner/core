@@ -115,6 +115,4 @@ public class PrescriptionsRESTImpl {
         return new JSONWithPadding(prescriptionBeanLocal.getTemplate(actionTypeId), callback);
     }
 
-
-
 }

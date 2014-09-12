@@ -25,7 +25,6 @@ import java.util.List;
 @Interceptors(ServicesLoggingInterceptor.class)
 public class DirectoryInfoRESTImpl {
 
-    //protected static final String PATH = BaseRegistryRESTImpl.PATH;
     private WebMisREST wsImpl;
     private HttpServletRequest servRequest;
     private int limit;
@@ -34,11 +33,10 @@ public class DirectoryInfoRESTImpl {
     private String sortingMethod;
     private AuthData auth;
     private String callback;
-    private Boolean test;
 
     public DirectoryInfoRESTImpl(WebMisREST wsImpl, HttpServletRequest servRequest, String callback,
                                   int limit, int  page, String sortingField, String sortingMethod,
-                                  AuthData auth, Boolean test) {
+                                  AuthData auth) {
         this.auth = auth;
         this.wsImpl = wsImpl;
         this.servRequest = servRequest;
@@ -47,7 +45,6 @@ public class DirectoryInfoRESTImpl {
         this.page = page;
         this.sortingField = sortingField;
         this.sortingMethod = sortingMethod;
-        this.test = test;
     }
     //__________________________________________________________________________________________________________________
     //***********************************   СПРАВОЧНИКИ   ***********************************
@@ -177,16 +174,7 @@ public class DirectoryInfoRESTImpl {
         DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         AllDepartmentsListData data = wsImpl.getAllDepartments(request);
-
-        //TODO: Вставлен кэйс для тестов (нужно ли?)
-        if(this.test){
-            Exception ex = new Exception();
-            return TestDataRestConstruct.makeTestDataRestResponse(
-                                                           ex.getStackTrace()[0].getMethodName(),
-                                                           this.servRequest,
-                                                           data.dataToString());
-        } else
-            return new JSONWithPadding(data ,this.callback);
+        return new JSONWithPadding(data ,this.callback);
     }
 
     /**
