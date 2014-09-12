@@ -83,7 +83,7 @@ class HospitalBedBeanTest {
   final val TorgStructReceived = 3
   final val ThospOrgStruct = 4
 
-  final val codes_all = asJavaSet(Set[String](ConfigManager.Messages("db.apt.received.codes.orgStructDirection").toString,
+  final val codes_all = setAsJavaSet(Set[String](ConfigManager.Messages("db.apt.received.codes.orgStructDirection").toString,
                                               ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer").toString,
                                               ConfigManager.Messages("db.apt.moving.codes.timeArrival").toString,
                                               ConfigManager.Messages("db.apt.moving.codes.patronage").toString,
@@ -91,12 +91,12 @@ class HospitalBedBeanTest {
                                               ConfigManager.Messages("db.apt.moving.codes.orgStructReceived").toString,
                                               ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct").toString))
 
-  val codes_move = asJavaSet(Set[String]( ConfigManager.Messages("db.apt.moving.codes.hospitalBed"),
+  val codes_move = setAsJavaSet(Set[String]( ConfigManager.Messages("db.apt.moving.codes.hospitalBed"),
                                           ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"),
                                           ConfigManager.Messages("db.apt.moving.codes.timeArrival"),
                                           ConfigManager.Messages("db.apt.moving.codes.timeLeaved")))
 
-  val codes_receive = asJavaSet(Set(ConfigManager.Messages("db.apt.received.codes.orgStructDirection")))
+  val codes_receive = setAsJavaSet(Set(ConfigManager.Messages("db.apt.received.codes.orgStructDirection")))
 
   @Before
   def init() {
@@ -219,11 +219,11 @@ class HospitalBedBeanTest {
     val codes2 = Set[String](ConfigManager.Messages("db.apt.moving.codes.timeLeaved"))
     val codes3 = Set[String](ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct"))
     val apvalues1 = new java.util.HashMap[ActionProperty, java.util.List[APValue]]()
-    apvalues1.put(testData.getTestDefaultActionProperty(1), asJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(1))))
+    apvalues1.put(testData.getTestDefaultActionProperty(1), seqAsJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(1))))
     val apvalues2 = new java.util.HashMap[ActionProperty, java.util.List[APValue]]()
-    apvalues2.put(testData.getTestDefaultActionProperty(2), asJavaList(List[APValue](testData.getTestDefaultAPValueTime(new Date()))))
+    apvalues2.put(testData.getTestDefaultActionProperty(2), seqAsJavaList(List[APValue](testData.getTestDefaultAPValueTime(new Date()))))
     val apvalues3 = new java.util.HashMap[ActionProperty, java.util.List[APValue]]()
-    apvalues3.put(testData.getTestDefaultActionProperty(3), asJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(2))))
+    apvalues3.put(testData.getTestDefaultActionProperty(3), seqAsJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(2))))
     val testEventPerson = testData.getTestDefaultEventPerson(1, testEvent, testData.getTestDefaultStaff)
 
     try{
@@ -231,7 +231,7 @@ class HospitalBedBeanTest {
         .format(TEvent_id, mapper.writeValueAsString(hbData), mapper.writeValueAsString(authData)))
 
       when(eventBean.getEventById(TEvent_id)).thenReturn(testEvent)
-      when(actionBean.getActionsWithFilter(anyInt(), anyInt(), anyString(), anyObject(), anyObject(), anyObject())).thenReturn(asJavaList(List(testLastAction)))
+      when(actionBean.getActionsWithFilter(anyInt(), anyInt(), anyString(), anyObject(), anyObject(), anyObject())).thenReturn(seqAsJavaList(List(testLastAction)))
       when(actionBean.createAction(anyInt(), anyInt(), anyObject())).thenReturn(testAction)
       when(actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(ConfigManager.Messages("db.actionType.moving").toInt)).thenReturn(list_apt)
       when(dbOrgStructureBean.getOrgStructureByHospitalBedId(hbData.data.bedRegistration.bedId.intValue())).thenReturn(department)
@@ -494,37 +494,37 @@ class HospitalBedBeanTest {
       if(code.compareTo(ConfigManager.Messages("db.apt.received.codes.orgStructDirection").toString)==0){
         map.put(testData.getTestDefaultActionProperty(1,
           testData.getTestDefaultActionPropertyType(1, ConfigManager.Messages("db.apt.received.codes.orgStructDirection"))),
-          asJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(TorgStructDirection))))
+          seqAsJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(TorgStructDirection))))
       }
       else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer").toString)==0){
         map.put(testData.getTestDefaultActionProperty(2,
           testData.getTestDefaultActionPropertyType(2, ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))),
-          asJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(TorgStructTransfer))))
+          seqAsJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(TorgStructTransfer))))
       }
       else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.timeArrival").toString)==0){
         map.put(testData.getTestDefaultActionProperty(3,
           testData.getTestDefaultActionPropertyType(3, ConfigManager.Messages("db.apt.moving.codes.timeArrival"))),
-          asJavaList(List[APValue](testData.getTestDefaultAPValueTime(TtimeArrival))))
+          seqAsJavaList(List[APValue](testData.getTestDefaultAPValueTime(TtimeArrival))))
       }
       else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.patronage").toString)==0){
         map.put(testData.getTestDefaultActionProperty(4,
           testData.getTestDefaultActionPropertyType(4, ConfigManager.Messages("db.apt.moving.codes.patronage"))),
-          asJavaList(List[APValue](testData.getTestDefaultAPValueString(Tpatronage))))
+          seqAsJavaList(List[APValue](testData.getTestDefaultAPValueString(Tpatronage))))
       }
       else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospitalBed").toString)==0){
         map.put(testData.getTestDefaultActionProperty(5,
           testData.getTestDefaultActionPropertyType(5, ConfigManager.Messages("db.apt.moving.codes.hospitalBed"))),
-          asJavaList(List[APValue](testData.getTestDefaultAPValueHospitalBed(ThospitalBed))))
+          seqAsJavaList(List[APValue](testData.getTestDefaultAPValueHospitalBed(ThospitalBed))))
       }
       else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructReceived").toString)==0){
         map.put(testData.getTestDefaultActionProperty(6,
           testData.getTestDefaultActionPropertyType(6, ConfigManager.Messages("db.apt.moving.codes.orgStructReceived"))),
-          asJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(TorgStructReceived))))
+          seqAsJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(TorgStructReceived))))
       }
       else if(code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct").toString)==0){
         map.put(testData.getTestDefaultActionProperty(7,
           testData.getTestDefaultActionPropertyType(7, ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct"))),
-          asJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(ThospOrgStruct))))
+          seqAsJavaList(List[APValue](testData.getTestDefaultAPValueOrgStructure(ThospOrgStruct))))
       }
     })
 

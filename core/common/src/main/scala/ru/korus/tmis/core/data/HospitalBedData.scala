@@ -190,7 +190,7 @@ class HospitalBedEntry {
                                 ConfigManager.Messages("db.apt.moving.codes.hospitalBed"),
                                 ConfigManager.Messages("db.apt.moving.codes.orgStructReceived"),
                                 ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct"))
-        mGetPropertiesWithValuesByCodes(action.getId.intValue(), asJavaSet(codes))
+        mGetPropertiesWithValuesByCodes(action.getId.intValue(), setAsJavaSet(codes))
       }
       else new java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]
 

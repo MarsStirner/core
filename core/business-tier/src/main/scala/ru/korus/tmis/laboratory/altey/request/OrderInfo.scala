@@ -20,9 +20,10 @@ sealed case class OrderInfo(
 
 object OrderInfo {
 
-  object OrderPriority extends Enumeration(1, "Urgent", "Normal") {
+  object OrderPriority extends Enumeration(1) {
     type OrderPriority = Value
-    val Urgent, Normal = Value
+    val Urgent = Value("Urgent")
+    val Normal = Value("Normal")
   }
 
   type OrderPriority = OrderPriority.OrderPriority

@@ -366,7 +366,7 @@ class JobTicketInfoContainer {
         if (mLastMovingAction!=null && mActionPropertiesWithValues!=0){
           val moving = mLastMovingAction(actionValues.get(0)._1.getEvent.getId.intValue())
           if (moving!=null){
-            val listMovingAP = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer))
+            val listMovingAP = JavaConversions.seqAsJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer))
             val apValues = mActionPropertiesWithValues(moving.getId.intValue(), listMovingAP)
             if (apValues!=null && apValues.size>0){
               val values = apValues.iterator.next()._2

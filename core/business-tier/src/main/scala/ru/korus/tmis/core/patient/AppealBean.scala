@@ -338,7 +338,7 @@ with CAPids {
         if (admissionMkb != null) {
           var map = Map.empty[String, java.util.Set[AnyRef]]
           map += ("finalMkb" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue), 0, 0)))
-          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, asJavaMap(map), authData)
+          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, mapAsJavaMap(map), authData)
           diag.filter(p => p.isInstanceOf[Diagnostic]).toList.foreach(f => f.asInstanceOf[Diagnostic].setResult(this.getRbResultById(15)))
           dbManager.persistAll(diag)
         }
@@ -405,7 +405,7 @@ with CAPids {
         .toSet[AnyRef]
       map += (flatCode -> values)
     })
-    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), asJavaMap(map), authData)
+    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), mapAsJavaMap(map), authData)
     val mergedItems = diagnoses.filter(p => (p.isInstanceOf[Diagnosis] &&
       p.asInstanceOf[Diagnosis].getId != null &&
       p.asInstanceOf[Diagnosis].getId.intValue() > 0) ||
@@ -832,7 +832,7 @@ with CAPids {
       "attendant" -> i18n("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString,
       "aftereffect" -> i18n("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString)
 
-    val setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt: java.lang.Integer))
+    val setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt: java.lang.Integer))
     val actionId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
     if (actionId > 0) {
       var actionProperties = actionPropertyBean.getActionPropertiesByActionId(actionId)
@@ -997,7 +997,7 @@ with CAPids {
   }
 
   def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData) = {
-    val codes = asJavaSet(condition match {
+    val codes = setAsJavaSet(condition match {
       case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
       case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB", "WBC", "GRAN", "NEUT", "HGB", "PLT")
       case _ => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
@@ -1010,7 +1010,7 @@ with CAPids {
   }
 
   def getSurgicalOperations(eventId: Int, authData: AuthData) = {
-    val codes = asJavaSet(Set("operationName", "complicationName", "methodAnesthesia"))
+    val codes = setAsJavaSet(Set("operationName", "complicationName", "methodAnesthesia"))
     val map = actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(List(Integer.valueOf(eventId)), codes, Int.MaxValue, true)
     if (map != null && map.contains(Integer.valueOf(eventId)))
       new SurgicalOperationsListData(map.get(Integer.valueOf(eventId)),

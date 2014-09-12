@@ -379,7 +379,7 @@ class PatientBean
       = new java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]]
     if(role == 25) {  //Для сестры отделения только
       if (actionsMap.size() > 0) {
-        conditionsInfo = dbActionProperty.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(actionsMap.map(p=> p._1.getEvent.getId).toList, asJavaSet(Set("STATE", "PULS", "BPRAS","BPRAD")), 1, true)
+        conditionsInfo = dbActionProperty.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(actionsMap.map(p=> p._1.getEvent.getId).toList, setAsJavaSet(Set("STATE", "PULS", "BPRAS","BPRAD")), 1, true)
       }
       mapper.getSerializationConfig().setSerializationView(classOf[PatientsListDataViews.NurseView])
     }
