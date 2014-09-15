@@ -21,7 +21,7 @@ class APQLParser extends StdTokenParsers with PackratParsers {
 
 
   lazy val ifThenExpr: PackratParser[IfThenExpr] = ifLiteral ~ condition ~ thenLiteral ~ expr ^^ {
-    case _if ~ cond ~ then ~ expression => IfThenExpr(cond, expression)
+    case _if ~ cond ~ _then ~ expression => IfThenExpr(cond, expression)
   }
 
   lazy val condition: PackratParser[Condition] = acond | ocond
