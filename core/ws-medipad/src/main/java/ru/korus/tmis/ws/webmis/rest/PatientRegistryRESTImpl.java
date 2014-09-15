@@ -34,11 +34,13 @@ public class PatientRegistryRESTImpl {
     @EJB
     ExaminationsRegistryRESTImpl examinationsRegistryREST;
 
+    @EJB AppealRegistryRESTImpl appealRegistryREST;
+
     @Path("/{patientId}/appeals/")
     public AppealRegistryRESTImpl getAppealRegistryRESTImpl(@Context HttpServletRequest servRequest,
                                                             @QueryParam("callback") String callback,
                                                             @PathParam("patientId") int patientId){
-        return new AppealRegistryRESTImpl(wsImpl, patientId, callback, mkAuth(servRequest));
+        return appealRegistryREST;
     }
 
 

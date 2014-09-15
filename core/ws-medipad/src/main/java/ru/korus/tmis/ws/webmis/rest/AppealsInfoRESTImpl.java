@@ -34,6 +34,9 @@ public class AppealsInfoRESTImpl {
     @EJB
     ExaminationsRegistryRESTImpl examinationsRegistryREST;
 
+    @EJB
+    QuotesRegistryRESTImpl quotesRegistryREST;
+
 
     @Path("/{eventId}/hospitalbed/")
     public HospitalBedRegistryRESTImpl getHospitalBedRegistryRESTImpl(@Context HttpServletRequest servRequest,
@@ -65,7 +68,7 @@ public class AppealsInfoRESTImpl {
     public QuotesRegistryRESTImpl getQuotesRegistryRESTImpl(@Context HttpServletRequest servRequest,
                                                             @PathParam("eventId") int eventId,
                                                             @QueryParam("callback") String callback) {
-        return new QuotesRegistryRESTImpl(wsImpl, eventId, callback, mkAuth(servRequest)) ;
+        return quotesRegistryREST;
     }
 
     /**

@@ -7,8 +7,14 @@ import ru.korus.tmis.core.data.AppealSimplifiedRequestData;
 import ru.korus.tmis.core.data.AppealSimplifiedRequestDataFilter;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -18,20 +24,13 @@ import java.util.Set;
  * Date: 3/21/13 12:05 PM
  * Since: 1.0.0.74
  */
+@Stateless
 @Interceptors(ServicesLoggingInterceptor.class)
 public class AppealRegistryRESTImpl {
 
+    @EJB
     private WebMisREST wsImpl;
-    private int patientId;
-    private AuthData auth;
-    private String callback;
 
-    public AppealRegistryRESTImpl(WebMisREST wsImpl, int patientId, String callback, AuthData auth) {
-        this.patientId = patientId;
-        this.auth = auth;
-        this.wsImpl = wsImpl;
-        this.callback = callback;
-    }
 
     /**
      * Создание обращения на госпитализацию.
@@ -44,8 +43,11 @@ public class AppealRegistryRESTImpl {
     @POST
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object insertPatientAppeal(AppealData data) throws CoreException {
-        return new JSONWithPadding(wsImpl.insertAppealForPatient(data, this.patientId, this.auth), this.callback);
+    public Object insertPatientAppeal(@Context HttpServletRequest servRequest,
+                                      @QueryParam("callback") String callback,
+                                      @PathParam("patientId") int patientId,
+                                      AppealData data) throws CoreException {
+        return new JSONWithPadding(wsImpl.insertAppealForPatient(data, patientId, mkAuth(servRequest)), callback);
     }
 
     /**
@@ -77,7 +79,10 @@ public class AppealRegistryRESTImpl {
      */
     @GET
     @Produces({"application/x-javascript", "application/xml"})
-    public Object getAllAppealsForPatient(@QueryParam("limit")int limit,
+    public Object getAllAppealsForPatient(@Context HttpServletRequest servRequest,
+                                          @QueryParam("callback") String callback,
+                                          @PathParam("patientId") int patientId,
+                                          @QueryParam("limit")int limit,
                                           @QueryParam("page")int  page,
                                           @QueryParam("sortingField")String sortingField,  //сортировки вкл.
                                           @QueryParam("sortingMethod")String sortingMethod,
@@ -88,9 +93,9 @@ public class AppealRegistryRESTImpl {
                                           @QueryParam("filter[doctorId]") int doctorId,
                                           @QueryParam("filter[diagnosis]") String mkbCode) throws CoreException {
         Set<String> codes = new LinkedHashSet<String>();
-        AppealSimplifiedRequestDataFilter filter = new AppealSimplifiedRequestDataFilter(this.patientId, beginDate, endDate, departmentId, doctorId, mkbCode, number, codes);
+        AppealSimplifiedRequestDataFilter filter = new AppealSimplifiedRequestDataFilter(patientId, beginDate, endDate, departmentId, doctorId, mkbCode, number, codes);
         AppealSimplifiedRequestData request= new AppealSimplifiedRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getAllAppealsByPatient(request, this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.getAllAppealsByPatient(request, mkAuth(servRequest)), callback);
     }
 
     //Основные сведения истории болезни
@@ -100,4 +105,8 @@ public class AppealRegistryRESTImpl {
     public Object getBasicInfoOfDiseaseHistory(@QueryParam("externalId") String externalId){
           return wsImpl.getBasicInfoOfDiseaseHistory(patientId, externalId).toString();
     }*/
+
+    private AuthData mkAuth(HttpServletRequest servRequest) {
+        return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+    }
 }
