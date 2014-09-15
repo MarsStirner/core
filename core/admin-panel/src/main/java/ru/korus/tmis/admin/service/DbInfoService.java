@@ -13,4 +13,6 @@ public interface DbInfoService {
     DbInfo getMainDbInfo();
 
     DbInfo getSettingsDbInfo();
+
+    String getDomainPath();
 }

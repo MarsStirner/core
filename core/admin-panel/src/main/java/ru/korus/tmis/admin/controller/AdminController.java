@@ -3,16 +3,12 @@ package ru.korus.tmis.admin.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
-import ru.korus.tmis.admin.model.User;
 import ru.korus.tmis.admin.service.DbInfoService;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
 
-import javax.ejb.EJB;
-import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -27,6 +23,7 @@ import java.util.Map;
 @Scope("session")
 public class AdminController implements Serializable {
 
+    public final static String MAIN_JSP = "admin";
     @Autowired
     AuthStorageBeanLocal authStorageBeanLocal;
 
@@ -39,7 +36,8 @@ public class AdminController implements Serializable {
         model.put("tmisCoreDb", dbInfoService.getSettingsDbInfo());
         model.put("state", ViewState.MAIN);
         model.put("version", ConfigManager.Common().version());
-        return "admin";
+        model.put("domainPath",  dbInfoService.getDomainPath());
+        return MAIN_JSP;
     }
 
 }

@@ -4,6 +4,7 @@ import org.springframework.stereotype.Service;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 
 import javax.ejb.Local;
+import javax.persistence.EntityManager;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -13,5 +14,8 @@ import javax.ejb.Local;
  */
 @Local
 public interface EjbWrapperLocal {
+
     AuthStorageBeanLocal getAuthStorageBeanLocal();
+
+    EntityManager getMainEntityManager();
 }

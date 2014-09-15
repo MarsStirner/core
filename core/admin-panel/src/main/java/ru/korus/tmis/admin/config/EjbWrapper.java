@@ -4,6 +4,8 @@ import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -14,6 +16,9 @@ import javax.ejb.Stateless;
 @Stateless
 public class EjbWrapper implements EjbWrapperLocal {
 
+    @PersistenceContext(unitName = "s11r64")
+    EntityManager s11r64;
+
     @EJB
     AuthStorageBeanLocal authStorageBeanLocal;
 
@@ -21,4 +26,11 @@ public class EjbWrapper implements EjbWrapperLocal {
     public AuthStorageBeanLocal getAuthStorageBeanLocal() {
         return authStorageBeanLocal;
     }
+
+    @Override
+    public EntityManager getMainEntityManager() {
+        return s11r64;
+    }
+
+
 }

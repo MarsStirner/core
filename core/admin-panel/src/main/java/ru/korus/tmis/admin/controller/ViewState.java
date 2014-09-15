@@ -7,9 +7,11 @@ package ru.korus.tmis.admin.controller;
  * Description:  <br>
  */
 public enum ViewState {
+
     ROOT("/", ""),
     AUTH("/auth", "Авторизация"),
-    MAIN("/admin", "Общая информация");
+    MAIN("/admin", "Общая информация"),
+    ALL_SETTINGS("/admin/settings", "Все настройки");
 
     private final String path;
 

@@ -36,6 +36,7 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
 		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+        registry.addResourceHandler("/admin/resources/**").addResourceLocations("/resources/");
 	}
 
 	@Override
@@ -48,6 +49,17 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
         try {
             EjbWrapperLocal ejbLocal = getEjbWrapper();
             return ejbLocal.getAuthStorageBeanLocal();
+        } catch (NamingException e) {
+            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+        }
+        return null;
+    }
+
+    @Bean
+    public EjbWrapperLocal getEjbWrapperLocal() {
+        try {
+            EjbWrapperLocal ejbLocal = getEjbWrapper();
+            return ejbLocal;
         } catch (NamingException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }
