@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.apql
 
+
 import scala.util.parsing.combinator._
 import scala.util.parsing.combinator.lexical.StdLexical
 import scala.util.parsing.combinator.syntactical.StdTokenParsers
@@ -31,12 +32,12 @@ class APQLParser extends StdTokenParsers with PackratParsers {
   lazy val andConditionList: PackratParser[List[Expr]] = repsep(expr, andLiteral)
   lazy val orConditionList: PackratParser[List[Expr]] = repsep(expr, orLiteral)
 
-  lazy val orLiteral: PackratParser[Literal] = ident ^^ { case "OR" => OR }
-  lazy val andLiteral: PackratParser[Literal] = ident ^^ { case "AND" => AND }
-  lazy val ifLiteral: PackratParser[Literal] = ident ^^ { case "IF" => IF}
-  lazy val thenLiteral: PackratParser[Literal] = ident ^^ { case "THEN" => THEN }
+  lazy val orLiteral: PackratParser[Expr] = ident ^^ { case "OR" => OR }
+  lazy val andLiteral: PackratParser[Expr] = ident ^^ { case "AND" => AND }
+  lazy val ifLiteral: PackratParser[Expr] = ident ^^ { case "IF" => IF}
+  lazy val thenLiteral: PackratParser[Expr] = ident ^^ { case "THEN" => THEN }
 
-  lazy val expr: PackratParser[Expr] = method | value | number | string
+  lazy val expr: PackratParser[Expr] = method | number | string
 
   lazy val method: PackratParser[MethodCall] = expr.? ~ ".".? ~ ident ~ "(" ~ args ~ ")" ^^ {
     case expression ~ dot ~ name ~ "(" ~ arguments ~ ")" => MethodCall(expression, name, arguments)
@@ -44,7 +45,6 @@ class APQLParser extends StdTokenParsers with PackratParsers {
 
   lazy val args: PackratParser[List[Expr]] = repsep(expr, ",")
 
-  lazy val value: PackratParser[Expr] = ident ^^ { case ident => Value(ident) }
   lazy val number: PackratParser[NumericLiteral] = numericLit ^^ { case n => NumericLiteral(n) }
   lazy val string: PackratParser[StringLiteral] = stringLit ^^ { case n => StringLiteral(n) }
 
