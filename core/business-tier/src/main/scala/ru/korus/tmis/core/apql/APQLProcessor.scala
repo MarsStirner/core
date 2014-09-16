@@ -2,7 +2,7 @@ package ru.korus.tmis.core.apql
 
 import javax.ejb.{EJB, Stateless}
 
-import ru.korus.tmis.core.database.common.{DbActionPropertyBean, DbActionBeanLocal}
+import ru.korus.tmis.core.database.common.{DbActionPropertyBeanLocal, DbActionPropertyBean, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model.{ActionProperty, Action, APValue}
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConverters._
@@ -16,7 +16,7 @@ import scala.collection.JavaConverters._
 class APQLProcessor {
 
   @EJB private var actionBean: DbActionBeanLocal = _
-  @EJB private var actionPropertyBean: DbActionPropertyBean = _
+  @EJB private var actionPropertyBean: DbActionPropertyBeanLocal = _
 
   def process(expr: IfThenExpr): Option[List[APValue]] = {
     val result = expr.condition match {
@@ -135,7 +135,7 @@ class APQLProcessor {
       case "containsValueOf" => args.size match {
         case 1 => args.head match {
           case x: StringValue =>
-            val prop = value.find(p => p.getType.getCode.equals(x.value))
+            val prop = value.find(p => p.getType.getCode != null && p.getType.getCode.equals(x.value))
             new BooleanValue(prop.isDefined && !actionPropertyBean.getActionPropertyValue(prop.get).isEmpty)
           case _ => noSuchMethod(method, args)
         }
@@ -143,7 +143,7 @@ class APQLProcessor {
       }
       case "getValueOf" => args.size match {
           case 1 => args.head match {
-          case arg: StringValue => value.find(p => p.getType.getCode.equals(arg.value)) match {
+          case arg: StringValue => value.find(p => p.getType.getCode != null && p.getType.getCode.equals(arg.value)) match {
             case Some(x) => new ActionPropertyValues(actionPropertyBean.getActionPropertyValue(x).asScala.toList)
             case None => throw new CoreException(this + " hasn't property with code " + arg.value)
           }

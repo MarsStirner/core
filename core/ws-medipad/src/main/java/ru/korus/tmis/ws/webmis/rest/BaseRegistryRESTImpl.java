@@ -1,20 +1,13 @@
 package ru.korus.tmis.ws.webmis.rest;
 
-import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
-import ru.korus.tmis.prescription.PrescriptionBeanLocal;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
-import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Context;
 import java.io.Serializable;
-import java.util.Arrays;
 
 /**
  * Базовый класс для registry REST-сервисов
@@ -52,6 +45,8 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     @EJB private CustomInfoRESTImpl customInfoREST;
 
+    @EJB private APQLEndPoint apqlEndPoint;
+
 
     @Path("/")
     public CustomInfoRESTImpl getCustomInfoRESTImpl() { return customInfoREST; }
@@ -82,5 +77,8 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     @Path("/job")
     public JobImpl getJobImpl() { return jobImpl; }
+
+    @Path("/apql")
+    public APQLEndPoint getAPQL() { return apqlEndPoint; }
 
 }
