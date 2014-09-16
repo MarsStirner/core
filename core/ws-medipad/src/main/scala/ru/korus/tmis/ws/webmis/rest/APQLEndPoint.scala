@@ -5,6 +5,7 @@ import javax.ejb.{EJB, Stateless}
 import javax.servlet.http.HttpServletRequest
 import javax.ws.rs.{QueryParam, POST}
 import javax.ws.rs.core.Context
+import scala.collection.JavaConverters._
 
 import com.sun.jersey.api.json.JSONWithPadding
 import ru.korus.tmis.core.apql.{IfThenExpr, APQLParser, APQLProcessor}
@@ -31,7 +32,7 @@ class APQLEndPoint {
     parseResult match {
       case x: p.NoSuccess => throw new CoreException(x.msg)
       case x: p.Success[IfThenExpr] => apqlProcessor.process(x.get) match {
-        case Some(y) => new JSONWithPadding(y.head, callback)
+        case Some(y) => new JSONWithPadding(y.asJava, callback)
         case None => new JSONWithPadding(null, callback)
       }
 
