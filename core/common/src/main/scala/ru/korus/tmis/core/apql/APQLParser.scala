@@ -19,15 +19,14 @@ class APQLParser extends StdTokenParsers with PackratParsers {
   val lexical = new StdLexical
   lexical.delimiters ++= Seq(".", "(", ")", ",", " ")
 
-
   lazy val ifThenExpr: PackratParser[IfThenExpr] = ifLiteral ~ condition ~ thenLiteral ~ expr ^^ {
     case _if ~ cond ~ _then ~ expression => IfThenExpr(cond, expression)
   }
 
   lazy val condition: PackratParser[Condition] = acond | ocond
 
-  lazy val acond: PackratParser[Condition] = "(" ~> andConditionList <~")" ^^ { case x => Condition(x, "AND") }
-  lazy val ocond: PackratParser[Condition] = "(" ~> orConditionList <~")" ^^ { case x => Condition(x, "OR") }
+  lazy val acond: PackratParser[Condition] = "(" ~> andConditionList <~")" ^^ { case x => ANDCondition(x) }
+  lazy val ocond: PackratParser[Condition] = "(" ~> orConditionList <~")" ^^ { case x => ORCondition(x) }
 
   lazy val andConditionList: PackratParser[List[Expr]] = repsep(expr, andLiteral)
   lazy val orConditionList: PackratParser[List[Expr]] = repsep(expr, orLiteral)

@@ -10,11 +10,12 @@ import scala.util.parsing.combinator.syntactical.StdTokenParsers
  */
 case class IfThenExpr(condition: Condition, value: Expr)
 
-case class Condition(expressions: List[Expr], logic: String)
+sealed trait Condition
+case class ORCondition(expressions: List[Expr]) extends Condition
+case class ANDCondition(expressions: List[Expr]) extends Condition
 
 sealed trait Expr
 case class MethodCall(expr: Option[Expr], name: String, args: List[Expr]) extends Expr
-case class MethodOnFieldCall(expr: Expr, methodCall: MethodCall) extends Expr
 case class NumericLiteral(value: String) extends Expr
 case class StringLiteral(value: String) extends Expr
 object OR extends Expr
