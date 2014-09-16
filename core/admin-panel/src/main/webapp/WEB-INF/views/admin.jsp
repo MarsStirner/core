@@ -11,6 +11,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="ТМИС: Администрирование">
     <meta name="author" content="ВТР">
+    <meta http-equiv="X-UA-Compatible" content="IE=9" />
     <link href="resources/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="resources/jquery/jquery-1.8.2.min.js"></script>
     <script type="text/javascript" src="resources/bootstrap/3.1.0/js/bootstrap.min.js"></script>
@@ -32,7 +33,7 @@
                 <span class="icon-bar"></span>
                 <span class="icon-bar"></span>
             </button>
-            <a class="navbar-brand" href="admin" title="Общая информация о системе">ФТМИС</a>
+            <a class="navbar-brand" href="${pageContext.request.contextPath}/admin" title="Общая информация о системе">ФТМИС</a>
         </div>
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
@@ -41,18 +42,18 @@
                             class="caret"></b></a>
                     <ul class="dropdown-menu global_nav">
                         <li>
-                            <a href="admin/integration/pharmacy">1C Аптека</a>
+                            <a href="${pageContext.request.contextPath}/admin/integration/pharmacy">1C Аптека</a>
                         </li>
                         <li>
-                            <a href="admin/integration/trfu">ТРФУ</a>
+                            <a href="${pageContext.request.contextPath}/admin/integration/trfu">ТРФУ</a>
                         </li>
                         <li>
-                            <a href="admin/integration/risar">РИСАР</a>
+                            <a href="${pageContext.request.contextPath}/admin/integration/risar">РИСАР</a>
                         </li>
                     </ul>
                 </li>
                 <li>
-                    <a href="admin/settings" title="Все настройки (из табл. tmis_core.setting)">Настройки</a>
+                    <a href="${pageContext.request.contextPath}/admin/settings" title="Все настройки (из табл. tmis_core.setting)">Настройки</a>
                 </li>
             </ul>
         </div>
@@ -60,7 +61,7 @@
 </nav>
 <div class="container">
     <div class="row">
-        <div class="col-lg-8">
+        <div class="col-lg-8 ${state.isShowTitle() ? "aaa" : "hide"}">
             <h1 class="page-header">
                 ${state.getTitle()}
             </h1>

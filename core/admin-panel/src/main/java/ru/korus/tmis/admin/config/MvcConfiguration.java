@@ -12,6 +12,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import ru.korus.tmis.admin.controller.AuthInterceptor;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
+import ru.korus.tmis.core.database.common.DbSettingsBean;
+import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.naming.InitialContext;
@@ -56,10 +58,10 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter{
     }
 
     @Bean
-    public EjbWrapperLocal getEjbWrapperLocal() {
+    public DbSettingsBeanLocal getDbSettingsBean() {
         try {
             EjbWrapperLocal ejbLocal = getEjbWrapper();
-            return ejbLocal;
+            return ejbLocal.getDbSettingsBean();
         } catch (NamingException e) {
             e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
         }

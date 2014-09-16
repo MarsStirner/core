@@ -15,7 +15,6 @@ import ru.korus.tmis.scala.util.ConfigManager._
 @Startup
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Singleton
-@TransactionManagement(TransactionManagementType.BEAN)
 class DbSettingsBean extends DbSettingsBeanLocal
 with Logging
 with I18nable {

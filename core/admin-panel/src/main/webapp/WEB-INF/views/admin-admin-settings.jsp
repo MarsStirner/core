@@ -12,28 +12,29 @@
         <div class="panel-body">
             <form:form method="POST" modelAttribute="tmisSettings" role="form" cssClass="form-horizontal">
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
-                    <button type="reset" class="btn btn-default">Отмена</button>
-                </div>
-                <div class="form-group">
-                    <label class="col-sm-2 control-label">Path</label>
-
-                    <div class="col-sm-10">
-                        <label class="col-sm-2 control-label">Value</label>
-                    </div>
+                    <button type="reset" class="btn btn-default  pull-right">Отмена</button>
+                    <button type="submit" class="btn btn-primary pull-right">Сохранить</button>
                 </div>
                 <c:forEach items="${tmisSettings.settings}" var="setting" varStatus="status">
                     <div class="form-group">
-                        <label for="input${status.index}" class="col-sm-2 control-label">${setting.path}</label>
+                        <label for="input${status.index}" class="col-sm-4 control-label">${setting.path} :</label>
 
-                        <div class="col-sm-10">
-                            <form:input path="settings[${status.index}].value" cssClass="form-control" id="input${status.index}"/>
+                        <div class=${setting.isBoolean() ? "col-sm-1" : "col-sm-8"}>
+                            <c:set var="settings[status.index].path" value = "${setting.path}"/>
+                            <c:choose>
+                                <c:when test="${setting.isBoolean()}">
+                                    <form:checkbox path="settings[${status.index}].enable" cssClass="form-control" cssStyle="width:40px; height:40px;" id="input${status.index}"/>
+                                </c:when>
+                                <c:otherwise>
+                                    <form:input path="settings[${status.index}].value" cssClass="form-control" id="input${status.index}"/>
+                                </c:otherwise>
+                            </c:choose>
                         </div>
                     </div>
                 </c:forEach>
                 <div class="form-group">
-                    <button type="submit" class="btn btn-primary">Сохранить</button>
-                    <button type="reset" class="btn btn-default">Отмена</button>
+                    <button type="reset" class="btn btn-default  pull-right">Отмена</button>
+                    <button type="submit" class="btn btn-primary pull-right">Сохранить</button>
                 </div>
             </form:form>
         </div>

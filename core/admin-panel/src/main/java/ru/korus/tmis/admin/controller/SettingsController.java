@@ -3,11 +3,13 @@ package ru.korus.tmis.admin.controller;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import ru.korus.tmis.admin.model.Settings;
 import ru.korus.tmis.admin.service.AllSettingsService;
 
+import javax.servlet.http.HttpServletRequest;
 import java.io.Serializable;
 import java.util.Map;
 
@@ -22,14 +24,36 @@ import java.util.Map;
 @Scope("session")
 public class SettingsController implements Serializable {
 
+    public static final String SETTINGS_LIST = "SETTINGS_LIST";
     @Autowired
     AllSettingsService allSettingsService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String viewRegistration(Map<String, Object> model) {
+    public String viewRegistration(Map<String, Object> model, HttpServletRequest request) {
         model.put("state", ViewState.ALL_SETTINGS);
-        model.put("tmisSettings", allSettingsService.getSettings() );
+        Settings settingsList = allSettingsService.getSettings();
+        model.put("tmisSettings", settingsList);
+        request.getSession().setAttribute(SETTINGS_LIST, settingsList);
         return AdminController.MAIN_JSP;
+    }
+
+
+    @RequestMapping(method = RequestMethod.POST)
+    public String viewRegistration(@ModelAttribute("tmisSettings") Settings settings, Map<String, Object> model, HttpServletRequest request) {
+        Object settingsList = request.getSession().getAttribute(SETTINGS_LIST);
+        if(settingsList != null && settingsList instanceof Settings ) {
+
+            for(int i = 0; i < ((Settings)settingsList).getSettings().length; ++i) {
+                settings.getSettings()[i].setPath(((Settings) settingsList).getSettings()[i].getPath());
+            }
+            allSettingsService.save(settings);
+        }
+        model.put("state", ViewState.ALL_SETTINGS);
+        Settings settingsListNew = allSettingsService.getSettings();
+        model.put("tmisSettings", settingsListNew);
+        request.getSession().setAttribute(SETTINGS_LIST, settingsListNew);
+        return AdminController.MAIN_JSP;
+
     }
 
 }

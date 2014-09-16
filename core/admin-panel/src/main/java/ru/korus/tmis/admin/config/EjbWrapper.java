@@ -1,6 +1,8 @@
 package ru.korus.tmis.admin.config;
 
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
+import ru.korus.tmis.core.database.common.DbSettingsBean;
+import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -20,7 +22,10 @@ public class EjbWrapper implements EjbWrapperLocal {
     EntityManager s11r64;
 
     @EJB
-    AuthStorageBeanLocal authStorageBeanLocal;
+    private AuthStorageBeanLocal authStorageBeanLocal;
+
+    @EJB
+    private DbSettingsBeanLocal DbSettingsBeanLocal;
 
     @Override
     public AuthStorageBeanLocal getAuthStorageBeanLocal() {
@@ -30,6 +35,11 @@ public class EjbWrapper implements EjbWrapperLocal {
     @Override
     public EntityManager getMainEntityManager() {
         return s11r64;
+    }
+
+    @Override
+    public DbSettingsBeanLocal getDbSettingsBean() {
+        return DbSettingsBeanLocal;
     }
 
 

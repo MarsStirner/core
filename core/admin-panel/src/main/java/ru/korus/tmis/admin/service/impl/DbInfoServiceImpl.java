@@ -2,7 +2,6 @@ package ru.korus.tmis.admin.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import ru.korus.tmis.admin.config.EjbWrapperLocal;
 import ru.korus.tmis.admin.model.DbInfo;
 import ru.korus.tmis.admin.service.DbInfoService;
 import ru.korus.tmis.admin.service.impl.domain.*;
@@ -27,8 +26,6 @@ public class DbInfoServiceImpl implements DbInfoService {
 
     static DomainType domainXml = null;
 
-    @Autowired
-    EjbWrapperLocal ejbWrapperLocal;
 
     @Override
     public DbInfo getMainDbInfo() {

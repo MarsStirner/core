@@ -1,7 +1,6 @@
 package ru.korus.tmis.admin.service;
 
 import org.springframework.stereotype.Service;
-import ru.korus.tmis.admin.model.SettingInfo;
 import ru.korus.tmis.admin.model.Settings;
 
 import java.util.List;
@@ -14,4 +13,6 @@ import java.util.List;
  */
 public interface AllSettingsService {
     Settings getSettings();
+
+    void save(Settings settings);
 }

@@ -19,7 +19,7 @@ import javax.persistence.Table;
 @Table(name = "Setting")
 @NamedQueries(
         {
-                @NamedQuery(name = "Setting.findAll", query = "SELECT s FROM Setting s")
+                @NamedQuery(name = "Setting.findAll", query = "SELECT s FROM Setting s ORDER BY s.path")
         })
 public class Setting implements Serializable {
 
