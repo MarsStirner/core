@@ -15,8 +15,8 @@ import scala.collection.JavaConverters._
 @Stateless
 class APQLProcessor {
 
-  @EJB var actionBean: DbActionBeanLocal = _
-  @EJB var actionPropertyBean: DbActionPropertyBean = _
+  @EJB private var actionBean: DbActionBeanLocal = _
+  @EJB private var actionPropertyBean: DbActionPropertyBean = _
 
   def process(expr: IfThenExpr): Option[List[APValue]] = {
     val result = expr.condition match {
@@ -35,13 +35,13 @@ class APQLProcessor {
     if (result)
       processExpression(expr.value) match {
         case v: ActionPropertyValues => Option(v.value)
-        case _ => ???
+        case _ => None // Unknown situation
       }
     else
       None
   }
 
-  def processExpression(expr: Expr): ExpressionValue = expr match {
+  private def processExpression(expr: Expr): ExpressionValue = expr match {
     case method: MethodCall =>
       val args = method.args.map(processExpression)
       method.expr match {
@@ -121,7 +121,7 @@ class APQLProcessor {
   private class ActionValue(val value: Action) extends ExpressionValue {
 
     override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = method match {
-      case "properties" => args match {
+      case "properties" => args.size match {
         case 0 => new ActionPropertyList(value.getActionProperties.asScala.toList)
         case _ => noSuchMethod(method, args)
       }
@@ -132,7 +132,7 @@ class APQLProcessor {
 
   private class ActionPropertyList(val value: List[ActionProperty]) extends ExpressionValue {
     override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = method match {
-      case "containsValueOf" => args match {
+      case "containsValueOf" => args.size match {
         case 1 => args.head match {
           case x: StringValue =>
             val prop = value.find(p => p.getType.getCode.equals(x.value))
@@ -141,8 +141,8 @@ class APQLProcessor {
         }
         case _ => noSuchMethod(method, args)
       }
-      case "getValueOf" => args match {
-        case 1 => args.head match {
+      case "getValueOf" => args.size match {
+          case 1 => args.head match {
           case arg: StringValue => value.find(p => p.getType.getCode.equals(arg.value)) match {
             case Some(x) => new ActionPropertyValues(actionPropertyBean.getActionPropertyValue(x).asScala.toList)
             case None => throw new CoreException(this + " hasn't property with code " + arg.value)
@@ -157,7 +157,7 @@ class APQLProcessor {
 
   private class ActionPropertyValues(val value: List[APValue]) extends ExpressionValue {
 
-    override def apply(method: String, args: List[ExpressionValue]): Unit = method match {
+    override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = method match {
       case _ => noSuchMethod(method, args)
     }
 
