@@ -115,19 +115,47 @@ class APQLProcessor {
   }
 
   private class StringValue(val value: String) extends ExpressionValue {
-    def methods = Nil
+
+    val equals = Method("equals", List(classOf[StringValue]),
+      (args: List[ExpressionValue]) => new BooleanValue(this.value.equals(args.head.asInstanceOf[StringValue].value)))
+
+    def methods = List(equals)
+
   }
 
   private class IntegerValue(val value: Int) extends ExpressionValue {
-    def methods = Nil
+
+    val equals = Method("equals", List(classOf[IntegerValue]),
+      (args: List[ExpressionValue]) => new BooleanValue(this.value.equals(args.head.asInstanceOf[IntegerValue].value)))
+
+    def methods = List(equals)
+
   }
 
   private class BooleanValue(val value: Boolean) extends ExpressionValue {
-    def methods = Nil
+
+    val equals = Method("equals", List(classOf[BooleanValue]),
+      (args: List[ExpressionValue]) => new BooleanValue(this.value.equals(args.head.asInstanceOf[BooleanValue].value)))
+
+    def methods = List(equals)
+
   }
 
-  private class DateValue(val value: Date) extends ExpressionValue {
-    def methods = Nil
+  private class DateValue(val value: Date) extends ExpressionValue with Comparable[DateValue] {
+
+    val less = Method("less", List(classOf[DateValue]),
+      (args: List[ExpressionValue]) => new BooleanValue(this.compareTo(args.head.asInstanceOf[DateValue]) < 0))
+
+    val more = Method("more", List(classOf[DateValue]),
+      (args: List[ExpressionValue]) => new BooleanValue(this.compareTo(args.head.asInstanceOf[DateValue]) > 0))
+
+    val equals = Method("equals", List(classOf[DateValue]),
+      (args: List[ExpressionValue]) => new BooleanValue(this.compareTo(args.head.asInstanceOf[DateValue]) == 0))
+
+    def methods = List(less, more, equals)
+
+    override def compareTo(o: DateValue): Int = this.value compareTo o.value
+
   }
 
 
