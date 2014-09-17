@@ -57,6 +57,8 @@ public interface WebMisREST extends Serializable {
 
     JSONCommonData getStructOfPrimaryMedExamWithCopy(int actionTypeId, AuthData authData, int eventId) throws CoreException;
 
+    APValue calculateActionPropertyValue(int eventId, int actionTypeId, int actionPropertyId) throws CoreException;
+
     JSONCommonData insertPrimaryMedExamForPatient(int eventId, JSONCommonData data, AuthData authData, URI baseUri) throws CoreException;
 
     JSONCommonData modifyPrimaryMedExamForPatient(int actionId, JSONCommonData data, AuthData authData, URI baseUri) throws CoreException;

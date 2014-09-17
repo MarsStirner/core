@@ -3,7 +3,7 @@ package ru.korus.tmis.ws.webmis.rest
 import java.util
 import javax.ejb.{EJB, Stateless}
 import javax.servlet.http.HttpServletRequest
-import javax.ws.rs.{QueryParam, POST}
+import javax.ws.rs.{GET, QueryParam, POST}
 import javax.ws.rs.core.Context
 import scala.collection.JavaConverters._
 
@@ -26,7 +26,7 @@ class APQLEndPoint {
   @POST
   def runQuery(@Context servRequest: HttpServletRequest,
                @QueryParam("callback") callback: String,
-                query: String) = {
+               query: String) = {
     val p = new APQLParser
     val parseResult = p.parse(query)
     parseResult match {
@@ -38,6 +38,15 @@ class APQLEndPoint {
 
     }
 
+  }
+
+  @GET
+  def legacy(@Context servRequest: HttpServletRequest,
+             @QueryParam("callback") callback: String,
+             @QueryParam("eventId") eventId: Int,
+             @QueryParam("actionTypeId") actionTypeId: Int,
+             @QueryParam("actionPropertyTypeId") actionPropertyTypeId: Int) = {
+    new JSONWithPadding(wsImpl.calculateActionPropertyValue(eventId, actionTypeId, actionPropertyTypeId), callback)
   }
 
   private def mkAuth(servRequest: HttpServletRequest) = wsImpl.checkTokenCookies(util.Arrays.asList(servRequest.getCookies:_*))

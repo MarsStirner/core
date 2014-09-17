@@ -844,6 +844,18 @@ with CAPids {
 
   }
 
+  def calculateActionPropertyValue(eventId: Int, actionTypeId: Int, actionPropertyId: Int) = {
+    calculateActionPropertyValue(
+      dbEventBean.getEventById(eventId),
+      actionTypeBean.getActionTypeById(actionTypeId),
+      actionPropertyTypeBean.getActionPropertyTypeById(actionPropertyId),
+      mutable.HashMap[Int, java.util.List[Action]](),
+      mutable.HashMap[ActionProperty, java.util.List[APValue]](),
+      mutable.HashMap[(Set[String], Int, String), java.util.List[Action]]()
+    )
+
+  }
+
   //создание первичного мед. осмотра
   def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI) = {
 
