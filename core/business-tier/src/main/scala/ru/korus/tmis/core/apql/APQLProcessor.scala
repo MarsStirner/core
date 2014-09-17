@@ -75,8 +75,13 @@ class APQLProcessor {
       }
     )
 
+    val getNowDateTime = Method("getNowDateTime", Nil, (args: List[ExpressionValue]) => { new DateValue(new Date()) })
 
-    override def methods: List[APQLProcessor.this.GlobalObject.Method] = List(getActionsByEventId, getActionsByEventIdAndFilterByCode)
+    override def methods: List[APQLProcessor.this.GlobalObject.Method] =
+      List(
+        getActionsByEventId,
+        getActionsByEventIdAndFilterByCode,
+        getNowDateTime)
 
     private def getActionsByEvent(id: Int): Try[ActionList] = {
       Try(new ActionList(actionBean.getActionsByEvent(id).asScala.toList))
