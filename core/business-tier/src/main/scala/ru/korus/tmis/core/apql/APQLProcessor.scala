@@ -1,9 +1,10 @@
 package ru.korus.tmis.core.apql
 
+import java.util.Date
 import javax.ejb.{EJB, Stateless}
 
 import ru.korus.tmis.core.database.common.{DbActionPropertyBeanLocal, DbActionPropertyBean, DbActionBeanLocal}
-import ru.korus.tmis.core.entity.model.{ActionProperty, Action, APValue}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConverters._
 
@@ -106,6 +107,13 @@ class APQLProcessor {
     }
   }
 
+  private class DateValue(val value: Date) extends ExpressionValue {
+
+    override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = ???
+
+  }
+
+
   private class ActionList(val value: List[Action]) extends ExpressionValue {
     def apply(method: String, args: List[ExpressionValue]) = method match {
       case "first" => args match {
@@ -113,7 +121,7 @@ class APQLProcessor {
           case x :: xs => new ActionValue(x)
           case Nil => throw new CoreException("Cannot get first element of empty list")
         }
-        case _ => throw new CoreException("Unknown error on call first() at " + this.value + " with args " + args)
+        case _ => noSuchMethod(method, args)
       }
       case _ => noSuchMethod(method, args)
     }
@@ -159,6 +167,15 @@ class APQLProcessor {
   private class ActionPropertyValues(val value: List[APValue]) extends ExpressionValue {
 
     override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = method match {
+      case "first" => args match {
+        case x :: xs => x match {
+          case y: APValueDate => new DateValue(y.getValue)
+          case y: APValueString => new StringValue(y.getValue)
+          case y: APValueInteger => new IntegerValue(y.getValue)
+          case _ => throw new CoreException("Unsupported ActionPropertyValue type - " + x.getClass)
+        }
+        case Nil => throw new CoreException("Cannot get first element of empty list")
+      }
       case _ => noSuchMethod(method, args)
     }
 
