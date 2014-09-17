@@ -37,11 +37,6 @@ public class EjbWrapper implements EjbWrapperLocal {
     }
 
     @Override
-    public EntityManager getMainEntityManager() {
-        return s11r64;
-    }
-
-    @Override
     public DbSettingsBeanLocal getDbSettingsBean() {
         return DbSettingsBeanLocal;
     }

@@ -12,7 +12,10 @@ import java.util.List;
  * Description:  <br>
  */
 public interface AllSettingsService {
+
     Settings getSettings();
 
     void save(Settings settings);
+
+    void save(String path, String value);
 }

@@ -29,7 +29,7 @@ public class SettingsController implements Serializable {
     AllSettingsService allSettingsService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String viewRegistration(Map<String, Object> model, HttpServletRequest request) {
+    public String get(Map<String, Object> model, HttpServletRequest request) {
         model.put("state", ViewState.ALL_SETTINGS);
         Settings settingsList = allSettingsService.getSettings();
         model.put("tmisSettings", settingsList);
@@ -39,7 +39,7 @@ public class SettingsController implements Serializable {
 
 
     @RequestMapping(method = RequestMethod.POST)
-    public String viewRegistration(@ModelAttribute("tmisSettings") Settings settings, Map<String, Object> model, HttpServletRequest request) {
+    public String get(@ModelAttribute("tmisSettings") Settings settings, Map<String, Object> model, HttpServletRequest request) {
         Object settingsList = request.getSession().getAttribute(SETTINGS_LIST);
         if(settingsList != null && settingsList instanceof Settings ) {
 

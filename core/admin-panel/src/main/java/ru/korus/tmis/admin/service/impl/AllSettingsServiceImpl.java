@@ -5,13 +5,11 @@ import org.springframework.stereotype.Service;
 import ru.korus.tmis.admin.model.SettingInfo;
 import ru.korus.tmis.admin.model.Settings;
 import ru.korus.tmis.admin.service.AllSettingsService;
-import ru.korus.tmis.core.database.common.DbSettingsBean;
 import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.core.entity.model.Setting;
 
 
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -39,8 +37,13 @@ public class AllSettingsServiceImpl implements AllSettingsService {
     @Override
     public void save(Settings settings) {
         for(SettingInfo s : settings.getSettings()) {
-            dbSettingsBean.updateSetting(s.getPath(), s.getValue());
+            save(s.getPath(), s.getValue());
         }
+    }
+
+    @Override
+    public void save(String path, String value) {
+        dbSettingsBean.updateSetting(path, value);
     }
 
     private List<SettingInfo> getAllSettings() {

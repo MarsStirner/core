@@ -20,9 +20,7 @@ public interface EjbWrapperLocal {
 
     AuthStorageBeanLocal getAuthStorageBeanLocal();
 
-    EntityManager getMainEntityManager();
-
     DbSettingsBeanLocal getDbSettingsBean();
 
-    public DbOrganizationBeanLocal getOrganizationBeanLocal();
+    DbOrganizationBeanLocal getOrganizationBeanLocal();
 }

@@ -11,12 +11,20 @@
                 ЛПУ
             </div>
             <div class="panel-body">
-                <form:form method="POST" modelAttribute="commonSettings" role="form">
+                <form:form method="POST" action="common/orgid" modelAttribute="commonSettings" role="form">
                     <div class="row">
-                        <div class="form-group">
-                            <div class="col-xs-4">
-                                <form:label path="orgId" placeholder=".col-xs-1">ЛПУ id</form:label>
-                                <form:input path="orgId" cssClass="form-control" placeholder=".col-xs-1"/>
+                        <div class="col-xs-8">
+                            <div class="form-group">
+                                <form:label path="orgId">ЛПУ id</form:label>
+                                <div class="input-group">
+                                    <form:input path="orgId" cssClass="form-control"/>
+                                    <span class="input-group-btn">
+                                        <button type="submit" class="form-control btn btn-primary"><span class="glyphicon glyphicon-ok"/></button>
+                                    </span>
+                                    <span class="input-group-btn">
+                                        <button type="reset" class="form-control btn btn-default"><span class="glyphicon glyphicon-remove"/></button>
+                                    </span>
+                                </div>
                             </div>
                         </div>
                     </div>

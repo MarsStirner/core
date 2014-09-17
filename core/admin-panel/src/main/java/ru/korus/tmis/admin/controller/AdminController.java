@@ -31,7 +31,7 @@ public class AdminController implements Serializable {
     DbInfoService dbInfoService;
 
     @RequestMapping(method = RequestMethod.GET)
-    public String viewRegistration(Map<String, Object> model) {
+    public String get(Map<String, Object> model) {
         model.put("s11r64Db", dbInfoService.getMainDbInfo());
         model.put("tmisCoreDb", dbInfoService.getSettingsDbInfo());
         model.put("state", ViewState.MAIN);

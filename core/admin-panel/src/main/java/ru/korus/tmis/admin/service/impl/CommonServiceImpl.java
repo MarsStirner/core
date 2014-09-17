@@ -5,6 +5,8 @@ import org.springframework.stereotype.Service;
 import ru.korus.tmis.admin.model.CommonSettings;
 import ru.korus.tmis.admin.service.CommonService;
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
+import ru.korus.tmis.core.entity.model.Organisation;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.scala.util.ConfigManager;
 
 /**
@@ -22,8 +24,17 @@ public class CommonServiceImpl implements CommonService {
     @Override
     public CommonSettings getCommonSettings() {
         CommonSettings res = new CommonSettings();
-        res.setOrgId(ConfigManager.Common().OrgId());
-        res.setOrgName("//TODO orgName");
+        final int orgId = ConfigManager.Common().OrgId();
+        res.setOrgId(orgId);
+        try {
+            Organisation organization = organizationBeanLocal.getOrganizationById(orgId);
+            if (organization != null) {
+                res.setOrgName(organization.getShortName());
+            }
+        } catch (CoreException ex) {
+            ex.printStackTrace();
+            res.setOrgName(ex.getMessage());
+        }
         return res;
     }
 }

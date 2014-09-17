@@ -10,7 +10,7 @@ public class CommonSettings {
 
     private Integer orgId;
 
-    private String orgName;
+    private String orgName = "???";
 
     public Integer getOrgId() {
         return orgId;
