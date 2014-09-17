@@ -9,10 +9,22 @@ import org.junit.Test
  */
 class APQLParserTest {
 
-  @Test def parseCondition(): Unit = parse(
+  @Test def parseCondition() = parse(
     """IF (getActionsByEvent(12, "typeCode").first().properties().containsValueOf("propertyCode"))
       |THEN
       |  getActionsByEvent(12, "typeCode").first().properties().getValueOf("propertyCode")""".stripMargin
+  )
+
+  @Test def parseCondition2() = parse(
+    """IF (true)
+      |THEN
+      |  getActionsByEvent(12, "typeCode").first().properties().getValueOf("propertyCode")""".stripMargin
+  )
+
+  @Test def parseCondition3() = parse(
+    """IF (true)
+      |THEN
+      |  getActionsByEvent("12").first().properties().getValueOf("propertyCode")""".stripMargin
   )
 
   private def parse(s: String): Unit = {
