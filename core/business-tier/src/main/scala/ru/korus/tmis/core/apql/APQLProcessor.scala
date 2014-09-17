@@ -3,7 +3,7 @@ package ru.korus.tmis.core.apql
 import java.util.Date
 import javax.ejb.{EJB, Stateless}
 
-import ru.korus.tmis.core.database.common.{DbActionPropertyBeanLocal, DbActionPropertyBean, DbActionBeanLocal}
+import ru.korus.tmis.core.database.common.{DbActionPropertyBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConverters._
@@ -56,20 +56,15 @@ class APQLProcessor {
 
   private object GlobalObject extends ExpressionValue {
 
-    override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = {
-      method match {
-        case "getActionsByEvent" => args.size match {
-          case 1 => args.head match {
-            case v: IntegerValue => getActionsByEvent(v.value)
-            case _ => throw new CoreException("Unknown method " + method + " with args " + args)
-          }
-          case 2 => (args.head, args.last) match {
-            case (x: IntegerValue, y: StringValue) => getActionsByEvent(x.value, y.value)
-          }
-          case _ => throw new CoreException("Unknown method " + method + " with args " + args)
-        }
-      }
-    }
+    val getActionsByEventId = Method( "getActionsByEvent", List(classOf[IntegerValue]),
+      (args: List[ExpressionValue]) =>  getActionsByEvent(args.head.asInstanceOf[IntegerValue].value))
+
+    val getActionsByEventIdAndFilterByCode = Method( "getActionsByEvent", List(classOf[IntegerValue], classOf[StringValue]),
+      (args: List[ExpressionValue]) =>
+        getActionsByEvent(args.head.asInstanceOf[IntegerValue].value, args.last.asInstanceOf[StringValue].value))
+
+
+    override def methods: List[APQLProcessor.this.GlobalObject.Method] = List(getActionsByEventId, getActionsByEventIdAndFilterByCode)
 
     private def getActionsByEvent(id: Int): ActionList = {
       new ActionList(actionBean.getActionsByEvent(id).asScala.toList)
@@ -83,106 +78,97 @@ class APQLProcessor {
 
 
   private trait ExpressionValue {
-    def apply(method: String, args: List[ExpressionValue]): ExpressionValue
+    def apply(method: String, args: List[ExpressionValue]): ExpressionValue = {
+      methods.find(m => m.name.equals(method) && m.argsTypes.equals(args.map(_.getClass))).
+        getOrElse[Method](noSuchMethod(method, args)).body(args)
+    }
+
+    def methods: List[Method]
 
     def noSuchMethod(method: String, args: List[ExpressionValue]) =
       throw new CoreException("No such method " + method + " with args " + args)
+
+    case class Method (
+      name: String,
+      argsTypes: List[java.lang.reflect.Type],
+      body: (List[ExpressionValue]) => ExpressionValue
+    )
+
   }
 
   private class StringValue(val value: String) extends ExpressionValue {
-    def apply(method: String, args: List[ExpressionValue]) = method match {
-      case _ => noSuchMethod(method, args)
-    }
+    def methods = Nil
   }
 
   private class IntegerValue(val value: Int) extends ExpressionValue {
-    def apply(method: String, args: List[ExpressionValue]) = method match {
-      case _ => noSuchMethod(method, args)
-    }
+    def methods = Nil
   }
 
   private class BooleanValue(val value: Boolean) extends ExpressionValue {
-    def apply(method: String, args: List[ExpressionValue]) = method match {
-      case _ => noSuchMethod(method, args)
-    }
+    def methods = Nil
   }
 
   private class DateValue(val value: Date) extends ExpressionValue {
-
-    override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = ???
-
+    def methods = Nil
   }
 
 
   private class ActionList(val value: List[Action]) extends ExpressionValue {
-    def apply(method: String, args: List[ExpressionValue]) = method match {
-      case "first" => args match {
-        case Nil => value match {
-          case x :: xs => new ActionValue(x)
-          case Nil => throw new CoreException("Cannot get first element of empty list")
-        }
-        case _ => noSuchMethod(method, args)
-      }
-      case _ => noSuchMethod(method, args)
-    }
+
+    val first = Method("first", Nil, (args: List[ExpressionValue]) =>  new ActionValue(value.head))
+
+    override def methods: List[Method] = List(first)
+
   }
 
   private class ActionValue(val value: Action) extends ExpressionValue {
 
-    override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = method match {
-      case "properties" => args.size match {
-        case 0 => new ActionPropertyList(value.getActionProperties.asScala.toList)
-        case _ => noSuchMethod(method, args)
-      }
-      case _ => noSuchMethod(method, args)
-    }
+    val properties = Method("properties", Nil,
+      (args: List[ExpressionValue]) =>  new ActionPropertyList(value.getActionProperties.asScala.toList))
 
+    override def methods: List[Method] = List(properties)
   }
 
   private class ActionPropertyList(val value: List[ActionProperty]) extends ExpressionValue {
-    override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = method match {
-      case "containsValueOf" => args.size match {
-        case 1 => args.head match {
-          case x: StringValue =>
-            val prop = value.find(p => p.getType.getCode != null && p.getType.getCode.equals(x.value))
-            new BooleanValue(prop.isDefined && !actionPropertyBean.getActionPropertyValue(prop.get).isEmpty)
-          case _ => noSuchMethod(method, args)
-        }
-        case _ => noSuchMethod(method, args)
-      }
-      case "getValueOf" => args.size match {
-          case 1 => args.head match {
-          case arg: StringValue => value.find(p => p.getType.getCode != null && p.getType.getCode.equals(arg.value)) match {
-            case Some(x) => new ActionPropertyValues(actionPropertyBean.getActionPropertyValue(x).asScala.toList)
-            case None => throw new CoreException(this + " hasn't property with code " + arg.value)
-          }
-          case _ => noSuchMethod(method, args)
-        }
-        case _ => noSuchMethod(method, args)
-      }
-      case _ => noSuchMethod(method, args)
-    }
+
+    val containsValueOf = Method(
+      "containsValueOf",
+      List(classOf[StringValue]),
+      (args: List[ExpressionValue]) => {
+        val prop = value.find(p => p.getType.getCode != null && p.getType.getCode.equals(args.head.asInstanceOf[StringValue].value))
+        new BooleanValue(prop.isDefined && !actionPropertyBean.getActionPropertyValue(prop.get).isEmpty)
+      })
+
+    val getValueOf = Method(
+      "getValueOf",
+      List(classOf[StringValue]),
+      (args: List[ExpressionValue]) => {
+        value.find(p => p.getType.getCode != null && p.getType.getCode.equals(args.head.asInstanceOf[StringValue].value)) match {
+          case Some(x) => new ActionPropertyValues(actionPropertyBean.getActionPropertyValue(x).asScala.toList)
+          case None => throw new CoreException(this + " hasn't property with code " + args.head.asInstanceOf[StringValue].value)
+      }})
+
+    override def methods: List[Method] = List(containsValueOf, getValueOf)
   }
 
   private class ActionPropertyValues(val value: List[APValue]) extends ExpressionValue {
 
-    override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = method match {
-      case "first" => args match {
-        case x :: xs => x match {
-          case y: APValueDate => new DateValue(y.getValue)
-          case y: APValueString => new StringValue(y.getValue)
-          case y: APValueInteger => new IntegerValue(y.getValue)
-          case _ => throw new CoreException("Unsupported ActionPropertyValue type - " + x.getClass)
-        }
-        case Nil => throw new CoreException("Cannot get first element of empty list")
+    val first = Method("first", Nil,
+      (args: List[ExpressionValue]) => value match {
+      case x :: xs => x match {
+        case y: APValueDate => new DateValue(y.getValue)
+        case y: APValueString => new StringValue(y.getValue)
+        case y: APValueInteger => new IntegerValue(y.getValue)
+        case _ => throw new CoreException("Unsupported ActionPropertyValue type - " + x.getClass)
       }
-      case _ => noSuchMethod(method, args)
-    }
+      case Nil => throw new CoreException("Cannot get first element of empty list")
+    })
 
+    override def methods: List[Method] = List(first)
   }
 
   private class Void extends ExpressionValue {
-    override def apply(method: String, args: List[ExpressionValue]): ExpressionValue = throw new CoreException("Null Pointer Exception")
+    def methods = Nil
   }
 
 }
