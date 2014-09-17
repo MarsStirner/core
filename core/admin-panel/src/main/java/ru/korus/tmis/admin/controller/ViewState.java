@@ -11,7 +11,8 @@ public enum ViewState {
     ROOT("/", ""),
     AUTH("/auth", "Авторизация"),
     MAIN("/admin", "Общая информация"),
-    ALL_SETTINGS("/admin/settings", "Все настройки", false);
+    ALL_SETTINGS("/admin/settings", "Все настройки", false),
+    COMMON("/admin/common", "Общие настройки ЛПУ");
 
     private final String path;
 
@@ -26,7 +27,7 @@ public enum ViewState {
     ViewState(String path, String title, Boolean isShowTitle) {
         this.path = path;
         this.title = title;
-        this.isShowTitle = true;
+        this.isShowTitle = isShowTitle;
     }
 
     public Boolean isShowTitle() {

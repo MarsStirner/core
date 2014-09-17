@@ -12,7 +12,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import ru.korus.tmis.admin.controller.AuthInterceptor;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
-import ru.korus.tmis.core.database.common.DbSettingsBean;
+import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
 import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
 
@@ -20,56 +20,49 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 
 @Configuration
-@ComponentScan(basePackages="ru.korus.tmis.admin")
+@ComponentScan(basePackages = "ru.korus.tmis.admin")
 @EnableWebMvc
-public class MvcConfiguration extends WebMvcConfigurerAdapter{
+public class MvcConfiguration extends WebMvcConfigurerAdapter {
 
     @Autowired
     AuthInterceptor authInterceptor;
 
     @Bean
-	public ViewResolver getViewResolver(){
-		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-		resolver.setPrefix("/WEB-INF/views/");
-	    resolver.setSuffix(".jsp");
-		return resolver;
-	}
-	
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
-        registry.addResourceHandler("/admin/resources/**").addResourceLocations("/resources/");
-	}
+    public ViewResolver getViewResolver() {
+        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        resolver.setPrefix("/WEB-INF/views/");
+        resolver.setSuffix(".jsp");
+        return resolver;
+    }
 
-	@Override
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+        registry.addResourceHandler("/admin/resources/**").addResourceLocations("/resources/");
+    }
+
+    @Override
     public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(authInterceptor);
     }
 
     @Bean
-    public AuthStorageBeanLocal getAuthStorageBeanLocal() {
-        try {
-            EjbWrapperLocal ejbLocal = getEjbWrapper();
-            return ejbLocal.getAuthStorageBeanLocal();
-        } catch (NamingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return null;
+    public AuthStorageBeanLocal getAuthStorageBeanLocal() throws NamingException {
+        return getEjbWrapper().getAuthStorageBeanLocal();
     }
 
     @Bean
-    public DbSettingsBeanLocal getDbSettingsBean() {
-        try {
-            EjbWrapperLocal ejbLocal = getEjbWrapper();
-            return ejbLocal.getDbSettingsBean();
-        } catch (NamingException e) {
-            e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
-        }
-        return null;
+    public DbSettingsBeanLocal getDbSettingsBean() throws NamingException {
+        return getEjbWrapper().getDbSettingsBean();
+    }
+
+    @Bean
+    public DbOrganizationBeanLocal getOrganizationBeanLocal() throws NamingException {
+        return getEjbWrapper().getOrganizationBeanLocal();
     }
 
     private EjbWrapperLocal getEjbWrapper() throws NamingException {
         String jndi = String.format("java:app/admin-panel-%s/EjbWrapper", ConfigManager.Common().version());
-        return (EjbWrapperLocal)(new InitialContext()).lookup(jndi);
+        return (EjbWrapperLocal) (new InitialContext()).lookup(jndi);
     }
 }

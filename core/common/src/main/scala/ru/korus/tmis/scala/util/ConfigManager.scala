@@ -94,26 +94,6 @@ object ConfigManager extends Configuration {
 
     def isUpdateRLS = "on".equals(UpdateRLS)
 
-
-    // Legacy area
-
-    var OrgName = "ФНКЦ ДГОИ"
-    var XmlNamespace = "urn:hl7-org:v3"
-    var DefaultXsiType = ""
-    val XsiNamespace = "http://www.w3.org/2001/XMLSchema-instance"
-    var Hl7_SoapAction = "urn:hl7-org:v3#MISExchange:ProcessHL7v3Message"
-    var Hl7_SoapOperation = "ProcessHL7v3Message"
-    var Hl7_RequestRootElement = "Message"
-    var Hl7_XsiType = "RCMR_IN000002UV02"
-    var GetOrgList_SoapAction = "urn:hl7-org:v3#MISExchange:GetOrganizationList"
-    var GetOrgList_SoapOperation = "GetOrganizationList"
-    var GetOrgList_RequestRootElement = "None"
-    var GetDepList_SoapAction = "urn:hl7-org:v3#MISExchange:GetDepartmentList"
-    var GetDepList_SoapOperation = "GetDepartmentList"
-    var GetDepList_RequestRootElement = "OrganizationRef"
-
-    def HttpAuthToken = DatatypeConverter.printBase64Binary(
-      (User + ":" + Password).getBytes)
   }
 
   /**

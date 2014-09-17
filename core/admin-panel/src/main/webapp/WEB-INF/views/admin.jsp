@@ -38,17 +38,20 @@
         <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
             <ul class="nav navbar-nav">
                 <li>
+                    <a href="${pageContext.request.contextPath}/admin/common" title="Общие настройки ЛПУ">ЛПУ</a>
+                </li>
+                <li>
                     <a href="#" class="dropdown-toggle" data-toggle="dropdown" title="Настройка инеграции с другими подсистемами">Интеграции<b
                             class="caret"></b></a>
                     <ul class="dropdown-menu global_nav">
                         <li>
-                            <a href="${pageContext.request.contextPath}/admin/integration/pharmacy">1C Аптека</a>
+                            <a href="${pageContext.request.contextPath}/admin">1C Аптека</a>
                         </li>
                         <li>
-                            <a href="${pageContext.request.contextPath}/admin/integration/trfu">ТРФУ</a>
+                            <a href="${pageContext.request.contextPath}/admin">ТРФУ</a>
                         </li>
                         <li>
-                            <a href="${pageContext.request.contextPath}/admin/integration/risar">РИСАР</a>
+                            <a href="${pageContext.request.contextPath}/admin">РИСАР</a>
                         </li>
                     </ul>
                 </li>

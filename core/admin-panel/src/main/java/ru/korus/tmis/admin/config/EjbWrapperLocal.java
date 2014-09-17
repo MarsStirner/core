@@ -2,6 +2,7 @@ package ru.korus.tmis.admin.config;
 
 import org.springframework.stereotype.Service;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
+import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
 import ru.korus.tmis.core.database.common.DbSettingsBean;
 import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 
@@ -22,4 +23,6 @@ public interface EjbWrapperLocal {
     EntityManager getMainEntityManager();
 
     DbSettingsBeanLocal getDbSettingsBean();
+
+    public DbOrganizationBeanLocal getOrganizationBeanLocal();
 }
