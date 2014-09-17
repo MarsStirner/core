@@ -7,6 +7,7 @@ import ru.korus.tmis.core.database.common.{DbActionPropertyBeanLocal, DbActionBe
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
@@ -21,16 +22,19 @@ class APQLProcessor {
 
   def process(expr: IfThenExpr): Option[List[APValue]] = {
     val result = expr.condition match {
-      case c: ORCondition =>
-        c.expressions.map(processExpression).map {
+      case c: ORCondition => c.expressions.map(e => {
+          Try(processExpression(e)).getOrElse(new BooleanValue(false)) match {
+            case b: BooleanValue => b.value
+            case _ => throw new CoreException("Invalid type of expression in IF cause.")
+          }
+        }).contains(true)
+
+      case c: ANDCondition => !c.expressions.map(e => {
+        Try(processExpression(e)).getOrElse(new BooleanValue(false)) match {
           case b: BooleanValue => b.value
           case _ => throw new CoreException("Invalid type of expression in IF cause.")
-        }.contains(true)
-
-      case c: ANDCondition => !c.expressions.map(processExpression).map {
-        case b: BooleanValue => b.value
-        case _ => throw new CoreException("Invalid type of expression in IF cause.")
-      }.contains(false)
+        }
+      }).contains(false)
     }
 
     if (result)
@@ -57,27 +61,36 @@ class APQLProcessor {
   private object GlobalObject extends ExpressionValue {
 
     val getActionsByEventId = Method( "getActionsByEvent", List(classOf[IntegerValue]),
-      (args: List[ExpressionValue]) =>  getActionsByEvent(args.head.asInstanceOf[IntegerValue].value))
+      (args: List[ExpressionValue]) =>  {
+        val eventId = args.head.asInstanceOf[IntegerValue].value
+        getActionsByEvent(eventId).getOrElse(throw new CoreException("Cannot find actions of event with id [" + eventId + "]"))
+      })
 
     val getActionsByEventIdAndFilterByCode = Method( "getActionsByEvent", List(classOf[IntegerValue], classOf[StringValue]),
-      (args: List[ExpressionValue]) =>
-        getActionsByEvent(args.head.asInstanceOf[IntegerValue].value, args.last.asInstanceOf[StringValue].value))
+      (args: List[ExpressionValue]) => {
+        val eventId = args.head.asInstanceOf[IntegerValue].value
+        val actionTypeCode = args.last.asInstanceOf[StringValue].value
+        getActionsByEvent(eventId, actionTypeCode).getOrElse(throw new CoreException("Cannot find actions of event with id ["
+          + eventId + "] and ActionType code [" + actionTypeCode + "]"))
+      }
+    )
 
 
     override def methods: List[APQLProcessor.this.GlobalObject.Method] = List(getActionsByEventId, getActionsByEventIdAndFilterByCode)
 
-    private def getActionsByEvent(id: Int): ActionList = {
-      new ActionList(actionBean.getActionsByEvent(id).asScala.toList)
+    private def getActionsByEvent(id: Int): Try[ActionList] = {
+      Try(new ActionList(actionBean.getActionsByEvent(id).asScala.toList))
     }
 
-    private def getActionsByEvent(id: Int, actionTypeCode: String): ActionList = {
-      new ActionList(actionBean.getActionsByEvent(id).asScala.toList.filter(p => p.getActionType.getCode.equals(actionTypeCode)))
+    private def getActionsByEvent(id: Int, actionTypeCode: String): Try[ActionList] = {
+      Try(new ActionList(actionBean.getActionsByEvent(id).asScala.toList.filter(p => p.getActionType.getCode.equals(actionTypeCode))))
     }
 
   }
 
 
   private trait ExpressionValue {
+
     def apply(method: String, args: List[ExpressionValue]): ExpressionValue = {
       methods.find(m => m.name.equals(method) && m.argsTypes.equals(args.map(_.getClass))).
         getOrElse[Method](noSuchMethod(method, args)).body(args)
@@ -115,7 +128,10 @@ class APQLProcessor {
 
   private class ActionList(val value: List[Action]) extends ExpressionValue {
 
-    val first = Method("first", Nil, (args: List[ExpressionValue]) =>  new ActionValue(value.head))
+    val first = Method("first", Nil, (args: List[ExpressionValue]) =>  value match {
+      case x :: xs => new ActionValue(x)
+      case Nil => throw new CoreException("Cannot get first element of empty List")
+    })
 
     override def methods: List[Method] = List(first)
 
@@ -135,17 +151,22 @@ class APQLProcessor {
       "containsValueOf",
       List(classOf[StringValue]),
       (args: List[ExpressionValue]) => {
-        val prop = value.find(p => p.getType.getCode != null && p.getType.getCode.equals(args.head.asInstanceOf[StringValue].value))
-        new BooleanValue(prop.isDefined && !actionPropertyBean.getActionPropertyValue(prop.get).isEmpty)
+        val arg = args.head.asInstanceOf[StringValue].value
+        val prop = value.find(p => p.getType.getCode != null && p.getType.getCode.equals(arg))
+          .getOrElse(
+            throw new CoreException("Cannot find property [" + arg + "] in " + value.flatMap(p => Option(p.getType.getCode))))
+        new BooleanValue(!actionPropertyBean.getActionPropertyValue(prop).isEmpty)
       })
 
     val getValueOf = Method(
       "getValueOf",
       List(classOf[StringValue]),
       (args: List[ExpressionValue]) => {
-        value.find(p => p.getType.getCode != null && p.getType.getCode.equals(args.head.asInstanceOf[StringValue].value)) match {
+        val arg = args.head.asInstanceOf[StringValue].value
+        value.find(p => p.getType.getCode != null && p.getType.getCode.equals(arg)) match {
           case Some(x) => new ActionPropertyValues(actionPropertyBean.getActionPropertyValue(x).asScala.toList)
-          case None => throw new CoreException(this + " hasn't property with code " + args.head.asInstanceOf[StringValue].value)
+          case None =>
+            throw new CoreException("Cannot find property [" + arg + "] in " + value.flatMap(p => Option(p.getType.getCode)))
       }})
 
     override def methods: List[Method] = List(containsValueOf, getValueOf)

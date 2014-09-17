@@ -33,7 +33,7 @@ class APQLEndPoint {
       case x: p.NoSuccess => throw new CoreException(x.msg)
       case x: p.Success[IfThenExpr] => apqlProcessor.process(x.get) match {
         case Some(y) => new JSONWithPadding(y.asJava, callback)
-        case None => new JSONWithPadding(null, callback)
+        case None => new JSONWithPadding("", callback)
       }
 
     }
