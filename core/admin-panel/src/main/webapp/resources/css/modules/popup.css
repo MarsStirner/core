@@ -1,0 +1,963 @@
+@charset "UTF-8";
+/*
+*	FONTS
+*/
+/*
+*	FONTS
+*/
+/* line 3, ../../sass/_buttons.scss */
+.Styled.Button {
+  background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjUwJSIgeTE9IjAlIiB4Mj0iNTAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2Y3ZjdmNyIvPjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iI2QzZDNkMyIvPjwvbGluZWFyR3JhZGllbnQ+PC9kZWZzPjxyZWN0IHg9IjAiIHk9IjAiIHdpZHRoPSIxMDAlIiBoZWlnaHQ9IjEwMCUiIGZpbGw9InVybCgjZ3JhZCkiIC8+PC9zdmc+IA==');
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #f7f7f7), color-stop(100%, #d3d3d3));
+  background: -webkit-linear-gradient(#f7f7f7 0%, #d3d3d3 100%);
+  background: -moz-linear-gradient(#f7f7f7 0%, #d3d3d3 100%);
+  background: -o-linear-gradient(#f7f7f7 0%, #d3d3d3 100%);
+  background: linear-gradient(#f7f7f7 0%, #d3d3d3 100%);
+  -webkit-border-radius: 6px;
+  -moz-border-radius: 6px;
+  -ms-border-radius: 6px;
+  -o-border-radius: 6px;
+  border-radius: 6px;
+  -webkit-box-shadow: rgba(0, 0, 0, 0.5) 0 0 0.1em 0;
+  -moz-box-shadow: rgba(0, 0, 0, 0.5) 0 0 0.1em 0;
+  box-shadow: rgba(0, 0, 0, 0.5) 0 0 0.1em 0;
+  margin: 0;
+  border-top: 2px solid #b3b3b3;
+  border-right: 2px solid #bbbbbb;
+  border-bottom: 2px solid #b3b3b3;
+  border-left: 2px solid #bbbbbb;
+  cursor: pointer;
+  padding: 0.4em 1.5em;
+  min-width: 100px;
+  position: relative;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 1.3em;
+  line-height: 1.28em;
+  text-align: center;
+}
+/* line 22, ../../sass/_buttons.scss */
+.Styled.Button:hover, .Styled.Button.Green:hover, .Styled.Button.BlueBorder {
+  border-top: 2px solid #128edc;
+  border-right: 2px solid #128edc;
+  border-bottom: 2px solid #128edc;
+  border-left: 2px solid #128edc;
+  /*border:2px solid #128EDC;*/
+}
+/* line 32, ../../sass/_buttons.scss */
+.Styled.Button:active {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  color: rgba(0, 0, 0, 0.5);
+}
+/* line 36, ../../sass/_buttons.scss */
+.Styled.Button.AddButton {
+  padding-left: 0.5em;
+}
+/* line 38, ../../sass/_buttons.scss */
+.Styled.Button.AddButton .Icon {
+  vertical-align: middle;
+  margin-top: -0.1em;
+  margin-left: 0.5em;
+}
+/* line 46, ../../sass/_buttons.scss */
+.Styled.Button[disabled] {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  opacity: 0.5;
+  cursor: default;
+  border: 2px solid #b3b3b3;
+}
+/* line 51, ../../sass/_buttons.scss */
+.Styled.Button.Submit {
+  cursor: pointer;
+}
+/* line 54, ../../sass/_buttons.scss */
+.Styled.Button.Hidden {
+  display: none;
+}
+/* line 57, ../../sass/_buttons.scss */
+.Styled.Button.Disabled {
+  filter: progid:DXImageTransform.Microsoft.Alpha(Opacity=50);
+  opacity: 0.5;
+  cursor: default;
+  border: 2px solid #b3b3b3;
+}
+/* line 64, ../../sass/_buttons.scss */
+.Styled.Button.Green {
+  background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjUwJSIgeTE9IjAlIiB4Mj0iNTAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzUyYzQzZCIvPjxzdG9wIG9mZnNldD0iNDElIiBzdG9wLWNvbG9yPSIjMzBhMzFhIi8+PHN0b3Agb2Zmc2V0PSI2MiUiIHN0b3AtY29sb3I9IiMzMGEzMWEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM1MmM0M2QiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyYWQpIiAvPjwvc3ZnPiA=');
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #52c43d), color-stop(41%, #30a31a), color-stop(62%, #30a31a), color-stop(100%, #52c43d));
+  background: -webkit-linear-gradient(#52c43d 0%, #30a31a 41%, #30a31a 62%, #52c43d 100%);
+  background: -moz-linear-gradient(#52c43d 0%, #30a31a 41%, #30a31a 62%, #52c43d 100%);
+  background: -o-linear-gradient(#52c43d 0%, #30a31a 41%, #30a31a 62%, #52c43d 100%);
+  background: linear-gradient(#52c43d 0%, #30a31a 41%, #30a31a 62%, #52c43d 100%);
+  border: 2px solid #31a31b;
+  color: #fff;
+}
+/* line 72, ../../sass/_buttons.scss */
+.Styled.Button.Green:active {
+  -webkit-box-shadow: none;
+  -moz-box-shadow: none;
+  box-shadow: none;
+  color: rgba(0, 0, 0, 0.5);
+}
+/* line 77, ../../sass/_buttons.scss */
+.Styled.Button.BlueBorder {
+  border-top: 2px solid #128edc;
+  border-right: 2px solid #128edc;
+  border-bottom: 2px solid #128edc;
+  border-left: 2px solid #128edc;
+  position: relative;
+}
+/* line 86, ../../sass/_buttons.scss */
+.Styled.Button.Pushed {
+  background: url('data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjUwJSIgeTE9IjAlIiB4Mj0iNTAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iI2I3YjdiNyIvPjxzdG9wIG9mZnNldD0iODIlIiBzdG9wLWNvbG9yPSIjZWZlZmVmIi8+PHN0b3Agb2Zmc2V0PSIxMDAlIiBzdG9wLWNvbG9yPSIjZjZmNmY2Ii8+PC9saW5lYXJHcmFkaWVudD48L2RlZnM+PHJlY3QgeD0iMCIgeT0iMCIgd2lkdGg9IjEwMCUiIGhlaWdodD0iMTAwJSIgZmlsbD0idXJsKCNncmFkKSIgLz48L3N2Zz4g');
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #b7b7b7), color-stop(82%, #efefef), color-stop(100%, #f6f6f6));
+  background: -webkit-linear-gradient(#b7b7b7 0%, #efefef 82%, #f6f6f6 100%);
+  background: -moz-linear-gradient(#b7b7b7 0%, #efefef 82%, #f6f6f6 100%);
+  background: -o-linear-gradient(#b7b7b7 0%, #efefef 82%, #f6f6f6 100%);
+  background: linear-gradient(#b7b7b7 0%, #efefef 82%, #f6f6f6 100%);
+  border-top: 2px solid #a0a0a0;
+  border-right: 2px solid #d6d6d6;
+  border-left: 2px solid #d6d6d6;
+  border-bottom: 2px solid #e0e0e0;
+}
+/* line 93, ../../sass/_buttons.scss */
+.Styled.Button.Dropdown {
+  border-radius: 0;
+  margin-left: 0;
+  -webkit-border-bottom-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+  -webkit-border-top-left-radius: 4px;
+  border-top-left-radius: 4px;
+  -moz-border-radius-bottomleft: 4px;
+  -moz-border-radius-topleft: 4px;
+}
+/* line 103, ../../sass/_buttons.scss */
+.Styled.Button.DropdownToggle {
+  border-radius: 0;
+  margin-left: 0;
+  -webkit-border-bottom-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+  -webkit-border-top-right-radius: 4px;
+  border-top-right-radius: 4px;
+  -moz-border-radius-bottomright: 4px;
+  -moz-border-radius-topright: 4px;
+}
+/* line 113, ../../sass/_buttons.scss */
+.Styled.Button .Icon {
+  margin-left: -0.8em;
+}
+/* line 69, ../../sass/_base.scss */
+.Styled.Button:not([ie]) {
+  filter: progid:DXImageTransform.Microsoft.gradient(enabled='false');
+}
+
+/* line 119, ../../sass/_buttons.scss */
+a.Button {
+  color: black;
+}
+/* line 122, ../../sass/_buttons.scss */
+a.Button:active i {
+  opacity: 0.5;
+}
+
+/* line 128, ../../sass/_buttons.scss */
+.doc-save-options {
+  position: absolute;
+  padding: .5em;
+  border: 1px solid #b6b6b6;
+  border-radius: 3px;
+  background-color: white;
+  color: #3F3F40;
+  font-size: 1.2em;
+  cursor: pointer;
+}
+/* line 138, ../../sass/_buttons.scss */
+.doc-save-options:hover {
+  background-color: #d2f0fd;
+}
+
+/*
+*	FONTS
+*/
+/*
+*	FONTS
+*/
+/*
+	Usage:
+ 		@include sprite-folder("<folder>");
+			element {
+				@include sprite-file("<file-without-extension>");
+
+				@include sprite-background-position($sprite, "<file-without-extension>", 100%, 0);
+			}
+*/
+/* [Nano], Tiny (up to 16px of height), Small (24px), Medium (32px), Large (64px), [Huge] */
+/* line 6, ../../sass/_icons.scss */
+.Icon {
+  display: -moz-inline-stack;
+  display: inline-block;
+  vertical-align: middle;
+  *vertical-align: auto;
+  zoom: 1;
+  *display: inline;
+  margin-right: 8px;
+  position: relative;
+  /*	&.Tiny {
+  		width: 16px;
+  		height: 16px;
+  	}*/
+}
+
+/*Иконки*/
+/* line 21, ../../sass/_icons.scss */
+.AddIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -369px;
+  height: 14px;
+  width: 14px;
+  /*	cursor: pointer;
+  	margin-left: 0.4em;*/
+}
+
+/* line 26, ../../sass/_icons.scss */
+.SearchIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 0;
+  height: 12px;
+  width: 13px;
+  cursor: pointer;
+}
+
+/* line 30, ../../sass/_icons.scss */
+.EditIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -174px;
+  height: 16px;
+  width: 12px;
+  /*	vertical-align: baseline;
+  	cursor: pointer;
+  	margin-left: 0.4em;
+  	bottom: -0.2em;*/
+}
+
+/* line 37, ../../sass/_icons.scss */
+.DateIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -121px;
+  height: 9px;
+  width: 17px;
+  width: 17px;
+  height: 9px;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-top: -4px;
+}
+
+/* line 46, ../../sass/_icons.scss */
+.GoodSmileIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -252px;
+  height: 16px;
+  width: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* line 51, ../../sass/_icons.scss */
+.NormSmileIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -226px;
+  height: 16px;
+  width: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* line 56, ../../sass/_icons.scss */
+.BadSmileIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -200px;
+  height: 16px;
+  width: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+/* line 63, ../../sass/_icons.scss */
+.DoneIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -60px;
+  height: 9px;
+  width: 9px;
+}
+/* line 66, ../../sass/_icons.scss */
+.DoneIcon.Tiny {
+  width: 9px;
+  height: 9px;
+}
+
+/* line 72, ../../sass/_icons.scss */
+.DisabledIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -278px;
+  height: 9px;
+  width: 10px;
+}
+
+/* line 75, ../../sass/_icons.scss */
+.CancelIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -79px;
+  height: 9px;
+  width: 10px;
+}
+/* line 78, ../../sass/_icons.scss */
+.CancelIcon.Tiny {
+  width: 10px;
+  height: 9px;
+}
+
+/* line 83, ../../sass/_icons.scss */
+.RemoveIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -297px;
+  height: 14px;
+  width: 14px;
+  /*    cursor:pointer;
+  	vertical-align: baseline;
+      &.Tiny {
+  		width:14px;
+  		height:14px;
+  	}*/
+}
+/* line 43, ../../../../.rvm/gems/ruby-1.9.3-p374/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/utilities/sprites/_base.scss */
+.RemoveIcon:hover, .RemoveIcon.remove_tiny_hover, .RemoveIcon.remove_tiny-hover {
+  background-position: 0 -345px;
+}
+/* line 91, ../../sass/_icons.scss */
+.RemoveIcon:hover {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -345px;
+  height: 14px;
+  width: 14px;
+}
+
+/* line 95, ../../sass/_icons.scss */
+.DrugIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -98px;
+  height: 13px;
+  width: 11px;
+  width: 11px;
+  height: 13px;
+  position: absolute;
+  top: 50%;
+  right: 0;
+  margin-top: -6px;
+}
+
+/* line 104, ../../sass/_icons.scss */
+.DeleteIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -297px;
+  height: 14px;
+  width: 14px;
+  /*	cursor:pointer;
+      &.Tiny {
+  		width:14px;
+  		height:14px;
+  		margin-right:0.2em;
+  	}*/
+}
+/* line 43, ../../../../.rvm/gems/ruby-1.9.3-p374/gems/compass-0.12.2/frameworks/compass/stylesheets/compass/utilities/sprites/_base.scss */
+.DeleteIcon:hover, .DeleteIcon.remove_tiny_hover, .DeleteIcon.remove_tiny-hover {
+  background-position: 0 -345px;
+}
+/* line 112, ../../sass/_icons.scss */
+.DeleteIcon:hover {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -345px;
+  height: 14px;
+  width: 14px;
+}
+
+/* line 116, ../../sass/_icons.scss */
+.CloseIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -321px;
+  height: 14px;
+  width: 14px;
+  cursor: pointer;
+}
+/* line 119, ../../sass/_icons.scss */
+.CloseIcon.Tiny {
+  width: 14px;
+  height: 14px;
+}
+
+/* line 124, ../../sass/_icons.scss */
+.AttentionIcon {
+  background: url("../../images/sprites/icons-sprite.png") no-repeat;
+  background-position: 0 -140px;
+  height: 24px;
+  width: 24px;
+}
+/* line 126, ../../sass/_icons.scss */
+.AttentionIcon.Tiny {
+  width: 14px;
+  height: 14px;
+}
+
+/* line 131, ../../sass/_icons.scss */
+.AddIcon, .RemoveIcon, .EditIcon {
+  cursor: pointer;
+  vertical-align: middle;
+  width: 16px;
+  height: 16px;
+}
+
+/* line 137, ../../sass/_icons.scss */
+.AddIcon:hover, .RemoveIcon:hover, .EditIcon:hover {
+  width: 16px;
+  height: 16px;
+}
+
+/*TODO: Убрать после hfphf,jnrb*/
+/* line 7, ../../sass/modules/popup.scss */
+.ui-widget.webmis {
+  font-size: 100%;
+}
+/* line 11, ../../sass/modules/popup.scss */
+.ui-widget.webmis div > a.Actions {
+  color: #118DDC;
+}
+/* line 15, ../../sass/modules/popup.scss */
+.ui-widget.webmis textarea {
+  font-family: Arial, Tahoma, sans-serif;
+  font-size: 1.2em;
+}
+/* line 19, ../../sass/modules/popup.scss */
+.ui-widget.webmis .popup {
+  overflow: hidden;
+}
+/* line 23, ../../sass/modules/popup.scss */
+.ui-widget.webmis .ui-dialog-title {
+  font-size: 1.4em;
+}
+
+/* line 28, ../../sass/modules/popup.scss */
+.ui-dialog .ui-dialog-buttonpane {
+  margin: 0;
+}
+/* line 30, ../../sass/modules/popup.scss */
+.ui-dialog .ui-dialog-buttonpane .button-color-green {
+  background: url("data:image/svg+xml;base64,PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0idXRmLTgiPz4gPHN2ZyB2ZXJzaW9uPSIxLjEiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+PGRlZnM+PGxpbmVhckdyYWRpZW50IGlkPSJncmFkIiBncmFkaWVudFVuaXRzPSJ1c2VyU3BhY2VPblVzZSIgeDE9IjUwJSIgeTE9IjAlIiB4Mj0iNTAlIiB5Mj0iMTAwJSI+PHN0b3Agb2Zmc2V0PSIwJSIgc3RvcC1jb2xvcj0iIzUyYzQzZCIvPjxzdG9wIG9mZnNldD0iNDElIiBzdG9wLWNvbG9yPSIjMzBhMzFhIi8+PHN0b3Agb2Zmc2V0PSI2MiUiIHN0b3AtY29sb3I9IiMzMGEzMWEiLz48c3RvcCBvZmZzZXQ9IjEwMCUiIHN0b3AtY29sb3I9IiM1MmM0M2QiLz48L2xpbmVhckdyYWRpZW50PjwvZGVmcz48cmVjdCB4PSIwIiB5PSIwIiB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSJ1cmwoI2dyYWQpIiAvPjwvc3ZnPiA=");
+  background: -webkit-gradient(linear, 50% 0%, 50% 100%, color-stop(0%, #52c43d), color-stop(41%, #30a31a), color-stop(62%, #30a31a), color-stop(100%, #52c43d));
+  background: -webkit-linear-gradient(#52c43d 0%, #30a31a 41%, #30a31a 62%, #52c43d 100%);
+  background: -moz-linear-gradient(#52c43d 0%, #30a31a 41%, #30a31a 62%, #52c43d 100%);
+  background: -o-linear-gradient(#52c43d 0%, #30a31a 41%, #30a31a 62%, #52c43d 100%);
+  background: linear-gradient(#52c43d 0%, #30a31a 41%, #30a31a 62%, #52c43d 100%);
+  /*	background: -webkit-linear-gradient(top, #009F1F 0%,#009F1F 100%);
+  	background: linear-gradient(top, #009F1F 0%,#009F1F 100%);*/
+  color: #fff;
+}
+/* line 42, ../../sass/modules/popup.scss */
+.ui-dialog .ui-dialog-buttonpane .button-color-green .ui-button-text {
+  text-shadow: none;
+}
+
+/* line 48, ../../sass/modules/popup.scss */
+.SampleNav {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background: #fff;
+  padding: 1em;
+}
+
+/* line 55, ../../sass/modules/popup.scss */
+.SampleNav span {
+  font-size: 1.3em;
+  cursor: pointer;
+}
+
+/* line 60, ../../sass/modules/popup.scss */
+#popup-overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background: rgba(179, 179, 179, 0.5);
+}
+
+/* line 70, ../../sass/modules/popup.scss */
+.popup {
+  background: #fff;
+  border: 1px solid #a4b4bd;
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.3);
+  display: none;
+}
+/* line 77, ../../sass/modules/popup.scss */
+.popup header {
+  background: transparent;
+  padding: 1.3em 3em;
+}
+/* line 82, ../../sass/modules/popup.scss */
+.popup section {
+  padding: 1em;
+}
+/* line 84, ../../sass/modules/popup.scss */
+.popup section.PopupContent {
+  border-left: 1px solid #cccccc;
+  top: 6em;
+  right: 0em;
+  bottom: 0;
+  left: 22em;
+  padding: 2.2em 3em 0 3em;
+  overflow: auto;
+}
+/* line 93, ../../sass/modules/popup.scss */
+.popup section.WithButtons {
+  right: 3em;
+  left: 3em;
+}
+/* line 97, ../../sass/modules/popup.scss */
+.popup section.labs-popup {
+  padding-bottom: 0em;
+}
+/* line 102, ../../sass/modules/popup.scss */
+.popup .Grid td:first-child {
+  color: #919294;
+}
+
+/* line 107, ../../sass/modules/popup.scss */
+.thesaurus-selected-terms {
+  border-bottom: 1px solid #d9d9d9;
+}
+
+/* line 110, ../../sass/modules/popup.scss */
+.PopupHeader {
+  float: left;
+  max-width: 59%;
+  text-align: left;
+  font-size: 2em;
+  color: #000;
+}
+
+/* line 118, ../../sass/modules/popup.scss */
+.PopupActions {
+  float: right;
+  max-width: 40%;
+}
+/* line 121, ../../sass/modules/popup.scss */
+.PopupActions .Styled.Button {
+  margin-left: 0.5em;
+}
+/* line 124, ../../sass/modules/popup.scss */
+.PopupActions .ShowHidePopup {
+  font-size: 1.2em;
+  margin-left: 0.5em;
+}
+
+/* line 130, ../../sass/modules/popup.scss */
+.PopupCol {
+  border: 1px solid #cccccc;
+  overflow: auto;
+  padding: 1em;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+  display: inline-block;
+  margin-left: -0.3em;
+  vertical-align: top;
+  height: 35em;
+}
+/* line 139, ../../sass/modules/popup.scss */
+.PopupCol h4 {
+  font-size: 1.4em;
+  font-weight: bolder;
+}
+
+/* line 144, ../../sass/modules/popup.scss */
+.LeftCol {
+  width: 49%;
+  left: 0;
+}
+
+/* line 148, ../../sass/modules/popup.scss */
+.RightCol {
+  width: 49%;
+  right: 0;
+}
+
+/* line 153, ../../sass/modules/popup.scss */
+.ArrowCol {
+  overflow: hidden;
+  border: none;
+  padding: 0;
+  position: relative;
+  width: 2%;
+}
+/* line 160, ../../sass/modules/popup.scss */
+.ArrowCol > i {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  margin-top: -0.5em;
+  margin-left: -0.5em;
+}
+
+/* line 169, ../../sass/modules/popup.scss */
+.TezList {
+  margin-bottom: 1em;
+  margin-right: -1em;
+}
+/* line 172, ../../sass/modules/popup.scss */
+.TezList a {
+  cursor: pointer;
+  display: block;
+  text-decoration: none;
+  color: #000;
+  padding-left: 0.4em;
+  font-size: 1.2em;
+  margin-bottom: 1px;
+  padding-bottom: 0.1em;
+}
+/* line 181, ../../sass/modules/popup.scss */
+.TezList a:hover {
+  background: #118EDC;
+  color: #fff;
+}
+/* line 185, ../../sass/modules/popup.scss */
+.TezList a.Selected {
+  background: #118EDC;
+  color: #fff;
+}
+/* line 189, ../../sass/modules/popup.scss */
+.TezList a:before {
+  content: "-";
+  padding-right: 0.2em;
+}
+
+/* line 195, ../../sass/modules/popup.scss */
+.TezList li ul {
+  margin-left: 1.2em;
+}
+
+/* line 200, ../../sass/modules/popup.scss */
+.SumText p {
+  font-size: 1.3em;
+  margin-bottom: 1.4em;
+}
+/* line 204, ../../sass/modules/popup.scss */
+.SumText dfn {
+  font-weight: bold;
+}
+
+/* line 214, ../../sass/modules/popup.scss */
+.EventList > li label {
+  margin-bottom: 0em;
+  color: #000;
+  display: block;
+  padding-top: 0.2em;
+  cursor: pointer;
+  margin-bottom: 1px;
+  padding-left: 0.4em;
+}
+/* line 224, ../../sass/modules/popup.scss */
+.EventList > li label:hover {
+  background: #118EDC;
+  color: #fff;
+}
+/* line 227, ../../sass/modules/popup.scss */
+.EventList > li label:hover .EventRoom {
+  color: #ccc;
+}
+/* line 231, ../../sass/modules/popup.scss */
+.EventList > li label.Selected {
+  background: #118EDC;
+  color: #fff;
+}
+/* line 234, ../../sass/modules/popup.scss */
+.EventList > li label.Selected .EventRoom {
+  color: #ccc;
+}
+
+/* line 242, ../../sass/modules/popup.scss */
+.EventList ul {
+  margin-left: 2em;
+}
+
+/* line 245, ../../sass/modules/popup.scss */
+.EventRoom {
+  display: block;
+  padding-left: 2.5em;
+  padding-top: 0.2em;
+  padding-bottom: 0.2em;
+  color: #8c8c8c;
+  font-size: 0.9em;
+}
+
+/* line 255, ../../sass/modules/popup.scss */
+.PopUpLine.TwoCols {
+  margin-right: -0.6em;
+}
+/* line 258, ../../sass/modules/popup.scss */
+.PopUpLine.ThreeCols {
+  margin-right: -1.5em;
+}
+/* line 260, ../../sass/modules/popup.scss */
+.PopUpLine.ThreeCols .PopupCol {
+  padding: 0;
+}
+/* line 263, ../../sass/modules/popup.scss */
+.PopUpLine.ThreeCols .RightCol {
+  width: 32%;
+}
+/* line 266, ../../sass/modules/popup.scss */
+.PopUpLine.ThreeCols .LeftCol {
+  width: 32%;
+}
+/* line 269, ../../sass/modules/popup.scss */
+.PopUpLine.ThreeCols .CenterCol {
+  width: 32%;
+  right: 34%;
+}
+/* line 273, ../../sass/modules/popup.scss */
+.PopUpLine.ThreeCols h3 {
+  background: #CCCCCC;
+  font-size: 1.2em;
+}
+/* line 276, ../../sass/modules/popup.scss */
+.PopUpLine.ThreeCols h3 label {
+  margin-bottom: 0;
+  font-size: 1em;
+  display: block;
+  padding: 0.4em 0.1em 0.2em 0.4em;
+  color: #000;
+}
+/* line 285, ../../sass/modules/popup.scss */
+.PopUpLine .BreadCrumb {
+  padding-bottom: 2.5em;
+}
+/* line 287, ../../sass/modules/popup.scss */
+.PopUpLine .BreadCrumb li {
+  color: #118DDC;
+}
+/* line 289, ../../sass/modules/popup.scss */
+.PopUpLine .BreadCrumb li a {
+  color: #118DDC;
+}
+/* line 292, ../../sass/modules/popup.scss */
+.PopUpLine .BreadCrumb li:last-child {
+  color: #000;
+}
+/* line 295, ../../sass/modules/popup.scss */
+.PopUpLine .BreadCrumb li:last-child::after {
+  content: "";
+}
+/* line 301, ../../sass/modules/popup.scss */
+.PopUpLine #page {
+  padding: 0;
+}
+
+/* line 305, ../../sass/modules/popup.scss */
+.EventList {
+  padding-top: 0.2em;
+  overflow: auto;
+}
+
+/* line 311, ../../sass/modules/popup.scss */
+.PopupSideBar {
+  float: left;
+  overflow: auto;
+  width: 19.2em;
+  padding-left: 2.8em;
+  padding-top: 2.2em;
+}
+
+/* line 318, ../../sass/modules/popup.scss */
+.PopupButtons {
+  padding: 3em 0;
+}
+
+/* line 321, ../../sass/modules/popup.scss */
+.ContentButtons {
+  height: 3.4em;
+  padding: 1.8em 0 1.1em 0;
+  margin-left: -0.5em;
+}
+/* line 325, ../../sass/modules/popup.scss */
+.ContentButtons .PopupActions {
+  float: none;
+}
+/* line 327, ../../sass/modules/popup.scss */
+.ContentButtons .PopupActions .BlueBorder {
+  position: relative;
+  top: -2px;
+}
+
+/* line 334, ../../sass/modules/popup.scss */
+.MKBPopup button.Styled.ui-button {
+  padding: 0;
+}
+/* line 337, ../../sass/modules/popup.scss */
+.MKBPopup button.Styled.ui-button span {
+  font-weight: normal;
+  color: black;
+}
+
+/* line 343, ../../sass/modules/popup.scss */
+.MKBPopup .ui-dialog-buttonset .Cancel {
+  font-size: 1.2em;
+  margin-right: 2em;
+  margin-left: 1em;
+}
+
+/* line 349, ../../sass/modules/popup.scss */
+.MKBPopup .ui-dialog-buttonpane {
+  margin: 0;
+}
+
+/* line 352, ../../sass/modules/popup.scss */
+.MKBHolder {
+  margin-left: 1.2em;
+  height: 41em;
+  overflow-y: scroll;
+  border-bottom: 0.1em solid #a6a6a6;
+}
+
+/* line 360, ../../sass/modules/popup.scss */
+.popup .MKBHeader {
+  margin: 0 3em;
+  padding-left: 0;
+  padding-right: 0;
+  border-bottom: 1px solid #d9d9d9;
+}
+/* line 366, ../../sass/modules/popup.scss */
+.popup .MKBHeader .LineBlock {
+  position: relative;
+}
+/* line 370, ../../sass/modules/popup.scss */
+.popup .MKBHeader .searchButton {
+  display: inline-block;
+  position: relative;
+  left: -2.5em;
+  top: .2em;
+  z-index: 999;
+}
+
+/* line 382, ../../sass/modules/popup.scss */
+.MKBSearch .typeSearch {
+  padding-right: 1em;
+}
+
+/* line 386, ../../sass/modules/popup.scss */
+.MKBList {
+  font-size: 1.2em;
+}
+/* line 388, ../../sass/modules/popup.scss */
+.MKBList li {
+  padding: 0.1em 0;
+}
+/* line 392, ../../sass/modules/popup.scss */
+.MKBList .Opened > span {
+  font-weight: bold;
+}
+/* line 395, ../../sass/modules/popup.scss */
+.MKBList .Opened > ul {
+  display: block;
+}
+/* line 399, ../../sass/modules/popup.scss */
+.MKBList ul {
+  display: none;
+}
+/* line 403, ../../sass/modules/popup.scss */
+.MKBList > li > ul {
+  margin-left: 0.5em;
+  padding-left: 6em;
+  border-left: 0.1em solid #cccccc;
+}
+/* line 408, ../../sass/modules/popup.scss */
+.MKBList > li > ul > li > ul {
+  padding-left: 6em;
+}
+/* line 411, ../../sass/modules/popup.scss */
+.MKBList > li > ul > li > ul > li > ul {
+  padding-left: 3em;
+}
+/* line 419, ../../sass/modules/popup.scss */
+.MKBList span {
+  cursor: pointer;
+  display: inline-block;
+  line-height: 1.6em;
+  padding: 0 0.2em 0 0.2em;
+}
+/* line 424, ../../sass/modules/popup.scss */
+.MKBList span:hover {
+  background: #c3e2f6;
+}
+/* line 427, ../../sass/modules/popup.scss */
+.MKBList span.Selected {
+  background: #e5e5e5;
+}
+/* line 430, ../../sass/modules/popup.scss */
+.MKBList span i.bullet {
+  display: inline-block;
+  min-width: 2em;
+  margin-right: .5em;
+}
+
+/* line 438, ../../sass/modules/popup.scss */
+.TreeHolder {
+  margin-left: 1.2em;
+  height: 50em;
+  overflow-y: scroll;
+  border-bottom: 0.1em solid #a6a6a6;
+}
+
+/* line 446, ../../sass/modules/popup.scss */
+.Tree {
+  font-size: 1.2em;
+}
+/* line 448, ../../sass/modules/popup.scss */
+.Tree li {
+  padding: 0.1em 0;
+}
+/* line 452, ../../sass/modules/popup.scss */
+.Tree .Opened > span {
+  font-weight: bold;
+}
+/* line 455, ../../sass/modules/popup.scss */
+.Tree .Opened > ul {
+  display: block;
+}
+/* line 459, ../../sass/modules/popup.scss */
+.Tree ul {
+  display: none;
+}
+/* line 463, ../../sass/modules/popup.scss */
+.Tree li ul {
+  margin-left: 0.5em;
+  padding-left: 2em;
+  border-left: 0.1em solid #cccccc;
+}
+/* line 469, ../../sass/modules/popup.scss */
+.Tree span {
+  cursor: pointer;
+  display: inline-block;
+  line-height: 1.6em;
+  padding: 0 0.2em 0 0.2em;
+}
+/* line 474, ../../sass/modules/popup.scss */
+.Tree span:hover {
+  background: #c3e2f6;
+}
+/* line 477, ../../sass/modules/popup.scss */
+.Tree span.Selected {
+  background: #e5e5e5;
+}

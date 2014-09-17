@@ -2,10 +2,12 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthToken;
+import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
-import ru.korus.tmis.ws.impl.WebMisRESTImpl;
-import javax.inject.Inject;
-import javax.inject.Singleton;
+import ru.korus.tmis.prescription.PrescriptionBeanLocal;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Path;
@@ -13,6 +15,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Context;
 import java.io.Serializable;
+import java.util.Arrays;
 
 /**
  * Базовый класс для registry REST-сервисов
@@ -21,7 +24,7 @@ import java.io.Serializable;
  * Since: 1.0.0.74
  */
 @Interceptors(ServicesLoggingInterceptor.class)
-@Singleton
+@Stateless
 @Path("/tms-registry/")
 @Produces("application/json")
 public class BaseRegistryRESTImpl implements Serializable {
@@ -34,79 +37,114 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     private boolean testConstruct = false;
 
-    @Inject
-    WebMisRESTImpl wsImpl;
+    @EJB
+    private WebMisREST wsImpl;
 
-    @Context
-    HttpServletRequest servRequest;
+    @EJB
+    private PrescriptionBeanLocal prescriptionnBeanLocal;
+
+    @EJB
+    private DbSettingsBeanLocal dbSettingsBeanLocal;
+
+    @EJB
+    JobImpl jobImpl;
 
     @Path("/")
-    public CustomInfoRESTImpl getCustomInfoRESTImpl(@QueryParam("token") String token,
+    public CustomInfoRESTImpl getCustomInfoRESTImpl(@Context HttpServletRequest servRequest,
+                                                    @QueryParam("token") String token,
                                                     @QueryParam("callback") String callback,
                                                     @QueryParam("limit") int limit,
-                                                    @QueryParam("page") int  page,
+                                                    @QueryParam("page") int page,
                                                     @QueryParam("sortingField") String sortingField,
                                                     @QueryParam("sortingMethod") String sortingMethod) {
-        return new CustomInfoRESTImpl(wsImpl, callback, limit, page, sortingField, sortingMethod, makeAuth(token));
+        return new CustomInfoRESTImpl(wsImpl, callback, limit, page, sortingField, sortingMethod, makeAuth(token, servRequest));
     }
 
     @Path("/dir/")
-    public DirectoryInfoRESTImpl getDirectoryInfoRESTImpl(@QueryParam("token") String token,
+    public DirectoryInfoRESTImpl getDirectoryInfoRESTImpl(@Context HttpServletRequest servRequest,
+                                                          @QueryParam("token") String token,
                                                           @QueryParam("test") String test,
                                                           @QueryParam("callback") String callback,
                                                           @QueryParam("limit") int limit,
-                                                          @QueryParam("page") int  page,
+                                                          @QueryParam("page") int page,
                                                           @QueryParam("sortingField") String sortingField,
                                                           @QueryParam("sortingMethod") String sortingMethod) {
         //TODO: Вставлен кэйс для тестов (нужно ли?)
         this.testConstruct = (test != null &&
                 !test.isEmpty() &&
                 (test.toLowerCase().compareTo("yes") == 0 || test.toLowerCase().compareTo("true") == 0));
-        return new DirectoryInfoRESTImpl(wsImpl, servRequest, callback, limit, page, sortingField, sortingMethod, makeAuth(token), testConstruct);
+        return new DirectoryInfoRESTImpl(wsImpl, servRequest, callback, limit, page, sortingField, sortingMethod, makeAuth(token, servRequest), testConstruct);
     }
 
     @Path("/patients/")
-    public PatientRegistryRESTImpl getPatientRegistryRESTImpl(@QueryParam("token") String token,
-                                                              @QueryParam("callback") String callback){
-        return new PatientRegistryRESTImpl(wsImpl, callback, makeAuth(token));
+    public PatientRegistryRESTImpl getPatientRegistryRESTImpl(@Context HttpServletRequest servRequest,
+                                                              @QueryParam("token") String token,
+                                                              @QueryParam("callback") String callback) {
+        return new PatientRegistryRESTImpl(wsImpl, callback, makeAuth(token, servRequest));
     }
 
     @Path("/appeals/")
-    public AppealsInfoRESTImpl getAppealsInfoRESTImpl(@QueryParam("token") String token,
-                                                      @QueryParam("callback") String callback){
-        return new AppealsInfoRESTImpl(wsImpl, callback, makeAuth(token));
+    public AppealsInfoRESTImpl getAppealsInfoRESTImpl(@Context HttpServletRequest servRequest,
+                                                      @QueryParam("token") String token,
+                                                      @QueryParam("callback") String callback) {
+        return new AppealsInfoRESTImpl(wsImpl, callback, makeAuth(token, servRequest));
     }
 
     @Path("/diagnostics/")
-    public DiagnosticsInfoRESTImpl getDiagnosticsInfoRESTImpl(@QueryParam("token") String token,
-                                                              @QueryParam("callback") String callback){
-        return new DiagnosticsInfoRESTImpl(wsImpl, callback, makeAuth(token));
+    public DiagnosticsInfoRESTImpl getDiagnosticsInfoRESTImpl(@Context HttpServletRequest servRequest,
+                                                              @QueryParam("token") String token,
+                                                              @QueryParam("callback") String callback) {
+        return new DiagnosticsInfoRESTImpl(wsImpl, callback, makeAuth(token, servRequest));
     }
 
     @Path("/hospitalbed/")
-    public HospitalBedsInfoRESTImpl getHospitalBedsInfoRESTImpl(@QueryParam("token") String token,
-                                                                @QueryParam("callback") String callback){
-        return new HospitalBedsInfoRESTImpl(wsImpl, callback, makeAuth(token));
+    public HospitalBedsInfoRESTImpl getHospitalBedsInfoRESTImpl(@Context HttpServletRequest servRequest,
+                                                                @QueryParam("token") String token,
+                                                                @QueryParam("callback") String callback) {
+        return new HospitalBedsInfoRESTImpl(wsImpl, callback, makeAuth(token, servRequest));
     }
 
     @Path("/autosave")
-    public AutoSaveStorageREST getAutoSaveStarage(@QueryParam("token") String token,
-                                              @QueryParam("callback") String callback) {
-        return new AutoSaveStorageREST(wsImpl, makeAuth(token), callback);
+    public AutoSaveStorageREST getAutoSaveStorage(@Context HttpServletRequest servRequest,
+                                                  @QueryParam("token") String token,
+                                                  @QueryParam("callback") String callback) {
+        return new AutoSaveStorageREST(wsImpl, makeAuth(token, servRequest), callback);
     }
 
+    @Path("/rls")
+    public RlsDataImpl getRlsDataImpl(@Context HttpServletRequest servRequest,
+                                      @QueryParam("token") String token,
+                                      @QueryParam("callback") String callback) {
+        return new RlsDataImpl(wsImpl, makeAuth(token, servRequest), callback);
+    }
+
+    @Path("/prescriptions")
+    public PrescriptionsRESTImpl getPrescriptions(
+            @Context HttpServletRequest servRequest,
+            @QueryParam("token") String token,
+            @QueryParam("callback") String callback) {
+        return new PrescriptionsRESTImpl(prescriptionnBeanLocal, makeAuth(token, servRequest), callback);
+    }
+
+    @Path("/job")
+    public JobImpl getJobImpl() {
+        return jobImpl;
+    }
+
+    @Path("/settings")
+    public SettingsRESTImpl getSettings(@Context HttpServletRequest servRequest,
+                                        @QueryParam("token") String token,
+                                        @QueryParam("callback") String callback) {
+        return new SettingsRESTImpl(dbSettingsBeanLocal, makeAuth(token, servRequest), callback);
+    }
     //__________________________________________________________________________________________________________________
 
-    private AuthData makeAuth(String token) {
-       if(TEST_MODE && token!=null && !token.isEmpty()) { //Тестовый режим
-         return wsImpl.getStorageAuthData(new AuthToken(token));
-       } else { //Боевой режим
-         return this.wsImpl.checkTokenCookies(this.servRequest);
-       }
+    private AuthData makeAuth(String token, HttpServletRequest servRequest) {
+        if (TEST_MODE && token != null && !token.isEmpty()) { //Тестовый режим
+            return wsImpl.getStorageAuthData(new AuthToken(token));
+        } else { //Боевой режим
+            return this.wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+        }
     }
-
-    /*protected JSONWithPadding convertToJson(Object in, String callback) {
-      return new JSONWithPadding(in, callback);
-    }*/
 
 }

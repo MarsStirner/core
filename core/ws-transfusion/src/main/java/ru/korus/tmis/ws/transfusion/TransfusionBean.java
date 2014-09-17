@@ -32,6 +32,9 @@ public class TransfusionBean {
     @EJB
     private SendOrderBloodComponents sendOrderBloodComponents;
 
+  //  @EJB
+  //  EjbTmp tmp;
+
     @EJB
     private SendProcedureRequest sendProcedureRequest;
 
@@ -40,6 +43,7 @@ public class TransfusionBean {
      */
     @Schedule(hour = "*", minute = "*", second = "15")
     public void pullDB() {
+      //  tmp.dummy();
         try {
             logger.info("Pooling db...Trfu integration is {}", ConfigManager.TrfuProp().isActive());
             if (ConfigManager.TrfuProp().isActive() &&

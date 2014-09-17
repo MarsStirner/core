@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?>
+<pocdmt000040ClinicalDocument xmlns="urn:hl7-org:v3">
+    <realmCode code="RU"/>
+    <typeId root="2.16.840.1.113883.1.3" extension="POCD_HD000040"/>
+    <id root="TEST"/>
+    <code code="18610-6" codeSystem="2.16.840.1.113883.6.1" codeSystemName="LOINC" displayName="MEDICATION ADMINISTERED"/>
+    <effectiveTime value="20140622"/>
+    <confidentialityCode code="N" codeSystem="2.16.840.1.113883.5.25"/>
+    <languageCode code="ru-RU"/>
+    <setId root="TEST"/>
+    <versionNumber xsi:type="POCD_MT000040.RegionOfInterest.value" value="1" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"/>
+    <recordTarget>
+        <patientRole>
+            <id root="TEST" extension="2013/3501"/>
+            <patient>
+                <name>
+                    <given>Сергей</given>
+                    <given>Игоревич</given>
+                    <family>Милонов</family>
+                </name>
+                <administrativeGenderCode code="M" codeSystem="2.16.840.1.113883.5.1"/>
+                <birthTime value="19900801"/>
+            </patient>
+        </patientRole>
+    </recordTarget>
+    <author>
+        <time value="20140623"/>
+        <assignedAuthor>
+            <id root="TEST"/>
+            <assignedPerson>
+                <name>
+                    <prefix>Прочий персонал</prefix>
+                    <given> </given>
+                    <family>Админ</family>
+                </name>
+            </assignedPerson>
+        </assignedAuthor>
+    </author>
+    <custodian>
+        <assignedCustodian>
+            <representedCustodianOrganization>
+                <id root="TEST"/>
+                <name>ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева» Минздрава России</name>
+            </representedCustodianOrganization>
+        </assignedCustodian>
+    </custodian>
+    <componentOf>
+        <encompassingEncounter>
+            <id root="TEST" extension="2013/3501"/>
+            <code code="IMP" codeSystem="2.16.840.1.113883.5.4" codeSystemName="actCode" displayName="Inpatient encounter"/>
+            <effectiveTime nullFlavor="NI"/>
+        </encompassingEncounter>
+    </componentOf>
+    <component>
+        <structuredBody>
+            <component>
+                <section>
+                    <text>Дополнительные рекомендации
+                        <list>
+                            <item>Описание препарата</item>
+                            <item>Анальгин</item>
+                        </list>
+                    </text>
+                    <entry>
+                        <substanceAdministration classCode="SBADM" moodCode="RQO" negationInd="false">
+                            <id root="TEST"/>
+                            <id/>
+                            <effectiveTime value="20140622110000"/>
+                            <priorityCode codeSystem="2.16.840.1.113883.5.7" codeSystemName="ActPriority" displayName="Планово"/>
+                            <doseQuantity>
+                                <center value="11.0">
+                                    <translation codeSystemName="RLS">
+                                        <originalText>мг</originalText>
+                                    </translation>
+                                </center>
+                            </doseQuantity>
+                            <consumable>
+                                <manufacturedProduct>
+                                    <manufacturedLabeledDrug>
+                                        <code code="19040" codeSystemName="RLS_NOMEN"/>
+                                    </manufacturedLabeledDrug>
+                                </manufacturedProduct>
+                            </consumable>
+                        </substanceAdministration>
+                    </entry>
+                </section>
+            </component>
+        </structuredBody>
+    </component>
+</pocdmt000040ClinicalDocument>

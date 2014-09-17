@@ -34,23 +34,5 @@ public interface DbRbSpecialVariablesPreferencesBeanLocal {
 
     public List executeNamedQuery(String query);
 
-    public List<UploadItem> executeNamedQueryForUploadItem(String query);
-
-    public List<PatientProperties> executeNamedQueryForPatientProperties(String query);
-
-    public List<PatientPolicy> executeNamedQueryForPolicy(String query);
-
-    public List<PatientDocument> executeNamedQueryForDocument(String query);
-
-    public List<UploadItemProperties> executeNamedQueryForUploadItemProperties(String query);
-
-    public List<PatientOKATOAddress> executeNamedQueryForOKATO(String query);
-
-    public List<SluchProperties> executeNamedQueryForSluchProperties(String query);
-
-    public List<UploadUslProperties> executeNamedQueryForUploadUslProperties(String query);
-
-    public List<UploadUslItem> executeNamedQueryForUploadUslItem(String query);
-
-    public List<SluchCodeMes> executeNamedQueryForCodeMes(String query);
+    public List<Map> executeNamedQueryForMap(String query);
 }

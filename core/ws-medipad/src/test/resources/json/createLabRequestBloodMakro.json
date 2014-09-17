@@ -1,0 +1,1125 @@
+{"data": [
+    {
+        "id": 2843,
+        "version": 0,
+        "name": "Биохимия крови \"МАКРО\" (альбумин, общий белок, общий билирубин, прямой билирубин, креатинин, мочевина, глюкоза, электролиты (К, Na), АЛТ, АСТ, ЛДГ, ГГТ, щелочная фосфатаза, альфа-амилаза, панкреатическая амилаза, холестерин общий, триглицериды, липа",
+        "type": "Action",
+        "typeId": 2843,
+        "status": null,
+        "code": "16.47",
+        "isEditable": true,
+        "flatCode": "",
+        "mnem": "LAB",
+        "context": "action_lab",
+        "group": [
+            {
+                "id": 0,
+                "version": null,
+                "name": "Summary",
+                "attribute": [
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "assessmentId",
+                        "code": null,
+                        "type": "Integer",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "0"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "assessmentName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "Биохимия крови \"МАКРО\" (альбумин, общий белок, общий билирубин, прямой билирубин, креатинин, мочевина, глюкоза, электролиты (К, Na), АЛТ, АСТ, ЛДГ, ГГТ, щелочная фосфатаза, альфа-амилаза, панкреатическая амилаза, холестерин общий, триглицериды, липа"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "assessmentDate",
+                        "code": null,
+                        "type": "Datetime",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "2014-05-21 17:58:00"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "doctorLastName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "doctorFirstName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "doctorMiddleName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "doctorSpecs",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "assignerLastName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "assignerFirstName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "assignerMiddleName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "assignerSpecs",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "assignerPost",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "urgent",
+                        "code": null,
+                        "type": "Boolean",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "false"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "multiplicity",
+                        "code": null,
+                        "type": "Integer",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "1"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "finance",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "1"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "plannedEndDate",
+                        "code": null,
+                        "type": "Datetime",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "2014-05-29 18:00:00"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "executorId",
+                        "code": null,
+                        "type": "Integer",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 0,
+                        "version": 0,
+                        "name": "assignerId",
+                        "code": null,
+                        "type": "Integer",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "3"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    }
+                ]
+            },
+            {
+                "id": 1,
+                "version": null,
+                "name": "Details",
+                "attribute": [
+                    {
+                        "id": 34871,
+                        "version": 0,
+                        "name": "Время забора",
+                        "code": "TAKINGTIME",
+                        "type": "JobTicket",
+                        "scope": "4",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "false"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": ""
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 35826,
+                        "version": 0,
+                        "name": "Статус анализа",
+                        "code": null,
+                        "type": "AnalysisStatus",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "false"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": ""
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34292,
+                        "version": 0,
+                        "name": "Альбумин",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34293,
+                        "version": 0,
+                        "name": "Общий белок",
+                        "code": "TP",
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34294,
+                        "version": 0,
+                        "name": "Билирубин общий",
+                        "code": "TB",
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34295,
+                        "version": 0,
+                        "name": "Билирубин прямой",
+                        "code": "CB",
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34296,
+                        "version": 0,
+                        "name": "Креатинин",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34297,
+                        "version": 0,
+                        "name": "Мочевина",
+                        "code": "UREA",
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34298,
+                        "version": 0,
+                        "name": "Глюкоза",
+                        "code": "GLUCOSE",
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34299,
+                        "version": 0,
+                        "name": "Калий",
+                        "code": "K",
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34300,
+                        "version": 0,
+                        "name": "Натрий",
+                        "code": "NA",
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34301,
+                        "version": 0,
+                        "name": "АЛТ",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34302,
+                        "version": 0,
+                        "name": "АСТ",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34303,
+                        "version": 0,
+                        "name": "ЛДГ",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34304,
+                        "version": 0,
+                        "name": "ГГТ",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34305,
+                        "version": 0,
+                        "name": "ЩФ",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34306,
+                        "version": 0,
+                        "name": "Альфа-амилаза",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34307,
+                        "version": 0,
+                        "name": "П-амилаза",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34308,
+                        "version": 0,
+                        "name": "Холестерин",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34309,
+                        "version": 0,
+                        "name": "Триглицериды",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34310,
+                        "version": 0,
+                        "name": "Липаза",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34311,
+                        "version": 0,
+                        "name": "ЛПНП",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 34312,
+                        "version": 0,
+                        "name": "ЛПВП",
+                        "code": null,
+                        "type": "String",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "true"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": "true"
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 2843001,
+                        "version": 0,
+                        "name": "Направительный диагноз",
+                        "code": null,
+                        "type": "MKB",
+                        "scope": "",
+                        "typeId": null,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "isAssignable",
+                                "value": "false"
+                            },
+                            {
+                                "name": "isAssigned",
+                                "value": ""
+                            },
+                            {
+                                "name": "valueId"
+                            },
+                            {
+                                "name": "value",
+                                "value": ""
+                            }
+                        ],
+                        "layoutAttributeValues": [],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    }
+                ]
+            }
+        ],
+        "editable": true
+    }
+]}

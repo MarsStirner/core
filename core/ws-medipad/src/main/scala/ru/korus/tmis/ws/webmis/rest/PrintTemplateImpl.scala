@@ -11,7 +11,7 @@ import java.{util => ju}
  * Date: 2/24/14
  * Time: 10:36 AM
  */
-class PrintTemplateImpl(val wsImpl: WebMisRESTImpl, val authData: AuthData, val callback: String) {
+class PrintTemplateImpl(val wsImpl: WebMisREST, val authData: AuthData, val callback: String) {
 
   @GET
   @Path("/byIds")

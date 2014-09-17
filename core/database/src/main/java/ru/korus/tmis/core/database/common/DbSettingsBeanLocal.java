@@ -26,4 +26,6 @@ public interface DbSettingsBeanLocal {
     Setting getSettingByPathInMainSettings(String path);
 
     List<Setting> getAllSettings();
+
+    boolean updateSetting(String path, String value);
 }

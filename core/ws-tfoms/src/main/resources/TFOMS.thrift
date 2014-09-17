@@ -181,6 +181,9 @@ struct Sluch{
 	31:required double SUMV;
 
 	32:required list<Usl> USL;
+	//добавление двух полей для ВМП
+	33:optional string VID_HMP;
+	34:optional string METOD_HMP;
 }
 
 //Перечисление с названиями требуемых опциональных полей

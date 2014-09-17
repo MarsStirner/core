@@ -1,0 +1,17 @@
+<SOAP-ENV:Envelope
+        xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/"
+        xmlns:urn="http://www.korusconsulting.ru"
+        xmlns:xsd="http://www.w3.org/1999/XMLSchema"
+        xmlns:xsi="http://www.w3.org/1999/XMLSchema-instance"
+        SOAP-ENV:encodingStyle="http://schemas.xmlsoap.org/soap/encoding/">
+    <SOAP-ENV:Body>
+        <urn:bakDelivered>
+            <urn:orderBarCode>1000529970</urn:orderBarCode>
+            <urn:TakenTissueJournal> </urn:TakenTissueJournal>
+            <urn:getTissueTime>2014-06-05 11:50:33</urn:getTissueTime>
+            <urn:orderBiomaterialName> </urn:orderBiomaterialName>
+            <urn:orderLIS>1000529970</urn:orderLIS>
+        </urn:bakDelivered>
+
+    </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

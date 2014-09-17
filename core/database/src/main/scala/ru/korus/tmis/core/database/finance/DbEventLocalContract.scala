@@ -25,16 +25,6 @@ with I18nable {
   @EJB
   var dbStaffBeanLocal: DbStaffBeanLocal = _
 
-  def getByEventId(eventId: Integer): EventLocalContract = {
-    val resList = em.createNamedQuery("EventLocalContract.findByEventId", classOf[EventLocalContract])
-      .setParameter("eventId", eventId)
-      .getResultList
-    if (resList.isEmpty)
-      return null
-    else
-      return resList.get(0)
-  }
-
   def getByContractNumber(numberOfContract: String): EventLocalContract = {
     val resList = em.createNamedQuery("EventLocalContract.findByContractCode", classOf[EventLocalContract])
       .setParameter("code", numberOfContract)
@@ -59,7 +49,9 @@ with I18nable {
     res.setCreatePerson(coreStaff)
     res.setDateContract(dateContract)
     res.setDeleted(false)
-    res.setEvent(event)
+    if (event != null) {
+      event.setEventLocalContract(res);
+    }
     res.setFirstName(paidName.getGiven)
     res.setLastName(paidName.getFamily)
     res.setPatrName(paidName.getPartName)

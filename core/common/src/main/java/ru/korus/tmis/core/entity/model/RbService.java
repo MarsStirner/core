@@ -11,7 +11,7 @@ import java.util.Date;
 @NamedQueries(
         {
                 @NamedQuery(name = "rbService.findAll", query = "SELECT s FROM RbService s"),
-                @NamedQuery(name = "rbService.findByCode", query = "SELECT s FROM RbService s WHERE s.code = :code")
+                @NamedQuery(name = "rbService.findByCodeAndName", query = "SELECT s FROM RbService s WHERE s.code = :code AND s.begDate <= :date AND :date < s.endDate")
         })
 @XmlType(name = "service")
 @XmlRootElement(name = "service")

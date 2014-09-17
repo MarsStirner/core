@@ -16,6 +16,7 @@ import collection.mutable.LinkedHashSet
 import java.util
 import collection.JavaConversions
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import beans.BeanProperty
 
 /**
  * Dynamic Filters
@@ -1179,7 +1180,12 @@ class ContractContainer {
 @XmlRootElement(name = "tempInvalidAppealContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
 class TempInvalidAppealContainer {
-
+  @BeanProperty
+  var serial: String = _
+  @BeanProperty
+  var number: String = _
+  @BeanProperty
+  var isByService: Boolean = _ // флаг "По уходу за больным"
   @BeanProperty
   var begDate : Date = _    //
   @BeanProperty
@@ -1195,6 +1201,10 @@ class TempInvalidAppealContainer {
     this.endDate = tempInvalid.getEndDate
     this.age = tempInvalid.getAge
     this.sex = tempInvalid.getSex
+    val reason: RbTempInvalidReason = tempInvalid.getTempInvalidReason
+    this.isByService = reason != null && "09".equals(reason.getCode)
+    this.serial = tempInvalid.getSerial
+    this.number = tempInvalid.getNumber
   }
 }
 

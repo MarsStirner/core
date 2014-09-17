@@ -99,6 +99,8 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
   private static final org.apache.thrift.protocol.TField ED__COL_FIELD_DESC = new org.apache.thrift.protocol.TField("ED_COL", org.apache.thrift.protocol.TType.DOUBLE, (short)30);
   private static final org.apache.thrift.protocol.TField SUMV_FIELD_DESC = new org.apache.thrift.protocol.TField("SUMV", org.apache.thrift.protocol.TType.DOUBLE, (short)31);
   private static final org.apache.thrift.protocol.TField USL_FIELD_DESC = new org.apache.thrift.protocol.TField("USL", org.apache.thrift.protocol.TType.LIST, (short)32);
+  private static final org.apache.thrift.protocol.TField VID__HMP_FIELD_DESC = new org.apache.thrift.protocol.TField("VID_HMP", org.apache.thrift.protocol.TType.STRING, (short)33);
+  private static final org.apache.thrift.protocol.TField METOD__HMP_FIELD_DESC = new org.apache.thrift.protocol.TField("METOD_HMP", org.apache.thrift.protocol.TType.STRING, (short)34);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -135,6 +137,8 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
   public double ED_COL; // required
   public double SUMV; // required
   public List<Usl> USL; // required
+  public String VID_HMP; // optional
+  public String METOD_HMP; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -166,7 +170,9 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
     PATIENT((short)26, "patient"),
     ED__COL((short)30, "ED_COL"),
     SUMV((short)31, "SUMV"),
-    USL((short)32, "USL");
+    USL((short)32, "USL"),
+    VID__HMP((short)33, "VID_HMP"),
+    METOD__HMP((short)34, "METOD_HMP");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -239,6 +245,10 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
           return SUMV;
         case 32: // USL
           return USL;
+        case 33: // VID__HMP
+          return VID__HMP;
+        case 34: // METOD__HMP
+          return METOD__HMP;
         default:
           return null;
       }
@@ -295,7 +305,7 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
   private static final int __ED_COL_ISSET_ID = 13;
   private static final int __SUMV_ISSET_ID = 14;
   private short __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.NPR__MO,_Fields.EXTR,_Fields.LPU_1,_Fields.PODR,_Fields.DET,_Fields.DS0,_Fields.DS1,_Fields.DS2,_Fields.CODE__MES1,_Fields.CODE__MES2,_Fields.OS__SLUCH};
+  private _Fields optionals[] = {_Fields.NPR__MO,_Fields.EXTR,_Fields.LPU_1,_Fields.PODR,_Fields.DET,_Fields.DS0,_Fields.DS1,_Fields.DS2,_Fields.CODE__MES1,_Fields.CODE__MES2,_Fields.OS__SLUCH,_Fields.VID__HMP,_Fields.METOD__HMP};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -359,6 +369,10 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
     tmpMap.put(_Fields.USL, new org.apache.thrift.meta_data.FieldMetaData("USL", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Usl.class))));
+    tmpMap.put(_Fields.VID__HMP, new org.apache.thrift.meta_data.FieldMetaData("VID_HMP", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.METOD__HMP, new org.apache.thrift.meta_data.FieldMetaData("METOD_HMP", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Sluch.class, metaDataMap);
   }
@@ -494,6 +508,12 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
       }
       this.USL = __this__USL;
     }
+    if (other.isSetVID_HMP()) {
+      this.VID_HMP = other.VID_HMP;
+    }
+    if (other.isSetMETOD_HMP()) {
+      this.METOD_HMP = other.METOD_HMP;
+    }
   }
 
   public Sluch deepCopy() {
@@ -547,6 +567,8 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
     setSUMVIsSet(false);
     this.SUMV = 0.0;
     this.USL = null;
+    this.VID_HMP = null;
+    this.METOD_HMP = null;
   }
 
   public int getIDCASE() {
@@ -1260,6 +1282,54 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
     }
   }
 
+  public String getVID_HMP() {
+    return this.VID_HMP;
+  }
+
+  public Sluch setVID_HMP(String VID_HMP) {
+    this.VID_HMP = VID_HMP;
+    return this;
+  }
+
+  public void unsetVID_HMP() {
+    this.VID_HMP = null;
+  }
+
+  /** Returns true if field VID_HMP is set (has been assigned a value) and false otherwise */
+  public boolean isSetVID_HMP() {
+    return this.VID_HMP != null;
+  }
+
+  public void setVID_HMPIsSet(boolean value) {
+    if (!value) {
+      this.VID_HMP = null;
+    }
+  }
+
+  public String getMETOD_HMP() {
+    return this.METOD_HMP;
+  }
+
+  public Sluch setMETOD_HMP(String METOD_HMP) {
+    this.METOD_HMP = METOD_HMP;
+    return this;
+  }
+
+  public void unsetMETOD_HMP() {
+    this.METOD_HMP = null;
+  }
+
+  /** Returns true if field METOD_HMP is set (has been assigned a value) and false otherwise */
+  public boolean isSetMETOD_HMP() {
+    return this.METOD_HMP != null;
+  }
+
+  public void setMETOD_HMPIsSet(boolean value) {
+    if (!value) {
+      this.METOD_HMP = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case IDCASE:
@@ -1494,6 +1564,22 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
       }
       break;
 
+    case VID__HMP:
+      if (value == null) {
+        unsetVID_HMP();
+      } else {
+        setVID_HMP((String)value);
+      }
+      break;
+
+    case METOD__HMP:
+      if (value == null) {
+        unsetMETOD_HMP();
+      } else {
+        setMETOD_HMP((String)value);
+      }
+      break;
+
     }
   }
 
@@ -1586,6 +1672,12 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
     case USL:
       return getUSL();
 
+    case VID__HMP:
+      return getVID_HMP();
+
+    case METOD__HMP:
+      return getMETOD_HMP();
+
     }
     throw new IllegalStateException();
   }
@@ -1655,6 +1747,10 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
       return isSetSUMV();
     case USL:
       return isSetUSL();
+    case VID__HMP:
+      return isSetVID_HMP();
+    case METOD__HMP:
+      return isSetMETOD_HMP();
     }
     throw new IllegalStateException();
   }
@@ -1930,6 +2026,24 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
       if (!(this_present_USL && that_present_USL))
         return false;
       if (!this.USL.equals(that.USL))
+        return false;
+    }
+
+    boolean this_present_VID_HMP = true && this.isSetVID_HMP();
+    boolean that_present_VID_HMP = true && that.isSetVID_HMP();
+    if (this_present_VID_HMP || that_present_VID_HMP) {
+      if (!(this_present_VID_HMP && that_present_VID_HMP))
+        return false;
+      if (!this.VID_HMP.equals(that.VID_HMP))
+        return false;
+    }
+
+    boolean this_present_METOD_HMP = true && this.isSetMETOD_HMP();
+    boolean that_present_METOD_HMP = true && that.isSetMETOD_HMP();
+    if (this_present_METOD_HMP || that_present_METOD_HMP) {
+      if (!(this_present_METOD_HMP && that_present_METOD_HMP))
+        return false;
+      if (!this.METOD_HMP.equals(that.METOD_HMP))
         return false;
     }
 
@@ -2239,6 +2353,26 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetVID_HMP()).compareTo(typedOther.isSetVID_HMP());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetVID_HMP()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.VID_HMP, typedOther.VID_HMP);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
+    lastComparison = Boolean.valueOf(isSetMETOD_HMP()).compareTo(typedOther.isSetMETOD_HMP());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetMETOD_HMP()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.METOD_HMP, typedOther.METOD_HMP);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -2452,6 +2586,26 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
       sb.append(this.USL);
     }
     first = false;
+    if (isSetVID_HMP()) {
+      if (!first) sb.append(", ");
+      sb.append("VID_HMP:");
+      if (this.VID_HMP == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.VID_HMP);
+      }
+      first = false;
+    }
+    if (isSetMETOD_HMP()) {
+      if (!first) sb.append(", ");
+      sb.append("METOD_HMP:");
+      if (this.METOD_HMP == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.METOD_HMP);
+      }
+      first = false;
+    }
     sb.append(")");
     return sb.toString();
   }
@@ -2782,6 +2936,22 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 33: // VID__HMP
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.VID_HMP = iprot.readString();
+              struct.setVID_HMPIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
+          case 34: // METOD__HMP
+            if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
+              struct.METOD_HMP = iprot.readString();
+              struct.setMETOD_HMPIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -2987,6 +3157,20 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
         }
         oprot.writeFieldEnd();
       }
+      if (struct.VID_HMP != null) {
+        if (struct.isSetVID_HMP()) {
+          oprot.writeFieldBegin(VID__HMP_FIELD_DESC);
+          oprot.writeString(struct.VID_HMP);
+          oprot.writeFieldEnd();
+        }
+      }
+      if (struct.METOD_HMP != null) {
+        if (struct.isSetMETOD_HMP()) {
+          oprot.writeFieldBegin(METOD__HMP_FIELD_DESC);
+          oprot.writeString(struct.METOD_HMP);
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -3062,7 +3246,13 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
       if (struct.isSetOS_SLUCH()) {
         optionals.set(10);
       }
-      oprot.writeBitSet(optionals, 11);
+      if (struct.isSetVID_HMP()) {
+        optionals.set(11);
+      }
+      if (struct.isSetMETOD_HMP()) {
+        optionals.set(12);
+      }
+      oprot.writeBitSet(optionals, 13);
       if (struct.isSetNPR_MO()) {
         oprot.writeString(struct.NPR_MO);
       }
@@ -3101,6 +3291,12 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
             oprot.writeI32(_iter9);
           }
         }
+      }
+      if (struct.isSetVID_HMP()) {
+        oprot.writeString(struct.VID_HMP);
+      }
+      if (struct.isSetMETOD_HMP()) {
+        oprot.writeString(struct.METOD_HMP);
       }
     }
 
@@ -3154,7 +3350,7 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
         }
       }
       struct.setUSLIsSet(true);
-      BitSet incoming = iprot.readBitSet(11);
+      BitSet incoming = iprot.readBitSet(13);
       if (incoming.get(0)) {
         struct.NPR_MO = iprot.readString();
         struct.setNPR_MOIsSet(true);
@@ -3207,6 +3403,14 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
           }
         }
         struct.setOS_SLUCHIsSet(true);
+      }
+      if (incoming.get(11)) {
+        struct.VID_HMP = iprot.readString();
+        struct.setVID_HMPIsSet(true);
+      }
+      if (incoming.get(12)) {
+        struct.METOD_HMP = iprot.readString();
+        struct.setMETOD_HMPIsSet(true);
       }
     }
   }

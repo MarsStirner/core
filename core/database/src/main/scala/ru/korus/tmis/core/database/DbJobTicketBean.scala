@@ -10,7 +10,7 @@ import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
 import collection.mutable
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter
-import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.reflect.LoggingManager
 import java.util.Date
@@ -34,7 +34,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
   var em: EntityManager = _
 
   @EJB
-  var appLock: AppLockBeanLocal = _
+  var appLock: AuthStorageBeanLocal = _
 
   @EJB
   private var dbManager: DbManagerBeanLocal = _

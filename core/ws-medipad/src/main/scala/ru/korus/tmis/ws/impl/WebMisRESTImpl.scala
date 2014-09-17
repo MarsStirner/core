@@ -10,19 +10,21 @@ import ru.korus.tmis.core.entity.model._
 import collection.mutable
 import java.util.{Date, LinkedList}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.ws.webmis.rest.WebMisREST
-import javax.ejb.EJB
+import ru.korus.tmis.ws.webmis.rest.{LockData, WebMisREST}
+import javax.ejb.{Stateless, EJB}
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.patient._
 import scala.collection.JavaConversions._
 import com.google.common.collect.Lists
-import javax.servlet.http.HttpServletRequest
+import javax.servlet.http.Cookie
 import scala.Predef._
 
 import ru.korus.tmis.scala.util._
 import ru.korus.tmis.core.database.bak.{DbBbtResultOrganismBeanLocal, DbBbtResponseBeanLocal, DbBbtResultTextBeanLocal}
 import org.joda.time.DateTime
+import ru.korus.tmis.core.lock.ActionWithLockInfo
+import ru.korus.tmis.scala.util.StringId
 
 /**
  * User: idmitriev
@@ -30,15 +32,7 @@ import org.joda.time.DateTime
  * Time: 11:53 AM
  */
 
-/*@Named
-@WebService(
-  endpointInterface = "ru.korus.tmis.ws.medipad.WebMisService",
-  targetNamespace = "http://korus.ru/tmis/webmis",
-  serviceName = "tmis-webmis",
-  portName = "webmis",
-  name = "webmis"
-)
-@HandlerChain(file = "tmis-ws-logging-handlers.xml") */
+@Stateless
 class WebMisRESTImpl  extends WebMisREST
                       with Logging
                       with I18nable
@@ -194,6 +188,9 @@ class WebMisRESTImpl  extends WebMisREST
   @EJB
   var dbAutoSaveStorageLocal: DbAutoSaveStorageLocal = _
 
+  @EJB
+  var appLockBeanLocal: AppLockBeanLocal = _
+
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
       val patients = patientBean.getAllPatients(requestData)
@@ -274,7 +271,7 @@ class WebMisRESTImpl  extends WebMisREST
     constructAppealData(ide)
   }
 
-  private def constructAppealData(ide: Int) = {
+  private def constructAppealData(ide: Int): java.lang.String = {
     if(ide>0) {
       val result = appealBean.getAppealById(ide)
 
@@ -283,7 +280,7 @@ class WebMisRESTImpl  extends WebMisREST
       val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
 
       val mapper: ObjectMapper = new ObjectMapper()
-      mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsStandartForm])
+      //mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsStandartForm])
       val patient = positionE._1.getPatient
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
@@ -298,14 +295,14 @@ class WebMisRESTImpl  extends WebMisREST
         map,
         street,
         null,
-        actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
-        dbClientRelation.getClientRelationByRelativeId _,
+        actionBean.getLastActionByActionTypeIdAndEventId,  //havePrimary
+        dbClientRelation.getClientRelationByRelativeId,
         null,
         if (positionA._1.getContractId != null) {
           dbContractBean.getContractById(positionA._1.getContractId.intValue())
         } else {null},
         currentDepartment,
-        dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _,
+        dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
         dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
       ))
     } else {
@@ -565,9 +562,40 @@ class WebMisRESTImpl  extends WebMisREST
       null
     }
 
+    // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
+    def getPropertyCustom1(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
+
+      def getTherapyPhaseEndDate(action: Action): Date = {
+        action.getActionProperties.foreach(p =>
+          if (p.getType.getCode != null && p.getType.getCode.equals("therapyPhaseEndDate"))
+          actionPropertyBean.getActionPropertyValue(p).foreach {
+            case d: Date => return d
+            case _ =>
+          }
+        )
+        null
+      }
+
+      if(oldDocumentCodes.contains(at.getCode)) {
+        val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
+        if(pastActions != null && !pastActions.isEmpty && getTherapyPhaseEndDate(pastActions.head) != null)
+          pastActions.head.getActionProperties.foreach(e => {
+            if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
+              val values = actionPropertyBean.getActionPropertyValue(e)
+              if(actionTypeCodes.contains(e.getType.getCode)) {
+                if(values.size() > 0)
+                  return values.head
+              }
+            }
+          })
+        null
+      }
+      null
+    }
+
     at.getCode match {
       case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag","mainDiagMkb")) // Заключительный эпикриз
-      case "1_2_18" => getProperty(Set("1_2_18"), Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")) // Дневниковый осмотр
+      case "1_2_18" => getPropertyCustom1(Set("1_2_18"), Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")) // Дневниковый осмотр
       case _ => null
     }
   }
@@ -653,6 +681,12 @@ class WebMisRESTImpl  extends WebMisREST
     patientBean.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, auth)
   }
 
+  def getActionWithLockInfoList(list: java.util.List[Action]) : java.util.List[ActionWithLockInfo] =  {
+    val res :  java.util.List[ActionWithLockInfo] = new java.util.LinkedList[ActionWithLockInfo]
+    list.foreach(action => res.add(authStorage.getLockInfo(action)))
+    res
+  }
+
   //Возвращает список осмотров по пациенту и обращению с фильтрацией по типу действия
   def getListOfAssessmentsForPatientByEvent(requestData: AssessmentsListRequestData, auth: AuthData) = {
     val action_list = actionBean.getActionsWithFilter(requestData.limit,
@@ -661,8 +695,9 @@ class WebMisRESTImpl  extends WebMisREST
                                                       requestData.filter.unwrap(),
                                                       requestData.rewriteRecordsCount _,
                                                       auth)
+    val actionWithLockInfoList = getActionWithLockInfoList(action_list);
     //actionBean.getActionsByEventIdWithFilter(requestData.eventId, auth, requestData)
-    val assessments: AssessmentsListData = new AssessmentsListData(action_list, requestData)
+    val assessments: AssessmentsListData = new AssessmentsListData(actionWithLockInfoList, requestData)
     assessments
   }
 
@@ -1307,18 +1342,6 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getAssignmentById(actionId: Int, auth: AuthData) = assignmentBean.getAssignmentById(actionId)
 
-  def getFilteredRlsList(request: RlsDataListRequestData) = {
-    request.setRecordsCount(dbRlsBean.getCountOfRlsRecordsWithFilter(request.filter))
-    val list = dbRlsBean.getRlsListWithFilter(request.page,
-      request.limit,
-      request.sortingFieldInternal,
-      request.sortingMethod,
-      request.filter)
-    if (list!=null)
-      new RlsDataList(list, request)
-    else
-      new RlsDataList()
-  }
 
   def getEventTypes(request: ListDataRequest, authData: AuthData) = {
     val mapper: ObjectMapper = new ObjectMapper()
@@ -1378,6 +1401,11 @@ class WebMisRESTImpl  extends WebMisREST
                                 hospitalBedBean.getLastMovingActionForEventId _,
                                 actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
                                 request)
+  }
+
+
+  override def getJobTicketById(id: Int, authData: AuthData): JobTicket = {
+    dbJobTicketBean getJobTicketById id
   }
 
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
@@ -1469,8 +1497,8 @@ class WebMisRESTImpl  extends WebMisREST
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________
 
-  def checkTokenCookies(srvletRequest: HttpServletRequest) = {
-    authStorage.checkTokenCookies(srvletRequest)
+  def checkTokenCookies(cookies: lang.Iterable[Cookie]) = {
+    authStorage.checkTokenCookies(cookies)
   }
 
   def getStorageAuthData(token: AuthToken) = {
@@ -1492,6 +1520,29 @@ class WebMisRESTImpl  extends WebMisREST
 
   def deleteAutoSaveField(id: String, auth: AuthData) {
    dbAutoSaveStorageLocal.delete(id, auth.getUserId)
+  }
+
+  override def getRlsById(id: Int): Nomenclature = {
+    dbRlsBean.getRlsById(id)
+  }
+
+  override def getRlsByText(text: String): ju.List[Nomenclature] = {
+    dbRlsBean.getRlsByText(text)
+  }
+
+
+  def lock(actionId: Int, auth: AuthData): LockData = {
+    val appLockDetail: AppLockDetail = authStorage.getAppLock(auth.getAuthToken, "Action", actionId)
+    return new LockData(appLockDetail.getId.getMasterId)
+  }
+
+  def prolongLock(actionId: Int, auth: AuthData): LockData = {
+    val appLockDetail: AppLockDetail = authStorage.prolongAppLock(auth.getAuthToken, "Action", actionId)
+    return new LockData(appLockDetail.getId.getMasterId)
+  }
+
+  def releaseLock(actionId: Int, auth: AuthData) {
+    authStorage.releaseAppLock(auth.getAuthToken, "Action", actionId)
   }
 
 }

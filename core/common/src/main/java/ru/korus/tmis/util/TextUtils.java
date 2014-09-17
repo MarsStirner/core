@@ -1,5 +1,9 @@
 package ru.korus.tmis.util;
 
+import javax.xml.bind.annotation.adapters.HexBinaryAdapter;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
 /**
  * Author: Nosov Dmitriy
  * Date: 27.09.12
@@ -36,4 +40,13 @@ public class TextUtils {
         return value != null && !"".equals(value) ? value.trim().replaceAll(",", ".") : "0";
     }
 
+    public static String getMD5(final String pass) {
+        try {
+            byte[] md5sum = MessageDigest.getInstance("MD5").digest(pass.getBytes());
+            return (new HexBinaryAdapter()).marshal(md5sum).toLowerCase();
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 }
