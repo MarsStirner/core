@@ -18,6 +18,7 @@ sealed trait Expr
 case class MethodCall(expr: Option[Expr], name: String, args: List[Expr]) extends Expr
 case class NumericLiteral(value: String) extends Expr
 case class StringLiteral(value: String) extends Expr
+case class BooleanLiteral(value: Boolean) extends Expr
 object OR extends Expr
 object AND extends Expr
 object IF extends Expr
