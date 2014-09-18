@@ -45,7 +45,7 @@
         <version.logging.slf4j>1.7.2</version.logging.slf4j>
         <version.logging.grizzled-slf4j>1.0.2</version.logging.grizzled-slf4j>
 
-        <version.scala>2.10.3</version.scala>
+        <version.scala>2.11.2</version.scala>
         <version.javax.inject>1</version.javax.inject>
         <version.javaee.api>6.0</version.javaee.api>
         <version.javax.mail>1.4.5</version.javax.mail>
@@ -563,7 +563,7 @@
         <!--Logging-->
         <dependency>
             <groupId>org.clapper</groupId>
-            <artifactId>grizzled-slf4j_2.10</artifactId>
+            <artifactId>grizzled-slf4j_2.11</artifactId>
             <version>${version.logging.grizzled-slf4j}</version>
         </dependency>
 
