@@ -41,7 +41,7 @@ public class DbInfoServiceImpl implements DbInfoService {
     private DbInfo getDbInfo(String poolJndiName) {
         DbInfo res = new DbInfo("???", "???");
         try {
-            List<PropertyType> properties = getDbProperties("java:app/" + poolJndiName);
+            List<PropertyType> properties = getDbProperties(poolJndiName);
             res = new DbInfo(getDbName(properties),getDbHost(properties));
 
         } catch (IOException e) {
@@ -54,10 +54,12 @@ public class DbInfoServiceImpl implements DbInfoService {
     private List<PropertyType> getDbProperties(String poolJndiName) throws FileNotFoundException {
         DomainType domainXml = getDomainXml();
         List<PropertyType> properties = new LinkedList<PropertyType>();
+/*
         ApplicationsType applications = domainXml.getApplications();
         ApplicationType app = applications == null ? null : getTmisApp(applications.getApplication());
-        if(app != null && app.getResources() != null) {
-            List<Object> jdbcConnectionPoolList= app.getResources().getJdbcConnectionPoolOrJdbcResourceOrAdminObjectResource();
+*/
+        if(domainXml != null && domainXml.getResources() != null) {
+            List<Object> jdbcConnectionPoolList = domainXml.getResources().getJdbcConnectionPoolOrJdbcResourceOrAdminObjectResource();
             resList:for(Object resource : jdbcConnectionPoolList) {
                 if(resource instanceof JdbcResourceType &&
                         poolJndiName.equals(((JdbcResourceType) resource).getJndiName())) {
@@ -77,7 +79,7 @@ public class DbInfoServiceImpl implements DbInfoService {
 
     private DomainType getDomainXml() throws FileNotFoundException {
         if(this.domainXml == null) {
-            final String pathToDamainConfig = getDomainPath().substring(1) + "/config/domain.xml";
+            final String pathToDamainConfig = getDomainPath() + "/config/domain.xml";
             this.domainXml = JAXB.unmarshal(new FileInputStream(pathToDamainConfig), DomainType.class);
         }
         return this.domainXml;
@@ -103,7 +105,7 @@ public class DbInfoServiceImpl implements DbInfoService {
 
     private ApplicationType getTmisApp(List<ApplicationType> application) {
         for(ApplicationType app : application) {
-            if(app.getContextRoot().contains("tmis-server") ||
+            if(app.getName().contains("tmis-server") ||
                     app.getName().contains("admin-panel")) {
                 return app;
             }
@@ -122,7 +124,7 @@ public class DbInfoServiceImpl implements DbInfoService {
 
     private String initDomainPath() {
         final String path = this.getClass().getResource("").getPath();
-        final Integer indexEnd = path.indexOf("/applications/admin-panel");
+        final Integer indexEnd = Math.max(path.indexOf("/applications/admin-panel"), path.indexOf("/applications/tmis-server"));
         if (indexEnd > 0) {
             return path.substring(0, indexEnd);
         }

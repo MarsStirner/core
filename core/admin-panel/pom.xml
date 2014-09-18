@@ -1,57 +1,42 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<parent>
-    <artifactId>tmis-core</artifactId>
-    <groupId>ru.korus.tmis</groupId>
-    <version>2.5.37</version>
-  </parent>
-	<groupId>ru.korus.tmis.admin</groupId>
-	<artifactId>admin-panel</artifactId>
-    <version>2.5.37</version>
-	<packaging>war</packaging>
-	<name>MIS Admin Panel</name>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <artifactId>tmis-core</artifactId>
+        <groupId>ru.korus.tmis</groupId>
+        <version>2.5.30.4-SNAPSHOT</version>
+    </parent>
+    <groupId>ru.korus.tmis.admin</groupId>
+    <artifactId>admin-panel</artifactId>
+    <version>2.5.30.4-SNAPSHOT</version>
+    <packaging>war</packaging>
+    <name>MIS Admin Panel</name>
 
-	<properties>
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring.version>3.2.4.RELEASE</spring.version>
-    </properties>
-	<dependencies>
-       <dependency>
+    <dependencies>
+        <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>2.5.37</version>
+            <version>2.5.30.4-SNAPSHOT</version>
             <type>jar</type>
-           <!--<scope>provided</scope>-->
         </dependency>
-       <dependency>
+        <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>2.5.37</version>
-           <type>ejb</type>
-           <!--<scope>provided</scope>-->
+            <version>2.5.30.4-SNAPSHOT</version>
+            <type>ejb</type>
         </dependency>
 
+    </dependencies>
 
-<!--
-
-		<dependency>
-			<groupId>javax.servlet</groupId>
-			<artifactId>javax.servlet-api</artifactId>
-			<version>3.0.1</version>
-			<scope>provided</scope>
-		</dependency>
--->
-	</dependencies>
-
-	<build>
-		<plugins>
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.3</version>
-				<configuration>
-                   <!-- <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>-->
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.3</version>
+                <configuration>
+                    <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
@@ -70,11 +55,11 @@
                             </includes>
                         </resource>
                     </webResources>
-				</configuration>
-			</plugin>
-			<!--<plugin>
-				<groupId>org.mortbay.jetty</groupId>
-				<artifactId>jetty-maven-plugin</artifactId>
+                </configuration>
+            </plugin>
+            <!--<plugin>
+                <groupId>org.mortbay.jetty</groupId>
+                <artifactId>jetty-maven-plugin</artifactId>
                 <configuration>
                     <connectors>
                         <connector implementation="org.eclipse.jetty.server.nio.SelectChannelConnector">
@@ -83,7 +68,7 @@
                     </connectors>
                     <stopKey>tst</stopKey>
                 </configuration>
-			</plugin>-->
+            </plugin>-->
             <plugin>
                 <groupId>org.glassfish.embedded</groupId>
                 <artifactId>maven-embedded-glassfish-plugin</artifactId>
@@ -102,7 +87,7 @@
                 <artifactId>tomcat7-maven-plugin</artifactId>
                 <version>2.0</version>
             </plugin>-->
-		</plugins>
+        </plugins>
 
-	</build>
+    </build>
 </project>

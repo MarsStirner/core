@@ -1,5 +1,7 @@
 package ru.korus.tmis.ws.risar;
 
+import com.google.gson.Gson;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
@@ -96,7 +98,7 @@ public class RisarRestService {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         if (birthDate != null) {
             String birthDateStr = simpleDateFormat.format(birthDate);
-            map.add("birthDate:", birthDateStr);
+            map.add("birthDate", birthDateStr);
         }
         int index = 0;
         for (ClientDocument doc : patient.getClientDocuments()) {
@@ -116,8 +118,9 @@ public class RisarRestService {
         logger.info("RISAR notification. Find patient param: " + map);
         final String url = ConfigManager.Risar().ServiceUrl() + "/api/patients/v2/find/";
         logger.info("RISAR notification. Find patientt url: " + url);
-        RisarResponse result = rest.postForObject(url, map, RisarResponse.class);
-        logger.info("RISAR notification. Find result: " + result);
+        String resultStr = rest.postForObject(url, map, String.class);
+        logger.info("RISAR notification. Find result: " + resultStr);
+        RisarResponse result =  new Gson().fromJson(resultStr, RisarResponse.class);
         if (!result.isOk()) {
             throw new CoreException("RISAR find patient error:" + result);
         }

@@ -78,6 +78,41 @@
         <appender-ref ref="EXCEPTIONS"/>
     </logger>
 
+    <!-- Аппендер для RISAR -->
+    <appender name="RISAR" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%5p [%d][%thread][%logger{0}] %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/risar/risar.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis.ws.risar" level="INFO" additivity="false">
+        <appender-ref ref="RISAR"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </logger>
+
+    <!-- Аппендер для панели администратора -->
+    <appender name="ADMIN" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%5p [%d][%thread][%logger{0}] %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/admin/admin.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis.ws.risar" level="INFO" additivity="false">
+        <appender-ref ref="ADMIN"/>
+        <appender-ref ref="STDOUT_ERROR"/>
+        <appender-ref ref="EXCEPTIONS"/>
+    </logger>
 
     <!--Общий логгер для всего проекта-->
     <appender name="TMIS" class="ch.qos.logback.core.rolling.RollingFileAppender">
