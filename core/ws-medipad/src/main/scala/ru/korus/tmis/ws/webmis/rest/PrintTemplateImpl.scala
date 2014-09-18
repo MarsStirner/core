@@ -1,9 +1,10 @@
 package ru.korus.tmis.ws.webmis.rest
 
+import javax.ejb.{Stateless, EJB}
+import javax.servlet.http.HttpServletRequest
 import javax.ws.rs._
+import javax.ws.rs.core.Context
 import com.sun.jersey.api.json.JSONWithPadding
-import ru.korus.tmis.ws.impl.WebMisRESTImpl
-import ru.korus.tmis.core.auth.AuthData
 import java.{util => ju}
 
 /**
@@ -11,19 +12,26 @@ import java.{util => ju}
  * Date: 2/24/14
  * Time: 10:36 AM
  */
-class PrintTemplateImpl(val wsImpl: WebMisREST, val authData: AuthData, val callback: String) {
+@Stateless
+class PrintTemplateImpl {
+
+  @EJB private var wsImpl: WebMisREST = _
 
   @GET
   @Path("/byIds")
   @Produces(Array[String]("application/x-javascript"))
-  def getPrintTemplateByIds(@QueryParam("id") ids: ju.List[Integer]): Object = {
-    new JSONWithPadding(wsImpl.getRbPrintTemplatesByIds(ids, authData), callback)
+  def getPrintTemplateByIds(@Context servRequest:HttpServletRequest,
+                            @QueryParam("callback") callback: String,
+                            @QueryParam("id") ids: ju.List[Integer]): Object = {
+    new JSONWithPadding(wsImpl.getRbPrintTemplatesByIds(ids, mkAuth(servRequest)), callback)
   }
 
   @GET
   @Path("/byContexts")
   @Produces(Array[String]("application/x-javascript"))
-  def getPrintTemplateByContexts(@QueryParam("context") contexts: ju.List[String],
+  def getPrintTemplateByContexts(@Context servRequest:HttpServletRequest,
+                                 @QueryParam("callback") callback: String,
+                                 @QueryParam("context") contexts: ju.List[String],
                                  @QueryParam("fields") fields: String,
                                  @QueryParam("filter[render]") render: Integer): Object = {
     val f =
@@ -31,7 +39,9 @@ class PrintTemplateImpl(val wsImpl: WebMisREST, val authData: AuthData, val call
         fields.split(',')
       else
         Array[String]()
-    new JSONWithPadding(wsImpl.getRbPrintTemplatesByContexts(contexts, authData, f, render), callback)
+    new JSONWithPadding(wsImpl.getRbPrintTemplatesByContexts(contexts, mkAuth(servRequest), f, render), callback)
   }
+
+  private def mkAuth(servRequest: HttpServletRequest) = wsImpl.checkTokenCookies(ju.Arrays.asList(servRequest.getCookies:_*))
 
 }

@@ -1,8 +1,12 @@
 package ru.korus.tmis.ws.webmis.rest
 
-import ru.korus.tmis.ws.impl.WebMisRESTImpl
+import java.util
+import javax.ejb.{EJB, Stateless}
+import javax.servlet.http.HttpServletRequest
+import javax.ws.rs.core.Context
+
 import ru.korus.tmis.core.auth.AuthData
-import javax.ws.rs.{Produces, PathParam, Path, GET}
+import javax.ws.rs._
 import com.sun.jersey.api.json.JSONWithPadding
 
 /**
@@ -10,13 +14,18 @@ import com.sun.jersey.api.json.JSONWithPadding
  * Date: 3/3/14
  * Time: 6:55 PM
  */
-class OrganizationImpl(val wsImpl: WebMisREST, val authData: AuthData, val callback: String)  {
+@Stateless
+class OrganizationImpl {
+
+  @EJB private var wsImpl: WebMisREST = _
 
   @GET
   @Path("/{id}")
   @Produces(Array[String]("application/x-javascript"))
-  def getOrganizationById(@PathParam("id") id: Int): JSONWithPadding = {
-    new JSONWithPadding(wsImpl.getOrganizationById(id, authData), callback)
+  def getOrganizationById(@Context servRequest:HttpServletRequest,
+                          @QueryParam("callback") callback: String,
+                          @PathParam("id") id: Int): JSONWithPadding = {
+    new JSONWithPadding(wsImpl.getOrganizationById(id, wsImpl.checkTokenCookies(util.Arrays.asList(servRequest.getCookies:_*))), callback)
   }
 
 }

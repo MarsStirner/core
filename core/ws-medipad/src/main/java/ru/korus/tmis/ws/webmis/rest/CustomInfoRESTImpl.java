@@ -32,6 +32,10 @@ public class CustomInfoRESTImpl {
 
     @EJB private WebMisREST wsImpl;
 
+    @EJB private OrganizationImpl organizationImpl;
+
+    @EJB private PrintTemplateImpl printTemplateImpl;
+
 
     //__________________________________________________________________________________________________________________
     //***********************************   НЕФОРМАЛИЗОВАННЫЕ МЕТОДЫ И ЗАПРОСЫ  ***********************************
@@ -238,23 +242,17 @@ public class CustomInfoRESTImpl {
     @GET
     @Path("/build")
     @Produces("text/plain")
-    public Object getBuildVersion() {
+    public String getBuildVersion() {
         return wsImpl.getBuildVersion();
     }
 
 
     @Path("/printTemplate")
-    public Object getPrintTemplate(@Context HttpServletRequest servRequest,
-                                   @QueryParam("callback") String callback) {
-        return new PrintTemplateImpl(wsImpl, mkAuth(servRequest), callback);
-    }
+    public Object getPrintTemplate() { return printTemplateImpl; }
 
 
     @Path("/organization")
-    public Object getOrganizationById(@Context HttpServletRequest servRequest,
-                                      @QueryParam("callback") String callback) {
-        return new OrganizationImpl(wsImpl, mkAuth(servRequest), callback);
-    }
+    public Object getOrganizationById() { return organizationImpl; }
 
     private AuthData mkAuth(HttpServletRequest servRequest) {
         return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
