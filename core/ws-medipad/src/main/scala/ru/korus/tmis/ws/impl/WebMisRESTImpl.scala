@@ -2,7 +2,7 @@ package ru.korus.tmis.ws.impl
 
 import java.net.URI
 import java.util.Date
-import java.{util => ju, util, lang}
+import java.{util => ju, lang}
 import javax.ejb.{EJB, Stateless}
 import javax.servlet.http.Cookie
 
@@ -1626,7 +1626,7 @@ with CAPids {
     val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request, request.filter)
     //пересоберем мапу и сгруппируем по жобТикету
     var actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
-    var map = new mutable.LinkedHashMap[JobTicket, util.LinkedList[(Action, ActionTypeTissueType)]]
+    var map = new mutable.LinkedHashMap[JobTicket, ju.LinkedList[(Action, ActionTypeTissueType)]]
     if (!res.isEmpty) {
       request.rewriteRecordsCount(res.size().toLong)
       var firstJobTicket = res.iterator.next()._3
