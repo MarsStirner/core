@@ -1,8 +1,8 @@
 package ru.korus.tmis.ws.impl
 
 import java.net.URI
-import java.util.{Calendar, Date, LinkedList}
-import java.{lang, util => ju}
+import java.util.Date
+import java.{util => ju, util, lang}
 import javax.ejb.{EJB, Stateless}
 import javax.servlet.http.Cookie
 
@@ -328,7 +328,7 @@ with CAPids {
     val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsStandartForm]);
+    mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsStandartForm])
     //val map = patientBean.getKLADRAddressMapForPatient(result)
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
@@ -341,16 +341,16 @@ with CAPids {
       null,
       null,
       null,
-      actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
-      dbClientRelation.getClientRelationByRelativeId _,
-      actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
+      actionBean.getLastActionByActionTypeIdAndEventId, //havePrimary
+      dbClientRelation.getClientRelationByRelativeId,
+      actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes,
       if (positionE._1.getContract != null) {
         dbContractBean.getContractById(positionE._1.getContract.getId.intValue())
       } else {
         null
       },
       currentDepartment,
-      dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _,
+      dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
       dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
     ))
   }
@@ -362,7 +362,7 @@ with CAPids {
     val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
     val mapper: ObjectMapper = new ObjectMapper()
 
-    mapper.getSerializationConfig().setSerializationView(classOf[Views.DynamicFieldsPrintForm])
+    mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsPrintForm])
 
     val map = patientBean.getKLADRAddressMapForPatient(positionE._1.getPatient)
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
@@ -371,21 +371,21 @@ with CAPids {
     mapper.writeValueAsString(new AppealData(positionE._1,
       positionA._1,
       values,
-      actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes _,
+      actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes,
       "print_form",
       map,
       street,
       null,
-      actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
-      dbClientRelation.getClientRelationByRelativeId _,
-      actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _, //в тч Admission Diagnosis
+      actionBean.getLastActionByActionTypeIdAndEventId, //havePrimary
+      dbClientRelation.getClientRelationByRelativeId,
+      actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes, //в тч Admission Diagnosis
       if (positionA._1.getContractId != null) {
         dbContractBean.getContractById(positionA._1.getContractId.intValue())
       } else {
         null
       },
       currentDepartment,
-      dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _,
+      dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
       dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
     ))
 
@@ -393,7 +393,7 @@ with CAPids {
 
   def getAllAppealsByPatient(requestData: AppealSimplifiedRequestData, auth: AuthData): AppealSimplifiedDataList = {
     val set = appealBean.getSupportedAppealTypeCodes //справочник госпитализаций
-    requestData.filter.asInstanceOf[AppealSimplifiedRequestDataFilter].code = set.asInstanceOf[ju.Collection[String]]
+    requestData.filter.code = set.asInstanceOf[ju.Collection[String]]
     appealBean.getAllAppealsByPatient(requestData, auth)
   }
 
@@ -414,25 +414,24 @@ with CAPids {
 
     val mapper: ObjectMapper = new ObjectMapper()
     requestData.filter.asInstanceOf[ReceivedRequestDataFilter].role match {
-      case 29 => mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]) //Сестра приемного отделения
-      case _ => mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]) //Доктор
+      case 29 => mapper.getSerializationConfig.withView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]) //Сестра приемного отделения
+      case _ => mapper.getSerializationConfig.withView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]) //Доктор
     }
 
     requestData.setRecordsCount(dbEventBean.getCountOfAppealsForReceivedPatientByPeriod(requestData.filter))
     val data = if (requestData.recordsCount != 0) {
-      var received = dbEventBean.getAllAppealsForReceivedPatientByPeriod(requestData.page - 1,
+      val received = dbEventBean.getAllAppealsForReceivedPatientByPeriod(requestData.page - 1,
         requestData.limit,
         requestData.sortingFieldInternal,
         requestData.sortingMethod,
         requestData.filter)
       new ReceivedPatientsData(received,
         requestData,
-        appealBean.getDiagnosisListByAppealId _,
-        actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes _,
-        //actionPropertyBean.getActionPropertiesForEventByActionTypes _,
-        actionBean.getLastActionByActionTypeIdAndEventId _,
-        appealBean.getPatientsHospitalizedStatus _,
-        actionBean.getAppealActionByEventId _)
+        appealBean.getDiagnosisListByAppealId,
+        actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes,
+        actionBean.getLastActionByActionTypeIdAndEventId,
+        appealBean.getPatientsHospitalizedStatus,
+        actionBean.getAppealActionByEventId)
     } else new ReceivedPatientsData()
 
     mapper.writeValueAsString(data)
@@ -442,13 +441,13 @@ with CAPids {
   def getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData) = {
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //primaryAssessmentBean.getPrimaryAssessmentEmptyStruct("1_1_01", "PrimaryAssesment", null)
-    var listForConverter = new java.util.ArrayList[String]
+    val listForConverter = new java.util.ArrayList[String]
     listForConverter.add(ActionPropertyWrapperInfo.Value.toString)
     listForConverter.add(ActionPropertyWrapperInfo.ValueId.toString)
     listForConverter.add(ActionPropertyWrapperInfo.Norm.toString)
     listForConverter.add(ActionPropertyWrapperInfo.Unit.toString)
 
-    var listForSummary = new java.util.ArrayList[StringId]
+    val listForSummary = new java.util.ArrayList[StringId]
     listForSummary.add(ActionWrapperInfo.assessmentId)
     listForSummary.add(ActionWrapperInfo.assessmentName)
     listForSummary.add(ActionWrapperInfo.assessmentBeginDate)
@@ -469,11 +468,11 @@ with CAPids {
 
     //Для направлений на лабисследования, консультации и инструментальные иследования выводить поле "Направивший врач"
     val at = actionTypeBean.getActionTypeById(actionTypeId)
-    val flgDiagnostics = (at != null &&
-      (at.getMnemonic.toUpperCase().compareTo("LAB") == 0 ||
-        at.getMnemonic.toUpperCase().compareTo("BAK_LAB") == 0 ||
-        at.getMnemonic.toUpperCase().compareTo("DIAG") == 0 ||
-        at.getMnemonic.toUpperCase().compareTo("CONS") == 0))
+    val flgDiagnostics = at != null &&
+      (at.getMnemonic.toUpperCase.compareTo("LAB") == 0 ||
+        at.getMnemonic.toUpperCase.compareTo("BAK_LAB") == 0 ||
+        at.getMnemonic.toUpperCase.compareTo("DIAG") == 0 ||
+        at.getMnemonic.toUpperCase.compareTo("CONS") == 0)
     if (flgDiagnostics) {
       listForSummary.add(ActionWrapperInfo.executorId)
       listForSummary.add(ActionWrapperInfo.assignerId)
@@ -487,28 +486,27 @@ with CAPids {
       listForConverter,
       listForSummary,
       authData,
-      postProcessing(event) _,
+      postProcessing(event),
       null)
   }
 
   //запрос на структуру первичного мед. осмотра с копированием данных из предыдущего осмотра
   def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int) = {
-    var lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
+    val lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
     try {
-      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Document", authData, postProcessing() _, false) //postProcessingWithCopy _, true)
+      primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Document", authData, postProcessing(), false) //postProcessingWithCopy _, true)
     }
     catch {
-      case e: Exception => {
+      case e: Exception =>
         getStructOfPrimaryMedExam(actionTypeId, -1, authData)
-      }
     }
 
   }
 
   private def isNotifableAction(at: ActionType): Boolean = {
-    var notifiableFlatCodes = Array("TransfusionTherapy", "moving", "received", "del_moving", "del_received")
+    val notifiableFlatCodes = Array("TransfusionTherapy", "moving", "received", "del_moving", "del_received")
     notifiableFlatCodes :+ FlatCode.getPrescriptionCodeList // append prescriptions flat codes
-    return at.getFlatCode.startsWith("trfuProcedure_trfu") || notifiableFlatCodes.contains(at.getFlatCode)
+    at.getFlatCode.startsWith("trfuProcedure_trfu") || notifiableFlatCodes.contains(at.getFlatCode)
   }
 
 
@@ -549,12 +547,10 @@ with CAPids {
   }
 
   private def notifyAction(actions:  java.util.List[Action], baseUri: URI): java.lang.Boolean = {
-    val uri = URI.create(baseUri.toString.replace("/rest/", "/"))
     actions.toList.foreach(action => {
       notificationBeanLocal.sendNotification(action)
     })
-
-    return true
+    true
   }
 
   private def postProcessingForDiagnosis(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
@@ -861,7 +857,7 @@ with CAPids {
 
     validateDocumentsAvailability(eventId)
 
-    val isPrimary = (data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt) == 0).getOrElse(null) != null) //Врач прописывается только для первичного осмотра  (ид=139)
+    val isPrimary = data.getData.find(ce => ce.getTypeId.compareTo(i18n("db.actionType.primary").toInt) == 0).orNull != null //Врач прописывается только для первичного осмотра  (ид=139)
     if (isPrimary)
       appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
 
@@ -872,7 +868,7 @@ with CAPids {
       authData,
       baseUri,
       notifyAction,
-      postProcessing() _)
+      postProcessing())
 
     returnValue
   }
@@ -902,7 +898,7 @@ with CAPids {
   private def validateDocumentsAvailability(eventId: Int) = {
     val event = dbEventBean.getEventById(eventId)
     if (event == null)
-      throw new CoreException(i18n("settings.path.eventBlockTime").format(eventId));
+      throw new CoreException(i18n("settings.path.eventBlockTime").format(eventId))
 
     //, Нельзя создавать документы для закрытой госпитализации,
     // если прошло больше дней, чем указанно в конфигурации
@@ -914,12 +910,10 @@ with CAPids {
           throw new CoreException("Редактирование документов разрешено только в течении " + Integer.parseInt(availableDays) + " после закрытия истории болезни")
         }
       } catch {
-        case e: NumberFormatException => {
+        case e: NumberFormatException =>
           throw new CoreException("Невозможно обработать значение свойства " + i18n("settings.path.eventBlockTime") + " - " + availableDays)
-        }
-        case e: Throwable => {
+        case e: Throwable =>
           throw new CoreException(i18n("error.unknownError"))
-        }
       }
     }
   }
@@ -933,7 +927,7 @@ with CAPids {
     val json_data = primaryAssessmentBean.getPrimaryAssessmentById(assessmentId,
       "Assessment",
       authData,
-      postProcessing() _, false)
+      postProcessing(), false)
 
     json_data
   }
@@ -954,9 +948,9 @@ with CAPids {
       requestData.page - 1,
       requestData.sortingFieldInternal,
       requestData.filter.unwrap(),
-      requestData.rewriteRecordsCount _,
+      requestData.rewriteRecordsCount,
       auth)
-    val actionWithLockInfoList = getActionWithLockInfoList(action_list);
+    val actionWithLockInfoList = getActionWithLockInfoList(action_list)
     //actionBean.getActionsByEventIdWithFilter(requestData.eventId, auth, requestData)
     val assessments: AssessmentsListData = new AssessmentsListData(actionWithLockInfoList, requestData)
     assessments
@@ -970,16 +964,16 @@ with CAPids {
 
     val mapper: ObjectMapper = new ObjectMapper()
     if (action.getEndDate == null) //Если действие закрыто (перевод)
-      mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.RegistrationFormView])
+      mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationFormView])
     else
-      mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.MoveView])
+      mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MoveView])
     mapper.writeValueAsString(hospitalBedBean.getRegistryFormWithChamberList(action, authData))
   }
 
   def getMovingListForEvent(filter: HospitalBedDataListFilter, authData: AuthData) = {
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.MovesListView])
+    mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MovesListView])
     mapper.writeValueAsString(hospitalBedBean.getMovingListByEventIdAndFilter(filter, authData))
   }
 
@@ -989,7 +983,7 @@ with CAPids {
     val action = hospitalBedBean.registryPatientToHospitalBed(eventId, data, authData)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.RegistrationView])
+    mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationView])
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
@@ -999,7 +993,7 @@ with CAPids {
     val action = hospitalBedBean.modifyPatientToHospitalBed(actionId, data, authData)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.RegistrationView])
+    mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationView])
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
@@ -1027,12 +1021,7 @@ with CAPids {
     new HospitalBedProfilesListContainer(hospitalBedProfileBean.getAllRbHospitalBedProfiles)
   }
 
-  def getAllAvailableBedProfiles() = hospitalBedProfileBean.getAllRbHospitalBedProfiles
-
-  /*  def getFormOfAccountingMovementOfPatients(departmentId: Int) = {
-    val linear = seventhFormBean.fillInSeventhForm(departmentId, null, null/*previousMedDate, currentMedDate*/)
-    new FormOfAccountingMovementOfPatientsData(linear, null)
-  }*/
+  def getAllAvailableBedProfiles = hospitalBedProfileBean.getAllRbHospitalBedProfiles
 
   //форма 007
   def getForm007(departmentId: Int,
@@ -1047,7 +1036,7 @@ with CAPids {
     val action = hospitalBedBean.movingPatientToDepartment(eventId, data, authData)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.MoveView])
+    mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MoveView])
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
@@ -1067,14 +1056,14 @@ with CAPids {
     action.setStatus(2) //A little piece of magic - 2 is a status of CLOSED action
     actionBean.updateAction(action)
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[ActionDataContainer])
+    mapper.getSerializationConfig.withView(classOf[ActionDataContainer])
     mapper.writeValueAsString(new ActionDataContainer(action))
   }
 
   def insertOrUpdateQuota(quotaData: QuotaData, eventId: Int, auth: AuthData) = {
     var quota = appealBean.insertOrUpdateClientQuoting(quotaData.getData, eventId, auth)
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaCreate])
+    mapper.getSerializationConfig.withView(classOf[QuotaViews.DynamicFieldsQuotaCreate])
     if (quotaData.getData.getId > 0) {
       quota = dbClientQuoting.getClientQuotingById(quotaData.getData.getId)
     }
@@ -1091,10 +1080,10 @@ with CAPids {
       request.sortingFieldInternal,
       request.sortingMethod,
       request.filter,
-      request.rewriteRecordsCount _)
+      request.rewriteRecordsCount)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[QuotaViews.DynamicFieldsQuotaHistory])
+    mapper.getSerializationConfig.withView(classOf[QuotaViews.DynamicFieldsQuotaHistory])
     mapper.writeValueAsString(new QuotaListData(quotaList, request))
   }
 
@@ -1117,7 +1106,7 @@ with CAPids {
       requestData.sortingFieldInternal,
       requestData.sortingMethod,
       requestData.filter,
-      requestData.rewriteRecordsCount _)
+      requestData.rewriteRecordsCount)
     new TalonSPODataList(map, requestData)
   }
 
@@ -1128,7 +1117,7 @@ with CAPids {
       requestData.page - 1,
       requestData.sortingFieldInternal,
       requestData.filter.unwrap(),
-      requestData.rewriteRecordsCount _),
+      requestData.rewriteRecordsCount),
       requestData)
 
 
@@ -1169,13 +1158,13 @@ with CAPids {
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbCustomQueryBean.getCountDiagnosticsWithFilter(requestData.filter))
     var actions: java.util.List[Action] = null
-    if (requestData.getRecordsCount() > 0) {
+    if (requestData.getRecordsCount > 0) {
       actions = dbCustomQueryBean.getAllDiagnosticsWithFilter(requestData.page - 1,
         requestData.limit,
         requestData.sortingFieldInternal,
         requestData.filter.unwrap())
     }
-    var ajtList = new ju.LinkedList[(Action, JobTicket)]()
+    val ajtList = new ju.LinkedList[(Action, JobTicket)]()
     if (actions != null && actions.size() > 0) {
       actions.foreach(a => {
         ajtList.add((a, dbJobTicketBean.getJobTicketForAction(a.getId.intValue())))
@@ -1194,9 +1183,9 @@ with CAPids {
 
     //<= Изменить запрос (ждем отклик)
     //requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
-    var citoActionsCount = 0;
+    var citoActionsCount = 0
     if (beginDate > 0) {
-      citoActionsCount = actionBean.getActionForDateAndPacientInQueueType(beginDate, 1).toInt;
+      citoActionsCount = actionBean.getActionForDateAndPacientInQueueType(beginDate, 1).toInt
     }
 
     new FreePersonsListDataFilter()
@@ -1215,23 +1204,23 @@ with CAPids {
     val count = actionTypeBean.getCountAllActionTypeWithFilter(request.filter)
 
     val result = count match {
-      case 0 => {
-        val actionType = if (request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getGroupId() > 0) {
-          actionTypeBean.getActionTypeById(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getGroupId())
-        } else if (request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode() != null &&
-          request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode().compareTo("") != 0) {
-          val types = actionTypeBean.getActionTypesByCode(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode())
+      case 0 =>
+        val actionType = if (request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getGroupId > 0) {
+          actionTypeBean.getActionTypeById(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getGroupId)
+        } else if (request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode != null &&
+          request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode.compareTo("") != 0) {
+          val types = actionTypeBean.getActionTypesByCode(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode)
           if (types != null && types.size() > 0) {
             val mnems = request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getMnemonics
             types.find(p => {
               if (mnems != null && mnems.size() > 0) {
-                val ress = mnems.find(mnem => mnem.compareTo(p.getMnemonic) == 0).getOrElse(null)
+                val ress = mnems.find(mnem => mnem.compareTo(p.getMnemonic) == 0).orNull
                 if (ress != null) true else false
               }
               else {
                 p.getMnemonic.compareTo("") == 0
               }
-            }).getOrElse(null)
+            }).orNull
           } else null
         } else null
 
@@ -1257,19 +1246,15 @@ with CAPids {
         listForSummary.add(ActionWrapperInfo.multiplicity)
         listForSummary.add(ActionWrapperInfo.finance)
         listForSummary.add(ActionWrapperInfo.plannedEndDate)
-        //listForSummary.add(ActionWrapperInfo.toOrder)
 
         //Для направлений на лабисследования, консультации и инструментальные иследования выводить поле "Направивший врач"
         val mnemonics = request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getMnemonics
-        val flgDiagnostics = (
-          mnemonics != null &&
-            mnemonics.size() > 0 &&
-            (mnemonics.filter(p => (p.toUpperCase().compareTo("LAB") == 0 ||
-              p.toUpperCase().compareTo("BAK_LAB") == 0 ||
-              p.toUpperCase().compareTo("DIAG") == 0 ||
-              p.toUpperCase().compareTo("CONS") == 0))
-              ).size > 0
-          )
+        val flgDiagnostics = mnemonics != null &&
+          mnemonics.size() > 0 &&
+          mnemonics.exists(p => p.toUpperCase.compareTo("LAB") == 0 ||
+            p.toUpperCase.compareTo("BAK_LAB") == 0 ||
+            p.toUpperCase.compareTo("DIAG") == 0 ||
+            p.toUpperCase.compareTo("CONS") == 0)
 
         if (flgDiagnostics) {
           listForSummary.add(ActionWrapperInfo.executorId)
@@ -1281,12 +1266,10 @@ with CAPids {
         }
         json.setRequestData(request)
         json
-      }
-      case _ => {
+      case _ =>
         val mapper: ObjectMapper = new ObjectMapper()
-        mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.OneLevelView]); //плоская структурв
-        mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter _))
-      }
+        mapper.getSerializationConfig.withView(classOf[ActionTypesListDataViews.OneLevelView]); //плоская структурв
+        mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter))
     }
     result
   }
@@ -1301,8 +1284,8 @@ with CAPids {
 
   //********* Диагнозтические исследования **********
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    val json = directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB", auth, postProcessingForDiagnosis _)
-    json.getData().map(entity => entity.getId().intValue()).foreach(a_id => {
+    val json = directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB", auth, postProcessingForDiagnosis)
+    json.getData.map(entity => entity.getId.intValue()).foreach(a_id => {
       val action = actionBean.getActionById(a_id)
       if (action.getStatus == 2 && !action.getIsUrgent) {
         directionBean.sendActionToLis(a_id)
@@ -1313,15 +1296,15 @@ with CAPids {
   }
 
   def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB", auth, postProcessingForDiagnosis _) // postProcessingForDiagnosis
+    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB", auth, postProcessingForDiagnosis) // postProcessingForDiagnosis
   }
 
   def insertInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG", auth, postProcessingForDiagnosis _) // postProcessingForDiagnosis
+    directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG", auth, postProcessingForDiagnosis) // postProcessingForDiagnosis
   }
 
   def modifyInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG", auth, postProcessingForDiagnosis _) // postProcessingForDiagnosis
+    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG", auth, postProcessingForDiagnosis) // postProcessingForDiagnosis
   }
 
   def insertConsultation(request: ConsultationRequestData, authData: AuthData) = {
@@ -1333,7 +1316,7 @@ with CAPids {
 
   def modifyConsultation(request: ConsultationRequestData, authData: AuthData) = {
     val actionId = directionBean.createConsultation(request, authData)
-    var json = directionBean.getDirectionById(actionId, "Consultation", null, authData)
+    val json = directionBean.getDirectionById(actionId, "Consultation", null, authData)
     json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
     json
   }
@@ -1343,8 +1326,8 @@ with CAPids {
   }
 
   def checkCountOfConsultations(eventId: Int, pqt: Int, executorId: Int, data: Long) {
-    var executor = dbStaff.getStaffById(executorId)
-    var actionsCount = actionBean.getActionForEventAndPacientInQueueType(eventId, data, pqt)
+    val executor = dbStaff.getStaffById(executorId)
+    val actionsCount = actionBean.getActionForEventAndPacientInQueueType(eventId, data, pqt)
     if (pqt == 1) {
       if (executor.getMaxCito <= 0 || executor.getMaxCito <= actionsCount) {
         throw new CoreException(ConfigManager.Messages("error.citoLimit"))
@@ -1357,8 +1340,8 @@ with CAPids {
   }
 
   def getPlannedTime(actionId: Int) = {
-    var a = actionBean.getActionById(actionId)
-    var action19 = actionBean.getEvent29AndAction19ForAction(a)
+    val a = actionBean.getActionById(actionId)
+    val action19 = actionBean.getEvent29AndAction19ForAction(a)
     val apva = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
     val filter = new FreePersonsListDataFilter(0,
       a.getExecutor.getId.intValue(),
@@ -1368,7 +1351,7 @@ with CAPids {
     val timesAP = dbStaff.getActionPropertyForPersonByRequest(filter)
     if (timesAP != null) {
       val timesAPV = actionPropertyBean.getActionPropertyValue(timesAP)
-      var data = new ScheduleContainer(timesAPV.get(apva.getId.getIndex).asInstanceOf[APValueTime])
+      val data = new ScheduleContainer(timesAPV.get(apva.getId.getIndex).asInstanceOf[APValueTime])
       data
     } else {
       null
@@ -1411,9 +1394,9 @@ with CAPids {
     set.add("mkb")
 
     if (set.contains(request.filter.asInstanceOf[MKBListRequestDataFilter].view)) {
-      mapper.getSerializationConfig().setSerializationView(classOf[AllMKBListDataViews.OneLevelView]); //плоская структурв
+      mapper.getSerializationConfig.withView(classOf[AllMKBListDataViews.OneLevelView]); //плоская структурв
     } else {
-      mapper.getSerializationConfig().setSerializationView(classOf[AllMKBListDataViews.DefaultView]); //дерево
+      mapper.getSerializationConfig.withView(classOf[AllMKBListDataViews.DefaultView]); //дерево
     }
     mapper.writeValueAsString(new AllMKBListData(mkbs, mkbs_display, request))
   }
@@ -1432,181 +1415,159 @@ with CAPids {
     val mapper: ObjectMapper = new ObjectMapper()
 
     val list: java.util.LinkedList[Object] = dictName match {
-      case null => {
-        null
-      }
-      case "bloodTypes" |
-           "bloodPhenotype" => {
+      case null => null
+      case "bloodTypes" | "bloodPhenotype" =>
         //Группы крови
         val tableName: String = if (dictName.equals("bloodTypes")) "RbBloodType" else "RbBloodPhenotype"
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbBloodTypeBean.getCountOfBloodTypesWithFilter(request.filter, tableName))
         dbBloodTypeBean.getAllBloodTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(), tableName)
-      }
-      case "relationships" => {
+      case "relationships" =>
         //Типы родственных связей
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbRelationTypeBean.getCountOfRelationsWithFilter(request.filter))
         dbRelationTypeBean.getAllRelationsWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "citizenships" => {
+      case "citizenships" =>
         //Гражданство
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "citizenships2" => {
+      case "citizenships2" =>
         //Второе гражданство
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "socStatus" => {
+      case "socStatus" =>
         //Соц статусы
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "TFOMS" => {
+      case "TFOMS" =>
         //ТФОМС
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.TFOMSView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.TFOMSView])
         request.setRecordsCount(dbOrganizationBean.getCountOfOrganizationWithFilter(request.filter))
         dbOrganizationBean.getAllOrganizationWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "clientDocument" => {
+      case "clientDocument" =>
         //Типы документов, удостоверяющих личность
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.ClientDocumentView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.ClientDocumentView])
         request.setRecordsCount(dbDocumentTypeBean.getCountOfDocumentTypesWithFilter(request.filter))
         dbDocumentTypeBean.getAllDocumentTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "insurance" => {
+      case "insurance" =>
         //Страховые компании
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.InsuranceView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.InsuranceView])
         request.setRecordsCount(dbOrganizationBean.getCountOfOrganizationWithFilter(request.filter))
         dbOrganizationBean.getAllOrganizationWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "policyTypes" => {
+      case "policyTypes" =>
         //Тип полиса
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.PolicyTypeView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.PolicyTypeView])
         request.setRecordsCount(dbRbPolicyTypeBean.getCountOfRbPolicyTypeWithFilter(request.filter))
         dbRbPolicyTypeBean.getAllRbPolicyTypeWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "disabilityTypes" => {
+      case "disabilityTypes" =>
         //Тип инвалидности
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "KLADR" => {
+      case "KLADR" =>
         //адреса по кладру
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.KLADRView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.KLADRView])
         request.setRecordsCount(dbSchemeKladrBean.getCountOfKladrRecordsWithFilter(request.filter))
         dbSchemeKladrBean.getAllKladrRecordsWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "valueDomain" => {
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.ValueDomainView]);
+      case "valueDomain" =>
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.ValueDomainView])
         //request.setRecordsCount(dbSchemeKladrBean.getCountOfKladrRecordsWithFilter(request.filter))
         actionPropertyTypeBean.getActionPropertyTypeValueDomainsWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "specialities" => {
+      case "specialities" =>
         //  Специальности
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbSpeciality.getCountOfBloodTypesWithFilter(request.filter))
         dbSpeciality.getAllSpecialitiesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "contactTypes" => {
+      case "contactTypes" =>
         //  Типы контактов
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbRbContactType.getCountOfAllRbContactTypesWithFilter(request.filter))
         dbRbContactType.getAllRbContactTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
-      }
-      case "requestTypes" => {
+      case "requestTypes" =>
         //  Типы обращений
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.RequestTypesView])
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.RequestTypesView])
         dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
-          request.rewriteRecordsCount _)
-      }
-      case "finance" => {
+          request.rewriteRecordsCount)
+      case "finance" =>
         //  Типы оплаты
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         dbRbFinance.getAllRbFinanceWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
-          request.rewriteRecordsCount _)
-      }
-      case "quotaStatus" => {
+          request.rewriteRecordsCount)
+      case "quotaStatus" =>
         //   Статусы квот
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
-          request.rewriteRecordsCount _)
-      }
-      case "tissueTypes" => {
+          request.rewriteRecordsCount)
+      case "tissueTypes" =>
         //Типы исследования
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         dbRbTissueType.getAllRbTissueTypeWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
-          request.rewriteRecordsCount _)
-      }
-      case "operationTypes" => {
+          request.rewriteRecordsCount)
+      case "operationTypes" =>
         //Типы операций
-        mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
         dbRbOperationType.getAllRbOperationTypeWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
-          request.rewriteRecordsCount _)
-      }
+          request.rewriteRecordsCount)
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
   }
@@ -1616,7 +1577,7 @@ with CAPids {
       request.limit,
       request.sortingFieldInternal,
       request.filter.unwrap(),
-      request.rewriteRecordsCount _)
+      request.rewriteRecordsCount)
     new GroupTypesListData(quotaTypes, request)
   }
 
@@ -1632,13 +1593,13 @@ with CAPids {
 
   def getEventTypes(request: ListDataRequest, authData: AuthData) = {
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
+    mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
 
     val list = dbEventTypeBean.getEventTypesByRequestTypeIdAndFinanceId(request.page - 1,
       request.limit,
       request.sortingFieldInternal,
       request.filter.unwrap(),
-      request.rewriteRecordsCount _)
+      request.rewriteRecordsCount)
 
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
@@ -1665,9 +1626,9 @@ with CAPids {
     val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request, request.filter)
     //пересоберем мапу и сгруппируем по жобТикету
     var actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
-    var map = new mutable.LinkedHashMap[JobTicket, LinkedList[(Action, ActionTypeTissueType)]]
+    var map = new mutable.LinkedHashMap[JobTicket, util.LinkedList[(Action, ActionTypeTissueType)]]
     if (!res.isEmpty) {
-      request.rewriteRecordsCount(res.size())
+      request.rewriteRecordsCount(res.size().toLong)
       var firstJobTicket = res.iterator.next()._3
       res.foreach(f => {
         if (firstJobTicket.getId.intValue() == f._3.getId.intValue()) {
@@ -1685,8 +1646,8 @@ with CAPids {
       if (actions.size() > 0 || map.size == 0) map += (firstJobTicket -> actions)
     }
     new TakingOfBiomaterialData(map,
-      hospitalBedBean.getLastMovingActionForEventId _,
-      actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+      hospitalBedBean.getLastMovingActionForEventId,
+      actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds,
       request)
   }
 
@@ -1723,7 +1684,7 @@ with CAPids {
     appealBean.setExecPersonForAppeal(eventId, personId, authData, ExecPersonSetType.EP_SET_IN_LPU)
   }
 
-  def getLayoutAttributes() = new LayoutAttributeListData(dbLayoutAttributeBean.getAllLayoutAttributes)
+  def getLayoutAttributes = new LayoutAttributeListData(dbLayoutAttributeBean.getAllLayoutAttributes)
 
   def getBakResult(actionId: Int, authData: AuthData): BakLabResultDataContainer = {
     val response = dbBbtResponseBean.get(actionId)
@@ -1755,20 +1716,18 @@ with CAPids {
 
 
     // Убираем значения не заданных полей, если задан параметр fields
-    if (fields != null && !fields.isEmpty) {
+    if (fields != null && fields.nonEmpty) {
       templates.foreach(template => {
         classOf[RbPrintTemplate].getDeclaredFields.foreach(f => {
           if (!fields.contains(f.getName)) {
             f.getType match {
-              case t if (t.equals(classOf[String])) => {
-                f.setAccessible(true);
+              case t if t.equals(classOf[String]) =>
+                f.setAccessible(true)
                 f.set(template, null)
-              }
-              case t if (t.equals(classOf[Integer])) => {
-                f.setAccessible(true);
+              case t if t.equals(classOf[Integer]) =>
+                f.setAccessible(true)
                 f.set(template, null)
-              }
-              case _ => {}
+              case _ =>
             }
           }
         })
@@ -1826,12 +1785,12 @@ with CAPids {
 
   def lock(actionId: Int, auth: AuthData): LockData = {
     val appLockDetail: AppLockDetail = authStorage.getAppLock(auth.getAuthToken, "Action", actionId)
-    return new LockData(appLockDetail.getId.getMasterId)
+    new LockData(appLockDetail.getId.getMasterId)
   }
 
   def prolongLock(actionId: Int, auth: AuthData): LockData = {
     val appLockDetail: AppLockDetail = authStorage.prolongAppLock(auth.getAuthToken, "Action", actionId)
-    return new LockData(appLockDetail.getId.getMasterId)
+    new LockData(appLockDetail.getId.getMasterId)
   }
 
   def releaseLock(actionId: Int, auth: AuthData) {
