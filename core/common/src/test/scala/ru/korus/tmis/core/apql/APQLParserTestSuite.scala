@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.apql
 
-import org.scalatest.Assertions
+import org.scalatest.testng.TestNGSuite
 import org.testng.annotations.Test
 
 /**
@@ -8,7 +8,7 @@ import org.testng.annotations.Test
  * Date: 9/15/14
  * Time: 2:41 PM
  */
-class APQLParserTest extends Assertions {
+class APQLParserTestSuite extends TestNGSuite {
 
   @Test def parseCondition() = parse(
     """IF (getActionsByEvent(12, "typeCode").first().properties().containsValueOf("propertyCode"))
