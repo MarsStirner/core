@@ -56,6 +56,7 @@ class APQLProcessor {
     case l: NumericLiteral => new IntegerValue(Integer.valueOf(l.value))
     case l: StringLiteral => new StringValue(l.value)
     case l: BooleanLiteral => new BooleanValue(l.value)
+    case _ => ???
   }
 
   private object GlobalObject extends ExpressionValue {
