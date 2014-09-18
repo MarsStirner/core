@@ -28,6 +28,7 @@ import scala.Predef._
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.language.reflectiveCalls
 
 /**
  * User: idmitriev

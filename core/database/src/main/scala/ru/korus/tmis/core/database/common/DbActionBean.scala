@@ -17,6 +17,7 @@ import ru.korus.tmis.schedule.QueueActionParam
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import ru.korus.tmis.core.database.DbActionTypeBeanLocal
 import org.joda.time.{DateTimeConstants, DateTime}
+import scala.language.reflectiveCalls
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

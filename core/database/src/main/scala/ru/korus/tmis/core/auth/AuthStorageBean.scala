@@ -18,6 +18,7 @@ import java.util
 import java.lang
 import ru.korus.tmis.core.entity.model.{Action, AppLockDetailPK, AppLockDetail, AppLock}
 import ru.korus.tmis.core.lock.{EntityLockInfo, ActionWithLockInfo}
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)

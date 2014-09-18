@@ -23,6 +23,7 @@ import java.util
 import util.Calendar
 import ru.korus.tmis.scala.util.{General, I18nable, ConfigManager}
 import ru.korus.tmis.core.entity.model.kladr.{Street, Kladr}
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

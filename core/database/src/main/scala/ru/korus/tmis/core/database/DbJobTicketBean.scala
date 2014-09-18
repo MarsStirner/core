@@ -18,6 +18,7 @@ import java.util.Date
 import java.text.SimpleDateFormat
 import java.util
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 /**
  * Методы для работы с JobTicket

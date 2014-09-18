@@ -14,6 +14,7 @@ import org.eclipse.persistence.jpa.JpaEntityManager
 import javax.ejb.{SessionContext, TransactionAttributeType, Stateless, TransactionAttribute}
 import javax.annotation.Resource
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

@@ -13,6 +13,7 @@ import collection.JavaConversions
 import java.util
 import org.codehaus.jackson.map.ObjectMapper
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 /**
  * Типы возможных View для сериализации данных в контейнерах ReceivedPatients

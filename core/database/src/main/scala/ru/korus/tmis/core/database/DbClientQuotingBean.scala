@@ -13,6 +13,7 @@ import ru.korus.tmis.core.exception.CoreException
 import javax.swing.table.TableModel
 import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 /**
  * Класс с методами для работы с таблицей s11r64.Client_Quoting

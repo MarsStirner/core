@@ -13,6 +13,7 @@ import java.util.Date
 import javax.annotation.Nullable
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
+import scala.language.reflectiveCalls
 
 /**
  * Методы для работы с TakenTissueJournal

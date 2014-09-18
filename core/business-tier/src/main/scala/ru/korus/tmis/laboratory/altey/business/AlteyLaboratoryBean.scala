@@ -37,6 +37,7 @@ import scala.collection.mutable
 import ru.korus.tmis.scala.util.{General, I18nable, ConfigManager}
 import scala.Some
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 //@Remote(Array(classOf[LaboratoryBeanLocal]))

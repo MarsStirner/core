@@ -5,6 +5,7 @@ import java.util.{List => JList, LinkedList}
 
 import org.junit.Assert._
 import ru.korus.tmis.scala.util.I18nable
+import scala.language.reflectiveCalls
 
 
 class I18nableTest {

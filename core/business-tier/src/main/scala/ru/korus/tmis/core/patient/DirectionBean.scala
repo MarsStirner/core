@@ -31,7 +31,7 @@ import ru.korus.tmis.schedule.{PacientInQueueType, PersonScheduleBeanLocal, Queu
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
-
+import scala.language.reflectiveCalls
 
 /**
  * Методы для работы с Направлениями

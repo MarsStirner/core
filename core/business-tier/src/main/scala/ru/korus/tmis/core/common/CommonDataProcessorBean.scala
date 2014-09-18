@@ -27,6 +27,7 @@ import ru.korus.tmis.core.entity.model.ActionStatus
 import javax.persistence.{EntityManager, PersistenceContext}
 import scala.List
 import scala.collection.JavaConverters._
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

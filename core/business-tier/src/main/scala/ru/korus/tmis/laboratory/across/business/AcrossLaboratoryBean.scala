@@ -26,6 +26,7 @@ import ru.korus.tmis.laboratory.across.{ws => lab2}
 import ru.korus.tmis.scala.util.Types.JList
 import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 import ru.korus.tmis.util.CompileTimeConfigManager
+import scala.language.reflectiveCalls
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable

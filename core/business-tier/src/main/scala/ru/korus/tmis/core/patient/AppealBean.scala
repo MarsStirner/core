@@ -18,7 +18,6 @@ import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import org.joda.time.{DateTime, Years}
 import scala.language.reflectiveCalls
-;
 
 @Stateless
 class AppealBean extends AppealBeanLocal

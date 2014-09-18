@@ -12,7 +12,7 @@ import org.slf4j.{LoggerFactory, Logger}
 import util.{TimeZone, Date}
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-
+import scala.language.reflectiveCalls
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

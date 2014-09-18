@@ -8,6 +8,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.OrgStructureHospitalBed
 import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.I18nable
+import scala.language.reflectiveCalls
 
 /**
  * User: idmitriev

@@ -14,6 +14,7 @@ import ru.korus.tmis.core.entity.model.{BloodKell, Staff, Patient, ClientRelatio
 import scala.collection.JavaConversions._
 import scala.util.control.Breaks._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

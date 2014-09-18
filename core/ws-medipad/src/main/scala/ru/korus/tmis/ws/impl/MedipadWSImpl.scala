@@ -19,7 +19,7 @@ import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.patient._
 import java.util._
 import ru.korus.tmis.scala.util.{Defaultible, I18nable, ConfigManager}
-
+import scala.language.reflectiveCalls
 
 @Named
 @WebService(
