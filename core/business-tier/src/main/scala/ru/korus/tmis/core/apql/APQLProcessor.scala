@@ -128,7 +128,10 @@ class APQLProcessor {
     val equals = Method("equals", List(classOf[IntegerValue]),
       (args: List[ExpressionValue]) => new BooleanValue(this.value.equals(args.head.asInstanceOf[IntegerValue].value)))
 
-    def methods = List(equals)
+    val summ = Method("summ", List(classOf[IntegerValue]),
+      (args: List[ExpressionValue]) => new IntegerValue(this.value + args.head.asInstanceOf[IntegerValue].value))
+
+    def methods = List(equals, summ)
 
   }
 
