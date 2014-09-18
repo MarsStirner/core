@@ -17,6 +17,7 @@ import java.util
 import collection.JavaConversions
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import beans.BeanProperty
+import scala.language.reflectiveCalls
 
 /**
  * Dynamic Filters

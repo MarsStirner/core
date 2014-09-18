@@ -12,6 +12,7 @@ import ru.korus.tmis.core.filter.AbstractListDataFilter
 import java.util
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 /**
  * Набор View для сериализации HospitalBedEntry
