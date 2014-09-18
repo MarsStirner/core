@@ -122,7 +122,7 @@ public class RisarRestService {
         logger.info("RISAR notification. Find result: " + resultStr);
         RisarResponse result =  new Gson().fromJson(resultStr, RisarResponse.class);
         if (!result.isOk()) {
-            throw new CoreException("RISAR find patient error:" + result);
+            throw new CoreException("RISAR notification. Find patient error:" + result);
         }
 
         List<ClientIdentification> res = new LinkedList<ClientIdentification>();
@@ -130,7 +130,7 @@ public class RisarRestService {
         return res;
     }
 
-    private ClientIdentification createNewIdentification(Patient patient, RisarResponse result) {
+    private ClientIdentification createNewIdentification(Patient patient, RisarResponse result) throws CoreException {
         final ClientIdentification identification = new ClientIdentification();
         identification.setClient(patient);
         identification.setIdentifier(result.getPatientId());
@@ -144,9 +144,12 @@ public class RisarRestService {
         return identification;
     }
 
-    private AccountingSystem findOrCreateAccountingSystem() {
+    private AccountingSystem findOrCreateAccountingSystem() throws CoreException {
         List<AccountingSystem> res = em.createQuery("SELECT accountingSystem FROM AccountingSystem accountingSystem WHERE accountingSystem.code = 'rs'", AccountingSystem.class).
                 setMaxResults(100).getResultList();
+        if (res.isEmpty()) {
+            throw new CoreException("RISAR notification. Patient registration error. Not found rbAccountingSystem.code = 'rs'");
+        }
         return res.iterator().next();
     }
 
