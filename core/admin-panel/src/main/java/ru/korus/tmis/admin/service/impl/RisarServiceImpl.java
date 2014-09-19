@@ -11,6 +11,7 @@ import ru.korus.tmis.admin.service.AllSettingsService;
 import ru.korus.tmis.admin.service.RisarService;
 import ru.korus.tmis.scala.util.ConfigManager;
 
+import java.net.MalformedURLException;
 import java.net.URL;
 
 /**
@@ -44,20 +45,33 @@ public class RisarServiceImpl implements RisarService {
             logger.info("RISAR base URL test. send GET to: ", urlFind);
             String resultStr = rest.getForObject(urlFind, String.class);
             logger.info("RISAR base URL test. response: ", resultStr);
+            risarSettings.setErrorMsg(null);
             return RisarSettings.ValidationState.OK;
         } catch (RestClientException ex ){
             logger.error("RISAR base URL test. error: ", ex);
-            return RisarSettings.ValidationState.WRONG;
+            return setWrongUrlStatus(url.toString());
         }
+    }
+
+    private RisarSettings.ValidationState setWrongUrlStatus(String url) {
+        risarSettings.setErrorMsg("wrong url: " + url);
+        return RisarSettings.ValidationState.WRONG;
     }
 
     @Override
     public void updateRisarUrl(URL url) {
         if(checkUrl(url) == RisarSettings.ValidationState.OK) {
             allSettingsService.save("Risar.ServiceUrl", url.toString());
-            risarSettings.setErrorMsg(null);
-        } else {
-            risarSettings.setErrorMsg("wrong url: " + url);
+        }
+    }
+
+    @Override
+    public RisarSettings.ValidationState checkUrl(String url) {
+        try {
+            return checkUrl(new URL(url));
+        } catch (MalformedURLException e) {
+            logger.error("RISAR base URL test. error: ", e);
+            return setWrongUrlStatus(url);
         }
 
     }

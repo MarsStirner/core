@@ -11,9 +11,12 @@ import java.net.URL;
  * Description:  <br>
  */
 public interface RisarService {
+
     RisarSettings getRisarSettings();
 
-    RisarSettings.ValidationState checkUrl(URL url);
-
     void updateRisarUrl(URL url);
+
+    RisarSettings.ValidationState checkUrl(String url);
+
+    RisarSettings.ValidationState checkUrl(URL url);
 }

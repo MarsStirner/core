@@ -16,7 +16,9 @@ public class RisarSettings {
 
     private URL url;
 
-    private ValidationState validationState = ValidationState.UNCHECKED;
+    private Integer check = 0;
+
+    private ValidationState validationState = RisarSettings.ValidationState.UNCHECKED;
 
     private String errorMsg;
 
@@ -41,6 +43,19 @@ public class RisarSettings {
     }
 
     public void setErrorMsg(String errorMsg) {
+        if(errorMsg == null) {
+            setValidationState(ValidationState.OK);
+        } else {
+            setValidationState(ValidationState.WRONG);
+        }
         this.errorMsg = errorMsg;
+    }
+
+    public Integer getCheck() {
+        return check;
+    }
+
+    public void setCheck(Integer check) {
+        this.check = check;
     }
 }

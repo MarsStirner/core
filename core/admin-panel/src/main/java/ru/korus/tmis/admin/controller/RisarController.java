@@ -6,6 +6,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
 import ru.korus.tmis.admin.model.RisarSettings;
 import ru.korus.tmis.admin.service.RisarService;
 
@@ -36,13 +37,11 @@ public class RisarController implements Serializable {
 
     @RequestMapping(value = "url", method = RequestMethod.POST)
     public String updateUrl(@ModelAttribute RisarSettings risarSettings, Map<String, Object> model, HttpServletRequest request) {
-        risarService.updateRisarUrl(risarSettings.getUrl());
-        return ViewState.RISAR.redirect();
-    }
-
-    @RequestMapping(value = "url/check", method = RequestMethod.POST)
-    public String checkUrl(@ModelAttribute RisarSettings risarSettings, Map<String, Object> model, HttpServletRequest request) {
-        risarService.checkUrl(risarSettings.getUrl());
+        if(risarSettings.getCheck() == 0) {
+            risarService.checkUrl(risarSettings.getUrl());
+        }  else {
+            risarService.updateRisarUrl(risarSettings.getUrl());
+        }
         return ViewState.RISAR.redirect();
     }
 }
