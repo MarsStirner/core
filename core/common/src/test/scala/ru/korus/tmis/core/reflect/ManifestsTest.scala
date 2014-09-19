@@ -1,21 +1,19 @@
 package ru.korus.tmis.core.reflect
 
-import org.junit.Test
-
-import org.junit.Assert._
-
 import java.lang.{Integer => JInteger}
 
+import org.scalatest.testng.TestNGSuite
+import org.testng.annotations.Test
 import ru.korus.tmis.util.reflect.Manifests
-import Manifests._;
+import Manifests._
 
-class ManifestsTest {
+class ManifestsTest extends TestNGSuite {
 
   @Test
-  def test_actuallyWorkingClassOf {
-    assertTrue(actuallyWorkingClassOf[Int] == classOf[Int])
+  def test_actuallyWorkingClassOf() {
+    assert(actuallyWorkingClassOf[Int] == classOf[Int])
 
-    assertTrue(actuallyWorkingClassOf[JInteger] == classOf[JInteger])
+    assert(actuallyWorkingClassOf[JInteger] == classOf[JInteger])
 
   }
 

@@ -1,20 +1,22 @@
 package ru.korus.tmis.core.data
 
 
-import org.junit.Test
+import java.util
+
+import org.scalatest.testng.TestNGSuite
+import org.testng.annotations.Test
 import ru.korus.tmis.util.reflect.Manifests
 import Manifests._
-import java.util.Set
 
-class ManifestsTest {
+class ManifestsTest extends TestNGSuite {
   @Test
-  def test_manifestFromClass {
+  def test_manifestFromClass() {
     // primitive
     assert(manifest[Int] == manifestFromClass(classOf[Int]))
     // class
     assert(manifest[String] == manifestFromClass(classOf[String]))
     // generic
-    assert(manifest[Set[_]] == manifestFromClass(classOf[Set[_]]))
+    assert(manifest[util.Set[_]] == manifestFromClass(classOf[util.Set[_]]))
 
     assert(manifest[Int] == manifestFromClass(java.lang.Integer.TYPE))
     assert(manifest[String] == manifestFromClass("".getClass))

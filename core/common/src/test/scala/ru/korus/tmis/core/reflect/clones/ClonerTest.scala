@@ -1,16 +1,14 @@
 package ru.korus.tmis.core.reflect.clones
 
-import org.junit.Test
+import org.scalatest.testng.TestNGSuite
+import org.testng.Assert._
 
-import org.junit.Assert._
-
-import java.lang.{Integer => JInteger}
-
+import org.testng.annotations.Test
 import ru.korus.tmis.util.reflect.clones.Cloner
 
 import ru.korus.tmis.core.entity.model._
 
-class ClonerTest {
+class ClonerTest extends TestNGSuite {
 
   // this test is intended only to check if our understanding of what google.cloning does reflects what it really does
   @Test
