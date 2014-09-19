@@ -2,13 +2,11 @@ package ru.korus.tmis.core.data
 
 import java.io.{StringReader, ByteArrayOutputStream}
 import javax.xml.bind.JAXBContext
-
-import org.scalatest.testng.TestNGSuite
 import org.testng.annotations.Test
 
-class CommonDataTest extends TestNGSuite {
+class CommonDataTest {
   @Test
-  def testJAXB() {
+  def testJAXB() = {
     val cd = new CommonData add
       (new CommonEntity(2, 42, "Нейм", "Тайп", 28, 17, "Кодовый код") add
         (new CommonGroup(3, "Нейм оф групп") add

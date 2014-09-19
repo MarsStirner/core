@@ -1,13 +1,12 @@
 package ru.korus.tmis.core.data
 
-import org.scalatest.testng.TestNGSuite
 import org.testng.annotations.Test
 import ru.korus.tmis.util.reflect.Configuration
 
 import reflect.Manifest
 import ru.korus.tmis.scala.util.StringId
 
-class ConfigurationTest extends TestNGSuite {
+class ConfigurationTest {
 
   object MockConfigManager extends Configuration {
     var setting0 = "defaultValue0"

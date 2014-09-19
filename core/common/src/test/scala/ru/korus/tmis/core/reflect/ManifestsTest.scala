@@ -2,12 +2,11 @@ package ru.korus.tmis.core.reflect
 
 import java.lang.{Integer => JInteger}
 
-import org.scalatest.testng.TestNGSuite
 import org.testng.annotations.Test
 import ru.korus.tmis.util.reflect.Manifests
 import Manifests._
 
-class ManifestsTest extends TestNGSuite {
+class ManifestsTest {
 
   @Test
   def test_actuallyWorkingClassOf() {

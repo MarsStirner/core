@@ -1,12 +1,11 @@
 package ru.korus.tmis.core.util
 
-import org.scalatest.testng.TestNGSuite
 import org.testng.annotations.Test
 import ru.korus.tmis.scala.util.I18nable
 import scala.language.reflectiveCalls
 
 
-class I18nableTestSuite extends TestNGSuite {
+class I18nableTest {
 
   object Tester extends I18nable {
     def tissueNotFoundMessage = i18n("error.takenTissueNotFound", 18)

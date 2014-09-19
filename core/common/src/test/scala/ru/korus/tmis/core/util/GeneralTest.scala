@@ -1,14 +1,12 @@
 package ru.korus.tmis.core.util
 
-
-import org.scalatest.testng.TestNGSuite
 import org.testng.annotations.Test
 import ru.korus.tmis.scala.util.{Types, General}
 import Types.{JLinked, JDouble, JInteger}
 import ru.korus.tmis.scala.util.General
 import scala.language.reflectiveCalls
 
-class GeneralTest extends TestNGSuite {
+class GeneralTest {
 
   case class TestClass(next: TestClass) {
     def getNext = next

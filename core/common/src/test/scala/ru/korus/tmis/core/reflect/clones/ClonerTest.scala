@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.reflect.clones
 
-import org.scalatest.testng.TestNGSuite
 import org.testng.Assert._
 
 import org.testng.annotations.Test
@@ -8,7 +7,7 @@ import ru.korus.tmis.util.reflect.clones.Cloner
 
 import ru.korus.tmis.core.entity.model._
 
-class ClonerTest extends TestNGSuite {
+class ClonerTest {
 
   // this test is intended only to check if our understanding of what google.cloning does reflects what it really does
   @Test
