@@ -127,7 +127,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
       }
 
     } catch {
-      case e => {
+      case e: Throwable => {
         error("Error while creating LIS service endpoint", e)
         throw e
       }

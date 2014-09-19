@@ -9,6 +9,7 @@ import ru.korus.tmis.core.entity.model.fd.{FDFieldValue, FDRecord, FDField, Flat
 import ru.korus.tmis.core.exception.CoreException
 import java.util
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 //Контейнер для справочника плоских структур
 @XmlType(name = "flatDirectoryData")

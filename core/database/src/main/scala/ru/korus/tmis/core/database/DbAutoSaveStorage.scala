@@ -9,6 +9,7 @@ import javax.ejb.Stateless
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.ConfigManager
 import ru.korus.tmis.core.data.AutoSaveOutputDataContainer
+import scala.language.reflectiveCalls
 
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>

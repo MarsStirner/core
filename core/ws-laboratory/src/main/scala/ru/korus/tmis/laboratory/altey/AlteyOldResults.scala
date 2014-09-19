@@ -4,6 +4,7 @@ import grizzled.slf4j.Logging
 
 import javax.ejb.EJB
 import ru.korus.tmis.laboratory.altey.accept._
+import scala.language.reflectiveCalls
 
 
 import ru.korus.tmis.scala.util.{Types, General, I18nable}

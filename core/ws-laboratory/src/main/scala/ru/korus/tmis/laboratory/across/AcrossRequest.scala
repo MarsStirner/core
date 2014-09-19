@@ -29,7 +29,7 @@ class AcrossRequest extends AcrossRequestService with Logging with I18nable {
     try {
       labBean.sendAnalysisRequestToAcross(actionId)
     } catch {
-      case e => ()
+      case e: Throwable => ()
     }
   }
 }

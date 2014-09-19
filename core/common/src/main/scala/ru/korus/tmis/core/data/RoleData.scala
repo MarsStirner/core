@@ -11,6 +11,7 @@ import ru.korus.tmis.core.auth.AuthData
 import javax.xml.bind.annotation.XmlType._
 import ru.korus.tmis.core.entity.model.{Staff, Role}
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 /**
  * Контейнер с данными о пользователе и его ролях в системе tmis

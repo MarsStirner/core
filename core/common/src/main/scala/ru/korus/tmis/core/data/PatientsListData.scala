@@ -10,6 +10,7 @@ import collection.JavaConversions
 import collection.immutable.ListMap
 import java.util
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 object PatientsListDataViews {
   class AttendingDoctorView {}

@@ -9,6 +9,7 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.filter.AbstractListDataFilter
 import ru.korus.tmis.scala.util.ConfigManager
 import ru.korus.tmis.core.lock.{EntityLockInfo, ActionWithLockInfo}
+import scala.language.reflectiveCalls
 
 //Контейнер для списка осмотров
 @XmlType(name = "assessmentsListData")

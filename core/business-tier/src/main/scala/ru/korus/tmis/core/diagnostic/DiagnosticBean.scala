@@ -15,6 +15,7 @@ import javax.ejb.{EJB, Stateless}
 import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
