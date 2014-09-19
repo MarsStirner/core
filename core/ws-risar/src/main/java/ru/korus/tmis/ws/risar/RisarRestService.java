@@ -1,5 +1,7 @@
 package ru.korus.tmis.ws.risar;
 
+import com.google.gson.Gson;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
@@ -96,7 +98,7 @@ public class RisarRestService {
         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
         if (birthDate != null) {
             String birthDateStr = simpleDateFormat.format(birthDate);
-            map.add("birthDate:", birthDateStr);
+            map.add("birthDate", birthDateStr);
         }
         int index = 0;
         for (ClientDocument doc : patient.getClientDocuments()) {
@@ -116,10 +118,11 @@ public class RisarRestService {
         logger.info("RISAR notification. Find patient param: " + map);
         final String url = ConfigManager.Risar().ServiceUrl() + "/api/patients/v2/find/";
         logger.info("RISAR notification. Find patientt url: " + url);
-        RisarResponse result = rest.postForObject(url, map, RisarResponse.class);
-        logger.info("RISAR notification. Find result: " + result);
+        String resultStr = rest.postForObject(url, map, String.class);
+        logger.info("RISAR notification. Find result: " + resultStr);
+        RisarResponse result =  new Gson().fromJson(resultStr, RisarResponse.class);
         if (!result.isOk()) {
-            throw new CoreException("RISAR find patient error:" + result);
+            throw new CoreException("RISAR notification. Find patient error:" + result);
         }
 
         List<ClientIdentification> res = new LinkedList<ClientIdentification>();
@@ -127,7 +130,7 @@ public class RisarRestService {
         return res;
     }
 
-    private ClientIdentification createNewIdentification(Patient patient, RisarResponse result) {
+    private ClientIdentification createNewIdentification(Patient patient, RisarResponse result) throws CoreException {
         final ClientIdentification identification = new ClientIdentification();
         identification.setClient(patient);
         identification.setIdentifier(result.getPatientId());
@@ -141,9 +144,12 @@ public class RisarRestService {
         return identification;
     }
 
-    private AccountingSystem findOrCreateAccountingSystem() {
+    private AccountingSystem findOrCreateAccountingSystem() throws CoreException {
         List<AccountingSystem> res = em.createQuery("SELECT accountingSystem FROM AccountingSystem accountingSystem WHERE accountingSystem.code = 'rs'", AccountingSystem.class).
                 setMaxResults(100).getResultList();
+        if (res.isEmpty()) {
+            throw new CoreException("RISAR notification. Patient registration error. Not found rbAccountingSystem.code = 'rs'");
+        }
         return res.iterator().next();
     }
 
