@@ -35,8 +35,13 @@ public class RisarController implements Serializable {
     }
 
     @RequestMapping(value = "url", method = RequestMethod.POST)
-    public String updateOrgId(@ModelAttribute RisarSettings risarSettings, Map<String, Object> model, HttpServletRequest request) {
+    public String updateUrl(@ModelAttribute RisarSettings risarSettings, Map<String, Object> model, HttpServletRequest request) {
         risarService.updateRisarUrl(risarSettings.getUrl());
+        return ViewState.RISAR.redirect();
+    }
+
+    @RequestMapping(value = "url/check", method = RequestMethod.POST)
+    public String checkUrl(@ModelAttribute RisarSettings risarSettings, Map<String, Object> model, HttpServletRequest request) {
         risarService.checkUrl(risarSettings.getUrl());
         return ViewState.RISAR.redirect();
     }

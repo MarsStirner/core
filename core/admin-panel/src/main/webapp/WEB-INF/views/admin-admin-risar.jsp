@@ -15,7 +15,7 @@
                     <div class="row">
                         <div class="col-xs-8">
                             <div class="form-group">
-                                <form:label path="url">Базовый url API:</form:label>
+                                <form:label path="url">Базовый URL:</form:label>
                                 <div class="input-group">
                                     <form:input path="url" cssClass="form-control"/>
                                     <span class="input-group-btn">
@@ -27,13 +27,14 @@
                                     <span class="input-group-btn">
                                         <a class="btn btn-default" role="button" href="${pageContext.request.contextPath}/admin/url/check">check</a>
                                     </span>
-                                    <c:if test="${risarSettings.errorMsg != null && !risarSettings.errorMsg.isEmpty()}">
-                                    <span class="alert alert-danger">
-                                            ${risarSettings.errorMsg}
-                                    </span>
-                                    </c:if>
                                 </div>
                             </div>
+                            <c:if test="${risarSettings.errorMsg != null && !risarSettings.errorMsg.isEmpty()}">
+                                <div class="alert alert-danger">
+                                    <button type="button" class="close" data-dismiss="alert" aria-hidden="true">×</button>
+                                        ${risarSettings.errorMsg}
+                                </div>
+                            </c:if>
                         </div>
                     </div>
                     <div class="row">
