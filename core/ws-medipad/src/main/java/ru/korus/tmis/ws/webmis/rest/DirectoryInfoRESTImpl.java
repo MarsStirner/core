@@ -4,8 +4,10 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.entity.model.RbPolicyType;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.ws.impl.ReferenceBookBean;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -13,6 +15,7 @@ import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.util.Arrays;
@@ -30,6 +33,8 @@ import java.util.List;
 public class DirectoryInfoRESTImpl {
 
     @EJB private WebMisREST wsImpl;
+
+    @EJB private ReferenceBookBean referenceBookBean;
 
     //__________________________________________________________________________________________________________________
     //***********************************   СПРАВОЧНИКИ   ***********************************
@@ -97,6 +102,16 @@ public class DirectoryInfoRESTImpl {
         DictionaryListRequestDataFilter filter = new DictionaryListRequestDataFilter(dictName, headId, groupId, name, level, parent, type, capId);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getDictionary(request, dictName),callback);
+    }
+
+
+    @GET
+    @Path("/policyTypes")
+    @Produces({ "application/x-javascript", "application/xml" })
+    public JSONWithPadding getPolicyTypes(@Context HttpServletRequest servRequest,
+                                          @QueryParam("callback") String callback) {
+        List<RbPolicyType> r = referenceBookBean.getPolicyTypes(mkAuth(servRequest));
+        return new JSONWithPadding(new GenericEntity<List<RbPolicyType>>(r){}, callback);
     }
 
     /**
@@ -530,7 +545,7 @@ public class DirectoryInfoRESTImpl {
     /**
      * Функциональность данного класса под сомнением, мнемоники должны быть оторваны от ядра
      * (за исключением редких случаев и в этих случаях имена мнемоник должны храниться в файлах *.properties)
-     * Настоятельно нерекомендую пользоваться этим классом. По мере исправления исходного кода, его использующего,
+     * Настоятельно не рекомендую пользоваться этим классом. По мере исправления исходного кода, его использующего,
      * он будет удален.
      */
     @Deprecated

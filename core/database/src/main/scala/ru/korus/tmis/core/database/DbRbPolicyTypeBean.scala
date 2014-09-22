@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
-import java.lang.Iterable
+import java.util
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbPolicyType
@@ -33,7 +33,7 @@ class DbRbPolicyTypeBean
                               """
 
 
-  def getAllRbPolicyTypes(): Iterable[RbPolicyType] = {
+  def getAllRbPolicyTypes(): util.List[RbPolicyType] = {
     em.createNamedQuery("RbPolicyType.findAll", classOf[RbPolicyType]).getResultList
   }
 
