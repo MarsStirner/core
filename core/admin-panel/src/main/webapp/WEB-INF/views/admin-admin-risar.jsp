@@ -19,19 +19,10 @@
                                 <div class="input-group">
                                     <form:input path="url" cssClass="form-control"/>
                                     <span class="input-group-btn">
-                                        <form:button path="check" value="0" class="form-control btn btn-primary"><span class="glyphicon glyphicon-ok"/></button>
+                                        <button type="submit" class="form-control btn btn-primary"><span class="glyphicon glyphicon-ok"/></button>
                                     </span>
                                     <span class="input-group-btn">
                                         <button type="reset" class="form-control btn btn-default"><span class="glyphicon glyphicon-remove"/></button>
-                                    </span>
-                                    <span class="input-group-btn">
-                                        <form:button path="check" value="1" type="submit" class="form-control btn btn-default"><span
-                                                class="glyphicon glyphicon-ok"/>
-                                            <c:if test="${risarSettings.validationState == 'OK'}">
-                                                <i class="glyphicon glyphicon-ok" style="color:green"></i>
-                                            </c:if>
-                                            Check
-                                        </form:button>
                                     </span>
                                 </div>
                             </div>

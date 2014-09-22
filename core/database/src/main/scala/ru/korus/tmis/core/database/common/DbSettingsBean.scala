@@ -52,11 +52,12 @@ with I18nable {
   def getSettingByPathInMainSettings(path: String): Setting = getSetting(s11r64, path)
 
   private def getSetting(em: EntityManager, path: String ): Setting = {
-    val result: Setting = em.createQuery("SELECT s FROM Setting s WHERE s.path = :path", classOf[Setting]).setParameter("path", path).getSingleResult
-    if (result == null) {
-      new Setting
+    val result = em.createQuery("SELECT s FROM Setting s WHERE s.path = :path", classOf[Setting]).setParameter("path", path).getResultList
+    if (result.isEmpty) {
+      return null
+    } else {
+      return result.iterator().next()
     }
-    result
   }
 
   def getAllSettings: util.List[Setting] = {

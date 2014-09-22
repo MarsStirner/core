@@ -1,5 +1,6 @@
 package ru.korus.tmis.admin.model;
 
+import java.io.Serializable;
 import java.net.URL;
 
 /**
@@ -8,7 +9,7 @@ import java.net.URL;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-public class RisarSettings {
+public class RisarSettings implements Serializable {
 
     static public enum ValidationState {
         OK, WRONG, UNCHECKED;

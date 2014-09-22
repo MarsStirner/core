@@ -37,11 +37,7 @@ public class RisarController implements Serializable {
 
     @RequestMapping(value = "url", method = RequestMethod.POST)
     public String updateUrl(@ModelAttribute RisarSettings risarSettings, Map<String, Object> model, HttpServletRequest request) {
-        if(risarSettings.getCheck() == 0) {
-            risarService.checkUrl(risarSettings.getUrl());
-        }  else {
-            risarService.updateRisarUrl(risarSettings.getUrl());
-        }
+        risarService.updateRisarUrl(risarSettings.getUrl());
         return ViewState.RISAR.redirect();
     }
 }
