@@ -43,8 +43,8 @@ public class SettingsController implements Serializable {
         Object settingsList = request.getSession().getAttribute(SETTINGS_LIST);
         if(settingsList != null && settingsList instanceof Settings ) {
 
-            for(int i = 0; i < ((Settings)settingsList).getSettings().length; ++i) {
-                settings.getSettings()[i].setPath(((Settings) settingsList).getSettings()[i].getPath());
+            for(int i = 0; i < ((Settings)settingsList).getSettings().size(); ++i) {
+                settings.getSettings().get(i).setPath(((Settings) settingsList).getSettings().get(i).getPath());
             }
             allSettingsService.save(settings);
         }

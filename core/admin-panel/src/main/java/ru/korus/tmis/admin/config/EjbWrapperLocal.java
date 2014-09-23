@@ -1,13 +1,11 @@
 package ru.korus.tmis.admin.config;
 
-import org.springframework.stereotype.Service;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
-import ru.korus.tmis.core.database.common.DbSettingsBean;
 import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
+import ru.korus.tmis.core.notification.DbNotificationActionBeanLocal;
 
 import javax.ejb.Local;
-import javax.persistence.EntityManager;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -23,4 +21,6 @@ public interface EjbWrapperLocal {
     DbSettingsBeanLocal getDbSettingsBean();
 
     DbOrganizationBeanLocal getOrganizationBeanLocal();
+
+    DbNotificationActionBeanLocal getDbNotificationActionBeanLocal();
 }

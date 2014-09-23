@@ -14,6 +14,7 @@ import ru.korus.tmis.admin.controller.AuthInterceptor;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal;
 import ru.korus.tmis.core.database.common.DbSettingsBeanLocal;
+import ru.korus.tmis.core.notification.DbNotificationActionBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.naming.InitialContext;
@@ -59,6 +60,11 @@ public class MvcConfiguration extends WebMvcConfigurerAdapter {
     @Bean
     public DbOrganizationBeanLocal getOrganizationBeanLocal() throws NamingException {
         return getEjbWrapper().getOrganizationBeanLocal();
+    }
+
+    @Bean
+    public DbNotificationActionBeanLocal getDbNotificationActionBean() throws NamingException {
+        return getEjbWrapper().getDbNotificationActionBeanLocal();
     }
 
     private EjbWrapperLocal getEjbWrapper() throws NamingException {

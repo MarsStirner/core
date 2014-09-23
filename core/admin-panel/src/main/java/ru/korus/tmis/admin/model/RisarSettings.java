@@ -25,7 +25,9 @@ public class RisarSettings implements Serializable {
 
     private String errorMsg;
 
-    private List<RisarActionList> risarActionList = new ArrayList<RisarActionList>();
+    private List<RisarAction> risarActionList = new ArrayList<RisarAction>();
+
+    private List<RisarAction> risarNewActionList = new ArrayList<RisarAction>();
 
     public URL getUrl() {
         return url;
@@ -64,11 +66,19 @@ public class RisarSettings implements Serializable {
         this.check = check;
     }
 
-    public List<RisarActionList> getRisarActionList() {
+    public List<RisarAction> getRisarActionList() {
         return risarActionList;
     }
 
-    public void setRisarActionList(List<RisarActionList> risarActionList) {
+    public void setRisarActionList(List<RisarAction> risarActionList) {
         this.risarActionList = risarActionList;
+    }
+
+    public List<RisarAction> getRisarNewActionList() {
+        return risarNewActionList;
+    }
+
+    public void setRisarNewActionList(List<RisarAction> risarNewActionList) {
+        this.risarNewActionList = risarNewActionList;
     }
 }

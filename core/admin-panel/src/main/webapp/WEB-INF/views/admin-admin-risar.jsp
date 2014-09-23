@@ -46,11 +46,15 @@
                 </ul>
                 <div id='content' class="tab-content">
                     <div class="tab-pane active" id="risarActionList">
-                        <form:form>
+                        <form:form method="POST" action="risar/actions/remove" modelAttribute="risarSettings" role="form">
+                            <div class="form-group">
+                                <button type="submit" class="btn btn-primary">Удалить отмеченные осмотры</button>
+                                <button type="reset" class="btn btn-default">Отмена</button>
+                            </div>
                             <table class="table table-bordered table-striped">
                                 <thead>
                                 <tr>
-                                    <th>id</th>
+                                    <th>id осмотра</th>
                                     <th>Наименование</th>
                                     <th>Не пердавать</th>
                                 </tr>
@@ -58,9 +62,9 @@
                                 <tbody>
                                 <c:forEach items="${risarSettings.risarActionList}" var="risarAction" varStatus="status">
                                     <tr>
-                                        <th>${risarAction.id}</th>
-                                        <th>${risarAction.name}</th>
-                                        <th><form:checkbox path="risarAction[${status.index}].remove"/></th>
+                                        <td>${risarAction.id}</td>
+                                        <td>${risarAction.name}</td>
+                                        <td><form:checkbox path="risarActionList[${status.index}].remove"/></td>
                                     </tr>
                                 </c:forEach>
                                 </tbody>
@@ -68,11 +72,66 @@
                         </form:form>
                     </div>
                     <div class="tab-pane" id="addActionsToRisar">
-                        <form:form>
+                        <div class="panel">
+                            <c:choose>
+                                <c:when test="${risarSettings.risarNewActionList.isEmpty()}">
+                                    <b>Подходящие осмотры не найдены.</b>
+                                    <p>Типы действий, соответствующие выгружаемым осмотрам, должны иметь свойства «Диагноз» и «Рекомендации» вида:
+                                    <table class="table table-bordered table-condensed">
+                                        <thead>
+                                        <tr>
+                                            <th>Название (может быть любым)</th>
+                                            <th>Тип</th>
+                                            <th>code</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody>
+                                        </tr>
+                                        <tr>
+                                            <td>Диагноз</td>
+                                            <td>MKB</td>
+                                            <td>diagnosis</td>
+                                        </tr>
+                                        <tr>
+                                            <td>Рекомендации</td>
+                                            <td>Text, String или Html</td>
+                                            <td>recommendations</td>
+                                        </tr>
+                                        </tbody>
+                                    </table>
+                                    </p>
+                                </c:when>
+                                <c:otherwise>pizzas.
 
-                        </form:form>
-                    </div>
-                    <div class="tab-pane" id="messages">
+                                        <form:form method="POST" action="risar/actions/add" modelAttribute="risarSettings" role="form">
+                                            <div class="form-group">
+                                                <button type="submit" class="btn btn-primary">Добавить отмеченные осмотры</button>
+                                                <button type="reset" class="btn btn-default">Отмена</button>
+                                            </div>
+                                            <table class="table table-bordered table-striped">
+                                                <thead>
+                                                <tr>
+                                                    <th>Добавить</th>
+                                                    <th>id осмотра</th>
+                                                    <th>Наименование</th>
+                                                </tr>
+                                                </thead>
+                                                <tbody>
+                                                <c:forEach items="${risarSettings.risarNewActionList}" var="risarAction" varStatus="status">
+                                                    <tr>
+                                                        <td><form:checkbox path="risarNewActionList[${status.index}].add"/></td>
+                                                        <td>${risarAction.id}</td>
+                                                        <td>${risarAction.name}</td>
+                                                    </tr>
+                                                </c:forEach>
+                                                </tbody>
+                                            </table>
+                                        </form:form>
+
+
+                                </c:otherwise>
+                            </c:choose>
+                        </div>
                     </div>
                 </div>
             </div>

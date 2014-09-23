@@ -40,4 +40,10 @@ public class RisarController implements Serializable {
         risarService.updateRisarUrl(risarSettings.getUrl());
         return ViewState.RISAR.redirect();
     }
+
+    @RequestMapping(value = "actions/remove", method = RequestMethod.POST)
+    public String removeNotification(@ModelAttribute RisarSettings risarSettings, Map<String, Object> model, HttpServletRequest request) {
+        risarService.removeNotification(risarSettings.getRisarActionList());
+        return ViewState.RISAR.redirect();
+    }
 }

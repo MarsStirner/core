@@ -1,6 +1,10 @@
 package ru.korus.tmis.core.notification;
 
+import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.NotificationActionType;
+
 import javax.ejb.Local;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -10,5 +14,12 @@ import javax.ejb.Local;
  */
 @Local
 public interface DbNotificationActionBeanLocal {
+
     void pullDb();
+
+    List<NotificationActionType> getActionsByPath(String baseUrl);
+
+    void removeFromNotification(Integer id);
+
+    List<ActionType> getRisarCandidatActions();
 }

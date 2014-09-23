@@ -14,10 +14,10 @@ import javax.persistence.*;
 @Table(name = "NotificationActionType")
 @NamedQueries(
         {
-                @NamedQuery(name = "NotificationActionType.findUrlsByActionType",
-                        query = "SELECT n.baseUrl FROM NotificationActionType n WHERE n.actionType.id = :actionTypeId"),
+                @NamedQuery(name = "NotificationActionType.findByActionType",
+                        query = "SELECT n FROM NotificationActionType n WHERE n.actionType.id = :actionTypeId"),
                 @NamedQuery(name = "NotificationActionType.findByUrl",
-                        query = "SELECT n.baseUrl FROM NotificationActionType n WHERE n.baseUrl LIKE :actionTypeId")
+                        query = "SELECT n FROM NotificationActionType n WHERE n.baseUrl LIKE :baseUrl")
         }
 )
 public class NotificationActionType implements Serializable {
