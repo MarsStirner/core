@@ -4,6 +4,7 @@ import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common._
+import ru.korus.tmis.core.entity.model.RbPolicyType.InsuranceType
 import ru.korus.tmis.core.entity.model._
 
 import grizzled.slf4j.Logging
@@ -45,6 +46,9 @@ class PatientBean
 
   @EJB
   var dbClientPolicy: DbClientPolicyBeanLocal = _
+
+  @EJB
+  var DbRbPolicyTypeBean: DbRbPolicyTypeBeanLocal = _
 
   @EJB
   var dbClientContact: DbClientContactBeanLocal = _
@@ -537,8 +541,26 @@ class PatientBean
 
       //create or update insurance policy data
       set = Set.empty[Int]
-      val clientPolicies = patientEntry.getPayments()
-      val serverPolicies = patient.getActiveClientPolicies()
+      val clientPolicies = patientEntry.getPayments
+
+      //check policies
+      val policyTypes = DbRbPolicyTypeBean.getAllRbPolicyTypes
+      val omsPolicies = clientPolicies.filter(p => {
+        val t = policyTypes.find(_.getId == p.getPolicyType.getId).
+          getOrElse(throw new CoreException(i18n("error.patient.policy.CannotFindPolicyType").format(p.getPolicyType.getId)))
+        t.getInsuranceType == InsuranceType.OMS
+      })
+
+      omsPolicies.foreach(p => {
+        if(p.getRangePolicyDate.getStart != null && p.getRangePolicyDate.getEnd != null) {
+          if(omsPolicies.exists(o => { val startDate = o.getRangePolicyDate.getStart
+            startDate != null && startDate.after(p.getRangePolicyDate.getStart) && startDate.before(p.getRangePolicyDate.getEnd)}))
+            throw new CoreException(i18n("error.patient.policy.IntersectionOfPolicies"))
+        }
+      })
+
+
+      val serverPolicies = patient.getActiveClientPolicies
       serverPolicies.foreach(
         (serverPolicy) => {
           val result = clientPolicies.find {element => element.getId() == serverPolicy.getId().intValue()}
