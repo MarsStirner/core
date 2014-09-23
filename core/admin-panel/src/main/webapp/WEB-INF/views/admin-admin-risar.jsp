@@ -19,7 +19,7 @@
                                 <div class="input-group">
                                     <form:input path="url" cssClass="form-control"/>
                                     <span class="input-group-btn">
-                                        <button type="submit" class="form-control btn btn-primary"><span class="glyphicon glyphicon-ok"/></button>
+                                        <button type="submit" class="form-control btn btn-default"><span class="glyphicon glyphicon-save"/></button>
                                     </span>
                                     <span class="input-group-btn">
                                         <button type="reset" class="form-control btn btn-default"><span class="glyphicon glyphicon-remove"/></button>
@@ -40,6 +40,41 @@
                         </div>
                     </div>
                 </form:form>
+                <ul class="nav nav-tabs">
+                    <li class="active"><a href="#risarActionList" data-toggle="tab">Осмотры для передачи в РИСАР</a></li>
+                    <li><a href="#addActionsToRisar" data-toggle="tab">Добавить осмотры</a></li>
+                </ul>
+                <div id='content' class="tab-content">
+                    <div class="tab-pane active" id="risarActionList">
+                        <form:form>
+                            <table class="table table-bordered table-striped">
+                                <thead>
+                                <tr>
+                                    <th>id</th>
+                                    <th>Наименование</th>
+                                    <th>Не пердавать</th>
+                                </tr>
+                                </thead>
+                                <tbody>
+                                <c:forEach items="${risarSettings.risarActionList}" var="risarAction" varStatus="status">
+                                    <tr>
+                                        <th>${risarAction.id}</th>
+                                        <th>${risarAction.name}</th>
+                                        <th><form:checkbox path="risarAction[${status.index}].remove"/></th>
+                                    </tr>
+                                </c:forEach>
+                                </tbody>
+                            </table>
+                        </form:form>
+                    </div>
+                    <div class="tab-pane" id="addActionsToRisar">
+                        <form:form>
+
+                        </form:form>
+                    </div>
+                    <div class="tab-pane" id="messages">
+                    </div>
+                </div>
             </div>
         </div>
     </div>

@@ -15,7 +15,9 @@ import javax.persistence.*;
 @NamedQueries(
         {
                 @NamedQuery(name = "NotificationActionType.findUrlsByActionType",
-                        query = "SELECT n.baseUrl FROM NotificationActionType n WHERE n.actionType.id = :actionTypeId")
+                        query = "SELECT n.baseUrl FROM NotificationActionType n WHERE n.actionType.id = :actionTypeId"),
+                @NamedQuery(name = "NotificationActionType.findByUrl",
+                        query = "SELECT n.baseUrl FROM NotificationActionType n WHERE n.baseUrl LIKE :actionTypeId")
         }
 )
 public class NotificationActionType implements Serializable {

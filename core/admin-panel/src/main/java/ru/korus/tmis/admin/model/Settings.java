@@ -1,6 +1,7 @@
 package ru.korus.tmis.admin.model;
 
 import java.io.Serializable;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -10,13 +11,13 @@ import java.io.Serializable;
  */
 public class Settings implements Serializable {
 
-    private SettingInfo[] settings;
+    private List<SettingInfo> settings;
 
-    public SettingInfo[] getSettings() {
+    public List<SettingInfo> getSettings() {
         return settings;
     }
 
-    public void setSettings(SettingInfo[] settings) {
+    public void setSettings(List<SettingInfo> settings) {
         this.settings = settings;
     }
 }

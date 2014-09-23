@@ -30,7 +30,7 @@ public class AllSettingsServiceImpl implements AllSettingsService {
         List<SettingInfo> settingInfoList = getAllSettings();
 
         Settings settings = new Settings();
-        settings.setSettings(settingInfoList.toArray(new SettingInfo[settingInfoList.size()]));
+        settings.setSettings(settingInfoList);
         return settings;
     }
 

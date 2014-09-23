@@ -2,6 +2,8 @@ package ru.korus.tmis.admin.model;
 
 import java.io.Serializable;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -22,6 +24,8 @@ public class RisarSettings implements Serializable {
     private ValidationState validationState = RisarSettings.ValidationState.UNCHECKED;
 
     private String errorMsg;
+
+    private List<RisarActionList> risarActionList = new ArrayList<RisarActionList>();
 
     public URL getUrl() {
         return url;
@@ -58,5 +62,13 @@ public class RisarSettings implements Serializable {
 
     public void setCheck(Integer check) {
         this.check = check;
+    }
+
+    public List<RisarActionList> getRisarActionList() {
+        return risarActionList;
+    }
+
+    public void setRisarActionList(List<RisarActionList> risarActionList) {
+        this.risarActionList = risarActionList;
     }
 }

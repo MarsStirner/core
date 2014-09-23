@@ -34,7 +34,13 @@ public class RisarServiceImpl implements RisarService {
     @Override
     public RisarSettings getRisarSettings() {
         risarSettings.setUrl(ConfigManager.Risar().ServiceUrl());
+        initRisarActionList();
         return risarSettings;
+    }
+
+    private void initRisarActionList() {
+
+
     }
 
     @Override
