@@ -39,7 +39,7 @@ public class HospitalBedRegistryRESTImpl {
      */
     @POST
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public  Object registryPatientToHospitalBed (HospitalBedData data) throws CoreException {
         return new JSONWithPadding(wsImpl.registryPatientToHospitalBed(this.eventId, data, this.auth), this.callback);
     }
@@ -56,7 +56,7 @@ public class HospitalBedRegistryRESTImpl {
     @PUT
     @Path("/{actionId}/")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public  Object modifyPatientToHospitalBed(HospitalBedData data,
                                               @PathParam("actionId") int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.modifyPatientToHospitalBed(actionId, data, this.auth), this.callback);
@@ -69,7 +69,7 @@ public class HospitalBedRegistryRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getMovingListForEvent() throws CoreException {
 
         HospitalBedDataListFilter filter = new HospitalBedDataListFilter(this.eventId);
@@ -89,7 +89,7 @@ public class HospitalBedRegistryRESTImpl {
     @POST
     @Path("/moving/")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public  Object movingPatientToDepartment(HospitalBedData data) throws CoreException {
         return new JSONWithPadding(wsImpl.movingPatientToDepartment(this.eventId, data, this.auth), this.callback);
     }
@@ -103,7 +103,7 @@ public class HospitalBedRegistryRESTImpl {
      */
     @GET
     @Path("/{actionId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getInfoHospitalBedForPatient(@PathParam("actionId") int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.getPatientToHospitalBedById(actionId, this.auth), this.callback);
     }
@@ -117,7 +117,7 @@ public class HospitalBedRegistryRESTImpl {
      */
     @DELETE
     @Path("/{actionId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object callOffHospitalBedForPatient(@PathParam("actionId") int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.callOffHospitalBedForPatient(actionId, this.auth), this.callback);
     }

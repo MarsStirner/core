@@ -35,7 +35,7 @@ public class HospitalBedsInfoRESTImpl {
      */
     @GET
     @Path("/vacant/")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getVacantHospitalBeds(@Context HttpServletRequest servRequest,
                                         @QueryParam("callback") String callback,
                                         @QueryParam("filter[departmentId]") int departmentId) throws CoreException {
@@ -52,7 +52,7 @@ public class HospitalBedsInfoRESTImpl {
      */
      @GET
      @Path("/avaliable_profiles")
-     @Produces("application/x-javascript")
+     @Produces({"application/javascript", "application/x-javascript"})
      public Object getAvailableProfiles(@Context HttpServletRequest servRequest,
                                         @QueryParam("callback") String callback) throws CoreException {
          return new JSONWithPadding(wsImpl.getAllAvailableBedProfiles(mkAuth(servRequest)), callback);
@@ -66,7 +66,7 @@ public class HospitalBedsInfoRESTImpl {
      */
     @GET
     @Path("/profile_by_id/")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getProfileNameById(@Context HttpServletRequest servRequest,
                                      @QueryParam("callback") String callback,
                                      @QueryParam("id")int profileId) throws CoreException {

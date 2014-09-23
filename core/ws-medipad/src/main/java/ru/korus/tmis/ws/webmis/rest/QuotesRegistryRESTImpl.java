@@ -36,7 +36,7 @@ public class QuotesRegistryRESTImpl {
      * @throws ru.korus.tmis.core.exception.CoreException
      */
     @POST
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object createQuota(@Context HttpServletRequest servRequest,
                               @PathParam("eventId") int eventId,
                               @QueryParam("callback") String callback,
@@ -53,7 +53,7 @@ public class QuotesRegistryRESTImpl {
      */
     @PUT
     @Path("/{id}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object modifyQuota(@Context HttpServletRequest servRequest,
                               @PathParam("eventId") int eventId,
                               @QueryParam("callback") String callback,
@@ -69,7 +69,7 @@ public class QuotesRegistryRESTImpl {
      * @throws ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getQuotaHistory(@Context HttpServletRequest servRequest,
                                   @PathParam("eventId") int eventId,
                                   @QueryParam("callback") String callback,

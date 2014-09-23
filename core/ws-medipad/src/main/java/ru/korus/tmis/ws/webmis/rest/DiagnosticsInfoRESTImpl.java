@@ -32,7 +32,7 @@ public class DiagnosticsInfoRESTImpl {
      */
     @GET
     @Path("/laboratory/bak/{actionId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getVacantHospitalBeds(@Context HttpServletRequest servRequest,
                                         @QueryParam("callback") String callback,
                                         @PathParam("actionId") int actionId) throws CoreException {

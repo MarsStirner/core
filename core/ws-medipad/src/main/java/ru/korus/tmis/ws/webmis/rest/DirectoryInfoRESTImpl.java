@@ -84,7 +84,7 @@ public class DirectoryInfoRESTImpl {
      * @see CoreException
      */
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getRecordsFromDictionary(@QueryParam("dictName")String dictName,
                                            @QueryParam("sortingField") String sortingField,
                                            @QueryParam("sortingMethod") String sortingMethod,
@@ -107,7 +107,7 @@ public class DirectoryInfoRESTImpl {
 
     @GET
     @Path("/policyTypes")
-    @Produces({ "application/x-javascript", "application/xml" })
+    @Produces({"application/javascript", "application/x-javascript", "application/xml" })
     public JSONWithPadding getPolicyTypes(@Context HttpServletRequest servRequest,
                                           @QueryParam("callback") String callback) {
         List<RbPolicyType> r = referenceBookBean.getPolicyTypes(mkAuth(servRequest));
@@ -125,7 +125,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/persons")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllPersons(@QueryParam("sortingField") String sortingField,
                                 @QueryParam("sortingMethod") String sortingMethod,
                                 @QueryParam("limit") int limit,
@@ -152,7 +152,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/persons/free")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getFreePersons(@QueryParam("sortingField") String sortingField,
                                  @QueryParam("sortingMethod") String sortingMethod,
                                  @QueryParam("limit") int limit,
@@ -182,7 +182,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/departments")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllDepartments(@QueryParam("sortingField") String sortingField,
                                     @QueryParam("sortingMethod") String sortingMethod,
                                     @QueryParam("limit") int limit,
@@ -227,7 +227,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/mkbs")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllActionTypeNames(@Context HttpServletRequest servRequest,
                                         @QueryParam("sortingField") String sortingField,
                                         @QueryParam("sortingMethod") String sortingMethod,
@@ -275,7 +275,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/flatDirectory")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getFlatDirectories(@Context HttpServletRequest servRequest,
                                      @Context UriInfo info,
                                      @QueryParam("includeMeta") String includeMeta,
@@ -326,7 +326,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/thesaurus")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getThesaurus(@Context HttpServletRequest servRequest,
                                @QueryParam("sortingField") String sortingField,
                                @QueryParam("sortingMethod") String sortingMethod,
@@ -357,7 +357,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/quotaTypes")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getQuotaTypes(@QueryParam("sortingField") String sortingField,
                                 @QueryParam("sortingMethod") String sortingMethod,
                                 @QueryParam("limit") int limit,
@@ -385,7 +385,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/eventTypes")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getEventTypes(@Context HttpServletRequest servRequest,
                                 @QueryParam("sortingField") String sortingField,
                                 @QueryParam("sortingMethod") String sortingMethod,
@@ -408,7 +408,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/contracts")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getContracts(
                                 @QueryParam("eventTypeId")   int eventTypeId,
     @DefaultValue("false")      @QueryParam("showDeleted")   boolean showDeleted,
@@ -438,7 +438,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/actionTypes")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllActionTypeNames(@Context HttpServletRequest servRequest,
                                         @Context UriInfo info,
                                         @QueryParam("sortingField") String sortingField,
@@ -487,7 +487,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/actionTypes/{id}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getStructOfPrimaryMedExam(@Context HttpServletRequest servRequest,
                                             @PathParam("id") int actionTypeId,
                                             @QueryParam("eventId") int eventId,
@@ -501,7 +501,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/layoutAttributes/")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getLayoutAttributes(@QueryParam("callback") String callback) throws CoreException {
         return new JSONWithPadding(wsImpl.getLayoutAttributes(),callback);
     }
@@ -511,7 +511,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/actionsByParams")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getActionByParams(@Context HttpServletRequest servRequest,
                                     @QueryParam("sortingField") String sortingField,
                                     @QueryParam("sortingMethod") String sortingMethod,

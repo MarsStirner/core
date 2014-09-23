@@ -40,7 +40,7 @@ public class AssignmentsRegistryRESTImpl {
      */
     @POST
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object insertAssignment(AssignmentData data) throws CoreException {
         return new JSONWithPadding(wsImpl.insertAssignment(data, this.eventId, this.auth), this.callback);
     }
@@ -56,7 +56,7 @@ public class AssignmentsRegistryRESTImpl {
     @PUT
     @Path("/{actionId}")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object modifyAssignment(AssignmentData data,
                                    @PathParam("actionId")int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.insertAssignment(data, this.eventId, this.auth), this.callback);  //TODO: подкл actionId
@@ -72,7 +72,7 @@ public class AssignmentsRegistryRESTImpl {
      */
     @GET
     @Path("/{actionId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAssignmentById(@PathParam("actionId")int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.getAssignmentById(actionId, this.auth), this.callback);
     }

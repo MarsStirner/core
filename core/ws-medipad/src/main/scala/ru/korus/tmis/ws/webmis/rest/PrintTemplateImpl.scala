@@ -19,7 +19,7 @@ class PrintTemplateImpl {
 
   @GET
   @Path("/byIds")
-  @Produces(Array[String]("application/x-javascript"))
+  @Produces(Array[String]("application/javascript", "application/x-javascript"))
   def getPrintTemplateByIds(@Context servRequest:HttpServletRequest,
                             @QueryParam("callback") callback: String,
                             @QueryParam("id") ids: ju.List[Integer]): Object = {
@@ -28,7 +28,7 @@ class PrintTemplateImpl {
 
   @GET
   @Path("/byContexts")
-  @Produces(Array[String]("application/x-javascript"))
+  @Produces(Array[String]("application/javascript", "application/x-javascript"))
   def getPrintTemplateByContexts(@Context servRequest:HttpServletRequest,
                                  @QueryParam("callback") callback: String,
                                  @QueryParam("context") contexts: ju.List[String],
