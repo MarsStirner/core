@@ -66,13 +66,6 @@ public class RisarSettings implements Serializable {
         this.check = check;
     }
 
-    public List<RisarAction> getRisarActionList() {
-        return risarActionList;
-    }
-
-    public void setRisarActionList(List<RisarAction> risarActionList) {
-        this.risarActionList = risarActionList;
-    }
 
     public List<RisarAction> getRisarNewActionList() {
         return risarNewActionList;
@@ -80,5 +73,13 @@ public class RisarSettings implements Serializable {
 
     public void setRisarNewActionList(List<RisarAction> risarNewActionList) {
         this.risarNewActionList = risarNewActionList;
+    }
+
+    public List<RisarAction> getRisarActionList() {
+        return risarActionList;
+    }
+
+    public void setRisarActionList(List<RisarAction> risarActionList) {
+        this.risarActionList = risarActionList;
     }
 }

@@ -19,6 +19,10 @@ public class RisarAction {
 
     private Boolean add = false;
 
+    public RisarAction() {
+
+    }
+
     public RisarAction(NotificationActionType nat) {
         this(nat.getActionType());
         remove = false;

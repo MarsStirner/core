@@ -29,6 +29,7 @@ import java.util.List;
 public class RisarServiceImpl implements RisarService {
 
     private static final Logger logger = LoggerFactory.getLogger(RisarServiceImpl.class);
+    public static final String RISAR_NOTIFICATION_PATH = "ws-risar/api/notification/new/exam";
 
     @Autowired
     private AllSettingsService allSettingsService;
@@ -56,7 +57,7 @@ public class RisarServiceImpl implements RisarService {
 
     private void initRisarActionList() {
         risarSettings.getRisarActionList().clear();
-        for(NotificationActionType nat : dbNotificationActionBeanLocal.getActionsByPath("ws-risar/api/notification/new/exam")) {
+        for(NotificationActionType nat : dbNotificationActionBeanLocal.getActionsByPath(RISAR_NOTIFICATION_PATH)) {
             risarSettings.getRisarActionList().add(new RisarAction(nat));
         }
     }
@@ -80,8 +81,18 @@ public class RisarServiceImpl implements RisarService {
     @Override
     public void removeNotification(List<RisarAction> risarActionList) {
         for(RisarAction risarAction : risarActionList) {
-            if(risarAction.getRemove()) {
+            if(risarAction.getRemove() && risarAction.getId() != null) {
                 dbNotificationActionBeanLocal.removeFromNotification(risarAction.getId());
+            }
+        }
+    }
+
+    @Override
+    public void addNotification(List<RisarAction> risarNewActionList) {
+        for(RisarAction risarAction : risarNewActionList) {
+            if(risarAction.getAdd()) {
+                String s = ConfigManager.Common().ServerUrl();
+                dbNotificationActionBeanLocal.addNotification(risarAction.getId(), s +  (s.endsWith("/") ? "" : "/") + RISAR_NOTIFICATION_PATH + "/");
             }
         }
     }

@@ -73,6 +73,14 @@ public class DbNotificationActionBean implements DbNotificationActionBeanLocal, 
     }
 
     @Override
+    public void addNotification(Integer actionTypeId, String path) {
+        NotificationActionType notificationActionType = new NotificationActionType();
+        notificationActionType.setActionType(em.find(ActionType.class, actionTypeId));
+        notificationActionType.setBaseUrl(path);
+        em.persist(notificationActionType);
+    }
+
+    @Override
     public void sendEntity(Object entity) throws CoreException {
         if (entity instanceof NotificationAction) {
             final NotificationAction notificationAction = (NotificationAction) entity;

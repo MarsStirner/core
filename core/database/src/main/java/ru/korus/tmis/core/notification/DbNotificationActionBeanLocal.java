@@ -22,4 +22,6 @@ public interface DbNotificationActionBeanLocal {
     void removeFromNotification(Integer id);
 
     List<ActionType> getRisarCandidatActions();
+
+    void addNotification(Integer id, String path);
 }

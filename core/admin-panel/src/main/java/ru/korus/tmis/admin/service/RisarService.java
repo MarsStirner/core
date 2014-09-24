@@ -23,4 +23,6 @@ public interface RisarService {
     RisarSettings.ValidationState checkUrl(URL url);
 
     void removeNotification(List<RisarAction> risarActionList);
+
+    void addNotification(List<RisarAction> risarNewActionList);
 }
