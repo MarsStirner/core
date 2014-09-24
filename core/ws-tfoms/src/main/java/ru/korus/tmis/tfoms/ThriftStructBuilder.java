@@ -124,13 +124,12 @@ public class ThriftStructBuilder {
      */
     public static ru.korus.tmis.tfoms.thriftgen.Contract createContract(
             final ru.korus.tmis.core.entity.model.Contract contract) {
-        final ru.korus.tmis.tfoms.thriftgen.Contract result = new ru.korus.tmis.tfoms.thriftgen.Contract()
+        return new ru.korus.tmis.tfoms.thriftgen.Contract()
                 .setId(contract.getId())
                 .setNumber(contract.getNumber())
                 .setBegDate(DateConvertions.convertDateToUTCMilliseconds(contract.getBegDate()))
                 .setEndDate(DateConvertions.convertDateToUTCMilliseconds(contract.getEndDate()))
                 .setResolution(contract.getResolution());
-        return result;
     }
 
     public static Schet createSchet(

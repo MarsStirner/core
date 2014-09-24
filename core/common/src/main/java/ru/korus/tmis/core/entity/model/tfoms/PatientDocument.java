@@ -39,6 +39,17 @@ public class PatientDocument implements Informationable {
         }
     }
 
+    public PatientDocument(final Integer id,
+                           final String DOCTYPE,
+                           final String DOCSER,
+                           final String DOCNUM
+    ) {
+        this.document = id;
+        this.DOCTYPE = DOCTYPE;
+        this.DOCSER = DOCSER;
+        this.DOCNUM = DOCNUM;
+    }
+
     public Integer getDocument() {
         return document;
     }
@@ -71,6 +82,10 @@ public class PatientDocument implements Informationable {
         this.DOCNUM = DOCNUM;
     }
 
+    @Override
+    public String toString(){
+        return getInfo();
+    }
 
     @Override
     public String getInfo() {

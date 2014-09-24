@@ -3,11 +3,11 @@ package ru.korus.tmis.ws.webmis.rest;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
-import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
-import ru.korus.tmis.core.entity.model.RbPrintTemplate;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
-import javax.servlet.http.HttpServletRequest;
+import javax.ejb.Local;
+import javax.servlet.http.Cookie;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
@@ -17,6 +17,7 @@ import java.util.List;
  * Date: 3/19/13
  * Time: 12:05 PM
  */
+@Local
 public interface WebMisREST extends Serializable {
 
     PatientCardData insertPatient(PatientCardData patientData, AuthData auth) throws CoreException;
@@ -233,14 +234,6 @@ public interface WebMisREST extends Serializable {
      */
     AssignmentData getAssignmentById(int actionId, AuthData auth) throws CoreException;
 
-    /**
-     * Получение справочника Rls
-     * @param request Данные из запроса как RlsDataListRequestData
-     * @return Список Rls как RlsDataList
-     * @throws CoreException
-     * @see RlsDataList
-     */
-    RlsDataList getFilteredRlsList(RlsDataListRequestData request) throws CoreException;
 
     /**
      * Сервис на получения списка типов обращений.
@@ -303,6 +296,15 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      */
     TakingOfBiomaterialData getTakingOfBiomaterial(TakingOfBiomaterialRequesData request, AuthData authData) throws CoreException;
+
+    /**
+     * Получение объекта JobTicket по идентификатору
+     * @param id Идентификатор
+     * @param authData Данные авторизации
+     * @return Detached-объект JobTicket
+     * @throws CoreException
+     */
+    JobTicket getJobTicketById(int id, AuthData authData) throws CoreException;
 
     /**
      * Сервис по обновлению статусов JobTicket
@@ -419,7 +421,12 @@ public interface WebMisREST extends Serializable {
      */
     OrganizationContainer getOrganizationById(int id, AuthData authData) throws CoreException;
 
-    AuthData checkTokenCookies(HttpServletRequest srvletRequest);
+    /**
+     * Проверка аутентификации
+     * @param cookies Cookies, передаваемые в запросе
+     * @return Данные аутентификации пользователя
+     */
+    AuthData checkTokenCookies(Iterable<Cookie> cookies);
 
     AuthData getStorageAuthData(AuthToken token);
 
@@ -427,7 +434,6 @@ public interface WebMisREST extends Serializable {
      * Пометить action как удаленный
      *
      * @param actionId Идентификатор удаляемого действия
-     * @return false если удаление не удалось и true  случае успеха
      */
     void removeAction(int actionId) throws CoreException;
 
@@ -457,4 +463,21 @@ public interface WebMisREST extends Serializable {
      */
     void deleteAutoSaveField(String id, AuthData auth) throws CoreException;
 
+    Nomenclature getRlsById(int id) throws CoreException;
+
+    List<Nomenclature> getRlsByText(String text) throws CoreException;
+
+    /**
+     * Залочить действие
+     *
+     * @param actionId - Идентификатор действия
+     * @param auth - Данные авторизации пользователя
+     * @return - Информацию о новом локе
+     * @throws CoreException
+     */
+    LockData lock(int actionId, AuthData auth) throws CoreException;
+
+    LockData prolongLock(int actionId, AuthData auth) throws CoreException;
+
+    void releaseLock(int actionId, AuthData auth);
 }

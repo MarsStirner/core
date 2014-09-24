@@ -12,6 +12,7 @@ import ru.korus.tmis.core.entity.model.{ActionTypeTissueType, Action, Event, Tak
 import java.util.Date
 import javax.annotation.Nullable
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 
 /**
  * Методы для работы с TakenTissueJournal
@@ -30,7 +31,7 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
     var em: EntityManager = _
 
     @EJB
-    var appLock: AppLockBeanLocal = _
+    var appLock: AuthStorageBeanLocal = _
 
     @EJB
     private var dbManager: DbManagerBeanLocal = _

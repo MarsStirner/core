@@ -8,8 +8,6 @@ import ru.korus.tmis.core.data.JSONCommonData;
 import ru.korus.tmis.core.data.QueryDataStructure;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
-import ru.korus.tmis.ws.impl.WebMisRESTImpl;
-import scala.collection.convert.WrapAsJava;
 
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
@@ -29,13 +27,13 @@ import java.util.Set;
 public class ExaminationsRegistryRESTImpl {
 
     //protected static final String PATH = AppealsInfoRESTImpl.PATH + "{eventId}/examinations/";
-    private WebMisRESTImpl wsImpl;
+    private WebMisREST wsImpl;
     private int eventId;
     private int patientId;
     private AuthData auth;
     private String callback;
 
-    public ExaminationsRegistryRESTImpl(WebMisRESTImpl wsImpl, int eventId, int patientId, String callback, AuthData auth) {
+    public ExaminationsRegistryRESTImpl(WebMisREST wsImpl, int eventId, int patientId, String callback, AuthData auth) {
         this.eventId = eventId;
         this.patientId = patientId;
         this.auth = auth;
@@ -76,7 +74,7 @@ public class ExaminationsRegistryRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public  Object modifyPrimaryMedExamForPatient(JSONCommonData data,
-                                                  @PathParam("actionId") int actionId) {
+                                                  @PathParam("actionId") int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.modifyPrimaryMedExamForPatient(actionId, data, this.auth), this.callback);
     }
 
@@ -122,7 +120,7 @@ public class ExaminationsRegistryRESTImpl {
                                                         @QueryParam("filter[doctorName]") String doctorName,
                                                         @QueryParam("filter[speciality]") String speciality,
                                                         @QueryParam("filter[assessmentName]") String assessmentName,
-                                                        @QueryParam("filter[departmentName]") String departmentName) {
+                                                        @QueryParam("filter[departmentName]") String departmentName) throws CoreException {
 
         List<String> mnems = info.getQueryParameters().get("filter[mnem]");
         List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
@@ -150,15 +148,36 @@ public class ExaminationsRegistryRESTImpl {
     @GET
     @Path("/{actionId}")
     @Produces({"application/x-javascript", "application/xml"})
-    public Object getPrimaryMedExamById(@PathParam("actionId")int actionId) {
+    public Object getPrimaryMedExamById(@PathParam("actionId")int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.getPrimaryAssessmentById(actionId,this.auth), this.callback);
     }
 
     @DELETE
     @Path("/{actionId}")
-    public void removeAction(@PathParam("actionId")int actionId) {
+    public void removeAction(@PathParam("actionId")int actionId) throws CoreException {
         wsImpl.removeAction(actionId);
     }
+
+    @GET
+    @Path("/{actionId}/lock")
+    @Produces({"application/x-javascript", "application/xml"})
+    public Object lockAction(@PathParam("actionId")int actionId) throws CoreException {
+        return new JSONWithPadding(wsImpl.lock(actionId, this.auth), this.callback);
+    }
+
+    @PUT
+    @Path("/{actionId}/lock")
+    @Produces({"application/x-javascript", "application/xml"})
+    public Object prolongLockAction(@PathParam("actionId")int actionId) throws CoreException {
+        return new JSONWithPadding(wsImpl.prolongLock(actionId, this.auth), this.callback);
+    }
+
+    @DELETE
+    @Path("/{actionId}/lock")
+    public void releaseLockAction(@PathParam("actionId")int actionId) throws CoreException {
+        wsImpl.releaseLock(actionId, this.auth);
+    }
+
 
 
     /**
@@ -198,7 +217,7 @@ public class ExaminationsRegistryRESTImpl {
                           @QueryParam("filter[doctorName]") String doctorName,
                           @QueryParam("filter[speciality]") String speciality,
                           @QueryParam("filter[assessmentName]") String assessmentName,
-                          @QueryParam("filter[departmentName]") String departmentName) {
+                          @QueryParam("filter[departmentName]") String departmentName) throws CoreException {
 
         List<String> mnems = info.getQueryParameters().get("filter[mnem]");
         List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");

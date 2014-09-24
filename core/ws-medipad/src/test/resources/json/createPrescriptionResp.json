@@ -1,0 +1,134 @@
+{"message": null, "data": [
+    {
+        "properties": [
+            {
+                "name": "Наименование",
+                "value": null,
+                "id": 3966,
+                "type": "RLS",
+                "code": "nomen",
+                "valueId": null,
+                "valueDomain": ""
+            },
+            {
+                "name": "Способ введения",
+                "value": null,
+                "id": 3968,
+                "type": "ReferenceRb",
+                "code": "moa",
+                "valueId": null,
+                "valueDomain": "rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER"
+            },
+            {
+                "name": "Дозировка",
+                "value": null,
+                "id": 3971,
+                "type": "String",
+                "code": "dosage",
+                "valueId": null,
+                "valueDomain": ""
+            },
+            {
+                "name": "Доза",
+                "value": null,
+                "id": 3972,
+                "type": "Double",
+                "code": null,
+                "valueId": null,
+                "valueDomain": ""
+            },
+            {
+                "name": "Единицы",
+                "value": null,
+                "id": 3969,
+                "type": "String",
+                "code": "units",
+                "valueId": null,
+                "valueDomain": "'мг','мкг','гр','мл',*"
+            },
+            {
+                "name": "Скорость введения",
+                "value": null,
+                "id": 3967,
+                "type": "String",
+                "code": "voa",
+                "valueId": null,
+                "valueDomain": ""
+            },
+            {
+                "name": "Примечания",
+                "value": null,
+                "id": 3970,
+                "type": "String",
+                "code": null,
+                "valueId": null,
+                "valueDomain": ""
+            }
+        ],
+        "name": "Терапия",
+        "id": 375,
+        "client": {
+            "id": 2,
+            "lastName": "Милонов",
+            "firstName": "Сергей",
+            "birthDate": 649454400000,
+            "middleName": "Игоревич"
+        },
+        "modifyPerson": {
+            "id": 41,
+            "lastName": "test",
+            "firstName": "test",
+            "birthDate": null,
+            "middleName": "test"
+        },
+        "doctor": null,
+        "note": "",
+        "createPerson": {
+            "id": 41,
+            "lastName": "test",
+            "firstName": "test",
+            "birthDate": null,
+            "middleName": "test"
+        },
+        "urgent": false,
+        "setPerson": {
+            "id": 41,
+            "lastName": "test",
+            "firstName": "test",
+            "birthDate": null,
+            "middleName": "test"
+        },
+        "eventId": 841695,
+        "drugs": [
+            {
+                "name": "Анальгин",
+                "id": 11,
+                "unitName": "Миллиграмм",
+                "unit": 327,
+                "units": [
+                    {
+                        "id": 327,
+                        "code": "Миллиграмм"
+                    }
+                ],
+                "nomen": 11,
+                "dose": 111.0
+            }
+        ],
+        "assigmentIntervals": [
+            {
+                "id": 20,
+                "status": 0,
+                "edt": 1400252400000,
+                "bdt": 1400252400000,
+                "endDateTime": 1400252400000,
+                "note": "",
+                "actionId": 375,
+                "masterId": null,
+                "beginDateTime": 1400252400000,
+                "executionIntervals": []
+            }
+        ],
+        "actionTypeId": 123
+    }
+]}

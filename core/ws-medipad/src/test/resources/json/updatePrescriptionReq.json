@@ -1,0 +1,159 @@
+{"requestData": {}, "data": {
+    "actionTypeId": 123,
+    "assigmentIntervals": [
+        {
+            "beginDateTime": 1400252400000,
+            "endDateTime": 1400338860000,
+            "status": 0,
+            "id": 14,
+            "actionId": 366,
+            "masterId": null,
+            "bdt": "2014-05-16 19:00:00",
+            "edt": "2014-05-17 19:01:00",
+            "note": "",
+            "executionIntervals": [
+                {
+                    "beginDateTime": 1400252400000,
+                    "endDateTime": 1400338860000,
+                    "status": 0,
+                    "id": 15,
+                    "actionId": 366,
+                    "masterId": 14,
+                    "bdt": "2014-05-16 19:00:00",
+                    "edt": "2014-05-17 19:01:00",
+                    "note": "",
+                    "stateName": "Не исполнено",
+                    "backgroundColor": "#b2a7c9",
+                    "cid": "c377",
+                    "intervalString": "16.05.2014 19:00 - 17.05.2014 19:01",
+                    "canBeEdited": true,
+                    "canBeCanceled": false,
+                    "canBeExecuted": true,
+                    "canBeCanceledExecution": false,
+                    "canBeAddedStop": true
+                }
+            ],
+            "stateName": "Не исполнено",
+            "backgroundColor": "#b2a7c9",
+            "cid": "c376",
+            "intervalString": "16.05.2014 19:00 - 17.05.2014 19:01",
+            "canBeEdited": true,
+            "canBeCanceled": false,
+            "canBeExecuted": true,
+            "canBeCanceledExecution": false,
+            "canBeAddedStop": true
+        }
+    ],
+    "client": {
+        "id": 2,
+        "birthDate": 0,
+        "firstName": "Сергей",
+        "middleName": "Игоревич",
+        "lastName": "Милонов"
+    },
+    "createPerson": {
+        "id": 41,
+        "firstName": "test",
+        "middleName": "test",
+        "lastName": "test"
+    },
+    "doctor": {
+        "id": 6,
+        "firstName": "Алексей",
+        "middleName": "Алексеевич",
+        "lastName": "Самарин"
+    },
+    "drugs": [
+        {
+            "id": 8,
+            "nomen": 6060,
+            "name": "Анальгин",
+            "dose": 111,
+            "unit": 327,
+            "unitName": "мг",
+            "units": [
+                {
+                    "id": 327,
+                    "code": "мг"
+                },
+                {
+                    "id": 9,
+                    "code": "мл"
+                }
+            ]
+        }
+    ],
+    "eventId": 189,
+    "id": 366,
+    "isUrgent": false,
+    "modifyPerson": {
+        "id": 41,
+        "firstName": "test",
+        "middleName": "test",
+        "lastName": "test"
+    },
+    "name": "Терапия",
+    "note": "",
+    "properties": [
+        {
+            "id": 3801,
+            "name": "Наименование",
+            "type": "RLS",
+            "code": "nomen",
+            "value": "этот тип экшен проперти пока не поддерживается"
+        },
+        {
+            "id": 3802,
+            "name": "Скорость введения",
+            "type": "String",
+            "code": "voa",
+            "value": null
+        },
+        {
+            "id": 3803,
+            "name": "Способ введения",
+            "type": "ReferenceRb",
+            "code": "moa",
+            "valueDomain": "rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER",
+            "value": null,
+            "valueId": null
+        },
+        {
+            "id": 3804,
+            "name": "Единицы",
+            "type": "String",
+            "code": "units",
+            "valueDomain": "'мг','мкг','гр','мл',*",
+            "value": null
+        },
+        {
+            "id": 3805,
+            "name": "Примечания",
+            "type": "String",
+            "code": null,
+            "value": null
+        },
+        {
+            "id": 3806,
+            "name": "Дозировка",
+            "type": "String",
+            "code": "dosage",
+            "value": null
+        },
+        {
+            "id": 3807,
+            "name": "Доза",
+            "type": "Double",
+            "code": null,
+            "value": null
+        }
+    ],
+    "setPerson": {
+        "id": 6,
+        "firstName": "Алексей",
+        "middleName": "Алексеевич",
+        "lastName": "Самарин"
+    },
+    "moa": null,
+    "voa": null
+}}

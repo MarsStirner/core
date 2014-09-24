@@ -240,4 +240,20 @@ public interface DbActionBeanLocal {
      * @return список услуг
      */
     List<Action>  getServiceList(Integer eventId);
+
+    /**
+     * Получить список действий в рамках одного обращения
+     *
+     * @param eventId - ID обращения
+     * @return список услуг
+     */
+    List<Action> getActionsByEvent(Integer eventId);
+
+    /**
+     * Получить список действий требуемых типов для обращения
+     * @param eventId - обращение
+     * @param flatCodeList - массив типов действия ActionType.flatCode
+     * @return
+     */
+    List<Action> getActionsByTypeFlatCodeAndEventId(Integer eventId, List<String> flatCodeList);
 }

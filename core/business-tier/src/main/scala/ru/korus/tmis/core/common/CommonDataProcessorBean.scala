@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.common
 
-import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
@@ -27,6 +27,7 @@ import scala.Some
 import ru.korus.tmis.core.entity.model.ActionStatus
 import javax.persistence.{EntityManager, PersistenceContext}
 import scala.List
+import scala.collection.JavaConverters._
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -44,7 +45,7 @@ class CommonDataProcessorBean
   var em: EntityManager = _
 
   @EJB
-  var appLock: AppLockBeanLocal = _
+  var appLock: AuthStorageBeanLocal = _
 
   @EJB
   var dbAction: DbActionBeanLocal = _
@@ -696,6 +697,7 @@ class CommonDataProcessorBean
       typeName,
       dbActionProperty.convertScope(apt), //apt.getConstructorValueDomain,
       map,
+      (for(r <- apt.getActionPropertyRelation) yield new ActionPropertyRelationWrapper(r)).toList.asJava,
       dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList,
       apt.isMandatory.toString,
       apt.isReadOnly.toString)

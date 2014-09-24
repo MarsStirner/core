@@ -1,6 +1,7 @@
 package ru.korus.tmis.pharmacy;
 
 import misexchange.MISExchange;
+import misexchange.MISExchangePortType;
 import misexchange.Request;
 import org.hl7.v3.*;
 import org.joda.time.DateTime;
@@ -36,7 +37,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     private static final Logger logger = LoggerFactory.getLogger(PharmacyBean.class);
 
-    private static final int LAST_ACTIONS = 10;
+    private static final int LAST_ACTIONS = 300;
 
     private static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
@@ -85,6 +86,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * Назначен/Не исполнен (ещё или уже)
      */
     private static final int PS_NEW = 0;
+
+    private MISExchangePortType misExchangeSoap = null;
 
     /**
      * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
@@ -159,12 +162,13 @@ public class PharmacyBean implements PharmacyBeanLocal {
             // сохранение данных об отправке
             pharmacy = dbPharmacy.getOrCreate(action);
             // формирование сообщения для отправки
-            final Request request = createRequest(action, toLog);
+            final Request request = createRequest(action, pharmacy.getStatus(), toLog);
 
             toLog.addN("prepare message... \n\n #", HL7PacketBuilder.marshallMessage(request, "misexchange"));
             // отправка сообщения в 1С
             // final MCCIIN000002UV01 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
-            final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
+            final MISExchangePortType misExchangeSoap = getMisExchangeSoap();
+            final MCCIIN000002UV012 result = misExchangeSoap.processHL7V3Message(request);
             if (result != null) {
                 // обработка результата
                 toLog.addN("Connection successful. Result: # \n\n #",
@@ -178,29 +182,29 @@ public class PharmacyBean implements PharmacyBeanLocal {
                     } else {
                         final StringBuilder sb = getAckString(ack);
                         pharmacy.setErrorString(sb.toString());
-                        pharmacy.setStatus(PharmacyStatus.ERROR);
+                        setErrorStatus(pharmacy);
                     }
                 }
             } else {
                 toLog.add("Error connection with 1C Pharmacy. Message was set in ERROR status");
-                pharmacy.setStatus(PharmacyStatus.ERROR);
+                setErrorStatus(pharmacy);
             }
         } catch (NoSuchOrgStructureException e) {
             if (pharmacy != null) {
                 pharmacy.setErrorString("NoSuchOrgStructureException " + e);
-                pharmacy.setStatus(PharmacyStatus.ERROR);
+                setErrorStatus(pharmacy);
             }
             toLog.add("OrgStructure not found. Skip message: " + e);
         } catch (SkipMessageProcessException e) {
             if (pharmacy != null) {
                 pharmacy.setErrorString("SkipMessageProcessException " + e);
-                pharmacy.setStatus(PharmacyStatus.ERROR);
+                setErrorStatus(pharmacy);
             }
             toLog.add("Skip message: " + e);
         } catch (Exception e) {
             if (pharmacy != null) {
                 pharmacy.setErrorString("Exception " + e);
-                pharmacy.setStatus(PharmacyStatus.ERROR);
+                setErrorStatus(pharmacy);
             }
             toLog.add("Exception: " + e, e);
         } finally {
@@ -212,6 +216,24 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 }
             }
         }
+    }
+
+    private void setErrorStatus(Pharmacy pharmacy) {
+        if (pharmacy.getStatus() != PharmacyStatus.RESEND ) {
+            pharmacy.setStatus(PharmacyStatus.ERROR);
+        }
+    }
+
+    public void setMisExchangeSoap(MISExchangePortType misExchangeSoap) {
+        this.misExchangeSoap = misExchangeSoap;
+    }
+
+    private MISExchangePortType getMisExchangeSoap() {
+
+        if(misExchangeSoap == null) {
+            misExchangeSoap = new MISExchange().getMISExchangeSoap();
+        }
+        return misExchangeSoap;
     }
 
     private StringBuilder getAckString(MCCIMT000200UV01Acknowledgement ack) {
@@ -242,15 +264,22 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Создание объектной модели сообщения для 1С Аптеки в соответсвии с типом сообщения
      *
+     *
      * @param action событие на основе которого отправляется сообщение в 1С Аптеку
+     * @param status
      * @return возвращает класс готовый к отправке в 1С Аптеку
      * @throws MessageProcessException проблемы при создании сообщения
      */
-    public Request createRequest(final Action action, final ToLog toLog)
+    public Request createRequest(final Action action, PharmacyStatus status, final ToLog toLog)
             throws MessageProcessException, SkipMessageProcessException, NoSuchOrgStructureException {
 
         final ActionType actionType = action.getActionType();
 
+        if(status == PharmacyStatus.RESEND) {
+            final OrgStructure structure = getReceivedOrgStructure(action);
+            toLog.addN("receive orgStructure [#], [#]", structure.getId(), structure.getName());
+            return HL7PacketBuilder.processUpdateReceived(action, structure, getFinaceType(action));
+        }
         if (FlatCode.RECEIVED.getCode().equalsIgnoreCase(actionType.getFlatCode())) {
             final OrgStructure structure = getReceivedOrgStructure(action);
             toLog.addN("receive orgStructure [#], [#]", structure.getId(), structure.getName());
@@ -553,9 +582,11 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         prescription.setErrCount(prescription.getErrCount() + 1);
                         toLog.add("prepare message... \n\n # \n", HL7PacketBuilder.marshallMessage(request, "misexchange"));
                         if (!HL7PacketBuilder.isTestMode()) {
-                            final MCCIIN000002UV012 result = new MISExchange().getMISExchangeSoap().processHL7V3Message(request);
-                            toLog.add("Connection successful. Result: # \n\n # \n",
-                                    result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
+                            final MCCIIN000002UV012 result = getMisExchangeSoap().processHL7V3Message(request);
+                            if(result != null) {
+                                toLog.add("Connection successful. Result: # \n\n # \n",
+                                        result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
+                            }
 
                             if (isOk(result)) {
                                 prescriptionSendingRes.setUuid(prescriptionInfo.getPrescrUUID());
@@ -601,6 +632,9 @@ public class PharmacyBean implements PharmacyBeanLocal {
     }
 
     private boolean isOk(MCCIIN000002UV012 result) throws CoreException {
+        if ( result == null ) {
+            return false;
+        }
         boolean res = false;
         for (MCCIMT000200UV01Acknowledgement ack : result.getAcknowledgement()) {
             if (AcknowledgementType.AA.equals(ack.getTypeCode())) {

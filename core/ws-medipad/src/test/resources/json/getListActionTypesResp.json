@@ -1,0 +1,147 @@
+{"data": [
+    {
+        "name": "Осмотр врача приемного отделения (первичная госпитализация)",
+        "id": 139,
+        "groups": [],
+        "groupId": 28,
+        "flatCode": "feed",
+        "code": "1_1_01"
+    },
+    {
+        "name": "Консилиум",
+        "id": 309,
+        "groups": [],
+        "groupId": 446,
+        "flatCode": "",
+        "code": "1_4_1"
+    },
+    {
+        "name": "Обоснование клинического диагноза",
+        "id": 426,
+        "groups": [],
+        "groupId": 128,
+        "flatCode": "",
+        "code": "4501"
+    },
+    {
+        "name": "Заключительный эпикриз",
+        "id": 427,
+        "groups": [],
+        "groupId": 128,
+        "flatCode": "",
+        "code": "4504"
+    },
+    {
+        "name": "Этапный эпикриз",
+        "id": 428,
+        "groups": [],
+        "groupId": 128,
+        "flatCode": "",
+        "code": "4502"
+    },
+    {
+        "name": "Переводной эпикриз",
+        "id": 469,
+        "groups": [],
+        "groupId": 128,
+        "flatCode": "",
+        "code": "4505"
+    },
+    {
+        "name": "Педиатр - совместный осмотр с зав. отделением",
+        "id": 599,
+        "groups": [],
+        "groupId": 448,
+        "flatCode": "",
+        "code": "1_5_3"
+    },
+    {
+        "name": "Педиатр-дневниковый осмотр",
+        "id": 632,
+        "groups": [],
+        "groupId": 29,
+        "flatCode": "",
+        "code": "1_2_07"
+    },
+    {
+        "name": "Извещение о больном с впервые в жизни установленным диагнозом рака или другого злокачественного новообразования",
+        "id": 1500,
+        "groups": [],
+        "groupId": 1499,
+        "flatCode": "",
+        "code": "1_7_2"
+    },
+    {
+        "name": "Протокол на случай выявления у больного запущенной формы злокачественного новообразования",
+        "id": 1507,
+        "groups": [],
+        "groupId": 1499,
+        "flatCode": "",
+        "code": "1_7_1"
+    },
+    {
+        "name": "Осмотр врача приемного отделения (повторная госпитализация)",
+        "id": 2456,
+        "groups": [],
+        "groupId": 28,
+        "flatCode": "feed",
+        "code": "1_1_02"
+    },
+    {
+        "name": "НАПРАВЛЕНИЕ НА МСЭ (ФОРМА 088/У-06)",
+        "id": 2531,
+        "groups": [],
+        "groupId": 2458,
+        "flatCode": "",
+        "code": "1_8_2"
+    },
+    {
+        "name": "Согласие на проведение терапии препаратом",
+        "id": 2759,
+        "groups": [],
+        "groupId": 2458,
+        "flatCode": "",
+        "code": "1_8_3"
+    },
+    {
+        "name": "Отказ от медицинского вмешательства",
+        "id": 2785,
+        "groups": [],
+        "groupId": 2458,
+        "flatCode": "",
+        "code": "1_8_4"
+    },
+    {
+        "name": "Дежурный врач осмотр",
+        "id": 2844,
+        "groups": [],
+        "groupId": 1505,
+        "flatCode": "dutyDoctor",
+        "code": "01_1"
+    },
+    {
+        "name": "ВЫПИСКА ИЗ МЕДИЦИНСКОЙ КАРТЫ СТАЦИОНАРНОГО БОЛЬНОГО ЗЛОКАЧЕСТВЕННЫМ НОВООБРАЗОВАНИЕМ",
+        "id": 3577,
+        "groups": [],
+        "groupId": 2458,
+        "flatCode": "",
+        "code": "1_8_5"
+    }
+], "requestData": {
+    "filter": {
+        "type": "ActionTypesListRequestDataFilter",
+        "groupId": 3577,
+        "mnemonics": ["EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH"],
+        "flatCodes": [],
+        "code": null,
+        "showHidden": true,
+        "orgStructId": null,
+        "view": "tree"
+    },
+    "recordsCount": 0,
+    "limit": 10,
+    "sortingField": "id",
+    "sortingMethod": "asc",
+    "coreVersion": "1.0.0-TEST",
+    "page": 1
+}}

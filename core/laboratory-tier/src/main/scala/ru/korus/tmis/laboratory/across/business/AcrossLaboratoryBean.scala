@@ -6,6 +6,7 @@ import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import java.util
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 
 //import ru.korus.tmis.laboratory.data.lis.accept.{AnalysisResult => AResult1}
 
@@ -61,7 +62,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   var dbCustomQuery: DbCustomQueryLocal = _
 
   @EJB
-  var appLock: AppLockBeanLocal = _
+  var appLock: AuthStorageBeanLocal = _
 
   @EJB
   var dbManager: DbManagerBeanLocal = _
@@ -570,7 +571,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     // Изменяем статус действия на "Закончено"
     if (finished) {
       a.setStatus(ActionStatus.FINISHED.getCode)
-      entities += a
     }
 
     // Сохраняем изменившиеся сущности в БД

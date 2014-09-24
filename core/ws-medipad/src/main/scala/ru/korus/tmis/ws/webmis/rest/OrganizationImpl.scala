@@ -10,7 +10,7 @@ import com.sun.jersey.api.json.JSONWithPadding
  * Date: 3/3/14
  * Time: 6:55 PM
  */
-class OrganizationImpl(val wsImpl: WebMisRESTImpl, val authData: AuthData, val callback: String)  {
+class OrganizationImpl(val wsImpl: WebMisREST, val authData: AuthData, val callback: String)  {
 
   @GET
   @Path("/{id}")

@@ -1,8 +1,11 @@
 package ru.korus.tmis.testutil;
 
-import java.sql.*;
-import java.util.HashMap;
-import java.util.Map;
+import ru.korus.tmis.util.TestUtilCommon;
+
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
+import java.sql.Statement;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -15,73 +18,85 @@ import java.util.Map;
  *
  */
 public class DbUtil {
-    private static final String HOST = "localhost";// "10.128.225.66"
-    protected static final String JDBC_MYSQL_URL = "jdbc:mysql://" + HOST + "/core_test";
+    private static class TableMaxIndex {
+        final private String tableName;
+        final private int maxIndex;
 
-    private Connection conn = null;
-    final String tables[] = {
-            "`ActionProperty_Action`",
-            "`ActionProperty_Date`",
-            "`ActionProperty_Double`",
-            "`ActionProperty_FDRecord`",
-            "`ActionProperty_HospitalBed`",
-            "`ActionProperty_HospitalBedProfile`",
-            "`ActionProperty_Image`",
-            "`ActionProperty_ImageMap`",
-            "`ActionProperty_Integer`",
-            "`ActionProperty_Job_Ticket`",
-            "`ActionProperty_MKB`",
-            "`ActionProperty_Organisation`",
-            "`ActionProperty_OtherLPURecord`",
-            "`ActionProperty_Person`",
-            "`ActionProperty_rbBloodComponentType`",
-            "`ActionProperty_rbFinance`",
-            "`ActionProperty_rbReasonOfAbsence`",
-            "`ActionProperty_String`",
-            "`ActionProperty_Time`",
-            "`ActionProperty`",
-            "`Event`",
-            "`Action`",};
-    final Map<String, Integer> maxIndexMap = new HashMap<String, Integer>();
-
-    public DbUtil() {
-        initConnection();
-        System.out.println("Database connection established");
-        saveState();
-        close();
-    }
-
-    public void saveState() {
-        try {
-            for (final String tableName : tables) {
-                final Statement s = conn.createStatement();
-                final String sql = "SELECT max(`id`) FROM " + tableName;
-                s.executeQuery(sql);
-                final ResultSet rs = s.getResultSet();
-                if (rs.next()) {
-                    maxIndexMap.put(tableName, rs.getInt("max(`id`)"));
-                    System.out.println("Table: " + tableName + " max index: " + maxIndexMap.get(tableName) );
-                } else {
-                    throw new SQLException(String.format("Cannot init max index. SQL: %s", sql));
-                }
-            }
-        } catch (final Exception e) {
-            e.printStackTrace();
+        private TableMaxIndex(String tableName, int maxIndex) {
+            this.tableName = tableName;
+            this.maxIndex = maxIndex;
         }
     }
 
-    public void restore() {
+    private static final String HOST = "localhost";// "10.128.225.66"
+    protected static final String JDBC_MYSQL_URL = "jdbc:mysql://" + HOST + "/core_test?characterEncoding=utf8";
+
+    private Connection conn = null;
+    final TableMaxIndex tables[] = {
+            new TableMaxIndex("`ActionProperty`", 1456),
+            new TableMaxIndex("`ActionProperty_Action`", 1456),
+            new TableMaxIndex("`ActionProperty_Date`", 1456),
+            new TableMaxIndex("`ActionProperty_Double`", 1456),
+            new TableMaxIndex("`ActionProperty_FDRecord`", 1456),
+            new TableMaxIndex("`ActionProperty_HospitalBed`", 1456),
+            new TableMaxIndex("`ActionProperty_HospitalBedProfile`", 1456),
+            new TableMaxIndex("`ActionProperty_Image`", 1456),
+            new TableMaxIndex("`ActionProperty_ImageMap`", 1456),
+            new TableMaxIndex("`ActionProperty_Integer`", 1456),
+            new TableMaxIndex("`ActionProperty_Job_Ticket`", 1456),
+            new TableMaxIndex("`ActionProperty_MKB`", 1456),
+            new TableMaxIndex("`ActionProperty_Organisation`", 1456),
+            new TableMaxIndex("`ActionProperty_OtherLPURecord`", 1456),
+            new TableMaxIndex("`ActionProperty_Person`", 1456),
+            new TableMaxIndex("`ActionProperty_rbBloodComponentType`", 1456),
+            new TableMaxIndex("`ActionProperty_rbFinance`", 1456),
+            new TableMaxIndex("`ActionProperty_rbReasonOfAbsence`", 1456),
+            new TableMaxIndex("`ActionProperty_String`", 1456),
+            new TableMaxIndex("`ActionProperty_Time`", 1456),
+            new TableMaxIndex("`rbBloodComponentType`", 0),
+            new TableMaxIndex("`bbtOrganism_SensValues`", 0),
+            new TableMaxIndex("`bbtResult_Organism`", 0),
+            new TableMaxIndex("`bbtResult_Text`", 0),
+            new TableMaxIndex("`bbtResponse`", 0),
+            new TableMaxIndex("`DrugChart`", 4),
+            new TableMaxIndex("`DrugComponent`", 1),
+            new TableMaxIndex("`Action`", 259),
+            new TableMaxIndex("`Event`", 254),
+            new TableMaxIndex("`Person`", 25),
+    };
+
+    public void prepare() {
         initConnection();
+        System.out.println("Database connection established");
         try {
-            final Statement s = conn.createStatement();
-            for (String tableName : tables) {
-                s.executeUpdate("DELETE FROM " + tableName + " WHERE `id` >= " + maxIndexMap.get(tableName));
-                System.out.println("A rows with has been removed. Table: " + tableName + " max index: " + maxIndexMap.get(tableName) );
-            }
+            clear();
+            initDb("./src/test/resources/sql/init.sql");
+            initDb("./src/test/resources/sql/OrgStructure_ActionType.sql");
         } catch (final Exception e) {
             e.printStackTrace();
         } finally {
             close();
+        }
+    }
+
+    private void initDb(String fileName) throws SQLException {
+        final Statement s = conn.createStatement();
+        String[] sqlList = TestUtilCommon.getSqlFromFile(fileName);
+        for (String sql : sqlList) {
+            if (!sql.trim().isEmpty()) {
+                System.out.println("update DB: " + sql);
+                s.executeUpdate(sql);
+            }
+        }
+
+    }
+
+    private void clear() throws SQLException {
+        final Statement s = conn.createStatement();
+        for (TableMaxIndex table : tables) {
+            System.out.print("Clear table" + table.tableName);
+            s.executeUpdate("DELETE FROM " + table.tableName + " WHERE `id` > " + table.maxIndex);
+            System.out.println("A rows with has been removed. Table: " + table.tableName + " max index: " + table.maxIndex);
         }
     }
 
@@ -103,7 +118,7 @@ public class DbUtil {
         }
     }
 
-    public void close() {
+    private void close() {
         if (conn != null) {
             try {
                 conn.close();

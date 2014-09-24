@@ -65,7 +65,7 @@ public class FinancePullBeanTest extends Arquillian {
     private static final double TEST_SERVICE_SUM = 10000.0;
     private static final double TEST_SERVICE_SUM_DISC = 1000.0;
     private static final int TEST_SERVICE_PATIENT_ID = 347610;
-    private static final String CODE_CONTRACT = "2201-п1";
+    private static final String CODE_CONTRACT = "2201-п";
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em;
 
@@ -154,12 +154,11 @@ public class FinancePullBeanTest extends Arquillian {
         initDb();
         ServiceListResult res = paymentBeanLocal.getServiceList(TEST_EVENT_ID);
         Assert.assertTrue(res.getIdTreatment().equals(TEST_EVENT_ID));
-        final int countOfService = 1;
-        Assert.assertEquals(res.getListService().size(), countOfService);
-        Integer[] actionsId = {793630};
-        for(int i = 0; i < countOfService; ++i) {
-            ServiceInfo serviceInforFromDb = new ServiceInfo(dbActionBeanLocal.getActionById(actionsId[i]));
-            Assert.assertEquals(res.getListService().get(i), serviceInforFromDb);
+        final int countOfService = 2;
+        Assert.assertEquals(res.getServiceListArray().getListService().size(), countOfService);
+        for(ServiceInfo cur : res.getServiceListArray().getListService()) {
+            ServiceInfo serviceInforFromDb = new ServiceInfo(dbActionBeanLocal.getActionById(cur.getIdService().intValue()));
+            Assert.assertEquals(cur, serviceInforFromDb);
         }
     }
 
@@ -224,6 +223,11 @@ public class FinancePullBeanTest extends Arquillian {
         res.setSumDisc(TEST_SERVICE_SUM_DISC);
         res.setCodePatient("" + TEST_SERVICE_PATIENT_ID);
         res.setTypePayment(true);
+        PersonName personName = new PersonName();
+        personName.setFamily("Тестов");
+        personName.setGiven("Тест");
+        personName.setPartName("Тестович");
+        res.setPatientName(personName);
         return res;
     }
 

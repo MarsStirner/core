@@ -4,15 +4,12 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.RoleData;
 import ru.korus.tmis.core.exception.AuthenticationException;
 
+import javax.ejb.Local;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
-import javax.jws.WebService;
 import java.io.Serializable;
 
-@WebService(
-        targetNamespace = "http://korus.ru/tmis/authentication",
-        name = "authentication"
-)
+@Local
 public interface AuthenticationWebService extends Serializable {
     @WebMethod
     RoleData getRoles(@WebParam(name = "userName") String login,

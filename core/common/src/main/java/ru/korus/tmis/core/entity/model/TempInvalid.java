@@ -4,12 +4,15 @@ import java.io.Serializable;
 import javax.persistence.*;
 
 import java.util.Date;
+import java.util.LinkedList;
+import java.util.List;
 
 
 /**
  * The persistent class for the TempInvalid database table.
  */
 @Entity
+@Table(name = "TempInvalid")
 public class TempInvalid implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -54,14 +57,14 @@ public class TempInvalid implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDatetime;
 
-
     private boolean deleted;
 
     @Column(name = "diagnosis_id")
     private int diagnosisId;
 
-    @Column(name = "event_id")
-    private int eventId;
+    @ManyToOne
+    @JoinColumn(name = "event_id")
+    private Event event;
 
     //0-листок нетрудоспособности, 1-справка
     @Basic(optional = false)
@@ -77,7 +80,6 @@ public class TempInvalid implements Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifyDatetime;
-
 
     @Lob()
     private String notes;
@@ -107,6 +109,9 @@ public class TempInvalid implements Serializable {
 
     //Тип 0-ВУТ, 1-инвалидность, 2-ограничение жизнедеятельности
     private byte type;
+
+    @OneToMany(mappedBy = "master", cascade = CascadeType.ALL)
+    private List<TempInvalidPeriod> tempInvalidPeriod = new LinkedList<TempInvalidPeriod>();
 
     public TempInvalid() {
     }
@@ -209,12 +214,12 @@ public class TempInvalid implements Serializable {
         this.diagnosisId = diagnosisId;
     }
 
-    public int getEventId() {
-        return this.eventId;
+    public Event getEvent() {
+        return this.event;
     }
 
-    public void setEventId(int eventId) {
-        this.eventId = eventId;
+    public void setEvent(Event event) {
+        this.event = event;
     }
 
     public int getDuration() {
@@ -263,16 +268,15 @@ public class TempInvalid implements Serializable {
     }
 
     public void setNumber(String number) {
-        this.number = number;
+        this.number = number.substring(0, Math.min(serial.length(), 16));
     }
-
 
     public String getSerial() {
         return this.serial;
     }
 
     public void setSerial(String serial) {
-        this.serial = serial;
+        this.serial = serial.substring(0, Math.min(serial.length(), 8));
     }
 
     public short getSex() {
@@ -359,4 +363,11 @@ public class TempInvalid implements Serializable {
         this.tempInvalidReason = tempInvalidReason;
     }
 
+    public List<TempInvalidPeriod> getTempInvalidPeriod() {
+        return tempInvalidPeriod;
+    }
+
+    public void setTempInvalidPeriod(List<TempInvalidPeriod> tempInvalidPeriod) {
+        this.tempInvalidPeriod = tempInvalidPeriod;
+    }
 }

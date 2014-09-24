@@ -7,7 +7,6 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
-import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
@@ -27,7 +26,7 @@ import java.util.List;
 public class DirectoryInfoRESTImpl {
 
     //protected static final String PATH = BaseRegistryRESTImpl.PATH;
-    private WebMisRESTImpl wsImpl;
+    private WebMisREST wsImpl;
     private HttpServletRequest servRequest;
     private int limit;
     private int  page;
@@ -37,7 +36,7 @@ public class DirectoryInfoRESTImpl {
     private String callback;
     private Boolean test;
 
-    public DirectoryInfoRESTImpl(WebMisRESTImpl wsImpl, HttpServletRequest servRequest, String callback,
+    public DirectoryInfoRESTImpl(WebMisREST wsImpl, HttpServletRequest servRequest, String callback,
                                   int limit, int  page, String sortingField, String sortingMethod,
                                   AuthData auth, Boolean test) {
         this.auth = auth;
@@ -107,7 +106,7 @@ public class DirectoryInfoRESTImpl {
                                            @QueryParam("filter[parent]")String parent,    //KLADR
                                            @QueryParam("filter[typeIs]")String type,        //valueDomain
                                            @QueryParam("filter[capId]")int capId  //valueDomain
-    ) {
+    ) throws CoreException {
         DictionaryListRequestDataFilter filter = new DictionaryListRequestDataFilter(dictName, headId, groupId, name, level, parent, type, capId);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         return new JSONWithPadding(wsImpl.getDictionary(request, dictName),this.callback);
@@ -125,7 +124,7 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/persons")
     @Produces("application/x-javascript")
-    public Object getAllPersons(@QueryParam("filter[departmentId]")int departmentId) {
+    public Object getAllPersons(@QueryParam("filter[departmentId]")int departmentId) throws CoreException {
         PersonsListDataFilter filter = new PersonsListDataFilter(departmentId);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         return new JSONWithPadding(wsImpl.getAllPersons(request),this.callback);
@@ -151,7 +150,7 @@ public class DirectoryInfoRESTImpl {
                                  @QueryParam("filter[speciality]")int speciality,
                                  @QueryParam("filter[doctorId]")int doctorId,
                                  @QueryParam("filter[beginDate]")long beginDate,
-                                 @QueryParam("filter[endDate]")long endDate) {
+                                 @QueryParam("filter[endDate]")long endDate) throws CoreException {
 
         FreePersonsListDataFilter filter = new FreePersonsListDataFilter(speciality, doctorId, actionType, beginDate, endDate);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
@@ -172,7 +171,7 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/departments")
     @Produces("application/x-javascript")
-    public Object getAllDepartments(@QueryParam("filter[hasBeds]")String hasBeds) {
+    public Object getAllDepartments(@QueryParam("filter[hasBeds]")String hasBeds) throws CoreException {
 
         Boolean flgBeds =  hasBeds!=null && hasBeds.contains("true");
         DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds);
@@ -228,7 +227,7 @@ public class DirectoryInfoRESTImpl {
                                         @QueryParam("filter[diagnosis]")String diagnosis,
                                         @QueryParam("filter[view]")String view,
                                         @QueryParam("filter[display]")String display,
-                                        @QueryParam("filter[sex]")int sex) {
+                                        @QueryParam("filter[sex]")int sex) throws CoreException {
 
         Boolean flgDisplay =  display!=null && display.contains("true");
         MKBListRequestDataFilter filter = new MKBListRequestDataFilter(mkbId, classId, blockId, code, diagnosis, view, flgDisplay, sex);
@@ -314,7 +313,7 @@ public class DirectoryInfoRESTImpl {
     @Produces("application/x-javascript")
     public Object getThesaurus(@QueryParam("filter[id]")int thesaurusId,
                                @QueryParam("filter[groupId]")String groupId,
-                               @QueryParam("filter[code]")String code) {
+                               @QueryParam("filter[code]")String code) throws CoreException {
         ThesaurusListRequestDataFilter filter = new ThesaurusListRequestDataFilter(thesaurusId, groupId, code);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         return new JSONWithPadding(wsImpl.getThesaurusList(request, this.auth),this.callback);
@@ -339,39 +338,10 @@ public class DirectoryInfoRESTImpl {
     @Produces("application/x-javascript")
     public Object getQuotaTypes(@QueryParam("filter[id]")int typeId,
                                 @QueryParam("filter[code]")String code,
-                                @QueryParam("filter[groupId]")String groupId) {
+                                @QueryParam("filter[groupId]")String groupId) throws CoreException {
         QuotaTypesListRequestDataFilter filter = new QuotaTypesListRequestDataFilter(typeId, code, groupId);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         return new JSONWithPadding(wsImpl.getQuotaTypes(request),this.callback);
-    }
-
-    /**
-     * Получение данных из справочника медицинских препоратов (rls).
-     * <pre>
-     * &#15; Возможные значения для сортировки:
-     * &#15; "name" | "tradeName" - по торговому наименованию препората (значение по умолчанию);
-     * &#15; "code" - по коду препората;
-     * &#15; "dosage" - по номинальной дозировке препората;
-     * &#15; "form" - по форме комплектования препората;</pre>
-     * @param name  Фильтр по обозначению препората. (В url: filter[name]=...)<pre>
-     * &#15; Проверяется сперва торговое обозначение, после латинское обозначение препората.</pre>
-     * @param code Фильтр по коду медицинского препората. (В url: filter[code]=...)
-     * @param dosage Фильтр по дозировке. (В url: filter[dosage]=...)
-     * @param form Фильтр по форме выпуска препората. (В url: filter[form]=...)
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws CoreException
-     * @see CoreException
-     */
-    @GET
-    @Path("/rls")
-    @Produces("application/x-javascript")
-    public Object getRlsList( @QueryParam("filter[name]")String name,
-                              @QueryParam("filter[code]")int code,
-                              @QueryParam("filter[dosage]")String dosage,
-                              @QueryParam("filter[form]")String form) {
-        RlsDataListFilter filter = new RlsDataListFilter(code, name, dosage, form);
-        RlsDataListRequestData request = new RlsDataListRequestData(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getFilteredRlsList(request),this.callback);
     }
 
     /**
@@ -390,7 +360,7 @@ public class DirectoryInfoRESTImpl {
     @Path("/eventTypes")
     @Produces("application/x-javascript")
     public Object getEventTypes(@QueryParam("filter[requestType]")int requestType,
-                                @QueryParam("filter[finance]")int finance) {
+                                @QueryParam("filter[finance]")int finance) throws CoreException {
         EventTypesListRequestDataFilter filter = new EventTypesListRequestDataFilter(finance, requestType);
         ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
         return new JSONWithPadding(wsImpl.getEventTypes(request, this.auth),this.callback);
@@ -440,7 +410,11 @@ public class DirectoryInfoRESTImpl {
                                         @QueryParam("filter[groupId]")int groupId,
                                         @QueryParam("filter[code]")String code,
                                         @QueryParam("filter[view]")String view,
-                                        @QueryParam("showHidden") int showHidden) {
+                                        @QueryParam("showHidden") int showHidden,
+                                        @QueryParam("filter[orgStruct]")int orgStructFilterEnable) throws CoreException {
+
+        if(patientId < 1 && (view == null || !view.equals("tree")))
+            throw new CoreException("GET-параметр patientId обязателен и не может быть меньше 1 если используется не filter[view]=tree");
 
         java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
         java.util.List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
@@ -451,10 +425,14 @@ public class DirectoryInfoRESTImpl {
             for(String mnem: mnems)
                 if(mnem != null && !mnem.equals("")) mnemonics.add(mnem);
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, mnemonics, view, showHidden == 1);
+        Integer orgStructId = auth.getUser() == null || auth.getUser().getOrgStructure() == null || orgStructFilterEnable == 0  ? null : auth.getUser().getOrgStructure().getId();
+
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, mnemonics, view, showHidden == 1, orgStructId);
+
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding((view != null && view.compareTo("tree") == 0) ? wsImpl.getListOfActionTypes(request)
-                                                                                 : wsImpl.getListOfActionTypeIdNames(request, patientId), this.callback);
+        final Object res = (view != null && view.equals("tree")) ? wsImpl.getListOfActionTypes(request)
+                : wsImpl.getListOfActionTypeIdNames(request, patientId);
+        return new JSONWithPadding(res, this.callback);
     }
 
     /**
@@ -468,7 +446,7 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/actionTypes/{id}")
     @Produces("application/x-javascript")
-    public Object getStructOfPrimaryMedExam(@PathParam("id") int actionTypeId, @QueryParam("eventId") int eventId) {
+    public Object getStructOfPrimaryMedExam(@PathParam("id") int actionTypeId, @QueryParam("eventId") int eventId) throws CoreException {
         return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, eventId, this.auth), this.callback);
     }
 
@@ -479,7 +457,7 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/layoutAttributes/")
     @Produces("application/x-javascript")
-    public Object getLayoutAttributes() {
+    public Object getLayoutAttributes() throws CoreException {
         return new JSONWithPadding(wsImpl.getLayoutAttributes(),this.callback);
     }
 
@@ -490,7 +468,7 @@ public class DirectoryInfoRESTImpl {
     @Path("/actionsByParams")
     @Produces("application/x-javascript")
     public Object getActionByParams(@QueryParam("filter[mnem]") List<String> mnem,
-                                @QueryParam("eventId") int eventId) {
+                                @QueryParam("eventId") int eventId) throws CoreException {
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter(null,
                 eventId,
                 0,
@@ -537,6 +515,10 @@ public class DirectoryInfoRESTImpl {
         CONSULTATIONS("consultations"){
             public String getSubType() { return "consultations";}
             public String getMnemonic() { return "CONS";}
+        },
+        CONSULTATIONS_POLY("consultations_poly"){
+            public String getSubType() { return "consultations_poly";}
+            public String getMnemonic() { return "CONS_POLY";}
         },
         LAB("lab"){
             public String getSubType() { return "laboratory";}
