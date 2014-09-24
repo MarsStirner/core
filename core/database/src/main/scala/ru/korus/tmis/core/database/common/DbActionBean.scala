@@ -10,12 +10,12 @@ import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.QueryDataStructure
-import java.util
+import java.{util, lang}
 import ru.korus.tmis.core.filter.ListDataFilter
 import java.text.SimpleDateFormat
 import ru.korus.tmis.schedule.QueueActionParam
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import ru.korus.tmis.core.database.DbActionTypeBeanLocal
+import ru.korus.tmis.core.database.{DbActionTypeBeanLocal}
 import org.joda.time.{DateTimeConstants, DateTime}
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
@@ -661,7 +661,7 @@ class DbActionBean
   def removeAction(actionId: Int) {
     val action: Action = this.getActionIdWithoutDetach(actionId)
     if (!isOpenDoc(action)) {
-      throw new CoreException("Невозможно удалить закрытый документ")
+      throw  new CoreException("Невозможно удалить закрытый документ")
     }
     action.setDeleted(true)
     em.merge(action)
@@ -675,7 +675,7 @@ class DbActionBean
 
     val now = new DateTime()
     now.getDayOfWeek match {
-      case DateTimeConstants.SUNDAY | DateTimeConstants.SATURDAY => {
+      case  DateTimeConstants.SUNDAY | DateTimeConstants.SATURDAY => {
         logger.info("Skip closing documents in closed events. It's weekend! Go party!")
         return // Не следует запускать проверку в выходные дни
       }
@@ -702,16 +702,16 @@ class DbActionBean
     }
 
     em.createQuery("SELECT a FROM Action a WHERE a.event.execDate < :date AND a.endDate IS NULL AND a.actionType.mnemonic IN :docMnemonics", classOf[Action])
-      .setParameter("date", date.toDate)
-      .setParameter("docMnemonics", asJavaCollection(docMnemonics))
-      .getResultList
+    .setParameter("date", date.toDate)
+    .setParameter("docMnemonics", asJavaCollection(docMnemonics))
+    .getResultList
 
-      // Закрываем документы датой закрытия истории болезни
-      .foreach(a => {
+    // Закрываем документы датой закрытия истории болезни
+    .foreach( a => {
       a setEndDate a.getEvent.getExecDate
       a setStatus ActionStatus.FINISHED.getCode
       a setModifyDatetime now.toDate
-    })
+    } )
     em.flush()
 
   }
@@ -720,20 +720,6 @@ class DbActionBean
     em.createNamedQuery("Action.ServiceList",
       classOf[Action])
       .setParameter("eventId", eventId)
-      .getResultList
-  }
-
-  def getActionsByEvent(eventId: Integer): util.List[Action] = {
-    em.createNamedQuery("Action.findByEventId",
-      classOf[Action])
-      .setParameter("eventId", eventId)
-      .getResultList
-  }
-
-  def getActionsByTypeFlatCodeAndEventId(eventId: Integer, flatCodeList: util.List[String]): util.List[Action] = {
-    em.createNamedQuery("Action.findByFlatCodesAndEventId", classOf[Action])
-      .setParameter("eventId", eventId)
-      .setParameter("flatCodes", flatCodeList)
       .getResultList
   }
 }

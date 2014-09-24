@@ -1,14 +1,13 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
-import beans.BeanProperty
+import scala.beans.BeanProperty
 import java.util.Date
 import java.{util => ju}
 import ru.korus.tmis.core.entity.model.{Staff, Action}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.filter.AbstractListDataFilter
 import ru.korus.tmis.scala.util.ConfigManager
-import ru.korus.tmis.core.lock.{EntityLockInfo, ActionWithLockInfo}
 
 //Контейнер для списка осмотров
 @XmlType(name = "assessmentsListData")
@@ -20,10 +19,10 @@ class AssessmentsListData {
   @BeanProperty
   var data: ju.LinkedList[AssessmentsListEntry] = new ju.LinkedList[AssessmentsListEntry]
 
-  def this(actions: ju.List[ActionWithLockInfo], requestData: AssessmentsListRequestData) {
+  def this(actions: ju.List[Action], requestData: AssessmentsListRequestData) {
     this()
     this.requestData = requestData
-    actions.foreach(actionWithLockInfo => this.data.add(new AssessmentsListEntry(actionWithLockInfo)))
+    actions.foreach(action => this.data.add(new AssessmentsListEntry(action)))
   }
 }
 
@@ -253,15 +252,8 @@ class AssessmentsListEntry {
   @BeanProperty
   var flatCode: String = _
 
-  @BeanProperty
-  var readOnly: Boolean = _
-
-  @BeanProperty
-  var lockInfo: LockInfoContainer = _
-
-  def this(actionWithLockInfo: ActionWithLockInfo) {
+  def this(action: Action) {
     this()
-    val action = actionWithLockInfo.action
     id = action.getId.intValue()
     typeId = action.getActionType.getId.intValue()
     assessmentDate = action.getCreateDatetime
@@ -271,29 +263,7 @@ class AssessmentsListEntry {
     doctor = new DoctorSpecsContainer(action.getCreatePerson)
     flatCode = action.getActionType.getFlatCode
     mnemonic = action.getActionType.getMnemonic
-    readOnly = actionWithLockInfo.lockInfo != null
-    if (actionWithLockInfo.lockInfo != null) {
-      lockInfo = new LockInfoContainer(actionWithLockInfo.lockInfo.person.getId, actionWithLockInfo.lockInfo.person.getFullName)
-    }
   }
-}
-
-@XmlType
-class LockInfoContainer {
-
-  @BeanProperty
-  var personId: Integer = _
-
-  @BeanProperty
-  var personInfo: String = _
-
-  def this(id: Integer, personInfo: String) {
-    this()
-    personId = id
-    this.personInfo = personInfo
-  }
-
-
 }
 
 @XmlType(name = "doctorSpecsContainer")

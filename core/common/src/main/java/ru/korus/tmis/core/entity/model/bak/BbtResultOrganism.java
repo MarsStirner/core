@@ -34,6 +34,7 @@ public class BbtResultOrganism implements Serializable {
     private String concentration;
 
     @OneToMany(mappedBy = "bbtResultOrganism")
+    @JoinColumn(name = "organism_id", referencedColumnName = "bbtResult_Organism_id")
     private List<BbtOrganismSensValues> sensValues = new ArrayList<BbtOrganismSensValues>();
 
     public BbtResultOrganism() {

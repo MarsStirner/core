@@ -1,15 +1,18 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.{TempInvalidPeriod, TempInvalid, Staff, Patient}
+import ru.korus.tmis.core.entity.model.TempInvalid
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
-import ru.korus.tmis.core.exception.NoSuchRbTempInvalidDocumentException
+import java.lang.Iterable
+import ru.korus.tmis.core.exception.{CoreException, NoSuchRbTempInvalidDocumentException}
 import java.util.Date
 import javax.ejb.EJB
+import ru.korus.tmis.core.entity.model.Staff
+import ru.korus.tmis.core.entity.model.Patient
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -43,8 +46,8 @@ class DbTempInvalidBean
     FROM
       TempInvalid t
     WHERE
-      t.event.id = :eventId
-                           """
+      t.eventId = :eventId
+                      """
 
   def getTempInvalidById(id: Int): TempInvalid = {
     val result = em.createQuery(FindByIdQuery,
@@ -75,6 +78,10 @@ class DbTempInvalidBean
     result.size match {
       case 0 => {
         null
+        /*
+        throw new CoreException(
+          ConfigManager.ErrorCodes.RbTempInvalidForEventNotFound,
+          i18n("error.rbTempInvalidForEventNotFound").format(eventId))       */
       }
       case size => {
         var ti = result.iterator.next()
@@ -84,32 +91,39 @@ class DbTempInvalidBean
     }
   }
 
-  def insertOrUpdateTempInvalid(tempInvalidIn: TempInvalid,
-                                start: Date,
-                                end: Date,
-                                docType: Short,
-                                reasonCode: String,
-                                caseBegDate: Date,
-                                serial: String,
-                                number: String,
-                                sex: Short,
-                                age: Byte,
-                                duration: Int,
-                                closed: Short,
-                                patient: Patient,
-                                sessionUser: Staff
+  def insertOrUpdateTempInvalid(
+                                 id: Int,
+                                 comment: String,
+                                 start: Date,
+                                 end: Date,
+                                 docType: Short,
+                                 reasonId: Int,
+                                 caseBegDate: Date,
+                                 serail: String,
+                                 number: String,
+                                 sex: Short,
+                                 age: Byte,
+                                 duration: Int,
+                                 closed: Short,
+                                 patient: Patient,
+                                 sessionUser: Staff
                                  ) = {
 
-    var tempInvalid: TempInvalid = if (tempInvalidIn == null) new TempInvalid() else tempInvalidIn
+    var tempInvalid: TempInvalid = new TempInvalid();
     val now: Date = new Date
-    tempInvalid.setCreateDatetime(now)
-    tempInvalid.setCreatePerson(sessionUser)
+    if (id > 0) {
+      tempInvalid = getTempInvalidById(id)
+    } else {
+      tempInvalid.setCreateDatetime(now)
+      tempInvalid.setCreatePerson(sessionUser)
+    }
     tempInvalid.setModifyDatetime(now)
+    tempInvalid.setNotes(comment)
     tempInvalid.setCaseBegDate(caseBegDate);
     tempInvalid.setBegDate(start)
     tempInvalid.setEndDate(end)
-    tempInvalid.setSerial(if (serial == null) "" else serial)
-    tempInvalid.setNumber(if (number == null) "" else number)
+    tempInvalid.setSerial(serail)
+    tempInvalid.setNumber(number)
     tempInvalid.setSex(sex)
     tempInvalid.setAge(age)
     tempInvalid.setDeleted(false)
@@ -117,28 +131,13 @@ class DbTempInvalidBean
     tempInvalid.setClosed(closed)
     tempInvalid.setModifyPerson(sessionUser)
     tempInvalid.setDocTypeCode(docType)
-    tempInvalid.setNotes("")
-    tempInvalid.setDocType(rbTempInvalidDocLocal.getRbTempInvalidDocumentByCode(String.valueOf(docType)))
-    tempInvalid.setTempInvalidReason(if (reasonCode == null) null else rbTempIvalidReason.getRbTempInvalidReasonByCode(reasonCode))
+    //tempInvalid.setDocType(rbTempInvalidDocLocal.getRbTempInvalidDocumentById(docTypeId))
+    tempInvalid.setTempInvalidReason(rbTempIvalidReason.getRbTempInvalidReasonById(reasonId))
 
     tempInvalid.setPatient(patient)
 
-    val tempInvalidPeriod = {
-      if (tempInvalid.getTempInvalidPeriod.isEmpty) {
-        val periodNew: TempInvalidPeriod = new TempInvalidPeriod()
-        periodNew.setIsExternal(0)
-        periodNew.setMaster(tempInvalid)
-        periodNew.setNote("")
-        tempInvalid.getTempInvalidPeriod.add(periodNew)
-      }
-      tempInvalid.getTempInvalidPeriod.iterator.next
-    }
-    tempInvalidPeriod.setBegDate(start)
-    tempInvalidPeriod.setEndDate(end)
-
-    em.persist(tempInvalid)
-    em.flush()
     tempInvalid
+
   }
 
 

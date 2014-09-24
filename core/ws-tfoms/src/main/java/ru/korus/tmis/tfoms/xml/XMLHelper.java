@@ -1,5 +1,6 @@
 package ru.korus.tmis.tfoms.xml;
 
+import com.google.common.collect.ImmutableMap;
 import org.apache.thrift.TException;
 import org.joda.time.DateTimeFieldType;
 import org.joda.time.LocalDate;
@@ -15,8 +16,6 @@ import ru.korus.tmis.tfoms.Constants;
 import ru.korus.tmis.tfoms.TFOMSErrors;
 import ru.korus.tmis.tfoms.TFOMSServer;
 import ru.korus.tmis.tfoms.thriftgen.*;
-import scala.collection.immutable.Stream;
-import scala.tools.nsc.backend.icode.analysis.CopyPropagation;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -32,9 +31,33 @@ public final class XMLHelper {
     private static final Logger logger = LoggerFactory.getLogger(XMLHelper.class);
 
     /**
-     * Выгрузка всех поликлинических услуг
+     * Проверка на необходимость выгрузки этого случая (не был ли этот случай уже выставлен в каком-либо счете)
      *
-     * @param registry реестр куда попадет результат
+     * @param primaryAccount флаг типа выгрузки (первичная \ повторная)
+     * @param actionId       идентификатор действия с которым связана услуга
+     * @return true - выгрузка еще не проводилась, false - случай уже был выставлен в одном из счетов
+     */
+    private static boolean checkItemIsAlreadyInAccountItems(final boolean primaryAccount, final int actionId) {
+        final ImmutableMap<String, String> variables = ImmutableMap.of(Constants.ACTION_ID_PARAM, String.valueOf(actionId));
+        try {
+            final String queryName = primaryAccount ? Constants.ACCOUNTITEM_CHECK_PRIMARY : Constants.ACCOUNTITEM_CHECK_ADDITIONAL;
+            final String query = TFOMSServer.getQueryChache().getQueryWithSettedParams(queryName, variables);
+            final List resultList = TFOMSServer.getSpecialPreferencesBean().executeNamedQuery(query);
+            if (((Number) resultList.get(0)).intValue() > 0) {
+                logger.debug("Action[{}] is in AccountItem.", actionId);
+                return false;
+            }
+        } catch (Exception e) {
+            logger.error("Exception while checking AccountItem table for Action[" + actionId + "].", e);
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Выгрузка всех поликлинических услуг
+     *  @param registry              реестр куда попадет результат
+     *
      */
     public static void processPoliclinicSluch(
             final Map<Person, List<Sluch>> registry,
@@ -46,223 +69,295 @@ public final class XMLHelper {
             final Set<PersonOptionalFields> personOptionalFields,
             final Set<SluchOptionalFields> sluchOptionalFields,
             final boolean needForSpokesman) {
-        final List<UploadRow> itemList;
-        try {
-            itemList = TFOMSServer.getQueryChache().executeNamedQuery(
-                    Constants.QUERY_NAME_POLICLINIC_MAIN,
-                    UploadRow.class,
-                    null,
-                    true
-            );
-            XMLHelper.toLog(itemList);
-        } catch (Exception e) {
-            logger.error("Exception while getting result of Policlinic main query", e);
-            logger.info("Processing policlinic sluch skipped");
+        final String mainPoliclinicQuery = TFOMSServer.getQueryChache().getQueryWithSettedParams(
+                Constants.POLICLINIC_SELECT_STATEMENT,
+                null
+        );
+        //Skip processing
+        if (mainPoliclinicQuery.isEmpty()) {
+            logger.error("Main Policlinic query with name = \'{}\' not exists.", Constants.POLICLINIC_SELECT_STATEMENT);
             return;
         }
-        List<XMLSluch> sluchList = groupSluchByActionId(itemList);
-        logger.info("Start processing sluchList...");
-        for (XMLSluch sluch : sluchList) {
-            logger.debug("##### Start of Sluch[{}] #####\n{}", sluch.getId(), sluch.getInfo());
-            addSluchToRegistry(
-                    registry,
-                    account,
-                    sluch,
-                    infisCode,
-                    obsoleteInfisCode,
-                    patientOptionalFields,
-                    personOptionalFields,
-                    sluchOptionalFields,
-                    needForSpokesman
-            );
-            //дополнительные случаи
-            //WMIS-22-40
-            if (sluch.needAdditionalPoliclinicSluch()) {
-                //WMIS-22
-                logger.debug("Need Additional policlinic Sluch.");
-                processAdditionalPoliclinicSluch(
-                        sluch,
-                        registry,
-                        account,
-                        infisCode,
-                        sluchOptionalFields
-                );
-            } else if (sluch.needAdditionalDispanserizationSluch()) {
-                //WMIS-40
-                logger.debug("Need Additional dispanserization Sluch.");
-                processAdditionalDispanserizationSluch(
-                        sluch,
-                        registry,
-                        account,
-                        infisCode,
-                        sluchOptionalFields
-                );
+        logger.info("Main Policlinic query:\n{}", mainPoliclinicQuery);
+        long startTime = System.currentTimeMillis();
+        List<UploadItem> itemList;
+        try {
+            itemList = TFOMSServer.getSpecialPreferencesBean().executeNamedQueryForUploadItem(mainPoliclinicQuery);
+            logger.info("Query executionTime is {} seconds. Returned {} rows.", (float) (System.currentTimeMillis() - startTime) / 1000, itemList.size());
+            for(Object item : itemList){
+                logger.debug(item.toString());
             }
+        } catch (Exception e) {
+            logger.error("Exception while executing main policlinic query. Skip processing policlinic rows", e);
+            return;
+        }
+        //Each row processing
+        for (UploadItem item : itemList) {
+            logger.debug("##### Start of Item[{}] #####\n{}", item.getId(), item.getInfo());
+            if (checkItemIsAlreadyInAccountItems(primaryAccount, item.getAction())) {
+                XMLSluch sluch = new XMLSluch(item);
+                if (!sluch.fillPatientProperties(Constants.PATIENT_PROPERTIES)) {
+                    logger.debug("Item[{}] processing skipped because patientProperties is not found.", item.getId());
+                    //Нету пола и возраста (даты рождения)..... пропускаем такой случай
+                    continue;
+                }
+                if (!sluch.fillPatientPolicy(Constants.PATIENT_POLICY)) {
+                    logger.debug("Item[{}] policy is not found.", item.getId());
+                }
+                if (!sluch.fillPatientDocument(Constants.PATIENT_DOCUMENT)) {
+                    logger.debug("Item[{}] document is not found.", item.getId());
+                }
+                if (!sluch.fillUploadItemProperties(Constants.POLICLINIC_PROPERTIES)) {
+                    logger.debug("Item[{}] processing skipped because UploadItemProperties is not found.", item.getId());
+                    //Нет свойств случая (DS012, RSLT, ISHOD) пропускаем этот случай
+                    continue;
+                }
+                if (!sluch.fillSluchProperties(Constants.SLUCH_PROPERTIES)) {
+                    logger.debug("Item[{}] sluchProperties is not found.", item.getId());
+                }
+                if (!sluch.fillUploadUslProperties(Constants.POLICLINIC_USL_PROPERTIES)) {
+                    logger.debug("Item[{}] processing skipped because UploadUslProperties is not found.", item.getId());
+                    //Нет единицы учета и прочего
+                    continue;
+                }
+                //TODO TESTING
+                logger.debug(sluch.getParameters().toString());
+                if (!sluch.fillUsl(Constants.POLICLINIC_TARIFF, false)) {
+                    logger.debug("Item[{}] processing skipped because no one USL is founded (Contract_Tariff, rbServiceFinance, MedicalKindUnit)", item.getId());
+                    //Не найдено подходящего тарифа, пропускаем
+                    continue;
+                }
+                //Проверка не является ли этот случаем исключением из выгрузки  (true - исключение и его нужно пропустить)
+                //WMIS-22-40
+                if (sluch.isException(Constants.POLICLINIC_EXCEPTION)) {
+                    continue;
+                }
+                addSluchToRegistry(
+                        registry,
+                        account,
+                        sluch,
+                        infisCode,
+                        obsoleteInfisCode,
+                        true,
+                        patientOptionalFields,
+                        personOptionalFields,
+                        sluchOptionalFields,
+                        needForSpokesman
+                );
+
+                //дополнительные случаи
+                //WMIS-22-40
+                if (sluch.needAdditionalPoliclinicSluch()) {
+                    //WMIS-22
+                    logger.debug("Need Additional policlinic Sluch.");
+                    processAdditionalPoliclinicSluch(
+                            sluch,
+                            registry,
+                            primaryAccount,
+                            account,
+                            infisCode,
+                            obsoleteInfisCode,
+                            patientOptionalFields,
+                            personOptionalFields,
+                            sluchOptionalFields,
+                            needForSpokesman
+                    );
+                } else if (sluch.needAdditionalDispanserizationSluch()) {
+                    //WMIS-40
+                    logger.debug("Need Additional dispanserization Sluch.");
+                    processAdditionalDispanserizationSluch(
+                            sluch,
+                            registry,
+                            primaryAccount,
+                            account,
+                            infisCode,
+                            obsoleteInfisCode,
+                            patientOptionalFields,
+                            personOptionalFields,
+                            sluchOptionalFields,
+                            needForSpokesman
+                    );
+                }
+            }
+            logger.debug("End of Item[{}]", item.getId());
         }
     }
 
     private static void processAdditionalDispanserizationSluch(final XMLSluch primarySluch,
                                                                final Map<Person, List<Sluch>> registry,
+                                                               final boolean primaryAccount,
                                                                final Account account,
                                                                final String infisCode,
-                                                               final Set<SluchOptionalFields> sluchOptionalFields
-    ) {
-        final List<AdditionalUploadRow> itemList;
-        try {
-            itemList = TFOMSServer.getQueryChache().executeNamedQueryWithMap(
-                    Constants.QUERY_NAME_DISPANSERIZATION_ADDITIONAL,
-                    AdditionalUploadRow.class,
-                    primarySluch.getParamMap(),
-                    true
-            );
-            XMLHelper.toLog(itemList);
-        } catch (Exception e) {
-            logger.error("Exception while getting result of Policlinic Additional query", e);
-            logger.info("Processing additional policlinic sluch skipped");
+                                                               final String obsoleteInfisCode,
+                                                               final Set<PatientOptionalFields> patientOptionalFields,
+                                                               final Set<PersonOptionalFields> personOptionalFields,
+                                                               final Set<SluchOptionalFields> sluchOptionalFields,
+                                                               final boolean needForSpokesman) {
+        final String additionalPoliclinicQuery = TFOMSServer.getQueryChache().getQueryWithSettedParams(
+                Constants.ADDITIONAL_DISPANSERIZATION_SELECT_STATEMENT,
+                primarySluch.getParameters()
+        );
+        //Skip processing
+        if (additionalPoliclinicQuery.isEmpty()) {
+            logger.error("Additional query with name = \'{}\' not exists.", Constants.ADDITIONAL_DISPANSERIZATION_SELECT_STATEMENT);
             return;
         }
-        List<AdditionalXMLSluch> sluchList = groupSluchForAdditionalDispanserization(itemList, primarySluch);
+        logger.info("Additional dispanserization query:\n{}", additionalPoliclinicQuery);
+        long startTime = System.currentTimeMillis();
+        List<UploadItem> itemList;
+        try {
+            itemList = TFOMSServer.getSpecialPreferencesBean().executeNamedQueryForUploadItem(additionalPoliclinicQuery);
+        } catch (Exception e) {
+            logger.error("Exception while executing additional dispanserization query. Skip processing rows", e);
+            return;
+        }
+        logger.info("Query executionTime is {} seconds. Returned {} rows.", (float) (System.currentTimeMillis() - startTime) / 1000, itemList.size());
+        toLog(itemList);
         //Each row processing
-        for (AdditionalXMLSluch sluch : sluchList) {
-            logger.debug("##### ADDITIONAL Start of Sluch[{}] #####\n{}", sluch.getId(), sluch.getInfo());
-            addSluchToRegistry(
-                    registry,
-                    account,
-                    sluch,
-                    infisCode,
-                    sluchOptionalFields
-            );
-            logger.debug(" ADDITIONAL # End of Sluch[{}]", sluch.getId());
+        for (UploadItem item : itemList) {
+            logger.debug("##### ADDITIONAL # Start of Item[{}] #####\n{}", item.getId(), item.getInfo());
+                XMLSluch sluch = new XMLSluch(item, primarySluch);
+                sluch.setPatientProperties(primarySluch.getPatientProperties());
+                if (!sluch.fillPatientPolicy(Constants.PATIENT_POLICY)) {
+                    logger.debug("Item[{}] policy is not found.", item.getId());
+                }
+                if (!sluch.fillPatientDocument(Constants.PATIENT_DOCUMENT)) {
+                    logger.debug("Item[{}] document is not found.", item.getId());
+                }
+                if (!sluch.fillUploadItemProperties(Constants.POLICLINIC_PROPERTIES)) {
+                    logger.debug("Item[{}] processing skipped because UploadItemProperties is not found.", item.getId());
+                    continue;
+                }
+                if (!sluch.fillSluchProperties(Constants.SLUCH_PROPERTIES)) {
+                    logger.debug("Item[{}] sluchProperties is not found.", item.getId());
+                }
+                //TODO TESTING
+                logger.debug(sluch.getParameters().toString());
+                if (!sluch.fillUploadUslProperties(Constants.POLICLINIC_USL_PROPERTIES)) {
+                    logger.debug("Item[{}] processing skipped because UploadUslProperties is not found.", item.getId());
+                    continue;
+                }
+                if (Constants.DISPANSERIZATION_IDSP_LIST.contains(sluch.getUslProperties().getIDSP())
+                        && (
+                        Constants.DISPANSERIZATION_SERVICE_INFIS_PART.contains(sluch.getItem().getServiceInfis().substring(2, 5))
+                                && !"P".equals(sluch.getItem().getMedicalKindCode())
+                ) || (
+                        "2".equals(sluch.getItemProperties().getRegionalCode())
+                                && "P".equals(sluch.getItem().getMedicalKindCode())
+                )
+                        ) {
+                    logger.info("SKIP OTHER DISPANSERIZATION SLUCH");
+                    break;
+                } else {
+                    String uslQueryName = Constants.POLICLINIC_TARIFF;
+                    if (primarySluch.isChildDispanserizationUnder3Years()) {
+                        logger.debug("it is sluch with dispanserization under 3 years old patient");
+                        uslQueryName = Constants.ADDITIONAL_DISPANSERIZATION_TARIFF;
+                    }
+                    if (!sluch.fillUsl(uslQueryName, false)) {
+                        logger.debug("Item[{}] processing skipped because no one USL is founded (Contract_Tariff, rbServiceFinance, MedicalKindUnit)", item.getId());
+                        continue;
+                    }
+                    addSluchToRegistry(
+                            registry,
+                            account,
+                            sluch,
+                            infisCode,
+                            obsoleteInfisCode,
+                            true,
+                            patientOptionalFields,
+                            personOptionalFields,
+                            sluchOptionalFields,
+                            needForSpokesman
+                    );
+                }
+            logger.debug(" ADDITIONAL # End of Item[{}]", item.getId());
         }
     }
 
     private static void processAdditionalPoliclinicSluch(final XMLSluch primarySluch,
                                                          final Map<Person, List<Sluch>> registry,
+                                                         final boolean primaryAccount,
                                                          final Account account,
                                                          final String infisCode,
-                                                         final Set<SluchOptionalFields> sluchOptionalFields) {
-        final List<AdditionalUploadRow> itemList;
-        try {
-            itemList = TFOMSServer.getQueryChache().executeNamedQueryWithMap(
-                    Constants.QUERY_NAME_POLICLINIC_ADDITIONAL,
-                    AdditionalUploadRow.class,
-                    primarySluch.getParamMap(),
-                    true
-            );
-            XMLHelper.toLog(itemList);
-        } catch (Exception e) {
-            logger.error("Exception while getting result of Policlinic Additional query", e);
-            logger.info("Processing additional policlinic sluch skipped");
+                                                         final String obsoleteInfisCode,
+                                                         final Set<PatientOptionalFields> patientOptionalFields,
+                                                         final Set<PersonOptionalFields> personOptionalFields,
+                                                         final Set<SluchOptionalFields> sluchOptionalFields,
+                                                         final boolean needForSpokesman) {
+        final String additionalPoliclinicQuery = TFOMSServer.getQueryChache().getQueryWithSettedParams(
+                Constants.ADDITIONAL_POLICLINIC_SELECT_STATEMENT,
+                primarySluch.getParameters()
+        );
+        //Skip processing
+        if (additionalPoliclinicQuery.isEmpty()) {
+            logger.error("Additional query with name = \'{}\' not exists.", Constants.ADDITIONAL_POLICLINIC_SELECT_STATEMENT);
             return;
         }
-        final List<AdditionalXMLSluch> sluchList = groupSluchForAdditionalPoliclinic(itemList, primarySluch);
-        //Each row processing
-        for (AdditionalXMLSluch sluch : sluchList) {
-            logger.debug("##### ADDITIONAL Start of Sluch[{}] #####\n{}", sluch.getId(), sluch.getInfo());
-            addSluchToRegistry(
-                    registry,
-                    account,
-                    sluch,
-                    infisCode,
-                    sluchOptionalFields
-            );
-            logger.debug(" ADDITIONAL # End of Sluch[{}]", sluch.getId());
+        logger.info("Additional policlinic query:\n{}", additionalPoliclinicQuery);
+        long startTime = System.currentTimeMillis();
+        List<UploadItem> itemList;
+        try {
+            itemList = TFOMSServer.getSpecialPreferencesBean().executeNamedQueryForUploadItem(additionalPoliclinicQuery);
+        } catch (Exception e) {
+            logger.error("Exception while executing additional policlinic query. Skip processing rows", e);
+            return;
         }
-    }
-
-
-    private static List<AdditionalXMLSluch> groupSluchForAdditionalPoliclinic(final List<AdditionalUploadRow> itemList, XMLSluch primarySluch) {
-        final List<AdditionalXMLSluch> sluchList = new ArrayList<AdditionalXMLSluch>(itemList.size());
-        logger.debug("Start grouping Sluch by actionId for Additional Policlinic (2P)");
+        logger.info("Query executionTime is {} seconds. Returned {} rows.", (float) (System.currentTimeMillis() - startTime) / 1000, itemList.size());
+        toLog(itemList);
         //Each row processing
-        //Grouping sluch by actionId
-        final long startTime = System.currentTimeMillis();
-        for (AdditionalUploadRow item : itemList) {
-            //RSLT = "304"
-            if (!Constants.ADDITIONAL_SKIP_RESULT.equals(item.getRSLT())) {
-                logger.debug("Stop grouping at item[{}] (RSLT<>{})[{}]", item.getId(), Constants.ADDITIONAL_SKIP_RESULT, item.getRSLT());
-                break;
-            }
-            int currentItemAction = item.getAction();
-            boolean isNewSluch = true;
-            for (AdditionalXMLSluch currentSluch : sluchList) {
-                if (currentItemAction == currentSluch.getAction()) {
-                    logger.debug("Item[{}] has same actionId[{}] to Sluch[{}] group them", item.getId(), currentItemAction, currentSluch.getId());
-                    currentSluch.addItem(item);
-                    isNewSluch = false;
+        for (UploadItem item : itemList) {
+            logger.debug("##### ADDITIONAL # Start of Item[{}] #####\n{}", item.getId(), item.getInfo());
+
+                XMLSluch sluch = new XMLSluch(item, primarySluch);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("##### ADDITIONAL # {}", item.getInfo());
+                }
+                sluch.setPatientProperties(primarySluch.getPatientProperties());
+                if (!sluch.fillPatientPolicy(Constants.PATIENT_POLICY)) {
+                    logger.debug("Item[{}] policy is not found.", item.getId());
+                }
+                if (!sluch.fillPatientDocument(Constants.PATIENT_DOCUMENT)) {
+                    logger.debug("Item[{}] document is not found.", item.getId());
+                }
+                if (!sluch.fillUploadItemProperties(Constants.POLICLINIC_PROPERTIES)) {
+                    logger.debug("Item[{}] processing skipped because UploadItemProperties is not found.", item.getId());
+                    continue;
+                }
+                if ("304".equals(sluch.getItemProperties().getRSLT())) {
+                    if (!sluch.fillSluchProperties(Constants.SLUCH_PROPERTIES)) {
+                        logger.debug("Item[{}] sluchProperties is not found.", item.getId());
+                    }
+                    if (!sluch.fillUploadUslProperties(Constants.POLICLINIC_USL_PROPERTIES)) {
+                        logger.debug("Item[{}] processing skipped because UploadUslProperties is not found.", item.getId());
+                        continue;
+                    }
+                    //TODO TESTING
+                    logger.debug(sluch.getParameters().toString());
+                    if (!sluch.fillUsl(Constants.POLICLINIC_TARIFF, true)) {
+                        logger.debug("Item[{}] processing skipped because no one USL is founded (Contract_Tariff, rbServiceFinance, MedicalKindUnit)", item.getId());
+                        continue;
+                    }
+                    addSluchToRegistry(
+                            registry,
+                            account,
+                            sluch,
+                            infisCode,
+                            obsoleteInfisCode,
+                            true,
+                            patientOptionalFields,
+                            personOptionalFields,
+                            sluchOptionalFields,
+                            needForSpokesman
+                    );
+                } else {
+                    logger.info("SKIP SLUCH WITH RSLT<>304");
                     break;
                 }
-            }
-            if (isNewSluch) {
-                AdditionalXMLSluch sluch = new AdditionalXMLSluch(item, primarySluch);
-                sluchList.add(sluch);
-            }
-            logger.debug("End of Item[{}]", item.getId());
+            logger.debug(" ADDITIONAL # End of Item[{}]", item.getId());
         }
-        logger.debug("Grouping complete in ({}) seconds", (float) (System.currentTimeMillis() - startTime) / 1000);
-        return sluchList;
     }
 
-    private static List<AdditionalXMLSluch> groupSluchForAdditionalDispanserization(
-            final List<AdditionalUploadRow> itemList,
-            final XMLSluch primarySluch) {
-        final List<AdditionalXMLSluch> sluchList = new ArrayList<AdditionalXMLSluch>(itemList.size());
-        logger.debug("Start grouping Sluch by actionId for Additional Dispanserization (HCVZ)");
-        //Each row processing
-        //Grouping sluch by actionId
-        final long startTime = System.currentTimeMillis();
-        for (AdditionalUploadRow item : itemList) {
-            if (Constants.DISPANSERIZATION_SERVICE_INFIS_PART.contains(item.getRbServiceInfis().substring(2,5)) ) {
-                logger.info("SKIP OTHER DISPANSERIZATION SLUCH ON :: {}", item.getInfo());
-                break;
-            }
-            int currentItemAction = item.getAction();
-            boolean isNewSluch = true;
-            for (AdditionalXMLSluch currentSluch : sluchList) {
-                if (currentItemAction == currentSluch.getAction()) {
-                    logger.debug("Item[{}] has same actionId[{}] to Sluch[{}] group them", item.getId(), currentItemAction, currentSluch.getId());
-                    currentSluch.addItem(item);
-                    isNewSluch = false;
-                    break;
-                }
-            }
-            if (isNewSluch) {
-                AdditionalXMLSluch sluch = new AdditionalXMLSluch(item, primarySluch);
-                sluchList.add(sluch);
-            }
-            logger.debug("End of Item[{}]", item.getId());
-        }
-        logger.debug("Grouping complete in ({}) seconds", (float) (System.currentTimeMillis() - startTime) / 1000);
-        return sluchList;
-    }
-
-
-    private static List<XMLSluch> groupSluchByActionId(List<UploadRow> itemList) {
-        final List<XMLSluch> sluchList = new ArrayList<XMLSluch>(itemList.size());
-        //Each row processing
-        //Grouping sluch by actionId
-        logger.debug("Start of grouping Sluch by actionId");
-        final long startTime = System.currentTimeMillis();
-        for (UploadRow item : itemList) {
-            int currentItemAction = item.getAction();
-            boolean isNewSluch = true;
-            for (XMLSluch currentSluch : sluchList) {
-                if (currentItemAction == currentSluch.getAction()) {
-                    logger.debug("Item[{}] has same actionId[{}] to Sluch[{}] group them", item.getId(), currentItemAction, currentSluch.getId());
-                    currentSluch.addItem(item);
-                    isNewSluch = false;
-                    break;
-                }
-            }
-            if (isNewSluch) {
-                XMLSluch sluch = new XMLSluch(item);
-                sluchList.add(sluch);
-            }
-            logger.debug("End of Item[{}]", item.getId());
-        }
-        logger.debug("Grouping complete in ({}) seconds", (float) (System.currentTimeMillis() - startTime) / 1000);
-        return sluchList;
-    }
 
     public static void processStationarySluch(
             final Map<Person, List<Sluch>> registry,
@@ -274,86 +369,112 @@ public final class XMLHelper {
             final Set<PersonOptionalFields> personOptionalFields,
             final Set<SluchOptionalFields> sluchOptionalFields,
             final boolean needForSpokesman) {
-        final List<UploadRow> itemList;
-        try {
-            itemList = TFOMSServer.getQueryChache().executeNamedQueryWithMap(
-                    Constants.QUERY_NAME_STATIONARY_MAIN,
-                    UploadRow.class,
-                    null,
-                    true
-            );
-            XMLHelper.toLog(itemList);
-        } catch (Exception e) {
-            logger.error("Exception while getting result of Stationary main query", e);
-            logger.info("Processing stationary sluch skipped");
+        final String mainStationaryQuery = TFOMSServer.getQueryChache().getQueryWithSettedParams(
+                Constants.STATIONARY_SELECT_STATEMENT,
+                null
+        );
+        //Skip processing
+        if (mainStationaryQuery.isEmpty()) {
+            logger.error("Main Stationary query with name = \'{}\' not exists.", Constants.STATIONARY_SELECT_STATEMENT);
             return;
         }
-        List<XMLSluch> sluchList = groupSluchByActionId(itemList);
-        logger.info("Start processing sluchList...");
-        for (XMLSluch sluch : sluchList) {
-            logger.debug("##### Start of Sluch[{}] #####\n{}", sluch.getId(), sluch.getInfo());
-            addSluchToRegistry(
-                    registry,
-                    account,
-                    sluch,
-                    infisCode,
-                    obsoleteInfisCode,
-                    patientOptionalFields,
-                    personOptionalFields,
-                    sluchOptionalFields,
-                    needForSpokesman
-            );
-            logger.debug("End of Sluch[{}]", sluch.getId());
+        logger.info("Main Stationary query:\n{}", mainStationaryQuery);
+        long startTime = System.currentTimeMillis();
+        List<UploadItem> itemList;
+        try {
+            itemList = TFOMSServer.getSpecialPreferencesBean().executeNamedQueryForUploadItem(mainStationaryQuery);
+        } catch (Exception e) {
+            logger.error("Exception while executing main stationary query. Skip processing stationary rows", e);
+            return;
+        }
+        logger.info("Query executionTime is {} seconds. Returned {} rows.", (float) (System.currentTimeMillis() - startTime) / 1000, itemList.size());
+        toLog(itemList);
+
+        //Each row processing
+        for (UploadItem item : itemList) {
+            logger.debug("##### Start of Item[{}] #####\n{}", item.getId(), item.getInfo());
+            if (checkItemIsAlreadyInAccountItems(primaryAccount, item.getAction())) {
+                XMLSluch sluch = new XMLSluch(item);
+                if (!sluch.fillPatientProperties(Constants.PATIENT_PROPERTIES)) {
+                    logger.debug("Item[{}] processing skipped because patientProperties is not found.", item.getId());
+                    //Нету пола и возраста (даты рождения)..... пропускаем такой случай
+                    continue;
+                }
+                if (!sluch.fillPatientPolicy(Constants.PATIENT_POLICY)) {
+                    logger.debug("Item[{}] policy is not found.", item.getId());
+                }
+                if (!sluch.fillPatientDocument(Constants.PATIENT_DOCUMENT)) {
+                    logger.debug("Item[{}] document is not found.", item.getId());
+                }
+                if (!sluch.fillUploadItemProperties(Constants.STATIONARY_PROPERTIES)) {
+                    logger.debug("Item[{}] processing skipped because UploadItemProperties is not found.", item.getId());
+                    continue;
+                }
+                if (!sluch.fillSluchProperties(Constants.SLUCH_PROPERTIES)) {
+                    logger.debug("Item[{}] sluchProperties is not found.", item.getId());
+                }
+                if (!sluch.fillUploadUslProperties(Constants.STATIONARY_USL_PROPERTIES)) {
+                    logger.debug("Item[{}] processing skipped because UploadUslProperties is not found.", item.getId());
+                    continue;
+                }
+                if (!sluch.fillUsl(Constants.STATIONARY_TARIFF, false)) {
+                    logger.debug("Item[{}] processing skipped because no one USL is founded (Contract_Tariff, rbServiceFinance, MedicalKindUnit)", item.getId());
+                    continue;
+                }
+                //Проверка не является ли этот случаем исключением из выгрузки  (true - исключение и его нужно пропустить)
+                if (sluch.isException(Constants.STATIONARY_EXCEPTION)) {
+                    continue;
+                }
+                //Дополнительных запросов проводить не требуется
+                addSluchToRegistry(
+                        registry,
+                        account,
+                        sluch,
+                        infisCode,
+                        obsoleteInfisCode,
+                        false,
+                        patientOptionalFields,
+                        personOptionalFields,
+                        sluchOptionalFields,
+                        needForSpokesman
+                );
+            }
+            logger.debug("End of Item[{}]", item.getId());
         }
     }
 
+    /**
+     * Добавление случая в реестр
+     *
+     * @param registry              реестр куда попадет результат
+     * @param sluch                 случай для добавления
+     */
     private static void addSluchToRegistry(
             final Map<Person, List<Sluch>> registry,
             final Account account,
             final XMLSluch sluch,
             final String infisCode,
             final String obsoleteInfisCode,
+            final boolean isPoliclinic,
             final Set<PatientOptionalFields> patientOptionalFields,
             final Set<PersonOptionalFields> personOptionalFields,
             final Set<SluchOptionalFields> sluchOptionalFields,
             final boolean needForSpokesman) {
         //Идшник пациента из формируемого случая
-        final int sluchPatient = sluch.getPatient();
+        final int sluchPatient = sluch.getItem().getPatient();
         for (Map.Entry<Person, List<Sluch>> entry : registry.entrySet()) {
             if (entry.getKey().getPatientId() == sluchPatient) {
                 //Patient exists. adding sluch to patient
                 logger.debug("Patient[{}] exists in registry. Adding new Sluch to this patient", sluchPatient);
-                entry.getValue().addAll(sluch.formSluchStructure(account, sluchOptionalFields, patientOptionalFields, infisCode, obsoleteInfisCode));
+                entry.getValue().addAll(sluch.formSluchStructure(account, sluchOptionalFields, patientOptionalFields, infisCode, obsoleteInfisCode, isPoliclinic));
                 return;
             }
         }
         //Если внутри цикла не нашли пациента - то это новый пациент, формируем еще одну запись в реестре
         logger.debug("This Patient[{}] is new in registry.", sluchPatient);
         final ArrayList<Sluch> sluchList = new ArrayList<Sluch>(1);
-        sluchList.addAll(sluch.formSluchStructure(account, sluchOptionalFields, patientOptionalFields, infisCode, obsoleteInfisCode));
+        sluchList.addAll(sluch.formSluchStructure(account, sluchOptionalFields, patientOptionalFields, infisCode, obsoleteInfisCode, isPoliclinic));
         registry.put(sluch.formPersonStructure(personOptionalFields, needForSpokesman), sluchList);
-    }
-
-    private static void addSluchToRegistry(
-            final Map<Person, List<Sluch>> registry,
-            final Account account,
-            final AdditionalXMLSluch sluch,
-            final String infisCode,
-            final Set<SluchOptionalFields> sluchOptionalFields
-    ) {
-        //Идшник пациента из формируемого случая
-        final int sluchPatient = sluch.getPatient();
-        for (Map.Entry<Person, List<Sluch>> entry : registry.entrySet()) {
-            if (entry.getKey().getPatientId() == sluchPatient) {
-                //Patient exists. adding sluch to patient
-                logger.debug("Patient[{}] exists in registry. Adding new Sluch to this patient", sluchPatient);
-                entry.getValue().addAll(sluch.formSluchStructure(account, sluchOptionalFields, infisCode));
-                return;
-            }
-        }
-        //Если внутри цикла не нашли пациента - то это ошибка т.к. пациент болжен быть в соновном случае
-        logger.error("This Patient[{}] must EXISTS IN REGISTRY.", sluchPatient);
-        //TODO Exception
     }
 
 
@@ -495,7 +616,6 @@ public final class XMLHelper {
      * Формируется номер счета следующего формата ГГММ-N/ Ni,
      * Где N = номер пакета
      * Ni = первые 3 цифры кода ЛПУ.
-     *
      * @param formDate          дата создания счета (ГГММ)
      * @param packetNumber      номер пакета (N)
      * @param obsoleteInfisCode устаревший инфис ЛПУ (Ni)
@@ -567,25 +687,24 @@ public final class XMLHelper {
             final Organisation organisation,
             final List<Integer> orgStructureIdList,
             final String obsoleteInfisCode,
-            final String levelMO,
-            final String smoNumber) {
+            final String levelMO
+    ) {
         //Окргуление до начала дня (HH:mm:ss 00:00:00)
-        final LocalDate beginInterval = new LocalDate(begDate);
+        LocalDate beginInterval = new LocalDate(begDate);
         //Окргуление до конца дня (HH:mm:ss 23:59:59)
-        final LocalDateTime endInterval = new LocalDateTime(endDate)
+        LocalDateTime endInterval = new LocalDateTime(endDate)
                 .withField(DateTimeFieldType.hourOfDay(), 23)
                 .withField(DateTimeFieldType.minuteOfHour(), 59)
                 .withField(DateTimeFieldType.secondOfMinute(), 59);
         final SimpleDateFormat simpleDateFormat = new SimpleDateFormat("''yyyy-MM-dd HH:mm:ss''");
         final Map<String, String> result = new HashMap<String, String>();
-        result.put(Constants.PARAM_NAME_CONTRACT_ID, String.valueOf(contract.getId()));
-        result.put(Constants.PARAM_NAME_BEGIN_DATE, simpleDateFormat.format(beginInterval.toDate()));
-        result.put(Constants.PARAM_NAME_ORGANISATION_ID, String.valueOf(organisation.getId()));
-        result.put(Constants.PARAM_NAME_END_DATE, simpleDateFormat.format(endInterval.toDate()));
-        result.put(Constants.PARAM_NAME_ORG_STRUCTURE_ID_LIST, XMLHelper.getOrgStructureListAsString(orgStructureIdList));
-        result.put(Constants.PARAM_NAME_OBSOLETE_INFIS_CODE, '\'' + obsoleteInfisCode + '\'');
-        result.put(Constants.PARAM_NAME_LEVEL_MO, '\'' + levelMO + '\'');
-        result.put(Constants.PARAM_NAME_SMO_AREA, '\'' + smoNumber + '\'');
+        result.put(Constants.CONTRACT_ID_PARAM, String.valueOf(contract.getId()));
+        result.put(Constants.BEGIN_DATE_PARAM, simpleDateFormat.format(beginInterval.toDate()));
+        result.put(Constants.ORGANISATION_ID_PARAM, String.valueOf(organisation.getId()));
+        result.put(Constants.END_DATE_PARAM, simpleDateFormat.format(endInterval.toDate()));
+        result.put(Constants.ORG_STRUCTURE_ID_LIST_PARAM, XMLHelper.getOrgStructureListAsString(orgStructureIdList));
+        result.put(Constants.OBSOLETE_INFIS_CODE_PARAM, obsoleteInfisCode);
+        result.put(Constants.LEVEL_MO_PARAM, '\''+levelMO+'\'');
         return result;
     }
 
@@ -633,37 +752,5 @@ public final class XMLHelper {
                 toLog(item);
             }
         }
-    }
-
-    public static void preSelectParameters(final Map<String, String> resultParamMap) {
-        logger.debug("Start of preSelecting some parameters");
-        preSelectIntegerParameter(Constants.QUERY_NAME_MULTIPLE_BIRTH_CONTACT_TYPE, Constants.PARAM_NAME_MULTIPLE_BIRTH_CONTACT_TYPE, resultParamMap, null);
-
-        preSelectIntegerParameter(Constants.QUERY_NAME_MOVING_ACTION_TYPE, Constants.PARAM_NAME_MOVING_ACTION_TYPE, resultParamMap, null);
-        final Map<String, String> queryParameters = new HashMap<String, String>(1);
-        queryParameters.put(Constants.PARAM_NAME_MOVING_ACTION_TYPE, resultParamMap.get(Constants.PARAM_NAME_MOVING_ACTION_TYPE));
-
-        preSelectIntegerParameter(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_MAIN_DIAGNOSIS, Constants.PARAM_NAME_STATIONARY_PROPERTY_TYPE_MAIN_DIAGNOSIS, resultParamMap, queryParameters);
-        preSelectIntegerParameter(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_SECONDARY_DIAGNOSIS, Constants.PARAM_NAME_STATIONARY_PROPERTY_TYPE_SECONDARY_DIAGNOSIS, resultParamMap, queryParameters);
-        preSelectIntegerParameter(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_ISHOD, Constants.PARAM_NAME_STATIONARY_PROPERTY_TYPE_ISHOD, resultParamMap, queryParameters);
-        preSelectIntegerParameter(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_RESULT, Constants.PARAM_NAME_STATIONARY_PROPERTY_TYPE_RESULT, resultParamMap, queryParameters);
-        preSelectIntegerParameter(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_CSG, Constants.PARAM_NAME_STATIONARY_PROPERTY_TYPE_CSG, resultParamMap, queryParameters);
-        preSelectIntegerParameter(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_STAGE, Constants.PARAM_NAME_STATIONARY_PROPERTY_TYPE_STAGE, resultParamMap, queryParameters);
-        preSelectIntegerParameter(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_HOSPITAL_BED_PROFILE, Constants.PARAM_NAME_STATIONARY_PROPERTY_TYPE_HOSPITAL_BED_PROFILE, resultParamMap, queryParameters);
-        logger.debug("End of preSelecting some parameters");
-    }
-
-    private static boolean preSelectIntegerParameter(
-            final String queryName,
-            final String paramName,
-            final Map<String, String> resultParamMap,
-            final Map<String, String> queryParamMap) {
-        final Integer result = TFOMSServer.getQueryChache().executeNamedQueryForIntegerResult(queryName, queryParamMap);
-        if (result == null) {
-            return false;
-        }
-        resultParamMap.put(paramName, String.valueOf(result));
-        logger.debug("PreSelect: {} = {}", paramName, result);
-        return true;
     }
 }

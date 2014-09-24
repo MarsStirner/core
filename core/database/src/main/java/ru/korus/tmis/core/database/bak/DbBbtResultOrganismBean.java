@@ -45,7 +45,7 @@ public class DbBbtResultOrganismBean implements DbBbtResultOrganismBeanLocal {
     @Override
     public BbtResultOrganism get(Integer organismId, Integer actionId) {
         List<BbtResultOrganism> resultOrganismList =
-                em.createQuery("SELECT a FROM BbtResultOrganism a WHERE a.actionId = :actionId AND a.organism.id = :organismId", BbtResultOrganism.class)
+                em.createQuery("SELECT a FROM BbtResultOrganism a WHERE a.actionId = :actionId AND a.organism = :organismId", BbtResultOrganism.class)
                         .setParameter("actionId", actionId)
                         .setParameter("organismId", organismId)
                         .getResultList();

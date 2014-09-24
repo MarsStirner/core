@@ -36,7 +36,7 @@
                           validate-atmost-once-period-in-seconds="60">
         <property name="characterEncoding" value="UTF-8"></property>
         <property name="port" value="3306"></property>
-        <property name="DatabaseName" value="core_test_rb"></property>
+        <property name="DatabaseName" value="core_test"></property>
         <property name="characterSetResults" value="UTF-8"></property>
         <property name="user" value="root"></property>
         <property name="datasourceName" value="s11r64"></property>

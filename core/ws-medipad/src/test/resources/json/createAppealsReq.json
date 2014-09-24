@@ -1,36 +1,37 @@
 {"requestData": {}, "data": {
+    "version": "",
     "number": "",
     "urgent": false,
     "ambulanceNumber": "",
     "rangeAppealDateTime": {
-        "start": 1402042420115,
-        "end": 1402042458575
+        "start": 1393411484614,
+        "end": 1393411516098
     },
     "refuseAppealReason": "",
     "appealWithDeseaseThisYear": "повторно",
     "patient": {
-        "version": 0,
+        "version": 1,
         "sex": "male",
-        "patientCode": 2,
-        "birthDate": 649454400000,
+        "patientCode": 3,
+        "birthDate": 160866000000,
         "birthPlace": "",
         "snils": "",
         "name": {
-            "first": "Сергей",
-            "last": "Милонов",
-            "middle": "Игоревич",
-            "raw": "Милонов Сергей Игоревич",
-            "fio": "Милонов С. И.",
-            "full": "Милонов Сергей Игоревич"
+            "first": "Иван",
+            "last": "Иванов",
+            "middle": "",
+            "raw": "Иванов Иван ",
+            "fio": "",
+            "full": "Иванов Иван "
         },
         "address": {
             "registered": {
-                "localityType": 1,
+                "localityType": 0,
                 "kladr": false,
                 "house": "",
                 "building": "",
                 "flat": "",
-                "fullAddress": "Тюмень, улица Ленина, дом 56, квартира12",
+                "fullAddress": "",
                 "district": {
                     "code": "",
                     "name": "",
@@ -63,12 +64,12 @@
                 }
             },
             "residential": {
-                "localityType": 1,
-                "kladr": true,
+                "localityType": 0,
+                "kladr": false,
                 "house": "",
                 "building": "",
                 "flat": "",
-                "fullAddress": "Тюмень, улица Ленина, дом 56, квартира12",
+                "fullAddress": "",
                 "district": {
                     "code": "",
                     "name": "",
@@ -94,22 +95,14 @@
                     "index": ""
                 },
                 "republic": {
-                    "code": "7700000000000",
-                    "name": "Москва",
-                    "socr": "г",
+                    "code": "",
+                    "name": "",
+                    "socr": "",
                     "index": ""
                 }
             }
         },
-        "phones": [
-            {
-                "number": "8(652)1234575",
-                "typeId": 7,
-                "typeName": "бабушка",
-                "comment": "Зинаида Павловна",
-                "id": 3
-            }
-        ],
+        "phones": [],
         "payments": [
             {
                 "policyType": {
@@ -152,18 +145,16 @@
         ],
         "idCards": [
             {
-                "series": "4005",
-                "number": "8745252",
-                "issued": "6 УФМС по району",
+                "series": "",
+                "number": null,
+                "issued": "",
                 "rangeDocumentDate": {
-                    "start": 1360526400000,
+                    "start": "",
                     "end": ""
                 },
                 "docType": {
-                    "name": "ПАСПОРТ РФ",
-                    "id": 1
-                },
-                "id": 3
+                    "name": ""
+                }
             }
         ],
         "disabilities": [
@@ -190,24 +181,9 @@
             {
                 "comment": "",
                 "socialStatus": {
-                    "status": "Неорганизован",
-                    "id": 319
+                    "status": ""
                 },
-                "works": [
-                    {
-                        "preschoolNumber": null,
-                        "schoolNumber": null,
-                        "classNumber": null,
-                        "militaryUnit": null,
-                        "workingPlace": "",
-                        "position": "",
-                        "rank": null,
-                        "forceBranch": null,
-                        "relationType": null,
-                        "id": 2
-                    }
-                ],
-                "id": 2
+                "works": []
             }
         ],
         "medicalInfo": {
@@ -247,8 +223,8 @@
                 }
             }
         },
-        "id": 2,
-        "idCardsShortString": "ПАСПОРТ РФ:4005-8745252 "
+        "id": 3,
+        "idCardsShortString": ""
     },
     "appealType": {
         "eventType": {
@@ -286,10 +262,17 @@
     "physicalParameters": {
         "bloodPressure": {
             "left": {
+                "syst": "",
+                "diast": ""
             },
             "right": {
+                "syst": "",
+                "diast": ""
             }
-        }
+        },
+        "temperature": "",
+        "weight": "",
+        "height": ""
     },
     "branchType": {
         "id": -1,
@@ -301,6 +284,7 @@
     },
     "diagnoses": [
         {
+            "diagnosticId": "",
             "diagnosisKind": "diagReceivedMkb",
             "description": "",
             "mkb": {
@@ -310,6 +294,7 @@
             }
         },
         {
+            "diagnosticId": "",
             "diagnosisKind": "aftereffectMkb",
             "description": "",
             "mkb": {
@@ -319,6 +304,7 @@
             }
         },
         {
+            "diagnosticId": "",
             "diagnosisKind": "attendantMkb",
             "description": "",
             "mkb": {
@@ -330,6 +316,7 @@
     ],
     "agreedDoctor": "",
     "agreedType": {
+        "id": ""
     },
     "injury": "",
     "hospitalizationWith": [],
@@ -370,12 +357,6 @@
         "nextHospFinanceType": null
     },
     "orgStructStay": "28",
-    "reopening": "Нет",
-    "tempInvalid": {
-        "begDate": 1402042420115,
-        "endDate": 1402042458575,
-        "serial": "SERIAL12_SKIP",
-        "number": "NUMBER__12345678_SKIP",
-        "isByService": true
-    }
+    "orgStructDirectedFrom": "",
+    "reopening": "Нет"
 }}

@@ -1,8 +1,5 @@
 package ru.korus.tmis.core.pharmacy;
 
-import java.util.Arrays;
-import java.util.List;
-
 /**
  * Author:      Dmitriy E. Nosov <br>
  * Date:        25.12.12, 18:06 <br>
@@ -35,18 +32,6 @@ public enum FlatCode {
      */
     PRESCRIPTION("prescription"),
     /**
-     * Назначение пациенту
-     */
-    CHEMOTHERAPY("chemotherapy"),
-    /**
-     * Назначение пациенту
-     */
-    INFUSION("infusion"),
-    /**
-     * Назначение пациенту
-     */
-    ANALGESIA("analgesia"),
-    /**
      * Исполнение назначения пациенту
      */
     RELEASE_PRESCRIPTION("release_prescription");
@@ -59,9 +44,5 @@ public enum FlatCode {
 
     public String getCode() {
         return code;
-    }
-
-    public static List<String> getPrescriptionCodeList() {
-        return Arrays.asList(PRESCRIPTION.getCode(), CHEMOTHERAPY.getCode(), INFUSION.getCode(), ANALGESIA.getCode());
     }
 }

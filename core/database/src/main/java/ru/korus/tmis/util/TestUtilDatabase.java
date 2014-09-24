@@ -5,7 +5,6 @@ import ru.korus.tmis.core.database.bak.DbBbtResultTextBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.database.kladr.DbSchemeKladrBean;
-import ru.korus.tmis.core.pharmacy.DbDrugChartBeanLocal;
 import ru.korus.tmis.schedule.PersonScheduleBeanLocal;
 
 /**
@@ -24,7 +23,6 @@ public class TestUtilDatabase implements TestUtil {
                 Database.class.getPackage(),                  // ru.korus.tmis.core.database.dbutil
                 PersonScheduleBeanLocal.class.getPackage(),   // ru.korus.tmis.schedule
                 DbBbtResultTextBeanLocal.class.getPackage(),  // ru.korus.tmis.core.database.bak
-                DbDrugChartBeanLocal.class.getPackage()       // ru.korus.tmis.core.pharmacy
         };
         return res;
     }

@@ -7,7 +7,7 @@ import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.database._
 import common._
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
+import ru.korus.tmis.core.auth.AuthData
 import javax.persistence.{PersistenceContext, EntityManager}
 import java.util.{ArrayList, Date, LinkedList}
 import ru.korus.tmis.core.exception.CoreException
@@ -32,7 +32,7 @@ with CAPids {
   var organizationBeanLocal: DbOrganizationBeanLocal = _
 
   @EJB
-  var appLock: AuthStorageBeanLocal = _
+  var appLock: AppLockBeanLocal = _
 
   @EJB
   private var dbEventBean: DbEventBeanLocal = _
@@ -88,14 +88,9 @@ with CAPids {
   @EJB
   private var dbContractBean: DbContractBeanLocal = _
 
-  @EJB
-  var dbTempInvalidBean: DbTempInvalidBeanLocal = _
-
-/*
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
-*/
 
   private class IndexOf[T](seq: Seq[T]) {
     def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
@@ -146,16 +141,12 @@ with CAPids {
     val newEvent = this.verificationData(patientId, authData, appealData, true)
     dbManager.persist(newEvent)
     dbManager.detach(newEvent)
-    val res = insertOrModifyAppeal(appealData, newEvent, true, authData)
-    updateTempInvalid(newEvent, appealData.data.tempInvalid, authData)
-    res
+    insertOrModifyAppeal(appealData, newEvent, true, authData)
   }
 
   def updateAppeal(appealData: AppealData, eventId: Int, authData: AuthData) = {
     val newEvent = this.verificationData(eventId, authData, appealData, false)
-    val res = insertOrModifyAppeal(appealData, newEvent, false, authData)
-    updateTempInvalid(newEvent, appealData.data.tempInvalid, authData)
-    res
+    insertOrModifyAppeal(appealData, newEvent, false, authData)
   }
 
   def insertOrModifyAppeal(appealData: AppealData, event: Event, flgCreate: Boolean, authData: AuthData) = {
@@ -167,7 +158,7 @@ with CAPids {
 
     var oldAction: Action = null // Action.clone(temp)
     var oldValues = Map.empty[ActionProperty, java.util.List[APValue]] //actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue)
-    var lockId: Int = -1
+    var lockId: Int = -1 //appLock.acquireLock("Action", temp.getId.intValue(), oldAction.getIdx, authData)
 
     val temp = actionBean.getAppealActionByEventId(newEvent.getId.intValue(), i18n("db.actionType.hospitalization.primary").toInt)
     var action: Action = null
@@ -579,36 +570,6 @@ with CAPids {
     }
   }
 
-  def updateTempInvalid(event: Event, tempInvalidCont: TempInvalidAppealContainer, authDate: AuthData) {
-    if (tempInvalidCont != null &&
-        tempInvalidCont.begDate != null &&
-        tempInvalidCont.endDate != null &&
-        tempInvalidCont.serial != null &&
-        tempInvalidCont.number != null) {
-
-      var tempInvalid = if(event.getId == null) new TempInvalid() else dbTempInvalidBean.getTempInvalidByEventId(event.getId)
-      if (tempInvalid == null) {
-        tempInvalid = new TempInvalid()
-      }
-      tempInvalid.setEvent(event)
-      dbTempInvalidBean.insertOrUpdateTempInvalid(tempInvalid,
-        tempInvalidCont.begDate,//Date beginDate,
-        tempInvalidCont.endDate, //Date endDate,
-        0,//short docType,
-        if (tempInvalidCont.isByService) "09" else "01",//int reasonId,
-        tempInvalidCont.begDate,//Date caseBegDate,
-        tempInvalidCont.serial, //String serial,
-        tempInvalidCont.number, //String number,
-        0,//short sex,
-        0,//byte age,
-        0,//int duration,
-        0,//short closed,
-        event.getPatient,// Patient patient,
-        authDate.getUser//Staff sessionUser)
-      )
-    }
-  }
-
   @throws(classOf[CoreException])
   def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {
     //для создания ид пациента, для редактирование ид обращения
@@ -964,8 +925,7 @@ with CAPids {
       lockId = appLock.acquireLock("Client_Quoting", oldQuota.getId.intValue(), oldQuota.getId.intValue(), auth)
     }
     try {
-      val event: Event = dbEventBean.getEventById(eventId)
-      val patient = event.getPatient
+      val patient = dbEventBean.getEventById(eventId).getPatient
       var mkb: Mkb = null
       try {
         mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
@@ -981,13 +941,12 @@ with CAPids {
         dataEntry.getQuotaType.getId,
         dataEntry.getStatus.getId,
         dataEntry.getDepartment.getId,
-        event.getExternalId,
+        dataEntry.getAppealNumber,
         dataEntry.getTalonNumber,
         dataEntry.getStage.getId,
         dataEntry.getRequest.getId,
         mkb,
         patient,
-        event,
         auth.getUser)
       if (isPersist) dbManager.persist(clientQuoting) else dbManager.merge(clientQuoting)
     } finally {

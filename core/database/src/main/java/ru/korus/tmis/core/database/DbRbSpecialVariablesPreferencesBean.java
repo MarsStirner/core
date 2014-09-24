@@ -1,8 +1,6 @@
 package ru.korus.tmis.core.database;
 
 
-import org.eclipse.persistence.config.QueryHints;
-import org.eclipse.persistence.config.ResultType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.RbSpecialVariablesPreferences;
@@ -85,8 +83,8 @@ public class DbRbSpecialVariablesPreferencesBean implements DbRbSpecialVariables
     @Override
     public <T> List<T> executeNamedQuery(String query, Class<T> entityClass) {
         //adding detach
-        List<T> result = em.createNativeQuery(query, entityClass).getResultList();
-        for (T current : result) {
+        List<T> result =  em.createNativeQuery(query, entityClass).getResultList();
+        for(T current : result){
             em.detach(current);
         }
         return result;
@@ -104,7 +102,104 @@ public class DbRbSpecialVariablesPreferencesBean implements DbRbSpecialVariables
     }
 
     @Override
-    public List<Map> executeNamedQueryForMap(String query){
-        return em.createNativeQuery(query).setHint(QueryHints.RESULT_TYPE, ResultType.Map).getResultList();
+    public List<UploadItem> executeNamedQueryForUploadItem(String query) {
+        final List<Object[]> resultSet = em.createNativeQuery(query).getResultList();
+        final List<UploadItem> typedResultList = new ArrayList<UploadItem>(resultSet.size());
+        for(Object[] current : resultSet){
+            typedResultList.add(new UploadItem(current));
+        }
+        return typedResultList;
     }
+
+    @Override
+    public List<PatientProperties> executeNamedQueryForPatientProperties(String query) {
+        final List<Object[]> resultSet = em.createNativeQuery(query).getResultList();
+        final List<PatientProperties> typedResultList = new ArrayList<PatientProperties>(resultSet.size());
+        for(Object[] current : resultSet){
+            typedResultList.add(new PatientProperties(current));
+        }
+        return typedResultList;
+    }
+
+    @Override
+    public List<PatientPolicy> executeNamedQueryForPolicy(String query) {
+        final List<Object[]> resultSet = em.createNativeQuery(query).getResultList();
+        final List<PatientPolicy> typedResultList = new ArrayList<PatientPolicy>(resultSet.size());
+        for(Object[] current : resultSet){
+            typedResultList.add(new PatientPolicy(current));
+        }
+        return typedResultList;
+    }
+
+    @Override
+    public List<PatientDocument> executeNamedQueryForDocument(String query) {
+        final List<Object[]> resultSet = em.createNativeQuery(query).getResultList();
+        final List<PatientDocument> typedResultList = new ArrayList<PatientDocument>(resultSet.size());
+        for(Object[] current : resultSet){
+            typedResultList.add(new PatientDocument(current));
+        }
+        return typedResultList;
+    }
+
+    @Override
+    public List<UploadItemProperties> executeNamedQueryForUploadItemProperties(String query) {
+        final List<Object[]> resultSet = em.createNativeQuery(query).getResultList();
+        final List<UploadItemProperties> typedResultList = new ArrayList<UploadItemProperties>(resultSet.size());
+        for(Object[] current : resultSet){
+            typedResultList.add(new UploadItemProperties(current));
+        }
+        return typedResultList;
+    }
+
+    @Override
+    public List<PatientOKATOAddress> executeNamedQueryForOKATO(String query) {
+        final List<Object[]> resultSet = em.createNativeQuery(query).getResultList();
+        final List<PatientOKATOAddress> typedResultList = new ArrayList<PatientOKATOAddress>(resultSet.size());
+        for(Object[] current : resultSet){
+            typedResultList.add(new PatientOKATOAddress(current));
+        }
+        return typedResultList;
+    }
+
+    @Override
+    public List<SluchProperties> executeNamedQueryForSluchProperties(String query) {
+        final List<Object[]> resultSet = em.createNativeQuery(query).getResultList();
+        final List<SluchProperties> typedResultList = new ArrayList<SluchProperties>(resultSet.size());
+        for(Object[] current : resultSet){
+            typedResultList.add(new SluchProperties(current));
+        }
+        return typedResultList;
+    }
+
+    @Override
+    public List<UploadUslProperties> executeNamedQueryForUploadUslProperties(String query) {
+        final List<Object[]> resultSet = em.createNativeQuery(query).getResultList();
+        final List<UploadUslProperties> typedResultList = new ArrayList<UploadUslProperties>(resultSet.size());
+        for(Object[] current : resultSet){
+            typedResultList.add(new UploadUslProperties(current));
+        }
+        return typedResultList;
+    }
+
+    @Override
+    public List<UploadUslItem> executeNamedQueryForUploadUslItem(String query) {
+        final List<Object[]> resultSet = em.createNativeQuery(query).getResultList();
+        final List<UploadUslItem> typedResultList = new ArrayList<UploadUslItem>(resultSet.size());
+        for(Object[] current : resultSet){
+            typedResultList.add(new UploadUslItem(current));
+        }
+        return typedResultList;
+    }
+
+    @Override
+    public List<SluchCodeMes> executeNamedQueryForCodeMes(String query) {
+        final List<Object[]> resultSet = em.createNativeQuery(query).getResultList();
+        final List<SluchCodeMes> typedResultList = new ArrayList<SluchCodeMes>(resultSet.size());
+        for(Object[] current : resultSet){
+            typedResultList.add(new SluchCodeMes(current));
+        }
+        return typedResultList;
+    }
+
+
 }

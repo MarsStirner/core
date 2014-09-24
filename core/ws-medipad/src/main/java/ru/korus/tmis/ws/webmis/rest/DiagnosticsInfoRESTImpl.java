@@ -2,8 +2,8 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 
@@ -17,11 +17,11 @@ import javax.ws.rs.*;
 public class DiagnosticsInfoRESTImpl {
 
     //protected static final String PATH = BaseRegistryRESTImpl.PATH + "diagnostics/";
-    private WebMisREST wsImpl;
+    private WebMisRESTImpl wsImpl;
     private AuthData auth;
     private String callback;
 
-    public DiagnosticsInfoRESTImpl(WebMisREST wsImpl, String callback, AuthData auth) {
+    public DiagnosticsInfoRESTImpl(WebMisRESTImpl wsImpl, String callback, AuthData auth) {
         this.auth = auth;
         this.wsImpl = wsImpl;
         this.callback = callback;
@@ -35,7 +35,7 @@ public class DiagnosticsInfoRESTImpl {
     @GET
     @Path("/laboratory/bak/{actionId}")
     @Produces("application/x-javascript")
-    public Object getVacantHospitalBeds(@PathParam("actionId") int actionId) throws CoreException {
+    public Object getVacantHospitalBeds(@PathParam("actionId") int actionId) {
         return new JSONWithPadding(wsImpl.getBakResult(actionId, auth), this.callback);
     }
 }

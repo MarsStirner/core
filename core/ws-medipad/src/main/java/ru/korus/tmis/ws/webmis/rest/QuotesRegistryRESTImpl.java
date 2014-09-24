@@ -4,8 +4,8 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.QuotaData;
 import ru.korus.tmis.core.data.QuotaRequestData;
-import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 
@@ -19,12 +19,12 @@ import javax.ws.rs.*;
 public class QuotesRegistryRESTImpl {
 
     //protected static final String PATH = AppealsInfoRESTImpl.PATH + "{eventId}/quotes/";
-    private WebMisREST wsImpl;
+    private WebMisRESTImpl wsImpl;
     private int eventId;
     private AuthData auth;
     private String callback;
 
-    public QuotesRegistryRESTImpl(WebMisREST wsImpl, int eventId, String callback, AuthData auth) {
+    public QuotesRegistryRESTImpl(WebMisRESTImpl wsImpl, int eventId, String callback, AuthData auth) {
         this.eventId = eventId;
         this.auth = auth;
         this.wsImpl = wsImpl;
@@ -40,7 +40,7 @@ public class QuotesRegistryRESTImpl {
      */
     @POST
     @Produces("application/x-javascript")
-    public Object createQuota(QuotaData data) throws CoreException {
+    public Object createQuota(QuotaData data) {
         return new JSONWithPadding(wsImpl.insertOrUpdateQuota(data, eventId, this.auth), this.callback);
     }
 
@@ -55,7 +55,7 @@ public class QuotesRegistryRESTImpl {
     @Path("/{id}")
     @Produces("application/x-javascript")
     public Object modifyQuota(QuotaData data,
-                              @PathParam("id") int id) throws CoreException {        //TODO: insert quotes id
+                              @PathParam("id") int id) {        //TODO: insert quotes id
         return new JSONWithPadding(wsImpl.insertOrUpdateQuota(data, eventId, this.auth), this.callback);
     }
 
@@ -70,7 +70,7 @@ public class QuotesRegistryRESTImpl {
     public Object getQuotaHistory(@QueryParam("limit")int limit,
                                   @QueryParam("page")int  page,
                                   @QueryParam("sortingField")String sortingField,      //сортировки вкл.
-                                  @QueryParam("sortingMethod")String sortingMethod) throws CoreException {
+                                  @QueryParam("sortingMethod")String sortingMethod) {
 
         QuotaRequestData request = new QuotaRequestData(null, sortingField, sortingMethod, limit, page);
         return new JSONWithPadding(wsImpl.getQuotaHistory(eventId, request), this.callback);

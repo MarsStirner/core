@@ -85,6 +85,8 @@ public class HsPixPullBeanTest extends Arquillian {
 
         wa.addClass(HsPixPullBean.class);
 
+        //wa.addAsManifestResource(new File("./src/test/resources/META-INF/log4j.properties"));
+        //wa.addAsWebInfResource(new File("./src/test/resources/init.sql"), "classes/init.sql");
         wa.addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
         System.out.println("**************************** createTestArchive for HsPixPullBeanTest");
         return wa;

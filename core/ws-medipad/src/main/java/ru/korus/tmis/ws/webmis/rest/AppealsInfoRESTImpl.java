@@ -6,8 +6,8 @@ import ru.korus.tmis.core.data.AppealData;
 import ru.korus.tmis.core.data.IdValueContainer;
 import ru.korus.tmis.core.data.ReceivedRequestData;
 import ru.korus.tmis.core.data.ReceivedRequestDataFilter;
-import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import java.util.Date;
@@ -22,11 +22,11 @@ import java.util.Date;
 public class AppealsInfoRESTImpl {
 
     //protected static final String PATH = BaseRegistryRESTImpl.PATH + "appeals/";
-    private WebMisREST wsImpl;
+    private WebMisRESTImpl wsImpl;
     private AuthData auth;
     private String callback;
 
-    public AppealsInfoRESTImpl(WebMisREST wsImpl, String callback, AuthData auth) {
+    public AppealsInfoRESTImpl(WebMisRESTImpl wsImpl, String callback, AuthData auth) {
         this.auth = auth;
         this.wsImpl = wsImpl;
         this.callback = callback;
@@ -101,7 +101,7 @@ public class AppealsInfoRESTImpl {
                                                           @QueryParam("filter[externalId]")String externalId,
                                                           @QueryParam("filter[beginDate]")Long beginDate,
                                                           @QueryParam("filter[endDate]")Long endDate,
-                                                          @QueryParam("filter[diagnosis]") String mkbCode) throws CoreException {
+                                                          @QueryParam("filter[diagnosis]") String mkbCode) {
 
         ReceivedRequestDataFilter filter = new ReceivedRequestDataFilter(eventId, fullName, birthDate, externalId, beginDate, endDate, mkbCode, role);
         ReceivedRequestData requestData = new ReceivedRequestData(sortingField, sortingMethod, limit, page, filter);
@@ -120,7 +120,7 @@ public class AppealsInfoRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object updatePatientAppeal(@PathParam("eventId")int eventId,
-                                      AppealData data) throws CoreException {
+                                      AppealData data) {
         return new JSONWithPadding(wsImpl.updateAppeal(data, eventId, this.auth), this.callback);
     }
 
@@ -136,7 +136,7 @@ public class AppealsInfoRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object closeLastMovingAtAppeal(@PathParam(("eventId"))int eventId,
-                                          @QueryParam("date")long timestamp) throws CoreException {
+                                          @QueryParam("date")long timestamp) {
         Date date;
         if(timestamp < 1)
             date = new Date();
@@ -156,7 +156,7 @@ public class AppealsInfoRESTImpl {
     @GET
     @Path("{eventId}")
     @Produces("application/x-javascript")
-    public Object getAppealById(@PathParam("eventId")int eventId) throws CoreException {
+    public Object getAppealById(@PathParam("eventId")int eventId) {
         return new JSONWithPadding(wsImpl.getAppealById(eventId, this.auth), this.callback);
     }
 
@@ -170,35 +170,35 @@ public class AppealsInfoRESTImpl {
     @GET
     @Path("{eventId}/print")
     @Produces("application/x-javascript")
-    public Object getAppealPrintFormById(@PathParam("eventId")int eventId) throws CoreException {
+    public Object getAppealPrintFormById(@PathParam("eventId")int eventId) {
         return new JSONWithPadding(wsImpl.getAppealPrintFormById(eventId, this.auth), this.callback);
     }
 
     @GET
     @Path("{eventId}/diagnoses")
     @Produces("application/x-javascript")
-    public Object getDiagnosesByAppeal(@PathParam("eventId")int eventId) throws CoreException {
+    public Object getDiagnosesByAppeal(@PathParam("eventId")int eventId) {
         return new JSONWithPadding(wsImpl.getDiagnosesByAppeal(eventId, this.auth), this.callback);
     }
 
     @GET
     @Path("{eventId}/monitoring")
     @Produces("application/x-javascript")
-    public Object getMonitoringInfoByAppeal(@PathParam("eventId")int eventId) throws CoreException {
+    public Object getMonitoringInfoByAppeal(@PathParam("eventId")int eventId) {
         return new JSONWithPadding(wsImpl.getMonitoringInfoByAppeal(eventId, 0, this.auth), this.callback);
     }
 
     @GET
     @Path("{eventId}/surgical")
     @Produces("application/x-javascript")
-    public Object getSurgicalOperationsByAppeal(@PathParam("eventId")int eventId) throws CoreException {
+    public Object getSurgicalOperationsByAppeal(@PathParam("eventId")int eventId) {
         return new JSONWithPadding(wsImpl.getSurgicalOperationsByAppeal(eventId, this.auth), this.callback);
     }
 
     @GET
     @Path("{eventId}/analyzes")
     @Produces("application/x-javascript")
-    public Object getExpressAnalyzesInfoByAppeal(@PathParam("eventId")int eventId) throws CoreException {
+    public Object getExpressAnalyzesInfoByAppeal(@PathParam("eventId")int eventId) {
         return new JSONWithPadding(wsImpl.getMonitoringInfoByAppeal(eventId, 1, this.auth), this.callback);
     }
 
@@ -207,7 +207,7 @@ public class AppealsInfoRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object setExecPersonForAppeal(IdValueContainer data,
-                                         @PathParam("eventId")int eventId) throws CoreException {
+                                         @PathParam("eventId")int eventId) {
         return new JSONWithPadding(wsImpl.setExecPersonForAppeal(eventId, Integer.valueOf(data.getId()).intValue(), this.auth), this.callback);
     }
 }

@@ -1,7 +1,7 @@
 {"requestData": null, "data": {
-    "id": 257,
+    "id": 319,
     "version": 2,
-    "number": "2014/473",
+    "number": "2014/27",
     "urgent": false,
     "setPerson": {
         "doctor": {
@@ -29,11 +29,11 @@
     },
     "ambulanceNumber": "",
     "rangeAppealDateTime": {
-        "start": 1402042420000,
-        "end": 1402042458000
+        "start": 1393411484000,
+        "end": 1393411516000
     },
     "patient": {
-        "id": "2"
+        "id": "3"
     },
     "appealType": {
         "eventType": {
@@ -57,8 +57,14 @@
         "directed": "",
         "doctor": ""
     },
-    "hospitalizationType": null,
-    "hospitalizationPointType": null,
+    "hospitalizationType": {
+        "id": 220,
+        "name": ""
+    },
+    "hospitalizationPointType": {
+        "id": 134,
+        "name": ""
+    },
     "hospitalizationChannelType": {
         "id": -1,
         "name": null
@@ -85,7 +91,7 @@
     },
     "diagnoses": [
         {
-            "diagnosticId": 15,
+            "diagnosticId": 63,
             "diagnosisKind": "diagReceivedMkb",
             "description": "",
             "injury": "",
@@ -96,7 +102,7 @@
             }
         },
         {
-            "diagnosticId": 14,
+            "diagnosticId": 64,
             "diagnosisKind": "aftereffectMkb",
             "description": "",
             "injury": "",
@@ -107,7 +113,7 @@
             }
         },
         {
-            "diagnosticId": 16,
+            "diagnosticId": 62,
             "diagnosisKind": "attendantMkb",
             "description": "",
             "injury": "",
@@ -123,8 +129,6 @@
     "appealWithDeseaseThisYear": "повторно",
     "havePrimary": false,
     "contract": null,
-    "ward": null,
-    "totalDays": null,
     "currentDepartment": {
         "id": 28,
         "name": "Приемное отделение"
@@ -144,8 +148,7 @@
     "preHospitalDefects": null,
     "closed": false,
     "closeDateTime": null,
-    "orgStructStay": 0,
+    "orgStructStay": 28,
     "orgStructDirectedFrom": 0,
-    "reopening": "null",
-    "context": "f066"
+    "reopening": "null"
 }}

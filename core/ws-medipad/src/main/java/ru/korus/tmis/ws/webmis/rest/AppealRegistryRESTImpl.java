@@ -5,8 +5,8 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AppealData;
 import ru.korus.tmis.core.data.AppealSimplifiedRequestData;
 import ru.korus.tmis.core.data.AppealSimplifiedRequestDataFilter;
-import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import java.util.LinkedHashSet;
@@ -21,12 +21,12 @@ import java.util.Set;
 @Interceptors(ServicesLoggingInterceptor.class)
 public class AppealRegistryRESTImpl {
 
-    private WebMisREST wsImpl;
+    private WebMisRESTImpl wsImpl;
     private int patientId;
     private AuthData auth;
     private String callback;
 
-    public AppealRegistryRESTImpl(WebMisREST wsImpl, int patientId, String callback, AuthData auth) {
+    public AppealRegistryRESTImpl(WebMisRESTImpl wsImpl, int patientId, String callback, AuthData auth) {
         this.patientId = patientId;
         this.auth = auth;
         this.wsImpl = wsImpl;
@@ -44,7 +44,7 @@ public class AppealRegistryRESTImpl {
     @POST
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object insertPatientAppeal(AppealData data) throws CoreException {
+    public Object insertPatientAppeal(AppealData data) {
         return new JSONWithPadding(wsImpl.insertAppealForPatient(data, this.patientId, this.auth), this.callback);
     }
 
@@ -86,7 +86,7 @@ public class AppealRegistryRESTImpl {
                                           @QueryParam("filter[endDate]")long endDate,
                                           @QueryParam("filter[departmentId]") int departmentId,
                                           @QueryParam("filter[doctorId]") int doctorId,
-                                          @QueryParam("filter[diagnosis]") String mkbCode) throws CoreException {
+                                          @QueryParam("filter[diagnosis]") String mkbCode) {
         Set<String> codes = new LinkedHashSet<String>();
         AppealSimplifiedRequestDataFilter filter = new AppealSimplifiedRequestDataFilter(this.patientId, beginDate, endDate, departmentId, doctorId, mkbCode, number, codes);
         AppealSimplifiedRequestData request= new AppealSimplifiedRequestData(sortingField, sortingMethod, limit, page, filter);

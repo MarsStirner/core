@@ -17,6 +17,13 @@ import java.util.Date;
 public interface DbEventLocalContractLocal {
 
     /**
+     * Получить договор по ID обращения
+     * @param eventId - ID обращения
+     * @return Договор или null, если договор не найден
+     */
+    EventLocalContract getByEventId(Integer eventId);
+
+    /**
      * Получить договор по номеру
      * @param numberOfContract - номер договора
      * @return Договор или null, если договор не найден

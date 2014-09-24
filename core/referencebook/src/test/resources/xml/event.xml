@@ -224,6 +224,11 @@
                     <name>Самостоятельно</name>
                     <codingSystem>STR464</codingSystem>
                 </admissionReferral>
+                <admissionsThisYear>
+                    <code>1</code>
+                    <name>первично</name>
+                    <codingSystem>C42007</codingSystem>
+                </admissionsThisYear>
             </admissionInfo>
             <encounterResult>
                 <code>1</code>
@@ -512,6 +517,9 @@
                 <name> </name>
             </careProfile>
             <isChildProfile>true</isChildProfile>
+            <bedProfile>
+                <name>Онкологические</name>
+            </bedProfile>
             <servPaymentType>
                 <code>1</code>
                 <name>Бюджет</name>

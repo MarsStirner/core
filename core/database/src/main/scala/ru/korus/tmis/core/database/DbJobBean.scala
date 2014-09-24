@@ -11,7 +11,6 @@ import ru.korus.tmis.core.entity.model.{JobTicket, OrgStructure, Action, Job}
 import java.util.{Calendar, Date}
 import java.text.SimpleDateFormat
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
-import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 
 /**
  * Методы для работы с Job
@@ -29,7 +28,7 @@ class DbJobBean extends DbJobBeanLocal
   var em: EntityManager = _
 
   @EJB
-  var appLock: AuthStorageBeanLocal = _
+  var appLock: AppLockBeanLocal = _
 
   def insertOrUpdateJob(id: Int, action: Action, department: OrgStructure): Job = {
 

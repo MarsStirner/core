@@ -14,7 +14,6 @@ import ru.korus.tmis.core.data.{ActionTypesListRequestDataFilter, QueryDataStruc
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.I18nable
 import ru.korus.tmis.core.database.DbActionTypeBeanLocal
-import java.util
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -139,9 +138,6 @@ class DbActionTypeBean
     result
   }
 
-  def getActionTypeByCode(flatCodeList: util.List[String]): util.List[ActionType] = {
-    em.createNamedQuery("ActionType.findByFlatCodes", classOf[ActionType]).setParameter("flatCodes", flatCodeList).getResultList
-  }
 
   val ActionTypeByIdQuery = """
     SELECT at
@@ -226,5 +222,4 @@ class DbActionTypeBean
     at.deleted = 0
   GROUP BY at.groupId
                                          """
-
 }

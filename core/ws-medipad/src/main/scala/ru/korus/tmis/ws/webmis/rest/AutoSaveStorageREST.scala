@@ -22,7 +22,7 @@ class AutoSaveStorageREST(val wsImpl: WebMisREST, val authData: AuthData, val ca
 
   @GET
   @Path("/{id}")
-  @Produces(Array("application/x-javascript", MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON))
+  @Produces(Array("application/x-javascript", MediaType.APPLICATION_XML))
   def load(@PathParam("id") id: String) = {
     new JSONWithPadding(wsImpl.loadAutoSaveField(id, authData))
   }

@@ -45,7 +45,7 @@
         <property name="ServerName" value="127.0.0.1"></property>
         <property name="zeroDateTimeBehavior" value="convertToNull"></property>
     </jdbc-connection-pool>
-    <jdbc-resource pool-name="s11r64-pool" jndi-name=" java:app/jdbc/s11r64"></jdbc-resource>
+    <jdbc-resource pool-name="s11r64-pool" jndi-name="s11r64"></jdbc-resource>
     <!-- <jdbc-connection-pool connection-validation-method="auto-commit" datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="rls-pool" is-connection-validation-required="true" connection-creation-retry-attempts="3" ping="true" validate-atmost-once-period-in-seconds="60">
          <property name="characterEncoding" value="UTF-8"></property>
          <property name="port" value="3306"></property>

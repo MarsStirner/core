@@ -187,7 +187,7 @@ public class ActionProperty
 
         if (valueTypeMap.containsKey(propertyType)) {
             valueClass = valueTypeMap.get(propertyType);
-        } else if (isRef || "ReferenceRb".equals(propertyType)) {
+        } else if (isRef) {
             valueClass = valueTypeMap.get("Integer");
         } else {
             valueClass = null;

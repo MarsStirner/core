@@ -7,10 +7,11 @@ package ru.korus.tmis.ws.finance;
  * Description: Интерфейс веб-сервиса экономических расчетов <br>
  */
 
+import ru.korus.tmis.core.database.finance.PersonName;
+import ru.korus.tmis.core.database.finance.ServicePaidInfo;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.annotation.security.RolesAllowed;
-import javax.jws.HandlerChain;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebService;
@@ -19,7 +20,6 @@ import java.util.List;
 
 @WebService(targetNamespace = "http://korus.ru/tmis/ws/finance",
         name = "FinanceInfo")
-@HandlerChain(file = "finance-handlers.xml")
 interface ServiceFinanceInfo {
 
     /**
@@ -59,6 +59,12 @@ interface ServiceFinanceInfo {
      * @param listService - массив с информацией об оплаченных услугах
      * @return ID обращения
      */
-     Integer setPaymentInfo(@WebParam(name = "inParam", targetNamespace = "http://korus.ru/tmis/ws/finance") final PaymentPrm paymentPrm) throws CoreException;
+     Integer setPaymentInfo(@WebParam(name = "datePaid", targetNamespace = "http://korus.ru/tmis/ws/finance") final Date datePaid,
+                            @WebParam(name = "codeContract", targetNamespace = "http://korus.ru/tmis/ws/finance") final String codeContract,
+                            @WebParam(name = "dateContract", targetNamespace = "http://korus.ru/tmis/ws/finance") final Date dateContract,
+                            @WebParam(name = "idTreatment", targetNamespace = "http://korus.ru/tmis/ws/finance") final Integer idTreatment,
+                            @WebParam(name = "paidName", targetNamespace = "http://korus.ru/tmis/ws/finance") final PersonName paidName,
+                            @WebParam(name = "birthDate", targetNamespace = "http://korus.ru/tmis/ws/finance") final Date birthDate,
+                            @WebParam(name = "listService", targetNamespace = "http://korus.ru/tmis/ws/finance") final List<ServicePaidInfo> listService) throws CoreException;
 
 }

@@ -3,8 +3,8 @@ package ru.korus.tmis.ws.webmis.rest;
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AssignmentData;
-import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 
@@ -18,12 +18,12 @@ import javax.ws.rs.*;
 public class AssignmentsRegistryRESTImpl {
 
     //protected static final String PATH = AppealsInfoRESTImpl.PATH + "{eventId}/assignment/";
-    private WebMisREST wsImpl;
+    private WebMisRESTImpl wsImpl;
     private int eventId;
     private AuthData auth;
     private String callback;
 
-    public AssignmentsRegistryRESTImpl(WebMisREST wsImpl, int eventId, String callback, AuthData auth) {
+    public AssignmentsRegistryRESTImpl(WebMisRESTImpl wsImpl, int eventId, String callback, AuthData auth) {
         this.eventId = eventId;
         this.auth = auth;
         this.wsImpl = wsImpl;
@@ -41,7 +41,7 @@ public class AssignmentsRegistryRESTImpl {
     @POST
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public Object insertAssignment(AssignmentData data) throws CoreException {
+    public Object insertAssignment(AssignmentData data) {
         return new JSONWithPadding(wsImpl.insertAssignment(data, this.eventId, this.auth), this.callback);
     }
 
@@ -58,7 +58,7 @@ public class AssignmentsRegistryRESTImpl {
     @Consumes("application/json")
     @Produces("application/x-javascript")
     public Object modifyAssignment(AssignmentData data,
-                                   @PathParam("actionId")int actionId) throws CoreException {
+                                   @PathParam("actionId")int actionId) {
         return new JSONWithPadding(wsImpl.insertAssignment(data, this.eventId, this.auth), this.callback);  //TODO: подкл actionId
     }
 
@@ -73,7 +73,7 @@ public class AssignmentsRegistryRESTImpl {
     @GET
     @Path("/{actionId}")
     @Produces("application/x-javascript")
-    public Object getAssignmentById(@PathParam("actionId")int actionId) throws CoreException {
+    public Object getAssignmentById(@PathParam("actionId")int actionId) {
         return new JSONWithPadding(wsImpl.getAssignmentById(actionId, this.auth), this.callback);
     }
 

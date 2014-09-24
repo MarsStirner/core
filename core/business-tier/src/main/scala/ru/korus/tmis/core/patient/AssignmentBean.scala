@@ -5,7 +5,7 @@ import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
+import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
@@ -29,7 +29,7 @@ with I18nable {
   var em: EntityManager = _
 
   @EJB
-  var appLock: AuthStorageBeanLocal = _
+  var appLock: AppLockBeanLocal = _
 
   @EJB
   private var actionBean: DbActionBeanLocal = _

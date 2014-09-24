@@ -4,9 +4,6 @@
  */
 package ru.korus.tmis.pharmacy;
 
-import misexchange.MISExchangePortType;
-import misexchange.RCMRIN000002UV02;
-import misexchange.Request;
 import org.jboss.arquillian.container.test.api.Deployment;
 import org.jboss.arquillian.persistence.*;
 import org.jboss.arquillian.testng.Arquillian;
@@ -15,10 +12,7 @@ import org.jboss.shrinkwrap.api.ArchivePaths;
 import org.jboss.shrinkwrap.api.ShrinkWrap;
 import org.jboss.shrinkwrap.api.asset.EmptyAsset;
 import org.jboss.shrinkwrap.api.spec.WebArchive;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Mock;
 import org.testng.Assert;
-import org.testng.annotations.BeforeTest;
 import org.testng.annotations.Test;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.database.common.*;
@@ -29,30 +23,24 @@ import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionsTo1C;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.LoggingInterceptor;
 import ru.korus.tmis.core.pharmacy.*;
-import ru.korus.tmis.scala.util.ConfigManager;
-import ru.korus.tmis.util.TestUtilBusiness;
 import ru.korus.tmis.util.TestUtilCommon;
-import ru.korus.tmis.util.TestUtilDatabase;
-import ru.korus.tmis.util.TestUtilLaboratory;
 
 import javax.ejb.EJB;
-import javax.mail.internet.MimeUtility;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
 
-import static org.mockito.Mockito.times;
-import static org.mockito.Mockito.verify;
-import static org.mockito.MockitoAnnotations.initMocks;
-
 
 /**
  * @author SZagrebelny
  */
+//@RunWith(Arquillian.class)
 @PersistenceTest
+//@Transactional(value = TransactionMode.DISABLED)
 @Transactional(value = TransactionMode.ROLLBACK)
+@DataSource(value = "s11r64")
 public class PrescriptionTest extends Arquillian {
 
     @PersistenceContext(unitName = "s11r64")
@@ -78,40 +66,53 @@ public class PrescriptionTest extends Arquillian {
 
     final private Integer TEST_PATIENT_ID = 1;
 
-    @Mock
-    MISExchangePortType mockPort;
-
     @Deployment
     public static Archive createTestArchive() {
         final WebArchive wa = ShrinkWrap.create(WebArchive.class, "test.war");
-        wa.addAsWebInfResource(new File("../common/src/test/resources/META-INF/persistence.xml"), "classes/META-INF/persistence.xml");
+        wa.addAsWebInfResource(new File("./src/test/resources/META-INF/persistence.xml"), "classes/META-INF/persistence.xml");
 //--- common --------------------------------------------------------
+        wa.addClass(JpaExample.class);
+        wa.addClass(JpaExampleBean.class);
+//        wa.addClass(RbFinance.class);
+
         wa.addPackages(false, (new TestUtilCommon()).getPackagesForTest());
-        wa.addPackages(false, (new TestUtilBusiness()).getPackagesForTest());
-        wa.addPackages(false, (new TestUtilDatabase()).getPackagesForTest());
-        wa.addPackages(false, (new TestUtilLaboratory()).getPackagesForTest());
+         wa.addPackage(DbEventBeanLocal.class.getPackage());
+        wa.addClass(LoggingInterceptor.class);
+        wa.addClass(DbStaffBean.class);
+        wa.addClass(DbStaffBeanLocal.class);
 //-------------------------------------------------------------------
 
 //--- prescription --------------------------------------------------
-        wa.addClass(JpaExample.class);
-        wa.addClass(JpaExampleBean.class);
         wa.addClass(DrugChart.class);
         wa.addClass(DrugComponent.class);
         wa.addPackage(PharmacyBeanLocal.class.getPackage());
+        /*wa.addClass(PharmacyBeanLocal.class);
+        wa.addClass(PharmacyBean.class);
+        wa.addClass(DbDrugChartBeanLocal.class);
+        wa.addClass(DbDrugChartBean.class);
+        wa.addClass(DbPharmacyBeanLocal.class);
+        wa.addClass(DbPharmacyBean.class);
+        wa.addClass(DbDrugChartBean.class);
+        wa.addClass(DbRbFinance1CBean.class);
+        wa.addClass(DbRbFinance1CBeanLocal.class);
+        wa.addClass(DbPrescriptionsTo1CBeanLocal.class);
+        wa.addClass(DbPrescriptionsTo1CBean.class);
+        wa.addClass(DbRbMethodOfAdministrationLocal.class);
+        wa.addClass(DbRbMethodOfAdministration.class);
+        wa.addClass(DbPrescriptionSendingResBeanLocal.class);
+        wa.addClass(DbPrescriptionSendingResBean.class);*/
         wa.addPackage(DbDrugChartBean.class.getPackage());
         wa.addPackage(PrescriptionsTo1C.class.getPackage());
 //-------------------------------------------------------------------
+
+
         wa.addAsWebInfResource(EmptyAsset.INSTANCE, ArchivePaths.create("beans.xml"));
         System.out.println("**************************** createTestArchive");
         return wa;
     }
 
-    @BeforeTest
-    protected void setUp() throws Exception {
-        initMocks(this);
-    }
-
     @Test
+    //@Cleanup(phase = TestExecutionPhase.NONE)
     public void hello() {
         System.out.println("**************************** hello");
         Assert.assertNotNull(jpaExample);
@@ -122,7 +123,6 @@ public class PrescriptionTest extends Arquillian {
 
     @Test
     public void testPrescriptions() {
-        System.out.println("**************************** testPrescriptions() started...");
         try {
             createPrescriptions();
         } catch (CoreException ex) {
@@ -130,44 +130,8 @@ public class PrescriptionTest extends Arquillian {
         }
     }
 
-    @Test
-    public void pullDb() throws Exception {
-        ConfigManager.RbManagerSetting().DebugDemoMode_$eq("on");
-        ConfigManager.Common().OrgId_$eq(3479);
-        System.out.println("**************************** PrescriptionTest.pullDb");
-        initDb();
-        Assert.assertNotNull(pharmacyBean);
-
-        pharmacyBean.setMisExchangeSoap(mockPort);
-        ArgumentCaptor<MISExchangePortType> captor = ArgumentCaptor.forClass(MISExchangePortType.class);
-        pharmacyBean.pooling();
-        ArgumentCaptor<Request> argument = ArgumentCaptor.forClass(Request.class);
-        verify(mockPort, times(1)).processHL7V3Message(argument.capture());
-        final String contextPath = "misexchange";
-        final Request msg = argument.getAllValues().get(0);
-        String docText = null;
-        if (msg instanceof  RCMRIN000002UV02) {
-            ((RCMRIN000002UV02)msg).getMessage().getId().setRoot("TEST");
-            final List<Object> content = ((RCMRIN000002UV02) msg).getMessage().getControlActProcess().getText().getContent();
-            Object docBase64 = content.size() > 5 ? content.get(5) : null;
-            if(docBase64 instanceof String) {
-                docText = new String(javax.xml.bind.DatatypeConverter.parseBase64Binary(((String) docBase64)), "UTF-8");
-                docText = docText.replaceAll("root=\".{8}-.{4}-.{4}-.{4}-.{12}\"", "root=\"TEST\"");
-            }
-            ((RCMRIN000002UV02)msg).getMessage().getControlActProcess().setText(null);
-        }
-        Assert.assertTrue(TestUtilCommon.checkArgument(msg, "./src/test/resources/xml/sendPrescription.xml", contextPath));
-        Assert.assertTrue(TestUtilCommon.checkArgument(docText, "./src/test/resources/xml/sendPrescriptionDoc.xml"));
-    }
-
-    private void initDb() throws InterruptedException {
-        TestUtilCommon.executeQuery(em, "./src/test/resources/sql/init.sql");
-        em.flush();
-        Thread.sleep(1000);// чтобы успел отработать триггер в БД ??
-    }
-
-
     private void createPrescriptions() throws CoreException {
+        HL7PacketBuilder.setTestMode(true);
         List<Event> eventList = dbEventBeanLocal.getEventsForPatient(TEST_PATIENT_ID);
         Assert.assertTrue(!eventList.isEmpty());
         Event event = eventList.iterator().next();
@@ -182,6 +146,8 @@ public class PrescriptionTest extends Arquillian {
         createInterval(actionPrescription);
         createDrugComponent(actionPrescription);
         em.flush();
+        pharmacyBean.sendPrescriptionTo1C();
+        //TODO: Добавить проверку выходного пакета!
     }
 
     private void createDrugComponent(Action actionPrescription) {

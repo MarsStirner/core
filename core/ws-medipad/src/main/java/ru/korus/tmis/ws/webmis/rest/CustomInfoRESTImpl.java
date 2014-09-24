@@ -8,8 +8,10 @@ import ru.korus.tmis.core.data.TakingOfBiomaterialRequesData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
-import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.ws.impl.WebMisRESTImpl;
+import ru.korus.tmis.ws.webmis.rest.OrganizationImpl;
+import ru.korus.tmis.ws.webmis.rest.PrintTemplateImpl;
 
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
@@ -24,7 +26,7 @@ import java.util.List;
 @Interceptors(ServicesLoggingInterceptor.class)
 public class CustomInfoRESTImpl {
 
-    private WebMisREST wsImpl;
+    private WebMisRESTImpl wsImpl;
     private int limit;
     private int  page;
     private String sortingField;
@@ -32,7 +34,7 @@ public class CustomInfoRESTImpl {
     private AuthData auth;
     private String callback;
 
-    public CustomInfoRESTImpl(WebMisREST wsImpl, String callback,
+    public CustomInfoRESTImpl(WebMisRESTImpl wsImpl, String callback,
                                  int limit, int  page, String sortingField, String sortingMethod,
                                  AuthData auth) {
         this.auth = auth;
@@ -70,7 +72,7 @@ public class CustomInfoRESTImpl {
     public Object getForm007( @QueryParam("filter[departmentId]") int departmentId,
                               @QueryParam("filter[beginDate]")long beginDate,
                               @QueryParam("filter[endDate]")long endDate,
-                              @QueryParam("filter[profileBed]")List<Integer> profileBeds ) throws CoreException {
+                              @QueryParam("filter[profileBed]")List<Integer> profileBeds )  {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
         final int depId = getCurDepartamentOrDefault(departmentId);
         if(profileBeds.isEmpty()) { // если профили коек не заданы, то строим для всех
@@ -105,7 +107,7 @@ public class CustomInfoRESTImpl {
     public Object checkAppealNumber(@PathParam("name") String name,
                                     @QueryParam("typeId")int typeId,
                                     @QueryParam("number")String number,
-                                    @QueryParam("serial")String serial) throws CoreException {
+                                    @QueryParam("serial")String serial) {
         return new JSONWithPadding(wsImpl.checkExistanceNumber(name, typeId, number, serial),this.callback);
     }
 
@@ -136,7 +138,7 @@ public class CustomInfoRESTImpl {
                                          @QueryParam("filter[beginDate]")long beginDate,
                                          @QueryParam("filter[endDate]")long endDate,
                                          @QueryParam("filter[status]") String status,
-                                         @QueryParam("filter[biomaterial]") int biomaterial) throws CoreException {
+                                         @QueryParam("filter[biomaterial]") int biomaterial)   {
 
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
         final int depId = getCurDepartamentOrDefault(departmentId);
@@ -165,7 +167,7 @@ public class CustomInfoRESTImpl {
     @PUT
     @Path("/jobTickets/status")
     @Produces("application/x-javascript")
-    public Object setStatusesForJobTickets(JobTicketStatusDataList data) throws CoreException {
+    public Object setStatusesForJobTickets(JobTicketStatusDataList data) {
         return new JSONWithPadding(wsImpl.updateJobTicketsStatuses(data, this.auth),this.callback);
     }
 
@@ -197,7 +199,7 @@ public class CustomInfoRESTImpl {
     @Produces("application/x-javascript")
     public Object getAllPatientsForDepartmentOrUserByPeriod(@QueryParam("filter[date]")long endDate,
                                                             @QueryParam("filter[departmentId]") int departmentId,
-                                                            @QueryParam("filter[doctorId]") int doctorId) throws CoreException {
+                                                            @QueryParam("filter[doctorId]") int doctorId) {
 
         final int depId = getCurDepartamentOrDefault(departmentId);
         PatientsListRequestData requestData = new PatientsListRequestData ( depId,

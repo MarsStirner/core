@@ -1,10 +1,10 @@
 INSERT INTO `Person`
 (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `code`, `federalCode`, `regionalCode`, `lastName`, `firstName`, `patrName`, `post_id`, `speciality_id`, `org_id`, `orgStructure_id`, `office`, `office2`, `tariffCategory_id`, `finance_id`, `retireDate`, `ambPlan`, `ambPlan2`, `ambNorm`, `homPlan`, `homPlan2`, `homNorm`, `expPlan`, `expNorm`, `login`, `password`, `userProfile_id`, `retired`, `birthDate`, `birthPlace`, `sex`, `SNILS`, `INN`, `availableForExternal`, `primaryQuota`, `ownQuota`, `consultancyQuota`, `externalQuota`, `lastAccessibleTimelineDate`, `timelineAccessibleDays`, `typeTimeLinePerson`, `maxOverQueue`, `maxCito`, `quotUnit`, `academicdegree_id`, `academicTitle_id`, `uuid_id`, `displayInTimeline`)
   VALUES
-  (41, '2014-03-05 16:37:24', NULL, '2014-03-05 16:37:24', NULL, 0, 'code', '', '', 'test', 'test', 'test', NULL, 1, NULL, 24, '', '', NULL, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 'utest', '098f6bcd4621d373cade4e832627b4f6', 29, 0, '1970-01-01', '', 0, '', '', 0, 50, 25, 25, 10, NULL, 0, 0, 0, 0, NULL, NULL, NULL, 984153, 1);
+  (41, '2014-03-05 16:37:24', NULL, '2014-03-05 16:37:24', NULL, 0, 'code', '', '', 'test', 'test', 'test', NULL, 1, NULL, NULL, '', '', NULL, NULL, NULL, 0, 0, 0, 0, 0, 0, 0, 0, 'test', '098f6bcd4621d373cade4e832627b4f6', 29, 0, '1970-01-01', '', 0, '', '', 0, 50, 25, 25, 10, NULL, 0, 0, 0, 0, NULL, NULL, NULL, 984153, 1);
 
 SET @last = LAST_INSERT_ID();
-INSERT INTO Person_Profiles (userProfile_id, person_id) VALUES (29, 41);
+INSERT INTO Person_Profiles (userProfile_id, person_id) VALUES (29, @last);
 
 INSERT INTO `rbBloodComponentType` (`code`, `name`) VALUES ('02.02.003', 'Плазма свежезамороженная, полученная автоматическим аферезом');
 INSERT INTO `rbBloodComponentType` (`code`, `name`) VALUES ('02.01.020', 'Тромбоцитный концентрат, полученный автоматическим аферезом');
@@ -27,8 +27,3 @@ INSERT INTO `Event`
   (841695, '2014-03-05 15:44:43', 37, '2014-03-05 15:44:44', 37, 0, '2014/474', 2, NULL, 2, 61, NULL, '2014-03-05 15:44:43', 37, NULL, 37, 2, 1, NULL, NULL, 0, NULL, ' ', NULL, NULL, 0, NULL, NULL, NULL, 2, 0, 0, NULL, 984138, NULL);
 
 UPDATE `ActionType` SET `defaultPlannedEndDate`=0 WHERE  `id`=3911;
-UPDATE `Contract` SET `endDate`='2020-12-31' WHERE  `id`=61;
-
-INSERT IGNORE INTO `DrugChart` (`id`, `action_id`, `master_id`, `begDateTime`, `endDateTime`, `status`, `statusDateTime`, `note`, `uuid`, `version`) VALUES (14, 259, NULL, '2014-06-11 15:00:00', '2014-06-13 15:01:00', 0, '2014-05-21 14:26:58', NULL, 'b5ae2f0f-0c3f-4e88-addc-7c702672fe52', NULL);
-INSERT IGNORE INTO `DrugChart` (`id`, `action_id`, `master_id`, `begDateTime`, `endDateTime`, `status`, `statusDateTime`, `note`, `uuid`, `version`) VALUES (15, 259, 14, '2014-05-22 15:02:00', '2014-05-30 15:03:00', 0, '2014-05-21 14:05:41', '', '6c296380-6026-4b48-b414-450999b29379', NULL);
-

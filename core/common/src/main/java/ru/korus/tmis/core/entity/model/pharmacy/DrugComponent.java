@@ -17,7 +17,7 @@ import java.util.Date;
 @Table(name = "DrugComponent", schema = "", catalog = "")
 @NamedQueries(
         {
-                @NamedQuery(name = "DrugComponent.getByActionId", query = "SELECT dc FROM DrugComponent dc WHERE dc.action.id = :actionId AND dc.cancelDateTime IS NULL"),
+                @NamedQuery(name = "DrugComponent.getByActionId", query = "SELECT dc FROM DrugComponent dc WHERE dc.action.id = :actionId"),
         }
 )
 public class DrugComponent {
