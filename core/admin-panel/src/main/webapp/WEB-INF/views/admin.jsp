@@ -7,20 +7,15 @@
 
 <head>
     <meta charset="utf-8">
-    <title>ТМИС: Администрирование. ${state.getTitle()}</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="ТМИС: Администрирование">
     <meta name="author" content="ВТР">
     <meta http-equiv="X-UA-Compatible" content="IE=9" />
-    <link href="${pageContext.request.contextPath}/resources/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
+    <link href="resources/bootstrap/3.1.0/css/bootstrap.min.css" rel="stylesheet">
     <script type="text/javascript" src="resources/jquery/jquery-1.8.2.min.js"></script>
     <script type="text/javascript" src="resources/bootstrap/3.1.0/js/bootstrap.min.js"></script>
-    <style type="text/css">
-        .attr-title .lend {
-        }
 
-    </style>
-
+    <title>ТМИС: Администрирование. ${state.getTitle()}</title>
+    <meta name="description" content="ТМИС: Администрирование">
 </head>
 
 <body>
