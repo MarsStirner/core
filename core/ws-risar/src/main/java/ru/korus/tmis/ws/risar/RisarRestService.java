@@ -172,9 +172,10 @@ public class RisarRestService {
             if (patrName != null && !patrName.isEmpty()) {
                 map.add("doctorFIO[middlename]", patrName);
             }
-            final RbPost post = staff.getPost();
-            if (post != null) {
-                map.add("position", post.getName());
+            final Speciality speciality = staff.getSpeciality();
+            if (speciality != null) {
+                //map.add("position", post.getName());
+                map.add("specialityCode", speciality.getOKSOCode());
             }
         }
         try {
