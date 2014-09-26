@@ -324,7 +324,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 toLog.addN("Fetch last actions with size [#]", actionList.size());
                 for (Action action : actionList) {
                     final Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
-                    if (checkPharmacy == null) {
+                    if (checkPharmacy == null && isActionForSend(action)) {
                         toLog.addN("Found non sending action [#], flatCode [#]", action, action.getActionType().getFlatCode());
                         send(action, toLog);
                     }
