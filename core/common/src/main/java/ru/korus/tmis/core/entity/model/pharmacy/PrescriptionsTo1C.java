@@ -15,7 +15,8 @@ import java.util.Arrays;
 @Table(name = "PrescriptionsTo1C")
 @NamedQueries(
         {
-                @NamedQuery(name = "PrescriptionsTo1C.findToSend", query = "SELECT p FROM PrescriptionsTo1C p WHERE p.sendTime < :now"),
+                @NamedQuery(name = "PrescriptionsTo1C.findToSend", query = "SELECT p FROM PrescriptionsTo1C p " +
+                        "WHERE p.sendTime < :now AND (p.isPrescription = 1 OR (p.oldStatus = 0 AND p.newStatus = 1) OR (p.oldStatus = 1 AND p.newStatus = 0))"),
         })
 public class PrescriptionsTo1C implements Serializable {
     private static final long serialVersionUID = 1L;
