@@ -396,7 +396,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
    *
    * Возвращает пару (код, текстовое описание диагноза) по МКБ или null
    */
-  def getDiagnosis(e: Event): Pair[String, String] = {
+  def getDiagnosis(e: Event): (String, String) = {
     // Получаем тип свойства действия для диагноза
     val diagnosisAPT = asScalaSet(dbActionPropertyType.getDiagnosisAPT)
 
