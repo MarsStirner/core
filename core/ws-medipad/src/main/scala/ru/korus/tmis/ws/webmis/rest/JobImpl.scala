@@ -20,7 +20,7 @@ class JobImpl {
 
   @GET
   @Path("/jobTicket/{id}")
-  @Produces(Array("application/x-javascript", MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON))
+  @Produces(Array("application/javascript", "application/x-javascript", MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON))
   def load(@Context servRequest: HttpServletRequest,
            @QueryParam("callback") callback: String,
            @PathParam("id") id: Int) = {

@@ -10,6 +10,7 @@ import java.util.Date
 import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import java.util
+import scala.language.reflectiveCalls
 
 
 /**

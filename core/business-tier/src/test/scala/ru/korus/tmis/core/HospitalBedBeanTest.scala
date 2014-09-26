@@ -20,6 +20,7 @@ import scala.collection.JavaConversions._
 import java.util.Date
 import javax.persistence.EntityManager
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 /**
  * Author:      Ivan Dmitriev <br>

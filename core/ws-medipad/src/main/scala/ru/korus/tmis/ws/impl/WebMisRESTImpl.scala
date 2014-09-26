@@ -28,6 +28,7 @@ import scala.Predef._
 import scala.collection.JavaConversions._
 import scala.collection.JavaConverters._
 import scala.collection.mutable
+import scala.language.reflectiveCalls
 
 /**
  * User: idmitriev
@@ -502,13 +503,6 @@ with CAPids {
     }
 
   }
-
-  private def isNotifableAction(at: ActionType): Boolean = {
-    val notifiableFlatCodes = Array("TransfusionTherapy", "moving", "received", "del_moving", "del_received")
-    notifiableFlatCodes :+ FlatCode.getPrescriptionCodeList // append prescriptions flat codes
-    at.getFlatCode.startsWith("trfuProcedure_trfu") || notifiableFlatCodes.contains(at.getFlatCode)
-  }
-
 
   private def postProcessing(event: Event = null)(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
 

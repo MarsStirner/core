@@ -12,6 +12,7 @@ import javax.ejb.{EJB, Stateless}
 import java.util.Date
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import ru.korus.tmis.core.database.DbStaffBeanLocal
+import scala.language.reflectiveCalls
 
 /**
  * Класс с методами для работы с таблицей s11r64.Event_Persons

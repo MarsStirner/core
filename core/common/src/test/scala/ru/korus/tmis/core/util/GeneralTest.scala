@@ -1,15 +1,10 @@
 package ru.korus.tmis.core.util
 
-import org.junit.Test
-
-import org.junit.Assert._
+import org.testng.annotations.Test
 import ru.korus.tmis.scala.util.{Types, General}
 import Types.{JLinked, JDouble, JInteger}
 import ru.korus.tmis.scala.util.General
-
-// this is no error, we override standard scala assert to junit one
-
-import org.junit.Assert.{assertTrue => assert}
+import scala.language.reflectiveCalls
 
 class GeneralTest {
 
@@ -18,7 +13,7 @@ class GeneralTest {
   }
 
   @Test
-  def test_nullity {
+  def test_nullity() {
     import General.nullity_implicits
 
     val vi0: List[JInteger] = null
@@ -166,21 +161,21 @@ class GeneralTest {
   }
 
   @Test
-  def test_typed_equality {
+  def test_typed_equality() {
     import General.typedEquality
 
     val v0 = 12
     val v1 = 12
     val v2 = 12.0
 
-    assertTrue(v0 == v1)
-    assertTrue(v1 == v2)
-    assertTrue(v0 =!= v1)
+    assert(v0 == v1)
+    assert(v1 == v2)
+    assert(v0 =!= v1)
     // will not compile on purpose: assertFalse(v1 =!= v2)
   }
 
   @Test
-  def test_flow_implicits {
+  def test_flow_implicits() {
     import General.flow_implicits
 
     var vi = new JLinked[Int]() stating {
@@ -189,15 +184,15 @@ class GeneralTest {
       _.add(1)
     }
 
-    assertTrue(vi.contains(1) && vi.contains(2) && vi.contains(3))
+    assert(vi.contains(1) && vi.contains(2) && vi.contains(3))
 
     vi = new JLinked[Int]() stating()
 
-    assertTrue(vi.isEmpty)
+    assert(vi.isEmpty)
 
     vi = new JLinked[Int]() stating(_.add(1), _.add(2), _.add(3))
 
-    assertTrue(vi.contains(1) && vi.contains(2) && vi.contains(3))
+    assert(vi.contains(1) && vi.contains(2) && vi.contains(3))
 
   }
 

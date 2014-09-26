@@ -42,7 +42,7 @@ public class AppealRegistryRESTImpl {
      */
     @POST
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object insertPatientAppeal(@Context HttpServletRequest servRequest,
                                       @QueryParam("callback") String callback,
                                       @PathParam("patientId") int patientId,
@@ -78,7 +78,7 @@ public class AppealRegistryRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Produces({"application/x-javascript", "application/xml"})
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
     public Object getAllAppealsForPatient(@Context HttpServletRequest servRequest,
                                           @QueryParam("callback") String callback,
                                           @PathParam("patientId") int patientId,

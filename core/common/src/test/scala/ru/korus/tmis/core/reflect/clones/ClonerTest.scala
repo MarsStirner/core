@@ -1,11 +1,8 @@
 package ru.korus.tmis.core.reflect.clones
 
-import org.junit.Test
+import org.testng.Assert._
 
-import org.junit.Assert._
-
-import java.lang.{Integer => JInteger}
-
+import org.testng.annotations.Test
 import ru.korus.tmis.util.reflect.clones.Cloner
 
 import ru.korus.tmis.core.entity.model._

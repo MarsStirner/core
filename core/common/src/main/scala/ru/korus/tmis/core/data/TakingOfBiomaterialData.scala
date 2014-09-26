@@ -12,6 +12,7 @@ import scala.collection.JavaConversions._
 import java.util
 import collection.JavaConversions
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 /**
  * Контейнер с данными о заборе биоматериала

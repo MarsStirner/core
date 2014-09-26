@@ -17,6 +17,7 @@ import scala.collection.JavaConversions._
 import collection.mutable
 import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

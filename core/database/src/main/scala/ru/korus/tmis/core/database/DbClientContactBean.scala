@@ -11,6 +11,7 @@ import java.util.Date
 import java.lang.Iterable
 import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

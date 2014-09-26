@@ -21,7 +21,7 @@ class OrganizationImpl {
 
   @GET
   @Path("/{id}")
-  @Produces(Array[String]("application/x-javascript"))
+  @Produces(Array[String]("application/javascript", "application/x-javascript"))
   def getOrganizationById(@Context servRequest:HttpServletRequest,
                           @QueryParam("callback") callback: String,
                           @PathParam("id") id: Int): JSONWithPadding = {

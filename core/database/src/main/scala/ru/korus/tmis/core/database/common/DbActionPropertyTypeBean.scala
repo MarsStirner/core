@@ -15,6 +15,7 @@ import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFil
 import ru.korus.tmis.auxiliary.AuxiliaryQuickSort
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.I18nable
+import scala.language.reflectiveCalls
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

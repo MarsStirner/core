@@ -9,6 +9,7 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.filter.AbstractListDataFilter
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 //Контейнер для списка диагностик
 @XmlType(name = "diagnosticsListData")

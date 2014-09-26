@@ -12,6 +12,7 @@ import java.util.{Calendar, Date}
 import java.text.SimpleDateFormat
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
+import scala.language.reflectiveCalls
 
 /**
  * Методы для работы с Job

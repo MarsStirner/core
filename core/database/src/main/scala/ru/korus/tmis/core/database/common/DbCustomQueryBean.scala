@@ -20,6 +20,7 @@ import ru.korus.tmis.core.database.bak.BakDiagnosis
 import scala.collection.mutable
 import java.{util => ju}
 import ru.korus.tmis.scala.util.{General, CAPids, I18nable}
+import scala.language.reflectiveCalls
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

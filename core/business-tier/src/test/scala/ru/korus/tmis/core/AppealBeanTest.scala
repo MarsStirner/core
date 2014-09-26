@@ -23,6 +23,7 @@ import javax.persistence.EntityManager
 import java.util
 import collection.JavaConversions
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 /**
  * Author:      Ivan Dmitriev <br>

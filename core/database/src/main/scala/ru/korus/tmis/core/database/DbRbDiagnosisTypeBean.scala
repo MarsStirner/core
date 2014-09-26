@@ -9,6 +9,7 @@ import ru.korus.tmis.core.entity.model.RbDiagnosisType
 import ru.korus.tmis.core.exception.NoSuchRbDiagnosisTypeException
 import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 /**
  * Методы для работы с таблицей Diagnostic

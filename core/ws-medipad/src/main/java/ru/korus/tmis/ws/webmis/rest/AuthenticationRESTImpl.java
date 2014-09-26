@@ -81,7 +81,7 @@ public class AuthenticationRESTImpl   {
     @POST
     @Path("/roles")
     @Consumes({"application/json", "application/xml"})
-    @Produces({"application/x-javascript","application/xml"})
+    @Produces({"application/javascript", "application/x-javascript","application/xml"})
     public Object getRoles2(AuthEntry request,
                             @QueryParam("callback") String callback) {
         try {
@@ -104,7 +104,7 @@ public class AuthenticationRESTImpl   {
     @POST
     @Path("/auth")
     @Consumes({"application/json", "application/xml"})
-    @Produces({"application/x-javascript","application/xml"})
+    @Produces({"application/javascript", "application/x-javascript","application/xml"})
     public Object authenticate2(AuthEntry request,
                                @QueryParam("callback") String callback) throws AuthenticationException {
         return new JSONWithPadding(wsImpl.authenticate(request.login(), request.password(), request.roleId()), callback);
@@ -122,7 +122,7 @@ public class AuthenticationRESTImpl   {
     @POST
     @Path("/changeRole")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object authenticate3(@Context HttpServletRequest servRequest,
                                 @QueryParam("roleId") int roleId,
                                 @QueryParam("callback") String callback) throws AuthenticationException {

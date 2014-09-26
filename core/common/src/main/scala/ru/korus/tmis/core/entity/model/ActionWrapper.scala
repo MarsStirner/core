@@ -11,6 +11,7 @@ import java.util.{Calendar, GregorianCalendar}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.{StringId, ConfigManager}
 import scala.collection.JavaConverters._
+import scala.language.reflectiveCalls
 
 class ActionWrapper(a: Action)
   extends Logging {

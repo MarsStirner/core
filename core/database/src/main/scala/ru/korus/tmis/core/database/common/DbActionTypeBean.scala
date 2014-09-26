@@ -15,6 +15,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.I18nable
 import ru.korus.tmis.core.database.DbActionTypeBeanLocal
 import java.util
+import scala.language.reflectiveCalls
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

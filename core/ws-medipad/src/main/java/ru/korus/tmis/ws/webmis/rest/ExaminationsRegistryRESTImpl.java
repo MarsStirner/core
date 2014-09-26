@@ -45,7 +45,7 @@ public class ExaminationsRegistryRESTImpl {
      */
     @POST
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public  Object insertPrimaryMedExamForPatient(@Context HttpServletRequest servRequest,
                                                   @PathParam("eventId") int eventId,
                                                   @QueryParam("callback") String callback,
@@ -69,7 +69,7 @@ public class ExaminationsRegistryRESTImpl {
     @PUT
     @Path("/{actionId}")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public  Object modifyPrimaryMedExamForPatient(@Context HttpServletRequest servRequest,
                                                   @PathParam("eventId") int eventId,
                                                   @QueryParam("callback") String callback,
@@ -108,7 +108,7 @@ public class ExaminationsRegistryRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Produces({"application/x-javascript", "application/xml"})
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
     public Object getListOfAssessmentsForPatientByEvent(@Context HttpServletRequest servRequest,
                                                         @PathParam("eventId") int eventId,
                                                         @QueryParam("callback") String callback,
@@ -153,7 +153,7 @@ public class ExaminationsRegistryRESTImpl {
      */
     @GET
     @Path("/{actionId}")
-    @Produces({"application/x-javascript", "application/xml"})
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
     public Object getPrimaryMedExamById(@Context HttpServletRequest servRequest,
                                         @PathParam("eventId") int eventId,
                                         @QueryParam("callback") String callback,
@@ -174,7 +174,7 @@ public class ExaminationsRegistryRESTImpl {
 
     @GET
     @Path("/{actionId}/lock")
-    @Produces({"application/x-javascript", "application/xml"})
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
     public Object lockAction(@Context HttpServletRequest servRequest,
                              @PathParam("eventId") int eventId,
                              @QueryParam("callback") String callback,
@@ -185,7 +185,7 @@ public class ExaminationsRegistryRESTImpl {
 
     @PUT
     @Path("/{actionId}/lock")
-    @Produces({"application/x-javascript", "application/xml"})
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
     public Object prolongLockAction(@Context HttpServletRequest servRequest,
                                     @PathParam("eventId") int eventId,
                                     @QueryParam("callback") String callback,
@@ -214,7 +214,7 @@ public class ExaminationsRegistryRESTImpl {
      */
     @GET
     @Path("/lastByType/{actionTypeId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getStructOfPrimaryMedExamWithCopy(@Context HttpServletRequest servRequest,
                                                     @PathParam("eventId") int eventId,
                                                     @QueryParam("callback") String callback,
@@ -233,7 +233,7 @@ public class ExaminationsRegistryRESTImpl {
      */
     @GET
     @Path("/custom1")
-    @Produces({"application/x-javascript", "application/xml"})
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
     public Object custom1(@Context HttpServletRequest servRequest,
                           @PathParam("eventId") int eventId,
                           @QueryParam("callback") String callback,

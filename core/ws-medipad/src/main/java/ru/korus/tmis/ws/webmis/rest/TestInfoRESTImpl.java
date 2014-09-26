@@ -31,7 +31,7 @@ public class TestInfoRESTImpl implements Serializable {
 
     @GET
     @Path("/all")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllTestConstruct() {
         return new JSONWithPadding(wsImpl.makeTestRESTData(),"");
     }

@@ -6,6 +6,7 @@ import javax.xml.bind.annotation.{XmlAttribute, XmlRootElement, XmlType}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 @XmlType(name = "appealSimplifiedDataList")
 @XmlRootElement(name = "appealSimplifiedDataList")

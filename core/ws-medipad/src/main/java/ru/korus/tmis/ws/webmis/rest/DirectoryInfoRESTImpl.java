@@ -4,8 +4,10 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.entity.model.RbPolicyType;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.ws.impl.ReferenceBookBean;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -13,6 +15,7 @@ import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
 import java.util.Arrays;
@@ -30,6 +33,8 @@ import java.util.List;
 public class DirectoryInfoRESTImpl {
 
     @EJB private WebMisREST wsImpl;
+
+    @EJB private ReferenceBookBean referenceBookBean;
 
     //__________________________________________________________________________________________________________________
     //***********************************   СПРАВОЧНИКИ   ***********************************
@@ -79,7 +84,7 @@ public class DirectoryInfoRESTImpl {
      * @see CoreException
      */
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getRecordsFromDictionary(@QueryParam("dictName")String dictName,
                                            @QueryParam("sortingField") String sortingField,
                                            @QueryParam("sortingMethod") String sortingMethod,
@@ -99,6 +104,16 @@ public class DirectoryInfoRESTImpl {
         return new JSONWithPadding(wsImpl.getDictionary(request, dictName),callback);
     }
 
+
+    @GET
+    @Path("/policyTypes")
+    @Produces({"application/javascript", "application/x-javascript", "application/xml" })
+    public JSONWithPadding getPolicyTypes(@Context HttpServletRequest servRequest,
+                                          @QueryParam("callback") String callback) {
+        List<RbPolicyType> r = referenceBookBean.getPolicyTypes(mkAuth(servRequest));
+        return new JSONWithPadding(new GenericEntity<List<RbPolicyType>>(r){}, callback);
+    }
+
     /**
      * Список персонала
      * <pre>
@@ -110,7 +125,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/persons")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllPersons(@QueryParam("sortingField") String sortingField,
                                 @QueryParam("sortingMethod") String sortingMethod,
                                 @QueryParam("limit") int limit,
@@ -137,7 +152,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/persons/free")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getFreePersons(@QueryParam("sortingField") String sortingField,
                                  @QueryParam("sortingMethod") String sortingMethod,
                                  @QueryParam("limit") int limit,
@@ -167,7 +182,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/departments")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllDepartments(@QueryParam("sortingField") String sortingField,
                                     @QueryParam("sortingMethod") String sortingMethod,
                                     @QueryParam("limit") int limit,
@@ -212,7 +227,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/mkbs")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllActionTypeNames(@Context HttpServletRequest servRequest,
                                         @QueryParam("sortingField") String sortingField,
                                         @QueryParam("sortingMethod") String sortingMethod,
@@ -260,7 +275,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/flatDirectory")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getFlatDirectories(@Context HttpServletRequest servRequest,
                                      @Context UriInfo info,
                                      @QueryParam("includeMeta") String includeMeta,
@@ -311,7 +326,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/thesaurus")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getThesaurus(@Context HttpServletRequest servRequest,
                                @QueryParam("sortingField") String sortingField,
                                @QueryParam("sortingMethod") String sortingMethod,
@@ -342,7 +357,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/quotaTypes")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getQuotaTypes(@QueryParam("sortingField") String sortingField,
                                 @QueryParam("sortingMethod") String sortingMethod,
                                 @QueryParam("limit") int limit,
@@ -370,7 +385,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/eventTypes")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getEventTypes(@Context HttpServletRequest servRequest,
                                 @QueryParam("sortingField") String sortingField,
                                 @QueryParam("sortingMethod") String sortingMethod,
@@ -393,7 +408,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/contracts")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getContracts(
                                 @QueryParam("eventTypeId")   int eventTypeId,
     @DefaultValue("false")      @QueryParam("showDeleted")   boolean showDeleted,
@@ -423,7 +438,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/actionTypes")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllActionTypeNames(@Context HttpServletRequest servRequest,
                                         @Context UriInfo info,
                                         @QueryParam("sortingField") String sortingField,
@@ -472,7 +487,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/actionTypes/{id}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getStructOfPrimaryMedExam(@Context HttpServletRequest servRequest,
                                             @PathParam("id") int actionTypeId,
                                             @QueryParam("eventId") int eventId,
@@ -486,7 +501,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/layoutAttributes/")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getLayoutAttributes(@QueryParam("callback") String callback) throws CoreException {
         return new JSONWithPadding(wsImpl.getLayoutAttributes(),callback);
     }
@@ -496,7 +511,7 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/actionsByParams")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getActionByParams(@Context HttpServletRequest servRequest,
                                     @QueryParam("sortingField") String sortingField,
                                     @QueryParam("sortingMethod") String sortingMethod,
@@ -530,7 +545,7 @@ public class DirectoryInfoRESTImpl {
     /**
      * Функциональность данного класса под сомнением, мнемоники должны быть оторваны от ядра
      * (за исключением редких случаев и в этих случаях имена мнемоник должны храниться в файлах *.properties)
-     * Настоятельно нерекомендую пользоваться этим классом. По мере исправления исходного кода, его использующего,
+     * Настоятельно не рекомендую пользоваться этим классом. По мере исправления исходного кода, его использующего,
      * он будет удален.
      */
     @Deprecated

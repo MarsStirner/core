@@ -16,6 +16,7 @@ import General.nullity_implicits
 
 import Types._
 import ru.korus.tmis.laboratory.altey.business.AlteyBusinessBeanLocal
+import scala.language.reflectiveCalls
 
 /**
  * Получение результатов от ЛИС Алтей

@@ -6,6 +6,7 @@ import java.util.LinkedList
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 /*========== Контейнер для просмотра полных данных о талоне СПО ========== */
 

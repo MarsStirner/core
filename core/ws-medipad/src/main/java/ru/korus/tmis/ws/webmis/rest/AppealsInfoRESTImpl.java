@@ -103,7 +103,7 @@ public class AppealsInfoRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllAppealsForReceivedPatientByPeriod(@Context HttpServletRequest servRequest,
                                                           @QueryParam("limit")int limit,
                                                           @QueryParam("page")int  page,
@@ -134,7 +134,7 @@ public class AppealsInfoRESTImpl {
     @PUT
     @Path("{eventId}")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object updatePatientAppeal(@Context HttpServletRequest servRequest,
                                       @PathParam("eventId")int eventId,
                                       @QueryParam("callback") String callback,
@@ -152,7 +152,7 @@ public class AppealsInfoRESTImpl {
     @POST
     @Path("{eventId}/closemove")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object closeLastMovingAtAppeal(@Context HttpServletRequest servRequest,
                                           @PathParam(("eventId"))int eventId,
                                           @QueryParam("callback") String callback,
@@ -175,7 +175,7 @@ public class AppealsInfoRESTImpl {
      */
     @GET
     @Path("{eventId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAppealById(@Context HttpServletRequest servRequest,
                                 @PathParam("eventId")int eventId,
                                 @QueryParam("callback") String callback) throws CoreException {
@@ -191,7 +191,7 @@ public class AppealsInfoRESTImpl {
      */
     @GET
     @Path("{eventId}/print")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAppealPrintFormById(@Context HttpServletRequest servRequest,
                                          @PathParam("eventId")int eventId,
                                          @QueryParam("callback") String callback) throws CoreException {
@@ -200,7 +200,7 @@ public class AppealsInfoRESTImpl {
 
     @GET
     @Path("{eventId}/diagnoses")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getDiagnosesByAppeal(@Context HttpServletRequest servRequest,
                                        @PathParam("eventId")int eventId,
                                        @QueryParam("callback") String callback) throws CoreException {
@@ -209,7 +209,7 @@ public class AppealsInfoRESTImpl {
 
     @GET
     @Path("{eventId}/monitoring")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getMonitoringInfoByAppeal(@Context HttpServletRequest servRequest,
                                             @PathParam("eventId")int eventId,
                                             @QueryParam("callback") String callback) throws CoreException {
@@ -218,7 +218,7 @@ public class AppealsInfoRESTImpl {
 
     @GET
     @Path("{eventId}/surgical")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getSurgicalOperationsByAppeal(@Context HttpServletRequest servRequest,
                                                 @PathParam("eventId")int eventId,
                                                 @QueryParam("callback") String callback) throws CoreException {
@@ -227,7 +227,7 @@ public class AppealsInfoRESTImpl {
 
     @GET
     @Path("{eventId}/analyzes")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getExpressAnalyzesInfoByAppeal(@Context HttpServletRequest servRequest,
                                                  @PathParam("eventId")int eventId,
                                                  @QueryParam("callback") String callback) throws CoreException {
@@ -237,7 +237,7 @@ public class AppealsInfoRESTImpl {
     @PUT
     @Path("{eventId}/execPerson")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object setExecPersonForAppeal(@Context HttpServletRequest servRequest,
                                          IdValueContainer data,
                                          @PathParam("eventId")int eventId,

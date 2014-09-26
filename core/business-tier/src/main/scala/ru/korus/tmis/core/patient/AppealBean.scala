@@ -18,7 +18,6 @@ import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import org.joda.time.{DateTime, Years}
 import scala.language.reflectiveCalls
-;
 
 @Stateless
 class AppealBean extends AppealBeanLocal
@@ -570,11 +569,11 @@ with CAPids {
 
   @throws(classOf[CoreException])
   def checkAppealBegEndDate(datePeriod: DatePeriodContainer) {
-    /*if (datePeriod.getStart.getTime() > datePeriod.getEnd.getTime()) {
+    if (datePeriod.start after datePeriod.end)
       throw new CoreException(i18n("error.appeal.create.InvalidPeriod"))
-    }*/
+
     val maxDiffYears: Int = 3
-    val years: Int = Years.yearsBetween(new DateTime(datePeriod.getStart), new DateTime()).getYears;
+    val years: Int = Years.yearsBetween(new DateTime(datePeriod.getStart), new DateTime()).getYears
     if (Math.abs(years) > maxDiffYears - 1) {
       throw new CoreException(i18n("error.appeal.create.InvalidPeriod.StartDate", maxDiffYears))
     }

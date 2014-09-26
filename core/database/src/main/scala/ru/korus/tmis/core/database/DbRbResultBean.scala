@@ -9,6 +9,7 @@ import ru.korus.tmis.core.entity.model.RbResult
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 /**
  * Created with IntelliJ IDEA.

@@ -4,8 +4,10 @@ import ru.korus.tmis.core.entity.model.RbPolicyType;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
 
+import java.util.List;
+
 public interface DbRbPolicyTypeBeanLocal {
-    Iterable<RbPolicyType> getAllRbPolicyTypes()
+    List<RbPolicyType> getAllRbPolicyTypes()
             throws CoreException;
 
     RbPolicyType getRbPolicyTypeById(int id)

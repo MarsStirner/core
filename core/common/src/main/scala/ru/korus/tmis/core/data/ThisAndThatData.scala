@@ -17,6 +17,7 @@ import ru.korus.tmis.scala.util.ConfigManager
 import scala.Predef._
 import scala.beans.BeanProperty
 import scala.collection.JavaConversions._
+import scala.language.reflectiveCalls
 
 @XmlType(name = "listRequestData")
 @XmlRootElement(name = "listRequestData")

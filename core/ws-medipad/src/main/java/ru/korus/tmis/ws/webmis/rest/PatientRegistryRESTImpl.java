@@ -54,7 +54,7 @@ public class PatientRegistryRESTImpl {
      */
     @POST
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object insertPatient(@Context HttpServletRequest servRequest,
                                 @QueryParam("callback") String callback,
                                 PatientCardData patientData) throws CoreException {
@@ -73,7 +73,7 @@ public class PatientRegistryRESTImpl {
     @PUT
     @Path("/{patientId}")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object updatePatient(@Context HttpServletRequest servRequest,
                                 @QueryParam("callback") String callback,
                                 PatientCardData patientData,
@@ -86,7 +86,7 @@ public class PatientRegistryRESTImpl {
      * Получение списка пациентов.
      */
     @GET
-    @Produces({"application/x-javascript", "application/xml"})
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
     public Object getAllPatientsP(@Context HttpServletRequest servRequest,
                                   @QueryParam("callback") String callback,
                                   @QueryParam("limit")int limit,
@@ -114,7 +114,7 @@ public class PatientRegistryRESTImpl {
      */
     @GET
     @Path("/{patientId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getPatientById(@Context HttpServletRequest servRequest,
                                  @QueryParam("callback") String callback,
                                  @PathParam("patientId")int patientId) throws CoreException {
@@ -145,7 +145,7 @@ public class PatientRegistryRESTImpl {
      */
     @GET
     @Path("/{patientId}/talons")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllTalonsForPatient(@Context HttpServletRequest servRequest,
                                          @QueryParam("callback") String callback,
                                          @PathParam("patientId") int patientId,
@@ -168,7 +168,7 @@ public class PatientRegistryRESTImpl {
     @POST
     @Path("/{patientId}/bloodtypes")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object addBloodType(@Context HttpServletRequest servRequest,
                                @QueryParam("callback") String callback,
                                BloodHistoryData data,
@@ -184,7 +184,7 @@ public class PatientRegistryRESTImpl {
      */
     @GET
     @Path("/{patientId}/bloodtypes")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getBloodTypesHistory(@Context HttpServletRequest servRequest,
                                        @QueryParam("callback") String callback,
                                        @PathParam("patientId") int patientId) throws CoreException {

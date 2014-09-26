@@ -59,7 +59,7 @@ public class CustomInfoRESTImpl {
      */
     @GET
     @Path("/reports/f007")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getForm007(@Context HttpServletRequest servRequest,
                              @QueryParam("callback") String callback,
                              @QueryParam("limit") int limit,
@@ -100,7 +100,7 @@ public class CustomInfoRESTImpl {
      */
     @GET
     @Path("/checkExistance/{name}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object checkAppealNumber(@Context HttpServletRequest servRequest,
                                     @QueryParam("callback") String callback,
                                     @QueryParam("limit") int limit,
@@ -135,7 +135,7 @@ public class CustomInfoRESTImpl {
      */
     @GET
     @Path("/biomaterial/info")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getTakingOfBiomaterial(@Context HttpServletRequest servRequest,
                                          @QueryParam("callback") String callback,
                                          @QueryParam("limit") int limit,
@@ -175,7 +175,7 @@ public class CustomInfoRESTImpl {
      */
     @PUT
     @Path("/jobTickets/status")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object setStatusesForJobTickets(@Context HttpServletRequest servRequest,
                                            @QueryParam("callback") String callback,
                                            @QueryParam("limit") int limit,
@@ -211,7 +211,7 @@ public class CustomInfoRESTImpl {
      */
     @GET
     @Path("/departments/patients")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getAllPatientsForDepartmentOrUserByPeriod(@Context HttpServletRequest servRequest,
                                                             @QueryParam("callback") String callback,
                                                             @QueryParam("limit") int limit,

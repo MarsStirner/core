@@ -11,6 +11,7 @@ import ru.korus.tmis.core.exception.NoSuchRbTempInvalidDocumentException
 import java.util.Date
 import javax.ejb.EJB
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.data
 
-import org.junit.Test
+import org.testng.annotations.Test
 import ru.korus.tmis.util.reflect.Configuration
 
 import reflect.Manifest
@@ -27,7 +27,7 @@ class ConfigurationTest {
   def id[A](v: A): A = v
 
   @Test
-  def testSetSetting {
+  def testSetSetting() {
 
 
     val mcm = MockConfigManager

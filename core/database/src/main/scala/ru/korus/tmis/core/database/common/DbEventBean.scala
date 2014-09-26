@@ -24,6 +24,7 @@ import ru.korus.tmis.core.database._
 import scala.Some
 import com.google.common.collect.{Multimap, HashMultimap}
 import java.util
+import scala.language.reflectiveCalls
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

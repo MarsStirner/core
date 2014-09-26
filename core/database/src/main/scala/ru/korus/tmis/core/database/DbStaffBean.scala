@@ -20,7 +20,7 @@ import org.eclipse.persistence.sessions.{DatabaseRecord, Session}
 import org.eclipse.persistence.internal.jpa.EJBQueryImpl
 import org.eclipse.persistence.queries.DatabaseQuery
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-
+import scala.language.reflectiveCalls
 
 
 @Stateless

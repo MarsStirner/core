@@ -11,6 +11,7 @@ import ru.korus.tmis.core.exception.NoSuchClientAllergyException
 import scala.collection.JavaConversions._
 import java.lang.Iterable
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

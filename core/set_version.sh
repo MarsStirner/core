@@ -1,0 +1,1 @@
+echo $(cat ./core/pom.xml | grep "<version.tmis.core>" | sed -n -e 's/.*\([0-9]\+.[0-9]\+.[0-9]\+[-[A-Z]*]*\).*/\1/p') > version.txt && for FILE in $(find . -name pom.xml); do sed -i s/\$\{version\.tmis\.core\}/$(cat version.txt)/g $FILE; done && rm version.txt
