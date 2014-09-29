@@ -128,7 +128,7 @@ public interface AppealBeanLocal {
 
     MonitoringInfoListData getMonitoringInfo(int eventId, int condition, AuthData authData) throws CoreException;
 
-    Set<Tuple4<String, Date, Date, List<Integer>>> getInfectionMonitoring(int eventId, Iterable<String> infectPrefixies) throws CoreException;
+    Set<Tuple4<String, Date, Date, List<Integer>>> getInfectionMonitoring(int eventId) throws CoreException;
 
     SurgicalOperationsListData getSurgicalOperations(int eventId, AuthData authData) throws CoreException;
 

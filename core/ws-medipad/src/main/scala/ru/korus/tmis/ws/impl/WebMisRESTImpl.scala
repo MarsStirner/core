@@ -20,6 +20,7 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.lock.ActionWithLockInfo
 import ru.korus.tmis.core.notification.NotificationBeanLocal
 import ru.korus.tmis.core.patient._
+import ru.korus.tmis.core.values.InfectionControl
 import ru.korus.tmis.scala.util._
 import ru.korus.tmis.ws.webmis.rest.{LockData, WebMisREST}
 
@@ -571,18 +572,11 @@ with CAPids {
                                            apValueCache: mutable.HashMap[ActionProperty, java.util.List[APValue]],
                                            pastActionsCache: mutable.HashMap[(Set[String], Int, String), java.util.List[Action]]): APValue = {
 
-    val dnevnikoviiOsmotrSet = Set("1_2_18", "1_2_19", "1_2_22", "1_2_23")
+    val IC = InfectionControl
 
-    val infectDrugPropsSet = Set(
-      "infectDrugName_1", "infectDrugBeginDate_1", "infectDrugEndDate_1", "infectTherapyType_1",
-      "infectDrugName_2", "infectDrugBeginDate_2", "infectDrugEndDate_2", "infectTherapyType_2",
-      "infectDrugName_3", "infectDrugBeginDate_3", "infectDrugEndDate_3", "infectTherapyType_3",
-      "infectDrugName_4", "infectDrugBeginDate_4", "infectDrugEndDate_4", "infectTherapyType_4",
-      "infectDrugName_5", "infectDrugBeginDate_5", "infectDrugEndDate_5", "infectTherapyType_5",
-      "infectDrugName_6", "infectDrugBeginDate_6", "infectDrugEndDate_6", "infectTherapyType_6",
-      "infectDrugName_7", "infectDrugBeginDate_7", "infectDrugEndDate_7", "infectTherapyType_7",
-      "infectDrugName_8", "infectDrugBeginDate_8", "infectDrugEndDate_8", "infectTherapyType_8"
-    )
+    val dnevnikoviiOsmotrSet = IC.documents
+
+    val infectDrugPropsSet = IC.drugTherapyProperties
 
     val therapySet = Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")
 
@@ -662,7 +656,8 @@ with CAPids {
       if (lastAction == null)
         return null
 
-      val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(actionTypeCodesPrefix + "-EndDate"))
+      val endDateProperty = lastAction.getActionProperties.find(ap =>
+        ap.getType.getCode != null && ap.getType.getCode.equals(actionTypeCodesPrefix + IC.separator + IC.endDatePostfix))
 
       val endDateValue: Date = {
         if (endDateProperty.isDefined) {
@@ -755,15 +750,15 @@ with CAPids {
           null
       }
 
-      val localInfectProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectLocal")).orNull
+      val localInfectProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(IC.localInfectionChecker)).orNull
 
-      for(prefix <- localInfectPrefixes) {
+      for(prefix <- IC.localInfectPrefixes) {
 
         val values =
         Set (
-          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + "-EndDate")),
-          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + "-BeginDate")),
-          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + "-Etiology")))
+          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + IC.separator + IC.endDatePostfix)),
+          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + IC.separator + IC.beginDatePostfix)),
+          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + IC.separator + IC.etiologyPostfix)))
         .collect({
           case x: Some[ActionProperty] => getPropertyValue(x)
         })
@@ -789,9 +784,9 @@ with CAPids {
       case x if dnevnikoviiOsmotrSet.contains(x) =>
         if (therapySet.contains(x)) // Подтягивания значений для полей терапии
           getPropertyCustom1(dnevnikoviiOsmotrSet, therapySet)
-        else if ((infectPrefixes ++ localInfectPrefixes).exists(p => apt.getCode!= null && (apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)))) // или для полей инфекционного контроля
-          getPropertyCustom2(dnevnikoviiOsmotrSet, (infectPrefixes ++ localInfectPrefixes).find(p => apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)).get)
-        else if (apt.getCode!= null && apt.getCode.equals("infectLocal"))
+        else if (IC.allInfectPrefixes.exists(p => apt.getCode!= null && (apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)))) // или для полей инфекционного контроля
+          getPropertyCustom2(dnevnikoviiOsmotrSet, IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get)
+        else if (apt.getCode!= null && apt.getCode.equals(IC.localInfectionChecker))
           getPropertyCustom4(dnevnikoviiOsmotrSet)
         else if (infectDrugPropsSet.contains(apt.getCode))
           getPropertyCustom3(dnevnikoviiOsmotrSet)
@@ -801,25 +796,6 @@ with CAPids {
     }
 
   }
-
-  val infectPrefixes = Set("infectFever", "infectBacteremia", "infectSepsis","infectSepticShok")
-
-  val localInfectPrefixes = Set(
-    "infectCephalopyosis",    "infectMeningitis",                 "infectMeningoencephalitis",    "infectEncephalitis",
-    "infectConjunctivitis",   "infectPeriorbital",                "infectBlepharitis",            "infectChorioretinitis",
-    "infectSkinLight",        "infectSkinHard",                   "infectMucositis12",            "infectMucositis34",
-    "infectEsophagitis",      "infectGingivitis",                 "infectRhinitis",               "infectTonsillitis",
-    "infectOtitis",           "infectDefeatPPN",                  "infectBronchitis",             "infectInterstitialPneumonia",
-    "infectLobarPneumonia",   "infectPleurisy",                   "infectPericarditis",           "infectMioardit",
-    "infectEndocarditis",     "infectGastritis",                  "infectPancreatitis",           "infectCholecystitis",
-    "infecThepatitis",        "infectGepatolienalnyCandidiasis",  "infectAbscess",                "infectEnterocolitis",
-    "infectCecitis",          "infectAppendicitis",               "infectPeritonitis",            "infectGlomerulonephritis",
-    "infectPyelonephritis",   "infectCystitis",                   "infectUrethritis",             "infectEndometritis",
-    "infectAdnexitis",        "infectVulvovaginitis",             "infectOsteomyelitis",          "infectMyositis",
-    "infectCNSComment",       "infectEyeComment",                 "infectSkinComment",            "infectMucousComment",
-    "infectLORComment",       "infectLungsComment",               "infectHeartComment",           "infectAbdomenComment",
-    "infectUrogenitalComment","infectMusculoskeletalComment"
-  )
 
   def calculateActionPropertyValue(eventId: Int, actionTypeId: Int, actionPropertyId: Int) = {
     calculateActionPropertyValue(
@@ -1658,7 +1634,7 @@ with CAPids {
   }
 
   def getInfectionMonitoring(eventId: Int, authData: AuthData) = {
-    val r = appealBean.getInfectionMonitoring(eventId, infectPrefixes ++ localInfectPrefixes)
+    val r = appealBean.getInfectionMonitoring(eventId)
     val v = r.map(p => List[AnyRef](p._1, p._2, p._3, p._4).asJava).asJava
     v
   }

@@ -6,6 +6,7 @@ import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.database._
 import common._
+import ru.korus.tmis.core.values.InfectionControl
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import javax.persistence.{PersistenceContext, EntityManager}
@@ -1008,12 +1009,12 @@ with CAPids {
       new MonitoringInfoListData()
   }
 
-  def getInfectionMonitoring(eventId: Int, infectPrefixies: java.lang.Iterable[String]): java.util.Set[(String, Date, Date, java.util.List[Integer])] = {
-    val actionsCodes = Set("1_2_18", "1_2_19", "1_2_20", "1_2_21", "1_2_22", "1_2_23")
+  def getInfectionMonitoring(eventId: Int): java.util.Set[(String, Date, Date, java.util.List[Integer])] = {
+    val IC = InfectionControl
     actionBean.getActionsByEvent(eventId)
-    .filter(p => actionsCodes.contains(p.getActionType.getCode))
+    .filter(p => IC.documents.contains(p.getActionType.getCode))
     .flatMap(_.getActionProperties)
-    .filter(e => e.getType.getCode != null && infectPrefixies.exists(p => e.getType.getCode.startsWith(p)))
+    .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
     .groupBy( e => (e.getAction.getId,  e.getType.getCode.split('-').head))
     .flatMap(e => {
       val actionId = e._1._1
@@ -1024,8 +1025,8 @@ with CAPids {
           case None => None
         }
       }
-      val beginDate = list.find( p => p.getType.getCode.equals(e._1._2 + "-BeginDate"))
-      val endDate = list.find( p => p.getType.getCode.equals(e._1._2 + "-EndDate"))
+      val beginDate = list.find( p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.beginDatePostfix))
+      val endDate = list.find( p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.endDatePostfix))
 
       (name, beginDate, endDate) match {
         case (Some(x), Some(y), Some(z)) =>
