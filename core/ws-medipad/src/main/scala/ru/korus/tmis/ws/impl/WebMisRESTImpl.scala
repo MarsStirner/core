@@ -574,12 +574,7 @@ with CAPids {
 
     val IC = InfectionControl
 
-    val dnevnikoviiOsmotrSet = IC.documents
-
-    val infectDrugPropsSet = IC.drugTherapyProperties
-
     val therapySet = Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")
-
 
 
     // Получение значения свойства у предыдущих действий
@@ -781,15 +776,15 @@ with CAPids {
       case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"))
 
       // Дневниковый осмотр
-      case x if dnevnikoviiOsmotrSet.contains(x) =>
+      case x if IC.documents.contains(x) =>
         if (therapySet.contains(x)) // Подтягивания значений для полей терапии
-          getPropertyCustom1(dnevnikoviiOsmotrSet, therapySet)
+          getPropertyCustom1(IC.documents, therapySet)
         else if (IC.allInfectPrefixes.exists(p => apt.getCode!= null && (apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)))) // или для полей инфекционного контроля
-          getPropertyCustom2(dnevnikoviiOsmotrSet, IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get)
+          getPropertyCustom2(IC.documents, IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get)
         else if (apt.getCode!= null && apt.getCode.equals(IC.localInfectionChecker))
-          getPropertyCustom4(dnevnikoviiOsmotrSet)
-        else if (infectDrugPropsSet.contains(apt.getCode))
-          getPropertyCustom3(dnevnikoviiOsmotrSet)
+          getPropertyCustom4(IC.documents)
+        else if (IC.drugTherapyProperties.contains(apt.getCode))
+          getPropertyCustom3(IC.documents)
         else
           null
       case _ => null
