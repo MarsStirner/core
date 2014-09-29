@@ -13,11 +13,10 @@ import java.util.{ArrayList, Date, LinkedList}
 import ru.korus.tmis.core.exception.CoreException
 import collection.JavaConversions
 
-import javax.inject.Inject
-import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import org.joda.time.{DateTime, Years}
 import scala.language.reflectiveCalls
+import scala.collection.JavaConverters._
 
 @Stateless
 class AppealBean extends AppealBeanLocal
@@ -1007,6 +1006,50 @@ with CAPids {
       new MonitoringInfoListData(map.get(Integer.valueOf(eventId)))
     else
       new MonitoringInfoListData()
+  }
+
+  def getInfectionMonitoring(eventId: Int, infectPrefixies: java.lang.Iterable[String]): java.util.Set[(String, Date, Date, java.util.List[Integer])] = {
+    val actionsCodes = Set("1_2_18", "1_2_19", "1_2_20", "1_2_21", "1_2_22", "1_2_23")
+    actionBean.getActionsByEvent(eventId)
+    .filter(p => actionsCodes.contains(p.getActionType.getCode))
+    .flatMap(_.getActionProperties)
+    .filter(e => e.getType.getCode != null && infectPrefixies.exists(p => e.getType.getCode.startsWith(p)))
+    .groupBy( e => (e.getAction.getId,  e.getType.getCode.split('-').head))
+    .flatMap(e => {
+      val actionId = e._1._1
+      val list = e._2
+      val name = {
+        list.find( p => p.getType.getCode.equals(e._1._2)) match {
+          case Some(x) => Some(x.getType.getName)
+          case None => None
+        }
+      }
+      val beginDate = list.find( p => p.getType.getCode.equals(e._1._2 + "-BeginDate"))
+      val endDate = list.find( p => p.getType.getCode.equals(e._1._2 + "-EndDate"))
+
+      (name, beginDate, endDate) match {
+        case (Some(x), Some(y), Some(z)) =>
+          val bd = actionPropertyBean.getActionPropertyValue(y)
+          val ed = actionPropertyBean.getActionPropertyValue(z)
+          (bd.size(), ed.size()) match {
+            case (1, 1) => (bd.head, ed.head) match {
+              case (begin: APValueDate, end: APValueDate) => Some((x, begin.getValue, end.getValue, actionId))
+              case _ => None
+            }
+            case (1, 0) => bd.head match {
+              case b: APValueDate => Some(x, b.getValue, null, actionId)
+              case _ => None
+            }
+            case (0, 1) => ed.head match {
+              case end: APValueDate => Some(x, end.getValue, null, actionId)
+              case _ => None
+            }
+            case _ => None
+          }
+        case _ => None
+      }
+    })
+    .groupBy(p => (p._1, p._2, p._3)).map(e => (e._1._1, e._1._2, e._1._3, e._2.map(_._4).toList.asJava)).toSet.asJava
   }
 
   def getSurgicalOperations(eventId: Int, authData: AuthData) = {

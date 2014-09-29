@@ -15,8 +15,11 @@ import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Список REST-сервисов для получения информации о обращениях на госпитализацию
@@ -214,6 +217,15 @@ public class AppealsInfoRESTImpl {
                                             @PathParam("eventId")int eventId,
                                             @QueryParam("callback") String callback) throws CoreException {
         return new JSONWithPadding(wsImpl.getMonitoringInfoByAppeal(eventId, 0, mkAuth(servRequest)), callback);
+    }
+
+    @GET
+    @Path("{eventId}/infection-monitoring")
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getInfectionMonitoringInfoByAppeal(@Context HttpServletRequest servRequest,
+                                            @PathParam("eventId")int eventId,
+                                            @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(new GenericEntity<Set<List<Object>>>(wsImpl.getInfectionMonitoring(eventId, mkAuth(servRequest))) {}, callback);
     }
 
     @GET

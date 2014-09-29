@@ -20,7 +20,6 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.lock.ActionWithLockInfo
 import ru.korus.tmis.core.notification.NotificationBeanLocal
 import ru.korus.tmis.core.patient._
-import ru.korus.tmis.core.pharmacy.FlatCode
 import ru.korus.tmis.scala.util._
 import ru.korus.tmis.ws.webmis.rest.{LockData, WebMisREST}
 
@@ -585,37 +584,6 @@ with CAPids {
       "infectDrugName_8", "infectDrugBeginDate_8", "infectDrugEndDate_8", "infectTherapyType_8"
     )
 
-    val infectPrefixes = Set(
-      "infectFever", "infectBacteremia", "infectSepsis",
-      "infectSepticShok"
-    )
-
-    val localInfectPrefixes = Set(
-      "infectCephalopyosis", "infectMeningitis",
-      "infectMeningoencephalitis", "infectEncephalitis", "infectConjunctivitis",
-      "infectPeriorbital", "infectBlepharitis", "infectChorioretinitis",
-      "infectSkinLight", "infectSkinHard", "infectMucositis12",
-      "infectMucositis34", "infectEsophagitis", "infectGingivitis",
-      "infectRhinitis", "infectTonsillitis", "infectOtitis",
-      "infectDefeatPPN", "infectBronchitis", "infectInterstitialPneumonia", "infectLobarPneumonia",
-      "infectPleurisy", "infectPericarditis", "infectMioardit", "infectEndocarditis",
-      "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis",
-      "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectGlomerulonephritis",
-      "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis",
-      "infectOsteomyelitis", "infectMyositis",
-      "infectCNSComment",
-      "infectEyeComment",
-      "infectSkinComment",
-      "infectMucousComment",
-      "infectLORComment",
-      "infectLungsComment",
-      "infectHeartComment",
-      "infectAbdomenComment",
-      "infectUrogenitalComment",
-      "infectMusculoskeletalComment"
-
-    )
-
     val therapySet = Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")
 
 
@@ -833,6 +801,25 @@ with CAPids {
     }
 
   }
+
+  val infectPrefixes = Set("infectFever", "infectBacteremia", "infectSepsis","infectSepticShok")
+
+  val localInfectPrefixes = Set(
+    "infectCephalopyosis",    "infectMeningitis",                 "infectMeningoencephalitis",    "infectEncephalitis",
+    "infectConjunctivitis",   "infectPeriorbital",                "infectBlepharitis",            "infectChorioretinitis",
+    "infectSkinLight",        "infectSkinHard",                   "infectMucositis12",            "infectMucositis34",
+    "infectEsophagitis",      "infectGingivitis",                 "infectRhinitis",               "infectTonsillitis",
+    "infectOtitis",           "infectDefeatPPN",                  "infectBronchitis",             "infectInterstitialPneumonia",
+    "infectLobarPneumonia",   "infectPleurisy",                   "infectPericarditis",           "infectMioardit",
+    "infectEndocarditis",     "infectGastritis",                  "infectPancreatitis",           "infectCholecystitis",
+    "infecThepatitis",        "infectGepatolienalnyCandidiasis",  "infectAbscess",                "infectEnterocolitis",
+    "infectCecitis",          "infectAppendicitis",               "infectPeritonitis",            "infectGlomerulonephritis",
+    "infectPyelonephritis",   "infectCystitis",                   "infectUrethritis",             "infectEndometritis",
+    "infectAdnexitis",        "infectVulvovaginitis",             "infectOsteomyelitis",          "infectMyositis",
+    "infectCNSComment",       "infectEyeComment",                 "infectSkinComment",            "infectMucousComment",
+    "infectLORComment",       "infectLungsComment",               "infectHeartComment",           "infectAbdomenComment",
+    "infectUrogenitalComment","infectMusculoskeletalComment"
+  )
 
   def calculateActionPropertyValue(eventId: Int, actionTypeId: Int, actionPropertyId: Int) = {
     calculateActionPropertyValue(
@@ -1668,6 +1655,12 @@ with CAPids {
 
   def getMonitoringInfoByAppeal(eventId: Int, condition: Int, authData: AuthData) = {
     appealBean.getMonitoringInfo(eventId, condition, authData)
+  }
+
+  def getInfectionMonitoring(eventId: Int, authData: AuthData) = {
+    val r = appealBean.getInfectionMonitoring(eventId, infectPrefixes ++ localInfectPrefixes)
+    val v = r.map(p => List[AnyRef](p._1, p._2, p._3, p._4).asJava).asJava
+    v
   }
 
   def getSurgicalOperationsByAppeal(eventId: Int, authData: AuthData) = {

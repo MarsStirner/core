@@ -5,12 +5,10 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
+import scala.Tuple4;
 
 import javax.ejb.Local;
-import java.util.HashMap;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Список методов для работы с обращениями на госпитализацию
@@ -129,6 +127,8 @@ public interface AppealBeanLocal {
     ClientQuoting insertOrUpdateClientQuoting(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
 
     MonitoringInfoListData getMonitoringInfo(int eventId, int condition, AuthData authData) throws CoreException;
+
+    Set<Tuple4<String, Date, Date, List<Integer>>> getInfectionMonitoring(int eventId, Iterable<String> infectPrefixies) throws CoreException;
 
     SurgicalOperationsListData getSurgicalOperations(int eventId, AuthData authData) throws CoreException;
 
