@@ -3,7 +3,6 @@ package ru.korus.tmis.core.values
 /**
  * Данный класс описывает переменные для работы с инфекционным контролем.
  *
- *
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
  * Date: 9/29/14
  * Time: 5:50 PM
@@ -59,7 +58,5 @@ object InfectionControl {
 
   // Разделитель префикса и постфикса
   val separator = '-'
-
-
 
 }
