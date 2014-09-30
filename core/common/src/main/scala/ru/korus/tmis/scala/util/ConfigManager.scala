@@ -361,7 +361,7 @@ object ConfigManager extends Configuration {
     /**
      * URL сервиса CGM
      */
-    var ServiceUrl: URL = new URL("http://10.128.131.114:8090/CGM_SOAP")
+    var ServiceUrl: URL = new URL("http://10.128.131.116:8090/CGM_SOAP")
     /**
      * Login basic http auth
      */
