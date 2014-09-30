@@ -263,7 +263,7 @@ public class AppealsInfoRESTImpl {
                                          IdValueContainer data,
                                          @PathParam("eventId")int eventId,
                                          @QueryParam("callback") String callback) throws CoreException {
-        return new JSONWithPadding(wsImpl.setExecPersonForAppeal(eventId, Integer.valueOf(data.getId()).intValue(), mkAuth(servRequest)), callback);
+        return new JSONWithPadding(wsImpl.setExecPersonForAppeal(eventId, Integer.valueOf(data.getId()), mkAuth(servRequest)), callback);
     }
 
     public WebMisREST getWsImpl() {
