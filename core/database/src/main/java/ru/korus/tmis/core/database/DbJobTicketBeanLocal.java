@@ -1,17 +1,18 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.data.TakingOfBiomaterialRequesData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionTypeTissueType;
 import ru.korus.tmis.core.entity.model.Job;
 import ru.korus.tmis.core.entity.model.JobTicket;
 import ru.korus.tmis.core.exception.CoreException;
+import scala.Tuple3;
 
 import javax.ejb.Local;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Методы для работы с JobTicket
@@ -23,7 +24,7 @@ public interface DbJobTicketBeanLocal {
 
     JobTicket getJobTicketById(int id) throws CoreException;
 
-    Object getDirectionsWithJobTicketsBetweenDate(String sortQuery, TakingOfBiomaterialRequesDataFilter filter) throws CoreException;
+    List<Tuple3<Action, ActionTypeTissueType, JobTicket>> getDirectionsWithJobTicketsBetweenDate(TakingOfBiomaterialRequesData request, TakingOfBiomaterialRequesDataFilter filter) throws CoreException;
 
     boolean modifyJobTicketStatus(int id, int status, AuthData auth) throws CoreException;
 

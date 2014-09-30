@@ -53,7 +53,7 @@ public class DisabilitiesInfo {
         createDate = ClientInfo.getXmlGregorianCalendar(clientSocStatus.getCreateDatetime());
         begDate = ClientInfo.getXmlGregorianCalendar(clientSocStatus.getBegDate());
         endDate = ClientInfo.getXmlGregorianCalendar(clientSocStatus.getEndDate());
-        final String code = clientSocStatus.getSocStatusType().getCode();
+        final String code = clientSocStatus.getSocStatusType() == null ? null : clientSocStatus.getSocStatusType().getCode();
         if (code != null) {
             Map<String, String> mapGroup = new HashMap<String, String>() {{
                 put("081","1");

@@ -1,6 +1,7 @@
 package ru.korus.tmis.util;
 
 import org.custommonkey.xmlunit.Diff;
+import org.xml.sax.SAXException;
 import ru.korus.tmis.core.entity.model.RbFinance;
 import ru.korus.tmis.core.entity.model.bak.BbtResponse;
 import ru.korus.tmis.core.entity.model.fd.FDRecord;
@@ -39,6 +40,10 @@ public class TestUtilCommon implements TestUtil {
     public static boolean checkArgument(Object value, String pathExcept, String contextPath) throws Exception {
         String res = Utils.marshallMessage(value, contextPath);
         final String pathToExceptMessage = pathExcept;
+        return checkArgument(res, pathToExceptMessage);
+    }
+
+    public static boolean checkArgument(String res, String pathToExceptMessage) throws IOException, SAXException {
         String except = readAllBytes(pathToExceptMessage);
         Diff diff = new Diff(except, res);
         if( !diff.identical() ) {
@@ -57,6 +62,7 @@ public class TestUtilCommon implements TestUtil {
     public static void executeQuery(final EntityManager em, String sqlFileName) {
         final String[] sqlFromFile = getSqlFromFile(sqlFileName);
         for(String sql : sqlFromFile) {
+            System.out.println("execute SQL : " + sql);
             em.createNativeQuery(sql).executeUpdate();
         }
     }

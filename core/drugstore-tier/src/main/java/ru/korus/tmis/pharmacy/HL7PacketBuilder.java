@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionSendingRes;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionStatus;
+import ru.korus.tmis.core.pharmacy.FlatCode;
 import ru.korus.tmis.pharmacy.rlsupdate.BalanceOfGoodsInfoBean;
 import ru.korus.tmis.util.logs.ToLog;
 
@@ -76,7 +77,7 @@ public final class HL7PacketBuilder {
 
         final PRPAIN402001UV022 prpain402001UV022 = FACTORY_HL7.createPRPAIN402001UV022();
         prpain402001UV022.setITSVersion(XML_1_0);
-        prpain402001UV022.setCreationTime(createTS(action.getCreateDatetime(),DATETIME_FORMAT));
+        prpain402001UV022.setCreationTime(createTS(action.getCreateDatetime(), DATETIME_FORMAT));
         prpain402001UV022.setAcceptAckCode(createCS(AL));
         prpain402001UV022.setId(createII(uuidDocument));
         prpain402001UV022.setInteractionId(createII(ROOT_INTERACTION_ID, "PRPA_IN402001UV02"));
@@ -188,7 +189,7 @@ public final class HL7PacketBuilder {
         inpatientEncounterEvent.getId().add(createII(uuidExternalId, externalId));
         inpatientEncounterEvent.getId().add(createIIEx(financeId));
         inpatientEncounterEvent.setCode(createEncounterCode());
-        inpatientEncounterEvent.setStatusCode(createCS(STATUS_ACTIVE));
+        inpatientEncounterEvent.setStatusCode(createCS(getStatusByFlatCode(action)));
         inpatientEncounterEvent.setEffectiveTime(createIVLTS(action.getCreateDatetime(), DATE_FORMAT));
 
         final PRPAMT402002UV02Subject subject = FACTORY_HL7.createPRPAMT402002UV02Subject();
@@ -217,7 +218,7 @@ public final class HL7PacketBuilder {
         uv02Location1.setTypeCode(ParticipationTargetLocation.LOC);
         uv02Location1.setTime(time);
         final CS statusCode1 = FACTORY_HL7.createCS();
-        statusCode1.setCode("active");
+        statusCode1.setCode(STATUS_ACTIVE);
         uv02Location1.setStatusCode(statusCode1);
 
         final PRPAMT402002UV02ServiceDeliveryLocation deliveryLocation = FACTORY_HL7.createPRPAMT402002UV02ServiceDeliveryLocation();
@@ -226,7 +227,6 @@ public final class HL7PacketBuilder {
         typeId4.setRoot(uuidOrgStructure);
         deliveryLocation.getId().add(typeId4);
         uv02Location1.setServiceDeliveryLocation(deliveryLocation);
-
         inpatientEncounterEvent.getLocation().add(uv02Location1);
 
         subject2.setInpatientEncounterEvent(inpatientEncounterEvent);
@@ -235,6 +235,17 @@ public final class HL7PacketBuilder {
 
         ((misexchange.PRPAIN402002UV02) request).setMessage(prpain402002UV022);
         return request;
+    }
+
+    private static String getStatusByFlatCode(Action action) {
+        String res = STATUS_ACTIVE;
+        if (action.getActionType() != null &&
+                (FlatCode.LEAVED.getCode().equals(action.getActionType().getFlatCode()) ||
+                        FlatCode.DEL_RECEIVED.getCode().equals(action.getActionType().getFlatCode()
+                        ))) {
+            res = STATUS_COMPLETED;
+        }
+        return res;
     }
 
     private static CD createEncounterCode() {
@@ -284,7 +295,7 @@ public final class HL7PacketBuilder {
         final COCTMT050000UV01Patient patient = FACTORY_HL7.createCOCTMT050000UV01Patient();
         patient.setClassCode(RoleClassPatient.PAT);
         patient.getId().add(createII(uuidClient));
-        patient.setStatusCode(createCS("active"));
+        patient.setStatusCode(createCS(STATUS_ACTIVE));
 
         final COCTMT030000UV09Person person = FACTORY_HL7.createCOCTMT030000UV09Person();
         final JAXBElement<COCTMT030000UV09Person> patientPerson = FACTORY_HL7.createCOCTMT050000UV01PatientPatientPerson(person);
@@ -418,7 +429,7 @@ public final class HL7PacketBuilder {
         final PRPAMT302011UV02Location1 location1 = FACTORY_HL7.createPRPAMT302011UV02Location1();
         location1.setTypeCode(ParticipationTargetLocation.LOC);
         location1.setTime(createIVLTSCenter(action.getCreateDatetime(), DATETIME_FORMAT));
-        location1.setStatusCode(createCS("active"));
+        location1.setStatusCode(createCS(STATUS_ACTIVE));
         location1.setServiceDeliveryLocation(createServiceDeliveryLocation(uuidLocationOut));
         encounterEvent.setLocation1(location1);
 
@@ -426,7 +437,7 @@ public final class HL7PacketBuilder {
         final PRPAMT302011UV02Location2 location2 = FACTORY_HL7.createPRPAMT302011UV02Location2();
         location2.setTypeCode(ParticipationTargetLocation.LOC);
         location2.setTime(createIVLTSCenter(action.getCreateDatetime(), DATE_FORMAT));
-        location2.setStatusCode(createCS("active"));
+        location2.setStatusCode(createCS(STATUS_ACTIVE));
         location2.setServiceDeliveryLocation(createServiceDeliveryLocation(uuidLocationIn));
         encounterEvent.setLocation2(location2);
 
@@ -491,7 +502,7 @@ public final class HL7PacketBuilder {
         final PRPAMT302012UV02Location1 location1 = FACTORY_HL7.createPRPAMT302012UV02Location1();
         location1.setTypeCode(ParticipationTargetLocation.LOC);
         location1.setTime(createIVLTSCenter(action.getCreateDatetime(), DATE_FORMAT));
-        location1.setStatusCode(createCS("active"));
+        location1.setStatusCode(createCS(STATUS_ACTIVE));
         location1.setServiceDeliveryLocation(createServiceDeliveryLocation2012(uuidLocationOut));
         encounterEvent.setLocation1(location1);
 
@@ -499,7 +510,7 @@ public final class HL7PacketBuilder {
         final PRPAMT302012UV02Location2 location2 = FACTORY_HL7.createPRPAMT302012UV02Location2();
         location2.setTypeCode(ParticipationTargetLocation.LOC);
         location2.setTime(createIVLTSCenter(action.getCreateDatetime(), DATE_FORMAT));
-        location2.setStatusCode(createCS("active"));
+        location2.setStatusCode(createCS(STATUS_ACTIVE));
         location2.setServiceDeliveryLocation(createServiceDeliveryLocation2012(uuidLocationIn));
         encounterEvent.setLocation2(location2);
 
@@ -534,7 +545,7 @@ public final class HL7PacketBuilder {
         final Staff executorStaff = action.getExecutor() == null ? action.getCreatePerson() : action.getExecutor();
 
         final POCDMT000040ClinicalDocument clinicalDocument =
-                getClinicalDocument(prescriptionInfo, client, organisation, executorStaff,  version);
+                getClinicalDocument(prescriptionInfo, client, organisation, executorStaff, version);
         final String innerDocument = marshallMessage(clinicalDocument, "org.hl7.v3");
         toLog.add("prepare inner document... \n\n #", innerDocument);
 
@@ -645,7 +656,7 @@ public final class HL7PacketBuilder {
         final POCDMT000040AssignedAuthor assignedAuthor = FACTORY_HL7.createPOCDMT000040AssignedAuthor();
         // UUID автора медицинского документа
         final ru.korus.tmis.core.entity.model.UUID uuidStaff = executorStaff == null ? null : executorStaff.getUuid();
-        if(uuidStaff != null) {
+        if (uuidStaff != null) {
             assignedAuthor.getId().add(createII(uuidStaff.getUuid()));
         }
 
@@ -708,13 +719,13 @@ public final class HL7PacketBuilder {
         if (!AssignmentType.ASSIGNMENT.equals(type) || negationInd) {
             section.getEntry().add(createEntry(action, interval, drugComponent, routeOfAdministration, type, negationInd, prescrUUID, financeType));
         }*/
-        for (PrescriptionInfo.IntervalInfo curInterval : prescriptionInfo.getIntervalInfoList() )  {
+        for (PrescriptionInfo.IntervalInfo curInterval : prescriptionInfo.getIntervalInfoList()) {
             if (curInterval.isPrescription()) {
                 addEntries(prescriptionInfo, section, curInterval);
             }
         }
 
-        for (PrescriptionInfo.IntervalInfo curInterval : prescriptionInfo.getIntervalInfoList() )  {
+        for (PrescriptionInfo.IntervalInfo curInterval : prescriptionInfo.getIntervalInfoList()) {
             if (!curInterval.isPrescription()) {
                 addEntries(prescriptionInfo, section, curInterval);
             }
@@ -735,9 +746,9 @@ public final class HL7PacketBuilder {
     }
 
     private static void addEntries(PrescriptionInfo prescriptionInfo, POCDMT000040Section section, PrescriptionInfo.IntervalInfo curInterval) {
-        for(PrescriptionInfo.ComponentInfo curComp : curInterval.getComponentInfoList()) {
-            if( (curInterval.isPrescription() && !curInterval.getStatus().equals(PrescriptionStatus.PS_CANCELED)) ||
-                (!curInterval.isPrescription() && curInterval.getStatus().equals(PrescriptionStatus.PS_FINISHED))) {
+        for (PrescriptionInfo.ComponentInfo curComp : curInterval.getComponentInfoList()) {
+            if ((curInterval.isPrescription() && !curInterval.getStatus().equals(PrescriptionStatus.PS_CANCELED)) ||
+                    (!curInterval.isPrescription() && curInterval.getStatus().equals(PrescriptionStatus.PS_FINISHED))) {
                 final POCDMT000040Entry entry = createEntry(curInterval, curComp, prescriptionInfo);
                 section.getEntry().add(entry);
             }
@@ -833,10 +844,10 @@ public final class HL7PacketBuilder {
 
 
     public static String marshallMessage(final Object msg, final String contextPath) {
-        if(isTestMode) { //т.к. под Arcuillian  повисает на JAXBContext jaxbContext = JAXBContext.newInstance(contextPath, msg.getClass().getClassLoader());
+        if (isTestMode) { //т.к. под Arcuillian  повисает на JAXBContext jaxbContext = JAXBContext.newInstance(contextPath, msg.getClass().getClassLoader());
             return "TEST MODE! msg: " + msg;
         }
-            final StringWriter writer = new StringWriter();
+        final StringWriter writer = new StringWriter();
         try {
             JAXBContext jaxbContext = JAXBContext.newInstance(contextPath, msg.getClass().getClassLoader());
             final Marshaller marshaller = jaxbContext.createMarshaller();

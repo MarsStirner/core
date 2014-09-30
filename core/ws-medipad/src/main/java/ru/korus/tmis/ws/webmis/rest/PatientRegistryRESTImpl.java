@@ -10,6 +10,9 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
+
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
@@ -26,6 +29,7 @@ public class PatientRegistryRESTImpl {
     private WebMisREST wsImpl;
     private AuthData auth;
     private String callback;
+
 
     public PatientRegistryRESTImpl(WebMisREST wsImpl, String callback, AuthData auth) {
         this.auth = auth;
@@ -108,6 +112,7 @@ public class PatientRegistryRESTImpl {
     public Object getPatientById(@PathParam("patientId")int patientId) throws CoreException {
         return new JSONWithPadding(wsImpl.getPatientById(patientId, this.auth), this.callback);
     }
+
 
 
     /**

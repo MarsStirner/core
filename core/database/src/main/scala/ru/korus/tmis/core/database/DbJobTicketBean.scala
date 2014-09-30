@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.database
 
+import java.sql.Time
+
 import common.DbManagerBeanLocal
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.logging.LoggingInterceptor
@@ -8,8 +10,7 @@ import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
-import collection.mutable
-import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter
+import ru.korus.tmis.core.data.{TakingOfBiomaterialRequesData, TakingOfBiomaterialRequesDataFilter}
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.util.reflect.LoggingManager
@@ -45,15 +46,11 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
                    .getResultList
 
     result.size match {
-      case 0 => {
-        throw new CoreException(
-          ConfigManager.ErrorCodes.JobTicketNotFound,
-          i18n("error.jobTicketNotFound").format(id))
-      }
-      case size => {
+      case 0 =>
+        throw new CoreException( ConfigManager.ErrorCodes.JobTicketNotFound, i18n("error.jobTicketNotFound").format(id))
+      case size =>
         result.foreach(em.detach(_))
         result(0)
-      }
     }
   }
 
@@ -81,38 +78,66 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     jt
   }
 
-  def getDirectionsWithJobTicketsBetweenDate (sortQuery: String,
-                                              filter: TakingOfBiomaterialRequesDataFilter) = {
+  def getDirectionsWithJobTicketsBetweenDate (request: TakingOfBiomaterialRequesData,
+                                              filter: TakingOfBiomaterialRequesDataFilter): util.List[(Action, ActionTypeTissueType, JobTicket)] = {
 
-    val queryStr  = filter.toQueryStructure()
-    val typed = em.createQuery(DirectionsWithJobTicketsBetweenDateQuery.format(i18n("db.action.movingFlatCode"),
-                                                                               iCapIds("db.rbCAP.moving.id.bed"),
-                                                                               queryStr.query,
-                                                                               sortQuery),
-                                classOf[Array[AnyRef]])
+    val dayMoreThan = filter.getBeginDate
+    val dayLessThan = filter.getEndDate
+    val timeLessThan = new Time(filter.getEndDate.getTime)
+    val timeMoreThan = new Time(filter.getBeginDate.getTime)
+    val department = filter.getDepartmentId
 
-    if (queryStr.data.size() > 0) {
-      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+    val order = request.getSortingMethod.toLowerCase match {
+      case "desc" => "desc"
+      case _ => "asc"
     }
-    val result = typed.setParameter("beginDate", filter.beginDate)
-                      .setParameter("endDate", filter.endDate)
-                      .setParameter("departmentId", filter.departmentId)
-                      .getResultList
 
-    result.size() match {
-      case 0 => null
-      case size => {
-        val directions = result.foldLeft(new java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)])(
+    val orderField = request.getSortingField.toLowerCase match {
+      case "sex"                              => "research.event.patient.sex"
+      case "actiontype"                       => "research.actionType.name"
+      case "urgent"                           => "research.isUrgent"
+      case "tube"                             => "research.actionType.testTubeType.name"
+      case "status"                           => "jt.status"
+      case "fullname" | "fio" | "patient"     => "research.event.patient.lastName %s, research.event.patient.firstName %s, research.event.patient.patrName".format(order, order)
+      case "birthdate"                        => "research.event.patient.birthDate"
+      case "tissuetype"                       => "attt.tissueType.name"
+      case "date"                             => "jt.datetime"
+      case _                                  => "research.event.patient.lastName %s, research.event.patient.firstName %s, research.event.patient.patrName".format(order, order)
+    }
+
+    val queryString = DirectionsWithJobTicketsBetweenDateQuery.format(orderField, order)
+
+    val query = em.createQuery(queryString,
+      classOf[Array[AnyRef]])
+    val queryResult = query
+      .setParameter("department", department)
+      .setParameter("day_more_than", dayMoreThan)
+      .setParameter("day_less_than", dayLessThan)
+      .setParameter("begTime_less_than", timeLessThan)
+      .setParameter("endTime_more_than", timeMoreThan)
+      .getResultList
+
+    val outList = new util.ArrayList[(Action, ActionTypeTissueType, JobTicket)]
+
+    queryResult.size() match {
+      case 0 => outList
+      case size => queryResult.foldLeft(outList)(
           (list, aj) => {
-            em.detach(aj(0))
-            em.detach(aj(1))
-            em.detach(aj(2))
-            list.add((aj(0).asInstanceOf[Action], aj(2).asInstanceOf[ActionTypeTissueType], aj(1).asInstanceOf[JobTicket]))
+            if(
+            (filter.getStatus < 0 || aj(1).asInstanceOf[JobTicket].getStatus == filter.getStatus)
+              &&
+            (filter.getBiomaterial < 1 || aj(2).asInstanceOf[ActionTypeTissueType].getTissueType.getId == filter.getBiomaterial)
+              &&
+            (filter.getJobTicketId < 1 || aj(1).asInstanceOf[JobTicket].getId == filter.getJobTicketId)
+            ) {
+              em.detach(aj(0))
+              em.detach(aj(1))
+              em.detach(aj(2))
+              list.add((aj(0).asInstanceOf[Action], aj(2).asInstanceOf[ActionTypeTissueType], aj(1).asInstanceOf[JobTicket]))
+            }
             list
           }
         )
-        directions
-      }
     }
   }
 
@@ -135,7 +160,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     } else {
       LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
       LoggingManager.warning("code " + ConfigManager.ErrorCodes.JobTicketNotFound +
-        "Невозможно отредактировать" + ConfigManager.Messages("error.jobTicketNotFound".format(id)))
+        "Невозможно отредактировать" + ConfigManager.Messages("error.jobTicketNotFound").format(id))
     }
     isComplete
   }
@@ -155,13 +180,12 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val result = query.getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         null /*
         throw new CoreException(
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.jobNotFound").format(id))          */
-      }
-      case size => {
+      case size =>
         /*val jobAndJobTicket = result.foldLeft(new java.util.LinkedList[(JobTicket, TakenTissue)])(
           (list, aj) => {
             em.detach(aj(0))
@@ -176,7 +200,6 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
         em.detach(jt)
         em.detach(tt)
         (jt, tt)
-      }
     }
   }
 
@@ -187,16 +210,14 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val result = query.getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         null /*
         throw new CoreException(
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.jobNotFound").format(id))          */
-      }
-      case size => {
+      case size =>
         result.foreach(em.detach(_))
         result(0)
-      }
     }
   }
 
@@ -216,16 +237,14 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val result = query.getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         null /*
         throw new CoreException(
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.jobNotFound").format(id))          */
-      }
-      case size => {
+      case size =>
         result.foreach(jt => em.detach(jt))
         result.get(0)
-      }
     }
   }
 
@@ -236,14 +255,13 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val result = query.getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         new util.LinkedList[Action]
         /*
         throw new CoreException(
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.ActionsForJobTicketNotFound").format(jobTicketId))
           */
-      }
       case size => {
         result.foreach(a => {em.detach(a)})
       }
@@ -305,78 +323,25 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
 
   val DirectionsWithJobTicketsBetweenDateQuery =
     """
-    SELECT a, jt, attp
-    FROM
-      JobTicket jt,
-      APValueJobTicket apval,
-      ActionProperty ap
-        JOIN ap.action a
-        JOIN a.event e
-        JOIN e.patient pat,
-      ActionTypeTissueType attp
-    WHERE
-      jt.datetime BETWEEN :beginDate AND :endDate
-    AND
-      apval.value = jt.id
-    AND
-      apval.id.id = ap.id
-    AND
-      pat.id IN (
-          SELECT pat2.id
-          FROM
-            APValueHospitalBed apbed
-              JOIN apbed.value bed,
-            ActionProperty ap2
-              JOIN ap2.actionPropertyType apt2
-              JOIN ap2.action a2
-              JOIN a2.actionType at2
-              JOIN a2.event e2
-              JOIN e2.patient pat2
-          WHERE
-            apbed.id.id = ap2.id
-          AND
-            bed.masterDepartment.id = :departmentId
-          AND
-            at2.flatCode = '%s'
-          AND
-            jt.job.orgStructure.id = bed.masterDepartment.id
-          AND
-            apt2.id IN (
-              SELECT cap.actionPropertyType.id
-              FROM
-                RbCoreActionProperty cap
-              WHERE
-                cap.id = '%s'
-            )
-          AND (
-            a2.endDate IS NULL
-            OR
-            (jt.datetime BETWEEN a2.begDate AND a2.endDate AND a2.endDate BETWEEN :beginDate AND :endDate)
-          )
-          AND
-            a2.deleted = 0
-          AND
-            ap2.deleted = 0
-          AND
-            at2.deleted = 0
-          AND
-            apt2.deleted = 0
-          AND
-            e2.deleted = 0
-      )
-    AND
-      ap.deleted = 0
-    AND
-      a.deleted = 0
-    AND
-      (a.actionType.mnemonic = 'LAB' OR a.actionType.mnemonic = 'BAK_LAB')
-    AND
-      e.deleted = 0
-    AND
-      attp.actionType.id = a.actionType.id
-    %s
-    %s
+      SELECT research, jt, attt FROM JobTicket jt
+      LEFT JOIN jt.propertiesValues jtValue
+      LEFT JOIN jtValue.actionProperty jtProperty
+      LEFT JOIN jtProperty.action research
+      LEFT JOIN research.actionType.actionTypeTissueType attt
+
+      WHERE
+        jt.job.orgStructure.id = :department           AND
+        jt.job.date >= :day_more_than                  AND
+        jt.job.date <= :day_less_than                  AND
+        jt.job.begTime <= :begTime_less_than           AND
+        jt.job.endTime >= :endTime_more_than           AND
+
+        research.deleted = false                       AND
+        research.event.deleted = false                 AND
+        research.event.patient.deleted = false
+      ORDER BY %s %s
     """
+
 
   val JobTicketAndTakenTissueForActionQuery =
     """
@@ -450,7 +415,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       WHERE
         jt.id = :jobTicketId
       AND
-        a.actionType.mnemonic = 'LAB'
+        (a.actionType.mnemonic = 'LAB' OR a.actionType.mnemonic = 'BAK_LAB')
       AND
         apval.id.id = ap.id
       AND

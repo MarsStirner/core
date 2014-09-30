@@ -332,7 +332,7 @@ public class CommServer implements Communications.Iface {
         try {
             patient = patientBean.insertOrUpdatePatient(0, params.firstName, params.patrName, params.lastName,
                     DateConvertions.convertUTCMillisecondsToLocalDate(params.getBirthDate()), "",
-                    CommunicationHelper.getSexAsString(params.getSex()), "0", "0", "", null, 0, "", "", null, 0);
+                    CommunicationHelper.getSexAsString(params.getSex()), "0", "0", "", null, 0, null, null, "", "", null, 0);
             patientBean.savePatientToDataBase(patient);
             logger.debug("Patient ={}", patient);
             if (patient.getId() == 0 || patient.getId() == null) {

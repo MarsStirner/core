@@ -1,29 +1,35 @@
 package ru.korus.tmis.core.patient
 
-import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+import java.util
+import java.util.{Collections, Date}
+import javax.annotation.Resource
 import javax.ejb.{EJB, Stateless}
-import grizzled.slf4j.Logging
+import javax.interceptor.Interceptors
+import javax.jms._
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.data._
+
+import grizzled.slf4j.Logging
+import org.joda.time.DateTime
 import ru.korus.tmis.core.auth.AuthData
-import ru.korus.tmis.core.entity.model._
-import scala.collection.JavaConversions._
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
-import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
-import ConfigManager._
+import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
-import common._
-import java.{util}
-import ru.korus.tmis.core.filter.ActionsListDataFilter
+import ru.korus.tmis.core.database.bak.{DbBakCustomQueryBeanLocal, BakDiagnosis}
+import ru.korus.tmis.core.database.common._
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.core.filter.ActionsListDataFilter
+import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
 import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal
-import ru.korus.tmis.schedule.{QueueActionParam, PersonScheduleBeanLocal, PersonScheduleBean, PacientInQueueType}
-import PersonScheduleBean.PersonSchedule
+import ru.korus.tmis.lis.data._
+import ru.korus.tmis.lis.data.jms.LISMessageReceiver
+import ru.korus.tmis.scala.util.ConfigManager._
+import ru.korus.tmis.scala.util.{CAPids, ConfigManager, I18nable}
+import ru.korus.tmis.schedule.PersonScheduleBean.PersonSchedule
+import ru.korus.tmis.schedule.{PacientInQueueType, PersonScheduleBeanLocal, QueueActionParam}
 
-import util.Date
-
+import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
 
 
@@ -71,6 +77,20 @@ with I18nable {
   private var patientBean: DbPatientBeanLocal = _
   @EJB
   private var dbActionProperty: DbActionPropertyBeanLocal = _
+  @EJB
+  private var dbCustomQuery: DbCustomQueryLocal = _
+  @EJB
+  private var dbActionTypeBean: DbActionTypeBeanLocal = _
+  @EJB
+  private var dbBakCustomQueryBean: DbBakCustomQueryBeanLocal = _
+
+
+  @Resource(lookup = "DefaultConnectionFactory")
+  private var connectionFactory: ConnectionFactory = _
+  @Resource(lookup = "LaboratoryTopic")
+  private var topic: Topic = _
+  @Resource(lookup = "LaboratoryQueue")
+  private var queue: Queue = _
 
 
   //todo должен быть вызов веб-сервиса с передачей actionId
@@ -167,7 +187,7 @@ with I18nable {
     json_data
   }
 
-  private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) = {
+  private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int, auth: AuthData) = {
 
     val department = hospitalBedBean.getCurrentDepartmentForAppeal(eventId)
     val list = new java.util.LinkedList[(Job, JobTicket, TakenTissue, Action)]
@@ -193,7 +213,7 @@ with I18nable {
         val fromList = list.find((p) => p._1.getId == null &&
           p._2.getDatetime == a.getPlannedEndDate &&
           p._3.getType.getId == tissueType.getTissueType.getId &&
-          p._4.getIsUrgent == a.getIsUrgent).getOrElse(null) //срочные на одну дату и тип биоматериала должны создаваться с одним жобТикетом
+          p._4.getIsUrgent == a.getIsUrgent).orNull //срочные на одну дату и тип биоматериала должны создаваться с одним жобТикетом
         if (fromList != null) {
           val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
           j.setQuantity(j.getQuantity + 1)
@@ -210,7 +230,7 @@ with I18nable {
       } else {
         val (jobTicket, takenTissue) = jobAndTicket.asInstanceOf[(JobTicket, TakenTissue)]
         if (jobTicket != null && jobTicket.getJob != null) {
-          val fromList = list.find((p) => p._1.getId != null && p._1.getId.intValue() == jobTicket.getJob.getId.intValue()).getOrElse(null)
+          val fromList = list.find((p) => p._1.getId != null && p._1.getId.intValue() == jobTicket.getJob.getId.intValue()).orNull
           if (fromList == null) {
             val j = dbJobBean.insertOrUpdateJob(jobTicket.getJob.getId.intValue(), a, department)
             val jt = dbJobTicketBean.insertOrUpdateJobTicket(jobTicket.getId.intValue(), a, j)
@@ -306,24 +326,22 @@ with I18nable {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
             jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString))
             jt.setLabel("##Ошибка отправки в ЛИС##")
-            jt.setStatus(1)
+            jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
           }
         }
-      } else if (labCode != null && labCode.compareTo("0102") == 0) {
-        // Отправка назначения в Bak CGM
+      } else if (labCode != null) {
+        // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
         try {
-          //todo должен быть вызов веб-сервиса с передачей actionId
-          lisBak.sendLisAnalysisRequest(p._1.getId.intValue())
-          // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
-          actionBean.updateActionStatusWithFlush(p._1.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+          sendJMSLabRequest(p._1.getId.intValue(), labCode)
+          dbJobTicketBean.modifyJobTicketStatus(p._2, JobTicket.STATUS_SENDING, auth)
         }
         catch {
           case e: Exception => {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
-            jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString))
-            jt.setLabel("##Ошибка отправки в ЛИС##")
-            jt.setStatus(1)
+            jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString)  + e.getMessage)
+            jt.setLabel("##Ошибка отправки в ЛИС## " + e.getMessage)
+            jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
           }
         }
@@ -351,14 +369,14 @@ with I18nable {
     //Для лабораторных исследований отработаем с JobTicket
     if (mnem.toUpperCase.equals("LAB") || mnem.toUpperCase.equals("BAK_LAB")) {
       try {
-        actions = createJobTicketsForActions(actions, eventId)
+        actions = createJobTicketsForActions(actions, eventId, userData)
       } catch {
         // Если произошла ошибка в процессе проставления JobTickets -
         // то помечаем действие лабораторного исследования как удаленное
         case e: Throwable => {
           actions.foreach(a => {
-            em.find(classOf[Action], a.getId).setDeleted(true)
-            em.flush()
+            val act = em.find(classOf[Action], a.getId)
+            if(act != null) { act.setDeleted(true); em.flush() }
           })
           throw e
         }
@@ -404,7 +422,7 @@ with I18nable {
          userRole.compareTo("strHead")==0*/ ) {
         actions = commonDataProcessor.modifyActionFromCommonData(action.getId.intValue(), directions, userData)
         if (flgLab) {
-          actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue())
+          actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue(), userData)
           //редактирование или удаление старого жобТикета
           val jobTicket = if (oldJT > 0) dbJobTicketBean.getJobTicketById(oldJT) else null
           if (jobTicket != null) {
@@ -633,24 +651,23 @@ with I18nable {
             catch {
               case e: Exception => {
                 val jt = dbJobTicketBean.getJobTicketById(f.getId)
-                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString))
+                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString)  + e.getMessage)
                 jt.setLabel("##Ошибка отправки в ЛИС##")
                 isAllActionSent = false
                 em.merge(jt)
               }
             }
-          } else if (labCode != null && labCode.compareTo("0102") == 0) {
-            // Отправка назначения в Bak CGM
+          } else if (labCode != null) {
+            // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
             try {
-              //todo должен быть вызов веб-сервиса с передачей actionId
-              lisBak.sendLisAnalysisRequest(a.getId.intValue())
-              // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
-              actionBean.updateActionStatusWithFlush(a.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+              sendJMSLabRequest(a.getId.intValue(), labCode)
+              isAllActionSent = false // Статус проставляется автоматически по возвращению сообщения JMS
+              dbJobTicketBean.modifyJobTicketStatus(f.getId, JobTicket.STATUS_SENDING, authData)
             }
             catch {
               case e: Exception => {
                 val jt = dbJobTicketBean.getJobTicketById(f.getId)
-                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString))
+                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString)  + e.getMessage)
                 jt.setLabel("##Ошибка отправки в ЛИС##")
                 isAllActionSent = false
                 em.merge(jt)
@@ -699,5 +716,180 @@ with I18nable {
         }
       }
     }
+  }
+
+  private def sendJMSLabRequest(actionId: Int, labCode: String) = {
+    val action = actionBean.getActionById(actionId)
+    em.detach(action)
+
+    if(action == null)
+      throw new Exception("Action ")
+
+    val takingTime = action.getActionProperties.find(p => p.getType.getCode != null && p.getType.getCode.equals("TAKINGTIME"))
+    if(takingTime.isEmpty)
+      throw new CoreException("Невозможно сформировать запрос в лабораторию, т.к. не удалось найти свойство " +
+        "\"Время забора\" с кодом [TAKINGTIME] для исследования " + action.getActionType.getName + " [id=" +
+        action.getActionType.getId + "]")
+
+    var connection: Connection = null
+    var session: Session = null
+    try {
+      val actionType: ActionType = getActionType(action)
+      val eventInfo: Event = action.getEvent
+      val patientInfo: Patient = eventInfo.getPatient
+      val requestInfo: DiagnosticRequestInfo = getDiagnosticRequestInfo(action)
+      val biomaterialInfo: BiomaterialInfo = getBiomaterialInfo(action)
+      val orderInfo: OrderInfo = getOrderInfo(action, actionType)
+
+      em.detach(actionType)
+      em.detach(eventInfo)
+      em.detach(patientInfo)
+
+      val requestObject = new LaboratoryCreateRequestData(action, requestInfo, patientInfo, eventInfo, biomaterialInfo, orderInfo)
+      connection = connectionFactory.createConnection()
+      session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE)
+      val publisher = session.createProducer(topic)
+      val message = session.createObjectMessage()
+      message.setJMSType(LISMessageReceiver.JMS_TYPE)
+      message.setStringProperty(LISMessageReceiver.JMS_LAB_PROPERTY_NAME, labCode)
+      message.setObject(requestObject)
+      message.setJMSReplyTo(queue)
+      publisher.send(message)
+    }
+    catch {
+      case t: Throwable => t.printStackTrace();
+    }
+    finally {
+      if (session != null) {
+        try {
+          session.close()
+        }
+        catch {
+          case e: JMSException =>
+        }
+      }
+
+      if (connection != null) {
+        try {
+          connection.close()
+        }
+        catch {
+          case e: Exception => e.printStackTrace()
+        }
+      }
+    }
+  }
+
+  private def getActionType(action: Action): ActionType = {
+    val actionType: ActionType = action.getActionType
+    if (actionType.getId == -1) {
+      throw new CoreException("Error no Type For Action" + action.getId)
+    }
+    actionType
+  }
+
+  private def getDiagnosticRequestInfo(action: Action): DiagnosticRequestInfo = {
+    val diag: DiagnosticRequestInfo = new DiagnosticRequestInfo
+    val id: Int = action.getId
+    diag.setOrderMisId(id)
+    val orderCaseId: String = "" + action.getEvent.getExternalId
+    diag.setOrderCaseId(orderCaseId)
+    val orderFinanceId: Int = dbCustomQuery.getFinanceId(action.getEvent)
+    diag.setOrderFinanceId(orderFinanceId)
+    val date: DateTime = new DateTime(action.getCreateDatetime)
+    diag.setOrderMisDate(date)
+    val pregMin: Int = action.getEvent.getPregnancyWeek * 7
+    val pregMax: Int = action.getEvent.getPregnancyWeek * 7
+    diag.setOrderPregnatMin(pregMin)
+    diag.setOrderPregnatMax(pregMax)
+    val diagnosisBak: BakDiagnosis = dbBakCustomQueryBean.getBakDiagnosis(action)
+    if (diagnosisBak != null) {
+      diag.setOrderDiagCode(diagnosisBak.getCode)
+      diag.setOrderDiagText(diagnosisBak.getName)
+    }
+    val comment: String = action.getNote
+    diag.setOrderComment(comment)
+    val department: OrgStructure = getOrgStructureByEvent(action.getEvent)
+    if (department != null) {
+      diag.setOrderDepartmentMisCode(String.valueOf(department.getId))
+      diag.setOrderDepartmentName(department.getName)
+    }
+    val doctorLastname: String = action.getAssigner.getLastName
+    val doctorFirstname: String = action.getAssigner.getFirstName
+    val doctorPartname: String = action.getAssigner.getPatrName
+    val doctorCode: Int = action.getAssigner.getId
+    diag.setOrderDoctorFamily(doctorLastname)
+    diag.setOrderDoctorName(doctorFirstname)
+    diag.setOrderDoctorPatronum(doctorPartname)
+    diag.setOrderDoctorMisId(action.getAssigner.getId)
+    diag.setOrderDoctorMis(action.getAssigner)
+    diag
+  }
+
+  private def getBiomaterialInfo(action: Action): BiomaterialInfo = {
+    val tt: TakenTissue = action.getTakenTissue
+    val `type`: RbTissueType = tt.getType
+    if (`type` != null) {
+      val bi: BiomaterialInfo = new BiomaterialInfo(`type`.getCode, `type`.getName, String.valueOf(tt.getBarcode), tt.getPeriod, 0, new DateTime(tt.getDatetimeTaken), tt.getNote)
+      return bi
+    }
+    throw new CoreException("Не найден RbTissueType для actionId " + action.getId)
+  }
+
+  private def getOrderInfo(action: Action, actionType: ActionType): OrderInfo = {
+    val orderInfo: OrderInfo = new OrderInfo
+    val code: String = actionType.getCode
+    orderInfo.setDiagnosticCode(code)
+    val name: String = actionType.getName
+    orderInfo.setDiagnosticName(name)
+    val priority: OrderInfo.Priority = if (action.getIsUrgent) OrderInfo.Priority.URGENT else OrderInfo.Priority.NORMAL
+    orderInfo.setOrderPriority(priority)
+    var aa: ActionPropertyType = null
+    val apts: util.List[ActionPropertyType] = dbActionTypeBean.getActionTypePropertiesById(actionType.getId)
+    import scala.collection.JavaConversions._
+    for (apt <- apts) {
+      if (apt.getTest != null) {
+        aa = apt
+      }
+    }
+    if (aa == null) {
+      throw new CoreException("не определены показатели из rbTest, не нужно отправлять анализ в ЛИС actionId: " + action.getId)
+    }
+    val aptsSet: util.Set[ActionPropertyType] = new util.HashSet[ActionPropertyType]
+    import scala.collection.JavaConversions._
+    for (apt <- apts) {
+      aptsSet.add(apt)
+    }
+    val apsMap: util.Map[ActionPropertyType, ActionProperty] = action.getActionPropertiesByTypes(aptsSet)
+    import scala.collection.JavaConversions._
+    for (entry <- apsMap.entrySet) {
+      val ap: ActionProperty = entry.getValue
+      val apt: ActionPropertyType = entry.getKey
+      if (apt.getTest != null && (!apt.getIsAssignable || ap.getIsAssigned)) {
+        orderInfo.addIndicatorList(new IndicatorMetodic(apt.getTest.getName, apt.getTest.getCode))
+      }
+    }
+    orderInfo
+  }
+
+  private def getOrgStructureByEvent(e: Event): OrgStructure = {
+    val hospitalBeds: util.Map[Event, ActionProperty] = dbCustomQuery.getHospitalBedsByEvents(Collections.singletonList(e))
+    if (hospitalBeds == null) {
+      return null
+    }
+    import scala.collection.JavaConversions._
+    for (event <- hospitalBeds.keySet) {
+      val actionProperty: ActionProperty = hospitalBeds.get(event)
+      val actionPropertyValue: util.List[APValue] = dbActionProperty.getActionPropertyValue(actionProperty)
+      import scala.collection.JavaConversions._
+      for (apValue <- actionPropertyValue) {
+        apValue.getValue match {
+          case bed: OrgStructureHospitalBed =>
+            return bed.getMasterDepartment
+          case _ =>
+        }
+      }
+    }
+    null
   }
 }

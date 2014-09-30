@@ -40,13 +40,14 @@ class DbRbBloodTypeBean
   val AllBloodTypesWithFilterQuery = """
   SELECT DISTINCT %s
   FROM
-    RbBloodType r
+    %s r
   %s
   %s
                                      """
 
 
-  def getCountOfBloodTypesWithFilter(filter: Object) = {
+  def getCountOfBloodTypesWithFilter(filter: Object,
+                                     tableName: String) = {
     var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
       filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
     }
@@ -60,6 +61,7 @@ class DbRbBloodTypeBean
     }
     var typed = em.createQuery(AllBloodTypesWithFilterQuery.format(
       "count(r)",
+      tableName,
       queryStr.query,
       ""),
       classOf[Long])
@@ -69,7 +71,8 @@ class DbRbBloodTypeBean
     typed.getSingleResult
   }
 
-  def getAllBloodTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): java.util.LinkedList[Object] = {
+  def getAllBloodTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter,
+                                 tableName: String): java.util.LinkedList[Object] = {
 
     val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {
@@ -77,7 +80,7 @@ class DbRbBloodTypeBean
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
-    val typed = em.createQuery(AllBloodTypesWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
+    val typed = em.createQuery(AllBloodTypesWithFilterQuery.format("r.id, r.name", tableName, queryStr.query, sorting), classOf[Array[AnyRef]])
                   .setMaxResults(limit)
                   .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {

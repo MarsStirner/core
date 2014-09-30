@@ -20,9 +20,9 @@ public interface DbRbBloodTypeBeanLocal {
     java.util.LinkedList<Object> getAllBloodTypesData()
             throws CoreException;
 
-    long getCountOfBloodTypesWithFilter(Object filter)
+    long getCountOfBloodTypesWithFilter(Object filter, String tableName)
             throws CoreException;
 
-    java.util.LinkedList<Object> getAllBloodTypesWithFilter(int page, int limit, String sorting, ListDataFilter filter)
+    java.util.LinkedList<Object> getAllBloodTypesWithFilter(int page, int limit, String sorting, ListDataFilter filter, String tableName)
             throws CoreException;
 }

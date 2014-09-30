@@ -15,9 +15,9 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.bak.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.bak.BakResultService;
+import ru.korus.tmis.lis.data.model.*;
+import ru.korus.tmis.lis.data.model.hl7.complex.*;
 import ru.korus.tmis.util.Utils;
-import ru.korus.tmis.laboratory.bak.ws.server.model.*;
-import ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex.*;
 import ru.korus.tmis.util.logs.ToLog;
 
 import javax.ejb.EJB;
@@ -30,8 +30,8 @@ import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.UUID;
 
-import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.NAMESPACE;
-import static ru.korus.tmis.laboratory.bak.ws.server.model.hl7.HL7Specification.SUCCESS_ACCEPT_EVENT;
+import static ru.korus.tmis.lis.data.model.hl7.HL7Specification.NAMESPACE;
+import static ru.korus.tmis.lis.data.model.hl7.HL7Specification.SUCCESS_ACCEPT_EVENT;
 import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 
 /**
@@ -297,7 +297,7 @@ public class BakResult implements BakResultService {
                             final String antibioticSensitivity = getValue(pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode());
                             final String antibioticComment = getValue(pp.getObservationEvent().getValue().getStatusCode().getCode());
 
-                            ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic antibiotic = new ru.korus.tmis.laboratory.bak.ws.server.model.Antibiotic(
+                            Antibiotic antibiotic = new Antibiotic(
                                     antibioticCode, antibioticName);
                             antibiotic.setConcentration(antibioticConcentration);
                             antibiotic.setSensitivity(antibioticSensitivity);
@@ -355,9 +355,8 @@ public class BakResult implements BakResultService {
             }
 
             for (Microorganism microorganism : bakPosev.getMicroorganismList()) {
-                dbRbMicroorganismBean.add(new RbMicroorganism(microorganism.getCode(), microorganism.getName()));
+                final RbMicroorganism mic = dbRbMicroorganismBean.add(new RbMicroorganism(microorganism.getCode(), microorganism.getName()));
 
-                final RbMicroorganism mic = dbRbMicroorganismBean.get(microorganism.getCode());
                 final BbtResultOrganism resultOrganism = new BbtResultOrganism();
                 resultOrganism.setActionId(bakPosev.getActionId());
                 resultOrganism.setConcentration(microorganism.getComment());
@@ -374,8 +373,7 @@ public class BakResult implements BakResultService {
                 for (Antibiotic antibiotic : microorganism.getAntibioticList()) {
                     dbRbAntibioticBean.add(new RbAntibiotic(antibiotic.getCode(), antibiotic.getName()));
                     final RbAntibiotic rbAntibiotic = dbRbAntibioticBean.get(antibiotic.getCode());
-                    final RbMicroorganism rbMicroorganism = dbRbMicroorganismBean.get(microorganism.getCode());
-                    final BbtResultOrganism bbtResultOrganism = dbBbtResultOrganismBean.get(rbMicroorganism.getId(), bakPosev.getActionId());
+                    final BbtResultOrganism bbtResultOrganism = dbBbtResultOrganismBean.get(mic.getId(), bakPosev.getActionId());
 
                     final BbtOrganismSensValues bbtOrganismSens = new BbtOrganismSensValues();
                     bbtOrganismSens.setActivity(antibiotic.getSensitivity());

@@ -9,6 +9,7 @@ import ru.korus.tmis.core.exception.CoreException;
 import javax.ejb.Local;
 import javax.servlet.http.Cookie;
 import java.io.Serializable;
+import java.net.URI;
 import java.util.Date;
 import java.util.List;
 
@@ -56,9 +57,9 @@ public interface WebMisREST extends Serializable {
 
     JSONCommonData getStructOfPrimaryMedExamWithCopy(int actionTypeId, AuthData authData, int eventId) throws CoreException;
 
-    JSONCommonData insertPrimaryMedExamForPatient(int eventId, JSONCommonData data, AuthData authData) throws CoreException;
+    JSONCommonData insertPrimaryMedExamForPatient(int eventId, JSONCommonData data, AuthData authData, URI baseUri) throws CoreException;
 
-    JSONCommonData modifyPrimaryMedExamForPatient(int actionId, JSONCommonData data, AuthData authData) throws CoreException;
+    JSONCommonData modifyPrimaryMedExamForPatient(int actionId, JSONCommonData data, AuthData authData, URI baseUri) throws CoreException;
 
     JSONCommonData getPrimaryAssessmentById (int assessmentId, AuthData authData) throws CoreException;
 

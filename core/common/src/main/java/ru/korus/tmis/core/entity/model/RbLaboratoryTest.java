@@ -3,6 +3,7 @@ package ru.korus.tmis.core.entity.model;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
 /**
  * Created with IntelliJ IDEA.
@@ -20,7 +21,9 @@ import javax.xml.bind.annotation.XmlType;
         })
 @XmlType(name = "rbLaboratoryTest")
 @XmlRootElement(name = "rbLaboratoryTest")
-public class RbLaboratoryTest {
+public class RbLaboratoryTest implements Serializable {
+
+    public static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

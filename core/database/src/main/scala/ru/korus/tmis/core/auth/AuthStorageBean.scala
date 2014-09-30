@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.auth
 
+import ru.korus.tmis.core.database.common.DbSettingsBeanLocal
 import ru.korus.tmis.core.database.{AppLockStatusType, AppLockStatus, AppLockBeanLocal, DbStaffBeanLocal}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
@@ -10,7 +11,6 @@ import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
 import javax.servlet.http.Cookie
-import scala.None
 import ru.korus.tmis.core.exception.{CoreException, AuthenticationException, NoSuchUserException}
 import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
@@ -33,6 +33,9 @@ class AuthStorageBean
 
   @EJB
   var dbStaff: DbStaffBeanLocal = _
+
+  @EJB
+  var dbSetting: DbSettingsBeanLocal = _
 
   // Отображение токена в кортеж из данных аутентификации и даты окончания
   // срока действия токена
@@ -91,7 +94,7 @@ class AuthStorageBean
     )
 
     val tokenEndTime =
-      new Date(new Date().getTime + ConfigManager.TmisAuth.AuthTokenPeriod)
+      new Date(new Date().getTime + getAuthTokenLifeTime)
 
     authMap.put(authData.authToken, (authData, tokenEndTime))
 
@@ -106,7 +109,7 @@ class AuthStorageBean
     // Проверяем пароль
     // Пароли в базе хранятся в MD5 и по сети передаются тоже в MD5
     if (staff.getPassword != password) {
-      error("Incorrect password for: " + staff)
+      warn("Incorrect password for: " + staff)
       throw new NoSuchUserException(
         ConfigManager.TmisAuth.ErrorCodes.LoginIncorrect,
         login,
@@ -160,7 +163,7 @@ class AuthStorageBean
   def checkTokenCookies(cookies: lang.Iterable[Cookie]): AuthData = {
     //проверим, пришли ли куки
     if (cookies == null) {
-      error("No authentication data found")
+      warn("No authentication data found")
       throw new AuthenticationException(
         ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
         i18n("error.invalidToken"))
@@ -183,7 +186,7 @@ class AuthStorageBean
       if (authData != null) {
         info("Authentication data found: " + authData)
       } else {
-        error("No authentication data found")
+        warn("No authentication data found")
         throw new AuthenticationException(
           ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
           i18n("error.invalidToken"))
@@ -193,18 +196,18 @@ class AuthStorageBean
       tokenEndDate = this.getAuthDateTime(authToken)
       if (tokenEndDate != null) {
         if (tokenEndDate.before(new Date())) {
-          error("Token period exceeded")
+          warn("Token period exceeded")
           throw new AuthenticationException(
             ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
             i18n("error.tokenExceeded"))
         } else {
           info("Token is valid")
-          val tokenEndTimeNew = new Date(new Date().getTime + ConfigManager.TmisAuth.AuthTokenPeriod)
+          val tokenEndTimeNew = new Date(new Date().getTime + getAuthTokenLifeTime)
           authMap.remove(authToken)
           authMap.put(authToken, (authData, tokenEndTimeNew))
         }
       } else {
-        error("Token end date not found")
+        warn("Token end date not found")
         throw new AuthenticationException(
           ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
           i18n("error.invalidToken"))
@@ -219,19 +222,19 @@ class AuthStorageBean
   }
 
   def clearAppLock() {
-    val timeout: Date = new Date((new Date()).getTime - ConfigManager.Common.lockTimeoutSec * 1000)
+    val timeout: Date = new Date(new Date().getTime - ConfigManager.Common.lockTimeoutSec * 1000)
     lockMap.filter((tuple) => tuple._1.getAppLock.getRetTime.before(timeout)).foreach((tuple) =>
       releaseAppLock(tuple._2, tuple._1.getId.getTableName, tuple._1.getId.getRecordId)
     )
   }
 
   def getAppLock(token: AuthToken, tableName: String, id: Integer): AppLockDetail = {
-    clearAppLock();
+    clearAppLock()
     val authData = getAuthData(token)
     if (authData == null) {
       throw new CoreException("Пользователь не найден. Токен: %s".format(token))
     }
-    val appLockStatus: AppLockStatus = appLockBeanLocal.getAppLock(tableName, id, 0, authData);
+    val appLockStatus: AppLockStatus = appLockBeanLocal.getAppLock(tableName, id, 0, authData)
     if (appLockStatus.getStatus == AppLockStatusType.busy) {
       throw new CoreException(i18n("error.entryIsLocked"))
     }
@@ -300,19 +303,19 @@ class AuthStorageBean
           return res
         }
       }
-      return null
+      null
     }
   }
 
   def getLockInfo(action: Action): ActionWithLockInfo = {
-    var res = appLockBeanLocal.getLockInfo(action);
+    var res = appLockBeanLocal.getLockInfo(action)
     if (res.lockInfo == null) {
       val appLockDetail = checkAppLock("Action", action.getId)
       if (appLockDetail != null) {
         res = new ActionWithLockInfo(action, new EntityLockInfo(appLockDetail.getId.getMasterId.toInt, appLockDetail.getAppLock.getPerson, "NTK"))
       }
     }
-    return res;
+    res
   }
 
   def acquireLock(table: String, recordId: Int, recordIndex: Int, userData: AuthData): Integer = {
@@ -324,10 +327,26 @@ class AuthStorageBean
       }
       return appLockStatus.getId
     }
-    return appLockDetail.getId.getMasterId
+    appLockDetail.getId.getMasterId
   }
 
   def releaseLock(id: Integer) {
     appLockBeanLocal.releaseAppLock(id)
   }
+
+  def getAuthTokenLifeTime: Int = {
+    val value = dbSetting.getSettingByPath(i18n("settings.path.authTokenLife")).getValue
+    if(value != null && !value.isEmpty) {
+      try {
+        value.toInt
+      }
+      catch {
+        case e: Throwable =>
+          // TODO Log - incorrect setting value
+          ConfigManager.TmisAuth.AuthTokenPeriod
+      }
+    } else
+      ConfigManager.TmisAuth.AuthTokenPeriod
+  }
+
 }

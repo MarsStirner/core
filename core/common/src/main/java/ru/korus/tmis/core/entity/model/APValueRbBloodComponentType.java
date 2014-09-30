@@ -2,10 +2,7 @@ package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
 
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
 
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -15,8 +12,9 @@ public class APValueRbBloodComponentType extends AbstractAPValue implements Seri
 
     private static final long serialVersionUID = 1L;
 
+
     @OneToOne
-    @JoinColumn(name = "value", insertable = false, updatable = false)
+    @JoinColumn(name = "value")
     private RbTrfuBloodComponentType value;
 
     public APValueRbBloodComponentType() {
@@ -41,12 +39,29 @@ public class APValueRbBloodComponentType extends AbstractAPValue implements Seri
 
     @Override
     public String getValueAsString() {
-        return value != null ? value.getName() : null;
+        return value == null ? null : String.valueOf(value.getId());
+    }
+
+    @Override
+    public boolean setValue(Object value) {
+        Boolean res = false;
+        if (value instanceof RbTrfuBloodComponentType) {
+            this.value = (RbTrfuBloodComponentType)value;
+            res = true;
+        }
+        return res;
     }
 
     @Override
     public boolean setValueFromString(final String value) throws CoreException {
-       return false;
+        try {
+            this.value = new RbTrfuBloodComponentType();
+            this.value.setId(Integer.valueOf(value));
+        } catch (NumberFormatException ex) {
+            ex.printStackTrace();
+            return false;
+        }
+        return true;
     }
 
     @Override

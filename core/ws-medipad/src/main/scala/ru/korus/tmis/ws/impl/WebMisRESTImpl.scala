@@ -1,30 +1,33 @@
 package ru.korus.tmis.ws.impl
 
-import scala.collection.JavaConverters._
-import ru.korus.tmis.core.data._
-import ru.korus.tmis.core.auth.{AuthToken, AuthStorageBeanLocal, AuthData}
-import org.codehaus.jackson.map.ObjectMapper
-import ru.korus.tmis.core.exception.CoreException
-import java.{util => ju, lang}
-import ru.korus.tmis.core.entity.model._
-import collection.mutable
-import java.util.{Date, LinkedList}
-import grizzled.slf4j.Logging
-import ru.korus.tmis.ws.webmis.rest.{LockData, WebMisREST}
-import javax.ejb.{Stateless, EJB}
-import ru.korus.tmis.core.database._
-import ru.korus.tmis.core.database.common._
-import ru.korus.tmis.core.patient._
-import scala.collection.JavaConversions._
-import com.google.common.collect.Lists
+import java.net.URI
+import java.util.{Calendar, Date, LinkedList}
+import java.{lang, util => ju}
+import javax.ejb.{EJB, Stateless}
 import javax.servlet.http.Cookie
-import scala.Predef._
 
-import ru.korus.tmis.scala.util._
-import ru.korus.tmis.core.database.bak.{DbBbtResultOrganismBeanLocal, DbBbtResponseBeanLocal, DbBbtResultTextBeanLocal}
+import com.google.common.collect.Lists
+import grizzled.slf4j.Logging
+import org.codehaus.jackson.map.ObjectMapper
 import org.joda.time.DateTime
+import ru.korus.tmis.core.auth.{AuthData, AuthStorageBeanLocal, AuthToken}
+import ru.korus.tmis.core.data._
+import ru.korus.tmis.core.database._
+import ru.korus.tmis.core.database.bak.{DbBbtResponseBeanLocal, DbBbtResultOrganismBeanLocal, DbBbtResultTextBeanLocal}
+import ru.korus.tmis.core.database.common._
+import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.lock.ActionWithLockInfo
-import ru.korus.tmis.scala.util.StringId
+import ru.korus.tmis.core.notification.NotificationBeanLocal
+import ru.korus.tmis.core.patient._
+import ru.korus.tmis.core.pharmacy.FlatCode
+import ru.korus.tmis.scala.util._
+import ru.korus.tmis.ws.webmis.rest.{LockData, WebMisREST}
+
+import scala.Predef._
+import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
+import scala.collection.mutable
 
 /**
  * User: idmitriev
@@ -33,10 +36,10 @@ import ru.korus.tmis.scala.util.StringId
  */
 
 @Stateless
-class WebMisRESTImpl  extends WebMisREST
-                      with Logging
-                      with I18nable
-                      with CAPids {
+class WebMisRESTImpl extends WebMisREST
+with Logging
+with I18nable
+with CAPids {
   @EJB
   private var authStorage: AuthStorageBeanLocal = _
 
@@ -83,10 +86,10 @@ class WebMisRESTImpl  extends WebMisREST
   private var dbRelationTypeBean: DbRbRelationTypeBeanLocal = _
 
   @EJB
-  private  var dbDocumentTypeBean: DbRbDocumentTypeBeanLocal = _
+  private var dbDocumentTypeBean: DbRbDocumentTypeBeanLocal = _
 
   @EJB
-  private  var dbOrganizationBean: DbOrganizationBeanLocal = _
+  private var dbOrganizationBean: DbOrganizationBeanLocal = _
 
   @EJB
   private var dbRbPolicyTypeBean: DbRbPolicyTypeBeanLocal = _
@@ -166,7 +169,6 @@ class WebMisRESTImpl  extends WebMisREST
   @EJB
   var dbLayoutAttributeBean: DbLayoutAttributeBeanLocal = _
 
-
   @EJB
   var dbTempInvalidBean: DbTempInvalidBeanLocal = _
 
@@ -191,10 +193,13 @@ class WebMisRESTImpl  extends WebMisREST
   @EJB
   var appLockBeanLocal: AppLockBeanLocal = _
 
+  @EJB
+  var notificationBeanLocal: NotificationBeanLocal = _
+
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
       val patients = patientBean.getAllPatients(requestData)
-      return new PatientData(Lists.newArrayList(patients),requestData)
+      return new PatientData(Lists.newArrayList(patients), requestData)
     }
     throw new CoreException(
       i18n("error.cantGetPatients").format()
@@ -215,12 +220,12 @@ class WebMisRESTImpl  extends WebMisREST
       )
   }
 
-  def insertPatient(patientData: PatientCardData, auth: AuthData) : PatientCardData = {
+  def insertPatient(patientData: PatientCardData, auth: AuthData): PatientCardData = {
     //requiresPermissions(Array("clientAssessmentCreate"))
     val inPatientEntry = patientData.getData
     if (inPatientEntry != null) {
       if (auth != null) {
-        val outPatientEntry: PatientEntry = patientBean.savePatient(-1, inPatientEntry, auth)  //currentAuthData
+        val outPatientEntry: PatientEntry = patientBean.savePatient(-1, inPatientEntry, auth) //currentAuthData
 
         patientData.setData(outPatientEntry)
         return patientData
@@ -232,7 +237,7 @@ class WebMisRESTImpl  extends WebMisREST
     )
   }
 
-  def updatePatient(id: Int, patientData: PatientCardData, auth: AuthData) : PatientCardData = {
+  def updatePatient(id: Int, patientData: PatientCardData, auth: AuthData): PatientCardData = {
     //requiresPermissions(Array("clientAssessmentCreate"))
     val inPatientEntry = patientData.getData
     if (inPatientEntry != null) {
@@ -247,7 +252,8 @@ class WebMisRESTImpl  extends WebMisREST
       i18n("error.cantSavePatient").format()
     )
   }
-  def checkExistanceNumber(name : String, typeId: Int, number : String, serial: String) = {
+
+  def checkExistanceNumber(name: String, typeId: Int, number: String, serial: String) = {
     if (name.compareTo("appealNumber") == 0) {
       new TrueFalseContainer(appealBean.checkAppealNumber(number))
     } else if (name.compareTo("SNILS") == 0) {
@@ -260,19 +266,20 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   //Insert or modify appeal
-  def insertAppealForPatient(appealData : AppealData, patientId: Int, auth: AuthData) = {
+  def insertAppealForPatient(appealData: AppealData, patientId: Int, auth: AuthData) = {
 
     val ide = appealBean.insertAppealForPatient(appealData, patientId, auth)
     constructAppealData(ide)
   }
-  def updateAppeal(appealData : AppealData, eventId: Int, auth: AuthData) = {
+
+  def updateAppeal(appealData: AppealData, eventId: Int, auth: AuthData) = {
 
     val ide = appealBean.updateAppeal(appealData, eventId, auth)
     constructAppealData(ide)
   }
 
   private def constructAppealData(ide: Int): java.lang.String = {
-    if(ide>0) {
+    if (ide > 0) {
       val result = appealBean.getAppealById(ide)
 
       val positionE = result.iterator.next()
@@ -287,7 +294,7 @@ class WebMisRESTImpl  extends WebMisREST
       //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
       val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(ide)
       //
-      mapper.writeValueAsString(new AppealData( positionE._1,
+      mapper.writeValueAsString(new AppealData(positionE._1,
         positionA._1,
         values,
         null,
@@ -295,12 +302,14 @@ class WebMisRESTImpl  extends WebMisREST
         map,
         street,
         null,
-        actionBean.getLastActionByActionTypeIdAndEventId,  //havePrimary
+        actionBean.getLastActionByActionTypeIdAndEventId, //havePrimary
         dbClientRelation.getClientRelationByRelativeId,
         null,
         if (positionA._1.getContractId != null) {
           dbContractBean.getContractById(positionA._1.getContractId.intValue())
-        } else {null},
+        } else {
+          null
+        },
         currentDepartment,
         dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
         dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
@@ -324,7 +333,7 @@ class WebMisRESTImpl  extends WebMisREST
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
-    mapper.writeValueAsString(new AppealData( positionE._1,
+    mapper.writeValueAsString(new AppealData(positionE._1,
       positionA._1,
       values,
       null,
@@ -332,12 +341,14 @@ class WebMisRESTImpl  extends WebMisREST
       null,
       null,
       null,
-      actionBean.getLastActionByActionTypeIdAndEventId _,  //havePrimary
+      actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
       dbClientRelation.getClientRelationByRelativeId _,
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
       if (positionE._1.getContract != null) {
         dbContractBean.getContractById(positionE._1.getContract.getId.intValue())
-      } else {null},
+      } else {
+        null
+      },
       currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _,
       dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
@@ -357,7 +368,7 @@ class WebMisRESTImpl  extends WebMisREST
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
-    mapper.writeValueAsString(new AppealData( positionE._1,
+    mapper.writeValueAsString(new AppealData(positionE._1,
       positionA._1,
       values,
       actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes _,
@@ -367,10 +378,12 @@ class WebMisRESTImpl  extends WebMisREST
       null,
       actionBean.getLastActionByActionTypeIdAndEventId _, //havePrimary
       dbClientRelation.getClientRelationByRelativeId _,
-      actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,  //в тч Admission Diagnosis
+      actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _, //в тч Admission Diagnosis
       if (positionA._1.getContractId != null) {
         dbContractBean.getContractById(positionA._1.getContractId.intValue())
-      } else {null},
+      } else {
+        null
+      },
       currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes _,
       dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
@@ -396,23 +409,23 @@ class WebMisRESTImpl  extends WebMisREST
       ThreadLocalByRequest.unset()
       curAuthContext.clean()
     }*/
-    if(requestData.filter.asInstanceOf[ReceivedRequestDataFilter].role<=0)
-      requestData.filter.asInstanceOf[ReceivedRequestDataFilter].role = authData.getUserRole.getId.intValue()  //Роль из данных авторизации (клиент пока не использует)
+    if (requestData.filter.asInstanceOf[ReceivedRequestDataFilter].role <= 0)
+      requestData.filter.asInstanceOf[ReceivedRequestDataFilter].role = authData.getUserRole.getId.intValue() //Роль из данных авторизации (клиент пока не использует)
 
     val mapper: ObjectMapper = new ObjectMapper()
     requestData.filter.asInstanceOf[ReceivedRequestDataFilter].role match {
       case 29 => mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]) //Сестра приемного отделения
-      case _ =>  mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]) //Доктор
+      case _ => mapper.getSerializationConfig().setSerializationView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]) //Доктор
     }
 
     requestData.setRecordsCount(dbEventBean.getCountOfAppealsForReceivedPatientByPeriod(requestData.filter))
-    val data = if(requestData.recordsCount!=0){
-      var received = dbEventBean.getAllAppealsForReceivedPatientByPeriod(requestData.page-1,
+    val data = if (requestData.recordsCount != 0) {
+      var received = dbEventBean.getAllAppealsForReceivedPatientByPeriod(requestData.page - 1,
         requestData.limit,
         requestData.sortingFieldInternal,
         requestData.sortingMethod,
         requestData.filter)
-      new ReceivedPatientsData( received,
+      new ReceivedPatientsData(received,
         requestData,
         appealBean.getDiagnosisListByAppealId _,
         actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes _,
@@ -456,26 +469,26 @@ class WebMisRESTImpl  extends WebMisREST
 
     //Для направлений на лабисследования, консультации и инструментальные иследования выводить поле "Направивший врач"
     val at = actionTypeBean.getActionTypeById(actionTypeId)
-    val flgDiagnostics = (at!=null &&
-                          (at.getMnemonic.toUpperCase().compareTo("LAB")==0 ||
-                           at.getMnemonic.toUpperCase().compareTo("BAK_LAB")==0 ||
-                           at.getMnemonic.toUpperCase().compareTo("DIAG")==0 ||
-                           at.getMnemonic.toUpperCase().compareTo("CONS")==0))
-    if(flgDiagnostics){
+    val flgDiagnostics = (at != null &&
+      (at.getMnemonic.toUpperCase().compareTo("LAB") == 0 ||
+        at.getMnemonic.toUpperCase().compareTo("BAK_LAB") == 0 ||
+        at.getMnemonic.toUpperCase().compareTo("DIAG") == 0 ||
+        at.getMnemonic.toUpperCase().compareTo("CONS") == 0))
+    if (flgDiagnostics) {
       listForSummary.add(ActionWrapperInfo.executorId)
       listForSummary.add(ActionWrapperInfo.assignerId)
     }
     //listForSummary.add(ActionWrapperInfo.toOrder)
 
-    val event = if(eventId > 0)dbEventBean.getEventById(eventId) else null
+    val event = if (eventId > 0) dbEventBean.getEventById(eventId) else null
 
     primaryAssessmentBean.getEmptyStructure(actionTypeId,
-                                            "Document",
-                                            listForConverter,
-                                            listForSummary,
-                                            authData,
-                                            postProcessing(event) _,
-                                            null)
+      "Document",
+      listForConverter,
+      listForSummary,
+      authData,
+      postProcessing(event) _,
+      null)
   }
 
   //запрос на структуру первичного мед. осмотра с копированием данных из предыдущего осмотра
@@ -492,38 +505,61 @@ class WebMisRESTImpl  extends WebMisREST
 
   }
 
-  private def postProcessing (event: Event = null)(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+  private def isNotifableAction(at: ActionType): Boolean = {
+    var notifiableFlatCodes = Array("TransfusionTherapy", "moving", "received", "del_moving", "del_received")
+    notifiableFlatCodes :+ FlatCode.getPrescriptionCodeList // append prescriptions flat codes
+    return at.getFlatCode.startsWith("trfuProcedure_trfu") || notifiableFlatCodes.contains(at.getFlatCode)
+  }
+
+
+  private def postProcessing(event: Event = null)(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+
+    val cache = mutable.HashMap[Int, java.util.List[Action]]()
+    val APValueCache = mutable.HashMap[ActionProperty, java.util.List[APValue]]()
+    val pastActionsCache = mutable.HashMap[(Set[String], Int, String), java.util.List[Action]]()
+
     jData.data.get(0).group.get(1).attribute.foreach(ap => {
-      if(ap.typeId==null || ap.typeId.intValue()<=0) {
-        if(reWriteId.booleanValue)  //в id -> apt.id
+      if (ap.typeId == null || ap.typeId.intValue() <= 0) {
+        if (reWriteId.booleanValue) //в id -> apt.id
           ap.typeId = ap.id
         else
           ap.typeId = actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
       }
 
       // Вычисляем "подтягивающиеся" из прошлых документов значение
-      if(event != null) {
-        val aProp = try { actionPropertyTypeBean.getActionPropertyTypeById(ap.getId())} catch {
+      if (event != null) {
+        val aProp = try {
+          actionPropertyTypeBean.getActionPropertyTypeById(ap.getId)
+        } catch {
           case e: Throwable => null
         }
-        val at = try {actionTypeBean.getActionTypeById(jData.getData.get(0).getId())} catch {
+        val at = try {
+          actionTypeBean.getActionTypeById(jData.getData.get(0).getId) //TODO: jData.getData.get(0).getId это Action.id, но не ActionType.id
+        } catch {
           case e: Throwable => null
         }
 
-        if(aProp != null && at != null)
-          ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp))
+        if (aProp != null && at != null) {
+          ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp, cache, APValueCache, pastActionsCache))
+        }
       }
     }
     )
-
-
-
     jData
   }
 
-  private def postProcessingForDiagnosis (jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
+  private def notifyAction(actions:  java.util.List[Action], baseUri: URI): java.lang.Boolean = {
+    val uri = URI.create(baseUri.toString.replace("/rest/", "/"))
+    actions.toList.foreach(action => {
+      notificationBeanLocal.sendNotification(action)
+    })
+
+    return true
+  }
+
+  private def postProcessingForDiagnosis(jData: JSONCommonData, reWriteId: java.lang.Boolean) = {
     jData.data.get(0).group.get(1).attribute.foreach(ap => {
-      val value = if(ap.typeId!=null && ap.typeId.intValue()>0)
+      val value = if (ap.typeId != null && ap.typeId.intValue() > 0)
         ap.typeId.intValue()
       else
         actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
@@ -539,51 +575,71 @@ class WebMisRESTImpl  extends WebMisREST
    * Метод костылен по своей природе, т.к. костыльна сама поставленная задача.
    * @param event Экземпляр события, для которого создается документ
    * @param at Тип создаваемого документа
-   * @param ap Свойство создаваемого документа
+   * @param apt Свойство создаваемого документа
    */
-  private def calculateActionPropertyValue(event: Event, at: ActionType, ap: ActionPropertyType): APValue = {
+  private def calculateActionPropertyValue(event: Event, at: ActionType, apt: ActionPropertyType,
+                                           cache: mutable.HashMap[Int, java.util.List[Action]],
+                                           apValueCache: mutable.HashMap[ActionProperty, java.util.List[APValue]],
+                                           pastActionsCache: mutable.HashMap[(Set[String], Int, String), java.util.List[Action]]): APValue = {
+
+    val dnevnikoviiOsmotrSet = Set("1_2_18", "1_2_19", "1_2_22", "1_2_23")
+
+    val infectDrugPropsSet = Set(
+      "infectDrugName_1", "infectDrugBeginDate_1", "infectDrugEndDate_1", "infectTherapyType_1",
+      "infectDrugName_2", "infectDrugBeginDate_2", "infectDrugEndDate_2", "infectTherapyType_2",
+      "infectDrugName_3", "infectDrugBeginDate_3", "infectDrugEndDate_3", "infectTherapyType_3",
+      "infectDrugName_4", "infectDrugBeginDate_4", "infectDrugEndDate_4", "infectTherapyType_4",
+      "infectDrugName_5", "infectDrugBeginDate_5", "infectDrugEndDate_5", "infectTherapyType_5",
+      "infectDrugName_6", "infectDrugBeginDate_6", "infectDrugEndDate_6", "infectTherapyType_6",
+      "infectDrugName_7", "infectDrugBeginDate_7", "infectDrugEndDate_7", "infectTherapyType_7",
+      "infectDrugName_8", "infectDrugBeginDate_8", "infectDrugEndDate_8", "infectTherapyType_8"
+    )
+
+    val infectPrefixes = Set(
+      "infectFever", "infectBacteremia", "infectSepsis",
+      "infectSepticShok"
+    )
+
+    val localInfectPrefixes = Set(
+      "infectCephalopyosis", "infectMeningitis",
+      "infectMeningoencephalitis", "infectEncephalitis", "infectConjunctivitis",
+      "infectPeriorbital", "infectBlepharitis", "infectChorioretinitis",
+      "infectSkinLight", "infectSkinHard", "infectMucositis12",
+      "infectMucositis34", "infectEsophagitis", "infectGingivitis",
+      "infectRhinitis", "infectTonsillitis", "infectOtitis",
+      "infectDefeatPPN", "infectBronchitis", "infectInterstitialPneumonia", "infectLobarPneumonia",
+      "infectPleurisy", "infectPericarditis", "infectMioardit", "infectEndocarditis",
+      "infectGastritis", "infectPancreatitis", "infectCholecystitis", "infecThepatitis", "infectGepatolienalnyCandidiasis",
+      "infectAbscess", "infectEnterocolitis", "infectCecitis", "infectAppendicitis", "infectPeritonitis", "infectGlomerulonephritis",
+      "infectPyelonephritis", "infectCystitis", "infectUrethritis", "infectEndometritis", "infectAdnexitis", "infectVulvovaginitis",
+      "infectOsteomyelitis", "infectMyositis",
+      "infectCNSComment",
+      "infectEyeComment",
+      "infectSkinComment",
+      "infectMucousComment",
+      "infectLORComment",
+      "infectLungsComment",
+      "infectHeartComment",
+      "infectAbdomenComment",
+      "infectUrogenitalComment",
+      "infectMusculoskeletalComment"
+
+    )
+
+    val therapySet = Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")
+
+
 
     // Получение значения свойства у предыдущих действий
     def getProperty(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
-        if(oldDocumentCodes.contains(at.getCode)) {
-          val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
-          if(pastActions != null && !pastActions.isEmpty)
-            pastActions.head.getActionProperties.foreach(e => {
-              if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
-                val values = actionPropertyBean.getActionPropertyValue(e)
-                if(actionTypeCodes.contains(e.getType.getCode)) {
-                  if(values.size() > 0)
-                    return values.head
-                }
-              }
-            })
-          null
-        }
-      null
-    }
-
-    // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
-    def getPropertyCustom1(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
-
-      def getTherapyPhaseEndDate(action: Action): Date = {
-        action.getActionProperties.foreach(p =>
-          if (p.getType.getCode != null && p.getType.getCode.equals("therapyPhaseEndDate"))
-          actionPropertyBean.getActionPropertyValue(p).foreach {
-            case d: Date => return d
-            case _ =>
-          }
-        )
-        null
-      }
-
-      if(oldDocumentCodes.contains(at.getCode)) {
-        val pastActions = actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null)
-        if(pastActions != null && !pastActions.isEmpty && getTherapyPhaseEndDate(pastActions.head) != null)
+      if (oldDocumentCodes.contains(at.getCode)) {
+        val pastActions = pastActionsCache.getOrElseUpdate((oldDocumentCodes, event.getId, "a.begDate DESC"), actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null))
+        if (pastActions != null && !pastActions.isEmpty)
           pastActions.head.getActionProperties.foreach(e => {
-            if(e.getType.getCode != null && e.getType.getCode.equals(ap.getCode)) {
-              val values = actionPropertyBean.getActionPropertyValue(e)
-              if(actionTypeCodes.contains(e.getType.getCode)) {
-                if(values.size() > 0)
+            if (e.getType.getCode != null && e.getType.getCode.equals(apt.getCode)) {
+              val values = apValueCache.getOrElseUpdate(e, actionPropertyBean.getActionPropertyValue(e))
+              if (actionTypeCodes.contains(e.getType.getCode)) {
+                if (values.size() > 0)
                   return values.head
               }
             }
@@ -593,63 +649,256 @@ class WebMisRESTImpl  extends WebMisREST
       null
     }
 
+    def getLastActionByTypeCodes(typeCode: Iterable[String]): Action = {
+      val l = cache.getOrElseUpdate(event.getId, { actionBean.getActionsByEvent(event.getId) } )
+      val list = l.filter(a => typeCode.contains(a.getActionType.getCode))
+        .sortBy(_.getCreateDatetime)
+
+      if (list.nonEmpty)
+        list.last
+      else
+        null
+    }
+
+    // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
+    def getPropertyCustom1(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
+
+      def getTherapyPhaseEndDate(action: Action): Date = {
+        action.getActionProperties.foreach(p =>
+          if (p.getType.getCode != null && p.getType.getCode.equals("therapyPhaseEndDate"))
+            apValueCache.getOrElseUpdate(p, actionPropertyBean.getActionPropertyValue(p)).foreach {
+              case d: Date => return d
+              case _ =>
+            }
+        )
+        null
+      }
+
+      if (oldDocumentCodes.contains(at.getCode)) {
+        val pastActions = pastActionsCache.getOrElseUpdate((oldDocumentCodes, event.getId, "a.begDate DESC"), actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null))
+        if (pastActions != null && !pastActions.isEmpty && getTherapyPhaseEndDate(pastActions.head) != null)
+          pastActions.head.getActionProperties.foreach(e => {
+            if (e.getType.getCode != null && e.getType.getCode.equals(apt.getCode)) {
+              val values = apValueCache.getOrElseUpdate(e, actionPropertyBean.getActionPropertyValue(e))
+              if (actionTypeCodes.contains(e.getType.getCode)) {
+                if (values.size() > 0)
+                  return values.head
+              }
+            }
+          })
+        null
+      }
+      null
+    }
+
+    // Получение значений свойств по свойствам инфекционного контроля
+    def getPropertyCustom2(oldDocumentCodes: Set[String], actionTypeCodesPrefix: String): APValue = {
+
+      if (!apt.getCode.startsWith(actionTypeCodesPrefix) || !(oldDocumentCodes contains at.getCode))
+        return null
+
+      // Последний дневниковый осмотр из всех историй болезни
+      val lastAction = getLastActionByTypeCodes(oldDocumentCodes)
+
+      // Ничего не возвращем, если в прошлом не было дневникового осмотра
+      if (lastAction == null)
+        return null
+
+      val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(actionTypeCodesPrefix + "-EndDate"))
+
+      val endDateValue: Date = {
+        if (endDateProperty.isDefined) {
+          val ap = endDateProperty.get
+          val value = apValueCache.getOrElseUpdate(ap, actionPropertyBean.getActionPropertyValue(ap))
+          if (!value.isEmpty)
+            value.head match {
+              case p: APValueDate => p.getValue // в БД время сохраняется как 00.00.00
+              case _ => null
+            } else
+            null
+        } else
+          null
+      }
+
+      // Даты конца нет или она в будущем,  нужно подтянуть значения
+      if (endDateValue == null || endDateValue.after(new Date())) {
+        lastAction.getActionProperties.foreach(p => {
+          if (p.getType.getCode != null && p.getType.getCode.equals(apt.getCode)) {
+            val values = apValueCache.getOrElseUpdate(p, actionPropertyBean.getActionPropertyValue(p))
+            if (values.size() > 0)
+              return values.head
+          }
+        })
+        null
+      } else
+        null
+    }
+
+    // Получения значений для лекарственных назначений
+    def getPropertyCustom3(oldDocumentCodes: Set[String]): APValue = {
+
+      // Последний дневниковый осмотр из всех историй болезни
+      val lastAction = getLastActionByTypeCodes(oldDocumentCodes)
+
+      // Ничего не возвращем, если в прошлом не было дневникового осмотра
+      if (lastAction == null)
+        return null
+
+      val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectDrugEndDate_" + apt.getCode.last))
+
+      val endDateValue: Date = {
+        if (endDateProperty.isDefined) {
+          val ap = endDateProperty.get
+          val value = apValueCache.getOrElseUpdate(ap, actionPropertyBean.getActionPropertyValue(ap))
+          if (!value.isEmpty)
+            value.head match {
+              case p: APValueDate => p.getValue // в БД время сохраняется как 00.00.00
+              case _ => null
+            } else
+            null
+        } else
+          null
+      }
+
+      // Даты конца нет или она в будущем,  нужно подтянуть значения
+      if (endDateValue == null || endDateValue.after(new Date())) {
+        lastAction.getActionProperties.foreach(p => {
+          if (p.getType.getCode != null && p.getType.getCode.equals(apt.getCode)) {
+            val values = apValueCache.getOrElseUpdate(p, actionPropertyBean.getActionPropertyValue(p))
+            if (values.size() > 0)
+              return values.head
+          }
+        })
+        null
+      } else
+        null
+    }
+
+    // Получение значения поля "Локальная инфекция"
+    def getPropertyCustom4(oldDocumentCodes: Set[String]): APValue = {
+      // Последний дневниковый осмотр из всех историй болезни
+      val lastAction = getLastActionByTypeCodes(oldDocumentCodes)
+
+      // Ничего не возвращем, если в прошлом не было дневникового осмотра
+      if (lastAction == null)
+        return null
+
+      def getPropertyValue(prop: Option[ActionProperty]) = {
+        if (prop.isDefined) {
+          val ap = prop.get
+          val value = apValueCache.getOrElseUpdate(ap, actionPropertyBean.getActionPropertyValue(ap))
+          if (!value.isEmpty)
+            value.head match {
+              case p: APValueString => p.getValue
+              case _ => null
+            } else
+            null
+        } else
+          null
+      }
+
+      val localInfectProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectLocal")).orNull
+
+      for(prefix <- localInfectPrefixes) {
+
+        val values =
+        Set (
+          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + "-EndDate")),
+          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + "-BeginDate")),
+          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + "-Etiology")))
+        .collect({
+          case x: Some[ActionProperty] => getPropertyValue(x)
+        })
+
+        if(values.exists(_ != null))
+          return {
+            val v = apValueCache.getOrElseUpdate(localInfectProperty, actionPropertyBean.getActionPropertyValue(localInfectProperty))
+            if(v.size() > 0)
+              v.head
+            else
+              null
+          }
+      }
+      null
+    }
+
     at.getCode match {
-      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag","mainDiagMkb")) // Заключительный эпикриз
-      case "1_2_18" => getPropertyCustom1(Set("1_2_18"), Set("therapyTitle", "therapyBegDate", "therapyPhaseTitle", "therapyPhaseBegDate")) // Дневниковый осмотр
+
+      // Заключительный эпикриз
+      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"))
+
+      // Дневниковый осмотр
+      case x if dnevnikoviiOsmotrSet.contains(x) =>
+        if (therapySet.contains(x)) // Подтягивания значений для полей терапии
+          getPropertyCustom1(dnevnikoviiOsmotrSet, therapySet)
+        else if ((infectPrefixes ++ localInfectPrefixes).exists(p => apt.getCode!= null && (apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)))) // или для полей инфекционного контроля
+          getPropertyCustom2(dnevnikoviiOsmotrSet, (infectPrefixes ++ localInfectPrefixes).find(p => apt.getCode.startsWith(p + "-") || apt.getCode.equals(p)).get)
+        else if (apt.getCode!= null && apt.getCode.equals("infectLocal"))
+          getPropertyCustom4(dnevnikoviiOsmotrSet)
+        else if (infectDrugPropsSet.contains(apt.getCode))
+          getPropertyCustom3(dnevnikoviiOsmotrSet)
+        else
+          null
       case _ => null
     }
+
   }
 
   //создание первичного мед. осмотра
-  def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData)  = {
+  def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI) = {
 
     validateDocumentsAvailability(eventId)
 
-    val isPrimary = (data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
-    if(isPrimary)
+    val isPrimary = (data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt) == 0).getOrElse(null) != null) //Врач прописывается только для первичного осмотра  (ид=139)
+    if (isPrimary)
       appealBean.setExecPersonForAppeal(eventId, 0, authData, ExecPersonSetType.EP_CREATE_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
-    val returnValue = primaryAssessmentBean createPrimaryAssessmentForEventId(eventId,
+    val returnValue = primaryAssessmentBean createOrUpdatePrimaryAssessmentForEventId(eventId,
       data,
-      "Document",
+      null,
       authData,
-      /*preProcessing _*/null,
+      baseUri,
+      notifyAction,
       postProcessing() _)
+
     returnValue
   }
 
   //редактирование первичного мед. осмотра
-  def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData)  = {
+  def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI) = {
+
 
     validateDocumentsAvailability(actionBean.getActionById(actionId).getEvent.getId)
 
     //создаем ответственного, если до этого был другой
-    if(data.getData.find(ce => ce.getTypeId().compareTo(i18n("db.actionType.primary").toInt)==0).getOrElse(null)!=null) //Врач прописывается только для первичного осмотра  (ид=139)
+    if (data.getData.find(ce => ce.getTypeId.compareTo(i18n("db.actionType.primary").toInt) == 0).orNull != null) //Врач прописывается только для первичного осмотра  (ид=139)
       appealBean.setExecPersonForAppeal(actionId, 0, authData, ExecPersonSetType.EP_MODIFY_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
-    val returnValue = primaryAssessmentBean.modifyPrimaryAssessmentById(actionId,
+    val returnValue = primaryAssessmentBean createOrUpdatePrimaryAssessmentForEventId(null,
       data,
-      "Document",
+      actionId,
       authData,
-      /*preProcessing _*/null,
-      postProcessing() _)
+      baseUri,
+      notifyAction,
+      postProcessing())
+
     returnValue
   }
 
   private def validateDocumentsAvailability(eventId: Int) = {
     val event = dbEventBean.getEventById(eventId)
-    if(event == null)
+    if (event == null)
       throw new CoreException(i18n("settings.path.eventBlockTime").format(eventId));
 
     //, Нельзя создавать документы для закрытой госпитализации,
     // если прошло больше дней, чем указанно в конфигурации
     val closeDate = event.getExecDate
-    if(closeDate != null) {
-      val availableDays =  dbSettingsBean.getSettingByPathInMainSettings(i18n("settings.path.eventBlockTime")).getValue
+    if (closeDate != null) {
+      val availableDays = dbSettingsBean.getSettingByPathInMainSettings(i18n("settings.path.eventBlockTime")).getValue
       try {
-        if(new DateTime(closeDate).plusDays(Integer.parseInt(availableDays)).getMillis < new DateTime().getMillis) {
+        if (new DateTime(closeDate).plusDays(Integer.parseInt(availableDays)).getMillis < new DateTime().getMillis) {
           throw new CoreException("Редактирование документов разрешено только в течении " + Integer.parseInt(availableDays) + " после закрытия истории болезни")
         }
       } catch {
@@ -664,7 +913,7 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
 
-  def getPrimaryAssessmentById (assessmentId: Int, authData: AuthData) = {
+  def getPrimaryAssessmentById(assessmentId: Int, authData: AuthData) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //val authData:AuthData = null
@@ -681,8 +930,8 @@ class WebMisRESTImpl  extends WebMisREST
     patientBean.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, auth)
   }
 
-  def getActionWithLockInfoList(list: java.util.List[Action]) : java.util.List[ActionWithLockInfo] =  {
-    val res :  java.util.List[ActionWithLockInfo] = new java.util.LinkedList[ActionWithLockInfo]
+  def getActionWithLockInfoList(list: java.util.List[Action]): java.util.List[ActionWithLockInfo] = {
+    val res: java.util.List[ActionWithLockInfo] = new java.util.LinkedList[ActionWithLockInfo]
     list.foreach(action => res.add(authStorage.getLockInfo(action)))
     res
   }
@@ -690,11 +939,11 @@ class WebMisRESTImpl  extends WebMisREST
   //Возвращает список осмотров по пациенту и обращению с фильтрацией по типу действия
   def getListOfAssessmentsForPatientByEvent(requestData: AssessmentsListRequestData, auth: AuthData) = {
     val action_list = actionBean.getActionsWithFilter(requestData.limit,
-                                                      requestData.page-1,
-                                                      requestData.sortingFieldInternal,
-                                                      requestData.filter.unwrap(),
-                                                      requestData.rewriteRecordsCount _,
-                                                      auth)
+      requestData.page - 1,
+      requestData.sortingFieldInternal,
+      requestData.filter.unwrap(),
+      requestData.rewriteRecordsCount _,
+      auth)
     val actionWithLockInfoList = getActionWithLockInfoList(action_list);
     //actionBean.getActionsByEventIdWithFilter(requestData.eventId, auth, requestData)
     val assessments: AssessmentsListData = new AssessmentsListData(actionWithLockInfoList, requestData)
@@ -703,12 +952,12 @@ class WebMisRESTImpl  extends WebMisREST
 
   //<= Hospital Bed =>
   //Данные об регистрации на койке
-  def getPatientToHospitalBedById (actionId: Int, authData: AuthData) = {
+  def getPatientToHospitalBedById(actionId: Int, authData: AuthData) = {
 
     val action = actionBean.getActionById(actionId)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    if(action.getEndDate==null) //Если действие закрыто (перевод)
+    if (action.getEndDate == null) //Если действие закрыто (перевод)
       mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.RegistrationFormView])
     else
       mapper.getSerializationConfig().setSerializationView(classOf[HospitalBedViews.MoveView])
@@ -743,7 +992,7 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   //Снятие пациента с койки
-    def callOffHospitalBedForPatient(actionId: Int, authData: AuthData) = {
+  def callOffHospitalBedForPatient(actionId: Int, authData: AuthData) = {
     hospitalBedBean.callOffHospitalBedForPatient(actionId, authData)
   }
 
@@ -797,13 +1046,13 @@ class WebMisRESTImpl  extends WebMisREST
     val action = actionBean.getActionById(lastAction)
 
     // Проверяем входные значения
-    if(actionBean.getActionsByTypeFlatCodeAndEventId(eventId, "leaved").size < 1)
+    if (actionBean.getActionsByTypeFlatCodeAndEventId(eventId, "leaved").size < 1)
       throw new CoreException("Для закрытия последнего движения требуется наличие выписки")
-    if(date.before(action.getBegDate))
+    if (date.before(action.getBegDate))
       throw new CoreException("Дата закрытия движения не может быть раньше даты начала движения")
 
     action.setEndDate(date)
-    action.setStatus(2)           //A little piece of magic - 2 is a status of CLOSED action
+    action.setStatus(2) //A little piece of magic - 2 is a status of CLOSED action
     actionBean.updateAction(action)
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[ActionDataContainer])
@@ -825,7 +1074,7 @@ class WebMisRESTImpl  extends WebMisREST
     //val result = appealBean.getAppealById(appealId)
     //val appeal = result.iterator.next()._1
     val quotaList = dbClientQuoting.getAllClientQuotingForPatient(appeal.getPatient.getId.intValue(),
-      request.page-1,
+      request.page - 1,
       request.limit,
       request.sortingFieldInternal,
       request.sortingMethod,
@@ -851,8 +1100,8 @@ class WebMisRESTImpl  extends WebMisREST
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //requestData.setRecordsCount(dbCustomQueryBean.getCountOfAppealsWithFilter(requestData.filter))
-    val map = dbCustomQueryBean.getAllAppealsWithFilter( requestData.limit,
-      requestData.page-1,
+    val map = dbCustomQueryBean.getAllAppealsWithFilter(requestData.limit,
+      requestData.page - 1,
       requestData.sortingFieldInternal,
       requestData.sortingMethod,
       requestData.filter,
@@ -864,11 +1113,11 @@ class WebMisRESTImpl  extends WebMisREST
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     new AllPersonsListData(dbStaff.getAllPersonsByRequest(requestData.limit,
-                                                          requestData.page-1,
-                                                          requestData.sortingFieldInternal,
-                                                          requestData.filter.unwrap(),
-                                                          requestData.rewriteRecordsCount _),
-                           requestData)
+      requestData.page - 1,
+      requestData.sortingFieldInternal,
+      requestData.filter.unwrap(),
+      requestData.rewriteRecordsCount _),
+      requestData)
 
 
     /*requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
@@ -886,17 +1135,18 @@ class WebMisRESTImpl  extends WebMisREST
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbOrgStructureBean.getCountAllOrgStructuresWithFilter(requestData.filter))
     val list = new AllDepartmentsListData(dbOrgStructureBean.getAllOrgStructuresByRequest(requestData.limit,
-                                                                                          requestData.page-1,
-                                                                                          requestData.sortingFieldInternal,
-                                                                                          requestData.filter.unwrap()
-                                                                                        ),
-                                          requestData)
+      requestData.page - 1,
+      requestData.sortingFieldInternal,
+      requestData.filter.unwrap()
+    ),
+      requestData)
     list
   }
 
-  def getAllDepartmentsByHasBeds(hasBeds: String, hasPatients: String) = { //Для медипада
-  val flgBeds = hasBeds.toLowerCase.compareTo("true")==0 || hasBeds.toLowerCase.compareTo("yes")==0
-    val flgPatients = hasPatients.toLowerCase.compareTo("true")==0 || hasPatients.toLowerCase.compareTo("yes")==0
+  def getAllDepartmentsByHasBeds(hasBeds: String, hasPatients: String) = {
+    //Для медипада
+    val flgBeds = hasBeds.toLowerCase.compareTo("true") == 0 || hasBeds.toLowerCase.compareTo("yes") == 0
+    val flgPatients = hasPatients.toLowerCase.compareTo("true") == 0 || hasPatients.toLowerCase.compareTo("yes") == 0
     val filter = new DepartmentsDataFilter(flgBeds, flgPatients)
     new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", filter.unwrap()), null)
   }
@@ -907,11 +1157,11 @@ class WebMisRESTImpl  extends WebMisREST
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbCustomQueryBean.getCountDiagnosticsWithFilter(requestData.filter))
     var actions: java.util.List[Action] = null
-    if(requestData.getRecordsCount()>0) {
-      actions = dbCustomQueryBean.getAllDiagnosticsWithFilter(requestData.page-1,
-                                                              requestData.limit,
-                                                              requestData.sortingFieldInternal,
-                                                              requestData.filter.unwrap())
+    if (requestData.getRecordsCount() > 0) {
+      actions = dbCustomQueryBean.getAllDiagnosticsWithFilter(requestData.page - 1,
+        requestData.limit,
+        requestData.sortingFieldInternal,
+        requestData.filter.unwrap())
     }
     var ajtList = new ju.LinkedList[(Action, JobTicket)]()
     if (actions != null && actions.size() > 0) {
@@ -938,8 +1188,8 @@ class WebMisRESTImpl  extends WebMisREST
     }
 
     new FreePersonsListDataFilter()
-    val list = new FreePersonsListData(dbStaff.getEmptyPersonsByRequest( requestData.limit,
-      requestData.page-1,
+    val list = new FreePersonsListData(dbStaff.getEmptyPersonsByRequest(requestData.limit,
+      requestData.page - 1,
       requestData.sortingFieldInternal,
       requestData.filter.unwrap(),
       citoActionsCount),
@@ -954,23 +1204,23 @@ class WebMisRESTImpl  extends WebMisREST
 
     val result = count match {
       case 0 => {
-        val actionType = if(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getGroupId()> 0){
+        val actionType = if (request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getGroupId() > 0) {
           actionTypeBean.getActionTypeById(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getGroupId())
-        } else if ( request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode() != null  &&
-                    request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode().compareTo("") != 0) {
+        } else if (request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode() != null &&
+          request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode().compareTo("") != 0) {
           val types = actionTypeBean.getActionTypesByCode(request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getCode())
-          if (types!=null && types.size()>0){
+          if (types != null && types.size() > 0) {
             val mnems = request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getMnemonics
             types.find(p => {
-               if(mnems!=null && mnems.size()>0){
-                 val ress = mnems.find(mnem => mnem.compareTo(p.getMnemonic)==0).getOrElse(null)
-                 if (ress!=null)true else false
-               }
-               else {
-                 p.getMnemonic.compareTo("")==0
-               }
+              if (mnems != null && mnems.size() > 0) {
+                val ress = mnems.find(mnem => mnem.compareTo(p.getMnemonic) == 0).getOrElse(null)
+                if (ress != null) true else false
+              }
+              else {
+                p.getMnemonic.compareTo("") == 0
+              }
             }).getOrElse(null)
-          }  else null
+          } else null
         } else null
 
         //empty action property
@@ -1000,29 +1250,29 @@ class WebMisRESTImpl  extends WebMisREST
         //Для направлений на лабисследования, консультации и инструментальные иследования выводить поле "Направивший врач"
         val mnemonics = request.filter.asInstanceOf[ActionTypesListRequestDataFilter].getMnemonics
         val flgDiagnostics = (
-          mnemonics!=null &&
-          mnemonics.size()>0 &&
-          (mnemonics.filter(p=>(p.toUpperCase().compareTo("LAB")==0 ||
-                                p.toUpperCase().compareTo("BAK_LAB")==0 ||
-                                p.toUpperCase().compareTo("DIAG")==0 ||
-                                p.toUpperCase().compareTo("CONS")==0))
-          ).size>0
-        )
+          mnemonics != null &&
+            mnemonics.size() > 0 &&
+            (mnemonics.filter(p => (p.toUpperCase().compareTo("LAB") == 0 ||
+              p.toUpperCase().compareTo("BAK_LAB") == 0 ||
+              p.toUpperCase().compareTo("DIAG") == 0 ||
+              p.toUpperCase().compareTo("CONS") == 0))
+              ).size > 0
+          )
 
-        if(flgDiagnostics){
+        if (flgDiagnostics) {
           listForSummary.add(ActionWrapperInfo.executorId)
           listForSummary.add(ActionWrapperInfo.assignerId)
         }
         var json = new JSONCommonData()
         if (actionType != null) {
-          json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary,  null, null, patientBean.getPatientById(patientId))
+          json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary, null, null, patientBean.getPatientById(patientId))
         }
         json.setRequestData(request)
         json
       }
-      case _  => {
+      case _ => {
         val mapper: ObjectMapper = new ObjectMapper()
-        mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.OneLevelView]);  //плоская структурв
+        mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.OneLevelView]); //плоская структурв
         mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter _))
       }
     }
@@ -1031,13 +1281,15 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getListOfActionTypes(request: ListDataRequest) = {
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig().setSerializationView(classOf[ActionTypesListDataViews.DefaultView]);   //дерево
-    mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter _))
+    mapper.getSerializationConfig.withView(classOf[ActionTypesListDataViews.DefaultView]); //дерево
+    // Данный параметр использовался в прошлой реализации, в текущей он не требуется
+    request.filter.asInstanceOf[ActionTypesListRequestDataFilter].setCode(null)
+    mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter))
   }
 
   //********* Диагнозтические исследования **********
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    val json = directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB", auth,  postProcessingForDiagnosis _)
+    val json = directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB", auth, postProcessingForDiagnosis _)
     json.getData().map(entity => entity.getId().intValue()).foreach(a_id => {
       val action = actionBean.getActionById(a_id)
       if (action.getStatus == 2 && !action.getIsUrgent) {
@@ -1049,15 +1301,15 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB", auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB", auth, postProcessingForDiagnosis _) // postProcessingForDiagnosis
   }
 
   def insertInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG", auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+    directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG", auth, postProcessingForDiagnosis _) // postProcessingForDiagnosis
   }
 
   def modifyInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
-    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG", auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
+    directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG", auth, postProcessingForDiagnosis _) // postProcessingForDiagnosis
   }
 
   def insertConsultation(request: ConsultationRequestData, authData: AuthData) = {
@@ -1096,7 +1348,7 @@ class WebMisRESTImpl  extends WebMisREST
     var a = actionBean.getActionById(actionId)
     var action19 = actionBean.getEvent29AndAction19ForAction(a)
     val apva = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
-    val filter = new FreePersonsListDataFilter( 0,
+    val filter = new FreePersonsListDataFilter(0,
       a.getExecutor.getId.intValue(),
       a.getActionType.getId.intValue(),
       a.getPlannedEndDate.getTime,
@@ -1110,6 +1362,7 @@ class WebMisRESTImpl  extends WebMisREST
       null
     }
   }
+
   //*********  **********
 
   def getFlatDirectories(request: FlatDirectoryRequestData) = {
@@ -1118,7 +1371,7 @@ class WebMisRESTImpl  extends WebMisREST
         a.put(Integer.valueOf(b._1), Integer.valueOf(b._2))
         a
       })
-    val flatRecords = flatDirectoryBean.getFlatDirectoriesWithFilterRecords(  request.page,
+    val flatRecords = flatDirectoryBean.getFlatDirectoriesWithFilterRecords(request.page,
       request.limit,
       sorting,
       request.filter,
@@ -1130,12 +1383,12 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getAllMkbs(request: ListDataRequest, auth: AuthData) = {
     request.setRecordsCount(dbCustomQueryBean.getCountOfMkbsWithFilter(request.filter))
-    val mkbs = dbCustomQueryBean.getAllMkbsWithFilter(  request.page,
+    val mkbs = dbCustomQueryBean.getAllMkbsWithFilter(request.page,
       request.limit,
       request.sortingFieldInternal,
       request.filter.unwrap())
 
-    val mkbs_display = dbCustomQueryBean.getDistinctMkbsWithFilter (request.sortingFieldInternal,
+    val mkbs_display = dbCustomQueryBean.getDistinctMkbsWithFilter(request.sortingFieldInternal,
       request.filter.unwrap())
 
     val mapper: ObjectMapper = new ObjectMapper()
@@ -1145,10 +1398,10 @@ class WebMisRESTImpl  extends WebMisREST
     set.add("subgroup")
     set.add("mkb")
 
-    if(set.contains(request.filter.asInstanceOf[MKBListRequestDataFilter].view)) {
-      mapper.getSerializationConfig().setSerializationView(classOf[AllMKBListDataViews.OneLevelView]);   //плоская структурв
+    if (set.contains(request.filter.asInstanceOf[MKBListRequestDataFilter].view)) {
+      mapper.getSerializationConfig().setSerializationView(classOf[AllMKBListDataViews.OneLevelView]); //плоская структурв
     } else {
-      mapper.getSerializationConfig().setSerializationView(classOf[AllMKBListDataViews.DefaultView]);    //дерево
+      mapper.getSerializationConfig().setSerializationView(classOf[AllMKBListDataViews.DefaultView]); //дерево
     }
     mapper.writeValueAsString(new AllMKBListData(mkbs, mkbs_display, request))
   }
@@ -1162,96 +1415,111 @@ class WebMisRESTImpl  extends WebMisREST
     new ThesaurusListData(thesaurus, request)
   }
 
-  def getDictionary(request: ListDataRequest, dictName: String/*, auth: AuthData*/) = {
+  def getDictionary(request: ListDataRequest, dictName: String /*, auth: AuthData*/) = {
 
     val mapper: ObjectMapper = new ObjectMapper()
 
     val list: java.util.LinkedList[Object] = dictName match {
-      case null => {null}
-      case "bloodTypes" => { //Группы крови
+      case null => {
+        null
+      }
+      case "bloodTypes" |
+           "bloodPhenotype" => {
+        //Группы крови
+        val tableName: String = if (dictName.equals("bloodTypes")) "RbBloodType" else "RbBloodPhenotype"
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
-        request.setRecordsCount(dbBloodTypeBean.getCountOfBloodTypesWithFilter(request.filter))
-        dbBloodTypeBean.getAllBloodTypesWithFilter( request.page-1,
+        request.setRecordsCount(dbBloodTypeBean.getCountOfBloodTypesWithFilter(request.filter, tableName))
+        dbBloodTypeBean.getAllBloodTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
-          request.filter.unwrap())
+          request.filter.unwrap(), tableName)
       }
-      case "relationships" => { //Типы родственных связей
+      case "relationships" => {
+        //Типы родственных связей
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRelationTypeBean.getCountOfRelationsWithFilter(request.filter))
-        dbRelationTypeBean.getAllRelationsWithFilter( request.page-1,
+        dbRelationTypeBean.getAllRelationsWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "citizenships" => { //Гражданство
+      case "citizenships" => {
+        //Гражданство
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
-        dbRbSocTypeBean.getAllSocStatusTypesWithFilter( request.page-1,
+        dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "citizenships2" => { //Второе гражданство
+      case "citizenships2" => {
+        //Второе гражданство
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
-        dbRbSocTypeBean.getAllSocStatusTypesWithFilter( request.page-1,
+        dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "socStatus" => { //Соц статусы
+      case "socStatus" => {
+        //Соц статусы
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
-        dbRbSocTypeBean.getAllSocStatusTypesWithFilter( request.page-1,
+        dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "TFOMS" => { //ТФОМС
+      case "TFOMS" => {
+        //ТФОМС
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.TFOMSView]);
         request.setRecordsCount(dbOrganizationBean.getCountOfOrganizationWithFilter(request.filter))
-        dbOrganizationBean.getAllOrganizationWithFilter(request.page-1,
+        dbOrganizationBean.getAllOrganizationWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "clientDocument" => {  //Типы документов, удостоверяющих личность
+      case "clientDocument" => {
+        //Типы документов, удостоверяющих личность
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.ClientDocumentView]);
         request.setRecordsCount(dbDocumentTypeBean.getCountOfDocumentTypesWithFilter(request.filter))
-        dbDocumentTypeBean.getAllDocumentTypesWithFilter( request.page-1,
+        dbDocumentTypeBean.getAllDocumentTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "insurance" => { //Страховые компании
+      case "insurance" => {
+        //Страховые компании
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.InsuranceView]);
         request.setRecordsCount(dbOrganizationBean.getCountOfOrganizationWithFilter(request.filter))
-        dbOrganizationBean.getAllOrganizationWithFilter(request.page-1,
+        dbOrganizationBean.getAllOrganizationWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "policyTypes" => { //Тип полиса
+      case "policyTypes" => {
+        //Тип полиса
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.PolicyTypeView]);
         request.setRecordsCount(dbRbPolicyTypeBean.getCountOfRbPolicyTypeWithFilter(request.filter))
-        dbRbPolicyTypeBean.getAllRbPolicyTypeWithFilter(request.page-1,
+        dbRbPolicyTypeBean.getAllRbPolicyTypeWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "disabilityTypes" => {   //Тип инвалидности
+      case "disabilityTypes" => {
+        //Тип инвалидности
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
-        dbRbSocTypeBean.getAllSocStatusTypesWithFilter( request.page-1,
+        dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "KLADR" => {    //адреса по кладру
+      case "KLADR" => {
+        //адреса по кладру
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.KLADRView]);
         request.setRecordsCount(dbSchemeKladrBean.getCountOfKladrRecordsWithFilter(request.filter))
-        dbSchemeKladrBean.getAllKladrRecordsWithFilter( request.page-1,
+        dbSchemeKladrBean.getAllKladrRecordsWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
@@ -1259,73 +1527,80 @@ class WebMisRESTImpl  extends WebMisREST
       case "valueDomain" => {
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.ValueDomainView]);
         //request.setRecordsCount(dbSchemeKladrBean.getCountOfKladrRecordsWithFilter(request.filter))
-        actionPropertyTypeBean.getActionPropertyTypeValueDomainsWithFilter( request.page-1,
+        actionPropertyTypeBean.getActionPropertyTypeValueDomainsWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "specialities" => {  //  Специальности
+      case "specialities" => {
+        //  Специальности
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView]);
         request.setRecordsCount(dbSpeciality.getCountOfBloodTypesWithFilter(request.filter))
-        dbSpeciality.getAllSpecialitiesWithFilter(request.page-1,
+        dbSpeciality.getAllSpecialitiesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "contactTypes" => {  //  Типы контактов
+      case "contactTypes" => {
+        //  Типы контактов
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
         request.setRecordsCount(dbRbContactType.getCountOfAllRbContactTypesWithFilter(request.filter))
-        dbRbContactType.getAllRbContactTypesWithFilter( request.page-1,
+        dbRbContactType.getAllRbContactTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       }
-      case "requestTypes" => {  //  Типы обращений
+      case "requestTypes" => {
+        //  Типы обращений
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.RequestTypesView])
-        dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page-1,
+        dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
           request.rewriteRecordsCount _)
       }
-      case "finance" => {  //  Типы оплаты
+      case "finance" => {
+        //  Типы оплаты
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbRbFinance.getAllRbFinanceWithFilter(request.page-1,
+        dbRbFinance.getAllRbFinanceWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
           request.rewriteRecordsCount _)
       }
-      case "quotaStatus" => { //   Статусы квот
+      case "quotaStatus" => {
+        //   Статусы квот
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page-1,
+        dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
           request.rewriteRecordsCount _)
       }
-      case "tissueTypes" => {  //Типы исследования
+      case "tissueTypes" => {
+        //Типы исследования
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbRbTissueType.getAllRbTissueTypeWithFilter(request.page-1,
+        dbRbTissueType.getAllRbTissueTypeWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
           request.rewriteRecordsCount _)
       }
-      case "operationTypes" => {  //Типы операций
+      case "operationTypes" => {
+        //Типы операций
         mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
-        dbRbOperationType.getAllRbOperationTypeWithFilter(request.page-1,
-                                                          request.limit,
-                                                          request.sortingFieldInternal,
-                                                          request.filter.unwrap(),
-                                                          request.rewriteRecordsCount _)
+        dbRbOperationType.getAllRbOperationTypeWithFilter(request.page - 1,
+          request.limit,
+          request.sortingFieldInternal,
+          request.filter.unwrap(),
+          request.rewriteRecordsCount _)
       }
     }
     mapper.writeValueAsString(new DictionaryListData(list, request))
   }
 
   def getQuotaTypes(request: ListDataRequest) = {
-    val quotaTypes = dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page-1,
+    val quotaTypes = dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page - 1,
       request.limit,
       request.sortingFieldInternal,
       request.filter.unwrap(),
@@ -1347,7 +1622,7 @@ class WebMisRESTImpl  extends WebMisREST
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.getSerializationConfig().setSerializationView(classOf[DictionaryDataViews.DefaultView])
 
-    val list = dbEventTypeBean.getEventTypesByRequestTypeIdAndFinanceId(request.page-1,
+    val list = dbEventTypeBean.getEventTypesByRequestTypeIdAndFinanceId(request.page - 1,
       request.limit,
       request.sortingFieldInternal,
       request.filter.unwrap(),
@@ -1357,7 +1632,7 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def getContracts(eventTypeId: Int, showDeleted: Boolean, showExpired: Boolean) = {
-    if(eventTypeId < 1)
+    if (eventTypeId < 1)
       throw new CoreException("Идентификатор типа события не может быть меньше 1")
 
     val e = dbEventTypeBean.getEventTypeById(eventTypeId)
@@ -1375,14 +1650,14 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
 
-    val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
+    val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request, request.filter)
     //пересоберем мапу и сгруппируем по жобТикету
     var actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
     var map = new mutable.LinkedHashMap[JobTicket, LinkedList[(Action, ActionTypeTissueType)]]
-    if (res != null) {
-      request.rewriteRecordsCount(res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].size())
-      var firstJobTicket = res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].iterator.next()._3
-      res.asInstanceOf[java.util.LinkedList[(Action, ActionTypeTissueType, JobTicket)]].foreach(f => {
+    if (!res.isEmpty) {
+      request.rewriteRecordsCount(res.size())
+      var firstJobTicket = res.iterator.next()._3
+      res.foreach(f => {
         if (firstJobTicket.getId.intValue() == f._3.getId.intValue()) {
           actions.add((f._1, f._2))
         } else {
@@ -1398,9 +1673,9 @@ class WebMisRESTImpl  extends WebMisREST
       if (actions.size() > 0 || map.size == 0) map += (firstJobTicket -> actions)
     }
     new TakingOfBiomaterialData(map,
-                                hospitalBedBean.getLastMovingActionForEventId _,
-                                actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
-                                request)
+      hospitalBedBean.getLastMovingActionForEventId _,
+      actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds _,
+      request)
   }
 
 
@@ -1414,14 +1689,14 @@ class WebMisRESTImpl  extends WebMisREST
 
   def deletePatientInfo(id: Int) = patientBean.deletePatientInfo(id)
 
-  def getDiagnosesByAppeal (appealId: Int, authData: AuthData) = diagnosisBean.getDiagnosesByAppeal(appealId)
+  def getDiagnosesByAppeal(appealId: Int, authData: AuthData) = diagnosisBean.getDiagnosesByAppeal(appealId)
 
-  def getBloodTypesHistory (patientId: Int, authData: AuthData) = patientBean.getBloodHistory(patientId)
+  def getBloodTypesHistory(patientId: Int, authData: AuthData) = patientBean.getBloodHistory(patientId)
 
   def insertBloodTypeForPatient(patientId: Int, data: BloodHistoryData, authData: AuthData) = {
     patientBean.insertBloodTypeForPatient(patientId,
-                                          data,
-                                          authData)
+      data,
+      authData)
   }
 
   def getMonitoringInfoByAppeal(eventId: Int, condition: Int, authData: AuthData) = {
@@ -1463,18 +1738,24 @@ class WebMisRESTImpl  extends WebMisREST
     var templates = dbRBPrintTemplateBan getRbPrintTemplatesByContexts contexts.asScala.toArray
 
     // Проводим фильтрацию по заданным значениям
-    if(fRender != null)
+    if (fRender != null)
       templates = templates.filter(_.getRender == fRender)
 
 
     // Убираем значения не заданных полей, если задан параметр fields
-    if(fields != null && !fields.isEmpty) {
+    if (fields != null && !fields.isEmpty) {
       templates.foreach(template => {
         classOf[RbPrintTemplate].getDeclaredFields.foreach(f => {
-          if(!fields.contains(f.getName)) {
+          if (!fields.contains(f.getName)) {
             f.getType match {
-              case t if(t.equals(classOf[String])) => {f.setAccessible(true); f.set(template, null)}
-              case t if(t.equals(classOf[Integer])) => {f.setAccessible(true); f.set(template, null)}
+              case t if (t.equals(classOf[String])) => {
+                f.setAccessible(true);
+                f.set(template, null)
+              }
+              case t if (t.equals(classOf[Integer])) => {
+                f.setAccessible(true);
+                f.set(template, null)
+              }
               case _ => {}
             }
           }
@@ -1487,7 +1768,7 @@ class WebMisRESTImpl  extends WebMisREST
 
   def getOrganizationById(id: Int, authData: AuthData): OrganizationContainer = {
     val org = dbOrganizationBean.getOrganizationById(id)
-    if(org != null)
+    if (org != null)
       new OrganizationContainer(org)
     else
       throw new CoreException("Cannot find Organization with id=" + id)
@@ -1519,7 +1800,7 @@ class WebMisRESTImpl  extends WebMisREST
   }
 
   def deleteAutoSaveField(id: String, auth: AuthData) {
-   dbAutoSaveStorageLocal.delete(id, auth.getUserId)
+    dbAutoSaveStorageLocal.delete(id, auth.getUserId)
   }
 
   override def getRlsById(id: Int): Nomenclature = {

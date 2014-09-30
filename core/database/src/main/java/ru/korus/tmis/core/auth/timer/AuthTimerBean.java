@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.auth.timer;
 
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
-import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
@@ -28,8 +27,8 @@ public class AuthTimerBean implements AuthTimerBeanLocal {
     void init(){
         // Таймер для удаления токенов с истекшим сроком действия
         timerService.createIntervalTimer(
-                ConfigManager.TmisAuth().AuthTokenPeriod(),
-                ConfigManager.TmisAuth().AuthTokenPeriod(),
+                authStorageBeanLocal.getAuthTokenLifeTime(),
+                authStorageBeanLocal.getAuthTokenLifeTime(),
                 null);
     }
 

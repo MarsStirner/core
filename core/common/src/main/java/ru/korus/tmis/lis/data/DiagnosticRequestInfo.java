@@ -1,189 +1,187 @@
 package ru.korus.tmis.lis.data;
 
-import javax.xml.bind.annotation.XmlElement;
-import java.util.Date;
+import org.joda.time.DateTime;
+import ru.korus.tmis.core.entity.model.Staff;
+
+import java.io.Serializable;
 
 /**
- * Информация о направлении
+ * Author:      Dmitriy E. Nosov <br>
+ * Date:        20.11.13, 19:38 <br>
+ * Company:     Korus Consulting IT<br>
+ * Description:  <br>
  */
-public class DiagnosticRequestInfo {
-    /**
-     * Уникальный идентификатор направления в МИС (Action.id)
-     */
-    private int id;
+public class DiagnosticRequestInfo implements Serializable {
 
-    /**
-     * Дата создания направления врачом
-     */
-    private Date creationDate;
+    public static final long serialVersionUID = 1L;
 
-    /**
-     * Cрок беременности пациентки (в днях)
-     */
-    private Integer pregnancyDaysMin;
-    private Integer pregnancyDaysMax;
+    private int orderMisId;
+    private String orderCaseId;
+    private int orderFinanceId;
+    private DateTime orderMisDate;
+    private int orderPregnatMin;
+    private int orderPregnatMax;
+    private String orderDiagCode;
+    private String orderDiagText;
+    private String orderComment;
+    private String orderDepartmentName;
+    private String orderDepartmentMisCode;
+    private String orderDoctorFamily;
+    private String orderDoctorName;
+    private String orderDoctorPatronum;
+    private int orderDoctorMisId;
+    private Staff orderDoctorMis;
 
-    /**
-     * Код болезни по МКБ
-     * (последний из обоснования; если нет, то из первичного осмотра)
-     */
-    private String mkbCode;
-
-    /**
-     * Текстовое описание диагноза
-     * (последний из обоснования; если нет, то из первичного осмотра)
-     */
-    private String diagnosis;
-
-    /**
-     * Произвольный текстовый комментарий к направлению
-     */
-    private String comment;
-
-    /**
-     * Название отделения
-     */
-    private String departmentName;
-
-    /**
-     * Уникальный код отделение
-     */
-    private String departmentCode;
-
-    /**
-     * Фамилия назначившего врача
-     */
-    private String doctorLastName;
-
-    /**
-     * Имя назначившего врача
-     */
-    private String doctorFirstName;
-
-    /**
-     * Отчетство назначившего врача
-     */
-    private String doctorMiddleName;
-
-    /**
-     * Уникальный код назначившего врача
-     */
-    private String doctorCode;
-
-    @XmlElement(name = "orderMisId")
-    public int getId() {
-        return id;
+    public DiagnosticRequestInfo() {
     }
 
-    public void setId(int id) {
-        this.id = id;
+    public int getOrderMisId() {
+        return orderMisId;
     }
 
-    @XmlElement(name = "orderMisDate", required = true)
-    public Date getCreationDate() {
-        return creationDate;
+    public void setOrderMisId(int orderMisId) {
+        this.orderMisId = orderMisId;
     }
 
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
+    public String getOrderCaseId() {
+        return orderCaseId;
     }
 
-    @XmlElement(name = "orderPregnatMin")
-    public int getPregnancyDaysMin() {
-        return pregnancyDaysMin;
+    public void setOrderCaseId(String orderCaseId) {
+        this.orderCaseId = orderCaseId;
     }
 
-    public void setPregnancyDaysMin(int pregnancyWeeks) {
-        this.pregnancyDaysMin = pregnancyWeeks;
+    public int getOrderFinanceId() {
+        return orderFinanceId;
     }
 
-    @XmlElement(name = "orderPregnatMax")
-    public int getPregnancyDaysMax() {
-        return pregnancyDaysMax;
+    public void setOrderFinanceId(int orderFinanceId) {
+        this.orderFinanceId = orderFinanceId;
     }
 
-    public void setPregnancyDaysMax(int pregnancyWeeks) {
-        this.pregnancyDaysMax = pregnancyWeeks;
+    public DateTime getOrderMisDate() {
+        return orderMisDate;
     }
 
-    @XmlElement(name = "orderDiagCode", required = true)
-    public String getMkbCode() {
-        return mkbCode;
+    public void setOrderMisDate(DateTime orderMisDate) {
+        this.orderMisDate = orderMisDate;
     }
 
-    public void setMkbCode(String mkbCode) {
-        this.mkbCode = mkbCode;
+    public int getOrderPregnatMin() {
+        return orderPregnatMin;
     }
 
-    @XmlElement(name = "orderDiagText", required = true)
-    public String getDiagnosis() {
-        return diagnosis;
+    public void setOrderPregnatMin(int orderPregnatMin) {
+        this.orderPregnatMin = orderPregnatMin;
     }
 
-    public void setDiagnosis(String diagnosis) {
-        this.diagnosis = diagnosis;
+    public int getOrderPregnatMax() {
+        return orderPregnatMax;
     }
 
-    @XmlElement(name = "orderComment")
-    public String getComment() {
-        return comment;
+    public void setOrderPregnatMax(int orderPregnatMax) {
+        this.orderPregnatMax = orderPregnatMax;
     }
 
-    public void setComment(String comment) {
-        this.comment = comment;
+    public String getOrderDiagCode() {
+        return orderDiagCode;
     }
 
-    @XmlElement(name = "orderDepartmentName")
-    public String getDepartmentName() {
-        return departmentName;
+    public void setOrderDiagCode(String orderDiagCode) {
+        this.orderDiagCode = orderDiagCode;
     }
 
-    public void setDepartmentName(String departmentName) {
-        this.departmentName = departmentName;
+    public String getOrderDiagText() {
+        return orderDiagText;
     }
 
-    @XmlElement(name = "orderDepartmentMisId", required = true)
-    public String getDepartmentCode() {
-        return departmentCode;
+    public void setOrderDiagText(String orderDiagText) {
+        this.orderDiagText = orderDiagText;
     }
 
-    public void setDepartmentCode(String departmentCode) {
-        this.departmentCode = departmentCode;
+    public String getOrderComment() {
+        return orderComment;
     }
 
-    @XmlElement(name = "orderDoctorFamily")
-    public String getDoctorLastName() {
-        return doctorLastName;
+    public void setOrderComment(String orderComment) {
+        this.orderComment = orderComment;
     }
 
-    public void setDoctorLastName(String doctorLastName) {
-        this.doctorLastName = doctorLastName;
+    public String getOrderDepartmentName() {
+        return orderDepartmentName;
     }
 
-    @XmlElement(name = "orderDoctorName")
-    public String getDoctorFirstName() {
-        return doctorFirstName;
+    public void setOrderDepartmentName(String orderDepartmentName) {
+        this.orderDepartmentName = orderDepartmentName;
     }
 
-    public void setDoctorFirstName(String doctorFirstName) {
-        this.doctorFirstName = doctorFirstName;
+    public String getOrderDepartmentMisCode() {
+        return orderDepartmentMisCode;
     }
 
-    @XmlElement(name = "orderDoctorPatronum")
-    public String getDoctorMiddleName() {
-        return doctorMiddleName;
+    public void setOrderDepartmentMisCode(String orderDepartmentMisCode) {
+        this.orderDepartmentMisCode = orderDepartmentMisCode;
     }
 
-    public void setDoctorMiddleName(String doctorMiddleName) {
-        this.doctorMiddleName = doctorMiddleName;
+    public String getOrderDoctorFamily() {
+        return orderDoctorFamily;
     }
 
-    @XmlElement(name = "orderDoctorMisId", required = true)
-    public String getDoctorCode() {
-        return doctorCode;
+    public void setOrderDoctorFamily(String orderDoctorFamily) {
+        this.orderDoctorFamily = orderDoctorFamily;
     }
 
-    public void setDoctorCode(String doctorCode) {
-        this.doctorCode = doctorCode;
+    public String getOrderDoctorName() {
+        return orderDoctorName;
+    }
+
+    public void setOrderDoctorName(String orderDoctorName) {
+        this.orderDoctorName = orderDoctorName;
+    }
+
+    public String getOrderDoctorPatronum() {
+        return orderDoctorPatronum;
+    }
+
+    public void setOrderDoctorPatronum(String orderDoctorPatronum) {
+        this.orderDoctorPatronum = orderDoctorPatronum;
+    }
+
+    public int getOrderDoctorMisId() {
+        return orderDoctorMisId;
+    }
+
+    public void setOrderDoctorMisId(int orderDoctorMisId) {
+        this.orderDoctorMisId = orderDoctorMisId;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("DiagnosticRequestInfo{");
+        sb.append("orderMisId=").append(orderMisId);
+        sb.append(", orderCaseId='").append(orderCaseId).append('\'');
+        sb.append(", orderFinanceId=").append(orderFinanceId);
+        sb.append(", orderMisDate=").append(orderMisDate);
+        sb.append(", orderPregnatMin=").append(orderPregnatMin);
+        sb.append(", orderPregnatMax=").append(orderPregnatMax);
+        sb.append(", orderDiagCode='").append(orderDiagCode).append('\'');
+        sb.append(", orderDiagText='").append(orderDiagText).append('\'');
+        sb.append(", orderComment='").append(orderComment).append('\'');
+        sb.append(", orderDepartmentName='").append(orderDepartmentName).append('\'');
+        sb.append(", orderDepartmentMisCode='").append(orderDepartmentMisCode).append('\'');
+        sb.append(", orderDoctorFamily='").append(orderDoctorFamily).append('\'');
+        sb.append(", orderDoctorName='").append(orderDoctorName).append('\'');
+        sb.append(", orderDoctorPatronum='").append(orderDoctorPatronum).append('\'');
+        sb.append(", orderDoctorMisId=").append(orderDoctorMisId);
+        sb.append('}');
+        return sb.toString();
+    }
+
+    public Staff getOrderDoctorMis() {
+        return orderDoctorMis;
+    }
+
+    public void setOrderDoctorMis(Staff orderDoctorMis) {
+        this.orderDoctorMis = orderDoctorMis;
     }
 }

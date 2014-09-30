@@ -11,6 +11,10 @@ import java.io.Serializable;
  */
 @Entity
 @Table(name = "bbtOrganism_SensValues")
+@NamedQueries(
+        {
+                @NamedQuery(name = "BbtOrganismSensValues.deleteBy_bbtResultOrganismId", query = "DELETE FROM BbtOrganismSensValues a WHERE a.bbtResultOrganism.id = :id")
+        })
 public class BbtOrganismSensValues implements Serializable {
 
     @Id

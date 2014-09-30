@@ -18,7 +18,6 @@
 
     <build>
         <plugins>
-
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -33,25 +32,23 @@
                     </archive>
                     <failOnMissingWebXml>false</failOnMissingWebXml>
                     <attachClasses>true</attachClasses>
+                    <classesClassifier>classes</classesClassifier>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>**/web.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 
 
     <dependencies>
-        <dependency>
-            <groupId>mysql</groupId>
-            <artifactId>mysql-connector-java</artifactId>
-            <version>5.1.6</version>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.11</version>
-        </dependency>
-
 
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
@@ -64,8 +61,17 @@
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
             <version>${version.tmis.core}</version>
-            <type>jar</type>
+            <type>ejb</type>
         </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-business</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>ejb</type>
+        </dependency>
+
+
     </dependencies>
 
 </project>

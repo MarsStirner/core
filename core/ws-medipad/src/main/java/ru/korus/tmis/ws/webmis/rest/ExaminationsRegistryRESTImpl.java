@@ -33,12 +33,15 @@ public class ExaminationsRegistryRESTImpl {
     private AuthData auth;
     private String callback;
 
+
+
     public ExaminationsRegistryRESTImpl(WebMisREST wsImpl, int eventId, int patientId, String callback, AuthData auth) {
         this.eventId = eventId;
         this.patientId = patientId;
         this.auth = auth;
         this.wsImpl = wsImpl;
         this.callback = callback;
+
     }
 
     /**
@@ -52,11 +55,10 @@ public class ExaminationsRegistryRESTImpl {
     @POST
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public  Object insertPrimaryMedExamForPatient(JSONCommonData data) throws CoreException {
+    public  Object insertPrimaryMedExamForPatient(@Context UriInfo uri, JSONCommonData data) throws CoreException {
         if(eventId < 1)
             throw new CoreException("This service cannot be used without Event id");
-
-        return new JSONWithPadding(wsImpl.insertPrimaryMedExamForPatient(this.eventId, data, this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.insertPrimaryMedExamForPatient(this.eventId, data, this.auth, uri == null ? null : uri.getBaseUri()), this.callback);
     }
 
     /**
@@ -73,9 +75,10 @@ public class ExaminationsRegistryRESTImpl {
     @Path("/{actionId}")
     @Consumes("application/json")
     @Produces("application/x-javascript")
-    public  Object modifyPrimaryMedExamForPatient(JSONCommonData data,
+    public  Object modifyPrimaryMedExamForPatient(@Context UriInfo uri, JSONCommonData data,
                                                   @PathParam("actionId") int actionId) throws CoreException {
-        return new JSONWithPadding(wsImpl.modifyPrimaryMedExamForPatient(actionId, data, this.auth), this.callback);
+
+        return new JSONWithPadding(wsImpl.modifyPrimaryMedExamForPatient(actionId, data, this.auth, uri == null ? null : uri.getBaseUri()), this.callback);
     }
 
     /**

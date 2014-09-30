@@ -122,4 +122,10 @@ public interface AuthStorageBeanLocal {
     @Deprecated
     void releaseLock(Integer id);
 
+    /**
+     * Получение значения времени жизни токена аутентификации
+     * @return Время жизни токена в секундах из таблицы Setting БД tmis-core или стандартное значение из ConfigManager
+     */
+    int getAuthTokenLifeTime();
+
 }

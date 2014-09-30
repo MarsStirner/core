@@ -170,27 +170,29 @@ class PrimaryAssessmentBean
      При редактировании сущ. первичного осмотра actionTypeId приходит в поле typeId в поле id - actionId
   */
 
-  def createPrimaryAssessmentForEventId(eventId: Int,
+  def createOrUpdatePrimaryAssessmentForEventId(eventId: java.lang.Integer,
                                         assessment: JSONCommonData,
-                                        title: String,
+                                        assessmentId: java.lang.Integer,
                                         userData: AuthData,
-                                        preProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
+                                        baseUri: java.net.URI,
+                                        notify: (java.util.List[Action], java.net.URI) =>  java.lang.Boolean,
                                         postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
     var json_data = assessment
 
-    if (preProcessing != null) {
-      json_data =  preProcessing(json_data, true)
-    }
-
     var com_data = new CommonData()
     com_data.entity = json_data.data
 
-    var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, com_data, userData)
+    val actions: java.util.List[Action] = if (assessmentId == null ) {
+      commonDataProcessor.createActionForEventFromCommonData(eventId, com_data, userData)
+    } else {
+      commonDataProcessor.modifyActionFromCommonData(assessmentId, com_data, userData)
+    }
 
+    notify(actions, baseUri)
     com_data = commonDataProcessor.fromActions(
       actions,
-      title,
+      "Document",
       List(summary _, details _))
 
     json_data.data = com_data.entity
@@ -200,36 +202,6 @@ class PrimaryAssessmentBean
     json_data
   }
 
-
-  def modifyPrimaryAssessmentById(assessmentId: Int,
-                                  assessment: JSONCommonData,
-                                  title: String,
-                                  userData: AuthData,
-                                  preProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
-                                  postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
-
-    var json_data = assessment
-
-    if (preProcessing != null) {
-      json_data =  preProcessing(json_data, false)
-    }
-
-    var com_data = new CommonData()
-    com_data.entity = json_data.data
-
-    var actions: java.util.List[Action] = commonDataProcessor.modifyActionFromCommonData(assessmentId, com_data, userData)
-
-    com_data = commonDataProcessor.fromActions(
-      actions,
-      title,
-      List(summary _, details _))
-
-    json_data.data = com_data.entity
-    if (postProcessing != null) {
-      json_data =  postProcessing(json_data, false)
-    }
-    json_data
-  }
 
   def getPrimaryAssessmentById(assessmentId: Int,
                                title: String,

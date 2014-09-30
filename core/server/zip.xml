@@ -5,6 +5,7 @@
     <formats>
         <format>zip</format>
     </formats>
+    <includeBaseDirectory>false</includeBaseDirectory>
     <fileSets>
         <fileSet>
             <directory>${project.build.directory}</directory>
@@ -15,6 +16,13 @@
                 <include>/*.sh</include>
                 <include>/*.bat</include>
                 <include>logback.xml</include>
+            </includes>
+        </fileSet>
+        <fileSet>
+            <directory>../laboratory-bak/target/</directory>
+            <outputDirectory>/${project.build.finalName}/</outputDirectory>
+            <includes>
+                <include>**/*.war</include>
             </includes>
         </fileSet>
     </fileSets>

@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app>
+    <display-name>Finance Info</display-name>
+    <servlet>
+        <servlet-name>transfusion-serlvet</servlet-name>
+        <servlet-class>${version.jersey.servlet}</servlet-class>
+        <init-param>
+            <param-name>com.sun.jersey.config.property.packages</param-name>
+            <param-value>ru.korus.tmis.ws.transfusion</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>transfusion-serlvet</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+</web-app>

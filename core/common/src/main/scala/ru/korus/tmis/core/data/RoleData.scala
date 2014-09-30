@@ -5,7 +5,7 @@ import ru.korus.tmis.core.entity.model.Role
 import java.util.{LinkedList, Set}
 import javax.xml.bind.annotation.{XmlType, XmlRootElement}
 
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.AuthData
 import javax.xml.bind.annotation.XmlType._

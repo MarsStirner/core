@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.auth
 
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import javax.xml.bind.annotation.{XmlType, XmlRootElement}
 
 @XmlType(name = "authToken")

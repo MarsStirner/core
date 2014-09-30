@@ -23,6 +23,8 @@ import java.io.Serializable;
 @XmlRootElement(name = "rbLaboratory")
 public class RbLaboratory implements Serializable {
 
+    public static final long serialVersionUID = 1L;
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

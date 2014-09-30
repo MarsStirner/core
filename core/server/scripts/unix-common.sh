@@ -44,6 +44,12 @@ MYSQL_DB_TMIS_CORE=${mysql.db.tmis_core}
 MYSQL_DB_TMIS_CORE_POOL=${mysql.db.tmis_core.pool}
 MYSQL_DB_JNDI_TMIS_CORE=${mysql.db.jndi.tmis_core}
 
+# Параметры jms
+CONNECTION_FACTORY=${jms.ConnectionFactory.name}
+LABORATORY_TOPIC=${jms.LaboratoryTopic.name}
+QUEUE_CONNECTION_FACTORY=${jms.QueueConnectionFactory.name}
+LABORATORY_QUEUE=${jms.LaboratoryQueue.name}
+
 
 LIST_DOMAINS_CMD="${ASADMIN}/asadmin list-domains"
 

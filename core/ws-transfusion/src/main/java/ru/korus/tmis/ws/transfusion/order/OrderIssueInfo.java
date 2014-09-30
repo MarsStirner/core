@@ -7,9 +7,16 @@ package ru.korus.tmis.ws.transfusion.order;
  * Description:  <br>
  */
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * Сообщение о результатах выполнения требования
  */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlRootElement
 public class OrderIssueInfo {
     /**
      * Идентификатор компонента крови
@@ -50,6 +57,20 @@ public class OrderIssueInfo {
      * код донора
      */
     private Integer donorId;
+
+    /**
+     * URL этикетки
+     */
+    @XmlElement(required = false)
+    private String stickerUrl;
+
+    public String getStickerUrl() {
+        return stickerUrl;
+    }
+
+    public void setStickerUrl(String stickerUrl) {
+        this.stickerUrl = stickerUrl;
+    }
 
     /**
      * @return the componentId

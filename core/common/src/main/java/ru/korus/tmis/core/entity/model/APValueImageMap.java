@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
+import ru.korus.tmis.core.exception.CoreException;
+
 import java.io.Serializable;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
@@ -75,6 +77,11 @@ public class APValueImageMap implements Serializable, APValue {
 
     @Override
     public boolean setValueFromString(final String value) {
+        return false;
+    }
+
+    @Override
+    public boolean setValue(Object value) throws CoreException {
         return false;
     }
 

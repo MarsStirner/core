@@ -28,9 +28,11 @@ import ru.korus.tmis.core.patient.AppealBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.testutil.DbUtil;
 import ru.korus.tmis.testutil.WebMisBase;
-import scala.actors.threadpool.Arrays;
 
+import javax.annotation.Resource;
 import javax.ejb.EJB;
+import javax.jms.ConnectionFactory;
+import javax.jms.Topic;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
@@ -38,6 +40,7 @@ import java.net.URL;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -55,6 +58,13 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     final static String BASE_URL_SOAP = String.format("http://localhost:7713/%s/", WAR_NAME);
 
     final int TEST_PATIENT_ID = 2; // id пациента, для которого создается госпитализация
+
+    @Resource(mappedName = "LaboratoryTopic")
+    private Topic dlq;
+
+
+    @Resource(mappedName = "DefaultConnectionFactory")
+    private ConnectionFactory factory;
 
     @EJB
     private AppealBeanLocal appealBean = null;
@@ -343,9 +353,9 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         try {
             URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
             String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-full-data.xml")));
-            postData = postData.replace("1113481", String.valueOf(labTestBakLabResearchId));
-            postData = postData.replace("201406051155", String.valueOf(new Date().getTime()));
-            postData = postData.replace("201406051052", String.valueOf(new Date().getTime()));
+            postData = postData.replace("1137602", String.valueOf(labTestBakLabResearchId));
+            postData = postData.replace("201406111625", String.valueOf(new Date().getTime()));
+            postData = postData.replace("201406111616", String.valueOf(new Date().getTime()));
             postData = postData.replace("239", "41");
             System.out.println("I am going to send lab bak result request:");
             System.out.println(postData);
@@ -362,6 +372,33 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             assert (false);
         }
     }
+
+    @Test(dependsOnMethods = "testGetLisBakResults")
+    public void testSecondGetLisBakResults() {
+        try {
+            URL url = new URL(BASE_URL_SOAP + "/service-bak-results");
+            String postData = new String(Files.readAllBytes(Paths.get("./src/test/resources/xml/bak-response-full-data.xml")));
+            postData = postData.replace("1137602", String.valueOf(labTestBakLabResearchId));
+            postData = postData.replace("201406111625", String.valueOf(new Date().getTime()));
+            postData = postData.replace("201406111616", String.valueOf(new Date().getTime()));
+            postData = postData.replace("239", "41");
+            System.out.println("I am going to send lab bak result request:");
+            System.out.println(postData);
+            HttpURLConnection connection = WebMisBase.openConnection(url, labTestAuthData, "POST");
+            connection.setRequestProperty("Content-Type", "text/xml");
+            OutputStream outStream = connection.getOutputStream();
+            outStream.write(postData.getBytes());
+            outStream.flush();
+            int code = WebMisBase.getResponseCode(connection);
+            Assert.assertTrue(code == 200);
+            WebMisBase.getResponseData(connection, code);
+        } catch (Exception e) {
+            e.printStackTrace();
+            assert (false);
+        }
+    }
+
+
 
 
     private String getCommonAttributeValueByName(List<CommonAttribute> attributes, String name) {

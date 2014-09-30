@@ -160,12 +160,13 @@ class CustomInfoRESTTest {
 
     try{
       logger.info("Request data for method is: {}", mapper.writeValueAsString(request))
-      when(dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)).thenReturn(list, Array[Object](): _*)
+      //Don't know how to fix
+      //when(dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request, request.filter)).thenReturn(list, Array[Object](): _*)
       when(hospitalBedBean.getLastMovingActionForEventId(anyInt())).thenReturn(lastMoving)
       when(actionPropertyBean.getActionPropertiesByActionIdAndRbCoreActionPropertyIds(anyObject(), anyListOf(classOf[java.lang.Integer]))).thenReturn(map)
       val result = wsImpl.getTakingOfBiomaterial(request, null)
 
-      verify(dbJobTicketBean).getDirectionsWithJobTicketsBetweenDate(request.sortingFieldInternal, request.filter)
+      verify(dbJobTicketBean).getDirectionsWithJobTicketsBetweenDate(request, request.filter)
       Assert.assertNotNull(result)
       Assert.assertEquals(result.data.size(), list.size())
       for(i <- 0 until list.size()){

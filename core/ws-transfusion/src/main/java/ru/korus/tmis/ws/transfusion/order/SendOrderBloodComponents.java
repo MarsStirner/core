@@ -142,6 +142,15 @@ public class SendOrderBloodComponents {
         final BloodType bloodType = convertBloodId(clientBloodType.getCode());
         res.setBloodGroupId(bloodType.bloodGroupId);
         res.setRhesusFactorId(bloodType.rhesusFactorId);
+        res.setBloodKell(client.getBloodKell().equals(BloodKell.NOT_DEFINED) ? null : client.getBloodKell().equals(BloodKell.POSITIVE));
+        if ( client.getRbBloodPhenotype() != null ) {
+            for (String type : new String[] {"D","C","E","c","e"})  {
+                BloodPhenotype bloodPhenotype = new BloodPhenotype();
+                bloodPhenotype.setPhenotype(type);
+                bloodPhenotype.setValue(client.getRbBloodPhenotype().getCode().contains(type + "+"));
+                res.getBloodPhenotype().add(bloodPhenotype);
+            }
+        }
         return res;
     }
 

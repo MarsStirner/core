@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.filter
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.util.Date
 import java.text.{SimpleDateFormat, DateFormat}
 import ru.korus.tmis.core.data.QueryDataStructure

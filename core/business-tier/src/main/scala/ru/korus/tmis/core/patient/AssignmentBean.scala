@@ -10,7 +10,6 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import javax.inject.Inject
-import ru.korus.tmis.core.event.{ModifyActionNotification, Notification}
 import java.util.{LinkedList, Date}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
@@ -45,10 +44,6 @@ with I18nable {
 
   @EJB
   private var dbManager: DbManagerBeanLocal = _
-
-  @Inject
-  @Any
-  var actionEvent: javax.enterprise.event.Event[Notification] = _
 
   private class IndexOf[T](seq: Seq[T]) {
     def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
@@ -125,9 +120,6 @@ with I18nable {
       if (assignmentData.data.rangeDateTime.getEnd != null)
         action.setEndDate(assignmentData.data.rangeDateTime.getEnd)
 
-      //if (!flgCreate)
-      //  entities = entities + action
-
       //3. Action Property
 
       list.foreach(f => {
@@ -144,8 +136,6 @@ with I18nable {
               authData)
             em.merge(res)
           }
-        //if (!flgCreate)
-        //  entities = entities + ap
 
         val values = this.getValueByCase(ap.getType.getId.intValue(), assignmentData, authData)
         values.size match {
@@ -184,19 +174,8 @@ with I18nable {
           }
         }
       })
-
-      //if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
       em.flush()
       em.detach(action)
-      /*
-      if (!flgCreate) {
-        val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
-        actionEvent.fire(new ModifyActionNotification(oldAction,
-          oldValues,
-          action,
-          newValues))
-      }
-      */
     }
     finally {
       if (lockId > 0) appLock.releaseLock(lockId)

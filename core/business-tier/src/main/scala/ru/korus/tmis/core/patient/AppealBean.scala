@@ -12,7 +12,7 @@ import javax.persistence.{PersistenceContext, EntityManager}
 import java.util.{ArrayList, Date, LinkedList}
 import ru.korus.tmis.core.exception.CoreException
 import collection.JavaConversions
-import ru.korus.tmis.core.event.Notification
+
 import javax.inject.Inject
 import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
@@ -435,7 +435,7 @@ with CAPids {
     //запрос данных из Action
     val action = actionBean.getAppealActionByEventId(event.getId.intValue(), i18n("db.actionType.hospitalization.primary").toInt)
     if (action == null) {
-      throw new CoreException("Первичный осмотр для обращения с id=%d не найден в БД".format(id))
+      throw new CoreException(ConfigManager.ErrorCodes.ActionNotFound, "Невозможно открыть обращение[id=%d], т.к. в нем отсутствует действие Поступление".format(id))
     }
     //Запрос данных из ActionProperty
     val findMapActionProperty = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue())
@@ -964,7 +964,8 @@ with CAPids {
       lockId = appLock.acquireLock("Client_Quoting", oldQuota.getId.intValue(), oldQuota.getId.intValue(), auth)
     }
     try {
-      val patient = dbEventBean.getEventById(eventId).getPatient
+      val event: Event = dbEventBean.getEventById(eventId)
+      val patient = event.getPatient
       var mkb: Mkb = null
       try {
         mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
@@ -980,12 +981,13 @@ with CAPids {
         dataEntry.getQuotaType.getId,
         dataEntry.getStatus.getId,
         dataEntry.getDepartment.getId,
-        dataEntry.getAppealNumber,
+        event.getExternalId,
         dataEntry.getTalonNumber,
         dataEntry.getStage.getId,
         dataEntry.getRequest.getId,
         mkb,
         patient,
+        event,
         auth.getUser)
       if (isPersist) dbManager.persist(clientQuoting) else dbManager.merge(clientQuoting)
     } finally {

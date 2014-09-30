@@ -48,7 +48,7 @@ public class APValueHospitalBed extends AbstractAPValue implements Serializable,
 
     @Override
     public String getValueAsString() {
-        return value.getName();
+        return value == null ? null : value.getName();
     }
 
     @Override

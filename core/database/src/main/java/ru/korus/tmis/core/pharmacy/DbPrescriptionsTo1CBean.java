@@ -23,7 +23,7 @@ public class DbPrescriptionsTo1CBean implements DbPrescriptionsTo1CBeanLocal {
     @Override
     public Iterable<PrescriptionsTo1C> getPrescriptions() {
         return em.createNamedQuery("PrescriptionsTo1C.findToSend", PrescriptionsTo1C.class)
-                .setParameter("now", new Timestamp((new Date()).getTime())).getResultList();
+                .setParameter("now", new Timestamp((new Date()).getTime())).setMaxResults(50).getResultList();
     }
 
     @Override

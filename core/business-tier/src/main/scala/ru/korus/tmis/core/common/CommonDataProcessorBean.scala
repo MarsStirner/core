@@ -5,7 +5,6 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.event._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
@@ -70,14 +69,6 @@ class CommonDataProcessorBean
 
   @EJB
   var dbLayoutAttributeValueBean: DbLayoutAttributeValueBeanLocal = _
-
-  //////////////////////////////////////////////////////////////////////////////
-
-  @Inject
-  @Any
-  var actionEvent: Event[Notification] = _
-
-  //////////////////////////////////////////////////////////////////////////////
 
   def createActionForEventFromCommonData(eventId: Int,
                                          data: CommonData,
@@ -282,12 +273,7 @@ class CommonDataProcessorBean
     })
 
     val r = dbManager.detachAll[Action](result).toList
-    /*
-    r.foreach(a => {
-      val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
-      actionEvent.fire(new CreateActionNotification(a, values))
-    })
-    */
+
     r
   }
 
@@ -420,18 +406,10 @@ class CommonDataProcessorBean
             case Some(x) => x.toInt
           }
         }
-        /*res = aps.find(p => p.name == AWI.toOrder.toString).getOrElse(null)
-        if (res != null) {
-          toOrder = res.properties.get(APWI.Value.toString) match {
-            case None | Some("") => false
-            case Some(x) => x.toBoolean
-          }
-        }*/
 
         if (beginDate != null) a.setBegDate(beginDate)
 
         if (finance > 0) a.setFinanceId(finance)
-        //a.setToOrder(toOrder)
         if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
         if (assignerId > 0) a.setAssigner(new Staff(assignerId))
         if (executorId > 0) a.setExecutor(new Staff(executorId))
@@ -447,7 +425,7 @@ class CommonDataProcessorBean
           } else {
             (attribute.getPropertiesMap.get("valueId"), attribute.getPropertiesMap.get("value")) match {
 
-              case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
+              case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
                 new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
@@ -521,15 +499,7 @@ class CommonDataProcessorBean
         entities.filter(_.isInstanceOf[APValue]).map(_.asInstanceOf[APValue]).toList,
         userData))
 
-      /*
-      r.foreach(newAction => {
-        val newValues = dbActionProperty.getActionPropertiesByActionId(newAction.getId.intValue)
-        actionEvent.fire(new ModifyActionNotification(oldAction,
-          oldValues,
-          newAction,
-          newValues))
-      })
-      */
+
       r
 
     } finally {
@@ -617,19 +587,7 @@ class CommonDataProcessorBean
 
     val ActionStatus = ConfigManager.ActionStatus.immutable
 
-    status match {
-      case ActionStatus.Canceled => {
-        /*
-        r.foreach(a => {
-          val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
-          actionEvent.fire(new CancelActionNotification(a, values))
-        })
-        */
-      }
-      case _ => {
 
-      }
-    }
     true
   }
 
@@ -865,19 +823,19 @@ class CommonDataProcessorBean
     // Проверяем формат, в котором задана нижняя граница (днях, неделях, месяцах или годах)
     // и сверяем возраст пациента с заданной границей
     val lowLimit = apt.getAge_bu match {
-      case 1 => age.getDay   > apt.getAge_bc   // Дни
-      case 2 => age.getWeek  > apt.getAge_bc   // Недели
-      case 3 => age.getMonth > apt.getAge_bc   // Месяцы
-      case 4 => age.getWeek  > apt.getAge_bc   // Года
+      case 1 => age.getDay   >= apt.getAge_bc   // Дни
+      case 2 => age.getWeek  >= apt.getAge_bc   // Недели
+      case 3 => age.getMonth >= apt.getAge_bc   // Месяцы
+      case 4 => age.getYear  >= apt.getAge_bc   // Года
       case _ => true //Если значение не задано - то будем считать, что возраст пациента удовлетворяет
     }
 
     // Аналогично, но в обратную сторону проверяем соответствие возраста верхней границе
     val topLimit = apt.getAge_eu match {
-      case 1 => age.getDay   < apt.getAge_ec
-      case 2 => age.getWeek  < apt.getAge_ec
-      case 3 => age.getMonth < apt.getAge_ec
-      case 4 => age.getYear  < apt.getAge_ec
+      case 1 => age.getDay   <= apt.getAge_ec
+      case 2 => age.getWeek  <= apt.getAge_ec
+      case 3 => age.getMonth <= apt.getAge_ec
+      case 4 => age.getYear  <= apt.getAge_ec
       case _ => true
     }
 

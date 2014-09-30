@@ -125,6 +125,7 @@ public class RegOrderIssueResult {
             trfuOrderIssueResult.setVolume(orderIssue.getVolume());
             trfuOrderIssueResult.setDoseCount(orderIssue.getDoseCount());
             trfuOrderIssueResult.setTrfuDonorId(orderIssue.getDonorId());
+            trfuOrderIssueResult.setStickerUrl(orderIssue.getStickerUrl());
             em.persist(trfuOrderIssueResult);
         }
         final String res = trfuActionProp.getProp(actionId, PropType.ORDER_REQUEST_ID) + errMsg + "; Зарегистрирован результат от ТРФУ";

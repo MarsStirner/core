@@ -2,7 +2,7 @@ package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import java.util.{Calendar, Date}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.util.reflect.{LoggingManager, TmisLogging}
@@ -57,8 +57,6 @@ class TakingOfBiomaterialRequesData {
   @BeanProperty
   var coreVersion: String = _
 
-  var sortingFieldInternal: String = _
-
   def this(sortingField: String,
            sortingMethod: String,
            filter: TakingOfBiomaterialRequesDataFilter){
@@ -73,7 +71,6 @@ class TakingOfBiomaterialRequesData {
     }
     this.filter = filter
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
-    this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 
   def rewriteRecordsCount(recordsCount: java.lang.Long) = {
@@ -170,53 +167,6 @@ class TakingOfBiomaterialRequesDataFilter {
     today.getTime
   }
 
-  /**
-   * Формирование строки сортировки для подстановки в запрос
-   * @param sortingField Наименование поля сортировки
-   * @return
-   */
-  def toSortingString (sortingField: String, sortingMethod: String) = {
-    val lex =
-      sortingMethod.toLowerCase match {
-        case "desc" => "desc"
-        case _ => "asc"
-      }
-
-    var query =
-      sortingField.toLowerCase match {
-        case "sex" => {"e.patient.sex %s".format(lex)}
-        case "actiontype" | "at" => {"a.actionType.name %s".format(lex)}
-        case "urgent" => {"a.isUrgent %s".format(lex)}
-        case "tube" => {"a.actionType.testTubeType.name %s".format(lex)}
-        case "status" => {"jt.status %s".format(lex)}
-        case "fullname" | "fio" | "patient" => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(lex,lex,lex)}
-        case "birthdate" => {"e.patient.birthDate %s".format(lex)}
-        case "tissuetype" => {"attp.tissueType.name %s".format(lex)}
-        case "date" => {"jt.datetime %s".format(lex)}
-        case _ => {"e.patient.lastName %s, e.patient.firstName %s, e.patient.patrName %s".format(lex,lex,lex)}
-      }
-    query = "ORDER BY " + query
-    query
-  }
-
-  def toQueryStructure() = {
-    val qs = new QueryDataStructure()
-    if (this.jobTicketId > 0) {
-      qs.query += "AND jt.id = :jobTicketId\n"
-      qs.add("jobTicketId",this.jobTicketId:java.lang.Integer)
-    }
-    else {
-      if(this.status>=0){
-        qs.query += "AND jt.status = :status\n"
-        qs.add("status",this.status:java.lang.Integer)
-      }
-      if(this.biomaterial>0){
-        qs.query += ("AND attp.actionType.id = a.actionType.id AND attp.tissueType.id = :biomaterial")
-        qs.add("biomaterial",this.biomaterial:java.lang.Integer)
-      }
-    }
-    qs
-  }
 }
 
 @XmlType(name = "actionInfoDataContainer")

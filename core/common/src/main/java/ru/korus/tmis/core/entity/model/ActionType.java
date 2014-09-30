@@ -226,11 +226,9 @@ public class ActionType implements Serializable {
         return nonDeletedActionPropertyTypes;
     }
 
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(name = "ActionType_TissueType",
-            joinColumns = {@JoinColumn(name = "tissueType_id")},
-            inverseJoinColumns = {@JoinColumn(name = "master_id")})
-    private Set<RbTissueType> tissueTypes = new LinkedHashSet<RbTissueType>();
+
+    @OneToOne(mappedBy="actionType")
+    private ActionTypeTissueType actionTypeTissueType;
 
     ////////////////////////////////////////////////////////////////////////////
 
@@ -566,14 +564,6 @@ public class ActionType implements Serializable {
         this.isRequiredTissue = isRequiredTissue;
     }
 
-    public Set<RbTissueType> getTissueTypes() {
-        return tissueTypes;
-    }
-
-    public void setTissueTypes(Set<RbTissueType> tissueTypes) {
-        this.tissueTypes = tissueTypes;
-    }
-
     public String getMnemonic() {
         return mnemonic;
     }
@@ -631,4 +621,11 @@ public class ActionType implements Serializable {
         return "ru.korus.tmis.core.entity.model.ActionType[id=" + id + "]";
     }
 
+    public ActionTypeTissueType getActionTypeTissueType() {
+        return actionTypeTissueType;
+    }
+
+    public void setActionTypeTissueType(ActionTypeTissueType actionTypeTissueType) {
+        this.actionTypeTissueType = actionTypeTissueType;
+    }
 }

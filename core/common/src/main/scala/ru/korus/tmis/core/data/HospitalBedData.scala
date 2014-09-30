@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.{XmlType, XmlRootElement}
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import ru.korus.tmis.core.entity.model._
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import org.codehaus.jackson.map.annotate.JsonView

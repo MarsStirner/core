@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation._
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 import javax.xml.bind.annotation.adapters.{XmlAdapter, XmlJavaTypeAdapter}
 import java.util.ArrayList
 import ru.korus.tmis.core.entity.model.OrgStructure

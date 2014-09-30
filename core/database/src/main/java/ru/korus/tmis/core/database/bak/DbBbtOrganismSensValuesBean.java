@@ -39,9 +39,8 @@ public class DbBbtOrganismSensValuesBean implements DbBbtOrganismSensValuesBeanL
 
     @Override
     public void removeByResultOrganismId(Integer id) {
-        em.createQuery(
-                "DELETE FROM BbtOrganismSensValues a WHERE a.bbtResultOrganism = :bbtResultOrganismId")
-                .setParameter("bbtResultOrganismId", id).executeUpdate();
+        em.createNamedQuery("BbtOrganismSensValues.deleteBy_bbtResultOrganismId")
+                .setParameter("id", id).executeUpdate();
         em.flush();
     }
 

@@ -3,7 +3,7 @@ package ru.korus.tmis.core.data
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.map.annotate.JsonView
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile
-import reflect.BeanProperty
+import scala.beans.BeanProperty
 
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>

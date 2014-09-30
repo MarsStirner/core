@@ -26,7 +26,7 @@ public class RegistrationPatientHelper {
                 patient.getBirthTime(),
                 "", patient.getGender().codeName().toLowerCase(),
                 "", "", null, null,
-                -1, "", "",
+                -1, null, null, "", "",
                 null, -1
         );
     }

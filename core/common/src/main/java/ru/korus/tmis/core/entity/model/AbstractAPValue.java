@@ -21,8 +21,9 @@ public abstract class AbstractAPValue implements APValue {
         return "";
     }
     
-    public void setValue(Object value) throws CoreException {
+    public boolean setValue(Object value) throws CoreException {
         setValueFromString(value.toString());
+        return true;
     }
 
     @Override

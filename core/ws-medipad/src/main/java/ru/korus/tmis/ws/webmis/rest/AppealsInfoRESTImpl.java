@@ -10,6 +10,8 @@ import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.UriInfo;
 import java.util.Date;
 
 /**
@@ -25,6 +27,9 @@ public class AppealsInfoRESTImpl {
     private WebMisREST wsImpl;
     private AuthData auth;
     private String callback;
+
+    @Context
+    UriInfo uri;
 
     public AppealsInfoRESTImpl(WebMisREST wsImpl, String callback, AuthData auth) {
         this.auth = auth;
