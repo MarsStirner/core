@@ -367,6 +367,8 @@ public interface WebMisREST extends Serializable {
 
     Set<List<Object>> getInfectionMonitoring(int eventId, AuthData authData) throws CoreException;
 
+    Set<List<Object>> getInfectionDrugMonitoring(int eventId, AuthData authData) throws CoreException;
+
     SurgicalOperationsListData getSurgicalOperationsByAppeal(int eventId, AuthData authData) throws CoreException;
 
     /**

@@ -24,6 +24,11 @@ object InfectionControl {
     "infectDrugName_8", "infectDrugBeginDate_8", "infectDrugEndDate_8", "infectTherapyType_8"
   )
 
+  val infectDrugNamePrefix = "infectDrugName"
+  val infectDrugBeginDatePrefix = "infectDrugBeginDate"
+  val infectDrugEndDatePrefix = "infectDrugEndDate"
+  val infectTherapyTypePrefix = "infectTherapyType"
+
   // Список префиксов наименований не локальных инфекций
   val infectPrefixes = Set("infectFever", "infectBacteremia", "infectSepsis","infectSepticShok")
 

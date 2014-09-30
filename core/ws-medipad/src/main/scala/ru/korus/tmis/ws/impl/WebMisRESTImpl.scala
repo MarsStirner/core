@@ -1629,9 +1629,13 @@ with CAPids {
   }
 
   def getInfectionMonitoring(eventId: Int, authData: AuthData) = {
-    val r = appealBean.getInfectionMonitoring(eventId)
-    val v = r.map(p => List[AnyRef](p._1, p._2, p._3, p._4).asJava).asJava
-    v
+    appealBean.getInfectionMonitoring(eventId)
+      .map(p => List[AnyRef](p._1, p._2, p._3, p._4).asJava).asJava
+  }
+
+  def getInfectionDrugMonitoring(eventId: Int, authData: AuthData) = {
+    appealBean.getInfectionDrugMonitoring(eventId)
+      .map(p => List[AnyRef](p._1, p._2, p._3, p._4, p._5).asJava).asJava
   }
 
   def getSurgicalOperationsByAppeal(eventId: Int, authData: AuthData) = {

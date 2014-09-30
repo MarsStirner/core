@@ -229,6 +229,15 @@ public class AppealsInfoRESTImpl {
     }
 
     @GET
+    @Path("{eventId}/infection-drug-monitoring")
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getInfectionDrugMonitoringInfoByAppeal(@Context HttpServletRequest servRequest,
+                                                        @PathParam("eventId")int eventId,
+                                                        @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(new GenericEntity<Set<List<Object>>>(wsImpl.getInfectionDrugMonitoring(eventId, mkAuth(servRequest))) {}, callback);
+    }
+
+    @GET
     @Path("{eventId}/surgical")
     @Produces({"application/javascript", "application/x-javascript"})
     public Object getSurgicalOperationsByAppeal(@Context HttpServletRequest servRequest,

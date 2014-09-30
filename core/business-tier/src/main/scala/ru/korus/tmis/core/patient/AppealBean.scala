@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.patient
 
+import java.util
+
 import grizzled.slf4j.Logging
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.data._
@@ -1015,7 +1017,7 @@ with CAPids {
     .filter(p => IC.documents.contains(p.getActionType.getCode))
     .flatMap(_.getActionProperties)
     .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
-    .groupBy( e => (e.getAction.getId,  e.getType.getCode.split('-').head))
+    .groupBy( e => (e.getAction.getId,  e.getType.getCode.split(IC.separator).head))
     .flatMap(e => {
       val actionId = e._1._1
       val list = e._2
@@ -1051,6 +1053,60 @@ with CAPids {
       }
     })
     .groupBy(p => (p._1, p._2, p._3)).map(e => (e._1._1, e._1._2, e._1._3, e._2.map(_._4).toList.asJava)).toSet.asJava
+  }
+
+  def getInfectionDrugMonitoring(eventId: Int): java.util.Set[(String, Date, Date, String, java.util.List[Integer])] = {
+    val IC = InfectionControl
+    val r = actionBean.getActionsByEvent(eventId)
+      .filter(p => IC.documents.contains(p.getActionType.getCode))
+      .flatMap(_.getActionProperties)
+      .filter(e => e.getType.getCode != null && IC.drugTherapyProperties.contains(e.getType.getCode))
+      .groupBy(e => (e.getAction.getId,  e.getType.getCode.split('_').last))
+      .flatMap(e => {
+      val drugId = e._1._2
+      val list = e._2
+      val actionId = e._1._1
+
+      val name = list.find( p => p.getType.getCode.equals(IC.infectDrugNamePrefix + '_' + drugId))
+      val beginDate = list.find( p => p.getType.getCode.equals(IC.infectDrugBeginDatePrefix + '_' + drugId))
+      val endDate = list.find( p => p.getType.getCode.equals(IC.infectDrugEndDatePrefix + '_' + drugId))
+      val therapyType = list.find( p => p.getType.getCode.equals(IC.infectTherapyTypePrefix + '_' + drugId))
+
+      (name, beginDate, endDate, therapyType) match {
+        case (Some(a), Some(b), Some(c), Some(d)) =>
+          val n = actionPropertyBean.getActionPropertyValue(a)
+          val bd = actionPropertyBean.getActionPropertyValue(b)
+          val ed = actionPropertyBean.getActionPropertyValue(c)
+          val t = actionPropertyBean.getActionPropertyValue(d)
+
+          (n.size(), bd.size()) match {
+            case (1, 1) => (n.head, bd.head) match {
+              case (x: APValueString, y: APValueDate) =>
+                val e = ed.size() match {
+                  case 1 => ed.head match {
+                    case p: APValueDate => p.getValue
+                    case _ => null
+                  }
+                  case _ => null
+                }
+                val ty = t.size() match {
+                  case 1 => t.head match {
+                    case p: APValueString => p.getValue
+                    case _ => null
+                  }
+                  case _ => null
+                }
+                Some((x.getValue, y.getValue, e, ty, actionId))
+              case _ => None
+            }
+            case _ => None
+          }
+        case _ => None
+      }
+    })
+    r
+      .groupBy(e => (e._1, e._2, e._3, e._4))
+      .map(e => (e._1._1, e._1._2, e._1._3, e._1._4, e._2.map(_._5).toList.asJava)).toSet.asJava
   }
 
   def getSurgicalOperations(eventId: Int, authData: AuthData) = {
