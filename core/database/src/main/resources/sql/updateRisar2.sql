@@ -1,10 +1,12 @@
 ###############################################################################
 # Поддержка уведомлений о создании новых действий
 ###############################################################################
+ALTER TABLE `NotificationAction` ADD COLUMN `method` ENUM('POST', 'PUT', 'GET', 'DELETE') NOT NULL
+COMMENT 'HTTP метод для уведомления (POST - создание; PUT - редактирование)';
 
 DROP TRIGGER `onInsertAction`;
 DELIMITER //
-CREATE TRIGGER `onInsertAction` AFTER INSERT ON `ACTION` FOR EACH ROW BEGIN
+CREATE TRIGGER `onInsertAction` AFTER INSERT ON `Action` FOR EACH ROW BEGIN
   DECLARE flatCode VARCHAR(64);
   SELECT
     `ActionType`.`flatCode`
@@ -30,8 +32,8 @@ CREATE TRIGGER `onInsertAction` AFTER INSERT ON `ACTION` FOR EACH ROW BEGIN
     INSERT IGNORE INTO `ActionToODVD` (action_id) VALUES (NEW.id);
   END IF;
 END//
-DROP TRIGGER `OnUpdateAction`//
-CREATE TRIGGER `onUpdateAction` AFTER UPDATE ON `ACTION` FOR EACH ROW BEGIN
+DROP TRIGGER `Delete_ActionProperty_ON_UPDATE`//
+CREATE TRIGGER `onUpdateAction` AFTER UPDATE ON `Action` FOR EACH ROW BEGIN
   IF NEW.deleted IS NOT NULL AND NEW.deleted != OLD.deleted
   THEN
     UPDATE ActionProperty
