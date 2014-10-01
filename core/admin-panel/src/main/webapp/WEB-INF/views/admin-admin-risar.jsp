@@ -74,61 +74,38 @@
                     </div>
                     <div class="tab-pane" id="addActionsToRisar">
                         <div class="panel">
-                            <c:choose>
-                                <c:when test="${risarSettings.risarNewActionList.isEmpty()}">
-                                    <p class="text-danger"><b>Подходящие осмотры не найдены.</b></p>
-                                    <p>Для передачи в РИСАР, у осмотра необходимо настроить  свойства «Диагноз» и «Рекомендации» в соответствии с таблицей:</p>
-                                    <table class="table table-bordered table-condensed">
-                                        <thead>
+                            <c:if test="${risarSettings.risarNewActionList.isEmpty()}">
+                                <p class="text-danger">
+                                <h4><b>Подходящие осмотры не найдены.</b><h4>
+                                </p>
+                                <p>Для передачи в РИСАР, у осмотра необходимо настроить свойства «Диагноз» (тип <code>МКБ</code>, код <code>diagnosis</code>) и
+                                    «Рекомендации» (код <code>recommendations</code>):</p>
+                            </c:if>
+                            <form:form method="POST" action="risar/actions/add" modelAttribute="risarSettings" role="form">
+                                <table class="table table-bordered table-striped">
+                                    <thead>
+                                    <tr>
+                                        <th>Добавить</th>
+                                        <th>id осмотра</th>
+                                        <th>Наименование</th>
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    <c:forEach items="${risarSettings.risarNewActionList}" var="risarAction" varStatus="status">
                                         <tr>
-                                            <th>Название (может быть любым)</th>
-                                            <th>Тип</th>
-                                            <th>code</th>
+                                            <td><form:checkbox path="risarNewActionList[${status.index}].add"/></td>
+                                            <td>${risarAction.id}<input type="hidden" name="risarNewActionList[${status.index}].id"
+                                                                        value="${risarAction.id}"/></td>
+                                            <td>${risarAction.name}</td>
                                         </tr>
-                                        </thead>
-                                        <tbody>
-                                        </tr>
-                                        <tr>
-                                            <td>Диагноз</td>
-                                            <td>MKB</td>
-                                            <td>diagnosis</td>
-                                        </tr>
-                                        <tr>
-                                            <td>Рекомендации</td>
-                                            <td>Text, String или Html</td>
-                                            <td>recommendations</td>
-                                        </tr>
-                                        </tbody>
-                                    </table>
-                                </c:when>
-                                <c:otherwise>
-                                    <form:form method="POST" action="risar/actions/add" modelAttribute="risarSettings" role="form">
-                                        <table class="table table-bordered table-striped">
-                                            <thead>
-                                            <tr>
-                                                <th>Добавить</th>
-                                                <th>id осмотра</th>
-                                                <th>Наименование</th>
-                                            </tr>
-                                            </thead>
-                                            <tbody>
-                                            <c:forEach items="${risarSettings.risarNewActionList}" var="risarAction" varStatus="status">
-                                                <tr>
-                                                    <td><form:checkbox path="risarNewActionList[${status.index}].add"/></td>
-                                                    <td>${risarAction.id}<input type="hidden" name="risarNewActionList[${status.index}].id"
-                                                                                value="${risarAction.id}"/></td>
-                                                    <td>${risarAction.name}</td>
-                                                </tr>
-                                            </c:forEach>
-                                            </tbody>
-                                        </table>
-                                        <div class="form-group">
-                                            <button type="submit" class="btn btn-default">Добавить отмеченные осмотры</button>
-                                            <button type="reset" class="btn btn-default">Отмена</button>
-                                        </div>
-                                    </form:form>
-                                </c:otherwise>
-                            </c:choose>
+                                    </c:forEach>
+                                    </tbody>
+                                </table>
+                                <div class="form-group">
+                                    <button type="submit" class="btn btn-default">Добавить отмеченные осмотры</button>
+                                    <button type="reset" class="btn btn-default">Отмена</button>
+                                </div>
+                            </form:form>
                         </div>
                     </div>
                 </div>

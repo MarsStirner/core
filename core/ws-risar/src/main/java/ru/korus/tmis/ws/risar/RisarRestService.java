@@ -51,12 +51,26 @@ public class RisarRestService {
     @EJB
     DbActionPropertyBeanLocal dbActionPropertyBeanLocal;
 
-    @PUT
+    @POST
     @Path("/new/exam/{actionId}")
     @Produces(MediaType.TEXT_HTML + ";charset=UTF-8")
     public Response newExam(@PathParam(value = "actionId") Integer actionId) throws WebApplicationException {
+        logger.info("RISAR notification. New exam with actionId: " + actionId);
+        return saveExam(actionId);
+    }
+
+    @PUT
+    @Path("/new/exam/{actionId}")
+    @Produces(MediaType.TEXT_HTML + ";charset=UTF-8")
+    public Response updateExam(@PathParam(value = "actionId") Integer actionId) throws WebApplicationException {
+        logger.info("RISAR notification. Update exam with actionId: " + actionId);
+        return saveExam(actionId);
+    }
+
+
+    private Response saveExam(Integer actionId) {
         try {
-            logger.info("RISAR notification. New exam with actionId: " + actionId);
+            logger.info("RISAR notification. Save exam with actionId: " + actionId);
             Action action = dbActionBean.getActionById(actionId);
 
             final Integer clientId = action.getEvent().getPatient().getId();

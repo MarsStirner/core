@@ -96,7 +96,7 @@ public class DbNotificationActionBean implements DbNotificationActionBeanLocal, 
                         notificationBeanLocal.addListener(actionTypeId, notificationActionType.getBaseUrl());
                     }
                 }
-                notificationBeanLocal.sendNotification(notificationAction.getAction());
+                notificationBeanLocal.sendNotification(notificationAction);
             } else {
                 throw new CoreException("Error: NotificationAction.actionId is not valid or incorrect action type for NotificationAction.actionId. " +
                         "actionId : " + notificationAction.getAction() );
