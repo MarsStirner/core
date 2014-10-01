@@ -578,7 +578,7 @@ with CAPids {
 
 
     // Получение значения свойства у предыдущих действий
-    def getProperty(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
+    def getProperty(oldDocumentCodes: Set[String], actionTypeCodes: Set[String], event: Event): APValue = {
       if (oldDocumentCodes.contains(at.getCode)) {
         val pastActions = pastActionsCache.getOrElseUpdate((oldDocumentCodes, event.getId, "a.begDate DESC"), actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null))
         if (pastActions != null && !pastActions.isEmpty)
@@ -596,7 +596,7 @@ with CAPids {
       null
     }
 
-    def getLastActionByTypeCodes(typeCode: Iterable[String]): Action = {
+    def getLastActionByTypeCodes(typeCode: Iterable[String], event: Event): Action = {
       val l = cache.getOrElseUpdate(event.getId, { actionBean.getActionsByEvent(event.getId) } )
       val list = l.filter(a => typeCode.contains(a.getActionType.getCode))
         .sortBy(_.getCreateDatetime)
@@ -608,7 +608,7 @@ with CAPids {
     }
 
     // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
-    def getPropertyCustom1(oldDocumentCodes: Set[String], actionTypeCodes: Set[String]): APValue = {
+    def getPropertyCustom1(oldDocumentCodes: Set[String], actionTypeCodes: Set[String], event: Event): APValue = {
 
       def getTherapyPhaseEndDate(action: Action): Date = {
         action.getActionProperties.foreach(p =>
@@ -639,13 +639,13 @@ with CAPids {
     }
 
     // Получение значений свойств по свойствам инфекционного контроля
-    def getPropertyCustom2(oldDocumentCodes: Set[String], actionTypeCodesPrefix: String): APValue = {
+    def getPropertyCustom2(oldDocumentCodes: Set[String], actionTypeCodesPrefix: String, event: Event): APValue = {
 
       if (!apt.getCode.startsWith(actionTypeCodesPrefix) || !(oldDocumentCodes contains at.getCode))
         return null
 
       // Последний дневниковый осмотр из всех историй болезни
-      val lastAction = getLastActionByTypeCodes(oldDocumentCodes)
+      val lastAction = getLastActionByTypeCodes(oldDocumentCodes, event)
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
       if (lastAction == null)
@@ -683,10 +683,10 @@ with CAPids {
     }
 
     // Получения значений для лекарственных назначений
-    def getPropertyCustom3(oldDocumentCodes: Set[String]): APValue = {
+    def getPropertyCustom3(oldDocumentCodes: Set[String], event: Event): APValue = {
 
       // Последний дневниковый осмотр из всех историй болезни
-      val lastAction = getLastActionByTypeCodes(oldDocumentCodes)
+      val lastAction = getLastActionByTypeCodes(oldDocumentCodes, event)
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
       if (lastAction == null)
@@ -723,9 +723,9 @@ with CAPids {
     }
 
     // Получение значения поля "Локальная инфекция"
-    def getPropertyCustom4(oldDocumentCodes: Set[String]): APValue = {
+    def getPropertyCustom4(oldDocumentCodes: Set[String], event: Event): APValue = {
       // Последний дневниковый осмотр из всех историй болезни
-      val lastAction = getLastActionByTypeCodes(oldDocumentCodes)
+      val lastAction = getLastActionByTypeCodes(oldDocumentCodes, event)
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
       if (lastAction == null)
@@ -773,18 +773,39 @@ with CAPids {
     at.getCode match {
 
       // Заключительный эпикриз
-      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"))
+      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"), event)
 
       // Дневниковый осмотр
       case x if IC.documents.contains(x) =>
         if (therapySet.contains(x)) // Подтягивания значений для полей терапии
-          getPropertyCustom1(IC.documents, therapySet)
-        else if (IC.allInfectPrefixes.exists(p => apt.getCode!= null && (apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)))) // или для полей инфекционного контроля
-          getPropertyCustom2(IC.documents, IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get)
-        else if (apt.getCode!= null && apt.getCode.equals(IC.localInfectionChecker))
-          getPropertyCustom4(IC.documents)
-        else if (IC.drugTherapyProperties.contains(apt.getCode))
-          getPropertyCustom3(IC.documents)
+          getPropertyCustom1(IC.documents, therapySet, event)
+        else if (IC.allInfectPrefixes.exists(p => apt.getCode!= null && (apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)))) { // или для полей инфекционного контроля
+          val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
+          var outVal: APValue = null
+          for(e <- events) {
+            outVal = getPropertyCustom2(IC.documents, IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, e)
+            if(outVal != null) return outVal
+          }
+          outVal
+        }
+        else if (apt.getCode!= null && apt.getCode.equals(IC.localInfectionChecker)) {
+          val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
+          var outVal: APValue = null
+          for(e <- events) {
+            outVal = getPropertyCustom4(IC.documents, e)
+            if(outVal != null) return outVal
+          }
+          outVal
+        }
+        else if (IC.drugTherapyProperties.contains(apt.getCode)) {
+          val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
+          var outVal: APValue = null
+          for(e <- events) {
+            outVal =  getPropertyCustom3(IC.documents, e)
+            if(outVal != null) return outVal
+          }
+          outVal
+        }
         else
           null
       case _ => null
