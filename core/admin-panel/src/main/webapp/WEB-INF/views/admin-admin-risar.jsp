@@ -75,11 +75,15 @@
                     <div class="tab-pane" id="addActionsToRisar">
                         <div class="panel">
                             <c:if test="${risarSettings.risarNewActionList.isEmpty()}">
-                                <p class="text-danger">
-                                <h4><b>Подходящие осмотры не найдены.</b><h4>
-                                </p>
-                                <p>Для передачи в РИСАР, у осмотра необходимо настроить свойства «Диагноз» (тип <code>МКБ</code>, код <code>diagnosis</code>) и
-                                    «Рекомендации» (код <code>recommendations</code>):</p>
+                                <div class="alert alert-warning">
+                                    <h4><p class="text-danger">
+                                        <b>Подходящие осмотры не найдены.</b>
+                                    </p>
+                                    </h4>
+                                    <p>Для передачи в РИСАР, у осмотра необходимо настроить свойства «Диагноз» (тип <code>МКБ</code>, код <code>diagnosis</code>)
+                                        и
+                                        «Рекомендации» (код <code>recommendations</code>):</p>
+                                </div>
                             </c:if>
                             <form:form method="POST" action="risar/actions/add" modelAttribute="risarSettings" role="form">
                                 <table class="table table-bordered table-striped">
