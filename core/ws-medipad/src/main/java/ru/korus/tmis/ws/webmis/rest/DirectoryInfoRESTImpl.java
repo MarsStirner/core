@@ -176,6 +176,7 @@ public class DirectoryInfoRESTImpl {
      * &#15; "id" - по идентификатору отделения (значение по умолчанию);
      * &#15; "name" - по наименованию отделения </pre>
      * @param hasBeds Фильтр отделений имеющих развернутые койки.("true"/"false")
+     * @param withoutChildren Выбрать только элементы без дочерних элементов
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
@@ -188,10 +189,11 @@ public class DirectoryInfoRESTImpl {
                                     @QueryParam("limit") int limit,
                                     @QueryParam("page") int page,
                                     @QueryParam("filter[hasBeds]")String hasBeds,
+                                    @QueryParam("withoutChildren")Boolean withoutChildren,
                                     @QueryParam("callback") String callback) throws CoreException {
-
         Boolean flgBeds =  hasBeds!=null && hasBeds.contains("true");
-        DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds);
+        boolean withoutChildrenFlg =  withoutChildren!=null ? withoutChildren : false;
+        DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds, false, withoutChildrenFlg);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         AllDepartmentsListData data = wsImpl.getAllDepartments(request);
         return new JSONWithPadding(data, callback);

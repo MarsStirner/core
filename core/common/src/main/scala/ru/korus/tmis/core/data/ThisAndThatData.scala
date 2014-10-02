@@ -1453,6 +1453,9 @@ class DepartmentsDataFilter extends AbstractListDataFilter {
   @BeanProperty
   var hasPatients: Boolean = _
 
+  @BeanProperty
+  var withoutChildren: Boolean = _
+
   def this(hasBeds: Boolean) {
     this()
     this.hasBeds = hasBeds //if (hasBeds) 1 else 0
@@ -1464,15 +1467,28 @@ class DepartmentsDataFilter extends AbstractListDataFilter {
     this.hasPatients = hasPatients
   }
 
+  def this(hasBeds: Boolean,
+           hasPatients: Boolean,
+           withoutChildren: Boolean) {
+    this(hasBeds)
+    this.hasPatients = hasPatients
+    this.withoutChildren = withoutChildren
+  }
+
   @Override
   def toQueryStructure() = {
-    var qs = new QueryDataStructure()
+    val qs = new QueryDataStructure()
 
     if (hasBeds) {
       // qs.query += ("AND os.hasHospitalBeds = :hasBeds\n")   //Старый запрос (до баги WEBMIS-793)
       //qs.add("hasBeds", this.hasBeds: java.lang.Boolean)
-      qs.query += ("AND exists (SELECT  oshb.masterDepartment.id FROM OrgStructureHospitalBed oshb WHERE oshb.masterDepartment.id = os.id)") //WEBMIS-793
+      qs.query += "AND exists (SELECT  oshb.masterDepartment.id FROM OrgStructureHospitalBed oshb WHERE oshb.masterDepartment.id = os.id)" //WEBMIS-793
     }
+
+    if(withoutChildren) {
+      qs.query += "AND NOT EXISTS (SELECT os2 FROM OrgStructure os2 WHERE os2.parentId IS NOT NULL AND os2.parentId=os.id)"
+    }
+
     if (hasPatients) {
       val res = """ AND exists(
           SELECT e
