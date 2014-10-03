@@ -718,6 +718,10 @@ with I18nable {
     }
   }
 
+  def sendJMSLabRequest(actionId: Int) = {
+    sendJMSLabRequest(actionId, dbJobTicketBean.getLaboratoryCodeForActionId(actionId))
+  }
+
   private def sendJMSLabRequest(actionId: Int, labCode: String) = {
     val action = actionBean.getActionById(actionId)
     em.detach(action)

@@ -359,10 +359,6 @@ object ConfigManager extends Configuration {
 
   class LaboratoryBakClass extends Configuration {
     /**
-     * URL сервиса CGM
-     */
-    var ServiceUrl: URL = new URL("http://10.128.131.114:8090/CGM_SOAP")
-    /**
      * Login basic http auth
      */
     var User: String = null

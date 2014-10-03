@@ -1,6 +1,7 @@
 package ru.korus.tmis.laboratory.bak.ws.client;
 
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.patient.DirectionBeanLocal;
 import ru.korus.tmis.laboratory.bak.BakRequestService;
 import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal;
 
@@ -23,8 +24,12 @@ public class BakRequest implements BakRequestService {
     @EJB
     private BakBusinessBeanLocal bakBusinessBean;
 
+    @EJB
+    private DirectionBeanLocal directionBeanLocal;
+
     @Override
     public void sendAnalysisRequest(int actionId) throws CoreException {
-        bakBusinessBean.sendLisAnalysisRequest(actionId);
+        directionBeanLocal.sendJMSLabRequest(actionId);
+        //bakBusinessBean.sendLisAnalysisRequest(actionId);
     }
 }

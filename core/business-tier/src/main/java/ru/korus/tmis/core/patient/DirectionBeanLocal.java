@@ -10,7 +10,6 @@ import ru.korus.tmis.core.exception.CoreException;
 import scala.Function2;
 
 import javax.ejb.Local;
-import java.util.Date;
 
 /**
  * Методы для работы с Направлениями
@@ -102,4 +101,6 @@ public interface DirectionBeanLocal {
     boolean updateJobTicketsStatuses(JobTicketStatusDataList data, AuthData authData) throws CoreException;
 
     void sendActionToLis(int actionId) throws CoreException;
+
+    void sendJMSLabRequest(int actionId) throws CoreException;
 }

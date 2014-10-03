@@ -48,7 +48,7 @@ class MessageDrivenListener extends LISMessageReceiver {
   override protected def getLaboratoryCode: String = LAB_CODE
 
   private def sendRequestToLIS(a: LaboratoryCreateRequestData) {
-    logger.info(ConfigManager.LaboratoryBak.ServiceUrl.toString)
+    logger.info(System.getProperty(BakSend.CGM_BAK_URL_SYSTEM_PROPERTY))
     try {
       val document = createDocument(a)
       logger.info("Query: " + Utils.marshallMessage(document, "ru.korus.tmis.laboratory.bak.service"))

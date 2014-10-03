@@ -21,7 +21,6 @@ import ru.korus.tmis.laboratory.bak.service.*;
 import ru.korus.tmis.util.Utils;
 import ru.korus.tmis.laboratory.bak.ws.client.BakSend;
 import ru.korus.tmis.laboratory.bak.ws.client.handlers.SOAPEnvelopeHandlerResolver;
-import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.util.logs.ToLog;
 
 import javax.annotation.Nullable;
@@ -91,7 +90,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
     @Override
     public void sendLisAnalysisRequest(final int actionId) throws CoreException {
         ToLog toLog = new ToLog("Analysis Request");
-        toLog.addN(ConfigManager.LaboratoryBak().ServiceUrl().toString());
+        toLog.addN(System.getProperty(BakSend.CGM_BAK_URL_SYSTEM_PROPERTY));
         try {
             final BakSendService service = createCGMService();
             final HL7Document hl7Document = createDocument(actionId, toLog);
@@ -118,7 +117,7 @@ public class BakBusinessBean implements BakBusinessBeanLocal {
      * @return BakSend - сервис для выполнения запросов
      * @see BakSendService
      */
-    private BakSendService createCGMService() {
+    private BakSendService createCGMService() throws CoreException {
         final BakSend BakSend = new BakSend();
         BakSend.setHandlerResolver(new SOAPEnvelopeHandlerResolver());
         return BakSend.getService();
