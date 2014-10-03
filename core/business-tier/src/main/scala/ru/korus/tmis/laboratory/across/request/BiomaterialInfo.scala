@@ -9,6 +9,7 @@ import DataConverter._
 import ru.korus.tmis.scala.util.Defaultible
 import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
+import scala.language.reflectiveCalls
 
 sealed case class BiomaterialInfo(
                                    orderBiomaterialCode: Option[String] = None,

@@ -363,7 +363,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
    *
    * Возвращает пару (код, текстовое описание диагноза) по МКБ или null
    */
-  def getDiagnosis(e: Event): Pair[String, String] = {
+  def getDiagnosis(e: Event): (String, String) = {
     // Получаем тип свойства действия для диагноза
     val diagnosisAPT = asScalaSet(dbActionPropertyType.getDiagnosisAPT)
 

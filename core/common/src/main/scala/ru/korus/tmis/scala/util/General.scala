@@ -4,6 +4,7 @@ import scala.util.control.Exception.allCatch
 
 import Types.{JInteger, JDouble, JFloat, JBoolean}
 import scala.Some
+import scala.language.reflectiveCalls
 
 object General {
   type MayThrow[A] = Either[Throwable, A]

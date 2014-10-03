@@ -552,7 +552,7 @@ with TmisLogging {
                 entities = entities + ap
 
                 //Обновим APVs
-                if (ap_val._2 != 0 && ap_val._2.size() > 0) {
+                if (ap_val._2 != null && ap_val._2.size() > 0) {
                   flgEdit match {
                     case 1 => {
                       //Редактируем значения "Переведен в" и "Время выбытия"
