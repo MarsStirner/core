@@ -1485,8 +1485,10 @@ class DepartmentsDataFilter extends AbstractListDataFilter {
       qs.query += "AND exists (SELECT  oshb.masterDepartment.id FROM OrgStructureHospitalBed oshb WHERE oshb.masterDepartment.id = os.id)" //WEBMIS-793
     }
 
+    // Temporary implementation
     if(withoutChildren) {
-      qs.query += "AND NOT EXISTS (SELECT os2 FROM OrgStructure os2 WHERE os2.parentId IS NOT NULL AND os2.parentId=os.id)"
+      qs.query += "AND (exists (SELECT  oshb.masterDepartment.id FROM OrgStructureHospitalBed oshb WHERE oshb.masterDepartment.id = os.id) OR " +
+        "os.code = 'Консультативно-поликлиническое отделение')"
     }
 
     if (hasPatients) {
