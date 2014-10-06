@@ -49,6 +49,8 @@ public class TestUtilCommon implements TestUtil {
         if( !diff.identical() ) {
             System.out.println("Argument:");
             System.out.println(res);
+            System.out.println("Except:");
+            System.out.println(except);
             System.out.println("Diff with " + pathToExceptMessage + " :");
             System.out.println(diff.toString());
         }
