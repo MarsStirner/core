@@ -8,6 +8,7 @@ import General.nullity_implicits
 import DataConverter._
 import ru.korus.tmis.scala.util.Defaultible
 import Defaultible._
+import scala.language.reflectiveCalls
 
 
 sealed case class IndicatorMetodic(
