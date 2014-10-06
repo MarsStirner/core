@@ -152,7 +152,7 @@ public class FinancePullBeanTest extends Arquillian {
         initDb();
         ServiceListResult res = paymentBeanLocal.getServiceList(TEST_EVENT_ID);
         Assert.assertTrue(res.getIdTreatment().equals(TEST_EVENT_ID));
-        final int countOfService = 1;
+        final int countOfService = 2;
         Assert.assertEquals(res.getServiceListArray().getListService().size(), countOfService);
         for(ServiceInfo cur : res.getServiceListArray().getListService()) {
             ServiceInfo serviceInforFromDb = new ServiceInfo(dbActionBeanLocal.getActionById(cur.getIdService().intValue()));
