@@ -87,6 +87,10 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val timeLessThan = new Time(filter.getEndDate.getTime)
     val timeMoreThan = new Time(filter.getBeginDate.getTime)
     val department = filter.getDepartmentId
+    val labs: util.List[String] = filter.getLabs.toList match {
+      case Nil | null => em.createNamedQuery("RbLaboratory.findAll", classOf[RbLaboratory]).getResultList.map(_.getName)
+      case _ => filter.getLabs
+    }
 
     val order = request.getSortingMethod.toLowerCase match {
       case "desc" => "desc"
@@ -116,6 +120,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       .setParameter("day_less_than", dayLessThan)
       .setParameter("begTime_less_than", timeLessThan)
       .setParameter("endTime_more_than", timeMoreThan)
+      .setParameter("labs", labs)
       .getResultList
 
     val outList = new util.ArrayList[(Action, ActionTypeTissueType, JobTicket)]
@@ -329,6 +334,8 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       LEFT JOIN jtValue.actionProperty jtProperty
       LEFT JOIN jtProperty.action research
       LEFT JOIN research.actionType.actionTypeTissueType attt
+      LEFT JOIN research.actionType.actionPropertyTypes apt
+      LEFT JOIN apt.test.rbLaboratoryTest.rbLaboratory lab
 
       WHERE
         jt.job.orgStructure.id = :department           AND
@@ -336,6 +343,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
         jt.job.date <= :day_less_than                  AND
         jt.job.begTime <= :begTime_less_than           AND
         jt.job.endTime >= :endTime_more_than           AND
+        lab.name IN :labs                              AND
 
         research.deleted = false                       AND
         research.event.deleted = false                 AND

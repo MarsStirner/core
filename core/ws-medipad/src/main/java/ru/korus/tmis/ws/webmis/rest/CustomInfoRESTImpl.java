@@ -146,6 +146,7 @@ public class CustomInfoRESTImpl {
                                          @QueryParam("filter[departmentId]")int departmentId,
                                          @QueryParam("filter[beginDate]")long beginDate,
                                          @QueryParam("filter[endDate]")long endDate,
+                                         @QueryParam("filter[lab]")List<String> labs,
                                          @QueryParam("filter[status]") String status,
                                          @QueryParam("filter[biomaterial]") int biomaterial) throws CoreException {
 
@@ -158,7 +159,7 @@ public class CustomInfoRESTImpl {
                                                                                             beginDate,
                                                                                             endDate,
                                                                                             statusS,
-                                                                                            biomaterial);
+                                                                                            biomaterial, labs);
         TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, filter);
         return new JSONWithPadding(wsImpl.getTakingOfBiomaterial(request, mkAuth(servRequest)),callback);
     }
