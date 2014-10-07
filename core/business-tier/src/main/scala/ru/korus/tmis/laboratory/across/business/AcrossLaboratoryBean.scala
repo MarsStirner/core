@@ -57,6 +57,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   var dbManager: DbManagerBeanLocal = _
 
 
+
   def getAcrossLab: lab2.IAcrossIntf_FNKC = {
     import ru.korus.tmis.laboratory.across.ws._
     try {
@@ -261,7 +262,15 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     val comment = a.getNote
     info("Request:Comment" + comment)
 
-    val department = getOrgStructureByEvent(a.getEvent)
+    val department = if(
+      a.getEvent.getEventType.getRequestType != null && Seq(RbRequestType.POLIKLINIKA_CODE, RbRequestType.DIAGNOSTIKA_CODE)
+      .contains(a.getEvent.getEventType.getRequestType.getCode)) {
+      a.getEvent.getOrgStructure
+    } else if(a.getEvent.getEventType.getRequestType == null)
+      null
+    else {
+      getOrgStructureByEvent(a.getEvent)
+    }
     // DepartmentName (string) -- название подразделения - отделение
     // DepartmentCode (string) -- уникальный код подразделения (отделения)
     val (depName, depCode) = department match {
