@@ -8,6 +8,7 @@ import ru.korus.tmis.core.data.TakingOfBiomaterialRequesData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
+import ru.korus.tmis.core.entity.model.RbLaboratory;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 
@@ -17,6 +18,7 @@ import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import java.util.Arrays;
 import java.util.List;
 
@@ -254,6 +256,15 @@ public class CustomInfoRESTImpl {
 
     @Path("/organization")
     public Object getOrganizationById() { return organizationImpl; }
+
+
+    @GET
+    @Path("/labs")
+    @Produces({"application/javascript", "application/xml"})
+    public Object getLabs(@QueryParam("callback") String callback) {
+        return new JSONWithPadding(new GenericEntity<List<RbLaboratory>>(wsImpl.getLabs()) {}, callback);
+    }
+
 
     private AuthData mkAuth(HttpServletRequest servRequest) {
         return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));

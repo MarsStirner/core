@@ -41,6 +41,9 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
   @EJB
   private var dbManager: DbManagerBeanLocal = _
 
+  @EJB
+  var dbRbLaboratory: DbRbLaboratory = _
+
   def getJobTicketById(id: Int): JobTicket = {
     val result = em.createQuery(JobTicketByIdQuery, classOf[JobTicket])
                    .setParameter("id", id)
@@ -88,7 +91,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val timeMoreThan = new Time(filter.getBeginDate.getTime)
     val department = filter.getDepartmentId
     val labs: util.List[String] = filter.getLabs.toList match {
-      case Nil | null => em.createNamedQuery("RbLaboratory.findAll", classOf[RbLaboratory]).getResultList.map(_.getName)
+      case Nil | null => dbRbLaboratory.getAllLabs.map(_.getName)
       case _ => filter.getLabs
     }
 
