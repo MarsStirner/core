@@ -332,7 +332,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
 
   val DirectionsWithJobTicketsBetweenDateQuery =
     """
-      SELECT research, jt, attt FROM JobTicket jt
+      SELECT DISTINCT research, jt, attt FROM JobTicket jt
       LEFT JOIN jt.propertiesValues jtValue
       LEFT JOIN jtValue.actionProperty jtProperty
       LEFT JOIN jtProperty.action research
