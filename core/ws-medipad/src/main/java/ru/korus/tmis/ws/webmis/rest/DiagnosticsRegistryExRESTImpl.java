@@ -213,28 +213,34 @@ public class DiagnosticsRegistryExRESTImpl {
     @GET
     @Path("/consultations")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getListOfConsultationDiagnosticsForPatientByEvent(  @QueryParam("limit")int limit,
-                                                               @QueryParam("page")int  page,
-                                                               @QueryParam("sortingField")String sortingField,           //сортировки вкл
-                                                               @QueryParam("sortingMethod")String sortingMethod,
-                                                               @QueryParam("filter[code]")String  diaTypeCode,
-                                                               //@QueryParam("filter[diagnosticDate]")long  diagnosticDate,
-                                                               //@QueryParam("filter[directionDate]")long  directionDate,
-                                                               @QueryParam("filter[date]") long date,
-                                                               @QueryParam("filter[diagnosticName]")String  diagnosticName,
-                                                               @QueryParam("filter[assignPersonId]")int  assignPersonId,
-                                                               @QueryParam("filter[execPersonId]")int  execPersonId,
-                                                               @QueryParam("filter[statusId]")int  statusId,
-                                                               @QueryParam("filter[office]")String  office,
-                                                               @QueryParam("filter[urgent]")Boolean  urgent,
-                                                               @QueryParam("filter[class]")Short  clazz) throws CoreException {
+    public Object getListOfConsultationDiagnosticsForPatientByEvent(@QueryParam("limit")int limit,
+                                                                    @QueryParam("page")int  page,
+                                                                    @QueryParam("sortingField")String sortingField,           //сортировки вкл
+                                                                    @QueryParam("sortingMethod")String sortingMethod,
+                                                                    @QueryParam("filter[code]")String  diaTypeCode,
+                                                                    @QueryParam("filter[date]") long date,
+                                                                    @QueryParam("filter[diagnosticName]")String  diagnosticName,
+                                                                    @QueryParam("filter[assignPersonId]")int  assignPersonId,
+                                                                    @QueryParam("filter[execPersonId]")int  execPersonId,
+                                                                    @QueryParam("filter[statusId]")int  statusId,
+                                                                    @QueryParam("filter[office]")String  office,
+                                                                    @QueryParam("filter[urgent]")Boolean  urgent,
+                                                                    @QueryParam("filter[class]")Short  clazz,
+                                                                    @QueryParam("filter[mnem]") List<String> mnems) throws CoreException {
 
         final DirectoryInfoRESTImpl.ActionTypesSubType atst = DirectoryInfoRESTImpl.ActionTypesSubType.getType("consultations");
         final DirectoryInfoRESTImpl.ActionTypesSubType atst_poly = DirectoryInfoRESTImpl.ActionTypesSubType.getType("consultations_poly");
+
+        List<String> mnemonics;
+
+        if(mnems == null || mnems.isEmpty()) { // Старое поведение
+            mnemonics = new ArrayList<String>(){{this.add(atst.getMnemonic());this.add(atst_poly.getMnemonic());}};
+        } else { // Новое поведение
+            mnemonics = mnems;
+        }
+
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter( diaTypeCode,
                 this.eventId,
-                //diagnosticDate,
-                //directionDate,
                 date,
                 diagnosticName,
                 assignPersonId,
@@ -242,8 +248,8 @@ public class DiagnosticsRegistryExRESTImpl {
                 office,
                 statusId,
                 (urgent==null) ? -1 : (urgent) ? 1 : 0,
-                atst.getSubType(),
-                new ArrayList<String>(){{this.add(atst.getMnemonic());this.add(atst_poly.getMnemonic());}},
+                "consultations",
+                mnemonics,
                 (clazz==null) ? -1 : clazz);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
