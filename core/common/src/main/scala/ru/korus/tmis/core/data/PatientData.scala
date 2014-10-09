@@ -409,7 +409,7 @@ class BloodInfoContainer {
 }
 
 @XmlType(name = "bloodInfoContainer")
-@XmlRootElement(name = "bloodInfoContainer")
+@XmlRootElement(name = "BloodPhenoTypeContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
 class BloodPhenoTypeContainer {
   @BeanProperty
