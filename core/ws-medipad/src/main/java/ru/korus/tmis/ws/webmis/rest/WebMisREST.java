@@ -475,6 +475,8 @@ public interface WebMisREST extends Serializable {
 
     List<Nomenclature> getRlsByText(String text) throws CoreException;
 
+    List<RbLaboratory> getLabs();
+
     /**
      * Залочить действие
      *

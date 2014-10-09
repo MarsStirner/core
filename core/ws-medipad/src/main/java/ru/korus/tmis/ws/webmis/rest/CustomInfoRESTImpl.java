@@ -8,6 +8,7 @@ import ru.korus.tmis.core.data.TakingOfBiomaterialRequesData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
+import ru.korus.tmis.core.entity.model.RbLaboratory;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 
@@ -17,6 +18,7 @@ import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import java.util.Arrays;
 import java.util.List;
 
@@ -146,6 +148,7 @@ public class CustomInfoRESTImpl {
                                          @QueryParam("filter[departmentId]")int departmentId,
                                          @QueryParam("filter[beginDate]")long beginDate,
                                          @QueryParam("filter[endDate]")long endDate,
+                                         @QueryParam("filter[lab]")List<String> labs,
                                          @QueryParam("filter[status]") String status,
                                          @QueryParam("filter[biomaterial]") int biomaterial) throws CoreException {
 
@@ -158,7 +161,7 @@ public class CustomInfoRESTImpl {
                                                                                             beginDate,
                                                                                             endDate,
                                                                                             statusS,
-                                                                                            biomaterial);
+                                                                                            biomaterial, labs);
         TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, filter);
         return new JSONWithPadding(wsImpl.getTakingOfBiomaterial(request, mkAuth(servRequest)),callback);
     }
@@ -253,6 +256,15 @@ public class CustomInfoRESTImpl {
 
     @Path("/organization")
     public Object getOrganizationById() { return organizationImpl; }
+
+
+    @GET
+    @Path("/labs")
+    @Produces({"application/javascript", "application/xml"})
+    public Object getLabs(@QueryParam("callback") String callback) {
+        return new JSONWithPadding(new GenericEntity<List<RbLaboratory>>(wsImpl.getLabs()) {}, callback);
+    }
+
 
     private AuthData mkAuth(HttpServletRequest servRequest) {
         return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));

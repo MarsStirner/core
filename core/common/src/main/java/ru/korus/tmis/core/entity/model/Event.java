@@ -61,13 +61,16 @@ public class Event implements Serializable {
     private String externalId;
 
     @ManyToOne
-    @JoinColumn(name = "eventType_id",
-            nullable = false)
+    @JoinColumn(name = "eventType_id", nullable = false)
     private EventType eventType;
 
     @ManyToOne
     @JoinColumn(name = "org_id", nullable = true)
     private Organisation organisation;
+
+    @ManyToOne
+    @JoinColumn(name = "orgStructure_id", nullable = true)
+    private OrgStructure orgStructure;
 
     @JoinColumn(name = "contract_id")
     private Contract contract;
@@ -451,6 +454,14 @@ public class Event implements Serializable {
 
     public void setPrimary(Integer primary) {
         isPrimary = primary;
+    }
+
+    public OrgStructure getOrgStructure() {
+        return orgStructure;
+    }
+
+    public void setOrgStructure(OrgStructure orgStructure) {
+        this.orgStructure = orgStructure;
     }
 
     @Override

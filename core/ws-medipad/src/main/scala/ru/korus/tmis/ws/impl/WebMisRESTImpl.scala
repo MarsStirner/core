@@ -197,6 +197,9 @@ with CAPids {
   @EJB
   var notificationBeanLocal: NotificationBeanLocal = _
 
+  @EJB
+  var dbRbLaboratory: DbRbLaboratory = _
+
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
       val patients = patientBean.getAllPatients(requestData)
@@ -1765,6 +1768,7 @@ with CAPids {
     dbRlsBean.getRlsByText(text)
   }
 
+  def getLabs: java.util.List[RbLaboratory] = dbRbLaboratory.getAllLabs
 
   def lock(actionId: Int, auth: AuthData): LockData = {
     val appLockDetail: AppLockDetail = authStorage.getAppLock(auth.getAuthToken, "Action", actionId)
