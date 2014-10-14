@@ -123,6 +123,7 @@ public class BakResult implements BakResultBeanLocal {
                 if (subj.getObservationBattery() != null) {
                     final String orderMisId = subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
                     final boolean finalFlag = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getStatusCode().getCode().equals("true");
+                    final String comment = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getCode().getCodeSystem();
                     final List<CE> ceList = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getConfidentialityCode();
                     if (ceList != null && !ceList.isEmpty()) {
                         final String text = ceList.get(0).getDisplayName();
@@ -134,6 +135,12 @@ public class BakResult implements BakResultBeanLocal {
                             ifa.setValue(value);
                             ifa.setActionId(actionId);
                             ifa.setComplete(finalFlag);
+                            if(comment != null) {
+                                if (ifa.getComment() == null)
+                                    ifa.setComment(comment);
+                                else
+                                    ifa.setComment(ifa.getComment() + "\n" + comment);
+                            }
                         }
                     }
                /* } else if (subj.getObservationReport() != null) {
