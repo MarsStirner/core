@@ -329,7 +329,7 @@ with CAPids {
     val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsStandartForm])
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsStandartForm]))
     //val map = patientBean.getKLADRAddressMapForPatient(result)
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
@@ -363,7 +363,7 @@ with CAPids {
     val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
     val mapper: ObjectMapper = new ObjectMapper()
 
-    mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsPrintForm])
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsPrintForm]))
 
     val map = patientBean.getKLADRAddressMapForPatient(positionE._1.getPatient)
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
@@ -415,8 +415,8 @@ with CAPids {
 
     val mapper: ObjectMapper = new ObjectMapper()
     requestData.filter.asInstanceOf[ReceivedRequestDataFilter].role match {
-      case 29 => mapper.getSerializationConfig.withView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView]) //Сестра приемного отделения
-      case _ => mapper.getSerializationConfig.withView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView]) //Доктор
+      case 29 => mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsNurseView])) //Сестра приемного отделения
+      case _ => mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[ReceivedPatientsDataViews.AdmissionDepartmentsDoctorView])) //Доктор
     }
 
     requestData.setRecordsCount(dbEventBean.getCountOfAppealsForReceivedPatientByPeriod(requestData.filter))
@@ -937,16 +937,16 @@ with CAPids {
 
     val mapper: ObjectMapper = new ObjectMapper()
     if (action.getEndDate == null) //Если действие закрыто (перевод)
-      mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationFormView])
+      mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationFormView]))
     else
-      mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MoveView])
+      mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MoveView]))
     mapper.writeValueAsString(hospitalBedBean.getRegistryFormWithChamberList(action, authData))
   }
 
   def getMovingListForEvent(filter: HospitalBedDataListFilter, authData: AuthData) = {
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MovesListView])
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MovesListView]))
     mapper.writeValueAsString(hospitalBedBean.getMovingListByEventIdAndFilter(filter, authData))
   }
 
@@ -956,7 +956,7 @@ with CAPids {
     val action = hospitalBedBean.registryPatientToHospitalBed(eventId, data, authData)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationView])
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationView]))
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
@@ -966,7 +966,7 @@ with CAPids {
     val action = hospitalBedBean.modifyPatientToHospitalBed(actionId, data, authData)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationView])
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationView]))
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
@@ -1009,7 +1009,7 @@ with CAPids {
     val action = hospitalBedBean.movingPatientToDepartment(eventId, data, authData)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MoveView])
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MoveView]))
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
   }
 
@@ -1029,14 +1029,14 @@ with CAPids {
     action.setStatus(2) //A little piece of magic - 2 is a status of CLOSED action
     actionBean.updateAction(action)
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig.withView(classOf[ActionDataContainer])
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[ActionDataContainer]))
     mapper.writeValueAsString(new ActionDataContainer(action))
   }
 
   def insertOrUpdateQuota(quotaData: QuotaData, eventId: Int, auth: AuthData) = {
     var quota = appealBean.insertOrUpdateClientQuoting(quotaData.getData, eventId, auth)
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig.withView(classOf[QuotaViews.DynamicFieldsQuotaCreate])
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
     if (quotaData.getData.getId > 0) {
       quota = dbClientQuoting.getClientQuotingById(quotaData.getData.getId)
     }
@@ -1056,7 +1056,7 @@ with CAPids {
       request.rewriteRecordsCount)
 
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig.withView(classOf[QuotaViews.DynamicFieldsQuotaHistory])
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[QuotaViews.DynamicFieldsQuotaHistory]))
     mapper.writeValueAsString(new QuotaListData(quotaList, request))
   }
 
@@ -1241,7 +1241,7 @@ with CAPids {
         json
       case _ =>
         val mapper: ObjectMapper = new ObjectMapper()
-        mapper.getSerializationConfig.withView(classOf[ActionTypesListDataViews.OneLevelView]); //плоская структурв
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[ActionTypesListDataViews.OneLevelView])) //плоская структурв
         mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter))
     }
     result
@@ -1249,7 +1249,7 @@ with CAPids {
 
   def getListOfActionTypes(request: ListDataRequest) = {
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig.withView(classOf[ActionTypesListDataViews.DefaultView]); //дерево
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[ActionTypesListDataViews.DefaultView])) //дерево
     // Данный параметр использовался в прошлой реализации, в текущей он не требуется
     request.filter.asInstanceOf[ActionTypesListRequestDataFilter].setCode(null)
     mapper.writeValueAsString(new ActionTypesListData(request, actionTypeBean.getAllActionTypeWithFilter))
@@ -1367,9 +1367,9 @@ with CAPids {
     set.add("mkb")
 
     if (set.contains(request.filter.asInstanceOf[MKBListRequestDataFilter].view)) {
-      mapper.getSerializationConfig.withView(classOf[AllMKBListDataViews.OneLevelView]); //плоская структурв
+      mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[AllMKBListDataViews.OneLevelView])) //плоская структурв
     } else {
-      mapper.getSerializationConfig.withView(classOf[AllMKBListDataViews.DefaultView]); //дерево
+      mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[AllMKBListDataViews.DefaultView])) //дерево
     }
     mapper.writeValueAsString(new AllMKBListData(mkbs, mkbs_display, request))
   }
@@ -1392,7 +1392,7 @@ with CAPids {
       case "bloodTypes" | "bloodPhenotype" =>
         //Группы крови
         val tableName: String = if (dictName.equals("bloodTypes")) "RbBloodType" else "RbBloodPhenotype"
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         request.setRecordsCount(dbBloodTypeBean.getCountOfBloodTypesWithFilter(request.filter, tableName))
         dbBloodTypeBean.getAllBloodTypesWithFilter(request.page - 1,
           request.limit,
@@ -1400,7 +1400,7 @@ with CAPids {
           request.filter.unwrap(), tableName)
       case "relationships" =>
         //Типы родственных связей
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         request.setRecordsCount(dbRelationTypeBean.getCountOfRelationsWithFilter(request.filter))
         dbRelationTypeBean.getAllRelationsWithFilter(request.page - 1,
           request.limit,
@@ -1408,7 +1408,7 @@ with CAPids {
           request.filter.unwrap())
       case "citizenships" =>
         //Гражданство
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
@@ -1416,7 +1416,7 @@ with CAPids {
           request.filter.unwrap())
       case "citizenships2" =>
         //Второе гражданство
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
@@ -1424,7 +1424,7 @@ with CAPids {
           request.filter.unwrap())
       case "socStatus" =>
         //Соц статусы
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
@@ -1432,7 +1432,7 @@ with CAPids {
           request.filter.unwrap())
       case "TFOMS" =>
         //ТФОМС
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.TFOMSView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.TFOMSView]))
         request.setRecordsCount(dbOrganizationBean.getCountOfOrganizationWithFilter(request.filter))
         dbOrganizationBean.getAllOrganizationWithFilter(request.page - 1,
           request.limit,
@@ -1440,7 +1440,7 @@ with CAPids {
           request.filter.unwrap())
       case "clientDocument" =>
         //Типы документов, удостоверяющих личность
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.ClientDocumentView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.ClientDocumentView]))
         request.setRecordsCount(dbDocumentTypeBean.getCountOfDocumentTypesWithFilter(request.filter))
         dbDocumentTypeBean.getAllDocumentTypesWithFilter(request.page - 1,
           request.limit,
@@ -1448,7 +1448,7 @@ with CAPids {
           request.filter.unwrap())
       case "insurance" =>
         //Страховые компании
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.InsuranceView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.InsuranceView]))
         request.setRecordsCount(dbOrganizationBean.getCountOfOrganizationWithFilter(request.filter))
         dbOrganizationBean.getAllOrganizationWithFilter(request.page - 1,
           request.limit,
@@ -1456,7 +1456,7 @@ with CAPids {
           request.filter.unwrap())
       case "policyTypes" =>
         //Тип полиса
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.PolicyTypeView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.PolicyTypeView]))
         request.setRecordsCount(dbRbPolicyTypeBean.getCountOfRbPolicyTypeWithFilter(request.filter))
         dbRbPolicyTypeBean.getAllRbPolicyTypeWithFilter(request.page - 1,
           request.limit,
@@ -1464,7 +1464,7 @@ with CAPids {
           request.filter.unwrap())
       case "disabilityTypes" =>
         //Тип инвалидности
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         request.setRecordsCount(dbRbSocTypeBean.getCountOfSocStatusTypesWithFilter(request.filter))
         dbRbSocTypeBean.getAllSocStatusTypesWithFilter(request.page - 1,
           request.limit,
@@ -1472,14 +1472,14 @@ with CAPids {
           request.filter.unwrap())
       case "KLADR" =>
         //адреса по кладру
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.KLADRView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.KLADRView]))
         request.setRecordsCount(dbSchemeKladrBean.getCountOfKladrRecordsWithFilter(request.filter))
         dbSchemeKladrBean.getAllKladrRecordsWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap())
       case "valueDomain" =>
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.ValueDomainView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.ValueDomainView]))
         //request.setRecordsCount(dbSchemeKladrBean.getCountOfKladrRecordsWithFilter(request.filter))
         actionPropertyTypeBean.getActionPropertyTypeValueDomainsWithFilter(request.page - 1,
           request.limit,
@@ -1487,7 +1487,7 @@ with CAPids {
           request.filter.unwrap())
       case "specialities" =>
         //  Специальности
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         request.setRecordsCount(dbSpeciality.getCountOfBloodTypesWithFilter(request.filter))
         dbSpeciality.getAllSpecialitiesWithFilter(request.page - 1,
           request.limit,
@@ -1495,7 +1495,7 @@ with CAPids {
           request.filter.unwrap())
       case "contactTypes" =>
         //  Типы контактов
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         request.setRecordsCount(dbRbContactType.getCountOfAllRbContactTypesWithFilter(request.filter))
         dbRbContactType.getAllRbContactTypesWithFilter(request.page - 1,
           request.limit,
@@ -1503,7 +1503,7 @@ with CAPids {
           request.filter.unwrap())
       case "requestTypes" =>
         //  Типы обращений
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.RequestTypesView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.RequestTypesView]))
         dbRbRequestTypes.getAllRbRequestTypesWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
@@ -1511,7 +1511,7 @@ with CAPids {
           request.rewriteRecordsCount)
       case "finance" =>
         //  Типы оплаты
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         dbRbFinance.getAllRbFinanceWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
@@ -1519,7 +1519,7 @@ with CAPids {
           request.rewriteRecordsCount)
       case "quotaStatus" =>
         //   Статусы квот
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         dbRbQuotaStatus.getAllRbQuotaStatusWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
@@ -1527,7 +1527,7 @@ with CAPids {
           request.rewriteRecordsCount)
       case "tissueTypes" =>
         //Типы исследования
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         dbRbTissueType.getAllRbTissueTypeWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
@@ -1535,7 +1535,7 @@ with CAPids {
           request.rewriteRecordsCount)
       case "operationTypes" =>
         //Типы операций
-        mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+        mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
         dbRbOperationType.getAllRbOperationTypeWithFilter(request.page - 1,
           request.limit,
           request.sortingFieldInternal,
@@ -1566,7 +1566,7 @@ with CAPids {
 
   def getEventTypes(request: ListDataRequest, authData: AuthData) = {
     val mapper: ObjectMapper = new ObjectMapper()
-    mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView])
+    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
 
     val list = dbEventTypeBean.getEventTypesByRequestTypeIdAndFinanceId(request.page - 1,
       request.limit,

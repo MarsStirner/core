@@ -386,9 +386,9 @@ class PatientBean
       if (actionsMap.size() > 0) {
         conditionsInfo = dbActionProperty.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(actionsMap.map(p=> p._1.getEvent.getId).toList, setAsJavaSet(Set("STATE", "PULS", "BPRAS","BPRAD")), 1, true)
       }
-      mapper.getSerializationConfig().withView(classOf[PatientsListDataViews.NurseView])
+      mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[PatientsListDataViews.NurseView]))
     }
-    else mapper.getSerializationConfig().withView(classOf[PatientsListDataViews.AttendingDoctorView])
+    else mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[PatientsListDataViews.AttendingDoctorView]))
 
     mapper.writeValueAsString(new PatientsListData(actionsMap,
                                                    requestData,
