@@ -159,21 +159,26 @@ public class BakResult implements BakResultBeanLocal {
     /**
      * Сохранение ИФА исседования
      *
-     * @param ifa
-     * @param toLog
+     * @param ifa Структура исследования, разобранная из hl7 данных
+     * @param toLog Внешний логгер
      */
     private void saveIFA(final IFA ifa, final ToLog toLog) throws CoreException {
         try {
             final Action action = dbAction.getActionById(ifa.getActionId());
-            int aptId = 0;
+            int ifaResultPropId = 0;
+            int ifaCommentPropId = 0;
             for (ActionProperty property : action.getActionProperties()) {
                 final ActionPropertyType type = property.getType();
                 if (type.getCode() != null && "ifa".equals(type.getCode())) {
-                    aptId = type.getId();
+                    ifaResultPropId = type.getId();
+                } else if(type.getCode() != null && "comment".equals(type.getCode())) {
+                    ifaCommentPropId = type.getId();
                 }
             }
-            db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), aptId, true);
-            toLog.addN("Save IFA result [#], aptId [#]", ifa.getFullResult(), aptId);
+            db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), ifaResultPropId, true);
+            if(ifaCommentPropId > 0 && ifa.getComment() != null)
+                db.addSinglePropBasic(ifa.getComment(), APValueString.class, ifa.getActionId(), ifaCommentPropId, true);
+            toLog.addN("Save IFA result [#], ifaResultPropId [#]", ifa.getFullResult(), ifaResultPropId);
             // Изменяем статус действия на "Закончено"
             if (ifa.isComplete()) {
                 dbAction.updateActionStatusWithFlush(action.getId(), ActionStatus.FINISHED.getCode());
