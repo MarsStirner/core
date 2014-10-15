@@ -203,17 +203,10 @@ class CommonAttribute{
 
   @BeanProperty var properties: java.util.List[PropertyPair] = new java.util.LinkedList[PropertyPair]
 
-  def getPropertiesMap = {
-    val map =  new java.util.HashMap[String, String]()
-    properties.asScala.foreach((p) => map.put(p.name, p.value))
-    map.asScala.toMap
-  }
-  def addProperty(key: String, value: String) = {
-    value match {
-      case null => {}
-      case _ => properties.add(new PropertyPair(key, value))
-    }
-  }
+  @XmlTransient
+  def getPropertiesMap = properties.asScala.map((p) => p.name -> p.value).toMap
+
+  def addProperty(key: String, value: String) = if(value != null) properties.add(new PropertyPair(key, value))
 
   def apply(map: Map[String, String]) = {
     map.foreach((property) => {
