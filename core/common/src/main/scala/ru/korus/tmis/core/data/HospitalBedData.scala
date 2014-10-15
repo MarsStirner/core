@@ -168,14 +168,6 @@ class HospitalBedEntry {
   @BeanProperty
   var registrationForm: RegistrationHospitalBedContainer = _
 
-  /**
-   * Возвращает позицию найденного в списке значения
-   * @param seq Список
-   * @tparam T  Тип искомых данных
-   */
-  private class IndexOf[T] (seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
-  }
 
   def this(action: Action,
            mGetPropertiesWithValuesByCodes: (Int, java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
@@ -343,15 +335,6 @@ class MoveHospitalBedContainer {
   private val movingInDepartment = 2       //Перевод в отделение
 
   /**
-   * Возвращает позицию найденного в списке значения
-   * @param seq Список
-   * @tparam T  Тип искомых данных
-   */
-  private class IndexOf[T] (seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
-  }
-
-  /**
    * Конструктор класса MoveHospitalBedContainer
    * @param action Действие.
    * @param values Список значений свойств действия со значениями.
@@ -507,15 +490,6 @@ class RegistrationHospitalBedContainer {
   @JsonView(Array(classOf[HospitalBedViews.RegistrationFormView]))
   @BeanProperty
   var chamberList: java.util.LinkedList[ChamberDataContainer] = new java.util.LinkedList[ChamberDataContainer]
-
-  /**
-   * Возвращает позицию найденного в списке значения
-   * @param seq Список
-   * @tparam T  Тип искомых данных
-   */
-  private class IndexOf[T] (seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
-  }
 
   /**
    * Конструктор класса RegistrationHospitalBedContainer
