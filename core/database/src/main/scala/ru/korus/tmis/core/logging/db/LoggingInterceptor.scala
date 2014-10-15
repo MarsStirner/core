@@ -6,6 +6,8 @@ import javax.interceptor.{AroundInvoke, InvocationContext}
 
 import grizzled.slf4j.Logging
 
+import scala.compat.Platform._
+
 class LoggingInterceptor extends Logging {
 
 
@@ -23,11 +25,11 @@ class LoggingInterceptor extends Logging {
     val startTime = System.nanoTime
 
     try {
-      ctx proceed
+      ctx.proceed
     } catch {
       case ex: Exception => {
         trace("Caught exception " + ex)
-        trace(ex.getStackTraceString)
+        trace(ex.getStackTrace.mkString("", EOL, EOL))
         throw ex
       }
     } finally {
