@@ -67,7 +67,7 @@ class AppealBeanTest {
   final val TAction_id = 1
 
   private class IndexOf[T] (seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
+    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
   }
 
   @Before

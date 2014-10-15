@@ -50,7 +50,7 @@ class HospitalBedBeanTest {
   final val logger: Logger = LoggerFactory.getLogger(classOf[HospitalBedBeanTest])
 
   private class IndexOf[T] (seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
+    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
   }
 
   private val list = List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedFrom").toInt,

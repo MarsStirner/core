@@ -68,7 +68,7 @@ with TmisLogging {
   var dbOrgStructureHospitalBed: DbOrgStructureHospitalBedBeanLocal = _
 
   private class IndexOf[T](seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
+    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
   }
 
   private val list = List(iCapIds("db.rbCAP.moving.id.movedFrom").toInt,
