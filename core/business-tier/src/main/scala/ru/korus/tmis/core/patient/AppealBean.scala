@@ -100,7 +100,7 @@ with CAPids {
 */
 
   private class IndexOf[T](seq: Seq[T]) {
-    def unapply(pos: T) = seq find pos.== map (seq indexOf _)
+    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
   }
 
   val list = List(iCapIds("db.rbCAP.hosp.primary.id.directed").toInt, //Кем направлен
