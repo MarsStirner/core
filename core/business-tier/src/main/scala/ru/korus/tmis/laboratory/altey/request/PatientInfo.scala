@@ -9,6 +9,7 @@ import ru.korus.tmis.core.entity.model.Sex
 import ru.korus.tmis.scala.util.Defaultible
 import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
+import scala.language.implicitConversions
 
 sealed case class PatientInfo(
                                patientMisId: Int,

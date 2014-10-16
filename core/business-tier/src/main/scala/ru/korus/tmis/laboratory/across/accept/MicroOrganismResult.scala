@@ -1,6 +1,7 @@
 package ru.korus.tmis.laboratory.across.accept
 
 import ru.korus.tmis.laboratory.across.{accept2 => lab2}
+import scala.language.implicitConversions
 
 final object MicroOrganismResult {
 
