@@ -98,7 +98,7 @@ public class ServiceInfo {
         final Event event = action.getEvent();
         final Staff executor = event == null ? null : event.getExecutor();
         final OrgStructure orgStructure = executor == null ? null : executor.getOrgStructure();
-        this.orgStruct = orgStructure == null ? null : new CodeNameSystem(orgStructure.getCode(), orgStructure.getName());
+        this.orgStruct = orgStructure == null ? null : CodeNameSystem.newInstance(orgStructure.getCode(), orgStructure.getName(), null);
         Date birthDate = event == null ? null : event.getPatient().getBirthDate();
         Date setDate = event == null ? null : event.getSetDate();
         Boolean isChild = null;
@@ -137,10 +137,10 @@ public class ServiceInfo {
         this.diagnosis = diag;
 
         final RbMedicalAidType type = action.getEvent().getEventType().getRbMedicalAidType();
-        this.servType = type == null ? null : new CodeNameSystem(type.getCode(), type.getName());
+        this.servType = type == null ? null : CodeNameSystem.newInstance(type.getCode(), type.getName(), null);
 
         final RbMedicalAidProfile profile = service != null && service.getMedicalAidProfile() == null ? null : service.getMedicalAidProfile();
-        this.serviceProfile = (profile == null) ? null : new CodeNameSystem(profile.getCode(), profile.getName());
+        this.serviceProfile = (profile == null) ? null : CodeNameSystem.newInstance(profile.getCode(), profile.getName(), null);
     }
 
 
