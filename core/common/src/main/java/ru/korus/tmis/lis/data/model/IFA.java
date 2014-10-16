@@ -13,6 +13,8 @@ public class IFA {
 
     private long actionId;
 
+    private String comment;
+
     /**
      * Признак завершенности исследования
      */
@@ -54,6 +56,14 @@ public class IFA {
         this.actionId = actionId;
     }
 
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
     /**
      * Вывод результата в формате {значение}/{текст}
      * @return
@@ -71,4 +81,5 @@ public class IFA {
         sb.append('}');
         return sb.toString();
     }
+
 }
