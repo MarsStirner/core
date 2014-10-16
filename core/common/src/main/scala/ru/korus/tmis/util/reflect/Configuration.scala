@@ -37,7 +37,7 @@ trait Configuration extends Reflective {
     collect {case (name, field) => (name, field)}
 
   def setSetting(path: String, value: String): Boolean = {
-    def catchy[A](v: => A): Option[A] = try Some(v) catch {case ex => None}
+    def catchy[A](v: => A): Option[A] = try Some(v) catch {case ex: Throwable => None}
 
     def tokens = path.split("\\.", 2) // take only the first token, leave others
     tokens match {
