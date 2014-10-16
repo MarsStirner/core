@@ -35,7 +35,6 @@ class LoggingHandler
         }
           getOrElse "Unknown host") +
         "]"
-      case _ => "???"
     }
 
 
