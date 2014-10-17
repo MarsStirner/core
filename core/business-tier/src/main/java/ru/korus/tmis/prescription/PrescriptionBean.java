@@ -111,8 +111,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         final Action action = createPrescriptionAction(createPrescriptionReqData, authData);
         saveDrugs(action, data.getDrugs());
         saveIntervals(action, data.getNote(), data.getAssigmentIntervals());
-        PrescriptionsData res = new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
-        return res;
+        return new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
     }
 
     @Override
@@ -131,8 +130,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
 
         updateDrugs(action, data.getDrugs());
 
-        PrescriptionsData res = new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
-        return res;
+        return new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
     }
 
 
@@ -184,7 +182,6 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     }
 
     private void createNewInterval(AssigmentIntervalData intervalData) {
-        DrugChart interval = new DrugChart();
         Action action = em.find(Action.class, intervalData.getActionId());
         if (action != null) {
             dbDrugChartBeanLocal.create(action,
@@ -236,7 +233,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
                 logger.info("wrong property id : " + prop.getId(), ex);
             }
 
-            String  value =  prop.getValueId() == null ? prop.getValue() : (prop.getValueId() == null ? null :String.valueOf(prop.getValueId()));
+            String  value =  prop.getValueId() == null ? prop.getValue() : String.valueOf(prop.getValueId());
 
             if (ap != null && value != null && !"этот тип экшен проперти пока не поддерживается".equals(prop.getValue())) {
                 APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, value, 0);
