@@ -187,6 +187,24 @@
                 <project.build.debug>true</project.build.debug>
                 <!-- Название домена -->
                 <glassfish.domain>fccho-moscow</glassfish.domain>
+                <!-- Адрес ЛИС БАК -->
+                <bak.intergation.url>http\://10.128.131.116\:8090/CGM_SOAP</bak.intergation.url>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+
+        <!-- Профиль для установки на стандартный Linux-сервер  glassfish 3.x (тестовый стенд)-->
+        <profile>
+            <id>production-standart-test</id>
+            <properties>
+                <!-- Выключить дебаг -->
+                <project.build.debug>true</project.build.debug>
+                <!-- Название домена -->
+                <glassfish.domain>fccho-moscow</glassfish.domain>
+                <!-- Адрес ЛИС БАК -->
+                <bak.intergation.url>http\://10.128.131.114\:8090/CGM_SOAP</bak.intergation.url>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
