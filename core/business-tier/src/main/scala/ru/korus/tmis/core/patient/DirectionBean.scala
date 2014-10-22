@@ -239,7 +239,7 @@ with I18nable {
             if (takenTissue != null) a.setTakenTissue(takenTissue)
             list.add(j, jt, takenTissue, a)
             jtForAp = jt
-            actionsSendToLIS += Tuple2(a, jt.getId)
+            if(jobTicket.getStatus == JobTicket.STATUS_IS_FINISHED) actionsSendToLIS += Tuple2(a, jt.getId)
           } else {
             val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
             j.setQuantity(j.getQuantity + 1)
