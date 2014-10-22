@@ -71,7 +71,7 @@ class MISMessageReceiver extends MessageListener {
                   if(o.getThrowable != null)
                     logger.error(o.getThrowable.toString)  // TODO to log
                 } else {
-                  setJobTicketStatusOfResearch(action, JobTicket.STATUS_IN_PROGRESS)
+                  setJobTicketStatusOfResearch(action, JobTicket.STATUS_IN_PROGRESS, o.getThrowable)
                 }
               } catch {
                 case e: CoreException => logger.error(e.toString)
@@ -111,7 +111,7 @@ class MISMessageReceiver extends MessageListener {
     }
   }
 
-  private def setJobTicketStatusOfResearch(action: Action, status: Int) = {
+  private def setJobTicketStatusOfResearch(action: Action, status: Int, t: Throwable = null) = {
     var hasBeenUpdated = false
     for(l: ActionProperty <- action.getActionProperties.asScala) {
       if(l.getType.getCode != null && l.getType.getCode.equals("TAKINGTIME")) {
@@ -122,7 +122,8 @@ class MISMessageReceiver extends MessageListener {
               val jt = jtv.getJobTicket
               jt.setStatus(status)
               if(status.equals(JobTicket.STATUS_IN_PROGRESS)) { // Статус возвращается только в случае ошибки
-                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(action.getId))
+                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '" + action.getId + "'. "+
+                  {if(t != null) t.getMessage else "" } + "\n")
                 jt.setLabel("##Ошибка отправки в ЛИС##")
               }
               em merge jt

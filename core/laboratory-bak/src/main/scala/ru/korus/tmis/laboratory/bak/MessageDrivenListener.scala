@@ -60,7 +60,7 @@ class MessageDrivenListener extends LISMessageReceiver {
       logger.info("Result id[" + id.value + "], guid [" + guid.value + "]")
     } catch {
       case e: Throwable =>
-        logger.error("Sending error:" + e.getMessage, e)
+        logger.error("Sending error: " + e.getMessage, e)
         throw e
     }
   }
