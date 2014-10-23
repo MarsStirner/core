@@ -46,7 +46,7 @@ public class TestUtilCommon implements TestUtil {
     public static boolean checkArgument(String res, String pathToExceptMessage) throws IOException, SAXException {
         String except = readAllBytes(pathToExceptMessage);
         Diff diff = new Diff(except, res);
-        if( !diff.identical() ) {
+        if( !diff.similar() ) {
             System.out.println("Argument:");
             System.out.println(res);
             System.out.println("Except:");
@@ -54,7 +54,7 @@ public class TestUtilCommon implements TestUtil {
             System.out.println("Diff with " + pathToExceptMessage + " :");
             System.out.println(diff.toString());
         }
-        return diff.identical();
+        return diff.similar();
     }
 
     public static String readAllBytes(String sqlFileNAme) throws IOException {
