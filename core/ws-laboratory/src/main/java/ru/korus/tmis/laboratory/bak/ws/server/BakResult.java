@@ -647,7 +647,7 @@ public class BakResult implements BakResultService {
                             @WebParam(name = "orderBiomaterialName", targetNamespace = Namespace)
                             String orderBiomaterialName) throws CoreException {
 
-        logger.info("Bak Delivered [{}],[{}],[{}],[{}]", orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName);
+        logger.info("Bak Delivered [{}],[{}],[{}],[{}]", new Object[] {orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName});
         return 0;
     }
 }

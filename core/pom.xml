@@ -41,8 +41,8 @@
         <version.junit>4.8.2</version.junit>
         <version.logging.logback>1.0.13</version.logging.logback>
         <version.logging.logback.janino>2.6.1</version.logging.logback.janino>
-        <version.logging.jcl>1.7.2</version.logging.jcl>
-        <version.logging.slf4j>1.7.2</version.logging.slf4j>
+        <version.logging.jcl>1.5.6</version.logging.jcl>
+        <version.logging.slf4j>1.5.6</version.logging.slf4j>
         <version.logging.grizzled-slf4j>1.0.2</version.logging.grizzled-slf4j>
 
         <version.scala>2.11.2</version.scala>
@@ -312,6 +312,12 @@
             <artifactId>arquillian-persistence-impl</artifactId>
             <version>1.0.0.Alpha5</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -353,12 +359,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${version.logging.jcl}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${version.logging.logback}</version>
         </dependency>
 
         <!--Java EE-->

@@ -219,7 +219,7 @@ public class ReferenceBook implements ReferenceBookLocal {
                     }
                 }
                 logger.debug(sb.toString());
-                logger.info("M001 loading from {} to {}, loaded {} item(s), {} added", from, to, size, added);
+                logger.info("M001 loading from {} to {}, loaded {} item(s), {} added", new Object[] { from, to, size, added });
 
                 from = to + 1;
                 to = to + CHUNK_SIZE;
@@ -1221,7 +1221,7 @@ public class ReferenceBook implements ReferenceBookLocal {
                     }
                 }
                 logger.debug(sb.toString());
-                logger.info("Kladr loading from {} to {}, loaded {} item(s), {} added", from, to, size, added);
+                logger.info("Kladr loading from {} to {}, loaded {} item(s), {} added", new Object[] { from, to, size, added });
 
                 from = to + 1;
                 to = to + CHUNK_SIZE;
@@ -1274,7 +1274,7 @@ public class ReferenceBook implements ReferenceBookLocal {
                     }
                 }
                 logger.debug(sb.toString());
-                logger.info("KladrStreet loading from {} to {}, loaded {} item(s), {} added", from, to, size, added);
+                logger.info("KladrStreet loading from {} to {}, loaded {} item(s), {} added", new Object[] { from, to, size, added });
 
                 from = to + 1;
                 to = to + CHUNK_SIZE;
