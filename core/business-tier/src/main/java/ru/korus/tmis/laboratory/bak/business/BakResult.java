@@ -175,7 +175,10 @@ public class BakResult implements BakResultBeanLocal {
                     ifaCommentPropId = type.getId();
                 }
             }
-            db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), ifaResultPropId, true);
+            if(ifaResultPropId > 0)
+                db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), ifaResultPropId, true);
+            else if(ifa.getFullResult().equals("NO CHRG"))
+                ; //TODO Дефект биоматериала комментарий запишется в свойство, но, возможно, требуется отразить еще как-то
             if(ifaCommentPropId > 0 && ifa.getComment() != null)
                 db.addSinglePropBasic(ifa.getComment(), APValueString.class, ifa.getActionId(), ifaCommentPropId, true);
             toLog.addN("Save IFA result [#], ifaResultPropId [#]", ifa.getFullResult(), ifaResultPropId);
@@ -187,7 +190,7 @@ public class BakResult implements BakResultBeanLocal {
         } catch (Exception e) {
             logger.error("Exception: " + e, e);
             toLog.add("Problem save to ActionProperty IFA values: " + e + "]\n");
-            throw new CoreException("Не удалось сохранить данные по ИФА");
+            throw new CoreException("Не удалось сохранить данные по ИФА", e);
         }
     }
 
