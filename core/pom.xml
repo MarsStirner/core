@@ -39,6 +39,7 @@
         <version.testng>6.8</version.testng>
         <version.mokito>1.9.5</version.mokito>
         <version.junit>4.8.2</version.junit>
+        <version.logging.logback>0.9.20</version.logging.logback>
         <version.logging.logback.janino>2.6.1</version.logging.logback.janino>
         <version.logging.jcl>1.5.6</version.logging.jcl>
         <version.logging.slf4j>1.5.6</version.logging.slf4j>
