@@ -9,7 +9,6 @@ import ru.korus.tmis.core.entity.model.kladr.Kladr;
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.util.PublicClonable;
 
 import javax.persistence.EntityManager;
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class TestUtilCommon implements TestUtil {
 
     @Override
     public Package[] getPackagesForTest() {
-        final Package[] res = { CoreException.class.getPackage(),
+        return new Package[]{ CoreException.class.getPackage(),
                 PublicClonable.class.getPackage(),
                 RbFinance.class.getPackage(),
                 FDRecord.class.getPackage(),
@@ -34,13 +33,11 @@ public class TestUtilCommon implements TestUtil {
                 Kladr.class.getPackage(),
                 DrugChart.class.getPackage(),
                 BbtResponse.class.getPackage()};
-        return res;
     }
 
     public static boolean checkArgument(Object value, String pathExcept, String contextPath) throws Exception {
         String res = Utils.marshallMessage(value, contextPath);
-        final String pathToExceptMessage = pathExcept;
-        return checkArgument(res, pathToExceptMessage);
+        return checkArgument(res, pathExcept);
     }
 
     public static boolean checkArgument(String res, String pathToExceptMessage) throws IOException, SAXException {
