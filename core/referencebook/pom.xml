@@ -9,6 +9,10 @@
     <packaging>war</packaging>
     <name>TMIS Reference Book</name>
 
+    <properties>
+        <version.logging.logback>0.9.20</version.logging.logback>
+    </properties>
+
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-core</artifactId>
@@ -42,6 +46,12 @@
             <groupId>ru.korus.tmis.config</groupId>
             <artifactId>config</artifactId>
             <version>${version.tmis.core}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${version.logging.logback}</version>
         </dependency>
 
     </dependencies>
