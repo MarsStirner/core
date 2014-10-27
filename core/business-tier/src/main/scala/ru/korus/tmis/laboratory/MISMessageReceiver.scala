@@ -17,6 +17,9 @@ import ru.korus.tmis.util.logs.ToLog
 
 import scala.collection.JavaConverters._
 /**
+ * Эта схема была ошибочна - требуется заменить наследование каким-либо другим способом предосталения поведения.
+ * Одновременно с этим требуется вынести его в common, который следует использовать как общий для всех jar - будет
+ * возможность его модернизации без пересборки всех зависимых компонент,
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
  * Date: 8/5/14
  * Time: 7:25 PM
