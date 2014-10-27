@@ -4,8 +4,10 @@ import ru.korus.tmis.core.data.CommonAttribute
 
 import grizzled.slf4j.Logging
 import java.lang.Boolean
+import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.{StringId, ConfigManager}
 import java.util
+import scala.language.reflectiveCalls
 
 class ActionPropertyWrapper(ap: ActionProperty, apValueConverter: (ActionPropertyType, String) => java.util.LinkedList[java.util.LinkedList[String]], apScopeConverter: ActionPropertyType => String)
   extends Logging {
@@ -72,6 +74,7 @@ class ActionPropertyWrapper(ap: ActionProperty, apValueConverter: (ActionPropert
           case IsAssigned => {
             map + (xmlName -> this.ap.getIsAssigned.toString)
           }
+          case _ => throw new CoreException("Unknown ActionPropertyWrapped field")
         }
       })
 
