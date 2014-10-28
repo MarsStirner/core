@@ -692,39 +692,24 @@ with CAPids {
   }
 
   private def AnyToSetOfString(that: AnyRef, sec: String): Set[String] = {
-    if (that == null)
-      return null //Set.empty[String]     //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
-
-    if (that.isInstanceOf[Date]) {
-      return Set(ConfigManager.DateFormatter.format(that))
-    }
-    else if (that.isInstanceOf[LinkedList[ /*IdValueContainer*/ LegalRepresentativeContainer]]) {
-      var hospWith = Set.empty[String]
-      that.asInstanceOf[LinkedList[LegalRepresentativeContainer]].foreach(e => {
-        if (e.getRelative.getId > 0) {
-          sec match {
-            case "relative" => hospWith += e.getRelative.getId.toString
-            case "note" => hospWith += e.getNote.toString
-            case _ => hospWith += e.getRelative.getId.toString
+    that match {
+      case null => null //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
+      case x: Date => Set(ConfigManager.DateFormatter.format(that))
+      case x: IdNameContainer => if(x.getId > 0) Set(x.getId.toString) else Set.empty[String]
+      case x: util.LinkedList =>
+        var hospWith = Set.empty[String]
+        that.asInstanceOf[util.LinkedList[LegalRepresentativeContainer]].foreach(e => {
+          if (e.getRelative.getId > 0) {
+            sec match {
+              case "relative" => hospWith += e.getRelative.getId.toString
+              case "note" => hospWith += e.getNote.toString
+              case _ => hospWith += e.getRelative.getId.toString
+            }
           }
-        }
-      })
-      return hospWith
-    }
-    else if (that.isInstanceOf[IdNameContainer]) {
-
-      return if (that.asInstanceOf[IdNameContainer].getId > 0)
-        Set(that.asInstanceOf[IdNameContainer].getId.toString)
-      else Set.empty[String]
-    }
-    else {
-      try {
-        return Set(that.toString)
-      }
-      catch {
-        case e: Exception => {
-          throw new CoreException("Не могу преобразовать данные типа: %s в строковый массив".format(that.getClass.getName))
-        }
+        })
+        hospWith
+      case _ => try { Set(that.toString) } catch {
+        case e: Exception => throw new CoreException("Не могу преобразовать данные типа: %s в строковый массив".format(that.getClass.getName))
       }
     }
   }
