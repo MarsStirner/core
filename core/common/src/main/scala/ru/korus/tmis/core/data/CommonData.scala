@@ -70,6 +70,9 @@ class CommonEntity {
 
   @BeanProperty var group = new util.LinkedList[CommonGroup]
 
+  @BeanProperty
+  var lockInfo: LockInfoContainer = _
+
   private def this(id: Integer,
                    name: String,
                    eType: String,

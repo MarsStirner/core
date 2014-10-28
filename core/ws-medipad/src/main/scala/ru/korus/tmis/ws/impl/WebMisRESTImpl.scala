@@ -905,6 +905,9 @@ with CAPids {
       authData,
       postProcessing(), false)
 
+    val actionWithLockInfo = authStorage.getLockInfo(actionBean.getActionById(assessmentId))
+    val lockInfo = new LockInfoContainer(actionWithLockInfo.lockInfo.person.getId, actionWithLockInfo.lockInfo.person.getFullName)
+    json_data.data.foreach(d => d.setLockInfo(lockInfo));
     json_data
   }
 
