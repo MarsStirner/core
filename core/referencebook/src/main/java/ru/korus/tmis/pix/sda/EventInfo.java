@@ -118,7 +118,7 @@ public class EventInfo {
                 CodeNameSystem.newInstance(event.getAcheResult().getCode(), event.getAcheResult().getName(), "1.2.643.5.1.13.2.1.1.357"));
 
         final RbMedicalAidType type = event.getEventType().getRbMedicalAidType();
-        this.careType = type == null ? null : new CodeNameSystem(type.getCode(), type.getName());
+        this.careType = type == null ? null : CodeNameSystem.newInstance(type.getCode(), type.getName(), null);
         this.externalId = event.getExternalId();
     }
 
@@ -130,7 +130,7 @@ public class EventInfo {
         if(orgStructure == null) {
             return null;
         }
-        return  new CodeNameSystem(orgStructure.getCode(), orgStructure.getName());
+        return CodeNameSystem.newInstance(orgStructure.getCode(), orgStructure.getName(), null);
     }
 
     private boolean initAtHome(EventType event) {

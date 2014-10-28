@@ -354,7 +354,7 @@ public class SendProcedureRequest {
             if (name != null && name.equals(procedure.getName())) {
                 logger.info("The action type with flat code '{}' for same TRFU procedure: {}", flatCode, procedure);
             } else {
-                logger.info("The action type with flat code '{}' for different TRFU procedure '{}'. New procedure description: {}", flatCode, name, procedure);
+                logger.info("The action type with flat code '{}' for different TRFU procedure '{}'. New procedure description: {}", new Object[]{flatCode, name, procedure});
             }
         }
 

@@ -100,7 +100,7 @@ with CAPids {
 */
 
   private class IndexOf[T](seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
+    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
   }
 
   val list = List(iCapIds("db.rbCAP.hosp.primary.id.directed").toInt, //Кем направлен
@@ -692,39 +692,24 @@ with CAPids {
   }
 
   private def AnyToSetOfString(that: AnyRef, sec: String): Set[String] = {
-    if (that == null)
-      return null //Set.empty[String]     //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
-
-    if (that.isInstanceOf[Date]) {
-      return Set(ConfigManager.DateFormatter.format(that))
-    }
-    else if (that.isInstanceOf[LinkedList[ /*IdValueContainer*/ LegalRepresentativeContainer]]) {
-      var hospWith = Set.empty[String]
-      that.asInstanceOf[LinkedList[LegalRepresentativeContainer]].foreach(e => {
-        if (e.getRelative.getId > 0) {
-          sec match {
-            case "relative" => hospWith += e.getRelative.getId.toString
-            case "note" => hospWith += e.getNote.toString
-            case _ => hospWith += e.getRelative.getId.toString
+    that match {
+      case null => null //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
+      case x: Date => Set(ConfigManager.DateFormatter.format(that))
+      case x: IdNameContainer => if(x.getId > 0) Set(x.getId.toString) else Set.empty[String]
+      case x: util.LinkedList[LegalRepresentativeContainer] =>
+        var hospWith = Set.empty[String]
+        x.foreach(e => {
+          if (e.getRelative.getId > 0) {
+            sec match {
+              case "relative" => hospWith += e.getRelative.getId.toString
+              case "note" => hospWith += e.getNote.toString
+              case _ => hospWith += e.getRelative.getId.toString
+            }
           }
-        }
-      })
-      return hospWith
-    }
-    else if (that.isInstanceOf[IdNameContainer]) {
-
-      return if (that.asInstanceOf[IdNameContainer].getId > 0)
-        Set(that.asInstanceOf[IdNameContainer].getId.toString)
-      else Set.empty[String]
-    }
-    else {
-      try {
-        return Set(that.toString)
-      }
-      catch {
-        case e: Exception => {
-          throw new CoreException("Не могу преобразовать данные типа: %s в строковый массив".format(that.getClass.getName))
-        }
+        })
+        hospWith
+      case _ => try { Set(that.toString) } catch {
+        case e: Exception => throw new CoreException("Не могу преобразовать данные типа: %s в строковый массив".format(that.getClass.getName))
       }
     }
   }
@@ -1013,7 +998,7 @@ with CAPids {
 
   def getInfectionMonitoring(eventId: Int): java.util.Set[(String, Date, Date, java.util.List[Integer])] = {
     val IC = InfectionControl
-    actionBean.getActionsByEvent(eventId)
+    val r = actionBean.getActionsByEvent(eventId)
     .filter(p => IC.documents.contains(p.getActionType.getCode))
     .flatMap(_.getActionProperties)
     .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
@@ -1052,12 +1037,12 @@ with CAPids {
         case _ => None
       }
     })
-    .groupBy(p => (p._1, p._2, p._3)).map(e => (e._1._1, e._1._2, e._1._3, e._2.map(_._4).toList.asJava)).toSet.asJava
+    r.groupBy(p => (p._1, p._2)).map(e => (e._1._1, e._1._2, e._2.toList.filter(_._3 != null).sortBy(_._3).last._3, e._2.map(_._4).toList.asJava)).toSet.asJava
   }
 
   def getInfectionDrugMonitoring(eventId: Int): java.util.Set[(String, Date, Date, String, java.util.List[Integer])] = {
     val IC = InfectionControl
-    val r = actionBean.getActionsByEvent(eventId)
+    actionBean.getActionsByEvent(eventId)
       .filter(p => IC.documents.contains(p.getActionType.getCode))
       .flatMap(_.getActionProperties)
       .filter(e => e.getType.getCode != null && IC.drugTherapyProperties.contains(e.getType.getCode))
@@ -1104,9 +1089,8 @@ with CAPids {
         case _ => None
       }
     })
-    r
-      .groupBy(e => (e._1, e._2, e._3, e._4))
-      .map(e => (e._1._1, e._1._2, e._1._3, e._1._4, e._2.map(_._5).toList.asJava)).toSet.asJava
+      .groupBy(e => (e._1, e._2, e._4))
+      .map(e => (e._1._1, e._1._2, e._2.filter(_._3 != null).toList.sortBy(_._3).last._3, e._1._3, e._2.map(_._5).toList.asJava)).toSet.asJava
   }
 
   def getSurgicalOperations(eventId: Int, authData: AuthData) = {

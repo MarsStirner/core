@@ -8,6 +8,8 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.core.exception.CoreException
 
+import scala.compat.Platform._
+
 @Stateless
 class LoggingInterceptor extends Logging with TmisLogging {
 
@@ -30,10 +32,10 @@ class LoggingInterceptor extends Logging with TmisLogging {
     var message: String = ""
 
     try {
-      ctx proceed
+      ctx.proceed
     } catch {
       case ex: CoreException => {
-        message = ex.getClass.getSimpleName + " -> " + ex.getId + ": " + ex.getMessage + "\n" + ex.getStackTraceString
+        message = ex.getClass.getSimpleName + " -> " + ex.getId + ": " + ex.getMessage + "\n" + ex.getStackTrace.mkString("", EOL, EOL)
         logTmis.setStatusByPriority(logTmis.StatusKeys.Failed)
         throw ex
       }

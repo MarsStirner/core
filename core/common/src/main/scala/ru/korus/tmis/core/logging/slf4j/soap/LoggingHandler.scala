@@ -14,7 +14,7 @@ import javax.xml.rpc.handler.HandlerInfo
 import javax.xml.rpc.handler.soap.{SOAPMessageContext => RPCSOAPMessageContext}
 import javax.xml.rpc.handler
 import javax.xml.soap.SOAPMessage
-import ru.korus.tmis.scala.util.I18nable
+import scala.language.reflectiveCalls
 
 
 // slf4j to soap logging adapter

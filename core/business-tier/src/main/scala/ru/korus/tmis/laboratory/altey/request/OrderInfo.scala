@@ -10,6 +10,7 @@ import ru.korus.tmis.scala.util.Defaultible
 import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.Defaultible
+import scala.language.implicitConversions
 
 sealed case class OrderInfo(
                              diagnosticCode: Option[String] = None,

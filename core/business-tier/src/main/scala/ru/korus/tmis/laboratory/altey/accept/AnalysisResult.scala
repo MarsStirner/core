@@ -6,7 +6,7 @@ import ru.korus.tmis.laboratory.altey.{accept2 => lab}
 import ru.korus.tmis.scala.util.Variant
 import Variant.{EitherOf4, Variant3, Variant2, Variant1, Variant0}
 import scala.collection.JavaConversions._
-import scala.language.reflectiveCalls
+import scala.language.implicitConversions
 
 
 object AnalysisResult {

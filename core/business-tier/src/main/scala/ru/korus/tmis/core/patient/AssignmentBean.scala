@@ -47,7 +47,7 @@ with I18nable {
   private var dbManager: DbManagerBeanLocal = _
 
   private class IndexOf[T](seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
+    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
   }
 
   final val list = List(ConfigManager.Messages("db.actionPropertyType.assignment.name.injectionMethod").toInt,

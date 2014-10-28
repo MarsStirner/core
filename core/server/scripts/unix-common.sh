@@ -44,6 +44,12 @@ MYSQL_DB_TMIS_CORE=${mysql.db.tmis_core}
 MYSQL_DB_TMIS_CORE_POOL=${mysql.db.tmis_core.pool}
 MYSQL_DB_JNDI_TMIS_CORE=${mysql.db.jndi.tmis_core}
 
+# System properties
+
+BAK_INTEGRATION_ADDRESS='bak.intergation.url=${bak.intergation.url}'
+SYSTEM_PROPERTIES=(${BAK_INTEGRATION_ADDRESS})
+
+
 # Параметры jms
 CONNECTION_FACTORY=${jms.ConnectionFactory.name}
 LABORATORY_TOPIC=${jms.LaboratoryTopic.name}

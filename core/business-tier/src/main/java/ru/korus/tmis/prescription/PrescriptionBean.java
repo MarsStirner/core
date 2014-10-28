@@ -19,6 +19,8 @@ import ru.korus.tmis.core.pharmacy.DbPharmacyBeanLocal;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.Date;
@@ -109,8 +111,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         final Action action = createPrescriptionAction(createPrescriptionReqData, authData);
         saveDrugs(action, data.getDrugs());
         saveIntervals(action, data.getNote(), data.getAssigmentIntervals());
-        PrescriptionsData res = new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
-        return res;
+        return new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
     }
 
     @Override
@@ -129,8 +130,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
 
         updateDrugs(action, data.getDrugs());
 
-        PrescriptionsData res = new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
-        return res;
+        return new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
     }
 
 
@@ -153,9 +153,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     }
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public AssigmentIntervalData updateIntervals(AssigmentIntervalDataArray assigmentIntervalDataArray) {
         for (AssigmentIntervalData intervalData : assigmentIntervalDataArray.getData()) {
-            DrugChart interval = em.find(DrugChart.class, intervalData.getId());
+            DrugChart interval = intervalData.getId() == null ? null : em.find(DrugChart.class, intervalData.getId());
             if (interval == null) {
                 createNewInterval(intervalData);
             } else {
@@ -172,7 +173,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
 
     private void updateInterval(DrugChart interval, Long beginDateTime, Long endDateTime, Integer masterId, Short status, String note) {
         interval.setBegDateTime(new Date(beginDateTime));
-        interval.setEndDateTime(new Date(endDateTime));
+        interval.setEndDateTime(endDateTime == null ? null : new Date(endDateTime));
         if (masterId != null) {
             interval.setMaster(em.find(DrugChart.class, masterId));
         }
@@ -181,7 +182,6 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     }
 
     private void createNewInterval(AssigmentIntervalData intervalData) {
-        DrugChart interval = new DrugChart();
         Action action = em.find(Action.class, intervalData.getActionId());
         if (action != null) {
             dbDrugChartBeanLocal.create(action,
@@ -233,7 +233,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
                 logger.info("wrong property id : " + prop.getId(), ex);
             }
 
-            String  value =  prop.getValueId() == null ? prop.getValue() : (prop.getValueId() == null ? null :String.valueOf(prop.getValueId()));
+            String  value =  prop.getValueId() == null ? prop.getValue() : String.valueOf(prop.getValueId());
 
             if (ap != null && value != null && !"этот тип экшен проперти пока не поддерживается".equals(prop.getValue())) {
                 APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, value, 0);

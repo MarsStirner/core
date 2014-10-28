@@ -191,6 +191,22 @@ function create_db_pool {
 
 }
 
+function set_system_properties {
+    print_header "Create System properties"
+    declare -a OPTS=("${!1}")
+
+    CREATE_SYSTEM_PROPERTIES_CMD="${ASADMIN}/asadmin --user ${ADMIN_LOGIN}
+        --passwordfile ${GF_PASSWD_FILE}
+        --port ${ADMIN_PORT}
+        create-system-properties --target"
+
+    for i in "${OPTS[@]}"
+        do
+            echo "$CREATE_SYSTEM_PROPERTIES_CMD ${2} ${i}"
+            $CREATE_SYSTEM_PROPERTIES_CMD ${2} ${i}
+        done
+}
+
 function create_jms_connection_factory {
     print_header "Create JMS ConnectionFactory - ${CONNECTION_FACTORY}"
 
@@ -300,6 +316,8 @@ create_jvm_opts CREATE_JVM_OPTIONS[@] "server-config"
 create_jvm_opts CREATE_JVM_OPTIONS[@] "default-config"
 create_db_pool $MYSQL_DB_MIS $MYSQL_DB_MIS_POOL $MYSQL_DB_JNDI_MIS
 create_db_pool $MYSQL_DB_TMIS_CORE $MYSQL_DB_TMIS_CORE_POOL $MYSQL_DB_JNDI_TMIS_CORE
+set_system_properties SYSTEM_PROPERTIES[@] "default-config"
+set_system_properties SYSTEM_PROPERTIES[@] "server-config"
 create_jms_connection_factory
 create_jms_laboratory_topic
 create_jms_laboratory_queue

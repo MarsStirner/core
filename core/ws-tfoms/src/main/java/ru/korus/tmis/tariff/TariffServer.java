@@ -63,7 +63,7 @@ public class TariffServer implements TARIFFService.Iface {
     public List<Result> updateTariffs(final List<Tariff> tariffs, final int contractId)
             throws TException {
         final int currentRequestNum = ++requestNum;
-        logger.info("Start of Request#{} Call method -> updateTariffs[{}](contractId={}, tariffs={})", currentRequestNum, tariffs.size(), contractId, tariffs);
+        logger.info("Start of Request#{} Call method -> updateTariffs[{}](contractId={}, tariffs={})", new Object[] { currentRequestNum, tariffs.size(), contractId, tariffs });
         Contract contract = null;
         try {
             contract = contractBean.getContractById(contractId);
@@ -74,9 +74,9 @@ public class TariffServer implements TARIFFService.Iface {
         }
         if (contract != null && !contract.isDeleted()) {
             logger.debug("Contract is: Number[{}], Date[{}], resolution[{}]",
-                    contract.getNumber(),
+                    new Object[] { contract.getNumber(),
                     contract.getDate(),
-                    contract.getResolution());
+                    contract.getResolution() });
         } else {
             logger.debug("End of R#{}. No such contract or contract is deleted.");
             throw TariffServiceErrors.NO_SUCH_CONTRACT.getException();

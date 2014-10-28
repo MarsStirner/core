@@ -152,7 +152,7 @@ class PatientsListData {
    * @tparam T  Тип искомых данных
    */
   private class IndexOf[T] (seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
+    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
   }
 
   /**

@@ -11,7 +11,7 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.Defaultible
 import Defaultible.setDefault
 import ru.korus.tmis.laboratory.across.request.Utility._
-import scala.language.reflectiveCalls
+import scala.language.implicitConversions
 
 sealed case class DiagnosticRequestInfo(
                                          orderMisId: Int,

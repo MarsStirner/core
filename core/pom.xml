@@ -39,10 +39,10 @@
         <version.testng>6.8</version.testng>
         <version.mokito>1.9.5</version.mokito>
         <version.junit>4.8.2</version.junit>
-        <version.logging.logback>1.0.13</version.logging.logback>
+        <version.logging.logback>0.9.20</version.logging.logback>
         <version.logging.logback.janino>2.6.1</version.logging.logback.janino>
-        <version.logging.jcl>1.7.2</version.logging.jcl>
-        <version.logging.slf4j>1.7.2</version.logging.slf4j>
+        <version.logging.jcl>1.5.6</version.logging.jcl>
+        <version.logging.slf4j>1.5.6</version.logging.slf4j>
         <version.logging.grizzled-slf4j>1.0.2</version.logging.grizzled-slf4j>
 
         <version.scala>2.11.2</version.scala>
@@ -187,6 +187,24 @@
                 <project.build.debug>true</project.build.debug>
                 <!-- Название домена -->
                 <glassfish.domain>fccho-moscow</glassfish.domain>
+                <!-- Адрес ЛИС БАК -->
+                <bak.intergation.url>http\://10.128.131.116\:8090/CGM_SOAP</bak.intergation.url>
+            </properties>
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+        </profile>
+
+        <!-- Профиль для установки на стандартный Linux-сервер  glassfish 3.x (тестовый стенд)-->
+        <profile>
+            <id>production-standart-test</id>
+            <properties>
+                <!-- Выключить дебаг -->
+                <project.build.debug>true</project.build.debug>
+                <!-- Название домена -->
+                <glassfish.domain>fccho-moscow</glassfish.domain>
+                <!-- Адрес ЛИС БАК -->
+                <bak.intergation.url>http\://10.128.131.114\:8090/CGM_SOAP</bak.intergation.url>
             </properties>
             <activation>
                 <activeByDefault>true</activeByDefault>
@@ -215,81 +233,6 @@
             </dependencies>
         </profile>
 
-        <!-- Профиль для установки на стандартный Linux-сервер -->
-        <profile>
-            <id>fnkc-10.128.225.66-8080-bak</id>
-            <properties>
-                <!-- Выключить дебаг -->
-                <project.build.debug>true</project.build.debug>
-                <glassfish.host>localhost</glassfish.host>
-                <glassfish.home>/opt/glassfish3</glassfish.home>
-                <glassfish.domain>bak</glassfish.domain>
-
-                <mysql.db.mis>hospital</mysql.db.mis>
-                <mysql.db.mis.pool>hospital-pool</mysql.db.mis.pool>
-            </properties>
-        </profile>
-
-        <!-- Профиль для установки на стандартный Linux-сервер -->
-        <profile>
-            <id>fnkc-10.128.225.66-8081-pharmacy</id>
-            <properties>
-                <!-- Выключить дебаг -->
-                <project.build.debug>true</project.build.debug>
-                <glassfish.host>localhost</glassfish.host>
-                <glassfish.home>/opt/glassfish3</glassfish.home>
-                <glassfish.domain>pharmacy</glassfish.domain>
-
-                <mysql.db.mis>s11r64</mysql.db.mis>
-                <mysql.db.mis.pool>s11r64-pool</mysql.db.mis.pool>
-
-                <glassfish.port.instance>8081</glassfish.port.instance>
-                <!-- Порт админского Web IF -->
-                <glassfish.port.admin>4849</glassfish.port.admin>
-            </properties>
-        </profile>
-
-
-        <!-- Профиль для установки на клауд для Алтея -->
-        <profile>
-            <id>production-altey</id>
-            <properties>
-                <separate>\</separate>
-                <!-- Название домена -->
-                <glassfish.domain>mis</glassfish.domain>
-                <!-- Название базы данных МИС -->
-                <mysql.db.mis>hospital</mysql.db.mis>
-                <!-- Выключить дебаг -->
-                <project.build.debug>false</project.build.debug>
-            </properties>
-        </profile>
-
-        <!-- Профиль для Пензы -->
-        <profile>
-            <id>production-penza</id>
-            <properties>
-
-                <separate>\</separate>
-                <!-- Путь к директории доменов -->
-                <glassfish.domain.dir>C:\Winprog\glassfish3\glassfish\domains</glassfish.domain.dir>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>C:\Winprog\glassfish3\</glassfish.home>
-                <!-- Название домена -->
-                <glassfish.domain>mis</glassfish.domain>
-                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
-                <!--<com.sun.aas.instanceRoot>${glassfish.domain.dir}\${glassfish.domain}/</com.sun.aas.instanceRoot>-->
-
-                <!-- Логин к базе данных -->
-                <mysql.login>tmis</mysql.login>
-                <!-- Пароль к базе данных -->
-                <mysql.password>321</mysql.password>
-                <!-- Название базы данных МИС -->
-                <mysql.db.mis>pnz_burdenko_ntk</mysql.db.mis>
-                <!-- Выключить дебаг -->
-                <project.build.debug>false</project.build.debug>
-            </properties>
-        </profile>
-
         <profile>
             <!-- Профиль для интеграционных тестов -->
             <id>intergarion-tests</id>
@@ -301,173 +244,6 @@
                 <ear.name>tmis-server-${version.tmis.core}</ear.name>
                 <!-- Опиция для автосоздания таблиц/ключей на основе содержимого JPA-сущностей -->
                 <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
-            </properties>
-        </profile>
-
-        <!-- Профиль для MacMini -->
-        <profile>
-            <id>macmini</id>
-            <properties>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/usr/local/opt/glassfish/libexec/glassfish/domains/domain1</glassfish.home>
-                <!-- Логин к базе данных -->
-                <mysql.login>tmis</mysql.login>
-                <!-- Пароль к базе данных -->
-                <mysql.password>q1w2e3r4t5</mysql.password>
-                <!-- Название базы данных МИС -->
-                <mysql.db.mis>pnz_gor1</mysql.db.mis>
-                <!-- Порт админского Web IF -->
-                <glassfish.port.admin>4848</glassfish.port.admin>
-                <!-- Название домена -->
-                <glassfish.domain>domain1</glassfish.domain>
-                <!-- Логин администратора -->
-                <glassfish.admin.login>admin</glassfish.admin.login>
-                <!-- Пароль администратора-->
-                <glassfish.admin.password>admin1234</glassfish.admin.password>
-                <!-- Мастер пароль -->
-                <glassfish.master.password>admin1234</glassfish.master.password>
-                <!-- Схема работы при запуске приложения-->
-                <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
-            </properties>
-        </profile>
-
-        <!-- Пользовательский профиль nde-mac -->
-        <profile>
-            <id>nde-mac-glassfish4</id>
-            <properties>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/usr/local/opt/glassfish/libexec</glassfish.home>
-
-
-                <glassfish.master.password>changeit</glassfish.master.password>
-
-                <version.jersey.servlet>org.glassfish.jersey.servlet.ServletContainer</version.jersey.servlet>
-
-                <project.build.jdk>1.7</project.build.jdk>
-                <version.javaee.api>7.0</version.javaee.api>
-            </properties>
-        </profile>
-
-        <!-- Пользовательский профиль nde-mac -->
-        <profile>
-            <id>nde-mac-glassfish3</id>
-            <properties>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/Users/nde/Unixprog/glassfish3</glassfish.home>
-                <!--<eclipselink.ddl.generated>update-tables</eclipselink.ddl.generated>-->
-
-            </properties>
-        </profile>
-
-        <!-- Пользовательский профиль nde-macmini -->
-        <profile>
-            <id>nde-macmini</id>
-            <properties>
-                <!-- Домашняя директория Glassfish: /Users/nde/Unixprog/glassfish3/ -->
-                <glassfish.home>/Users/nde/Unixprog/glassfish3</glassfish.home>
-            </properties>
-        </profile>
-
-        <profile>
-            <!-- Пользовательский профиль -->
-            <id>nde-win</id>
-            <properties>
-                <separate>\</separate>
-                <!-- Путь к директории доменов -->
-                <glassfish.domain.dir>C:\Winprog\glassfish3\glassfish\domains</glassfish.domain.dir>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>C:\Winprog\glassfish3\</glassfish.home>
-
-                <glassfish.bin>C:\Winprog\glassfish3\bin\</glassfish.bin>
-                <!-- Название домена -->
-                <glassfish.domain>fccho</glassfish.domain>
-                <!-- Путь к директории домена (нужен для того, чтобы валидировался pom.xml -->
-                <!--<com.sun.aas.instanceRoot>${glassfish.domain.dir}\${glassfish.domain}\</com.sun.aas.instanceRoot>-->
-            </properties>
-        </profile>
-
-        <profile>
-            <id>nde-win-glassfish4</id>
-            <properties>
-                <separate>\</separate>
-                <!-- Путь к директории доменов -->
-                <glassfish.domain.dir>C:\Winprog\glassfish4\glassfish\domains</glassfish.domain.dir>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>C:\Winprog\glassfish4\</glassfish.home>
-
-                <glassfish.bin>C:\Winprog\glassfish4\bin\</glassfish.bin>
-
-                <glassfish.master.password>changeit</glassfish.master.password>
-
-                <project.build.jdk>1.7</project.build.jdk>
-                <version.javaee.api>7.0</version.javaee.api>
-            </properties>
-        </profile>
-
-        <!-- Пользовательский профиль -->
-        <profile>
-            <id>nde-lin</id>
-            <properties>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/opt/glassfish3/</glassfish.home>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>anosov</id>
-            <properties>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>/opt/glassfish3/</glassfish.home>
-                <!-- Название базы данных МИС -->
-                <mysql.db.mis>hospital</mysql.db.mis>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>anosov-win</id>
-            <properties>
-                <separate>\</separate>
-                <!-- Путь к директории доменов -->
-                <glassfish.domain.dir>C:\glassfish3\glassfish\domains</glassfish.domain.dir>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>C:\glassfish3\</glassfish.home>
-
-                <glassfish.bin>C:\glassfish3\bin\</glassfish.bin>
-
-                <!-- Название базы данных МИС -->
-                <mysql.db.mis>hospital</mysql.db.mis>
-            </properties>
-        </profile>
-
-        <profile>
-            <id>anosov-unix-risar</id>
-            <properties>
-                <glassfish.home>/opt/glassfish3/</glassfish.home>
-                <!-- Название базы данных МИС -->
-                <mysql.db.mis>hospital</mysql.db.mis>
-            </properties>
-        </profile>
-
-
-        <profile>
-            <id>anosov-fnkc66</id>
-            <properties>
-                <glassfish.home>/opt/glassfish3/</glassfish.home>
-            </properties>
-        </profile>
-
-        <profile>
-            <!-- Пользовательский профиль -->
-            <id>sg-win</id>
-            <properties>
-                <separate>\</separate>
-                <!-- Домашняя директория Glassfish -->
-                <glassfish.home>C:\Winprog\glassfish3\</glassfish.home>
-                <!-- Название домена -->
-                <glassfish.domain>fccho</glassfish.domain>
-                <!-- Логин администратора -->
-                <glassfish.admin.login>admin1234</glassfish.admin.login>
-                <glassfish.admin.password>admin1234</glassfish.admin.password>
             </properties>
         </profile>
 
@@ -536,6 +312,12 @@
             <artifactId>arquillian-persistence-impl</artifactId>
             <version>1.0.0.Alpha5</version>
             <scope>test</scope>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.slf4j</groupId>
+                    <artifactId>slf4j-jdk14</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -577,12 +359,6 @@
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
             <version>${version.logging.jcl}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>ch.qos.logback</groupId>
-            <artifactId>logback-classic</artifactId>
-            <version>${version.logging.logback}</version>
         </dependency>
 
         <!--Java EE-->

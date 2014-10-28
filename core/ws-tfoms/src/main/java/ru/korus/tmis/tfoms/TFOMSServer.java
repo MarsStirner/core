@@ -226,7 +226,7 @@ public class TFOMSServer implements TFOMSService.Iface {
     @Override
     public void setDoNotUploadAnymoreMarks(List<AccountItemWithMark> items) throws TException {
         final int currentRequestNum = ++requestNum;
-        logger.info("#{} Call method -> setDoNotUploadAnymoreMarks(size ={})\n({})", currentRequestNum, items.size(), items);
+        logger.info("#{} Call method -> setDoNotUploadAnymoreMarks(size ={})\n({})", new Object[] { currentRequestNum, items.size(), items });
         for (AccountItemWithMark item : items) {
             logger.debug("Start processing: {}", item);
             ru.korus.tmis.core.entity.model.AccountItem currentAccountItem = accountItemBean.getById(item.getId());
@@ -324,8 +324,8 @@ public class TFOMSServer implements TFOMSService.Iface {
         //Logger section
         logger.info("#{} Call method -> getXMLRegisters(contract_id={}, beginDate={}, endDate={}, infisCode=\"{}\","
                         + "obsoleteInfisCode=\"{}\" smoNumber=\"{}\", primaryAccont={}, levelMO={})",
-                currentRequestNum, contractId, beginDate, endDate, organisationInfis,
-                obsoleteInfisCode, smoNumber, primaryAccount, levelMO
+                new Object[] { currentRequestNum, contractId, beginDate, endDate, organisationInfis,
+                obsoleteInfisCode, smoNumber, primaryAccount, levelMO }
         );
         logger.info("PatientOptionalFields={}", patientOptionalFields);
         logger.info("SluchOptionalFields={}", sluchOptionalFields);
@@ -477,7 +477,7 @@ public class TFOMSServer implements TFOMSService.Iface {
         int sluchCount = printUploadResultToLog(result);
         queryChache.printSummaryUsage();
         logger.info("End of #{} getXMLRegisters. Return \"{}\" patients in result and \"{}\" sluch.",
-                currentRequestNum, result.getRegistrySize(), sluchCount);
+                new Object[] { currentRequestNum, result.getRegistrySize(), sluchCount });
         return result;
     }
 
@@ -628,9 +628,9 @@ public class TFOMSServer implements TFOMSService.Iface {
             throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> changeClientPolicy(patientId = {}, newPolicy = {}",
-                currentRequestNum,
+                new Object[] { currentRequestNum,
                 patientId,
-                newPolicy);
+                newPolicy });
         int result;
         ru.korus.tmis.core.entity.model.Patient patient;
         if (newPolicy.getNumber().length() > Constants.POLICY_NUMBER_MAX_LENGTH) {
@@ -644,9 +644,9 @@ public class TFOMSServer implements TFOMSService.Iface {
         try {
             patient = dbPatientBean.getPatientById(patientId);
             logger.debug("Patient founded. FIO= {} {} {}",
-                    patient.getLastName(),
+                    new Object[] { patient.getLastName(),
                     patient.getFirstName(),
-                    patient.getPatrName());
+                    patient.getPatrName() });
             final RbPolicyType newPolicyType = policyTypeBean.findByCode(String.valueOf(newPolicy.getPolicyTypeCode()));
             List<ClientPolicy> clientPolicies = clientPolicyBean.getActivePoliciesByClientAndType(patientId, newPolicyType);
             //Проверка на совпадение
@@ -709,7 +709,7 @@ public class TFOMSServer implements TFOMSService.Iface {
         logger.info("#{} Call method -> loadTfomsPayments", currentRequestNum);
         logger.info("Parameters:\nfileName = {}\nrefusedAmount = {}\npayedAmount = {}\npayedSum = {}\nrefusedSum = {}\n" +
                         "accountNumber = {}\ncomment = {}",
-                fileName, refusedAmount, payedAmount, payedSum, refusedSum, accountNumber, comment
+                new Object[] { fileName, refusedAmount, payedAmount, payedSum, refusedSum, accountNumber, comment }
         );
 
         final Map<Integer, String> result = new HashMap<Integer, String>(payments.size());

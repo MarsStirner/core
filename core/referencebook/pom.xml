@@ -44,6 +44,12 @@
             <version>${version.tmis.core}</version>
         </dependency>
 
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>${version.logging.logback}</version>
+        </dependency>
+
     </dependencies>
 
     <build>

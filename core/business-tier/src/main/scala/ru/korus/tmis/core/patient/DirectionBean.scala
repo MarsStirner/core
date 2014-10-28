@@ -207,7 +207,9 @@ with I18nable {
       val tissueType = dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue())
       if (tissueType == null)
         throw new CoreException(
-          ConfigManager.ErrorCodes.TakenTissueNotFound, i18n("error.TissueTypeNotFound").format(a.getActionType.getId.intValue())) //TODO Код ошибки не соответствует ошибке, нет соответствующего кодя для данной ошибки
+          ConfigManager.ErrorCodes.TakenTissueNotFound, i18n("error.TissueTypeNotFound").format(
+          actions.filter(_.getActionType.getActionTypeTissueType == null).map(_.getActionType.getName).toSet.mkString(", ")
+          ))
 
       if (jobAndTicket == null) {
         val fromList = list.find((p) => p._1.getId == null &&
@@ -237,7 +239,7 @@ with I18nable {
             if (takenTissue != null) a.setTakenTissue(takenTissue)
             list.add(j, jt, takenTissue, a)
             jtForAp = jt
-            actionsSendToLIS += Tuple2(a, jt.getId)
+            if(jobTicket.getStatus == JobTicket.STATUS_IS_FINISHED) actionsSendToLIS += Tuple2(a, jt.getId)
           } else {
             val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
             j.setQuantity(j.getQuantity + 1)

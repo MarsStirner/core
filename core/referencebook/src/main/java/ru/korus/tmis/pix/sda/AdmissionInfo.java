@@ -20,13 +20,13 @@ import java.util.Map;
  * Description:  <br>
  */
 public class AdmissionInfo {
-    private static final CodeNameSystem IS_URGENT_ADMISSION = new CodeNameSystem("isUrgentAdmission", "Экстренность");
-    private static final CodeNameSystem TIME_AFTER_FALLING_ILL = new CodeNameSystem("timeAfterFallingIll", "Доставлен в стационар от начала заболевания");
-    private static final CodeNameSystem TRANSPORT_TYPE = new CodeNameSystem("transportType", "Вид транспортировки");
-    private static final CodeNameSystem WARD = new CodeNameSystem("ward", "койка");
-    private static final CodeNameSystem FINAL_DEPARTMENT = new CodeNameSystem("finalDepartment", "Отделение пребывания");
-    private static final CodeNameSystem ADMISSION_REFERRAL = new CodeNameSystem("admissionReferral", "Кем доставлен");
-    private static final CodeNameSystem ADMISSION_THIS_YEAR = new CodeNameSystem("admissionsThisYear", "Госпитализирован по поводу данного заболевания в текущем году");
+    private static final CodeNameSystem IS_URGENT_ADMISSION = CodeNameSystem.newInstance("isUrgentAdmission", "Экстренность", null);
+    private static final CodeNameSystem TIME_AFTER_FALLING_ILL = CodeNameSystem.newInstance("timeAfterFallingIll", "Доставлен в стационар от начала заболевания", null);
+    private static final CodeNameSystem TRANSPORT_TYPE = CodeNameSystem.newInstance("transportType", "Вид транспортировки", null);
+    private static final CodeNameSystem WARD = CodeNameSystem.newInstance("ward", "койка", null);
+    private static final CodeNameSystem FINAL_DEPARTMENT = CodeNameSystem.newInstance("finalDepartment", "Отделение пребывания", null);
+    private static final CodeNameSystem ADMISSION_REFERRAL = CodeNameSystem.newInstance("admissionReferral", "Кем доставлен", null);
+    private static final CodeNameSystem ADMISSION_THIS_YEAR = CodeNameSystem.newInstance("admissionsThisYear", "Госпитализирован по поводу данного заболевания в текущем году", null);
     private final boolean urgent;
     private final CodeNameSystem timeAftreFalling;
     private final CodeNameSystem transportType;
@@ -72,7 +72,7 @@ public class AdmissionInfo {
         this.timeAftreFalling = apValue == null ? null : RbManager.get(RbManager.RbType.PRK371,
                 CodeNameSystem.newInstance(timeAfterFallingMap.get(timeAfterFallingMap.get(apValue.getValueAsString())), apValue.getValueAsString(), "1.2.643.5.1.13.2.1.1.537"));
         apValue = getActionPropertyByCodeOrName(received, TRANSPORT_TYPE);
-        this.transportType = apValue == null ? null : new CodeNameSystem(null, apValue.getValueAsString());
+        this.transportType = apValue == null ? null : CodeNameSystem.newInstance(null, apValue.getValueAsString(), null);
         apValue = getActionPropertyByCodeOrName(received, ADMISSION_REFERRAL);
         this.admissionReferral = apValue == null ? null : RbManager.get(RbManager.RbType.STR464,
                 CodeNameSystem.newInstance(admissionReferralMap.get(admissionReferralMap.get(apValue.getValueAsString())), apValue.getValueAsString(), "1.2.643.5.1.13.2.1.1.281"));
@@ -83,12 +83,12 @@ public class AdmissionInfo {
         final Action movingLast = hospitalBedBeanLocal.getLastMovingActionForEventId(event.getId());
         APValueOrgStructure apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(movingLast, FINAL_DEPARTMENT);
         this.finalDepartment = (apValueOrgStructure == null || apValueOrgStructure.getValue() == null) ?
-                null : new CodeNameSystem(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
+                null : CodeNameSystem.newInstance(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName(), null);
 
         final Action movingFirst = getFirstMoving(actions);
         apValueOrgStructure = (APValueOrgStructure) getActionPropertyByCodeOrName(movingFirst, FINAL_DEPARTMENT);
         this.department = (apValueOrgStructure == null || apValueOrgStructure.getValue() == null) ?
-                null : new CodeNameSystem(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName());
+                null : CodeNameSystem.newInstance(apValueOrgStructure.getValue().getCode(), apValueOrgStructure.getValue().getName(), null);
 
         apValue = getActionPropertyByCodeOrName(movingLast, WARD);
         ward = apValue == null ? null : apValue.getValueAsString();

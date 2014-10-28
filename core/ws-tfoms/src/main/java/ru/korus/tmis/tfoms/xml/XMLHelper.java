@@ -180,14 +180,14 @@ public final class XMLHelper {
         for (AdditionalUploadRow item : itemList) {
             //RSLT = "304"
             if (!Constants.ADDITIONAL_SKIP_RESULT.equals(item.getRSLT())) {
-                logger.debug("Stop grouping at item[{}] (RSLT<>{})[{}]", item.getId(), Constants.ADDITIONAL_SKIP_RESULT, item.getRSLT());
+                logger.debug("Stop grouping at item[{}] (RSLT<>{})[{}]", new Object[] { item.getId(), Constants.ADDITIONAL_SKIP_RESULT, item.getRSLT() });
                 break;
             }
             int currentItemAction = item.getAction();
             boolean isNewSluch = true;
             for (AdditionalXMLSluch currentSluch : sluchList) {
                 if (currentItemAction == currentSluch.getAction()) {
-                    logger.debug("Item[{}] has same actionId[{}] to Sluch[{}] group them", item.getId(), currentItemAction, currentSluch.getId());
+                    logger.debug("Item[{}] has same actionId[{}] to Sluch[{}] group them",  new Object[] { item.getId(), currentItemAction, currentSluch.getId() });
                     currentSluch.addItem(item);
                     isNewSluch = false;
                     break;
@@ -220,7 +220,7 @@ public final class XMLHelper {
             boolean isNewSluch = true;
             for (AdditionalXMLSluch currentSluch : sluchList) {
                 if (currentItemAction == currentSluch.getAction()) {
-                    logger.debug("Item[{}] has same actionId[{}] to Sluch[{}] group them", item.getId(), currentItemAction, currentSluch.getId());
+                    logger.debug("Item[{}] has same actionId[{}] to Sluch[{}] group them",  new Object[] { item.getId(), currentItemAction, currentSluch.getId() });
                     currentSluch.addItem(item);
                     isNewSluch = false;
                     break;
@@ -248,7 +248,7 @@ public final class XMLHelper {
             boolean isNewSluch = true;
             for (XMLSluch currentSluch : sluchList) {
                 if (currentItemAction == currentSluch.getAction()) {
-                    logger.debug("Item[{}] has same actionId[{}] to Sluch[{}] group them", item.getId(), currentItemAction, currentSluch.getId());
+                    logger.debug("Item[{}] has same actionId[{}] to Sluch[{}] group them",  new Object[] { item.getId(), currentItemAction, currentSluch.getId() });
                     currentSluch.addItem(item);
                     isNewSluch = false;
                     break;
@@ -404,7 +404,7 @@ public final class XMLHelper {
     public static void checkDates(Date beginInterval, Date endInterval, int requestNum) throws TException {
         if (beginInterval.after(endInterval)) {
             logger.error("End of #{}. Invalid period (endDate[{}] is smaller then beginDate[{}])",
-                    requestNum, endInterval.getTime(), beginInterval.getTime());
+                    new Object[] { requestNum, endInterval.getTime(), beginInterval.getTime() });
             throw TFOMSErrors.INVALID_DATES.getException();
         } else if (logger.isDebugEnabled()) {
             logger.debug("Interval from [{}] to [{}]", beginInterval.toString(), endInterval.toString());
