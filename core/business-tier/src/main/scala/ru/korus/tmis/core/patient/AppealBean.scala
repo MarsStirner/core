@@ -696,9 +696,9 @@ with CAPids {
       case null => null //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
       case x: Date => Set(ConfigManager.DateFormatter.format(that))
       case x: IdNameContainer => if(x.getId > 0) Set(x.getId.toString) else Set.empty[String]
-      case x: util.LinkedList =>
+      case x: util.LinkedList[LegalRepresentativeContainer] =>
         var hospWith = Set.empty[String]
-        that.asInstanceOf[util.LinkedList[LegalRepresentativeContainer]].foreach(e => {
+        x.foreach(e => {
           if (e.getRelative.getId > 0) {
             sec match {
               case "relative" => hospWith += e.getRelative.getId.toString
