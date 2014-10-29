@@ -543,7 +543,7 @@ with CAPids {
     jData
   }
 
-  private def notifyAction(actions:  java.util.List[Action], baseUri: URI): java.lang.Boolean = {
+  private def notifyAction(actions: java.util.List[Action], baseUri: URI): java.lang.Boolean = {
     actions.toList.foreach(action => {
       notificationBeanLocal.sendNotification(action)
     })
@@ -600,7 +600,9 @@ with CAPids {
     }
 
     def getLastActionByTypeCodes(typeCode: Iterable[String], event: Event): Action = {
-      val l = cache.getOrElseUpdate(event.getId, { actionBean.getActionsByEvent(event.getId) } )
+      val l = cache.getOrElseUpdate(event.getId, {
+        actionBean.getActionsByEvent(event.getId)
+      })
       val list = l.filter(a => typeCode.contains(a.getActionType.getCode))
         .sortBy(_.getCreateDatetime)
 
@@ -750,21 +752,21 @@ with CAPids {
 
       val localInfectProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(IC.localInfectionChecker)).orNull
 
-      for(prefix <- IC.localInfectPrefixes) {
+      for (prefix <- IC.localInfectPrefixes) {
 
         val values =
-        Set (
-          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + IC.separator + IC.endDatePostfix)),
-          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + IC.separator + IC.beginDatePostfix)),
-          lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + IC.separator + IC.etiologyPostfix)))
-        .collect({
-          case x: Some[ActionProperty] => getPropertyValue(x)
-        })
+          Set(
+            lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + IC.separator + IC.endDatePostfix)),
+            lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + IC.separator + IC.beginDatePostfix)),
+            lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals(prefix + IC.separator + IC.etiologyPostfix)))
+            .collect({
+            case x: Some[ActionProperty] => getPropertyValue(x)
+          })
 
-        if(values.exists(_ != null))
+        if (values.exists(_ != null))
           return {
             val v = apValueCache.getOrElseUpdate(localInfectProperty, actionPropertyBean.getActionPropertyValue(localInfectProperty))
-            if(v.size() > 0)
+            if (v.size() > 0)
               v.head
             else
               null
@@ -782,30 +784,31 @@ with CAPids {
       case x if IC.documents.contains(x) =>
         if (therapySet.contains(x)) // Подтягивания значений для полей терапии
           getPropertyCustom1(IC.documents, therapySet, event)
-        else if (IC.allInfectPrefixes.exists(p => apt.getCode!= null && (apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)))) { // или для полей инфекционного контроля
+        else if (IC.allInfectPrefixes.exists(p => apt.getCode != null && (apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)))) {
+          // или для полей инфекционного контроля
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
-          for(e <- events) {
+          for (e <- events) {
             outVal = getPropertyCustom2(IC.documents, IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, e)
-            if(outVal != null) return outVal
+            if (outVal != null) return outVal
           }
           outVal
         }
-        else if (apt.getCode!= null && apt.getCode.equals(IC.localInfectionChecker)) {
+        else if (apt.getCode != null && apt.getCode.equals(IC.localInfectionChecker)) {
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
-          for(e <- events) {
+          for (e <- events) {
             outVal = getPropertyCustom4(IC.documents, e)
-            if(outVal != null) return outVal
+            if (outVal != null) return outVal
           }
           outVal
         }
         else if (IC.drugTherapyProperties.contains(apt.getCode)) {
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
-          for(e <- events) {
-            outVal =  getPropertyCustom3(IC.documents, e)
-            if(outVal != null) return outVal
+          for (e <- events) {
+            outVal = getPropertyCustom3(IC.documents, e)
+            if (outVal != null) return outVal
           }
           outVal
         }
@@ -906,8 +909,13 @@ with CAPids {
       postProcessing(), false)
 
     val actionWithLockInfo = authStorage.getLockInfo(actionBean.getActionById(assessmentId))
-    val lockInfo = new LockInfoContainer(actionWithLockInfo.lockInfo.person.getId, actionWithLockInfo.lockInfo.person.getFullName)
-    json_data.data.foreach(d => d.setLockInfo(lockInfo));
+    if (actionWithLockInfo != null &&
+      actionWithLockInfo.lockInfo != null &&
+      actionWithLockInfo.lockInfo.person != null
+    ) {
+      val lockInfo = new LockInfoContainer(actionWithLockInfo.lockInfo.person.getId, actionWithLockInfo.lockInfo.person.getFullName)
+      json_data.data.foreach(d => d.setLockInfo(lockInfo))
+    }
     json_data
   }
 
