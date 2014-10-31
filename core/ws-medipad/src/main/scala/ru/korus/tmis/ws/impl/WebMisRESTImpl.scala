@@ -16,6 +16,7 @@ import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.bak.{DbBbtResponseBeanLocal, DbBbtResultOrganismBeanLocal, DbBbtResultTextBeanLocal}
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.entity.model.fd.APValueFlatDirectory
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.lock.ActionWithLockInfo
 import ru.korus.tmis.core.notification.NotificationBeanLocal
@@ -199,6 +200,8 @@ with CAPids {
 
   @EJB
   var dbRbLaboratory: DbRbLaboratory = _
+
+  @EJB var dbFdRecordBean: DbFDFieldBeanLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -1770,7 +1773,7 @@ with CAPids {
   def deleteAutoSaveField(id: String, auth: AuthData) {
     dbAutoSaveStorageLocal.delete(id, auth.getUserId)
   }
-
+  
   override def getRlsById(id: Int): Nomenclature = {
     dbRlsBean.getRlsById(id)
   }
@@ -1780,6 +1783,157 @@ with CAPids {
   }
 
   def getLabs: java.util.List[RbLaboratory] = dbRbLaboratory.getAllLabs
+
+  /**
+   * Low perfomance implementation. Need optimization.
+   * @param patientId Идентификатор пациента
+   * @return Данные о терапии в пределах всех историй болезни
+   */
+  def getTherapiesInfo(patientId: Int): ju.List[TherapyContainer] = {
+    val actions = patientBean.getPatientById(patientId).getEvents.flatMap(e => actionBean.getActionsByEvent(e.getId))
+    .filter(_.getActionProperties.exists(p => p.getType != null && p.getType.getCode != null && p.getType.getCode.equals("therapyTitle")))
+
+    val l = actions.flatMap(a =>  {
+
+      val properties = a.getActionProperties
+
+      val therapy = {
+        val props = properties.filter(p => p.getType.getCode != null && p.getType.getCode.equals("therapyTitle"))
+        props.size match {
+          case 1 =>
+            val values = actionPropertyBean.getActionPropertyValue(props.head)
+            values.size match {
+              case 1 => values.head match { case h: APValueFlatDirectory => Option(h); case _ => None }
+              case 0 => None
+              case _ => throw new CoreException("Invalid action property values " + props.head)
+            }
+          case _ => throw new CoreException("Invalid action type configuration " + a.getActionType)
+        }
+      }
+
+      val begDate = {
+        val props = properties.filter(p => p.getType.getCode != null && p.getType.getCode.equals("therapyBegDate"))
+        props.size match {
+          case 1 =>
+            val values = actionPropertyBean.getActionPropertyValue(props.head)
+            values.size match {
+              case 1 => values.head match { case h: APValueDate => Option(h.getValue); case _ => None }
+              case 0 => None
+              case _ => throw new CoreException("Invalid action property values " + props.head)
+            }
+          case _ => throw new CoreException("Invalid action type configuration " + a.getActionType)
+        }
+      }
+
+      val endDate = {
+        val props = properties.filter(p => p.getType.getCode != null && p.getType.getCode.equals("therapyEndDate"))
+        props.size match {
+          case 1 =>
+            val values = actionPropertyBean.getActionPropertyValue(props.head)
+            values.size match {
+              case 1 => values.head match { case h: APValueDate => Option(h.getValue); case _ => None }
+              case 0 => None
+              case _ => throw new CoreException("Invalid action property values " + props.head)
+            }
+          case _ => throw new CoreException("Invalid action type configuration " + a.getActionType)
+        }
+      }
+
+      val therapyPhase = {
+        val props = properties.filter(p => p.getType.getCode != null && p.getType.getCode.equals("therapyPhaseTitle"))
+        props.size match {
+          case 1 =>
+            val values = actionPropertyBean.getActionPropertyValue(props.head)
+            values.size match {
+              case 1 => values.head match { case h: APValueFlatDirectory => Option(h.getValue); case _ => None }
+              case 0 => None
+              case _ => throw new CoreException("Invalid action property values " + props.head)
+            }
+          case _ => throw new CoreException("Invalid action type configuration " + a.getActionType)
+        }
+      }
+
+      val phaseBegDate = {
+        val props = properties.filter(p => p.getType.getCode != null && p.getType.getCode.equals("therapyPhaseBegDate"))
+        props.size match {
+          case 1 =>
+            val values = actionPropertyBean.getActionPropertyValue(props.head)
+            values.size match {
+              case 1 => values.head match { case h: APValueDate => Option(h.getValue); case _ => None }
+              case 0 => None
+              case _ => throw new CoreException("Invalid action property values " + props.head)
+            }
+          case _ => throw new CoreException("Invalid action type configuration " + a.getActionType)
+        }
+      }
+
+      val phaseEndDate = {
+        val props = properties.filter(p => p.getType.getCode != null && p.getType.getCode.equals("therapyPhaseEndDate"))
+        props.size match {
+          case 1 =>
+            val values = actionPropertyBean.getActionPropertyValue(props.head)
+            values.size match {
+              case 1 => values.head match { case h: APValueDate => Option(h.getValue); case _ => None }
+              case 0 => None
+              case _ => throw new CoreException("Invalid action property values " + props.head)
+            }
+          case _ => throw new CoreException("Invalid action type configuration " + a.getActionType)
+        }
+      }
+
+      val phaseDay = {
+        val props = properties.filter(p => p.getType.getCode != null && p.getType.getCode.equals("therapyPhaseDay"))
+        props.size match {
+          case 1 =>
+            val values = actionPropertyBean.getActionPropertyValue(props.head)
+            values.size match {
+              case 1 => values.head match { case h: APValueString => Option(h.getValue); case _ => None }
+              case 0 => None
+              case _ => throw new CoreException("Invalid action property values " + props.head)
+            }
+          case _ => throw new CoreException("Invalid action type configuration " + a.getActionType)
+        }
+      }
+
+      (therapy, therapyPhase) match {
+        case (Some(x), Some(y)) =>
+          val valMap = x.getValue.getFieldValues.map(v => v.getFDField.getName -> v.getValue).toMap
+          val phaseValMap = y.getFieldValues.map(v => v.getFDField.getName -> v.getValue).toMap
+          Option((
+            x.getValue.getId,
+            valMap("Наименование"),
+            valMap("Ссылка"),
+            begDate,
+            endDate,
+            "unknownEventId",
+            phaseValMap("Наименование"),
+            phaseValMap("Ссылка"),
+            y.getId,
+            phaseBegDate,
+            phaseEndDate,
+            phaseDay,
+            a.getCreateDatetime,
+            a.getEvent.getId,
+            a.getId
+            ))
+        case _ => None
+      }
+
+    }).toSet
+
+    val g = l.groupBy(p => (p._1, p._2, p._3, p._4)).map(p => {
+      val therapyEndDateInGroup = p._2.map(_._5).toList.sorted.last.orNull
+      val e = p._2.groupBy(s => (s._6, s._7, s._8, s._9, s._10)).map(t => {
+        val therapyPhaseEndDateInGroup = t._2.map(_._11).toList.sorted.last.orNull
+        val d = t._2.map(y => new TherapyDay(y._12.orNull, y._13, y._14, y._15)).toList.sortBy(_.createDate).asJava
+        val event = if(!d.isEmpty) d.head.getEventId else 0
+        new TherapyPhase(event, t._1._2, t._1._3, t._1._4, t._1._5.orNull, therapyPhaseEndDateInGroup, d)
+      }).toList.asJava
+      new TherapyContainer(p._1._1, p._1._2, p._1._3, p._1._4.orNull, therapyEndDateInGroup, e)
+    })
+
+    g.toList.asJava
+  }
 
   def lock(actionId: Int, auth: AuthData): LockData = {
     val appLockDetail: AppLockDetail = authStorage.getAppLock(auth.getAuthToken, "Action", actionId)

@@ -477,6 +477,8 @@ public interface WebMisREST extends Serializable {
 
     List<RbLaboratory> getLabs();
 
+    List<TherapyContainer> getTherapiesInfo(int eventId) throws CoreException;
+
     /**
      * Залочить действие
      *

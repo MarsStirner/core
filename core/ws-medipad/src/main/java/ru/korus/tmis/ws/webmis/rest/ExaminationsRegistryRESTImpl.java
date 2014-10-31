@@ -2,10 +2,7 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.data.AssessmentsListRequestData;
-import ru.korus.tmis.core.data.AssessmentsListRequestDataFilter;
-import ru.korus.tmis.core.data.JSONCommonData;
-import ru.korus.tmis.core.data.QueryDataStructure;
+import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 
@@ -15,6 +12,7 @@ import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.UriInfo;
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -332,12 +330,20 @@ public class ExaminationsRegistryRESTImpl {
         return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, mkAuth(servRequest)), callback);
     }
 
-    @Path("{typeId}/calculate/{APTypeCode}")
+    @GET
+    @Path("/therapies")
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
     public Object calculate(@Context HttpServletRequest servRequest,
                             @PathParam("eventId") int eventId,
+                            @PathParam("patientId") int patientId,
                             @QueryParam("callback") String callback,
-                            @QueryParam("query") String query) {
-        return null;
+                            @QueryParam("query") String query) throws CoreException {
+        if(patientId < 1)
+            throw new IllegalArgumentException("Path param 'patientId' cannot be less than 1");
+
+        ListContainer l = new ListContainer();
+        l.setData(wsImpl.getTherapiesInfo(patientId));
+        return new JSONWithPadding(l, callback);
     }
 
     private AuthData mkAuth(HttpServletRequest servRequest) {
