@@ -11,7 +11,7 @@ import javax.xml.bind.annotation.adapters.XmlAdapter
  */
 class DateAdapter extends XmlAdapter[String, Date] {
 
-private val dateFormat = new SimpleDateFormat("yyyy-MM-dd")
+private val dateFormat = new SimpleDateFormat("yyyy-MM-dd") // ISO 8601 date
 
   @throws(classOf[Exception])
   override def marshal(v: Date) = {
@@ -27,7 +27,7 @@ private val dateFormat = new SimpleDateFormat("yyyy-MM-dd")
 
 class DateTimeAdapter extends XmlAdapter[String, Date] {
 
-  private val dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+  private val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss") // ISO 8601 local datetime
 
   @throws(classOf[Exception])
   override def marshal(v: Date) = {
