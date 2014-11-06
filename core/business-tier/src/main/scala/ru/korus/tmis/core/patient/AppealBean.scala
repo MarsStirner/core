@@ -20,6 +20,7 @@ import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import org.joda.time.{DateTime, Years}
 import scala.language.reflectiveCalls
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 @Stateless
 class AppealBean extends AppealBeanLocal
@@ -1037,7 +1038,7 @@ with CAPids {
         case _ => None
       }
     })
-    r.groupBy(p => (p._1, p._2)).map(e => (e._1._1, e._1._2, e._2.toList.filter(_._3 != null).sortBy(_._3).last._3, e._2.map(_._4).toList.asJava)).toSet.asJava
+    r.groupBy(p => (p._1, p._2)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava)).toSet.asJava
   }
 
   def getInfectionDrugMonitoring(eventId: Int): java.util.Set[(String, Date, Date, String, java.util.List[Integer])] = {
@@ -1090,7 +1091,7 @@ with CAPids {
       }
     })
       .groupBy(e => (e._1, e._2, e._4))
-      .map(e => (e._1._1, e._1._2, e._2.filter(_._3 != null).toList.sortBy(_._3).last._3, e._1._3, e._2.map(_._5).toList.asJava)).toSet.asJava
+      .map(e => (e._1._1, e._1._2, Try(e._2.filter(_._3 != null).toList.sortBy(_._3).last._3).getOrElse(null), e._1._3, e._2.map(_._5).toList.asJava)).toSet.asJava
   }
 
   def getSurgicalOperations(eventId: Int, authData: AuthData) = {
