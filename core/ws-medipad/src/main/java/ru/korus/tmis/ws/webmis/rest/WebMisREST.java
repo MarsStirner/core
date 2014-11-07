@@ -30,11 +30,11 @@ public interface WebMisREST extends Serializable {
 
     PatientCardData getPatientById(int id, AuthData auth)  throws CoreException;
 
-    String insertAppealForPatient(AppealData appealData,  int patientId, AuthData auth) throws CoreException;
+    AppealData insertAppealForPatient(AppealData appealData,  int patientId, AuthData auth) throws CoreException;
 
-    String updateAppeal(AppealData appealData,  int eventId, AuthData auth) throws CoreException;
+    AppealData updateAppeal(AppealData appealData,  int eventId, AuthData auth) throws CoreException;
 
-    String getAppealById(int id, AuthData auth) throws CoreException;
+    AppealData getAppealById(int id, AuthData auth) throws CoreException;
 
     String getAppealPrintFormById(int id, AuthData auth) throws CoreException;
 

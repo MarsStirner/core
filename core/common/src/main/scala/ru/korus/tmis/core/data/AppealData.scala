@@ -1,6 +1,9 @@
 package ru.korus.tmis.core.data
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
+import ru.korus.tmis.core.data.adapters.DateAdapter
+
 import scala.beans.BeanProperty
 import javax.xml.bind.annotation.XmlType._
 import ru.korus.tmis.core.entity.model._
@@ -1187,10 +1190,8 @@ class TempInvalidAppealContainer {
   var number: String = _
   @BeanProperty
   var isByService: Boolean = _ // флаг "По уходу за больным"
-  @BeanProperty
-  var begDate : Date = _    //
-  @BeanProperty
-  var endDate: Date = _      //
+  @XmlJavaTypeAdapter(classOf[DateAdapter]) @BeanProperty var begDate : Date = _    //
+  @XmlJavaTypeAdapter(classOf[DateAdapter]) @BeanProperty var endDate: Date = _      //
   @BeanProperty
   var age : Int = _      //
   @BeanProperty

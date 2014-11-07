@@ -274,18 +274,16 @@ with CAPids {
 
   //Insert or modify appeal
   def insertAppealForPatient(appealData: AppealData, patientId: Int, auth: AuthData) = {
-
     val ide = appealBean.insertAppealForPatient(appealData, patientId, auth)
     constructAppealData(ide)
   }
 
   def updateAppeal(appealData: AppealData, eventId: Int, auth: AuthData) = {
-
     val ide = appealBean.updateAppeal(appealData, eventId, auth)
     constructAppealData(ide)
   }
 
-  private def constructAppealData(ide: Int): java.lang.String = {
+  private def constructAppealData(ide: Int): AppealData = {
     if (ide > 0) {
       val result = appealBean.getAppealById(ide)
 
@@ -294,14 +292,12 @@ with CAPids {
       val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
 
       val mapper: ObjectMapper = new ObjectMapper()
-      //mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsStandartForm])
       val patient = positionE._1.getPatient
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
-      //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
       val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(ide)
-      //
-      mapper.writeValueAsString(new AppealData(positionE._1,
+
+      new AppealData(positionE._1,
         positionA._1,
         values,
         null,
@@ -320,7 +316,7 @@ with CAPids {
         currentDepartment,
         dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
         dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
-      ))
+      )
     } else {
       throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
     }
@@ -340,7 +336,7 @@ with CAPids {
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
-    mapper.writeValueAsString(new AppealData(positionE._1,
+    new AppealData(positionE._1,
       positionA._1,
       values,
       null,
@@ -359,7 +355,7 @@ with CAPids {
       currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
       dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
-    ))
+    )
   }
 
   def getAppealPrintFormById(id: Int, auth: AuthData) = {

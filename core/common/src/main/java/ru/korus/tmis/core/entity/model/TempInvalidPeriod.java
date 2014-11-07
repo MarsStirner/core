@@ -42,8 +42,8 @@ public class TempInvalidPeriod implements Serializable {
     @JoinColumn(name = "endPerson_id")
 	private Staff endPerson;
 
-	@Column(nullable=false)
-	private byte isExternal;
+	@Column(name = "isExternal", nullable=false)
+	private boolean isExternal;
 
     @ManyToOne
     @JoinColumn(name = "master_id", nullable=false)
@@ -117,11 +117,11 @@ public class TempInvalidPeriod implements Serializable {
 		this.endPerson = endPerson;
 	}
 
-	public byte getIsExternal() {
+	public boolean getIsExternal() {
 		return this.isExternal;
 	}
 
-	public void setIsExternal(byte isExternal) {
+	public void setIsExternal(boolean isExternal) {
 		this.isExternal = isExternal;
 	}
 

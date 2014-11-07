@@ -44,7 +44,8 @@ class DbTempInvalidBean
     FROM
       TempInvalid t
     WHERE
-      t.event.id = :eventId
+      t.event.id = :eventId AND t.deleted = false
+    ORDER BY t.createDatetime DESC
                            """
 
   def getTempInvalidById(id: Int): TempInvalid = {
@@ -127,7 +128,7 @@ class DbTempInvalidBean
     val tempInvalidPeriod = {
       if (tempInvalid.getTempInvalidPeriod.isEmpty) {
         val periodNew: TempInvalidPeriod = new TempInvalidPeriod()
-        periodNew.setIsExternal(0)
+        periodNew.setIsExternal(false)
         periodNew.setMaster(tempInvalid)
         periodNew.setNote("")
         tempInvalid.getTempInvalidPeriod.add(periodNew)
