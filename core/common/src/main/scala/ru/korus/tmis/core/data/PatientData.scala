@@ -12,6 +12,7 @@ import scala.Predef._
 import java.util
 import ru.korus.tmis.core.filter.AbstractListDataFilter
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 //Dynamic Filters
 object QuotaViews {

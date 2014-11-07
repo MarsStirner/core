@@ -17,6 +17,7 @@ import java.util
 import collection.JavaConversions
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import beans.BeanProperty
+import scala.language.reflectiveCalls
 
 /**
  * Dynamic Filters
@@ -79,7 +80,7 @@ class AppealData extends I18nable {
     this ()
     this.requestData = requestData
 
-    val setMovingIds = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
+    val setMovingIds = JavaConversions.setAsJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
                                                      i18n("db.apt.moving.codes.orgStructTransfer")))
 
     val diagnostics = if(mDiagnosticList!=null)mDiagnosticList(event.getId.intValue(), Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
@@ -95,10 +96,10 @@ class AppealData extends I18nable {
       if (postProcessing != null) {
       // Первичный и повторный осмотр
       // (список идентификаторов типов действий)
-      val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
+      val setATIds = JavaConversions.setAsJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
                                                    ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
       // (список рассматриваемых свойств действия)
-      val setAdmissionIds = JavaConversions.asJavaSet(Set(i18n("appeal.diagnosis.diagnosisKind.assignment"),
+      val setAdmissionIds = JavaConversions.setAsJavaSet(Set(i18n("appeal.diagnosis.diagnosisKind.assignment"),
                                                           i18n("appeal.diagnosis.diagnosisKind.mainDiag"),
                                                           i18n("db.apt.received.codes.orgStructDirection"),
                                                           i18n("db.apt.moving.codes.orgStructTransfer")
@@ -106,9 +107,9 @@ class AppealData extends I18nable {
 
       //Выписка
       // (список идентификаторов типов действий)
-      val setExtractATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.extract").toInt :java.lang.Integer))
+      val setExtractATIds = JavaConversions.setAsJavaSet(Set(ConfigManager.Messages("db.actionType.extract").toInt :java.lang.Integer))
       // (список рассматриваемых свойств действия)
-      val setExtractIds = JavaConversions.asJavaSet(Set(i18n("db.apt.moving.codes.hospOrgStruct"),
+      val setExtractIds = JavaConversions.setAsJavaSet(Set(i18n("db.apt.moving.codes.hospOrgStruct"),
                                                         i18n("db.apt.leaved.codes.hospOutcome"),
                                                         i18n("db.apt.leaved.codes.nextHospDate"),
                                                         i18n("db.apt.leaved.codes.nextHospFinance"),
@@ -589,7 +590,7 @@ class AppealEntry extends I18nable {
     }
     //*******************Доп сведения***************
     //Движения
-    val setATCodes = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
+    val setATCodes = JavaConversions.setAsJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
                                                    i18n("db.apt.moving.codes.orgStructTransfer"),
                                                    i18n("db.apt.documents.codes.RW"),
                                                    i18n("db.apt.documents.codes.preHospitalDefects"),

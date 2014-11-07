@@ -12,6 +12,7 @@ import ru.korus.tmis.core.data.{DepartmentsDataFilter, QueryDataStructure}
 import java.util
 import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

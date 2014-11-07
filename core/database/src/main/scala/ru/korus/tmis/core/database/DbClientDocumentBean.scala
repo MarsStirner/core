@@ -12,6 +12,7 @@ import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
 import java.util
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

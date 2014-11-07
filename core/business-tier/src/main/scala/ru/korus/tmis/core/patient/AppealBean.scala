@@ -1,11 +1,14 @@
 package ru.korus.tmis.core.patient
 
+import java.util
+
 import grizzled.slf4j.Logging
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.database._
 import common._
+import ru.korus.tmis.core.values.InfectionControl
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import javax.persistence.{PersistenceContext, EntityManager}
@@ -13,11 +16,10 @@ import java.util.{ArrayList, Date, LinkedList}
 import ru.korus.tmis.core.exception.CoreException
 import collection.JavaConversions
 
-import javax.inject.Inject
-import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import org.joda.time.{DateTime, Years}
-;
+import scala.language.reflectiveCalls
+import scala.collection.JavaConverters._
 
 @Stateless
 class AppealBean extends AppealBeanLocal
@@ -338,7 +340,7 @@ with CAPids {
         if (admissionMkb != null) {
           var map = Map.empty[String, java.util.Set[AnyRef]]
           map += ("finalMkb" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue), 0, 0)))
-          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, asJavaMap(map), authData)
+          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, mapAsJavaMap(map), authData)
           diag.filter(p => p.isInstanceOf[Diagnostic]).toList.foreach(f => f.asInstanceOf[Diagnostic].setResult(this.getRbResultById(15)))
           dbManager.persistAll(diag)
         }
@@ -405,7 +407,7 @@ with CAPids {
         .toSet[AnyRef]
       map += (flatCode -> values)
     })
-    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), asJavaMap(map), authData)
+    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), mapAsJavaMap(map), authData)
     val mergedItems = diagnoses.filter(p => (p.isInstanceOf[Diagnosis] &&
       p.asInstanceOf[Diagnosis].getId != null &&
       p.asInstanceOf[Diagnosis].getId.intValue() > 0) ||
@@ -569,11 +571,11 @@ with CAPids {
 
   @throws(classOf[CoreException])
   def checkAppealBegEndDate(datePeriod: DatePeriodContainer) {
-    /*if (datePeriod.getStart.getTime() > datePeriod.getEnd.getTime()) {
+    if (datePeriod.start after datePeriod.end)
       throw new CoreException(i18n("error.appeal.create.InvalidPeriod"))
-    }*/
+
     val maxDiffYears: Int = 3
-    val years: Int = Years.yearsBetween(new DateTime(datePeriod.getStart), new DateTime()).getYears;
+    val years: Int = Years.yearsBetween(new DateTime(datePeriod.getStart), new DateTime()).getYears
     if (Math.abs(years) > maxDiffYears - 1) {
       throw new CoreException(i18n("error.appeal.create.InvalidPeriod.StartDate", maxDiffYears))
     }
@@ -832,7 +834,7 @@ with CAPids {
       "attendant" -> i18n("appeal.db.actionPropertyType.name.diagnosis.attendant.code").toString,
       "aftereffect" -> i18n("appeal.db.actionPropertyType.name.diagnosis.aftereffect.code").toString)
 
-    val setATIds = JavaConversions.asJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt: java.lang.Integer))
+    val setATIds = JavaConversions.setAsJavaSet(Set(i18n("db.actionType.hospitalization.primary").toInt: java.lang.Integer))
     val actionId = actionBean.getLastActionByActionTypeIdAndEventId(eventId, setATIds)
     if (actionId > 0) {
       var actionProperties = actionPropertyBean.getActionPropertiesByActionId(actionId)
@@ -997,7 +999,7 @@ with CAPids {
   }
 
   def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData) = {
-    val codes = asJavaSet(condition match {
+    val codes = setAsJavaSet(condition match {
       case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
       case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB", "WBC", "GRAN", "NEUT", "HGB", "PLT")
       case _ => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
@@ -1009,8 +1011,106 @@ with CAPids {
       new MonitoringInfoListData()
   }
 
+  def getInfectionMonitoring(eventId: Int): java.util.Set[(String, Date, Date, java.util.List[Integer])] = {
+    val IC = InfectionControl
+    actionBean.getActionsByEvent(eventId)
+    .filter(p => IC.documents.contains(p.getActionType.getCode))
+    .flatMap(_.getActionProperties)
+    .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
+    .groupBy( e => (e.getAction.getId,  e.getType.getCode.split(IC.separator).head))
+    .flatMap(e => {
+      val actionId = e._1._1
+      val list = e._2
+      val name = {
+        list.find( p => p.getType.getCode.equals(e._1._2)) match {
+          case Some(x) => Some(x.getType.getName)
+          case None => None
+        }
+      }
+      val beginDate = list.find( p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.beginDatePostfix))
+      val endDate = list.find( p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.endDatePostfix))
+
+      (name, beginDate, endDate) match {
+        case (Some(x), Some(y), Some(z)) =>
+          val bd = actionPropertyBean.getActionPropertyValue(y)
+          val ed = actionPropertyBean.getActionPropertyValue(z)
+          (bd.size(), ed.size()) match {
+            case (1, 1) => (bd.head, ed.head) match {
+              case (begin: APValueDate, end: APValueDate) => Some((x, begin.getValue, end.getValue, actionId))
+              case _ => None
+            }
+            case (1, 0) => bd.head match {
+              case b: APValueDate => Some(x, b.getValue, null, actionId)
+              case _ => None
+            }
+            case (0, 1) => ed.head match {
+              case end: APValueDate => Some(x, end.getValue, null, actionId)
+              case _ => None
+            }
+            case _ => None
+          }
+        case _ => None
+      }
+    })
+    .groupBy(p => (p._1, p._2, p._3)).map(e => (e._1._1, e._1._2, e._1._3, e._2.map(_._4).toList.asJava)).toSet.asJava
+  }
+
+  def getInfectionDrugMonitoring(eventId: Int): java.util.Set[(String, Date, Date, String, java.util.List[Integer])] = {
+    val IC = InfectionControl
+    val r = actionBean.getActionsByEvent(eventId)
+      .filter(p => IC.documents.contains(p.getActionType.getCode))
+      .flatMap(_.getActionProperties)
+      .filter(e => e.getType.getCode != null && IC.drugTherapyProperties.contains(e.getType.getCode))
+      .groupBy(e => (e.getAction.getId,  e.getType.getCode.split('_').last))
+      .flatMap(e => {
+      val drugId = e._1._2
+      val list = e._2
+      val actionId = e._1._1
+
+      val name = list.find( p => p.getType.getCode.equals(IC.infectDrugNamePrefix + '_' + drugId))
+      val beginDate = list.find( p => p.getType.getCode.equals(IC.infectDrugBeginDatePrefix + '_' + drugId))
+      val endDate = list.find( p => p.getType.getCode.equals(IC.infectDrugEndDatePrefix + '_' + drugId))
+      val therapyType = list.find( p => p.getType.getCode.equals(IC.infectTherapyTypePrefix + '_' + drugId))
+
+      (name, beginDate, endDate, therapyType) match {
+        case (Some(a), Some(b), Some(c), Some(d)) =>
+          val n = actionPropertyBean.getActionPropertyValue(a)
+          val bd = actionPropertyBean.getActionPropertyValue(b)
+          val ed = actionPropertyBean.getActionPropertyValue(c)
+          val t = actionPropertyBean.getActionPropertyValue(d)
+
+          (n.size(), bd.size()) match {
+            case (1, 1) => (n.head, bd.head) match {
+              case (x: APValueString, y: APValueDate) =>
+                val e = ed.size() match {
+                  case 1 => ed.head match {
+                    case p: APValueDate => p.getValue
+                    case _ => null
+                  }
+                  case _ => null
+                }
+                val ty = t.size() match {
+                  case 1 => t.head match {
+                    case p: APValueString => p.getValue
+                    case _ => null
+                  }
+                  case _ => null
+                }
+                Some((x.getValue, y.getValue, e, ty, actionId))
+              case _ => None
+            }
+            case _ => None
+          }
+        case _ => None
+      }
+    })
+    r
+      .groupBy(e => (e._1, e._2, e._3, e._4))
+      .map(e => (e._1._1, e._1._2, e._1._3, e._1._4, e._2.map(_._5).toList.asJava)).toSet.asJava
+  }
+
   def getSurgicalOperations(eventId: Int, authData: AuthData) = {
-    val codes = asJavaSet(Set("operationName", "complicationName", "methodAnesthesia"))
+    val codes = setAsJavaSet(Set("operationName", "complicationName", "methodAnesthesia"))
     val map = actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(List(Integer.valueOf(eventId)), codes, Int.MaxValue, true)
     if (map != null && map.contains(Integer.valueOf(eventId)))
       new SurgicalOperationsListData(map.get(Integer.valueOf(eventId)),

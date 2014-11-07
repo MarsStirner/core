@@ -56,7 +56,7 @@ trait Configuration extends Reflective {
                                 getOrElse(false) // if child returned false, or we were screwed some time before, return false
 
       // split("whatever",2) can only return w0 - 2 tokens on any string
-      case _ => error("Configuration.setSetting: should never happen")
+      case _ => sys.error("Configuration.setSetting: should never happen")
     }
   }
 }

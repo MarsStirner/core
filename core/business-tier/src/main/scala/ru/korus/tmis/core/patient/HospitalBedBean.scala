@@ -21,6 +21,7 @@ import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import java.util.Date
 import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -551,7 +552,7 @@ with TmisLogging {
                 entities = entities + ap
 
                 //Обновим APVs
-                if (ap_val._2 != 0 && ap_val._2.size() > 0) {
+                if (ap_val._2 != null && ap_val._2.size() > 0) {
                   flgEdit match {
                     case 1 => {
                       //Редактируем значения "Переведен в" и "Время выбытия"

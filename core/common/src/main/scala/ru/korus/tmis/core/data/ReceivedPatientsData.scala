@@ -13,6 +13,7 @@ import collection.JavaConversions
 import java.util
 import org.codehaus.jackson.map.ObjectMapper
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 /**
  * Типы возможных View для сериализации данных в контейнерах ReceivedPatients
@@ -368,7 +369,7 @@ class ReceivedPatientsEntry extends I18nable  {
         eventIds.add(event.getId.intValue())
         if (status.compareTo(ConfigManager.Messages("patient.status.sentTo"))==0) {
           //Движения
-          val setATCodes = JavaConversions.asJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
+          val setATCodes = JavaConversions.setAsJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
                                                          i18n("db.apt.moving.codes.orgStructTransfer")))
           if (mMovingProperties!=null){
             val moveProps = mMovingProperties(eventIds, setATCodes, 1, false)
@@ -387,7 +388,7 @@ class ReceivedPatientsEntry extends I18nable  {
           }
         }
         else if (status.compareTo(ConfigManager.Messages("patient.status.regToBed"))==0){
-          val setATCodes = JavaConversions.asJavaSet(Set(i18n("db.apt.moving.codes.hospitalBed"),
+          val setATCodes = JavaConversions.setAsJavaSet(Set(i18n("db.apt.moving.codes.hospitalBed"),
                                                          i18n("db.apt.moving.codes.hospOrgStruct")))
           if (mMovingProperties!=null){
             val moveProps = mMovingProperties(eventIds, setATCodes, 1, false)
@@ -406,7 +407,7 @@ class ReceivedPatientsEntry extends I18nable  {
       }
       case _  => {
         this.havePrimary = if (mHasPrimary != null) {
-          val setATIds = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
+          val setATIds = JavaConversions.setAsJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer,
             ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
           val primaryId = mHasPrimary(event.getId.intValue(), setATIds)
           if(primaryId>0) true else false

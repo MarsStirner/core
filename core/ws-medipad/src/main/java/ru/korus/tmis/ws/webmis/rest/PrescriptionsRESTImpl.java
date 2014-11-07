@@ -35,7 +35,7 @@ public class PrescriptionsRESTImpl {
     private PrescriptionBeanLocal prescriptionBeanLocal;
 
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object listAction(@Context HttpServletRequest servRequest,
                              @QueryParam("callback") String callback,
                              @QueryParam("eventId") Integer eventId,
@@ -60,42 +60,42 @@ public class PrescriptionsRESTImpl {
     }
 
     @POST
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.create(createPrescriptionReqData, wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()))), callback);
     }
 
     @PUT
     @Path("/{prescriptionId}")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, @PathParam("prescriptionId")Integer actionId, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.update(actionId, createPrescriptionReqData, wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()))), callback);
     }
 
     @PUT
     @Path("/intervals")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object updateIntervals(@QueryParam("callback") String callback, AssigmentIntervalDataArray assigmentIntervalDataArray)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.updateIntervals(assigmentIntervalDataArray), callback);
     }
 
     @PUT
     @Path("/executeIntervals/")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object executeIntervals(@QueryParam("callback") String callback, ExecuteIntervalsData executeIntervalsData)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.executeIntervals(executeIntervalsData), callback);
     }
 
     @PUT
     @Path("/cancelIntervals/")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object cancelIntervals(@QueryParam("callback") String callback, ExecuteIntervalsData executeIntervalsData)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.cancelIntervals(executeIntervalsData), callback);
     }
 
     @PUT
     @Path("/cancelIntervalsExecution/")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object cancelIntervalsExecution(@QueryParam("callback") String callback, ExecuteIntervalsData executeIntervalsData)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.cancelIntervalsExecution(executeIntervalsData), callback);
     }
@@ -103,18 +103,16 @@ public class PrescriptionsRESTImpl {
 
     @GET
     @Path("/types/")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getTypes(@QueryParam("callback") String callback)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.getTypes(), callback);
     }
 
     @GET
     @Path("/template/{actionTypeId}/")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getTemplate(@QueryParam("callback") String callback, @PathParam("actionTypeId") Integer actionTypeId)throws CoreException {
         return new JSONWithPadding(prescriptionBeanLocal.getTemplate(actionTypeId), callback);
     }
-
-
 
 }

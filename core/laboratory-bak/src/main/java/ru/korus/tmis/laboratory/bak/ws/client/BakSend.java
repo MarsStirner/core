@@ -1,6 +1,7 @@
 
 package ru.korus.tmis.laboratory.bak.ws.client;
 
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.bak.BakSendService;
 import ru.korus.tmis.scala.util.ConfigManager;
 
@@ -28,6 +29,7 @@ public class BakSend extends Service {
     private final static URL CGMSOAP_WSDL_LOCATION;
     private final static WebServiceException CGMSOAP_EXCEPTION;
     private final static QName CGMSOAP_QNAME = new QName("http://cgm.ru", "CGM_SOAP");
+    public final static String CGM_BAK_URL_SYSTEM_PROPERTY = "bak.intergation.url";
 
     static {
         final String login = ConfigManager.LaboratoryBak().User();
@@ -85,7 +87,7 @@ public class BakSend extends Service {
      * @return returns BakSend
      */
     @WebEndpoint(name = "cgmsoap_PortType")
-    public BakSendService getService() {
+    public BakSendService getService() throws CoreException {
         final BakSendService service
                 = super.getPort(new QName("http://cgm.ru", "cgmsoap_PortType"), BakSendService.class);
         configureServiceURL((BindingProvider) service);
@@ -97,7 +99,7 @@ public class BakSend extends Service {
      * @return returns BakSend
      */
     @WebEndpoint(name = "cgmsoap_PortType")
-    public BakSendService getService(WebServiceFeature... features) {
+    public BakSendService getService(WebServiceFeature... features) throws CoreException {
         final BakSendService service
                 = super.getPort(new QName("http://cgm.ru", "cgmsoap_PortType"), BakSendService.class, features);
         configureServiceURL((BindingProvider) service);
@@ -109,12 +111,13 @@ public class BakSend extends Service {
      *
      * @param service - объект сервиса, в который установим URL
      */
-    private static void configureServiceURL(BindingProvider service) {
-        final String serviceUrl = ConfigManager.LaboratoryBak().ServiceUrl().toString();
+    private static void configureServiceURL(BindingProvider service) throws CoreException {
+        final String serviceUrl = System.getProperty(CGM_BAK_URL_SYSTEM_PROPERTY);
         if (serviceUrl != null) {
             Map<String, Object> requestContext = service.getRequestContext();
             requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
-        }
+        } else
+            throw new CoreException("No system property [" + CGM_BAK_URL_SYSTEM_PROPERTY +"]");
     }
 
     private static URL __getWsdlLocation() {

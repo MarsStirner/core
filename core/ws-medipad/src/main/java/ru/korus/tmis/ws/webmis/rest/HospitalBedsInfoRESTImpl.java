@@ -4,8 +4,14 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
+import java.util.Arrays;
 
 /**
  * Список REST-сервисов для просмотра движений
@@ -13,19 +19,12 @@ import javax.ws.rs.*;
  * Date: 3/22/13 6:34 PM
  * Since: 1.0.0.74
  */
+@Stateless
 @Interceptors(ServicesLoggingInterceptor.class)
 public class HospitalBedsInfoRESTImpl {
 
-    //protected static final String PATH = BaseRegistryRESTImpl.PATH + "hospitalbed/";
+    @EJB
     private WebMisREST wsImpl;
-    private AuthData auth;
-    private String callback;
-
-    public HospitalBedsInfoRESTImpl(WebMisREST wsImpl, String callback, AuthData auth) {
-        this.auth = auth;
-        this.wsImpl = wsImpl;
-        this.callback = callback;
-    }
 
     /**
      * Сервис на получение списка коек с меткой свободно/занято.
@@ -36,11 +35,14 @@ public class HospitalBedsInfoRESTImpl {
      */
     @GET
     @Path("/vacant/")
-    @Produces("application/x-javascript")
-    public Object getVacantHospitalBeds(@QueryParam("filter[departmentId]") int departmentId) throws CoreException {
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getVacantHospitalBeds(@Context HttpServletRequest servRequest,
+                                        @QueryParam("callback") String callback,
+                                        @QueryParam("filter[departmentId]") int departmentId) throws CoreException {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
-        int depId = (departmentId>0) ? departmentId : this.auth.getUser().getOrgStructure().getId().intValue();
-        return new JSONWithPadding(wsImpl.getVacantHospitalBeds(depId, this.auth), this.callback);
+        AuthData authData = mkAuth(servRequest);
+        int depId = (departmentId>0) ? departmentId : authData.getUser().getOrgStructure().getId();
+        return new JSONWithPadding(wsImpl.getVacantHospitalBeds(depId, authData), callback);
     }
 
     /**
@@ -50,9 +52,10 @@ public class HospitalBedsInfoRESTImpl {
      */
      @GET
      @Path("/avaliable_profiles")
-     @Produces("application/x-javascript")
-     public Object getAvailableProfiles() throws CoreException {
-         return new JSONWithPadding(wsImpl.getAllAvailableBedProfiles(auth), this.callback);
+     @Produces({"application/javascript", "application/x-javascript"})
+     public Object getAvailableProfiles(@Context HttpServletRequest servRequest,
+                                        @QueryParam("callback") String callback) throws CoreException {
+         return new JSONWithPadding(wsImpl.getAllAvailableBedProfiles(mkAuth(servRequest)), callback);
      }
 
     /**
@@ -63,9 +66,15 @@ public class HospitalBedsInfoRESTImpl {
      */
     @GET
     @Path("/profile_by_id/")
-    @Produces("application/x-javascript")
-    public Object getProfileNameById(@QueryParam("id")int profileId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getBedProfileById(profileId, auth), this.callback);
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getProfileNameById(@Context HttpServletRequest servRequest,
+                                     @QueryParam("callback") String callback,
+                                     @QueryParam("id")int profileId) throws CoreException {
+        return new JSONWithPadding(wsImpl.getBedProfileById(profileId, mkAuth(servRequest)), callback);
+    }
+
+    private AuthData mkAuth(HttpServletRequest servRequest) {
+        return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
     }
 
 }

@@ -1,7 +1,7 @@
 package ru.korus.tmis.scala.util
 
 import ru.korus.tmis.util.reflect.Configuration
-import ru.korus.tmis.scala.util.StringId
+import scala.language.reflectiveCalls
 
 object ActionWrapperInfo extends Configuration {
   awi =>

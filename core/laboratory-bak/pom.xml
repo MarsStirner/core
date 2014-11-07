@@ -19,6 +19,12 @@
             <artifactId>tmis-core-common</artifactId>
             <version>${version.tmis.core}</version>
         </dependency>
+        <dependency>
+            <groupId>ru.korus.tmis.config</groupId>
+            <artifactId>config</artifactId>
+            <version>${version.tmis.core}</version>
+            <type>jar</type>
+        </dependency>
     </dependencies>
 
     <build>

@@ -13,6 +13,7 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.LinkedHashMap
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import java.util
+import scala.language.reflectiveCalls
 
 //@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

@@ -48,25 +48,20 @@ class MessageDrivenListener extends LISMessageReceiver {
   override protected def getLaboratoryCode: String = LAB_CODE
 
   private def sendRequestToLIS(a: LaboratoryCreateRequestData) {
-    val toLog: ToLog = new ToLog("Analysis Request")
-    toLog.addN(ConfigManager.LaboratoryBak.ServiceUrl.toString)
+    logger.info(System.getProperty(BakSend.CGM_BAK_URL_SYSTEM_PROPERTY))
     try {
       val document = createDocument(a)
-      toLog.addN("Query: #", Utils.marshallMessage(document, "ru.korus.tmis.laboratory.bak.service"))
-      toLog.addN("Sending...")
+      logger.info("Query: " + Utils.marshallMessage(document, "ru.korus.tmis.laboratory.bak.service"))
+      logger.info("Sending...")
       val service: BakSendService = createCGMService
       val id: Holder[Integer] = new Holder[Integer](1)
       val guid: Holder[String] = new Holder[String](GUID)
       service.queryAnalysis(document, id, guid)
-      toLog.addN("Result id[#], guid [#]", id.value, guid.value)
+      logger.info("Result id[" + id.value + "], guid [" + guid.value + "]")
     } catch {
       case e: Throwable =>
         logger.error("Sending error:" + e.getMessage, e)
-        toLog.addN("Sending error: #", e.getMessage)
         throw e
-    }
-    finally {
-      logger.info(toLog.releaseString())
     }
   }
 

@@ -12,6 +12,7 @@ import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import java.util.Date
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 /**
  * Методы для работы с таблицей Diagnostic

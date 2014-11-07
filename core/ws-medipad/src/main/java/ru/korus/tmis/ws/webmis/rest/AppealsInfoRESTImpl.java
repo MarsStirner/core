@@ -8,11 +8,18 @@ import ru.korus.tmis.core.data.ReceivedRequestData;
 import ru.korus.tmis.core.data.ReceivedRequestDataFilter;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
+import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.GenericEntity;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Список REST-сервисов для получения информации о обращениях на госпитализацию
@@ -20,46 +27,51 @@ import java.util.Date;
  * Date: 3/21/13 5:05 PM
  * Since: 1.0.0.74
  */
+@Stateless
 @Interceptors(ServicesLoggingInterceptor.class)
 public class AppealsInfoRESTImpl {
 
-    //protected static final String PATH = BaseRegistryRESTImpl.PATH + "appeals/";
+    @EJB
     private WebMisREST wsImpl;
-    private AuthData auth;
-    private String callback;
 
-    @Context
-    UriInfo uri;
+    @EJB
+    ExaminationsRegistryRESTImpl examinationsRegistryREST;
 
-    public AppealsInfoRESTImpl(WebMisREST wsImpl, String callback, AuthData auth) {
-        this.auth = auth;
-        this.wsImpl = wsImpl;
-        this.callback = callback;
-    }
+    @EJB
+    QuotesRegistryRESTImpl quotesRegistryREST;
+
 
     @Path("/{eventId}/hospitalbed/")
-    public HospitalBedRegistryRESTImpl getHospitalBedRegistryRESTImpl(@PathParam("eventId") int eventId) {
-        return new HospitalBedRegistryRESTImpl(wsImpl, eventId, callback, this.auth) ;
+    public HospitalBedRegistryRESTImpl getHospitalBedRegistryRESTImpl(@Context HttpServletRequest servRequest,
+                                                                      @PathParam("eventId") int eventId,
+                                                                      @QueryParam("callback") String callback) {
+        return new HospitalBedRegistryRESTImpl(wsImpl, eventId, callback, mkAuth(servRequest)) ;
     }
 
     @Path("/{eventId}/assignments/")
-    public AssignmentsRegistryRESTImpl getAssignmentsRegistryRESTImpl(@PathParam("eventId") int eventId) {
-        return new AssignmentsRegistryRESTImpl(wsImpl, eventId, callback, this.auth) ;
+    public AssignmentsRegistryRESTImpl getAssignmentsRegistryRESTImpl(@Context HttpServletRequest servRequest,
+                                                                      @PathParam("eventId") int eventId,
+                                                                      @QueryParam("callback") String callback) {
+        return new AssignmentsRegistryRESTImpl(wsImpl, eventId, callback, mkAuth(servRequest)) ;
     }
 
     @Path("/{eventId}/documents/")
-    public ExaminationsRegistryRESTImpl getExaminationsRegistryRESTImpl(@PathParam("eventId") int eventId) {
-            return new ExaminationsRegistryRESTImpl(wsImpl, eventId, 0, callback, this.auth) ;
+    public ExaminationsRegistryRESTImpl getExaminationsRegistryRESTImpl() {
+            return examinationsRegistryREST;
     }
 
     @Path("/{eventId}/diagnostics/")
-    public DiagnosticsRegistryExRESTImpl getDiagnosticsRegistryRESTImpl(@PathParam("eventId") int eventId) {
-        return new DiagnosticsRegistryExRESTImpl(wsImpl, eventId, callback, this.auth) ;
+    public DiagnosticsRegistryExRESTImpl getDiagnosticsRegistryRESTImpl(@Context HttpServletRequest servRequest,
+                                                                        @PathParam("eventId") int eventId,
+                                                                        @QueryParam("callback") String callback) {
+        return new DiagnosticsRegistryExRESTImpl(wsImpl, eventId, callback, mkAuth(servRequest)) ;
     }
 
     @Path("/{eventId}/quotes/")
-    public QuotesRegistryRESTImpl getQuotesRegistryRESTImpl(@PathParam("eventId") int eventId) {
-        return new QuotesRegistryRESTImpl(wsImpl, eventId, callback, this.auth) ;
+    public QuotesRegistryRESTImpl getQuotesRegistryRESTImpl(@Context HttpServletRequest servRequest,
+                                                            @PathParam("eventId") int eventId,
+                                                            @QueryParam("callback") String callback) {
+        return quotesRegistryREST;
     }
 
     /**
@@ -94,8 +106,9 @@ public class AppealsInfoRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
-    @Produces("application/x-javascript")
-    public Object getAllAppealsForReceivedPatientByPeriod(@QueryParam("limit")int limit,
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getAllAppealsForReceivedPatientByPeriod(@Context HttpServletRequest servRequest,
+                                                          @QueryParam("limit")int limit,
                                                           @QueryParam("page")int  page,
                                                           @QueryParam("sortingField")String sortingField,    //сортировки вкл.
                                                           @QueryParam("sortingMethod")String sortingMethod,
@@ -106,11 +119,12 @@ public class AppealsInfoRESTImpl {
                                                           @QueryParam("filter[externalId]")String externalId,
                                                           @QueryParam("filter[beginDate]")Long beginDate,
                                                           @QueryParam("filter[endDate]")Long endDate,
-                                                          @QueryParam("filter[diagnosis]") String mkbCode) throws CoreException {
+                                                          @QueryParam("filter[diagnosis]") String mkbCode,
+                                                          @QueryParam("callback") String callback) throws CoreException {
 
         ReceivedRequestDataFilter filter = new ReceivedRequestDataFilter(eventId, fullName, birthDate, externalId, beginDate, endDate, mkbCode, role);
         ReceivedRequestData requestData = new ReceivedRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getAllAppealsForReceivedPatientByPeriod(requestData, this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.getAllAppealsForReceivedPatientByPeriod(requestData, mkAuth(servRequest)), callback);
     }
 
     /**
@@ -123,10 +137,12 @@ public class AppealsInfoRESTImpl {
     @PUT
     @Path("{eventId}")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
-    public Object updatePatientAppeal(@PathParam("eventId")int eventId,
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object updatePatientAppeal(@Context HttpServletRequest servRequest,
+                                      @PathParam("eventId")int eventId,
+                                      @QueryParam("callback") String callback,
                                       AppealData data) throws CoreException {
-        return new JSONWithPadding(wsImpl.updateAppeal(data, eventId, this.auth), this.callback);
+        return new JSONWithPadding(wsImpl.updateAppeal(data, eventId, mkAuth(servRequest)), callback);
     }
 
     /**
@@ -139,8 +155,10 @@ public class AppealsInfoRESTImpl {
     @POST
     @Path("{eventId}/closemove")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
-    public Object closeLastMovingAtAppeal(@PathParam(("eventId"))int eventId,
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object closeLastMovingAtAppeal(@Context HttpServletRequest servRequest,
+                                          @PathParam(("eventId"))int eventId,
+                                          @QueryParam("callback") String callback,
                                           @QueryParam("date")long timestamp) throws CoreException {
         Date date;
         if(timestamp < 1)
@@ -148,7 +166,7 @@ public class AppealsInfoRESTImpl {
         else
             date = new Date(timestamp);
 
-        return new JSONWithPadding(wsImpl.closeLastMovingOfAppeal(eventId, auth, date), this.callback);
+        return new JSONWithPadding(wsImpl.closeLastMovingOfAppeal(eventId, mkAuth(servRequest), date), callback);
     }
 
     /**
@@ -160,9 +178,11 @@ public class AppealsInfoRESTImpl {
      */
     @GET
     @Path("{eventId}")
-    @Produces("application/x-javascript")
-    public Object getAppealById(@PathParam("eventId")int eventId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getAppealById(eventId, this.auth), this.callback);
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getAppealById(@Context HttpServletRequest servRequest,
+                                @PathParam("eventId")int eventId,
+                                @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(wsImpl.getAppealById(eventId, mkAuth(servRequest)), callback);
     }
 
     /**
@@ -174,45 +194,88 @@ public class AppealsInfoRESTImpl {
      */
     @GET
     @Path("{eventId}/print")
-    @Produces("application/x-javascript")
-    public Object getAppealPrintFormById(@PathParam("eventId")int eventId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getAppealPrintFormById(eventId, this.auth), this.callback);
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getAppealPrintFormById(@Context HttpServletRequest servRequest,
+                                         @PathParam("eventId")int eventId,
+                                         @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(wsImpl.getAppealPrintFormById(eventId, mkAuth(servRequest)), callback);
     }
 
     @GET
     @Path("{eventId}/diagnoses")
-    @Produces("application/x-javascript")
-    public Object getDiagnosesByAppeal(@PathParam("eventId")int eventId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getDiagnosesByAppeal(eventId, this.auth), this.callback);
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getDiagnosesByAppeal(@Context HttpServletRequest servRequest,
+                                       @PathParam("eventId")int eventId,
+                                       @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(wsImpl.getDiagnosesByAppeal(eventId, mkAuth(servRequest)), callback);
     }
 
     @GET
     @Path("{eventId}/monitoring")
-    @Produces("application/x-javascript")
-    public Object getMonitoringInfoByAppeal(@PathParam("eventId")int eventId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getMonitoringInfoByAppeal(eventId, 0, this.auth), this.callback);
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getMonitoringInfoByAppeal(@Context HttpServletRequest servRequest,
+                                            @PathParam("eventId")int eventId,
+                                            @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(wsImpl.getMonitoringInfoByAppeal(eventId, 0, mkAuth(servRequest)), callback);
+    }
+
+    @GET
+    @Path("{eventId}/infection-monitoring")
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getInfectionMonitoringInfoByAppeal(@Context HttpServletRequest servRequest,
+                                            @PathParam("eventId")int eventId,
+                                            @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(new GenericEntity<Set<List<Object>>>(wsImpl.getInfectionMonitoring(eventId, mkAuth(servRequest))) {}, callback);
+    }
+
+    @GET
+    @Path("{eventId}/infection-drug-monitoring")
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getInfectionDrugMonitoringInfoByAppeal(@Context HttpServletRequest servRequest,
+                                                        @PathParam("eventId")int eventId,
+                                                        @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(new GenericEntity<Set<List<Object>>>(wsImpl.getInfectionDrugMonitoring(eventId, mkAuth(servRequest))) {}, callback);
     }
 
     @GET
     @Path("{eventId}/surgical")
-    @Produces("application/x-javascript")
-    public Object getSurgicalOperationsByAppeal(@PathParam("eventId")int eventId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getSurgicalOperationsByAppeal(eventId, this.auth), this.callback);
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getSurgicalOperationsByAppeal(@Context HttpServletRequest servRequest,
+                                                @PathParam("eventId")int eventId,
+                                                @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(wsImpl.getSurgicalOperationsByAppeal(eventId, mkAuth(servRequest)), callback);
     }
 
     @GET
     @Path("{eventId}/analyzes")
-    @Produces("application/x-javascript")
-    public Object getExpressAnalyzesInfoByAppeal(@PathParam("eventId")int eventId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getMonitoringInfoByAppeal(eventId, 1, this.auth), this.callback);
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getExpressAnalyzesInfoByAppeal(@Context HttpServletRequest servRequest,
+                                                 @PathParam("eventId")int eventId,
+                                                 @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(wsImpl.getMonitoringInfoByAppeal(eventId, 1, mkAuth(servRequest)), callback);
     }
 
     @PUT
     @Path("{eventId}/execPerson")
     @Consumes("application/json")
-    @Produces("application/x-javascript")
-    public Object setExecPersonForAppeal(IdValueContainer data,
-                                         @PathParam("eventId")int eventId) throws CoreException {
-        return new JSONWithPadding(wsImpl.setExecPersonForAppeal(eventId, Integer.valueOf(data.getId()).intValue(), this.auth), this.callback);
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object setExecPersonForAppeal(@Context HttpServletRequest servRequest,
+                                         IdValueContainer data,
+                                         @PathParam("eventId")int eventId,
+                                         @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(wsImpl.setExecPersonForAppeal(eventId, Integer.valueOf(data.getId()), mkAuth(servRequest)), callback);
     }
+
+    public WebMisREST getWsImpl() {
+        return wsImpl;
+    }
+
+    public void setWsImpl(WebMisREST wsImpl) {
+        this.wsImpl = wsImpl;
+    }
+
+    private AuthData mkAuth(HttpServletRequest servRequest) {
+        return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+    }
+
 }

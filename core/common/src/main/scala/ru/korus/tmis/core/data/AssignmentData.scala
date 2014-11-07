@@ -10,6 +10,7 @@ import java.util.{LinkedList, Date}
 import scala.collection.JavaConversions._
 import fd.{APValueFlatDirectory, FDField, FDFieldValue, FDRecord}
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 @XmlType(name = "assignmentData")
 @XmlRootElement(name = "assignmentData")

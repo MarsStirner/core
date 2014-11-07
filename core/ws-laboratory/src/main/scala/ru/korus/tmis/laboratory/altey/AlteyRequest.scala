@@ -28,7 +28,7 @@ class AlteyRequest extends AlteyRequestService with Logging with I18nable {
       labBean.sendLisAnalysisRequest(actionId)
     }
     catch {
-      case e => ()
+      case e: Throwable => ()
     }
   }
 }

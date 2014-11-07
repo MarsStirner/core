@@ -1,10 +1,8 @@
 package ru.korus.tmis.core.util
 
-import org.junit.Test
-import java.util.{List => JList, LinkedList}
-
-import org.junit.Assert._
+import org.testng.annotations.Test
 import ru.korus.tmis.scala.util.I18nable
+import scala.language.reflectiveCalls
 
 
 class I18nableTest {
@@ -15,8 +13,7 @@ class I18nableTest {
 
   @Test
   def testFormatting() {
-    assertEquals(Tester.tissueNotFoundMessage, "Биоматериал # 18 не найден")
-
+    assert(Tester.tissueNotFoundMessage.equals("Биоматериал # 18 не найден"))
   }
 
 }

@@ -13,6 +13,7 @@ import javax.xml.ws.soap.SOAPFaultException
 import org.apache.shiro.SecurityUtils
 import org.apache.shiro.mgt.DefaultSecurityManager
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 class AuthenticatingHandler
   extends SOAPHandler[SOAPMessageContext]

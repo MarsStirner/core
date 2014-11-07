@@ -324,7 +324,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 toLog.addN("Fetch last actions with size [#]", actionList.size());
                 for (Action action : actionList) {
                     final Pharmacy checkPharmacy = dbPharmacy.getPharmacyByAction(action);
-                    if (checkPharmacy == null) {
+                    if (checkPharmacy == null && isActionForSend(action)) {
                         toLog.addN("Found non sending action [#], flatCode [#]", action, action.getActionType().getFlatCode());
                         send(action, toLog);
                     }
@@ -491,7 +491,8 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 int errCount = prescription.getErrCount();
                 long step = 89 * 1000; // время до слейдующей попытки передачи данных
                 prescription.setSendTime(new Timestamp((new java.util.Date()).getTime() + (long) (errCount) * step));
-                if (sendPrescription(prescription)) {
+                if (sendPrescription(prescription) ||
+                   (!prescription.isPrescription() && prescription.getNewStatus().equals(PrescriptionStatus.PS_CANCELED))  ) {
                     dbPrescriptionsTo1CBeanLocal.remove(prescription);
                 }
             } catch (Exception e) {

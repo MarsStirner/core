@@ -31,7 +31,7 @@ import ru.korus.tmis.schedule.{PacientInQueueType, PersonScheduleBeanLocal, Queu
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
-
+import scala.language.reflectiveCalls
 
 /**
  * Методы для работы с Направлениями
@@ -237,7 +237,7 @@ with I18nable {
             if (takenTissue != null) a.setTakenTissue(takenTissue)
             list.add(j, jt, takenTissue, a)
             jtForAp = jt
-            actionsSendToLIS += Tuple2(a, jt.getId)
+            if(jobTicket.getStatus == JobTicket.STATUS_IS_FINISHED) actionsSendToLIS += Tuple2(a, jt.getId)
           } else {
             val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
             j.setQuantity(j.getQuantity + 1)
@@ -716,6 +716,10 @@ with I18nable {
         }
       }
     }
+  }
+
+  def sendJMSLabRequest(actionId: Int) = {
+    sendJMSLabRequest(actionId, dbJobTicketBean.getLaboratoryCodeForActionId(actionId))
   }
 
   private def sendJMSLabRequest(actionId: Int, labCode: String) = {

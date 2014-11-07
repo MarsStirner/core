@@ -23,6 +23,7 @@ import javax.persistence.EntityManager
 import java.util
 import collection.JavaConversions
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 /**
  * Author:      Ivan Dmitriev <br>
@@ -171,7 +172,7 @@ class AppealBeanTest {
     for(i <- 0 until 3) {
        apt :+= testData.getTestDefaultActionPropertyType(i+1, "testCode_%d".format(i+1))
        ap :+= testData.getTestDefaultActionProperty(i+1, apt.get(i))
-       apvalues.put(ap.get(i), asJavaList(List[APValue](apv.get(i))))
+       apvalues.put(ap.get(i), seqAsJavaList(List[APValue](apv.get(i))))
     }
 
     try{
@@ -360,7 +361,7 @@ class AppealBeanTest {
   @Test
   def testCheckAppealNumberFalse = {
     val number = "testNumber_existed"
-    val list = asJavaList(List(testData.getTestDefaultEvent))
+    val list = seqAsJavaList(List(testData.getTestDefaultEvent))
     logger.warn("Start of checkAppealNumber test:")
     when(dbEventBean.getAllAppealsForReceivedPatientByPeriod(anyInt(), anyInt(), anyString(), anyString(), anyObject())).thenReturn(list)
     try{
@@ -419,11 +420,11 @@ class AppealBeanTest {
   def testGetPatientsHospitalizedStatusSuccess = {
 
     val event =  testData.getTestDefaultEvent(TEvent_id)
-    val setATIdsPrimary = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
-    val setATIdsMoving = JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer))
-    val setATIdsPrimarySecondary =JavaConversions.asJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer, ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
-    val lstSentToIds = JavaConversions.asJavaList(List(ConfigManager.Messages("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
-    val lstCancelIds = JavaConversions.asJavaList(List(ConfigManager.Messages("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
+    val setATIdsPrimary = JavaConversions.setAsJavaSet(Set(ConfigManager.Messages("db.actionType.hospitalization.primary").toInt :java.lang.Integer))
+    val setATIdsMoving = JavaConversions.setAsJavaSet(Set(ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer))
+    val setATIdsPrimarySecondary =JavaConversions.setAsJavaSet(Set(ConfigManager.Messages("db.actionType.primary").toInt :java.lang.Integer, ConfigManager.Messages("db.actionType.secondary").toInt :java.lang.Integer))
+    val lstSentToIds = JavaConversions.seqAsJavaList(List(ConfigManager.Messages("db.rbCAP.hosp.primary.id.sentTo").toInt :java.lang.Integer))
+    val lstCancelIds = JavaConversions.seqAsJavaList(List(ConfigManager.Messages("db.rbCAP.hosp.primary.id.cancel").toInt :java.lang.Integer))
 
     var apt = List.empty[ActionPropertyType]
     var ap = List.empty[ActionProperty]
@@ -435,7 +436,7 @@ class AppealBeanTest {
     for(i <- 0 until 3) {
       apt :+= testData.getTestDefaultActionPropertyType(i+1, "testCode_%d".format(i+1))
       ap :+= testData.getTestDefaultActionProperty(i+1, apt.get(i))
-      apvalues.put(ap.get(i), asJavaList(List[APValue](apv.get(i))))
+      apvalues.put(ap.get(i), seqAsJavaList(List[APValue](apv.get(i))))
     }
 
     logger.warn("Start of getPatientsHospitalizedStatus test:")

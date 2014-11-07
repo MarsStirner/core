@@ -32,7 +32,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.5.46.1-SNAPSHOT</version.tmis.core>
+        <version.tmis.core>2.5.47.3-SNAPSHOT</version.tmis.core>
 
         <version.joda.time>2.3</version.joda.time>
         <version.apache.thrift>0.9.0</version.apache.thrift>
@@ -45,7 +45,7 @@
         <version.logging.slf4j>1.7.2</version.logging.slf4j>
         <version.logging.grizzled-slf4j>1.0.2</version.logging.grizzled-slf4j>
 
-        <version.scala>2.10.3</version.scala>
+        <version.scala>2.11.2</version.scala>
         <version.javax.inject>1</version.javax.inject>
         <version.javaee.api>6.0</version.javaee.api>
         <version.javax.mail>1.4.5</version.javax.mail>

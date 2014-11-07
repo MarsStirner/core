@@ -5,6 +5,7 @@ import ru.korus.tmis.util.{CompileTimeConfigManager}
 import ru.korus.tmis.scala.util.{Types, General, I18nable}
 import Types.{JList, JLinked, JString, JBoolean, JInteger}
 import javax.ejb.EJB
+import scala.language.reflectiveCalls
 
 
 import ru.korus.tmis.scala.util.{General, I18nable}

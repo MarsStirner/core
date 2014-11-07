@@ -16,6 +16,7 @@ import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
 import java.util.Date
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless

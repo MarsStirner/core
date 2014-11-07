@@ -37,6 +37,7 @@ import scala.collection.mutable
 import ru.korus.tmis.scala.util.{General, I18nable, ConfigManager}
 import scala.Some
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 //@Remote(Array(classOf[LaboratoryBeanLocal]))
@@ -126,7 +127,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
       }
 
     } catch {
-      case e => {
+      case e: Throwable => {
         error("Error while creating LIS service endpoint", e)
         throw e
       }
@@ -395,7 +396,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
    *
    * Возвращает пару (код, текстовое описание диагноза) по МКБ или null
    */
-  def getDiagnosis(e: Event): Pair[String, String] = {
+  def getDiagnosis(e: Event): (String, String) = {
     // Получаем тип свойства действия для диагноза
     val diagnosisAPT = asScalaSet(dbActionPropertyType.getDiagnosisAPT)
 

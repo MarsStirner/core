@@ -41,6 +41,11 @@ public class RbPolicyType implements Serializable {
     @Column(name = "name")
     private String name;
 
+    @Basic(optional = false)
+    @Column(name ="insurance_type")
+    @Enumerated(EnumType.STRING)
+    private InsuranceType insuranceType;
+
     /*
     * END DB FIELDS
     * */
@@ -67,6 +72,14 @@ public class RbPolicyType implements Serializable {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    public InsuranceType getInsuranceType() {
+        return insuranceType;
+    }
+
+    public void setInsuranceType(InsuranceType insuranceType) {
+        this.insuranceType = insuranceType;
     }
 
     /*
@@ -97,4 +110,7 @@ public class RbPolicyType implements Serializable {
     public String toString() {
         return "ru.korus.tmis.core.entity.model.RbPolicyType[id=" + id + "]";
     }
+
+    public enum InsuranceType { OMS, DMS }
+
 }

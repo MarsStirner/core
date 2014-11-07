@@ -8,6 +8,7 @@ import javax.xml.bind.annotation._
 import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 import ru.korus.tmis.core.entity.model.Mkb
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 @XmlType(name = "jsonCommonData")
 @XmlRootElement(name = "jsonCommonData")

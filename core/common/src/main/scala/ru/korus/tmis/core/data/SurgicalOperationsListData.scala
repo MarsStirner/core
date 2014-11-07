@@ -47,7 +47,7 @@ class SurgicalOperationsListData {
           val anesthesia = this.getAPValueByComparedCode(f._2, "methodAnesthesia")
           var code: String = ""
           if (mGetOperationTypes!=null){
-            val operationTypes = mGetOperationTypes(f._1.getId.intValue(), asJavaList(List("OperationType")))
+            val operationTypes = mGetOperationTypes(f._1.getId.intValue(), seqAsJavaList(List("OperationType")))
             if (operationTypes!=null && operationTypes.size()>0){
               val codes = operationTypes.iterator.next()._2
               if (codes!=null && codes.size()>0)

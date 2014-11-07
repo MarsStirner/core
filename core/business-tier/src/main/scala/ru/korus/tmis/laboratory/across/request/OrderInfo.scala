@@ -9,6 +9,7 @@ import ru.korus.tmis.scala.util.Defaultible
 import Defaultible._
 import ru.korus.tmis.laboratory.across.ws.Tindicator
 import ru.korus.tmis.scala.util.Defaultible
+import scala.language.reflectiveCalls
 
 sealed case class OrderInfo(
                              diagnosticCode: Option[String] = None,
@@ -19,9 +20,10 @@ sealed case class OrderInfo(
 
 object OrderInfo {
 
-  object OrderPriority extends Enumeration(1, "Urgent", "Normal") {
+  object OrderPriority extends Enumeration(1) {
     type OrderPriority = Value
-    val Urgent, Normal = Value
+    val Urgent = Value("Urgent")
+    val Normal = Value("Normal")
   }
 
   type OrderPriority = OrderPriority.OrderPriority

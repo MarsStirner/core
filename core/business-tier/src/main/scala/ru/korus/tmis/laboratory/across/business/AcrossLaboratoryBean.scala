@@ -26,6 +26,7 @@ import ru.korus.tmis.laboratory.across.{ws => lab2}
 import ru.korus.tmis.scala.util.Types.JList
 import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 import ru.korus.tmis.util.CompileTimeConfigManager
+import scala.language.reflectiveCalls
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
@@ -362,7 +363,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
    *
    * Возвращает пару (код, текстовое описание диагноза) по МКБ или null
    */
-  def getDiagnosis(e: Event): Pair[String, String] = {
+  def getDiagnosis(e: Event): (String, String) = {
     // Получаем тип свойства действия для диагноза
     val diagnosisAPT = asScalaSet(dbActionPropertyType.getDiagnosisAPT)
 

@@ -12,6 +12,7 @@ import scala.collection.JavaConversions._
 import java.util
 import collection.JavaConversions
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 /**
  * Контейнер с данными о заборе биоматериала
@@ -363,10 +364,10 @@ class JobTicketInfoContainer {
         this.biomaterial = new TissueTypeContainer(actionValues.get(0)._2)
         this.assigner = new DoctorContainer(actionValues.get(0)._1.getAssigner)
         this.appealNumber = actionValues.get(0)._1.getEvent.getExternalId
-        if (mLastMovingAction!=null && mActionPropertiesWithValues!=0){
+        if (mLastMovingAction!=null && mActionPropertiesWithValues != 0){ //TODO Проверить поведение и убрать warning
           val moving = mLastMovingAction(actionValues.get(0)._1.getEvent.getId.intValue())
           if (moving!=null){
-            val listMovingAP = JavaConversions.asJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer))
+            val listMovingAP = JavaConversions.seqAsJavaList(List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.bed").toInt :java.lang.Integer))
             val apValues = mActionPropertiesWithValues(moving.getId.intValue(), listMovingAP)
             if (apValues!=null && apValues.size>0){
               val values = apValues.iterator.next()._2

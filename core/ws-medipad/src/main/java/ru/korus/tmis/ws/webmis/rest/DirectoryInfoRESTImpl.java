@@ -2,17 +2,23 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions;
-import ru.korus.tmis.auxiliary.TestDataRestConstruct;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.entity.model.RbPolicyType;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+import ru.korus.tmis.ws.impl.ReferenceBookBean;
+
+import javax.ejb.EJB;
+import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.UriInfo;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -22,33 +28,14 @@ import java.util.List;
  * Date: 3/19/13 2:06 PM
  * Since: 1.0.0.74
  */
+@Stateless
 @Interceptors(ServicesLoggingInterceptor.class)
 public class DirectoryInfoRESTImpl {
 
-    //protected static final String PATH = BaseRegistryRESTImpl.PATH;
-    private WebMisREST wsImpl;
-    private HttpServletRequest servRequest;
-    private int limit;
-    private int  page;
-    private String sortingField;
-    private String sortingMethod;
-    private AuthData auth;
-    private String callback;
-    private Boolean test;
+    @EJB private WebMisREST wsImpl;
 
-    public DirectoryInfoRESTImpl(WebMisREST wsImpl, HttpServletRequest servRequest, String callback,
-                                  int limit, int  page, String sortingField, String sortingMethod,
-                                  AuthData auth, Boolean test) {
-        this.auth = auth;
-        this.wsImpl = wsImpl;
-        this.servRequest = servRequest;
-        this.callback = callback;
-        this.limit = limit;
-        this.page = page;
-        this.sortingField = sortingField;
-        this.sortingMethod = sortingMethod;
-        this.test = test;
-    }
+    @EJB private ReferenceBookBean referenceBookBean;
+
     //__________________________________________________________________________________________________________________
     //***********************************   СПРАВОЧНИКИ   ***********************************
     //__________________________________________________________________________________________________________________
@@ -97,19 +84,34 @@ public class DirectoryInfoRESTImpl {
      * @see CoreException
      */
     @GET
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getRecordsFromDictionary(@QueryParam("dictName")String dictName,
+                                           @QueryParam("sortingField") String sortingField,
+                                           @QueryParam("sortingMethod") String sortingMethod,
+                                           @QueryParam("limit") int limit,
+                                           @QueryParam("page") int page,
                                            @QueryParam("filter[headId]")int headId,
                                            @QueryParam("filter[groupId]")int groupId,
                                            @QueryParam("filter[name]")String name,
                                            @QueryParam("filter[level]")String level,      //KLADR
                                            @QueryParam("filter[parent]")String parent,    //KLADR
                                            @QueryParam("filter[typeIs]")String type,        //valueDomain
-                                           @QueryParam("filter[capId]")int capId  //valueDomain
+                                           @QueryParam("filter[capId]")int capId,  //valueDomain
+                                           @QueryParam("callback") String callback
     ) throws CoreException {
         DictionaryListRequestDataFilter filter = new DictionaryListRequestDataFilter(dictName, headId, groupId, name, level, parent, type, capId);
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getDictionary(request, dictName),this.callback);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getDictionary(request, dictName),callback);
+    }
+
+
+    @GET
+    @Path("/policyTypes")
+    @Produces({"application/javascript", "application/x-javascript", "application/xml" })
+    public JSONWithPadding getPolicyTypes(@Context HttpServletRequest servRequest,
+                                          @QueryParam("callback") String callback) {
+        List<RbPolicyType> r = referenceBookBean.getPolicyTypes(mkAuth(servRequest));
+        return new JSONWithPadding(new GenericEntity<List<RbPolicyType>>(r){}, callback);
     }
 
     /**
@@ -123,11 +125,16 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/persons")
-    @Produces("application/x-javascript")
-    public Object getAllPersons(@QueryParam("filter[departmentId]")int departmentId) throws CoreException {
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getAllPersons(@QueryParam("sortingField") String sortingField,
+                                @QueryParam("sortingMethod") String sortingMethod,
+                                @QueryParam("limit") int limit,
+                                @QueryParam("page") int page,
+                                @QueryParam("filter[departmentId]")int departmentId,
+                                @QueryParam("callback") String callback) throws CoreException {
         PersonsListDataFilter filter = new PersonsListDataFilter(departmentId);
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getAllPersons(request),this.callback);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getAllPersons(request), callback);
     }
 
     /**
@@ -145,16 +152,21 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/persons/free")
-    @Produces("application/x-javascript")
-    public Object getFreePersons(@QueryParam("filter[actionType]")int actionType,
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getFreePersons(@QueryParam("sortingField") String sortingField,
+                                 @QueryParam("sortingMethod") String sortingMethod,
+                                 @QueryParam("limit") int limit,
+                                 @QueryParam("page") int page,
+                                 @QueryParam("filter[actionType]")int actionType,
                                  @QueryParam("filter[speciality]")int speciality,
                                  @QueryParam("filter[doctorId]")int doctorId,
                                  @QueryParam("filter[beginDate]")long beginDate,
-                                 @QueryParam("filter[endDate]")long endDate) throws CoreException {
+                                 @QueryParam("filter[endDate]")long endDate,
+                                 @QueryParam("callback") String callback) throws CoreException {
 
         FreePersonsListDataFilter filter = new FreePersonsListDataFilter(speciality, doctorId, actionType, beginDate, endDate);
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getFreePersons(request, beginDate),this.callback);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getFreePersons(request, beginDate),callback);
     }
 
     /**
@@ -164,29 +176,27 @@ public class DirectoryInfoRESTImpl {
      * &#15; "id" - по идентификатору отделения (значение по умолчанию);
      * &#15; "name" - по наименованию отделения </pre>
      * @param hasBeds Фильтр отделений имеющих развернутые койки.("true"/"false")
+     * @param withoutChildren Выбрать только элементы без дочерних элементов
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @GET
     @Path("/departments")
-    @Produces("application/x-javascript")
-    public Object getAllDepartments(@QueryParam("filter[hasBeds]")String hasBeds) throws CoreException {
-
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getAllDepartments(@QueryParam("sortingField") String sortingField,
+                                    @QueryParam("sortingMethod") String sortingMethod,
+                                    @QueryParam("limit") int limit,
+                                    @QueryParam("page") int page,
+                                    @QueryParam("filter[hasBeds]")String hasBeds,
+                                    @QueryParam("withoutChildren")Boolean withoutChildren,
+                                    @QueryParam("callback") String callback) throws CoreException {
         Boolean flgBeds =  hasBeds!=null && hasBeds.contains("true");
-        DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds);
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
+        boolean withoutChildrenFlg =  withoutChildren!=null ? withoutChildren : false;
+        DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds, false, withoutChildrenFlg);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         AllDepartmentsListData data = wsImpl.getAllDepartments(request);
-
-        //TODO: Вставлен кэйс для тестов (нужно ли?)
-        if(this.test){
-            Exception ex = new Exception();
-            return TestDataRestConstruct.makeTestDataRestResponse(
-                                                           ex.getStackTrace()[0].getMethodName(),
-                                                           this.servRequest,
-                                                           data.dataToString());
-        } else
-            return new JSONWithPadding(data ,this.callback);
+        return new JSONWithPadding(data, callback);
     }
 
     /**
@@ -219,20 +229,26 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/mkbs")
-    @Produces("application/x-javascript")
-    public Object getAllActionTypeNames(@QueryParam("filter[mkbId]")int mkbId,
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getAllActionTypeNames(@Context HttpServletRequest servRequest,
+                                        @QueryParam("sortingField") String sortingField,
+                                        @QueryParam("sortingMethod") String sortingMethod,
+                                        @QueryParam("limit") int limit,
+                                        @QueryParam("page") int page,
+                                        @QueryParam("filter[mkbId]")int mkbId,
                                         @QueryParam("filter[classId]")String classId,
                                         @QueryParam("filter[groupId]")String blockId,
                                         @QueryParam("filter[code]")String code,
                                         @QueryParam("filter[diagnosis]")String diagnosis,
                                         @QueryParam("filter[view]")String view,
                                         @QueryParam("filter[display]")String display,
-                                        @QueryParam("filter[sex]")int sex) throws CoreException {
+                                        @QueryParam("filter[sex]")int sex,
+                                        @QueryParam("callback") String callback) throws CoreException {
 
         Boolean flgDisplay =  display!=null && display.contains("true");
         MKBListRequestDataFilter filter = new MKBListRequestDataFilter(mkbId, classId, blockId, code, diagnosis, view, flgDisplay, sex);
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getAllMkbs(request, this.auth),this.callback);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getAllMkbs(request, mkAuth(servRequest)), callback);
     }
 
     /**
@@ -261,14 +277,16 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/flatDirectory")
-    @Produces("application/x-javascript")
-    public Object getFlatDirectories(@Context UriInfo info,
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getFlatDirectories(@Context HttpServletRequest servRequest,
+                                     @Context UriInfo info,
                                      @QueryParam("includeMeta") String includeMeta,
                                      @QueryParam("includeRecordList") String includeRecordList,
                                      @QueryParam("includeFDRecord") String includeFDRecord,
                                      @QueryParam("filterValue") String filterValue,
                                      @QueryParam("limit")int limit,
-                                     @QueryParam("page")int  page) throws CoreException {
+                                     @QueryParam("page")int page,
+                                     @QueryParam("callback") String callback) throws CoreException {
 
         //hand-made url query params parsing
         MultivaluedMap<String, String> queryParams = info.getQueryParameters();
@@ -291,7 +309,7 @@ public class DirectoryInfoRESTImpl {
                                                                 filterFields, filterValue, filterRecordIds);
         FlatDirectoryRequestData request = new FlatDirectoryRequestData(sortingFieldIds, limit, page, filter);
 
-        return new JSONWithPadding(wsImpl.getFlatDirectories(request),this.callback);
+        return new JSONWithPadding(wsImpl.getFlatDirectories(request), callback);
     }
 
     /**
@@ -310,13 +328,19 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/thesaurus")
-    @Produces("application/x-javascript")
-    public Object getThesaurus(@QueryParam("filter[id]")int thesaurusId,
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getThesaurus(@Context HttpServletRequest servRequest,
+                               @QueryParam("sortingField") String sortingField,
+                               @QueryParam("sortingMethod") String sortingMethod,
+                               @QueryParam("limit") int limit,
+                               @QueryParam("page") int page,
+                               @QueryParam("filter[id]")int thesaurusId,
                                @QueryParam("filter[groupId]")String groupId,
-                               @QueryParam("filter[code]")String code) throws CoreException {
+                               @QueryParam("filter[code]")String code,
+                               @QueryParam("callback") String callback) throws CoreException {
         ThesaurusListRequestDataFilter filter = new ThesaurusListRequestDataFilter(thesaurusId, groupId, code);
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getThesaurusList(request, this.auth),this.callback);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getThesaurusList(request, mkAuth(servRequest)), callback);
     }
 
     /**
@@ -335,13 +359,18 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/quotaTypes")
-    @Produces("application/x-javascript")
-    public Object getQuotaTypes(@QueryParam("filter[id]")int typeId,
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getQuotaTypes(@QueryParam("sortingField") String sortingField,
+                                @QueryParam("sortingMethod") String sortingMethod,
+                                @QueryParam("limit") int limit,
+                                @QueryParam("page") int page,
+                                @QueryParam("filter[id]")int typeId,
                                 @QueryParam("filter[code]")String code,
-                                @QueryParam("filter[groupId]")String groupId) throws CoreException {
+                                @QueryParam("filter[groupId]")String groupId,
+                                @QueryParam("callback") String callback) throws CoreException {
         QuotaTypesListRequestDataFilter filter = new QuotaTypesListRequestDataFilter(typeId, code, groupId);
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getQuotaTypes(request),this.callback);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getQuotaTypes(request), callback);
     }
 
     /**
@@ -358,12 +387,18 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/eventTypes")
-    @Produces("application/x-javascript")
-    public Object getEventTypes(@QueryParam("filter[requestType]")int requestType,
-                                @QueryParam("filter[finance]")int finance) throws CoreException {
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getEventTypes(@Context HttpServletRequest servRequest,
+                                @QueryParam("sortingField") String sortingField,
+                                @QueryParam("sortingMethod") String sortingMethod,
+                                @QueryParam("limit") int limit,
+                                @QueryParam("page") int page,
+                                @QueryParam("filter[requestType]")int requestType,
+                                @QueryParam("filter[finance]")int finance,
+                                @QueryParam("callback") String callback) throws CoreException {
         EventTypesListRequestDataFilter filter = new EventTypesListRequestDataFilter(finance, requestType);
-        ListDataRequest request = new ListDataRequest(this.sortingField, this.sortingMethod, this.limit, this.page, filter);
-        return new JSONWithPadding(wsImpl.getEventTypes(request, this.auth),this.callback);
+        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
+        return new JSONWithPadding(wsImpl.getEventTypes(request, mkAuth(servRequest)), callback);
     }
 
     /**
@@ -375,12 +410,13 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/contracts")
-    @Produces("application/x-javascript")
+    @Produces({"application/javascript", "application/x-javascript"})
     public Object getContracts(
                                 @QueryParam("eventTypeId")   int eventTypeId,
     @DefaultValue("false")      @QueryParam("showDeleted")   boolean showDeleted,
-    @DefaultValue("false")      @QueryParam("showExpired")   boolean showExpired) {
-        return new JSONWithPadding(wsImpl.getContracts(eventTypeId, showDeleted, showExpired), this.callback);
+    @DefaultValue("false")      @QueryParam("showExpired")   boolean showExpired,
+                                @QueryParam("callback")      String callback) {
+        return new JSONWithPadding(wsImpl.getContracts(eventTypeId, showDeleted, showExpired), callback);
     }
 
     /**
@@ -404,14 +440,20 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/actionTypes")
-    @Produces("application/x-javascript")
-    public Object getAllActionTypeNames(@Context UriInfo info,
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getAllActionTypeNames(@Context HttpServletRequest servRequest,
+                                        @Context UriInfo info,
+                                        @QueryParam("sortingField") String sortingField,
+                                        @QueryParam("sortingMethod") String sortingMethod,
+                                        @QueryParam("limit") int limit,
+                                        @QueryParam("page") int page,
                                         @QueryParam("patientId")int patientId,
                                         @QueryParam("filter[groupId]")int groupId,
                                         @QueryParam("filter[code]")String code,
                                         @QueryParam("filter[view]")String view,
                                         @QueryParam("showHidden") int showHidden,
-                                        @QueryParam("filter[orgStruct]")int orgStructFilterEnable) throws CoreException {
+                                        @QueryParam("filter[orgStruct]")int orgStructFilterEnable,
+                                        @QueryParam("callback") String callback) throws CoreException {
 
         if(patientId < 1 && (view == null || !view.equals("tree")))
             throw new CoreException("GET-параметр patientId обязателен и не может быть меньше 1 если используется не filter[view]=tree");
@@ -425,6 +467,8 @@ public class DirectoryInfoRESTImpl {
             for(String mnem: mnems)
                 if(mnem != null && !mnem.equals("")) mnemonics.add(mnem);
 
+        AuthData auth = mkAuth(servRequest);
+
         Integer orgStructId = auth.getUser() == null || auth.getUser().getOrgStructure() == null || orgStructFilterEnable == 0  ? null : auth.getUser().getOrgStructure().getId();
 
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, mnemonics, view, showHidden == 1, orgStructId);
@@ -432,7 +476,7 @@ public class DirectoryInfoRESTImpl {
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         final Object res = (view != null && view.equals("tree")) ? wsImpl.getListOfActionTypes(request)
                 : wsImpl.getListOfActionTypeIdNames(request, patientId);
-        return new JSONWithPadding(res, this.callback);
+        return new JSONWithPadding(res, callback);
     }
 
     /**
@@ -445,9 +489,12 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/actionTypes/{id}")
-    @Produces("application/x-javascript")
-    public Object getStructOfPrimaryMedExam(@PathParam("id") int actionTypeId, @QueryParam("eventId") int eventId) throws CoreException {
-        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, eventId, this.auth), this.callback);
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getStructOfPrimaryMedExam(@Context HttpServletRequest servRequest,
+                                            @PathParam("id") int actionTypeId,
+                                            @QueryParam("eventId") int eventId,
+                                            @QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, eventId, mkAuth(servRequest)), callback);
     }
 
     /**
@@ -456,9 +503,9 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/layoutAttributes/")
-    @Produces("application/x-javascript")
-    public Object getLayoutAttributes() throws CoreException {
-        return new JSONWithPadding(wsImpl.getLayoutAttributes(),this.callback);
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getLayoutAttributes(@QueryParam("callback") String callback) throws CoreException {
+        return new JSONWithPadding(wsImpl.getLayoutAttributes(),callback);
     }
 
     /**
@@ -466,9 +513,15 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Path("/actionsByParams")
-    @Produces("application/x-javascript")
-    public Object getActionByParams(@QueryParam("filter[mnem]") List<String> mnem,
-                                @QueryParam("eventId") int eventId) throws CoreException {
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getActionByParams(@Context HttpServletRequest servRequest,
+                                    @QueryParam("sortingField") String sortingField,
+                                    @QueryParam("sortingMethod") String sortingMethod,
+                                    @QueryParam("limit") int limit,
+                                    @QueryParam("page") int page,
+                                    @QueryParam("filter[mnem]") List<String> mnem,
+                                    @QueryParam("eventId") int eventId,
+                                    @QueryParam("callback") String callback) throws CoreException {
         DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter(null,
                 eventId,
                 0,
@@ -483,7 +536,7 @@ public class DirectoryInfoRESTImpl {
                 (short)-1);
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData, this.auth),this.callback);
+        return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData, mkAuth(servRequest)),callback);
     }
 
 
@@ -494,7 +547,7 @@ public class DirectoryInfoRESTImpl {
     /**
      * Функциональность данного класса под сомнением, мнемоники должны быть оторваны от ядра
      * (за исключением редких случаев и в этих случаях имена мнемоник должны храниться в файлах *.properties)
-     * Настоятельно нерекомендую пользоваться этим классом. По мере исправления исходного кода, его использующего,
+     * Настоятельно не рекомендую пользоваться этим классом. По мере исправления исходного кода, его использующего,
      * он будет удален.
      */
     @Deprecated
@@ -599,4 +652,9 @@ public class DirectoryInfoRESTImpl {
             return typeValue;
         }
     }
+
+    private AuthData mkAuth(HttpServletRequest servRequest) {
+        return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+    }
+
 }

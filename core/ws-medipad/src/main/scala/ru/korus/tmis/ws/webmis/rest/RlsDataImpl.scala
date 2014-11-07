@@ -1,9 +1,7 @@
 package ru.korus.tmis.ws.webmis.rest
 
-import ru.korus.tmis.core.auth.AuthData
 import javax.ws.rs.{QueryParam, PathParam, Path, GET}
-import ru.korus.tmis.core.database.DbRlsBeanLocal
-import javax.ejb.EJB
+import javax.ejb.{Stateless, EJB}
 import com.sun.jersey.api.json.JSONWithPadding
 
 /**
@@ -11,14 +9,15 @@ import com.sun.jersey.api.json.JSONWithPadding
  * Date: 5/13/14
  * Time: 8:11 PM
  */
-class RlsDataImpl(val wsImpl: WebMisREST, val authData: AuthData, val callback: String) {
+@Stateless
+class RlsDataImpl {
 
-  @EJB
-  var dbRlsBean: DbRlsBeanLocal = _
+  @EJB private var wsImpl: WebMisREST = _
 
   @GET
   @Path("/{id}")
-  def getRlsNomenById(@PathParam("id") id: Int) = {
+  def getRlsNomenById(@QueryParam("callback") callback: String,
+                      @PathParam("id") id: Int) = {
     new JSONWithPadding(wsImpl.getRlsById(id), callback)
   }
 

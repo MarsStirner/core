@@ -11,6 +11,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import scala.language.reflectiveCalls
 
 /**
  * Класс с методами для работы с таблицей s11r64.QuotaType

@@ -25,7 +25,7 @@ import java.nio.charset.Charset;
  */
 
 @Stateless
-@Produces({"application/x-javascript", "application/json", "application/xml"})
+@Produces({"application/javascript", "application/x-javascript", "application/json", "application/xml"})
 @Provider
 public class ExceptionJSONMessageProvider extends AbstractMessageReaderWriterProvider<ExceptionJSONMessage> {
     @Override

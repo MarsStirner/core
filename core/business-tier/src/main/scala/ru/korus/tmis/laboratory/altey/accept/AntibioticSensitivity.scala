@@ -1,6 +1,7 @@
 package ru.korus.tmis.laboratory.altey.accept
 
 import ru.korus.tmis.laboratory.altey.{accept2 => lab}
+import scala.language.reflectiveCalls
 
 final object AntibioticSensitivity {
   implicit def fromLab1(v: ru.korus.tmis.laboratory.altey.accept2.AntibioticSensitivity) = {

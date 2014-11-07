@@ -10,6 +10,7 @@ import collection.JavaConversions
 import collection.immutable.ListMap
 import java.util
 import ru.korus.tmis.scala.util.ConfigManager
+import scala.language.reflectiveCalls
 
 object PatientsListDataViews {
   class AttendingDoctorView {}
@@ -64,7 +65,7 @@ class PatientsListData {
         //куда переведен
         if (mActionPropertiesWithValues!=null) {
           val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"))
-          val apValues = mActionPropertiesWithValues(action.getId.intValue(), asJavaSet(codes))
+          val apValues = mActionPropertiesWithValues(action.getId.intValue(), setAsJavaSet(codes))
           if (apValues!=null && apValues.size()>0){
             val depart = apValues.iterator.next()
             if (depart._2!=null && depart._2.size()>0){
@@ -79,7 +80,7 @@ class PatientsListData {
         } else if (action.getActionType.getId.compareTo(ConfigManager.Messages("db.actionType.moving").toInt :java.lang.Integer)==0){
           if (mActionPropertiesWithValues!=null) {
             val codes = Set[String](ConfigManager.Messages("db.apt.moving.codes.hospitalBed"))
-            val apValues = mActionPropertiesWithValues(action.getId.intValue(), asJavaSet(codes))
+            val apValues = mActionPropertiesWithValues(action.getId.intValue(), setAsJavaSet(codes))
             if (apValues!=null && apValues.size()>0){
               val bedvs = apValues.iterator.next()
               if (bedvs._2!=null && bedvs._2.size()>0){

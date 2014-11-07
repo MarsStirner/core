@@ -27,7 +27,7 @@ import java.util.*;
  * Time: 6:03 PM
  */
 @Singleton
-@Produces({"application/x-javascript", "application/json", "application/xml"})
+@Produces({"application/javascript", "application/x-javascript", "application/json", "application/xml"})
 @Provider
 public class CustomJSONWithPaddingProvider extends JSONWithPaddingProvider {
 
