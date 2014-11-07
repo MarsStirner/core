@@ -999,7 +999,7 @@ with CAPids {
 
   def getInfectionMonitoring(eventId: Int): java.util.Set[(String, Date, Date, java.util.List[Integer])] = {
     val IC = InfectionControl
-    val r = actionBean.getActionsByEvent(eventId)
+    dbEventBean.getEventById(eventId).getPatient.getEvents.flatMap(e => actionBean.getActionsByEvent(e.getId))
     .filter(p => IC.documents.contains(p.getActionType.getCode))
     .flatMap(_.getActionProperties)
     .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
@@ -1038,12 +1038,12 @@ with CAPids {
         case _ => None
       }
     })
-    r.groupBy(p => (p._1, p._2)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava)).toSet.asJava
+    .groupBy(p => (p._1, p._2)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava)).toSet.asJava
   }
 
   def getInfectionDrugMonitoring(eventId: Int): java.util.Set[(String, Date, Date, String, java.util.List[Integer])] = {
     val IC = InfectionControl
-    actionBean.getActionsByEvent(eventId)
+    dbEventBean.getEventById(eventId).getPatient.getEvents.flatMap(e => actionBean.getActionsByEvent(e.getId))
       .filter(p => IC.documents.contains(p.getActionType.getCode))
       .flatMap(_.getActionProperties)
       .filter(e => e.getType.getCode != null && IC.drugTherapyProperties.contains(e.getType.getCode))
