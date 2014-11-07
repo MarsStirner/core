@@ -28,6 +28,8 @@ public class DrugData {
     private Double dose;
     private Integer unit;
     private String unitName;
+    private String dosageValue;
+    private RbUnit dosageValueUnit;
     private List<UnitsData> units = new LinkedList<UnitsData>();
 
     public DrugData(DrugComponent drugComponent, DbRbUnitBeanLocal dbRbUnitBeanLocal) {
@@ -35,6 +37,8 @@ public class DrugData {
         final RlsNomen nomen = drugComponent.getNomen();
         name = nomen == null || nomen.getRlsTradeName() == null ? null : nomen.getRlsTradeName().getLocalName();
         dose = drugComponent.getDose();
+        dosageValue = nomen == null ? null : nomen.getDosageValue();
+        dosageValueUnit = nomen == null || nomen.getDosageUnit() == null ? null : nomen.getDosageUnit();
         final RbUnit dosageUnit = drugComponent.getUnit();
         unit = dosageUnit == null ? null : dosageUnit.getId();
         unitName = dosageUnit == null ? null : dosageUnit.getName();
@@ -113,4 +117,21 @@ public class DrugData {
     public void setNomen(Integer nomen) {
         this.nomen = nomen;
     }
+
+    public String getDosageValue() {
+        return dosageValue;
+    }
+
+    public void setDosageValue(String dosageValue) {
+        this.dosageValue = dosageValue;
+    }
+
+    public RbUnit getDosageValueUnit() {
+        return dosageValueUnit;
+    }
+
+    public void setDosageValueUnit(RbUnit dosageValueUnit) {
+        this.dosageValueUnit = dosageValueUnit;
+    }
+
 }
