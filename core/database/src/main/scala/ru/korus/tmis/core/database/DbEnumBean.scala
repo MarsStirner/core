@@ -47,7 +47,8 @@ class DbEnumBean
     try {
       enums.synchronized {
         enums.foreach(tuple => {
-          val (emId, e) = tuple
+          val emId = tuple._1
+          val e = tuple._2
           val ee = e.asInstanceOf[Class[DbEnumerable]]
           emId match {
             case EmId => processEnums(em, ee)
