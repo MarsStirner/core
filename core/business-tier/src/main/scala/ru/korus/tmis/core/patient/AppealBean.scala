@@ -1017,7 +1017,13 @@ with CAPids {
       val list = e._2
       val name = {
         list.find( p => p.getType.getCode.equals(e._1._2)) match {
-          case Some(x) => Some(x.getType.getName)
+          case Some(x) =>
+            if(x.getType.getCode.endsWith(IC.customInfectionPostfix)) // Поля "Другое", название инфекции получаем из значения свойства
+              actionPropertyBean.getActionPropertyValue(x).headOption match {
+                case Some(y) => Some(y.getValue.toString)
+                case _ => None
+              }
+            else Some(x.getType.getName)
           case None => None
         }
       }
