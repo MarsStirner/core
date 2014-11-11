@@ -78,6 +78,6 @@ object Manifests {
   }
 
   def actuallyWorkingClassOf[T: Manifest]: Class[T] = {
-    manifest[T].erasure.asInstanceOf[Class[T]]
+    manifest[T].runtimeClass.asInstanceOf[Class[T]]
   }
 }
