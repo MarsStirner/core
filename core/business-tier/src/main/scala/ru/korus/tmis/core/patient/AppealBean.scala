@@ -1100,12 +1100,12 @@ with CAPids {
                 }
                 val ty = t.size() match {
                   case 1 => t.head match {
-                    case p: APValueString => p.getValue
+                    case p: APValueString => p.getValue.trim // Убираем пробелы - интерфейс иногда вставляет их вперед
                     case _ => null
                   }
                   case _ => null
                 }
-                Some((x.getValue, y.getValue, e, ty, actionId))
+                Some((x.getValue.trim, y.getValue, e, ty, actionId)) // В каУбираем пробелы - интерфейс иногда вставляет их вперед
               case _ => None
             }
             case _ => None
