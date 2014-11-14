@@ -1663,12 +1663,12 @@ with CAPids {
   }
 
   def getInfectionMonitoring(eventId: Int, authData: AuthData) = {
-    appealBean.getInfectionMonitoring(eventId)
+    appealBean.getInfectionMonitoring(dbEventBean.getEventById(eventId).getPatient)
       .map(p => List[AnyRef](p._1, p._2, p._3, p._4).asJava).asJava
   }
 
   def getInfectionDrugMonitoring(eventId: Int, authData: AuthData) = {
-    appealBean.getInfectionDrugMonitoring(eventId)
+    appealBean.getInfectionDrugMonitoring(dbEventBean.getEventById(eventId).getPatient)
       .map(p => List[AnyRef](p._1, p._2, p._3, p._4, p._5).asJava).asJava
   }
 

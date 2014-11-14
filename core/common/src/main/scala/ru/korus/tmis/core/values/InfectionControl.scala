@@ -50,6 +50,9 @@ object InfectionControl {
     "infectUrogenitalComment","infectMusculoskeletalComment"
   )
 
+  // Постфикс кода инфекций, название которых вводится пользователем
+  val customInfectionPostfix = "Comment"
+
   // ActionPropertyType.code свойства-чекбокса "Локальная инфекция"
   val localInfectionChecker = "infectLocal"
 

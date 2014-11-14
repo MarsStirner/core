@@ -997,11 +997,19 @@ with CAPids {
       new MonitoringInfoListData()
   }
 
-  def getInfectionMonitoring(eventId: Int): java.util.Set[(String, Date, Date, java.util.List[Integer])] = {
+  def getInfectionMonitoring(patient: Patient): java.util.Set[(String, Date, Date, java.util.List[Integer])] = {
     val IC = InfectionControl
-    dbEventBean.getEventById(eventId).getPatient.getEvents.flatMap(e => actionBean.getActionsByEvent(e.getId))
-    .filter(p => IC.documents.contains(p.getActionType.getCode))
-    .flatMap(_.getActionProperties)
+
+    val q =
+      """SELECT ap FROM Event e, Action a, ActionProperty ap WHERE
+        |e.patient = :patient
+        |AND a.event = e
+        |AND ap.action = a
+        |AND a.actionType.code IN :documents""".stripMargin
+    em.createQuery(q, classOf[ActionProperty])
+      .setParameter("patient", patient)
+      .setParameter("documents", IC.documents.asJava)
+      .getResultList
     .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
     .groupBy( e => (e.getAction.getId,  e.getType.getCode.split(IC.separator).head))
     .flatMap(e => {
@@ -1009,7 +1017,13 @@ with CAPids {
       val list = e._2
       val name = {
         list.find( p => p.getType.getCode.equals(e._1._2)) match {
-          case Some(x) => Some(x.getType.getName)
+          case Some(x) =>
+            if(x.getType.getCode.endsWith(IC.customInfectionPostfix)) // Поля "Другое", название инфекции получаем из значения свойства
+              actionPropertyBean.getActionPropertyValue(x).headOption match {
+                case Some(y) => Some(y.getValue.toString)
+                case _ => None
+              }
+            else Some(x.getType.getName)
           case None => None
         }
       }
@@ -1041,12 +1055,21 @@ with CAPids {
     .groupBy(p => (p._1, p._2)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava)).toSet.asJava
   }
 
-  def getInfectionDrugMonitoring(eventId: Int): java.util.Set[(String, Date, Date, String, java.util.List[Integer])] = {
+  def getInfectionDrugMonitoring(patient: Patient): java.util.Set[(String, Date, Date, String, java.util.List[Integer])] = {
     val IC = InfectionControl
-    dbEventBean.getEventById(eventId).getPatient.getEvents.flatMap(e => actionBean.getActionsByEvent(e.getId))
-      .filter(p => IC.documents.contains(p.getActionType.getCode))
-      .flatMap(_.getActionProperties)
-      .filter(e => e.getType.getCode != null && IC.drugTherapyProperties.contains(e.getType.getCode))
+
+    val q =
+      """SELECT ap FROM Event e, Action a, ActionProperty ap WHERE
+        |e.patient = :patient
+        |AND a.event = e
+        |AND ap.action = a
+        |AND ap.actionPropertyType.code IN :drugTherapyProperties
+        |AND a.actionType.code IN :documents""".stripMargin
+    em.createQuery(q, classOf[ActionProperty])
+      .setParameter("patient", patient)
+      .setParameter("documents", IC.documents.asJava)
+      .setParameter("drugTherapyProperties", IC.drugTherapyProperties.asJava)
+      .getResultList
       .groupBy(e => (e.getAction.getId,  e.getType.getCode.split('_').last))
       .flatMap(e => {
       val drugId = e._1._2
@@ -1077,12 +1100,12 @@ with CAPids {
                 }
                 val ty = t.size() match {
                   case 1 => t.head match {
-                    case p: APValueString => p.getValue
+                    case p: APValueString => p.getValue.trim // Убираем пробелы - интерфейс иногда вставляет их вперед
                     case _ => null
                   }
                   case _ => null
                 }
-                Some((x.getValue, y.getValue, e, ty, actionId))
+                Some((x.getValue.trim, y.getValue, e, ty, actionId)) // В каУбираем пробелы - интерфейс иногда вставляет их вперед
               case _ => None
             }
             case _ => None

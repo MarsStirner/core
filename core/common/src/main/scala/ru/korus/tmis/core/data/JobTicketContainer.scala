@@ -1,5 +1,8 @@
 package ru.korus.tmis.core.data
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
+
+import ru.korus.tmis.core.data.adapters.DateTimeAdapter
 import ru.korus.tmis.core.entity.model.JobTicket
 import java.util.Date
 import scala.beans.BeanProperty
@@ -23,6 +26,7 @@ class JobTicketContainer(jobTicket: JobTicket) {
   @BeanProperty
   var idx: Int = jobTicket.getIdx
 
+  @XmlJavaTypeAdapter(classOf[DateTimeAdapter])
   @BeanProperty
   var datetime: Date = jobTicket.getDatetime
 
