@@ -584,8 +584,6 @@ with CAPids {
 
   def updateTempInvalid(event: Event, tempInvalidCont: TempInvalidAppealContainer, authDate: AuthData) {
     if (tempInvalidCont != null &&
-        tempInvalidCont.begDate != null &&
-        tempInvalidCont.endDate != null &&
         tempInvalidCont.serial != null &&
         tempInvalidCont.number != null) {
 
