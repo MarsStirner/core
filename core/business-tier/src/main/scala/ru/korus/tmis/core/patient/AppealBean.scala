@@ -1003,8 +1003,8 @@ with CAPids {
     val q =
       """SELECT ap FROM Event e, Action a, ActionProperty ap WHERE
         |e.patient = :patient
-        |AND a.event = e
-        |AND ap.action = a
+        |AND a.event = e AND a.deleted = false
+        |AND ap.action = a AND ap.deleted = false
         |AND a.actionType.code IN :documents""".stripMargin
     em.createQuery(q, classOf[ActionProperty])
       .setParameter("patient", patient)
@@ -1061,8 +1061,8 @@ with CAPids {
     val q =
       """SELECT ap FROM Event e, Action a, ActionProperty ap WHERE
         |e.patient = :patient
-        |AND a.event = e
-        |AND ap.action = a
+        |AND a.event = e AND a.deleted = false
+        |AND ap.action = a AND ap.deleted = false
         |AND ap.actionPropertyType.code IN :drugTherapyProperties
         |AND a.actionType.code IN :documents""".stripMargin
     em.createQuery(q, classOf[ActionProperty])
