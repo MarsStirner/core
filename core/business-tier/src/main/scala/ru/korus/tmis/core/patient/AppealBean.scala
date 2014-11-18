@@ -995,7 +995,7 @@ with CAPids {
       new MonitoringInfoListData()
   }
 
-  def getInfectionMonitoring(patient: Patient): java.util.Set[(String, Date, Date, java.util.List[Integer])] = {
+  def getInfectionMonitoring(patient: Patient) = {
     val IC = InfectionControl
 
     val q =
@@ -1004,7 +1004,7 @@ with CAPids {
         |AND a.event = e AND a.deleted = false
         |AND ap.action = a AND ap.deleted = false
         |AND a.actionType.code IN :documents""".stripMargin
-    em.createQuery(q, classOf[ActionProperty])
+    val r = em.createQuery(q, classOf[ActionProperty])
       .setParameter("patient", patient)
       .setParameter("documents", IC.documents.asJava)
       .getResultList
@@ -1034,15 +1034,15 @@ with CAPids {
           val ed = actionPropertyBean.getActionPropertyValue(z)
           (bd.size(), ed.size()) match {
             case (1, 1) => (bd.head, ed.head) match {
-              case (begin: APValueDate, end: APValueDate) => Some((x, begin.getValue, end.getValue, actionId))
+              case (begin: APValueDate, end: APValueDate) => Some((x, begin.getValue, end.getValue, actionId, new Integer(y.getIdx)))
               case _ => None
             }
             case (1, 0) => bd.head match {
-              case b: APValueDate => Some(x, b.getValue, null, actionId)
+              case b: APValueDate => Some(x, b.getValue, null, actionId, new Integer(y.getIdx))
               case _ => None
             }
             case (0, 1) => ed.head match {
-              case end: APValueDate => Some(x, end.getValue, null, actionId)
+              case end: APValueDate => Some(x, end.getValue, null, actionId, new Integer(y.getIdx))
               case _ => None
             }
             case _ => None
@@ -1050,10 +1050,29 @@ with CAPids {
         case _ => None
       }
     })
-    .groupBy(p => (p._1, p._2)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava)).toSet.asJava
+    .groupBy(p => (p._1, p._2, p._5)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava, e._1._3))
+
+    // Безумная сортировка - сначала по дате начала, потом по порядку расположения на форме редактирования (idx свойства "Дата начала")
+    val result = new util.TreeSet[(String, Date, Date, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, util.List[Integer], Integer)] {
+      override def compare(o1: (String, Date, Date, util.List[Integer], Integer), o2: (String, Date, Date, util.List[Integer], Integer)): Int = {
+        val dateOrder =  o1._2.compareTo(o2._2)
+        val idxOrder = o1._5.compareTo(o2._5)
+        if(dateOrder != 0)
+          dateOrder
+        else if(idxOrder != 0)
+          idxOrder
+        else if(o1.equals(o2))
+          0
+        else
+          -1
+      }
+    })
+
+    r.foreach(result.add)
+    result
   }
 
-  def getInfectionDrugMonitoring(patient: Patient): java.util.Set[(String, Date, Date, String, java.util.List[Integer])] = {
+  def getInfectionDrugMonitoring(patient: Patient) = {
     val IC = InfectionControl
 
     val q =
@@ -1063,7 +1082,7 @@ with CAPids {
         |AND ap.action = a AND ap.deleted = false
         |AND ap.actionPropertyType.code IN :drugTherapyProperties
         |AND a.actionType.code IN :documents""".stripMargin
-    em.createQuery(q, classOf[ActionProperty])
+    val r = em.createQuery(q, classOf[ActionProperty])
       .setParameter("patient", patient)
       .setParameter("documents", IC.documents.asJava)
       .setParameter("drugTherapyProperties", IC.drugTherapyProperties.asJava)
@@ -1103,7 +1122,7 @@ with CAPids {
                   }
                   case _ => null
                 }
-                Some((x.getValue.trim, y.getValue, e, ty, actionId)) // В каУбираем пробелы - интерфейс иногда вставляет их вперед
+                Some((x.getValue.trim, y.getValue, e, ty, actionId, new Integer(b.getIdx))) // Убираем пробелы - интерфейс иногда вставляет их вперед
               case _ => None
             }
             case _ => None
@@ -1111,8 +1130,26 @@ with CAPids {
         case _ => None
       }
     })
-      .groupBy(e => (e._1, e._2, e._4))
-      .map(e => (e._1._1, e._1._2, Try(e._2.filter(_._3 != null).toList.sortBy(_._3).last._3).getOrElse(null), e._1._3, e._2.map(_._5).toList.asJava)).toSet.asJava
+      .groupBy(e => (e._1, e._2, e._4, e._6))
+      .map(e => (e._1._1, e._1._2, Try(e._2.filter(_._3 != null).toList.sortBy(_._3).last._3).getOrElse(null), e._1._3, e._2.map(_._5).toList.asJava, e._1._4))
+
+    // Безумная сортировка - сначала по дате начала, потом по порядку расположения на форме редактирования (idx свойства "Дата начала")
+    val result = new util.TreeSet[(String, Date, Date, String, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, String, util.List[Integer], Integer)] {
+      override def compare(o1: (String, Date, Date, String, util.List[Integer], Integer), o2: (String, Date, Date, String, util.List[Integer], Integer)): Int = {
+        val dateOrder = o1._2.compareTo(o2._2)
+        val idxOrder = o1._6.compareTo(o2._6)
+        if(dateOrder != 0)
+          dateOrder
+        else if(idxOrder != 0)
+          idxOrder
+        else if(o1.equals(o2))
+          0
+        else
+          -1
+      }
+    } )
+    r.foreach(result.add)
+    result
   }
 
   def getSurgicalOperations(eventId: Int, authData: AuthData) = {

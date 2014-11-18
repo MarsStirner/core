@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.data
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
-import javax.xml.bind.annotation.{XmlRootElement, XmlType}
+import javax.xml.bind.annotation.{XmlSeeAlso, XmlRootElement, XmlType}
 import ru.korus.tmis.core.data.adapters.DateAdapter
 
 import scala.beans.BeanProperty
@@ -40,6 +40,7 @@ class Views {}
 @XmlType(name = "appealData")
 @XmlRootElement(name = "appealData")
 @JsonIgnoreProperties(ignoreUnknown = true)
+@XmlSeeAlso(Array(classOf[IdValueContainer]))
 class AppealData extends I18nable {
   @BeanProperty
   var requestData: AppealRequestData = _
@@ -1190,8 +1191,8 @@ class TempInvalidAppealContainer {
   var number: String = _
   @BeanProperty
   var isByService: Boolean = _ // флаг "По уходу за больным"
-  @XmlJavaTypeAdapter(classOf[DateAdapter]) @BeanProperty var begDate : Date = _    //
-  @XmlJavaTypeAdapter(classOf[DateAdapter]) @BeanProperty var endDate: Date = _      //
+  @XmlJavaTypeAdapter(classOf[DateAdapter]) var begDate : Date = _    //
+  @XmlJavaTypeAdapter(classOf[DateAdapter]) var endDate: Date = _     //
   @BeanProperty
   var age : Int = _      //
   @BeanProperty

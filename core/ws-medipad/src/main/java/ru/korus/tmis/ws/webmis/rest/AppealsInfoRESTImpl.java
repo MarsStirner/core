@@ -19,7 +19,6 @@ import javax.ws.rs.core.GenericEntity;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * Список REST-сервисов для получения информации о обращениях на госпитализацию
@@ -225,7 +224,7 @@ public class AppealsInfoRESTImpl {
     public Object getInfectionMonitoringInfoByAppeal(@Context HttpServletRequest servRequest,
                                             @PathParam("eventId")int eventId,
                                             @QueryParam("callback") String callback) throws CoreException {
-        return new JSONWithPadding(new GenericEntity<Set<List<Object>>>(wsImpl.getInfectionMonitoring(eventId, mkAuth(servRequest))) {}, callback);
+        return new JSONWithPadding(new GenericEntity<List<List<Object>>>(wsImpl.getInfectionMonitoring(eventId, mkAuth(servRequest))) {}, callback);
     }
 
     @GET
@@ -234,7 +233,7 @@ public class AppealsInfoRESTImpl {
     public Object getInfectionDrugMonitoringInfoByAppeal(@Context HttpServletRequest servRequest,
                                                         @PathParam("eventId")int eventId,
                                                         @QueryParam("callback") String callback) throws CoreException {
-        return new JSONWithPadding(new GenericEntity<Set<List<Object>>>(wsImpl.getInfectionDrugMonitoring(eventId, mkAuth(servRequest))) {}, callback);
+        return new JSONWithPadding(new GenericEntity<List<List<Object>>>(wsImpl.getInfectionDrugMonitoring(eventId, mkAuth(servRequest))) {}, callback);
     }
 
     @GET
