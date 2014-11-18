@@ -12,7 +12,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * User: idmitriev
@@ -365,9 +364,9 @@ public interface WebMisREST extends Serializable {
      */
     MonitoringInfoListData getMonitoringInfoByAppeal(int eventId, int condition, AuthData authData) throws CoreException;
 
-    Set<List<Object>> getInfectionMonitoring(int eventId, AuthData authData) throws CoreException;
+    List<List<Object>> getInfectionMonitoring(int eventId, AuthData authData) throws CoreException;
 
-    Set<List<Object>> getInfectionDrugMonitoring(int eventId, AuthData authData) throws CoreException;
+    List<List<Object>> getInfectionDrugMonitoring(int eventId, AuthData authData) throws CoreException;
 
     SurgicalOperationsListData getSurgicalOperationsByAppeal(int eventId, AuthData authData) throws CoreException;
 

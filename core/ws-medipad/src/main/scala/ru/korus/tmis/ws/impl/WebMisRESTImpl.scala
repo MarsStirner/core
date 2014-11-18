@@ -12,6 +12,7 @@ import org.codehaus.jackson.map.ObjectMapper
 import org.joda.time.DateTime
 import ru.korus.tmis.core.auth.{AuthData, AuthStorageBeanLocal, AuthToken}
 import ru.korus.tmis.core.data._
+import ru.korus.tmis.core.data.adapters.ISODate
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.bak.{DbBbtResponseBeanLocal, DbBbtResultOrganismBeanLocal, DbBbtResultTextBeanLocal}
 import ru.korus.tmis.core.database.common._
@@ -1663,13 +1664,17 @@ with CAPids {
   }
 
   def getInfectionMonitoring(eventId: Int, authData: AuthData) = {
+    val outList = new java.util.ArrayList[java.util.List[AnyRef]]()
     appealBean.getInfectionMonitoring(dbEventBean.getEventById(eventId).getPatient)
-      .map(p => List[AnyRef](p._1, p._2, p._3, p._4).asJava).asJava
+    .foreach(p => outList.add(List[AnyRef](p._1, ISODate(p._2), ISODate(p._3), p._4)))
+    outList
   }
 
   def getInfectionDrugMonitoring(eventId: Int, authData: AuthData) = {
+    val outList = new java.util.ArrayList[java.util.List[AnyRef]]()
     appealBean.getInfectionDrugMonitoring(dbEventBean.getEventById(eventId).getPatient)
-      .map(p => List[AnyRef](p._1, p._2, p._3, p._4, p._5).asJava).asJava
+      .foreach(p => outList.add(List[AnyRef](p._1, ISODate(p._2), ISODate(p._3), p._4, p._5).asJava))
+    outList
   }
 
   def getSurgicalOperationsByAppeal(eventId: Int, authData: AuthData) = {

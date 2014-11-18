@@ -2,7 +2,7 @@ package ru.korus.tmis.core.data.adapters
 
 import java.text.SimpleDateFormat
 import java.util.Date
-import javax.xml.bind.annotation.adapters.XmlAdapter
+import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
@@ -41,3 +41,10 @@ class DateTimeAdapter extends XmlAdapter[String, Date] {
 
 }
 
+@XmlJavaTypeAdapter(classOf[DateAdapter])
+class ISODate(d: Date) extends Date(d.getTime)
+object ISODate { def apply(d: Date) = if(d != null) new ISODate(d) else null }
+
+@XmlJavaTypeAdapter(classOf[DateTimeAdapter])
+class ISODateTime(d: Date) extends Date(d.getTime)
+object ISODateTime { def apply(d: Date) = if(d != null) new ISODate(d) else null }
