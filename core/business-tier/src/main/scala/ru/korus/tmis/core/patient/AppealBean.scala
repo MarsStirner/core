@@ -1055,8 +1055,8 @@ with CAPids {
     // Безумная сортировка - сначала по дате начала, потом по порядку расположения на форме редактирования (idx свойства "Дата начала")
     val result = new util.TreeSet[(String, Date, Date, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, util.List[Integer], Integer)] {
       override def compare(o1: (String, Date, Date, util.List[Integer], Integer), o2: (String, Date, Date, util.List[Integer], Integer)): Int = {
-        val dateOrder =  o1._2.compareTo(o2._2)
-        val idxOrder = o1._5.compareTo(o2._5)
+        val dateOrder =  o2._2.compareTo(o1._2)
+        val idxOrder = o2._5.compareTo(o1._5)
         if(dateOrder != 0)
           dateOrder
         else if(idxOrder != 0)
@@ -1064,7 +1064,7 @@ with CAPids {
         else if(o1.equals(o2))
           0
         else
-          -1
+          1
       }
     })
 
@@ -1136,8 +1136,8 @@ with CAPids {
     // Безумная сортировка - сначала по дате начала, потом по порядку расположения на форме редактирования (idx свойства "Дата начала")
     val result = new util.TreeSet[(String, Date, Date, String, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, String, util.List[Integer], Integer)] {
       override def compare(o1: (String, Date, Date, String, util.List[Integer], Integer), o2: (String, Date, Date, String, util.List[Integer], Integer)): Int = {
-        val dateOrder = o1._2.compareTo(o2._2)
-        val idxOrder = o1._6.compareTo(o2._6)
+        val dateOrder = o2._2.compareTo(o1._2)
+        val idxOrder = o2._6.compareTo(o1._6)
         if(dateOrder != 0)
           dateOrder
         else if(idxOrder != 0)
@@ -1145,7 +1145,7 @@ with CAPids {
         else if(o1.equals(o2))
           0
         else
-          -1
+          1
       }
     } )
     r.foreach(result.add)
