@@ -106,11 +106,12 @@ class MISMessageReceiver extends MessageListener {
       if (p != null) {
         try {
           p.send(replyMessage)
-        } finally {
-          if (s != null) try { s.close() } catch {case t: Throwable =>  logger.error(t.toString) }
-          if (c != null) try { c.close() } catch {case t: Throwable =>  logger.error(t.toString) }
+        } catch {
+          case t: Throwable => logger.error(t.toString); throw t
         }
       }
+      if (s != null) try { s.close() } catch {case t: Throwable =>  logger.error(t.toString) }
+      if (c != null) try { c.close() } catch {case t: Throwable =>  logger.error(t.toString) }
     }
   }
 
