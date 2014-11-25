@@ -742,4 +742,27 @@ class DbActionBean
     val actions =  em.createNamedQuery("Action.findLatestMove", classOf[Action]).setParameter("eventId", event.getId).getResultList
     return if(actions.isEmpty) null else actions.get(0);
   }
+
+  def getAllActionsOfPatientThatHasActionProperty(patientId: Int, actionPropertyCode: String): util.List[Action] = {
+    val query =
+      """
+        |SELECT a
+        |FROM Action a,
+        |     Event e,
+        |     ActionProperty ap,
+        |     ActionPropertyType apt
+        |WHERE
+        |     e.patient.id = :patientId AND
+        |     a.event.id = e.id AND
+        |     ap.action.id = a.id AND
+        |     apt.id = ap.actionPropertyType.id AND
+        |     apt.code = :code
+        |""".stripMargin
+    val r = em.createQuery(query, classOf[Action])
+      .setParameter("patientId", patientId)
+      .setParameter("code", actionPropertyCode)
+      .getResultList
+    r.foreach(em.detach(_))
+    r
+  }
 }
