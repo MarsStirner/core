@@ -20,7 +20,6 @@ public class TempInvalidPeriod implements Serializable {
 	private int id;
 
 	@Temporal(TemporalType.DATE)
-	@Column(nullable=false)
 	private Date begDate;
 
     @ManyToOne
@@ -35,7 +34,6 @@ public class TempInvalidPeriod implements Serializable {
 	private Diagnosis diagnosis;
 
 	@Temporal(TemporalType.DATE)
-	@Column(nullable=false)
 	private Date endDate;
 
     @ManyToOne
