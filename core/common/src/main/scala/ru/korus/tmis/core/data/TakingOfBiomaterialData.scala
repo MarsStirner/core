@@ -1,7 +1,9 @@
 package ru.korus.tmis.core.data
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import ru.korus.tmis.core.data.adapters.DateTimeAdapter
 import scala.beans.BeanProperty
 import java.util.{Calendar, Date}
 import ru.korus.tmis.core.entity.model._
@@ -90,10 +92,8 @@ class TakingOfBiomaterialRequesDataFilter {
   var jobTicketId: Int = -1
   @BeanProperty
   var departmentId: Int = _
-  @BeanProperty
-  var beginDate: Date = _
-  @BeanProperty
-  var endDate: Date = _
+  @XmlJavaTypeAdapter(classOf[DateTimeAdapter]) @BeanProperty var beginDate: Date = _
+  @XmlJavaTypeAdapter(classOf[DateTimeAdapter]) @BeanProperty var endDate: Date = _
   @BeanProperty
   var status: Short = -1
   @BeanProperty
@@ -330,8 +330,7 @@ class JobTicketInfoContainer {
 
   @BeanProperty
   var id: Int = _
-  @BeanProperty
-  var date: Date = _                            //Дата и время
+  @XmlJavaTypeAdapter(classOf[DateTimeAdapter]) @BeanProperty var date: Date = _                            //Дата и время
   @BeanProperty
   var status: Int = _                           //Статус
   @BeanProperty

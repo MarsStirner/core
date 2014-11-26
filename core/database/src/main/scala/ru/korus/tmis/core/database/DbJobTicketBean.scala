@@ -1,9 +1,8 @@
 package ru.korus.tmis.core.database
 
-import java.sql.Time
-
 import common.DbManagerBeanLocal
 import javax.interceptor.Interceptors
+import org.joda.time._
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
@@ -85,10 +84,8 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
   def getDirectionsWithJobTicketsBetweenDate (request: TakingOfBiomaterialRequesData,
                                               filter: TakingOfBiomaterialRequesDataFilter): util.List[(Action, ActionTypeTissueType, JobTicket)] = {
 
-    val dayMoreThan = filter.getBeginDate
-    val dayLessThan = filter.getEndDate
-    val timeLessThan = new Time(filter.getEndDate.getTime)
-    val timeMoreThan = new Time(filter.getBeginDate.getTime)
+    val dateMoreThan = filter.getBeginDate
+    val dateLessThan = filter.getEndDate
     val department = filter.getDepartmentId
     val labs: util.List[String] = filter.getLabs.toList match {
       case Nil | null => dbRbLaboratory.getAllLabs.map(_.getName)
@@ -119,30 +116,47 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       classOf[Array[AnyRef]])
     val queryResult = query
       .setParameter("department", department)
-      .setParameter("day_more_than", dayMoreThan)
-      .setParameter("day_less_than", dayLessThan)
-      .setParameter("begTime_less_than", timeLessThan)
-      .setParameter("endTime_more_than", timeMoreThan)
-      .setParameter("labs", labs)
-      .getResultList
+      .setParameter("day_more_than", new LocalDate(dateMoreThan).minusDays(1).toDate) // Расширяем границы на один день
+      .setParameter("day_less_than", new LocalDate(dateLessThan).plusDays(1).toDate)  // вперед и назад чтобы точно попасть
+      .setParameter("labs", labs)                                                     // во временные промежутки, т.к. в БД
+      .getResultList                                                                  // будет дата со временем 00:00
 
     val outList = new util.ArrayList[(Action, ActionTypeTissueType, JobTicket)]
 
-    queryResult.size() match {
+    // Проводим уточняющую фильтрацию по времени
+    val result = queryResult.map(e => (e.apply(0).asInstanceOf[Action], e.apply(1).asInstanceOf[JobTicket], e.apply(2).asInstanceOf[ActionTypeTissueType]))
+    .filter(e => {
+      if(e._2.getDatetime == null) { // Такое маловероятно, но в БД встречается, поэтому фильтруем по временному промежутку на сущности Job
+        val day = new LocalDate(e._2.getJob.getDate)
+        val begTime = new LocalTime(e._2.getJob.getBegTime)
+        val endTime = new LocalTime(e._2.getJob.getEndTime)
+
+        val startDateTime = day.toDateTime(begTime)
+        val endDateTime = day.toDateTime(endTime)
+
+        (dateMoreThan.before(endDateTime.toDate) || dateMoreThan.equals(endDateTime.toDate)) &&
+          (dateLessThan.after(startDateTime.toDate) || dateLessThan.equals(startDateTime.toDate))
+      } else {
+        (e._2.getDatetime.after(dateMoreThan) || e._2.getDatetime.equals(dateMoreThan)) &&
+          (e._2.getDatetime.before(dateLessThan) || e._2.getDatetime.equals(dateLessThan))
+      }
+    })
+
+    result.size match {
       case 0 => outList
-      case size => queryResult.foldLeft(outList)(
+      case size => result.foldLeft(outList)(
           (list, aj) => {
             if(
-            (filter.getStatus < 0 || aj(1).asInstanceOf[JobTicket].getStatus == filter.getStatus)
+            (filter.getStatus < 0 || aj._2.getStatus == filter.getStatus)
               &&
-            (filter.getBiomaterial < 1 || aj(2).asInstanceOf[ActionTypeTissueType].getTissueType.getId == filter.getBiomaterial)
+            (filter.getBiomaterial < 1 || aj._3.getTissueType.getId == filter.getBiomaterial)
               &&
-            (filter.getJobTicketId < 1 || aj(1).asInstanceOf[JobTicket].getId == filter.getJobTicketId)
+            (filter.getJobTicketId < 1 || aj._2.getId == filter.getJobTicketId)
             ) {
-              em.detach(aj(0))
-              em.detach(aj(1))
-              em.detach(aj(2))
-              list.add((aj(0).asInstanceOf[Action], aj(2).asInstanceOf[ActionTypeTissueType], aj(1).asInstanceOf[JobTicket]))
+              em.detach(aj._1)
+              em.detach(aj._2)
+              em.detach(aj._3)
+              list.add((aj._1, aj._3, aj._2))
             }
             list
           }
@@ -344,10 +358,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
         jt.job.orgStructure.id = :department           AND
         jt.job.date >= :day_more_than                  AND
         jt.job.date <= :day_less_than                  AND
-        jt.job.begTime <= :begTime_less_than           AND
-        jt.job.endTime >= :endTime_more_than           AND
         lab.name IN :labs                              AND
-
         research.deleted = false                       AND
         research.event.deleted = false                 AND
         research.event.patient.deleted = false
