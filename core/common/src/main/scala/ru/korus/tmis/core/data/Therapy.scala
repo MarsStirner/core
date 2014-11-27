@@ -23,8 +23,8 @@ class TherapyContainer() {
   @BeanProperty var titleId: Int= _
   @BeanProperty var title: String= _
   @BeanProperty var link: String= _
-  @XmlJavaTypeAdapter(classOf[DateAdapter]) @BeanProperty var beginDate: Date= _
-  @XmlJavaTypeAdapter(classOf[DateAdapter]) @BeanProperty var endDate: Date= _
+  @XmlJavaTypeAdapter(classOf[DateAdapter]) var beginDate: Date= _
+  @XmlJavaTypeAdapter(classOf[DateAdapter]) var endDate: Date= _
   @BeanProperty var phases: util.List[TherapyPhase] = _
 
   def this(titleId: Int, title: String, link: String, beginDate: Date, endDate: Date, phases: util.List[TherapyPhase]) {
@@ -47,8 +47,8 @@ class TherapyPhase() {
   @BeanProperty var title: String = _
   @BeanProperty var link: String = _
   @BeanProperty var titleId: Int = _
-  @XmlJavaTypeAdapter(classOf[DateAdapter]) @BeanProperty var beginDate: Date = _
-  @XmlJavaTypeAdapter(classOf[DateAdapter]) @BeanProperty var endDate: Date = _
+  @XmlJavaTypeAdapter(classOf[DateAdapter]) var beginDate: Date = _
+  @XmlJavaTypeAdapter(classOf[DateAdapter]) var endDate: Date = _
   @BeanProperty var days: util.List[TherapyDay] = _
 
   def this(eventId: Int, title: String, link: String, titleId: Int, beginDate: Date, endDate: Date, days: util.List[TherapyDay]) {
@@ -77,7 +77,7 @@ class TherapyDay() {
   }
 
   @BeanProperty var day: String = _
-  @XmlJavaTypeAdapter(classOf[DateTimeAdapter]) @BeanProperty var createDate: Date = _
+  @XmlJavaTypeAdapter(classOf[DateTimeAdapter]) var createDate: Date = _
   @BeanProperty var eventId: Int = _
   @BeanProperty var docId: Int = _
 

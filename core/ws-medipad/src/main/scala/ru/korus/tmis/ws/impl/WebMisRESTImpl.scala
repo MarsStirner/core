@@ -1786,13 +1786,12 @@ with CAPids {
   def getLabs: java.util.List[RbLaboratory] = dbRbLaboratory.getAllLabs
 
   /**
-   * Low perfomance implementation. Need optimization.
    * @param patientId Идентификатор пациента
    * @return Данные о терапии в пределах всех историй болезни
    */
   def getTherapiesInfo(patientId: Int): ju.List[TherapyContainer] = {
-    val actions = patientBean.getPatientById(patientId).getEvents.flatMap(e => actionBean.getActionsByEvent(e.getId))
-    .filter(_.getActionProperties.exists(p => p.getType != null && p.getType.getCode != null && p.getType.getCode.equals("therapyTitle")))
+
+    val actions = actionBean.getAllActionsOfPatientThatHasActionProperty(patientId, "therapyTitle")
 
     val l = actions.flatMap(a =>  {
 
