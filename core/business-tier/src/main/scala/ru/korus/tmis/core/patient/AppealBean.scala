@@ -619,7 +619,7 @@ with CAPids {
 
 
     var event: Event = null
-    val now: Date = new Date;
+    val now: Date = new Date
     if (flgCreate) {
       //Создаем новое
       if (id <= 0) {
@@ -641,6 +641,20 @@ with CAPids {
         throw new CoreException(i18n("error.appeal.create.ContractIsExpired"))
 
       checkAppealBegEndDate(appealData.getData.rangeAppealDateTime)
+
+      val patient = dbPatientBean.getPatientById(id)
+      val et = dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId)
+      if(!et.isAgeValid(patient.getBirthDate))
+        throw new CoreException(i18n("error.appeal.create.InvalidPatientAge").format(et.getName, et.getAge))
+
+      val patientSex = patient.getSex match {
+        case 0 => Sex.UNDEFINED
+        case 1 => Sex.MEN
+        case 2 => Sex.WOMEN
+      }
+
+      if(!et.isSexValid(patientSex))
+        throw new CoreException(i18n("error.appeal.create.InvalidPatientSex").format(et.getName, et.getSex))
 
       event = dbEventBean.createEvent(id,
         //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
@@ -687,7 +701,7 @@ with CAPids {
 
     event.setOrganisation(organizationBeanLocal.getOrganizationById(ConfigManager.Common.OrgId))
 
-    return event
+    event
   }
 
   private def AnyToSetOfString(that: AnyRef, sec: String): Set[String] = {
