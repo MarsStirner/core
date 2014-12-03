@@ -40,6 +40,12 @@
             <artifactId>jersey-grizzly</artifactId>
             <version>1.18</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-bundle</artifactId>
+            <version>1.18.2</version>
+        </dependency>
     </dependencies>
 
     <build>

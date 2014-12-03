@@ -185,6 +185,9 @@ class DbActionPropertyBean
   def toRefValue(ap: ActionProperty, value: String): String = {
     val code = value.split("-")(0).trim
     val res = em.createNativeQuery("SELECT `id` FROM %s WHERE `code` = '%s'".format(ap.getType.getValueDomain, code)).getResultList
+    if(res.isEmpty) {
+      return ""
+    }
     String.valueOf(res(0))
   }
 
