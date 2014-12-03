@@ -32,6 +32,9 @@ public interface DbActionTypeBeanLocal {
     ActionType getActionTypeByCode(String code)
             throws CoreException;
 
+    ActionType getActionTypeByFlatCode(String code)
+            throws CoreException;
+
     Set<ActionType> getActionTypesByCode(String code)
             throws CoreException;
 

@@ -164,9 +164,14 @@ class CommonDataProcessorBean
         while (i < multiplicity) {
 
           val action = dbAction.createAction(eventId,
-            entity.id.intValue,
+            entity.getTypeId.intValue,
             userData)
-          val isPrimaryAction = entity.id.intValue == 139 || entity.id.intValue == 112 || entity.id.intValue == 2456
+
+          /* ActionType.id = 139 - Осмотр врача приемного отделения (первичная госпитализация)
+             ActionType.id = 112 - Поступление
+             ActionType.id = 139 - Осмотр врача приемного отделения (повторная госпитализация)
+           */
+          val isPrimaryAction = entity.typeId.intValue == 139 || entity.typeId.intValue == 112 || entity.typeId.intValue == 2456
           if (isPrimaryAction) {
             action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
           }
@@ -186,7 +191,7 @@ class CommonDataProcessorBean
           if (plannedEndDate != null) action.setPlannedEndDate(plannedEndDate)
 
 
-          val actionType = dbActionType.getActionTypeById(entity.id.intValue)
+          val actionType = dbActionType.getActionTypeById(entity.typeId.intValue)
           val aw = new ActionWrapper(action)
 
           // Collect all ActionProperties sent from the client
@@ -202,7 +207,7 @@ class CommonDataProcessorBean
             } else {
               val ap = dbActionProperty.createActionPropertyWithDate(
                 action,
-                attribute.id.intValue,
+                attribute.typeId.intValue,
                 userData,
                 now)
               new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
