@@ -6,7 +6,6 @@
         "type": "Document",
         "status": null,
         "version": 0,
-        "flatCode": "TransfusionTherapy",
         "code": "3_02",
         "group": [
             {
@@ -31,10 +30,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "assessmentName",
@@ -54,10 +53,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "assessmentBeginDate",
@@ -77,10 +76,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "assessmentEndDate",
@@ -100,10 +99,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "doctorLastName",
@@ -123,10 +122,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "doctorFirstName",
@@ -146,10 +145,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "doctorMiddleName",
@@ -169,10 +168,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "doctorSpecs",
@@ -192,10 +191,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "assignerLastName",
@@ -215,10 +214,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "assignerFirstName",
@@ -238,10 +237,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "assignerMiddleName",
@@ -261,10 +260,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "assignerSpecs",
@@ -284,10 +283,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "assignerPost",
@@ -307,10 +306,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "urgent",
@@ -330,10 +329,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "multiplicity",
@@ -353,10 +352,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "finance",
@@ -376,17 +375,17 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "name": "plannedEndDate",
                         "properties": [
                             {
                                 "name": "value",
-                                "value": "2014-12-04 07:00:00"
+                                "value": "2014-12-05 07:00:00"
                             }
                         ],
                         "id": 0,
@@ -399,10 +398,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": null,
-                        "mandatory": null
+                        "mandatory": null,
+                        "calculatedValue": null,
+                        "tableValues": null
                     }
                 ],
                 "version": null
@@ -442,10 +441,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": 1602607,
-                        "mandatory": "false"
+                        "mandatory": "false",
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "layoutAttributeValues": [],
@@ -478,10 +477,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": 1602602,
-                        "mandatory": "true"
+                        "mandatory": "true",
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "layoutAttributeValues": [],
@@ -514,10 +513,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": 1602603,
-                        "mandatory": "true"
+                        "mandatory": "true",
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "layoutAttributeValues": [],
@@ -550,10 +549,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": 1602604,
-                        "mandatory": "false"
+                        "mandatory": "false",
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "layoutAttributeValues": [],
@@ -586,10 +585,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": 1602605,
-                        "mandatory": "false"
+                        "mandatory": "false",
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "layoutAttributeValues": [],
@@ -622,10 +621,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": 1602606,
-                        "mandatory": "true"
+                        "mandatory": "true",
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "layoutAttributeValues": [],
@@ -658,10 +657,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": 1602601,
-                        "mandatory": "true"
+                        "mandatory": "true",
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "layoutAttributeValues": [],
@@ -694,10 +693,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": 1602608,
-                        "mandatory": "false"
+                        "mandatory": "false",
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "layoutAttributeValues": [],
@@ -730,10 +729,10 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": 1602609,
-                        "mandatory": "false"
+                        "mandatory": "false",
+                        "calculatedValue": null,
+                        "tableValues": null
                     },
                     {
                         "layoutAttributeValues": [],
@@ -766,18 +765,19 @@
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "calculatedValue": null,
-                        "tableValues": null,
                         "typeId": 1602615,
-                        "mandatory": "false"
+                        "mandatory": "false",
+                        "calculatedValue": null,
+                        "tableValues": null
                     }
                 ],
                 "version": null
             }
         ],
+        "flatCode": "TransfusionTherapy",
+        "editable": true,
         "isEditable": true,
         "mnem": "",
-        "typeId": 3911,
-        "editable": true
+        "typeId": 3911
     }
 ], "requestData": null}

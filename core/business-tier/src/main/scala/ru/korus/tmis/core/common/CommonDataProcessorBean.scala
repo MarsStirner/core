@@ -3,7 +3,7 @@ package ru.korus.tmis.core.common
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
-import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
+import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.event._
 import ru.korus.tmis.core.exception.CoreException
@@ -69,6 +69,9 @@ class CommonDataProcessorBean
 
   @EJB
   var dbLayoutAttributeValueBean: DbLayoutAttributeValueBeanLocal = _
+
+  @EJB
+  var dbActionPropertyTypeBeanLocal: DbActionPropertyTypeBeanLocal =  _
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -205,6 +208,12 @@ class CommonDataProcessorBean
             if (AWI.isSupported(attribute.name)) {
               list
             } else {
+              if(attribute.typeId == null && attribute.code != null) {
+                val apt: ActionPropertyType = dbActionPropertyTypeBeanLocal.getActionPropertyTypeByActionTypeIdAndTypeCode(actionType.getId, attribute.code, false)
+                if (apt != null) {
+                 attribute.typeId = apt.getId;
+                }
+              }
               val ap = dbActionProperty.createActionPropertyWithDate(
                 action,
                 attribute.typeId.intValue,
