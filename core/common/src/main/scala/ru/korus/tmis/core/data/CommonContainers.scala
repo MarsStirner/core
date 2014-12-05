@@ -15,8 +15,12 @@ import ru.korus.tmis.scala.util.ConfigManager
 class IdNameContainer {
   @BeanProperty
   var id : Int = _
+
   @BeanProperty
   var name : String = _
+
+  @BeanProperty
+  var code : String = _
 
   def this( id : Int, name : String) = {
     this()

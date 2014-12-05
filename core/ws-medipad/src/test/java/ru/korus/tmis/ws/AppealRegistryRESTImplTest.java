@@ -244,6 +244,43 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         }
     }
 
+    @Test/*(dependsOnMethods = "testCreateAction")*/
+    public void testCreateEvent() {
+        System.out.println("**************************** testCreateEvent() started...");
+        try {
+            AuthData authData = auth();
+            //http://webmis/data/patients/2/appeals/?callback=jQuery1820959072473924607_1402042407315
+            final Integer eventId = 841695;
+            URL url = new URL(BASE_URL + String.format("/tms-registry/patients/%s/appeals/",  TEST_PATIENT_ID));
+            final String tstCallback = "tstCallback";
+            url = addGetParam(url, "callback", tstCallback);
+            url = addGetParam(url, "_", authData.getAuthToken().getId());
+            System.out.println("Send POST to..." + url.toString());
+            HttpURLConnection conn = openConnectionPost(url, authData);
+            toPostStream(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createAppealsReq.json")), "UTF-8"), conn);
+            int code = getResponseCode(conn);
+            String res = getResponseData(conn, code);
+            if(code != 200 ) {
+                System.out.println(res);
+            } else {
+                res= res.replaceAll("\"id\":[ +]?\\d+,", "");
+                res= res.replaceAll("\"number\":[ +]?\\\"\\d+\\/\\d+\\\",", "");
+            }
+            Assert.assertTrue(code == 200);
+            res = removePadding(res, tstCallback);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createAppealsResp.json"))));
+            //TODO remove id  from json or clear DB
+            //Assert.assertEquals(resJson, expected);
+            Assert.assertTrue(res.contains("\"number\":"));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        }
+    }
+
     private void deleteAction(int actionId) {
         System.out.println("**************************** deleteAction(actionId) started...");
         try {
@@ -418,5 +455,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         final String res = usersMgr.create(personInfo);
         System.out.println("AppealRegistryRESTImplTest.createTestUser: " + res);
     }
+
+
 
 }

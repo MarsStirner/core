@@ -42,8 +42,8 @@ public class AppealRegistryRESTImpl {
      * @see ru.korus.tmis.core.exception.CoreException
      */
     @POST
-    @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Consumes({"application/json", "application/xml"})
+    @Produces({"application/x-javascript","application/xml"})
     public Object insertPatientAppeal(AppealData data) {
         return new JSONWithPadding(wsImpl.insertAppealForPatient(data, this.patientId, this.auth), this.callback);
     }

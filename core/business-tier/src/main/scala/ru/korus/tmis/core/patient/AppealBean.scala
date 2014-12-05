@@ -88,6 +88,12 @@ with CAPids {
   @EJB
   private var dbContractBean: DbContractBeanLocal = _
 
+  @EJB
+  private var dbEventTypeBeanLocal: DbEventTypeBeanLocal = _
+
+  @EJB
+  private var dbRbResultBeanLocal: DbRbResultBeanLocal = _
+
   @Inject
   @Any
   var actionEvent: javax.enterprise.event.Event[Notification] = _
@@ -586,10 +592,20 @@ with CAPids {
         throw new CoreException(i18n("error.appeal.create.InvalidPatientData").format(id))
       }
 
+      if ( appealData.data.appealType.eventType != null && appealData.data.appealType.eventType.id < 1 ) {
+        val et = dbEventTypeBeanLocal.getEventTypeByCode(appealData.data.appealType.eventType.getCode)
+        appealData.data.appealType.eventType.id = et.getId
+      }
+
       if (appealData.data.appealType == null ||
         appealData.data.appealType.eventType == null ||
-        appealData.data.appealType.eventType.getId <= 0) {
+        appealData.data.appealType.eventType.getId < 1) {
         throw new CoreException(i18n("error.appeal.create.NoAppealType"))
+      }
+
+      if ( appealData.data.contract != null && appealData.data.contract.getId < 1) {
+        val contract: Contract =  dbContractBean.getContractByNumber(appealData.data.contract.getNumber);
+        appealData.data.contract.id = contract.getId
       }
 
       if (appealData.data.contract == null || appealData.data.contract.getId < 1)
@@ -602,13 +618,17 @@ with CAPids {
 
       checkAppealBegEndDate(appealData.getData.rangeAppealDateTime)
 
+      val result = if(appealData.data.result == null) null else
+        dbRbResultBeanLocal.getRbResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.result.code)
+
       event = dbEventBean.createEvent(id,
         //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
         appealData.data.appealType.eventType.getId,
         //dbEventBean.getEventTypeIdByRequestTypeIdAndFinanceId(appealData.data.appealType.requestType.getId(), appealData.data.appealType.finance.getId()),
         appealData.data.rangeAppealDateTime.getStart(),
-        /*appealData.data.rangeAppealDateTime.getEnd()*/ null,
+        if(appealData.data.result == null) null else appealData.data.rangeAppealDateTime.getEnd(),
         appealData.getData.getContract.getId,
+        result,
         authData)
     }
     else {

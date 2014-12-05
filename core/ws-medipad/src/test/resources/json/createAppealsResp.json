@@ -1,82 +1,65 @@
-{"requestData": null, "data": {
-    "id": 319,
-    "version": 2,
-    "number": "2014/27",
-    "urgent": false,
-    "setPerson": {
-        "doctor": {
-            "id": 1,
-            "name": {
-                "first": "",
-                "last": "Админ",
-                "middle": "",
-                "raw": "Админ  "
-            }
-        },
-        "department": {
-            "id": 0,
-            "name": null
-        }
+{"data": {
+    "context": "f066",
+
+    "result": null,
+    "assignment": {
+        "number": "",
+        "doctor": "",
+        "assignmentDate": null,
+        "directed": ""
     },
+    "version": 2,
+    "hospitalizationWith": [],
+    "urgent": false,
+    "patient": {
+        "id": "2"
+    },
+    "contract": null,
+    "laboratory": null,
     "execPerson": {
-        "id": 1,
         "name": {
-            "first": "",
-            "last": "Админ",
-            "middle": "",
-            "raw": "Админ  "
-        }
+            "first": "test",
+            "last": "test",
+            "middle": "test",
+            "raw": "test test test"
+        },
+        "id": 26
     },
     "ambulanceNumber": "",
     "rangeAppealDateTime": {
-        "start": 1393411484000,
-        "end": 1393411516000
-    },
-    "patient": {
-        "id": "3"
+        "start": 1402042420000,
+        "end": 1402042458000
     },
     "appealType": {
         "eventType": {
-            "id": 53,
-            "name": "Дневной стационар(бюджет)"
-        },
-        "requestType": {
-            "id": 1,
-            "name": "Дневной стационар"
+            "name": "Дневной стационар(бюджет)",
+            "id": 53
         },
         "finance": {
-            "id": 1,
-            "name": "Бюджет"
+            "name": "Бюджет",
+            "id": 1
+        },
+        "requestType": {
+            "name": "Дневной стационар",
+            "id": 1
         }
     },
     "agreedType": null,
     "agreedDoctor": "",
-    "assignment": {
-        "assignmentDate": null,
-        "number": "",
-        "directed": "",
-        "doctor": ""
-    },
     "hospitalizationType": {
-        "id": 220,
-        "name": ""
+        "name": "",
+        "id": 220
     },
     "hospitalizationPointType": {
-        "id": 134,
-        "name": ""
+        "name": "",
+        "id": 134
     },
-    "hospitalizationChannelType": {
-        "id": -1,
-        "name": null
-    },
-    "hospitalizationWith": [],
     "deliveredType": "",
     "deliveredAfterType": "",
     "movingType": "может идти",
-    "stateType": "",
     "physicalParameters": {
-        "height": 0.0,
         "weight": 0.0,
+        "height": 0.0,
         "temperature": 0.0,
         "bloodPressure": {
             "left": {
@@ -89,50 +72,26 @@
             }
         }
     },
-    "diagnoses": [
-        {
-            "diagnosticId": 63,
-            "diagnosisKind": "diagReceivedMkb",
-            "description": "",
-            "injury": "",
-            "mkb": {
-                "id": 11439,
-                "code": "",
-                "diagnosis": ""
-            }
-        },
-        {
-            "diagnosticId": 64,
-            "diagnosisKind": "aftereffectMkb",
-            "description": "",
-            "injury": "",
-            "mkb": {
-                "id": 11439,
-                "code": "",
-                "diagnosis": ""
-            }
-        },
-        {
-            "diagnosticId": 62,
-            "diagnosisKind": "attendantMkb",
-            "description": "",
-            "injury": "",
-            "mkb": {
-                "id": 11439,
-                "code": "",
-                "diagnosis": ""
-            }
-        }
-    ],
-    "injury": "",
     "refuseAppealReason": "",
     "appealWithDeseaseThisYear": "повторно",
     "havePrimary": false,
-    "contract": null,
-    "currentDepartment": {
-        "id": 28,
-        "name": "Приемное отделение"
+    "tempInvalid": null,
+    "preHospitalDefects": null,
+    "closeDateTime": null,
+    "orgStructStay": 0,
+    "orgStructDirectedFrom": 0,
+    "hospitalizationChannelType": {
+        "name": null,
+        "id": -1
     },
+    "injury": "",
+    "closed": false,
+    "currentDepartment": {
+        "name": "Приемное отделение",
+        "id": 28
+    },
+    "reopening": "null",
+    "totalDays": null,
     "leaved": {
         "nextHospDate": null,
         "nextHospDepartment": null,
@@ -142,13 +101,56 @@
         "outcomeDate": null,
         "leavedDoctor": null
     },
-    "result": null,
-    "tempInvalid": null,
-    "laboratory": null,
-    "preHospitalDefects": null,
-    "closed": false,
-    "closeDateTime": null,
-    "orgStructStay": 28,
-    "orgStructDirectedFrom": 0,
-    "reopening": "null"
-}}
+    "ward": null,
+    "diagnoses": [
+        {
+            "description": "",
+            "mkb": {
+                "id": 11439,
+                "code": "",
+                "diagnosis": ""
+            },
+            "diagnosisKind": "diagReceivedMkb",
+            "diagnosticId": 51,
+            "injury": ""
+        },
+        {
+            "description": "",
+            "mkb": {
+                "id": 11439,
+                "code": "",
+                "diagnosis": ""
+            },
+            "diagnosisKind": "aftereffectMkb",
+            "diagnosticId": 50,
+            "injury": ""
+        },
+        {
+            "description": "",
+            "mkb": {
+                "id": 11439,
+                "code": "",
+                "diagnosis": ""
+            },
+            "diagnosisKind": "attendantMkb",
+            "diagnosticId": 49,
+            "injury": ""
+        }
+    ],
+    "stateType": "",
+    "setPerson": {
+        "doctor": {
+            "name": {
+                "first": "test",
+                "last": "test",
+                "middle": "test",
+                "raw": "test test test"
+            },
+            "id": 26
+        },
+        "department": {
+            "name": null,
+            "id": 0
+        }
+    }
+}, "requestData": null}

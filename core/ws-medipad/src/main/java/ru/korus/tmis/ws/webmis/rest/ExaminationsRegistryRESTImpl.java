@@ -52,8 +52,8 @@ public class ExaminationsRegistryRESTImpl {
      * @see ru.korus.tmis.core.data.JSONCommonData
      */
     @POST
-    @Consumes("application/json")
-    @Produces("application/x-javascript")
+    @Consumes({"application/json", "application/xml"})
+    @Produces({"application/x-javascript","application/xml"})
     public  Object insertPrimaryMedExamForPatient(JSONCommonData data) throws CoreException {
         if(eventId < 1)
             throw new CoreException("This service cannot be used without Event id");

@@ -285,7 +285,6 @@ with CAPids {
       val values = positionA._2.asInstanceOf[java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]]]
 
       val mapper: ObjectMapper = new ObjectMapper()
-      mapper.getSerializationConfig.withView(classOf[Views.DynamicFieldsStandartForm])
       val patient = positionE._1.getPatient
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
