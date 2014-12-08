@@ -167,7 +167,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         }
     }
 
-    @Test
+    //@Test
     public void testGetActionTypeInfo() {
         System.out.println("**************************** testGetActionTypeInfo() started...");
         try {

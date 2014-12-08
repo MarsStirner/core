@@ -6,9 +6,8 @@
         "type": "Document",
         "status": null,
         "version": 0,
-        "flatCode": "TransfusionTherapy",
         "code": "3_02",
-        "typeId": 3911,
+        "flatCode": "TransfusionTherapy",
         "group": [
             {
                 "name": "Summary",
@@ -27,15 +26,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "assessmentName",
@@ -50,15 +49,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "assessmentBeginDate",
@@ -73,15 +72,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "assessmentEndDate",
@@ -96,15 +95,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "doctorLastName",
@@ -119,15 +118,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "doctorFirstName",
@@ -142,15 +141,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "doctorMiddleName",
@@ -165,15 +164,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "doctorSpecs",
@@ -188,15 +187,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "assignerLastName",
@@ -211,15 +210,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "assignerFirstName",
@@ -234,15 +233,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "assignerMiddleName",
@@ -257,15 +256,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "assignerSpecs",
@@ -280,15 +279,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "assignerPost",
@@ -303,15 +302,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "urgent",
@@ -326,15 +325,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "multiplicity",
@@ -349,15 +348,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "finance",
@@ -372,22 +371,22 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     },
                     {
                         "name": "plannedEndDate",
                         "properties": [
                             {
                                 "name": "value",
-                                "value": "2014-12-08 07:00:00"
+                                "value": "2014-12-09 07:00:00"
                             }
                         ],
                         "id": 0,
@@ -395,15 +394,15 @@
                         "readOnly": null,
                         "scope": null,
                         "version": 0,
+                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": null,
-                        "typeId": null,
-                        "mandatory": null,
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": null,
+                        "mandatory": null
                     }
                 ],
                 "version": null
@@ -438,15 +437,15 @@
                         "readOnly": "true",
                         "scope": "",
                         "version": 0,
+                        "code": "trfuReqBloodCompResult",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": "trfuReqBloodCompResult",
-                        "typeId": 1602607,
-                        "mandatory": "false",
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": 1602607,
+                        "mandatory": "false"
                     },
                     {
                         "layoutAttributeValues": [],
@@ -474,15 +473,15 @@
                         "readOnly": "false",
                         "scope": "",
                         "version": 0,
+                        "code": "trfuReqBloodCompId",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": "trfuReqBloodCompId",
-                        "typeId": 1602602,
-                        "mandatory": "true",
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": 1602602,
+                        "mandatory": "true"
                     },
                     {
                         "layoutAttributeValues": [],
@@ -510,15 +509,15 @@
                         "readOnly": "false",
                         "scope": "'Плановая','Экстренная'",
                         "version": 0,
+                        "code": "trfuReqBloodCompType",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": "trfuReqBloodCompType",
-                        "typeId": 1602603,
-                        "mandatory": "true",
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": 1602603,
+                        "mandatory": "true"
                     },
                     {
                         "layoutAttributeValues": [],
@@ -546,15 +545,15 @@
                         "readOnly": "false",
                         "scope": "",
                         "version": 0,
+                        "code": "trfuReqBloodCompValue",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": "trfuReqBloodCompValue",
-                        "typeId": 1602604,
-                        "mandatory": "false",
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": 1602604,
+                        "mandatory": "false"
                     },
                     {
                         "layoutAttributeValues": [],
@@ -582,15 +581,15 @@
                         "readOnly": "false",
                         "scope": "",
                         "version": 0,
+                        "code": "trfuReqBloodCompDose",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": "trfuReqBloodCompDose",
-                        "typeId": 1602605,
-                        "mandatory": "false",
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": 1602605,
+                        "mandatory": "false"
                     },
                     {
                         "layoutAttributeValues": [],
@@ -618,15 +617,15 @@
                         "readOnly": "false",
                         "scope": "3_1_05",
                         "version": 0,
+                        "code": "trfuReqBloodCompRootCause",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": "trfuReqBloodCompRootCause",
-                        "typeId": 1602606,
-                        "mandatory": "true",
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": 1602606,
+                        "mandatory": "true"
                     },
                     {
                         "layoutAttributeValues": [],
@@ -654,15 +653,15 @@
                         "readOnly": "false",
                         "scope": "",
                         "version": 0,
+                        "code": "trfuReqBloodCompDiagnosis",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": "trfuReqBloodCompDiagnosis",
-                        "typeId": 1602601,
-                        "mandatory": "true",
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": 1602601,
+                        "mandatory": "true"
                     },
                     {
                         "layoutAttributeValues": [],
@@ -690,15 +689,15 @@
                         "readOnly": "true",
                         "scope": "",
                         "version": 0,
+                        "code": "trfuReqBloodCompDate",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": "trfuReqBloodCompDate",
-                        "typeId": 1602608,
-                        "mandatory": "false",
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": 1602608,
+                        "mandatory": "false"
                     },
                     {
                         "layoutAttributeValues": [],
@@ -726,15 +725,15 @@
                         "readOnly": "true",
                         "scope": "",
                         "version": 0,
+                        "code": "trfuReqBloodCompTime",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": "trfuReqBloodCompTime",
-                        "typeId": 1602609,
-                        "mandatory": "false",
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": 1602609,
+                        "mandatory": "false"
                     },
                     {
                         "layoutAttributeValues": [],
@@ -762,22 +761,23 @@
                         "readOnly": "true",
                         "scope": "Ид. компонента,Номер компонента,Тип компонента,Группа крови,Объём,Кол-во доз,Ид. донора,Этикетка,",
                         "version": 0,
+                        "code": "trfuReqBloodCompPasport",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
                         },
-                        "code": "trfuReqBloodCompPasport",
-                        "typeId": 1602615,
-                        "mandatory": "false",
                         "calculatedValue": null,
-                        "tableValues": null
+                        "tableValues": null,
+                        "typeId": 1602615,
+                        "mandatory": "false"
                     }
                 ],
                 "version": null
             }
         ],
-        "editable": true,
+        "typeId": 3911,
         "isEditable": true,
-        "mnem": ""
+        "mnem": "",
+        "editable": true
     }
 ], "requestData": null}

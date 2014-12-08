@@ -1,129 +1,48 @@
 {"requestData": {}, "data": {
-    "number": "",
-    "urgent": false,
-    "ambulanceNumber": "",
-    "rangeAppealDateTime": {
-        "start": 1402042420115,
-        "end": 1402042458575
-    },
-    "refuseAppealReason": "",
-    "appealWithDeseaseThisYear": "повторно",
     "appealType": {
         "eventType": {
             "code": "12"
         }
     },
-    "assignment": {
-        "directed": "",
-        "doctor": "",
-        "assignmentDate": "",
-        "number": ""
+    "execPerson" : {
+        "id" : "7"
     },
     "hospitalizationType": {
-        "id": "220",
-        "name": ""
-    },
-    "hospitalizationPointType": {
-        "id": "134",
-        "name": ""
-    },
-    "result": {
-        "code" : ""
-    },
-    "deliveredType": "",
-    "deliveredAfterType": "",
-    "movingType": "может идти",
-    "stateType": "",
-    "physicalParameters": {
-        "bloodPressure": {
-            "left": {
-            },
-            "right": {
-            }
-        }
-    },
-    "branchType": {
-        "id": -1,
-        "name": ""
-    },
-    "placeType": {
-        "id": -1,
-        "name": ""
-    },
-    "diagnoses": [
-        {
-            "diagnosisKind": "diagReceivedMkb",
-            "description": "",
-            "mkb": {
-                "code": "",
-                "diagnosis": "",
-                "parent": null
-            }
-        },
-        {
-            "diagnosisKind": "aftereffectMkb",
-            "description": "",
-            "mkb": {
-                "code": "",
-                "diagnosis": "",
-                "parent": null
-            }
-        },
-        {
-            "diagnosisKind": "attendantMkb",
-            "description": "",
-            "mkb": {
-                "code": "",
-                "diagnosis": "",
-                "parent": null
-            }
-        }
-    ],
-    "agreedDoctor": "",
-    "agreedType": {
-    },
-    "injury": "",
-    "hospitalizationWith": [],
-    "havePrimary": false,
-    "setPerson": {
-        "doctor": {
-            "name": {
-                "first": "",
-                "last": "",
-                "middle": "",
-                "raw": "",
-                "fio": "",
-                "full": "  "
-            },
-            "specs": {
-                "name": {}
-            },
-            "department": {
-                "name": ""
-            }
-        },
-        "department": {
-            "name": ""
-        }
+        "id": "220"
     },
     "contract": {
         "number": "2009/5"
     },
-    "leaved": {
-        "nextHospDate": null,
-        "nextHospDepartment": null,
-        "nextHospFinanceType": null
+
+    "rangeAppealDateTime": {
+        "start": 1402042420115,
+        "end": 1402042458575
     },
-    "orgStructStay": "28",
-    "reopening": "Нет",
-    "tempInvalid": {
-        "begDate": 1402042420115,
-        "endDate": 1402042458575,
-        "serial": "SERIAL12_SKIP",
-        "number": "NUMBER__12345678_SKIP",
-        "isByService": true
+    "appealWithDeseaseThisYear": "повторно",
+
+    "result": {
+        "code" : "5"
     },
-    "result" : {
-        "code": "5"
-    }
+
+    "diagnoses": [
+        {
+            "diagnosisKind": "mainDiagMkb",
+            "mkb": {
+                "code": "I10"
+            }
+        },
+        {
+            "diagnosisKind": "assocDiagMkb",
+            "mkb": {
+                "code": "E21"
+            }
+        },
+        {
+            "diagnosisKind": "diagComplMkb",
+            "mkb": {
+                "code": "C43"
+            }
+        }
+    ]
+
 }}
