@@ -619,9 +619,13 @@ with CAPids {
 
       checkAppealBegEndDate(appealData.getData.rangeAppealDateTime)
 
-      val result = if (appealData.data.result == null) null
+      val result : RbResult = if (appealData.data.result == null) null
       else
         dbRbResultBeanLocal.getRbResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.result.code)
+
+      val acheResult : RbAcheResult = if (appealData.data.result == null) null
+      else
+        dbRbResultBeanLocal.getRbAcheResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.acheResult.code)
 
       val execPerson = if (appealData.data.execPerson == null || appealData.data.execPerson.getId == null) null
       else
@@ -635,6 +639,7 @@ with CAPids {
         if (appealData.data.result == null) null else appealData.data.rangeAppealDateTime.getEnd(),
         appealData.getData.getContract.getId,
         result,
+        acheResult,
         execPerson,
         authData)
     }

@@ -24,6 +24,10 @@
         "code" : "5"
     },
 
+    "acheResult": {
+        "code" : "105"
+    },
+
     "diagnoses": [
         {
             "diagnosisKind": "mainDiagMkb",

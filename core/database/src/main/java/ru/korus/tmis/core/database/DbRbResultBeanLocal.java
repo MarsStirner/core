@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.EventType;
+import ru.korus.tmis.core.entity.model.RbAcheResult;
 import ru.korus.tmis.core.entity.model.RbResult;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -19,4 +20,6 @@ public interface DbRbResultBeanLocal {
     RbResult getRbResultById(int id) throws CoreException;
 
     RbResult getRbResultByCodeAndEventType(EventType et, String code) throws CoreException;
+
+    RbAcheResult getRbAcheResultByCodeAndEventType(EventType et, String code) throws CoreException;
 }

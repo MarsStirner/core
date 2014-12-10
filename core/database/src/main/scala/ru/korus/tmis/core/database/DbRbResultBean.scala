@@ -5,7 +5,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{EventType, RbResult}
+import ru.korus.tmis.core.entity.model.{RbAcheResult, EventType, RbResult}
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
@@ -69,6 +69,29 @@ class DbRbResultBean
     }
   }
 
+  def getRbAcheResultByCodeAndEventType(et: EventType, code: String): RbAcheResult = {
+    val result = em.createQuery(FindByCodeAndEventTypeInAcheResultQuery,
+      classOf[RbAcheResult])
+      .setParameter("eventPurpose", et.getPurposeId)
+      .setParameter("code", code)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        throw new CoreException(
+          ConfigManager.ErrorCodes.RbResultNotFound,
+          i18n("error.rbResultForEventNotFound").format(et.getId))
+      }
+      case size => {
+        result.foreach(rbStatus => {
+          em.detach(rbStatus)
+        })
+        result(0)
+      }
+    }
+  }
+
+
   val FindByCodeAndEventTypeQuery = """
   SELECT r
     FROM
@@ -77,6 +100,16 @@ class DbRbResultBean
     r.code = :code
     AND
     r.eventPurposeType.id = :eventPurpose
+                                    """
+
+  val FindByCodeAndEventTypeInAcheResultQuery = """
+  SELECT r
+    FROM
+  RbAcheResult r
+    WHERE
+    r.code = :code
+    AND
+    r.eventPurpose_id = :eventPurpose
                                     """
 
   val FindByIdQuery = """
