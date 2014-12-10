@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="ActionPropertyType" phpName="ActionPropertyType" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="deleted" phpName="deleted" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="actionType_id" phpName="actionTypeId" type="INTEGER" required="true"/>
+    <column name="idx" phpName="idx" type="INTEGER" required="true" defaultValue="0"/>
+    <column name="template_id" phpName="templateId" type="INTEGER" required="false"/>
+    <column name="name" phpName="name" type="VARCHAR" size="128" required="true"/>
+    <column name="descr" phpName="descr" type="VARCHAR" size="128" required="true"/>
+    <column name="unit_id" phpName="unitId" type="INTEGER" required="false"/>
+    <column name="typeName" phpName="typeName" type="VARCHAR" size="64" required="true"/>
+    <column name="valueDomain" phpName="ValueDomain" type="LONGVARCHAR" required="true"/>
+    <column name="defaultValue" phpName="defaultValue" type="VARCHAR" size="5000" required="true"/>
+    <column name="code" phpName="code" type="VARCHAR" size="64" required="false"/>
+    <column name="isVector" phpName="isVector" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="norm" phpName="norm" type="VARCHAR" size="64" required="true"/>
+    <column name="sex" phpName="sex" type="TINYINT" required="true"/>
+    <column name="age" phpName="age" type="VARCHAR" size="9" required="true"/>
+    <column name="age_bu" phpName="ageBu" type="TINYINT" required="false"/>
+    <column name="age_bc" phpName="ageBc" type="SMALLINT" required="false"/>
+    <column name="age_eu" phpName="ageEu" type="TINYINT" required="false"/>
+    <column name="age_ec" phpName="ageEc" type="SMALLINT" required="false"/>
+    <column name="penalty" phpName="penalty" type="INTEGER" size="3" required="true" defaultValue="0"/>
+    <column name="visibleInJobTicket" phpName="visibleInJobTicket" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="isAssignable" phpName="isAssignable" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="test_id" phpName="testId" type="INTEGER" required="false"/>
+    <column name="defaultEvaluation" phpName="defaultEvaluation" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="toEpicrisis" phpName="toEpicrisis" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="mandatory" phpName="mandatory" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="readOnly" phpName="readonly" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+
+    <foreign-key foreignTable="ActionType" name="FK_ActionPropertyType_ActionType">
+      <reference local="actionType_id" foreign="id"/>
+    </foreign-key>
+
+    <index name="actionType_id">
+      <index-column name="actionType_id"/>
+    </index>
+    <index name="unit_id">
+      <index-column name="unit_id"/>
+    </index>
+    <index name="template_id">
+      <index-column name="template_id"/>
+    </index>
+    <index name="test_id">
+      <index-column name="test_id"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

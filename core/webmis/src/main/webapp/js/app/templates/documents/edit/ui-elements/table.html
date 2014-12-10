@@ -1,0 +1,24 @@
+<label style="float: left;">
+	<%=name%>
+</label>
+
+<table class="table-widget">
+    <thead>
+        <tr>
+            <% _.each(columns, function(columnName){%>
+                <th><%= columnName %></th>
+            <%})%>
+        </tr> 
+    </thead>
+    <tbody>
+    <% _.each(trs, function(tr){%>
+    <tr>
+        <% _.each(tr, function(td){%>
+            <td><%= td%></td> 
+        <%})%>
+    </tr> 
+    <%})%>
+    </tbody>
+</table>
+
+

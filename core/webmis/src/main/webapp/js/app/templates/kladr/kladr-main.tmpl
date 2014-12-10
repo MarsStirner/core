@@ -1,0 +1,44 @@
+<!--<fieldset class="AdressForm">
+	<legend>${legend}</legend>
+	<ul class="addressFields">-->
+		<li>
+			<label>Город, село</label>
+			<select name="address-${addressType}-localityType" data-key="localityType" class="Styled">
+				<!--<option value="0" {{if address.localityType == 0}} selected{{/if}}>Город</option>
+				<option value="1" {{if address.localityType == 1}} selected{{/if}}>Село</option>-->
+				<option value="0">Город</option>
+				<option value="1">Село</option>
+			</select>
+		</li>
+		<li>
+			<label>
+				<!--data-key="kladr"{{if address.kladr}} checked{{/if}}-->
+				<input type="checkbox" class="kladr-toggle" name="address-${addressType}-kladr"/>
+				Кладр
+			</label>
+		</li>
+		<!-- here goes kladr -->
+		<li>
+			<div class="Field">
+				<label>Дом</label>
+				<input type="text" placeholder="№" name="address-${addressType}-house" data-maxlength="8">
+			</div>
+			<div class="Field">
+				<label>Корпус</label>
+				<input type="text" name="address-${addressType}-building" data-maxlength="8">
+			</div>
+			<div class="Field">
+				<label>Квартира</label>
+				<input type="text" name="address-${addressType}-flat" data-maxlength="8">
+			</div>
+			<!--<div class="Field">
+				<label for="textfield05">Участок</label>
+				<input type="text" class="Disabled" id="textfield05" disabled="disabled" name="textfield05">
+			</div>-->
+		</li>
+		<li>
+			<label>Адрес</label>
+			<input type="text" name="address-${addressType}-building">
+		</li>
+	<!--</ul>
+</fieldset>-->

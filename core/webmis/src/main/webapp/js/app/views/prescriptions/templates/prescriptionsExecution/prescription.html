@@ -1,0 +1,32 @@
+<td><input  type="checkbox" data-prescription-select /></td>
+<td>
+    <% if(data.client){ %>
+    <%= data.client.firstName%> <%= data.client.lastName %>
+    <% } %>
+</td>
+<td>
+    <ul style="margin-bottom:.5em;">
+        <% _.each(data.drugs, function(drug){%>
+        <li style="margin-bottom:.1em;">
+        <%= drug.name %>
+        <% if(drug.dose){%>
+        (<%= drug.dose %> <%= drug.unitName %>)
+        <%}%>
+
+        </li>
+        <%})%>
+    </ul>
+    <% if(data.voa){%>
+    <p>Скорость введения: <%= data.voa %> мл/час</p> 
+    <%}%>
+</td>
+<td>
+    <%= data.note %> 
+</td>
+<td  class="intervals" style="padding: 0;margin:0;position: relative;overflow:hidden;">
+</td>
+<td>
+    <% if(data.setPerson){ %>
+    <%= data.setPerson.firstName %> <%= data.setPerson.lastName %>
+    <% } %>
+</td>

@@ -1,0 +1,32 @@
+<%if (model) {%>
+	<td class="helper-item-checker-col">
+		<input type="checkbox" class="helper-item-checker" data-id="<%=model.get('id')%>">
+	</td>
+	<td class="helper-item-info">
+		<div class="helper-item-name">
+			<div>
+				<span class="helper-item-date"><%=moment(model.get("plannedEndDate")).format('DD.MM.YYYY')%></span>
+				<%if (model.get('takingTime')) {%>
+					<span class="helper-item-takingtime">&nbsp;&nbsp;Время забора: <%=moment(model.get("takingTime").datetime).format('H:mm')%></span>
+				<%}%>
+			</div>
+			<%if (model.get("diagnosticName")) {%>
+				<div><span><%=model.get("diagnosticName").name%></span></div>
+			<%} else if (model.get("assessmentName")) {%>
+				<div><span><%=model.get("assessmentName").name%></span></div>
+			<%}%>
+		</div>
+		<div class="helper-item-attrs-toggler">
+			<i class="icon-chevron-down"></i>
+		</div>
+	</td>
+<%}else{%>
+	<td class="helper-item-checker-col">
+		&nbsp;
+	</td>
+	<td class="helper-item-info" style="padding-bottom: 1em;">
+		<div class="helper-item-name">
+			<span>Нет записей</span>
+		</div>
+	</td>
+<%}%>

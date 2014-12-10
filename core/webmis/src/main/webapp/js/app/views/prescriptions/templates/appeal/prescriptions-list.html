@@ -1,0 +1,48 @@
+<!-- <table class="Grid"> -->
+<!-- 	<thead> -->
+<!-- 		<tr> -->
+<!-- 			<th>Тип назначения</th> -->
+<!-- 			<th>Врач</th> -->
+<!-- 			<th>Препараты</th> -->
+<!-- 			<th>Интервалы</th> -->
+<!-- 		</tr> -->
+<!-- 	</thead> -->
+<!-- 	<% _.each(data.items, function(item){%> -->
+<!-- 		<tr> -->
+<!-- 			<td> -->
+<!-- 				<%= item.name %> -->
+<!-- 			</td> -->
+<!-- 			<td> -->
+<!-- 				<% if(item.doctor){ %> -->
+<!-- 					<%= item.doctor.firstName%> <%= item.doctor.lastName %> -->
+<!-- 				<% } %> -->
+<!-- 			</td> -->
+<!-- 			<td> -->
+<!-- 				<ul> -->
+<!-- 					<% _.each(item.drugs, function(drug){%> -->
+<!-- 					<li><%= drug.name %></li> -->
+<!-- 					<%})%> -->
+<!-- 				</ul> -->
+<!-- 			</td> -->
+<!-- 			<td> -->
+<!-- 				<ul> -->
+<!-- 					<% _.each(item.assigmentIntervals, function(assigmentInterval){%> -->
+<!-- 						<li> -->
+<!-- 							<ul> -->
+<!-- 								<% _.each(assigmentInterval.executionIntervals, function(executionInterval){%> -->
+<!-- 										<li> -->
+<!-- 											<%= executionInterval.status %> | -->
+<!-- 											<%= Core.Date.formatDateTime(executionInterval.beginDateTime) %> -->
+<!-- 											<%if(executionInterval.endDateTime){%> -->
+<!-- 												 - <%= Core.Date.formatDateTime(executionInterval.endDateTime) %> -->
+<!-- 											<%}%> -->
+<!-- 										</li> -->
+<!-- 								<% })%> -->
+<!-- 							</ul> -->
+<!-- 						</li> -->
+<!-- 					<%})%> -->
+<!-- 				</ul> -->
+<!-- 			</td> -->
+<!-- 		</tr> -->
+<!-- 	<% }) %> -->
+<!-- </table> -->

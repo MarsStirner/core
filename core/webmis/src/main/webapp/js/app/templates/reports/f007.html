@@ -1,0 +1,36 @@
+<div id="page-head">
+	<ul class="BreadCrumb">
+		<li><a href="/reports/" >Отчёты</a></li>
+		<li><a href="/reports/hospital/" data-step-name="hospital">Стационар</a></li>
+		<li><a href="/reports/hospital/beds/" data-step-name="beds">Коечный фонд</a></li>
+		<li>Форма 007</li>
+	</ul>
+</div>
+<h3 style="margin-bottom: 20px;">ФОРМА N 007/У ЛИСТОК УЧЕТА ДВИЖЕНИЯ БОЛЬНЫХ И КОЕЧНОГО ФОНДА СТАЦИОНАРА</h3>
+<div>
+	<span class="Label">Дата и время окончания больничных суток</span>
+</div>
+<div class="row-fluid"  style="margin-bottom: 20px;">
+		<!--<div id="range" style="width:750px;"></div>-->
+	<div class="date" style="width: 10em;">
+		<input type="text" placeholder="дд.мм.гггг" class="SelectDate date-input report-end-date" autocomplete="off" value="<%=moment().format('DD.MM.YYYY')%>">
+		<i class="icon-calendar date-icon" style="right: .4em;"></i>
+	</div>
+	<div class="time" style="width: 6em;">
+		<input type="text" placeholder="чч:мм" class="SelectDate time-input report-end-time" autocomplete="off" value="<%=moment().format('HH:mm')%>">
+		<i class="icon-time time-icon" style="right: .4em;"></i>
+	</div>
+</div>
+<div class="row-fluid" style="margin-bottom: 20px;">
+	<div class="span6">
+		<select id="departments" style="width:100%;"></select>
+	</div>
+</div>
+<div class="row-fluid bed-profile-filter" style="margin-bottom: 20px;"></div>
+<div  class="row-fluid" style="margin-bottom: 20px;">
+	<div class="span6">
+		<button class="print">Сформировать</button>
+	</div>
+</div>
+<div id="iframe"></div>
+

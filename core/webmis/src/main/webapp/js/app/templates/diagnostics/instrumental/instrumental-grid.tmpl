@@ -1,0 +1,74 @@
+<script id="inst-diagnostic-grid" type="text/x-jquery-tmpl">
+	<table class="Grid">
+		<thead>
+		<!--<tr class="EditTh">-->
+		<tr>
+			<th>
+				<a class="Actions SortCol" data-field="plannedEndDate"><span>Планируемая дата </span></a>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="status"><span>Статус</span></a>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="diagnosticName"><span>Название исследования</span></a>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="cito"><span>Cito</span></a>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="assignPerson"><span>Направивший врач</span></a>
+			</th>
+			<th colspan="2">
+				<!--Действия-->
+			</th>
+
+		</tr>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+</script>
+
+<script id="inst-diagnostic-grid-row" type="text/x-jquery-tmpl">
+	<td>
+		{{if plannedEndDate}}
+		{{formatDateTime plannedEndDate}}
+		{{else}}
+		-
+		{{/if}}
+	</td>
+		<td {{if status}} class="instrumental-status-${status.id}"{{/if}}>
+		{{if status && status.name}}
+			${status.name}
+		{{else}}
+			-
+		{{/if}}
+	</td>
+	<td>
+		${diagnosticName.name}
+	</td>
+	<td>
+		{{if cito}}
+		<span class="Privilege">Срочно</span>
+		{{/if}}
+	</td>
+	<td>
+		${assignPerson.name.raw}
+	</td>
+
+	{{if !appealClosed && isEditable}}
+
+		<td><i class="icon-pencil edit-direction"></i></td>
+		<td><span class=" icon-remove cancel-direction"></span></td>
+	{{else}}
+		<td></td>
+		<td></td>
+	{{/if}}
+
+
+</script>
+
+<script id="inst-diagnostic-grid-default" type="text/x-jquery-tmpl">
+	<h3>Записей нет</h3>
+</script>

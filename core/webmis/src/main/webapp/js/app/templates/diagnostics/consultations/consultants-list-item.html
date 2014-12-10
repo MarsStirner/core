@@ -1,0 +1,7 @@
+ <ul>
+   <% _(items).each(function(item){ %>
+   <li class="<% if(selected(item.doctor.id)){%> clicked<%}%>" data-id="<%= item.doctor.id %>">
+    <span class="title"><%= item.doctor.name.raw %></span>
+  </li>
+  <% }) %>
+</ul>

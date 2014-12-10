@@ -1,0 +1,28 @@
+<%if (model) {%>
+	<td class="helper-item-attr-checker-col">
+		<%if (model.collection.initChecked) { %>
+			<input type="checkbox" class="helper-item-attr-checker" checked>
+		<%}else{%>
+			<input type="checkbox" class="helper-item-attr-checker">
+		<%}%>
+	</td>
+	<td class="helper-item-attr-info">
+		<div class="helper-item-attr-name">
+			<b><%=model.get("name")%>:</b>&nbsp;<%=model.get("value")||"-"%> <%=model.get("unit") || ""%>
+		</div>
+	</td>
+<%}else if (isReset) {%>
+	<td class="helper-item-attr-checker-col">
+		&nbsp;
+	</td>
+	<td class="helper-item-attr-info">
+		<div class="helper-item-attr-name">Нет записей</div>
+	</td>
+<%}else{%>
+	<td class="helper-item-attr-checker-col">
+		<i class="icon-spinner"></i>
+	</td>
+	<td class="helper-item-attr-info">
+		<div class="helper-item-attr-name">Загрузка...</div>
+	</td>
+<%}%>

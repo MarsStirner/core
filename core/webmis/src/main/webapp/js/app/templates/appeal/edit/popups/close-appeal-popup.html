@@ -1,0 +1,77 @@
+<% if(!data.docs.allDocs || !data.doctorId || !data.lastMoveClosed){%>
+    <% if(!data.doctorId){%>
+        <h3>Не назначен лечащий врач.</h3>
+    <% } %>
+    <% if(!data.docs.allDocs || !data.lastMoveClosed){%>
+        <h3>Нет документов:</h3>
+        <ul class="docs-list">
+            <% if(data.docs.vmp && !data.docs.vmpTicket){ %>
+                <li>Талон-направление на ВМП. <a href="/appeals/<%= data.appealId %>/quotes" target="_blank">Создать</a></li>
+            <% } %>
+
+            <% if(!data.docs.epicrisis){ %>
+                <li>Эпикриз.
+                <a href="/appeals/<%= data.appealId %>/documents/new/427"  target="_blank">Заключительный эпикриз</a> |
+                <a href="/appeals/<%= data.appealId %>/documents/new/2467"  target="_blank">Промежуточная выписка</a> |
+                <a href="/appeals/<%= data.appealId %>/documents/new/567"  target="_blank">Посмертный эпикриз</a></li>
+            <% } %>
+
+            <% if(!data.docs.discharge){ %>
+                <li>Выписка. <a href="/appeals/<%= data.appealId %>/documents/new/118"  target="_blank">Создать</a></li>
+            <% } else if (!data.lastMoveClosed) { %>
+                <li>Не закрыто последнее <a href="/appeals/<%= data.appealId %>/moves"  target="_blank">движение</a></li>
+            <% } %>
+
+            <% if(data.docs.oncology){%>
+                <% if(!_.isUndefined(data.docs.notice_090y) && !data.docs.notice_090y){%>
+                    <li>Извещение о больном с впервые в жизни установленным диагнозом злокачественного новообразования. <a href="/appeals/<%= data.appealId %>/documents/new/1500" target="_blank">Создать</a></li>
+                <% } %>
+
+                <% if(!_.isUndefined(data.docs.notice_027y_2) && !data.docs.notice_027y_2){%>
+                    <li>Протокол на случай выявления у больного запущенной формы злокачественного новообразования. <a href="/appeals/<%= data.appealId %>/documents/new/1507" target="_blank">Создать</a></li>
+                <% } %>
+
+                <% if(!_.isUndefined(data.docs.notice_027y_1) && !data.docs.notice_027y_1){%>
+                    <li>Выписка из медицинской карты стационарного больного злокачественным новообразованием. <a href="/appeals/<%= data.appealId %>/documents/new/3577"  target="_blank">Создать</a></li>
+                <% } %>
+
+            <% } %>
+
+        </ul>
+    <%}%>
+<%}else{%>
+
+
+<div class="SetComment">
+    <label>Дата и время закрытия ИБ</label>
+    <div style="display: block;margin-bottom:2em;">
+        <div class="date" style="width: 10em;">
+            <input type="text" placeholder="дд.мм.гггг" class="SelectDate date-input appeal-close-date" autocomplete="off" value="">
+            <i class="icon-calendar date-icon" style="right: .4em;"></i>
+        </div>
+        <div class="time" style="width: 6em;">
+            <input type="text" placeholder="чч:мм" class="SelectDate time-input appeal-close-time" autocomplete="off" value="">
+            <i class="icon-time time-icon" style="right: .4em;"></i>
+        </div>
+
+    </div>
+    <div style="margin-bottom:2em;">
+        <label>Результат госпитализации</label></br>
+        <select id="results" name="results" style="width:50%;">
+        <option>...</option>
+        <% _.each(data.results, function(result){%>
+        <option value="<%=result.id%>"><%=result.name%></option> 
+        <%})%>
+        </select>
+    </div>
+
+    <% if(data.docs.openDocs){ %>
+
+    <% } %>
+
+            <div style="display: block;margin-bottom:1em;">
+            <label><input type="checkbox" name="close-docs" checked="checked" class="close-docs"> Закрывать документы</label>
+        </div>
+
+</div>
+<% } %>

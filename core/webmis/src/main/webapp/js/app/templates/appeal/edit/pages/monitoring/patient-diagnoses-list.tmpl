@@ -1,0 +1,34 @@
+<h4 class="diagnosis-title">Диагнозы</h4>
+<div class="Diagnosis">
+<% if (diagnoses.length && _(diagnoses.toJSON()).chain().pluck("mkb").pluck("diagnosis").any().value()) { %>
+
+		<% diagnoses.each(function (diagnosis) { %>
+			<% if (diagnosis.get("mkb").diagnosis) { %>
+				<h3><%= diagnosis.get("diagnosisKindLabel") %></h3>
+				<p  >
+					<% if(!_.isEmpty(diagnosis.get("doctor"))){%>
+					<i class="icon-user-md HasToolTip" data-tooltip-content="#tooltip_<%= diagnosis.cid %>"></i>
+					<% } %>
+
+					<% if (diagnosis.get("description")) { %>
+						<i class="icon-file-alt HasToolTip" data-tooltip-content="#tooltip2_<%= diagnosis.cid %>"></i>
+					<% } %>
+					<%= Core.Date.format(diagnosis.get("datetime")) %> <%= diagnosis.get("mkb").code %> &mdash; <%= diagnosis.get("mkb").diagnosis %>
+				</p>
+				<% if(!_.isEmpty(diagnosis.get("doctor"))){%>
+				<div id="tooltip_<%= diagnosis.cid %>" class="ToolTip TopTail">
+					<%= diagnosis.get("doctor").name.raw %>
+				</div>
+				<%}%>
+				<% if (diagnosis.get("description")) { %>
+					<div id="tooltip2_<%= diagnosis.cid %>" class="ToolTip TopTail">
+						<%= diagnosis.get("description")%>
+					</div>
+				<% } %>
+
+			<% } %>
+		<% }); %>
+
+<% } else {%>
+	<h3>Диагноз не установлен</h3>
+<% } %>

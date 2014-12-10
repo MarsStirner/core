@@ -1,0 +1,36 @@
+<table>
+	<tr>
+		<td class="title-col">
+			<%= title %>
+		</td>
+		<td class="cito-col" >
+			<input  type="checkbox" val="" name="cito<%= key %>" id="cito<%= key %>" <%= checked %>/>
+		</td>
+		<td class="time-col" >
+
+			<div class="datetime">
+				<div class="date">
+					<input type="text"  
+					id="date<%= key %>" 
+					name="date<%= key %>" 
+					placeholder="дд.мм.гггг" 
+					class="SelectDate" 
+					data-mindate="0" 
+					value="<%= date %>"/>
+					<i class="icon-calendar date-icon"></i>
+				</div>
+				<div class="time">
+					<input type="text" 
+					id="time<%= key %>" 
+					class="HourPicker" 
+					value="<%= time %>" 
+					
+					name="time<%= key %>" 
+					placeholder="чч:мм" 
+					required="required"/>
+					<i class="icon-time time-icon"></i>
+				</div>
+			</div>
+		</td>
+	</tr>
+</table>

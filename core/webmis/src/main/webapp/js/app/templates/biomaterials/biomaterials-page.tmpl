@@ -1,0 +1,102 @@
+<section id="page" class="OneCol Clearfix">
+
+	<div class="biomaterials-head-filter clearfix">
+
+
+		<form action="" id="biomaterials-head-filter">
+
+			<div class="DaySelect" style="width: 10em; margin-right: 20px;">
+				<label>Дата</label>
+				<div class="date">
+					<input type="hidden" id="end-date" name="endDate" value=""/>
+					<input type="text" id="begin-date" name="beginDate" placeholder="дд.мм.гггг" class="SelectDate" />
+					<i class="icon-calendar date-icon" style="right: .3em; top: .3em;"></i>
+				</div>
+				<!--<div class="DatePeriod SingleDate">
+					<div class="FromTo">
+						<input type="hidden" id="end-date" name="endDate" value=""/>
+						<input type="text" id="begin-date" name="beginDate" placeholder="дд.мм.гггг" class="SelectDate" />
+					</div>
+					<i class="DateIcon Icon"></i>
+				</div>-->
+			</div>
+
+
+		<div class="biomaterials-department">
+			<label>Отделение</label>
+			<select class="Styled22 departments" name="departmentId" id="departments">
+
+
+			</select>
+		</div>
+		</form>
+
+
+		<div class="biomaterials-print">
+
+
+			<div class="split-button">
+				<div class="butonset">
+					<button id="print">Печать</button>
+					<button class="split-button-select">Выберите действие</button>
+				</div>
+
+				<ul class="split-button-dropdown">
+
+				</ul>
+
+			</div>
+
+
+		</div>
+
+
+	</div>
+
+
+	<div class="ContentSide Clearfix">
+		<div class="ContentHolder">
+
+			<div class="biomaterials-table-filter clearfix">
+				<form action="" id="biomaterials-table-filter">
+					<div class="biomaterials-action-type">
+						<label for="biomaterial">Биоматериал</label>
+
+						<select class="Styled2 biomaterial select2" name="biomaterial" id="biomaterial">
+							<option value="0" selected="selected">Все типы биоматериалов</option>
+						</select>
+					</div>
+
+					<div class="biomaterials-status">
+
+						<label>Статус</label>
+
+						<div id="status_buttonset">
+							<input type="radio" id="status-all" name="status" value="" /><label
+							for="status-all">Все <span id="status-all-count" class="status-count"></span></label>
+							<input type="radio" id="status-0" name="status" value="0" checked="checked"/><label for="status-0">Ожидается <span id="status-0-count" class="status-count"></span></label>
+							<input type="radio" id="status-1" name="status" value="1"/><label for="status-1">Выполняется <span id="status-1-count" class="status-count"></span></label>
+							<input type="radio" id="status-2" name="status" value="2"/><label for="status-2">Закончено <span id="status-2-count" class="status-count"></span></label>
+						</div>
+					</div>
+				</form>
+
+
+				<div class="biomaterials-send-to-lab">
+					<!--<button id="reset-all" ><i class="icon-undo"></i></button>-->
+					<button id="execute" class="Styled33 Button33"><span>Выполнить</span></button>
+					<button id="send-to-lab" class="Styled33 Button33"><span>Отправить в лабораторию</span></button>
+				</div>
+
+			</div>
+
+
+			<div id="biomaterial-grid"></div>
+
+			<div id="biomaterial-count"></div>
+
+
+		</div>
+	</div>
+</section>
+

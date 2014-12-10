@@ -1,0 +1,1927 @@
+/* line 1, ../sass/modules/_instrumental.scss */
+.instrumental-status-0 {
+  color: blue;
+}
+
+/* line 3, ../sass/modules/_instrumental.scss */
+.instrumental-status-1 {
+  color: #000;
+}
+
+/* line 7, ../sass/modules/_instrumental.scss */
+.instrumental-status-2 {
+  color: green;
+}
+
+/* line 11, ../sass/modules/_instrumental.scss */
+.instrumental-status-3 {
+  color: #bbb;
+}
+
+/* line 16, ../sass/modules/_instrumental.scss */
+.bottom-form .date .date-icon, .bottom-form .time .time-icon {
+  right: 0.6em;
+}
+
+/* line 30, ../sass/modules/_instrumental.scss */
+.tree ul {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+  font-size: 1em;
+  font-family: arial;
+}
+/* line 36, ../sass/modules/_instrumental.scss */
+.tree ul ul {
+  padding-left: 1em;
+}
+
+/* line 40, ../sass/modules/_instrumental.scss */
+.tree li {
+  padding: 0px;
+  margin: 0px 0 0.1em 0;
+  position: relative;
+  cursor: pointer;
+}
+
+/* line 49, ../sass/modules/_instrumental.scss */
+.tree .icon {
+  position: absolute;
+  top: 0.3em;
+  left: 0;
+  font-size: 0.8em;
+}
+
+/* line 56, ../sass/modules/_instrumental.scss */
+li.closed > ul {
+  display: none;
+}
+
+/* line 60, ../sass/modules/_instrumental.scss */
+li.open > ul {
+  display: block;
+}
+
+/* line 63, ../sass/modules/_instrumental.scss */
+.icons {
+  position: relative;
+}
+
+/* line 66, ../sass/modules/_instrumental.scss */
+.icons .icon-open, .icons .icon-closed {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 1em;
+}
+
+/* line 73, ../sass/modules/_instrumental.scss */
+.icons .icon-closed {
+  left: 0.1em;
+}
+
+/* line 76, ../sass/modules/_instrumental.scss */
+.icons .select {
+  position: absolute;
+  top: 0;
+  left: 0.8em;
+}
+
+/* line 81, ../sass/modules/_instrumental.scss */
+li .icon-open, li .icon-closed {
+  display: none;
+}
+
+/* line 84, ../sass/modules/_instrumental.scss */
+li.parent.open > .icon-open, .icons.open > .icon-open {
+  display: block;
+}
+
+/* line 87, ../sass/modules/_instrumental.scss */
+li.parent.open > .icon-closed, .icons.open > .icon-closed {
+  display: none;
+}
+
+/* line 91, ../sass/modules/_instrumental.scss */
+li.parent.closed > .icon-open, .icons.closed > .icon-open {
+  display: none;
+}
+
+/* line 94, ../sass/modules/_instrumental.scss */
+li.parent.closed > .icon-closed, .icons.closed > .icon-closed {
+  display: block;
+}
+
+/* line 97, ../sass/modules/_instrumental.scss */
+li .title {
+  padding: 0.13em 0.5em 0.13em 1em;
+  display: block;
+  line-height: 1.3;
+}
+/* line 102, ../sass/modules/_instrumental.scss */
+li .title:hover {
+  background-color: #118EDC;
+  color: #fff;
+}
+
+/* line 107, ../sass/modules/_instrumental.scss */
+.tree table:hover {
+  background-color: #118EDC;
+  color: #fff;
+}
+
+/* line 111, ../sass/modules/_instrumental.scss */
+.tree td, .list td {
+  vertical-align: top;
+}
+
+/* line 114, ../sass/modules/_instrumental.scss */
+li.clicked > .title {
+  background-color: #118EDC;
+  color: #fff;
+}
+
+/* line 118, ../sass/modules/_instrumental.scss */
+li.clicked > .icon-open, li.clicked > .icon-closed {
+  color: #fff;
+}
+
+/* line 125, ../sass/modules/_instrumental.scss */
+.instrumental-researchs .item label {
+  font-size: inherit;
+  margin: 0.2em;
+  cursor: pointer;
+}
+/* line 132, ../sass/modules/_instrumental.scss */
+.instrumental-researchs .selected {
+  background-color: #118EDC;
+}
+/* line 134, ../sass/modules/_instrumental.scss */
+.instrumental-researchs .selected label {
+  color: #fff;
+}
+
+/*
+*	FONTS
+*/
+/* line 4, ../sass/modules/_labs.scss */
+.labs .dynatree-container,
+.groups .dynatree-container,
+.group-tests .dynatree-container {
+  font-size: inherit;
+}
+
+/* line 10, ../sass/modules/_labs.scss */
+.labs-column {
+  display: inline-block;
+  vertical-align: top;
+  height: 35em;
+  overflow: auto;
+  margin-left: -0.3em;
+  overflow: auto;
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box;
+  box-sizing: border-box;
+}
+/* line 23, ../sass/modules/_labs.scss */
+.labs-column.labs-column-right {
+  width: 55%;
+}
+
+/* line 30, ../sass/modules/_labs.scss */
+.column-box {
+  border: 1px solid #cccccc;
+}
+
+/* line 33, ../sass/modules/_labs.scss */
+ul.dynatree-container a:focus, span.dynatree-focused a:link {
+  outline: 0;
+}
+
+/* line 38, ../sass/modules/_labs.scss */
+.labs-list li label, .lab-tests-list li label {
+  white-space: inherit!important;
+}
+/* line 42, ../sass/modules/_labs.scss */
+.labs-list .selected, .lab-tests-list .selected {
+  background-color: #118EDC;
+}
+/* line 44, ../sass/modules/_labs.scss */
+.labs-list .selected label, .lab-tests-list .selected label {
+  color: #fff;
+}
+
+/* line 51, ../sass/modules/_labs.scss */
+.tree ul {
+  list-style-type: none;
+  padding: 0px;
+  margin: 0px;
+  font-size: 1em;
+  font-family: arial;
+}
+/* line 57, ../sass/modules/_labs.scss */
+.tree ul ul {
+  padding-left: 1em;
+}
+
+/* line 61, ../sass/modules/_labs.scss */
+.tree li {
+  padding: 0px;
+  margin: 0px 0 0.1em 0;
+  position: relative;
+  cursor: pointer;
+}
+
+/* line 70, ../sass/modules/_labs.scss */
+.tree .icon {
+  position: absolute;
+  top: 0.3em;
+  left: 0;
+  font-size: 0.8em;
+}
+
+/* line 77, ../sass/modules/_labs.scss */
+li.closed > ul {
+  display: none;
+}
+
+/* line 81, ../sass/modules/_labs.scss */
+li.open > ul {
+  display: block;
+}
+
+/* line 84, ../sass/modules/_labs.scss */
+.icons {
+  position: relative;
+}
+
+/* line 87, ../sass/modules/_labs.scss */
+.icons .icon-open, .icons .icon-closed {
+  display: none;
+  position: absolute;
+  top: 0;
+  left: 0;
+  font-size: 1em;
+}
+
+/* line 94, ../sass/modules/_labs.scss */
+.icons .icon-closed {
+  left: 0.1em;
+}
+
+/* line 97, ../sass/modules/_labs.scss */
+.icons .select {
+  position: absolute;
+  top: 0;
+  left: 0.8em;
+}
+
+/* line 102, ../sass/modules/_labs.scss */
+li .icon-open, li .icon-closed {
+  display: none;
+}
+
+/* line 105, ../sass/modules/_labs.scss */
+li.parent.open > .icon-open, .icons.open > .icon-open {
+  display: block;
+}
+
+/* line 108, ../sass/modules/_labs.scss */
+li.parent.open > .icon-closed, .icons.open > .icon-closed {
+  display: none;
+}
+
+/* line 112, ../sass/modules/_labs.scss */
+li.parent.closed > .icon-open, .icons.closed > .icon-open {
+  display: none;
+}
+
+/* line 115, ../sass/modules/_labs.scss */
+li.parent.closed > .icon-closed, .icons.closed > .icon-closed {
+  display: block;
+}
+
+/* line 118, ../sass/modules/_labs.scss */
+li .title {
+  padding: 0.13em 0.5em 0.13em 1em;
+  display: block;
+  line-height: 1.3;
+}
+/* line 123, ../sass/modules/_labs.scss */
+li .title:hover {
+  background-color: #118EDC;
+  color: #fff;
+}
+
+/* line 128, ../sass/modules/_labs.scss */
+.tree table:hover {
+  background-color: #118EDC;
+  color: #fff;
+}
+
+/* line 132, ../sass/modules/_labs.scss */
+.tree td, .list td {
+  vertical-align: top;
+}
+
+/* line 135, ../sass/modules/_labs.scss */
+li.clicked > .title {
+  background-color: #118EDC;
+  color: #fff;
+}
+
+/* line 139, ../sass/modules/_labs.scss */
+li.clicked > .icon-open, li.clicked > .icon-closed {
+  color: #fff;
+}
+
+/* line 144, ../sass/modules/_labs.scss */
+.VidgetLine .msg {
+  padding: 3px 8px;
+}
+
+/* line 149, ../sass/modules/_labs.scss */
+.tests li label {
+  font-weight: normal;
+  font-size: inherit;
+  margin-bottom: 0;
+  color: #000;
+  cursor: pointer;
+  padding: 2px 4px 2px 0px;
+}
+
+/* line 163, ../sass/modules/_labs.scss */
+.selected .title2 {
+  background-color: #118EDC;
+  color: #fff;
+}
+
+/* line 167, ../sass/modules/_labs.scss */
+.title2 {
+  padding: 2px 4px 2px;
+  cursor: pointer;
+}
+
+/* line 171, ../sass/modules/_labs.scss */
+.tests {
+  margin: 0 0 4px 2em;
+}
+
+/* line 174, ../sass/modules/_labs.scss */
+.edit .tests {
+  margin: 0 0 4px 0.4em;
+}
+
+/* line 200, ../sass/modules/_labs.scss */
+.edit-tree .dynatree-container {
+  white-space: normal;
+  overflow: hidden;
+}
+
+/* line 207, ../sass/modules/_labs.scss */
+span.dynatree-node {
+  position: relative;
+  display: block;
+}
+/* line 210, ../sass/modules/_labs.scss */
+span.dynatree-node table {
+  width: 100%;
+  display: inline-block;
+  position: relative;
+}
+/* line 214, ../sass/modules/_labs.scss */
+span.dynatree-node table td {
+  vertical-align: top;
+}
+/* line 218, ../sass/modules/_labs.scss */
+span.dynatree-node table td.title-col {
+  padding-left: 5px;
+  width: 100%;
+}
+/* line 223, ../sass/modules/_labs.scss */
+span.dynatree-node table td.sito-col {
+  min-width: 25px;
+}
+/* line 226, ../sass/modules/_labs.scss */
+span.dynatree-node table td.time-col {
+  min-width: 14.6em;
+}
+
+/* line 233, ../sass/modules/_labs.scss */
+.edit-tree .dynatree-checkbox:first-child {
+  display: none;
+}
+
+/* line 240, ../sass/modules/_labs.scss */
+.datetime .date {
+  width: 8.67em;
+}
+/* line 242, ../sass/modules/_labs.scss */
+.datetime .date .date-icon {
+  right: 0.1em;
+}
+/* line 246, ../sass/modules/_labs.scss */
+.datetime .time {
+  width: 5.33em;
+}
+/* line 248, ../sass/modules/_labs.scss */
+.datetime .time .HourPicker {
+  vertical-align: baseline;
+}
+/* line 251, ../sass/modules/_labs.scss */
+.datetime .time .time-icon {
+  right: 0em;
+}
+
+/* line 260, ../sass/modules/_labs.scss */
+.lab-status-0 {
+  color: blue;
+}
+
+/* line 264, ../sass/modules/_labs.scss */
+.lab-status-1 {
+  color: black;
+}
+
+/* line 268, ../sass/modules/_labs.scss */
+.lab-status-2 {
+  color: green;
+}
+
+/* line 272, ../sass/modules/_labs.scss */
+.lab-status-3 {
+  color: #bbb;
+}
+
+/* line 277, ../sass/modules/_labs.scss */
+#doctor-outer #doctor, #assigner-outer #assigner {
+  color: #777;
+  cursor: pointer;
+  display: inline-block;
+  width: 88%;
+}
+
+/* line 280, ../sass/modules/_labs.scss */
+#doctor-outer .change-doctor, #assigner-outer .change-assigner {
+  display: inline-block;
+}
+
+/* line 284, ../sass/modules/_labs.scss */
+#executor-outer #executor {
+  color: #777;
+  cursor: pointer;
+  display: inline-block;
+  width: 88%;
+}
+
+/* line 287, ../sass/modules/_labs.scss */
+#executor-outer .change-executor {
+  display: inline-block;
+}
+
+/* line 291, ../sass/modules/_labs.scss */
+tr.norm-above {
+  color: blue;
+}
+
+/* line 294, ../sass/modules/_labs.scss */
+tr.norm-below {
+  color: red;
+}
+
+/* line 1, ../sass/modules/_consultations.scss */
+.consultation-status-0 {
+  color: blue;
+}
+
+/* line 3, ../sass/modules/_consultations.scss */
+.consultation-status-1 {
+  color: #000;
+}
+
+/* line 7, ../sass/modules/_consultations.scss */
+.consultation-status-2 {
+  color: green;
+}
+
+/* line 11, ../sass/modules/_consultations.scss */
+.consultation-status-3 {
+  color: #bbb;
+}
+
+/* line 18, ../sass/modules/_consultations.scss */
+.twocol, #timetable-items {
+  -moz-column-count: 2;
+  -moz-column-gap: 20px;
+  -webkit-column-count: 2;
+  -webkit-column-gap: 20px;
+  column-count: 2;
+  column-gap: 20px;
+  width: 100%;
+}
+
+/* line 33, ../sass/modules/_consultations.scss */
+#consultants li, #timetable-items label {
+  cursor: pointer;
+}
+
+/* line 37, ../sass/modules/_consultations.scss */
+#timetable-items .disabled label {
+  color: #bbb;
+  cursor: auto;
+}
+
+/* line 1, ../sass/modules/_close_appeal.scss */
+.docs-list {
+  font-size: 1.2em;
+}
+/* line 4, ../sass/modules/_close_appeal.scss */
+.docs-list li {
+  padding-top: .5em;
+}
+/* line 7, ../sass/modules/_close_appeal.scss */
+.docs-list li a {
+  color: #118ddc;
+}
+/* line 11, ../sass/modules/_close_appeal.scss */
+.docs-list li a:hover {
+  color: #dd1111;
+}
+
+/* line 2, ../sass/modules/_reports.scss */
+.form-list {
+  font-size: 13px;
+}
+
+/* line 5, ../sass/modules/_reports.scss */
+.form-list-item {
+  padding: 2px;
+}
+
+/* line 8, ../sass/modules/_reports.scss */
+.form-list-item a {
+  color: #000;
+  text-decoration: none;
+}
+
+/* line 13, ../sass/modules/_reports.scss */
+.form-list-level2 .form-list-item {
+  padding-left: 10px;
+  border-left: 1px solid #d4d4d4;
+  margin-left: 5px;
+}
+
+/* line 18, ../sass/modules/_reports.scss */
+.form-list-level2 .form-list-item:hover {
+  background-color: #DFEFFC;
+}
+
+/* line 21, ../sass/modules/_reports.scss */
+.form-list-level2 .form-list-item:hover .form-list-item-icon {
+  color: #909090;
+}
+
+/* line 25, ../sass/modules/_reports.scss */
+.form-list-item-icon {
+  color: #b5cdda;
+  font-size: 12px;
+}
+
+/* line 3, ../sass/modules/_biomaterials.scss */
+.color-label {
+  display: inline-block;
+  height: 15px;
+  width: 45px;
+  padding: 2px 4px;
+  background-color: #fff;
+  margin-bottom: -4px;
+  border: 1px solid #bbbbbb;
+}
+
+/* line 13, ../sass/modules/_biomaterials.scss */
+.tubes.Grid {
+  width: auto;
+  margin: 0;
+}
+
+/* line 19, ../sass/modules/_biomaterials.scss */
+.horizontal li {
+  display: inline-block;
+  font-size: 1.3em;
+  padding: 0.5em 1em;
+  -webkit-border-radius: 4px;
+  -moz-border-radius: 4px;
+  -ms-border-radius: 4px;
+  -o-border-radius: 4px;
+  border-radius: 4px;
+  cursor: pointer;
+}
+/* line 26, ../sass/modules/_biomaterials.scss */
+.horizontal li.active {
+  background: #0099ff;
+  cursor: default;
+}
+/* line 30, ../sass/modules/_biomaterials.scss */
+.horizontal li.active a {
+  color: #fff;
+  text-decoration: none;
+}
+
+/* line 38, ../sass/modules/_biomaterials.scss */
+td.status-code-0.urgent {
+  background-color: red;
+  color: #fff;
+}
+/* line 41, ../sass/modules/_biomaterials.scss */
+td.status-code-0.urgent .status-name, td.status-code-0.urgent .Warning {
+  color: #fff;
+}
+
+/* line 47, ../sass/modules/_biomaterials.scss */
+tr:hover td.status-code-0.urgent {
+  background-color: red;
+}
+
+/* line 51, ../sass/modules/_biomaterials.scss */
+td.status-code-2, td.status-code-2 .Warning {
+  color: #bbb;
+}
+
+/* line 56, ../sass/modules/_biomaterials.scss */
+.status-code-0 .status-name {
+  color: blue;
+}
+
+/* line 62, ../sass/modules/_biomaterials.scss */
+.status-code-1 .status-name {
+  color: #000000;
+}
+
+/* line 68, ../sass/modules/_biomaterials.scss */
+.status-code-2 .status-name {
+  color: green;
+}
+
+/* line 73, ../sass/modules/_biomaterials.scss */
+#biomaterial-grid {
+  margin-bottom: 20px;
+}
+
+/* line 76, ../sass/modules/_biomaterials.scss */
+.biomaterials-head-filter {
+  margin-bottom: 15px;
+  padding: 1em 1em 2em;
+  border-bottom: 1px solid #d4d4d4;
+}
+
+/* line 82, ../sass/modules/_biomaterials.scss */
+.biomaterials-datatime {
+  width: 41%;
+  float: left;
+}
+/* line 85, ../sass/modules/_biomaterials.scss */
+.biomaterials-datatime .DayScroller {
+  float: none;
+}
+
+/* line 90, ../sass/modules/_biomaterials.scss */
+.biomaterials-department {
+  width: 33%;
+  float: left;
+}
+/* line 94, ../sass/modules/_biomaterials.scss */
+.biomaterials-department .departments {
+  width: 450px;
+}
+/* line 98, ../sass/modules/_biomaterials.scss */
+.biomaterials-department label {
+  display: block;
+}
+
+/* line 104, ../sass/modules/_biomaterials.scss */
+.biomaterials-print {
+  float: right;
+  margin-top: 19px;
+}
+
+/* line 111, ../sass/modules/_biomaterials.scss */
+.biomaterials-table-filter {
+  margin-bottom: 25px;
+}
+
+/* line 115, ../sass/modules/_biomaterials.scss */
+.biomaterials-action-type {
+  float: left;
+  width: 25%;
+}
+/* line 119, ../sass/modules/_biomaterials.scss */
+.biomaterials-action-type .biomaterial {
+  width: 90%;
+}
+
+/* line 125, ../sass/modules/_biomaterials.scss */
+.biomaterials-status {
+  float: left;
+}
+
+/* line 129, ../sass/modules/_biomaterials.scss */
+.status-count {
+  font-weight: normal;
+  font-size: 0.8em;
+}
+
+/* line 134, ../sass/modules/_biomaterials.scss */
+.biomaterials-send-to-lab {
+  float: right;
+  margin-top: 18px;
+}
+
+/* line 140, ../sass/modules/_biomaterials.scss */
+.Grid td.highlight-it {
+  background: #FFCBCB;
+  border-bottom: 1px solid #cf8e8e;
+}
+
+/* line 1, ../sass/modules/_vmp.scss */
+.error {
+  border: 1px solid red;
+  padding: 5px;
+  margin-bottom: 1em;
+}
+
+/* line 1, ../sass/modules/_monitoring.scss */
+#warnings {
+  color: red;
+}
+/* line 3, ../sass/modules/_monitoring.scss */
+#warnings .msg {
+  display: none;
+  color: #800;
+  font-weight: bold;
+}
+/* line 8, ../sass/modules/_monitoring.scss */
+#warnings .icon-warning-sign {
+  cursor: pointer;
+}
+/* line 11, ../sass/modules/_monitoring.scss */
+#warnings:hover .msg {
+  display: inline;
+}
+
+/* line 1, ../sass/modules/_ui_print_button.scss */
+.split-button-dropdown .ui-menu-item a {
+  border-width: 0px!important;
+  padding: 0.8em 8px;
+}
+
+/* line 9, ../sass/modules/_ui_print_button.scss */
+.split-button-dropdown .ui-menu-item {
+  border-top: 1px solid #d4d4d4;
+}
+
+/* line 12, ../sass/modules/_ui_print_button.scss */
+.split-button-dropdown li:first-child {
+  border-top: none;
+}
+
+/* line 15, ../sass/modules/_ui_print_button.scss */
+.split-button-dropdown {
+  border: 1px solid #d4d4d4;
+  box-shadow: rgba(0, 0, 0, 0.5) 0 2px 3px 0;
+  padding: 0;
+}
+
+/* line 22, ../sass/modules/_ui_print_button.scss */
+.split-button-dropdown .ui-menu-item:hover {
+  background-color: #d2f0fd;
+}
+
+/* line 1, ../sass/modules/_ui_datepicker.scss */
+.ui-datepicker td.date-range-selected a {
+  background-color: #b1c5ff;
+}
+
+/* line 1, ../sass/modules/_datetimeEntry.scss */
+.datetimeEntry_control {
+  display: none!important;
+}
+
+/*
+ * FullCalendar v1.6.4 Stylesheet
+ * Docs & License: http://arshaw.com/fullcalendar/
+ * (c) 2013 Adam Shaw
+ */
+/* line 8, ../sass/modules/_fullcalendar.scss */
+.fc {
+  direction: ltr;
+  text-align: left;
+}
+
+/* line 13, ../sass/modules/_fullcalendar.scss */
+.fc table {
+  border-collapse: collapse;
+  border-spacing: 0;
+}
+
+/* line 19, ../sass/modules/_fullcalendar.scss */
+html .fc,
+.fc table {
+  font-size: 1em;
+}
+
+/* line 24, ../sass/modules/_fullcalendar.scss */
+.fc td,
+.fc th {
+  padding: 0;
+  vertical-align: top;
+}
+
+/* Header
+------------------------------------------------------------------------*/
+/* line 34, ../sass/modules/_fullcalendar.scss */
+.fc-header td {
+  white-space: nowrap;
+}
+
+/* line 38, ../sass/modules/_fullcalendar.scss */
+.fc-header-left {
+  width: 25%;
+  text-align: left;
+}
+
+/* line 43, ../sass/modules/_fullcalendar.scss */
+.fc-header-center {
+  text-align: center;
+}
+
+/* line 47, ../sass/modules/_fullcalendar.scss */
+.fc-header-right {
+  width: 25%;
+  text-align: right;
+}
+
+/* line 52, ../sass/modules/_fullcalendar.scss */
+.fc-header-title {
+  display: inline-block;
+  vertical-align: top;
+}
+
+/* line 57, ../sass/modules/_fullcalendar.scss */
+.fc-header-title h2 {
+  margin-top: 0;
+  white-space: nowrap;
+}
+
+/* line 62, ../sass/modules/_fullcalendar.scss */
+.fc .fc-header-space {
+  padding-left: 10px;
+}
+
+/* line 66, ../sass/modules/_fullcalendar.scss */
+.fc-header .fc-button {
+  margin-bottom: 1em;
+  vertical-align: top;
+}
+
+/* buttons edges butting together */
+/* line 73, ../sass/modules/_fullcalendar.scss */
+.fc-header .fc-button {
+  margin-right: -1px;
+}
+
+/* line 78, ../sass/modules/_fullcalendar.scss */
+.fc-header .fc-corner-right,
+.fc-header .ui-corner-right {
+  /* theme */
+  margin-right: 0;
+  /* back to normal */
+}
+
+/* button layering (for border precedence) */
+/* line 85, ../sass/modules/_fullcalendar.scss */
+.fc-header .fc-state-hover,
+.fc-header .ui-state-hover {
+  z-index: 2;
+}
+
+/* line 89, ../sass/modules/_fullcalendar.scss */
+.fc-header .fc-state-down {
+  z-index: 3;
+}
+
+/* line 94, ../sass/modules/_fullcalendar.scss */
+.fc-header .fc-state-active,
+.fc-header .ui-state-active {
+  z-index: 4;
+}
+
+/* Content
+------------------------------------------------------------------------*/
+/* line 103, ../sass/modules/_fullcalendar.scss */
+.fc-content {
+  clear: both;
+  zoom: 1;
+  /* for IE7, gives accurate coordinates for [un]freezeContentHeight */
+}
+
+/* line 108, ../sass/modules/_fullcalendar.scss */
+.fc-view {
+  width: 100%;
+  overflow: hidden;
+}
+
+/* Cell Styles
+------------------------------------------------------------------------*/
+/* line 119, ../sass/modules/_fullcalendar.scss */
+.fc-widget-header,
+.fc-widget-content {
+  /* <td>, usually */
+  border: 1px solid #dddddd;
+}
+
+/* line 123, ../sass/modules/_fullcalendar.scss */
+.fc-state-highlight {
+  /* <td> today cell */
+  /* TODO: add .fc-today to <th> */
+  background: #fcf8e3;
+}
+
+/* line 127, ../sass/modules/_fullcalendar.scss */
+.fc-cell-overlay {
+  /* semi-transparent rectangle while dragging */
+  background: #bce8f1;
+  opacity: .3;
+  filter: alpha(opacity=30);
+  /* for IE */
+}
+
+/* Buttons
+------------------------------------------------------------------------*/
+/* line 138, ../sass/modules/_fullcalendar.scss */
+.fc-button {
+  position: relative;
+  display: inline-block;
+  padding: 0 0.6em;
+  overflow: hidden;
+  height: 1.9em;
+  line-height: 1.9em;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+/* line 149, ../sass/modules/_fullcalendar.scss */
+.fc-state-default {
+  /* non-theme */
+  border: 1px solid;
+}
+
+/* line 153, ../sass/modules/_fullcalendar.scss */
+.fc-state-default.fc-corner-left {
+  /* non-theme */
+  border-top-left-radius: 4px;
+  border-bottom-left-radius: 4px;
+}
+
+/* line 158, ../sass/modules/_fullcalendar.scss */
+.fc-state-default.fc-corner-right {
+  /* non-theme */
+  border-top-right-radius: 4px;
+  border-bottom-right-radius: 4px;
+}
+
+/*
+	Our default prev/next buttons use HTML entities like &lsaquo; &rsaquo; &laquo; &raquo;
+	and we'll try to make them look good cross-browser.
+*/
+/* line 168, ../sass/modules/_fullcalendar.scss */
+.fc-text-arrow {
+  margin: 0 0.1em;
+  font-size: 2em;
+  font-family: "Courier New", Courier, monospace;
+  vertical-align: baseline;
+  /* for IE7 */
+}
+
+/* line 176, ../sass/modules/_fullcalendar.scss */
+.fc-button-prev .fc-text-arrow,
+.fc-button-next .fc-text-arrow {
+  /* for &lsaquo; &rsaquo; */
+  font-weight: bold;
+}
+
+/* icon (for jquery ui) */
+/* line 182, ../sass/modules/_fullcalendar.scss */
+.fc-button .fc-icon-wrap {
+  position: relative;
+  float: left;
+  top: 50%;
+}
+
+/* line 188, ../sass/modules/_fullcalendar.scss */
+.fc-button .ui-icon {
+  position: relative;
+  float: left;
+  margin-top: -50%;
+  *margin-top: 0;
+  *top: -50%;
+}
+
+/*
+  button states
+  borrowed from twitter bootstrap (http://twitter.github.com/bootstrap/)
+*/
+/* line 201, ../sass/modules/_fullcalendar.scss */
+.fc-state-default {
+  background-color: #f5f5f5;
+  background-image: -moz-linear-gradient(top, white, #e6e6e6);
+  background-image: -webkit-gradient(linear, 0 0, 0 100%, from(white), to(#e6e6e6));
+  background-image: -webkit-linear-gradient(top, white, #e6e6e6);
+  background-image: -o-linear-gradient(top, white, #e6e6e6);
+  background-image: linear-gradient(to bottom, #ffffff, #e6e6e6);
+  background-repeat: repeat-x;
+  border-color: #e6e6e6 #e6e6e6 #bfbfbf;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  color: #333;
+  text-shadow: 0 1px 1px rgba(255, 255, 255, 0.75);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.2), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* line 219, ../sass/modules/_fullcalendar.scss */
+.fc-state-hover,
+.fc-state-down,
+.fc-state-active,
+.fc-state-disabled {
+  color: #333333;
+  background-color: #e6e6e6;
+}
+
+/* line 224, ../sass/modules/_fullcalendar.scss */
+.fc-state-hover {
+  color: #333333;
+  text-decoration: none;
+  background-position: 0 -15px;
+  -webkit-transition: background-position 0.1s linear;
+  -moz-transition: background-position 0.1s linear;
+  -o-transition: background-position 0.1s linear;
+  transition: background-position 0.1s linear;
+}
+
+/* line 235, ../sass/modules/_fullcalendar.scss */
+.fc-state-down,
+.fc-state-active {
+  background-color: #cccccc;
+  background-image: none;
+  outline: 0;
+  box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.15), 0 1px 2px rgba(0, 0, 0, 0.05);
+}
+
+/* line 242, ../sass/modules/_fullcalendar.scss */
+.fc-state-disabled {
+  cursor: default;
+  background-image: none;
+  opacity: 0.65;
+  filter: alpha(opacity=65);
+  box-shadow: none;
+}
+
+/* Global Event Styles
+------------------------------------------------------------------------*/
+/* line 255, ../sass/modules/_fullcalendar.scss */
+.fc-event-container > * {
+  z-index: 8;
+}
+
+/* line 260, ../sass/modules/_fullcalendar.scss */
+.fc-event-container > .ui-draggable-dragging,
+.fc-event-container > .ui-resizable-resizing {
+  z-index: 9;
+}
+
+/* line 264, ../sass/modules/_fullcalendar.scss */
+.fc-event {
+  border: 1px solid #3a87ad;
+  /* default BORDER color */
+  background-color: #3a87ad;
+  /* default BACKGROUND color */
+  color: #fff;
+  /* default TEXT color */
+  font-size: .85em;
+  cursor: default;
+}
+
+/* line 272, ../sass/modules/_fullcalendar.scss */
+a.fc-event {
+  text-decoration: none;
+}
+
+/* line 277, ../sass/modules/_fullcalendar.scss */
+a.fc-event,
+.fc-event-draggable {
+  cursor: pointer;
+}
+
+/* line 281, ../sass/modules/_fullcalendar.scss */
+.fc-rtl .fc-event {
+  text-align: right;
+}
+
+/* line 285, ../sass/modules/_fullcalendar.scss */
+.fc-event-inner {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+/* line 292, ../sass/modules/_fullcalendar.scss */
+.fc-event-time,
+.fc-event-title {
+  padding: 0 1px;
+}
+
+/* line 296, ../sass/modules/_fullcalendar.scss */
+.fc .ui-resizable-handle {
+  display: block;
+  position: absolute;
+  z-index: 99999;
+  overflow: hidden;
+  /* hacky spaces (IE6/7) */
+  font-size: 300%;
+  /* */
+  line-height: 50%;
+  /* */
+}
+
+/* Horizontal Events
+------------------------------------------------------------------------*/
+/* line 310, ../sass/modules/_fullcalendar.scss */
+.fc-event-hori {
+  border-width: 1px 0;
+  margin-bottom: 1px;
+}
+
+/* line 316, ../sass/modules/_fullcalendar.scss */
+.fc-ltr .fc-event-hori.fc-event-start,
+.fc-rtl .fc-event-hori.fc-event-end {
+  border-left-width: 1px;
+  border-top-left-radius: 3px;
+  border-bottom-left-radius: 3px;
+}
+
+/* line 323, ../sass/modules/_fullcalendar.scss */
+.fc-ltr .fc-event-hori.fc-event-end,
+.fc-rtl .fc-event-hori.fc-event-start {
+  border-right-width: 1px;
+  border-top-right-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+/* resizable */
+/* line 331, ../sass/modules/_fullcalendar.scss */
+.fc-event-hori .ui-resizable-e {
+  top: 0 !important;
+  /* importants override pre jquery ui 1.7 styles */
+  right: -3px !important;
+  width: 7px !important;
+  height: 100% !important;
+  cursor: e-resize;
+}
+
+/* line 339, ../sass/modules/_fullcalendar.scss */
+.fc-event-hori .ui-resizable-w {
+  top: 0 !important;
+  left: -3px !important;
+  width: 7px !important;
+  height: 100% !important;
+  cursor: w-resize;
+}
+
+/* line 347, ../sass/modules/_fullcalendar.scss */
+.fc-event-hori .ui-resizable-handle {
+  _padding-bottom: 14px;
+  /* IE6 had 0 height */
+}
+
+/* Reusable Separate-border Table
+------------------------------------------------------------*/
+/* line 356, ../sass/modules/_fullcalendar.scss */
+table.fc-border-separate {
+  border-collapse: separate;
+}
+
+/* line 361, ../sass/modules/_fullcalendar.scss */
+.fc-border-separate th,
+.fc-border-separate td {
+  border-width: 1px 0 0 1px;
+}
+
+/* line 366, ../sass/modules/_fullcalendar.scss */
+.fc-border-separate th.fc-last,
+.fc-border-separate td.fc-last {
+  border-right-width: 1px;
+}
+
+/* line 371, ../sass/modules/_fullcalendar.scss */
+.fc-border-separate tr.fc-last th,
+.fc-border-separate tr.fc-last td {
+  border-bottom-width: 1px;
+}
+
+/* line 376, ../sass/modules/_fullcalendar.scss */
+.fc-border-separate tbody tr.fc-first td,
+.fc-border-separate tbody tr.fc-first th {
+  border-top-width: 0;
+}
+
+/* Month View, Basic Week View, Basic Day View
+------------------------------------------------------------------------*/
+/* line 385, ../sass/modules/_fullcalendar.scss */
+.fc-grid th {
+  text-align: center;
+}
+
+/* line 389, ../sass/modules/_fullcalendar.scss */
+.fc .fc-week-number {
+  width: 22px;
+  text-align: center;
+}
+
+/* line 394, ../sass/modules/_fullcalendar.scss */
+.fc .fc-week-number div {
+  padding: 0 2px;
+}
+
+/* line 398, ../sass/modules/_fullcalendar.scss */
+.fc-grid .fc-day-number {
+  float: right;
+  padding: 0 2px;
+}
+
+/* line 403, ../sass/modules/_fullcalendar.scss */
+.fc-grid .fc-other-month .fc-day-number {
+  opacity: 0.3;
+  filter: alpha(opacity=30);
+  /* for IE */
+  /* opacity with small font can sometimes look too faded
+     might want to set the 'color' property instead
+     making day-numbers bold also fixes the problem */
+}
+
+/* line 411, ../sass/modules/_fullcalendar.scss */
+.fc-grid .fc-day-content {
+  clear: both;
+  padding: 2px 2px 1px;
+  /* distance between events and day edges */
+}
+
+/* event styles */
+/* line 418, ../sass/modules/_fullcalendar.scss */
+.fc-grid .fc-event-time {
+  font-weight: bold;
+}
+
+/* right-to-left */
+/* line 424, ../sass/modules/_fullcalendar.scss */
+.fc-rtl .fc-grid .fc-day-number {
+  float: left;
+}
+
+/* line 428, ../sass/modules/_fullcalendar.scss */
+.fc-rtl .fc-grid .fc-event-time {
+  float: right;
+}
+
+/* Agenda Week View, Agenda Day View
+------------------------------------------------------------------------*/
+/* line 437, ../sass/modules/_fullcalendar.scss */
+.fc-agenda table {
+  border-collapse: separate;
+}
+
+/* line 441, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-days th {
+  text-align: center;
+}
+
+/* line 445, ../sass/modules/_fullcalendar.scss */
+.fc-agenda .fc-agenda-axis {
+  width: 50px;
+  padding: 0 4px;
+  vertical-align: middle;
+  text-align: right;
+  white-space: nowrap;
+  font-weight: normal;
+}
+
+/* line 454, ../sass/modules/_fullcalendar.scss */
+.fc-agenda .fc-week-number {
+  font-weight: bold;
+}
+
+/* line 458, ../sass/modules/_fullcalendar.scss */
+.fc-agenda .fc-day-content {
+  padding: 2px 2px 1px;
+}
+
+/* make axis border take precedence */
+/* line 464, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-days .fc-agenda-axis {
+  border-right-width: 1px;
+}
+
+/* line 468, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-days .fc-col0 {
+  border-left-width: 0;
+}
+
+/* all-day area */
+/* line 474, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-allday th {
+  border-width: 0 1px;
+}
+
+/* line 478, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-allday .fc-day-content {
+  min-height: 34px;
+  /* TODO: doesnt work well in quirksmode */
+  _height: 34px;
+}
+
+/* divider (between all-day and slots) */
+/* line 485, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-divider-inner {
+  height: 2px;
+  overflow: hidden;
+}
+
+/* line 490, ../sass/modules/_fullcalendar.scss */
+.fc-widget-header .fc-agenda-divider-inner {
+  background: #eee;
+}
+
+/* slot rows */
+/* line 496, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-slots th {
+  border-width: 1px 1px 0;
+}
+
+/* line 500, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-slots td {
+  border-width: 1px 0 0;
+  background: none;
+}
+
+/* line 505, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-slots td div {
+  height: 20px;
+}
+
+/* line 510, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-slots tr.fc-slot0 th,
+.fc-agenda-slots tr.fc-slot0 td {
+  border-top-width: 0;
+}
+
+/* line 515, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-slots tr.fc-minor th,
+.fc-agenda-slots tr.fc-minor td {
+  border-top-style: dotted;
+}
+
+/* line 519, ../sass/modules/_fullcalendar.scss */
+.fc-agenda-slots tr.fc-minor th.ui-widget-header {
+  *border-top-style: solid;
+  /* doesn't work with background in IE6/7 */
+}
+
+/* Vertical Events
+------------------------------------------------------------------------*/
+/* line 528, ../sass/modules/_fullcalendar.scss */
+.fc-event-vert {
+  border-width: 0 1px;
+}
+
+/* line 532, ../sass/modules/_fullcalendar.scss */
+.fc-event-vert.fc-event-start {
+  border-top-width: 1px;
+  border-top-left-radius: 3px;
+  border-top-right-radius: 3px;
+}
+
+/* line 538, ../sass/modules/_fullcalendar.scss */
+.fc-event-vert.fc-event-end {
+  border-bottom-width: 1px;
+  border-bottom-left-radius: 3px;
+  border-bottom-right-radius: 3px;
+}
+
+/* line 544, ../sass/modules/_fullcalendar.scss */
+.fc-event-vert .fc-event-time {
+  white-space: nowrap;
+  font-size: 10px;
+}
+
+/* line 549, ../sass/modules/_fullcalendar.scss */
+.fc-event-vert .fc-event-inner {
+  position: relative;
+  z-index: 2;
+}
+
+/* line 554, ../sass/modules/_fullcalendar.scss */
+.fc-event-vert .fc-event-bg {
+  /* makes the event lighter w/ a semi-transparent overlay  */
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #fff;
+  opacity: .25;
+  filter: alpha(opacity=25);
+}
+
+/* line 567, ../sass/modules/_fullcalendar.scss */
+.fc .ui-draggable-dragging .fc-event-bg,
+.fc-select-helper .fc-event-bg {
+  display: none\9;
+  /* for IE6/7/8. nested opacity filters while dragging don't work */
+}
+
+/* resizable */
+/* line 573, ../sass/modules/_fullcalendar.scss */
+.fc-event-vert .ui-resizable-s {
+  bottom: 0 !important;
+  /* importants override pre jquery ui 1.7 styles */
+  width: 100% !important;
+  height: 8px !important;
+  overflow: hidden !important;
+  line-height: 8px !important;
+  font-size: 11px !important;
+  font-family: monospace;
+  text-align: center;
+  cursor: s-resize;
+}
+
+/* line 585, ../sass/modules/_fullcalendar.scss */
+.fc-agenda .ui-resizable-resizing {
+  /* TODO: better selector */
+  _overflow: hidden;
+}
+
+/* line 2, ../sass/modules/_prescription.scss */
+.prescriptions-table.Grid tr:hover td {
+  background-color: inherit;
+}
+/* line 5, ../sass/modules/_prescription.scss */
+.prescriptions-table.Grid td, .prescriptions-table.Grid th {
+  border: 1px solid #d9d9d9;
+}
+
+/* line 10, ../sass/modules/_prescription.scss */
+h3.moa:first-letter {
+  text-transform: uppercase;
+}
+
+/* line 14, ../sass/modules/_prescription.scss */
+.hours {
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  position: absolute;
+}
+/* line 22, ../sass/modules/_prescription.scss */
+.hours .hour:nth-child(2n-1) {
+  background-color: #fafafa;
+}
+/* line 25, ../sass/modules/_prescription.scss */
+.hours .hour:nth-child(6n-5) {
+  background-color: #fafafa;
+}
+/* line 29, ../sass/modules/_prescription.scss */
+.hours .hour {
+  padding: 0;
+  margin: 0;
+  margin-right: -1px;
+  margin-left: -1px;
+  border-right: 1px solid white;
+  border-left: 1px solid #f1f1f1;
+  width: 4.166666%;
+  height: 100%;
+  display: inline-block;
+  vertical-align: top;
+  text-align: center;
+  color: #888;
+}
+/* line 42, ../sass/modules/_prescription.scss */
+.hours .hour span {
+  vertical-align: middle;
+}
+
+/* line 49, ../sass/modules/_prescription.scss */
+tr.inOtherDepartments td {
+  background-color: #FFEA4F;
+}
+/* line 52, ../sass/modules/_prescription.scss */
+tr.inOtherDepartments:hover td {
+  background-color: #FFEA4F;
+}
+
+/* line 59, ../sass/modules/_prescription.scss */
+tr.inCurrentDepartment td {
+  background-color: #07ace3;
+}
+/* line 62, ../sass/modules/_prescription.scss */
+tr.inCurrentDepartment:hover td {
+  background-color: #07ace3;
+}
+
+/* line 68, ../sass/modules/_prescription.scss */
+tr.inHospital td {
+  background-color: #94cf51;
+}
+/* line 71, ../sass/modules/_prescription.scss */
+tr.inHospital:hover td {
+  background-color: #94cf51;
+}
+
+/* line 77, ../sass/modules/_prescription.scss */
+.interval {
+  opacity: 0.8;
+}
+
+/* line 82, ../sass/modules/_prescription.scss */
+.intervals-legend {
+  float: right;
+  font-size: 1.2em;
+}
+/* line 85, ../sass/modules/_prescription.scss */
+.intervals-legend .interval-runs {
+  display: inline-block;
+  width: 3em;
+  height: 1em;
+  background-color: #f57177;
+}
+/* line 88, ../sass/modules/_prescription.scss */
+.intervals-legend .interval-assigned {
+  display: inline-block;
+  width: 3em;
+  height: 1em;
+  background-color: #07ace3;
+}
+/* line 91, ../sass/modules/_prescription.scss */
+.intervals-legend .interval-notExecuted {
+  display: inline-block;
+  width: 3em;
+  height: 1em;
+  background-color: #b2a7c9;
+}
+/* line 94, ../sass/modules/_prescription.scss */
+.intervals-legend .interval-executed {
+  display: inline-block;
+  width: 3em;
+  height: 1em;
+  background-color: #94cf51;
+}
+/* line 97, ../sass/modules/_prescription.scss */
+.intervals-legend .interval-canceled {
+  display: inline-block;
+  width: 3em;
+  height: 1em;
+  background-color: #999;
+}
+/* line 100, ../sass/modules/_prescription.scss */
+.intervals-legend .interval-stop {
+  display: inline-block;
+  width: 3em;
+  height: 1em;
+  background-color: #FFEA4F;
+}
+
+/* line 105, ../sass/modules/_prescription.scss */
+.filter label {
+  display: block;
+  margin-bottom: 1em;
+}
+
+/* line 111, ../sass/modules/_prescription.scss */
+.my-grid {
+  margin-bottom: 1.5em;
+}
+/* line 112, ../sass/modules/_prescription.scss */
+.my-grid.sklad {
+  font-size: 1.2em;
+  color: #333;
+}
+/* line 119, ../sass/modules/_prescription.scss */
+.my-grid tr {
+  border: 1px solid #dddddd;
+}
+/* line 122, ../sass/modules/_prescription.scss */
+.my-grid th {
+  background-color: #f3f3f3;
+}
+/* line 125, ../sass/modules/_prescription.scss */
+.my-grid td, .my-grid th {
+  padding: 0.8em;
+  vertical-align: middle;
+}
+/* line 132, ../sass/modules/_prescription.scss */
+.my-grid .icon-remove {
+  cursor: pointer;
+}
+
+/*
+ * qTip2 - Pretty powerful tooltips - v2.2.0
+ * http://qtip2.com
+ *
+ * Copyright (c) 2013 Craig Michael Thompson
+ * Released under the MIT, GPL licenses
+ * http://jquery.org/license
+ *
+ * Date: Thu Nov 21 2013 09:34 UTC+0000
+ * Plugins: None
+ * Styles: basic
+ */
+/* line 13, ../sass/modules/_jquery.qtip.scss */
+.qtip {
+  position: absolute;
+  left: -28000px;
+  top: -28000px;
+  display: none;
+  max-width: 480px;
+  min-width: 50px;
+  font-size: 10.5px;
+  line-height: 12px;
+  direction: ltr;
+  box-shadow: none;
+  padding: 0;
+}
+
+/* line 31, ../sass/modules/_jquery.qtip.scss */
+.qtip-content {
+  position: relative;
+  padding: 5px 9px;
+  overflow: hidden;
+  text-align: left;
+  word-wrap: break-word;
+}
+
+/* line 40, ../sass/modules/_jquery.qtip.scss */
+.qtip-titlebar {
+  position: relative;
+  padding: 5px 35px 5px 10px;
+  overflow: hidden;
+  border-width: 0 0 1px;
+  font-weight: bold;
+}
+
+/* line 49, ../sass/modules/_jquery.qtip.scss */
+.qtip-titlebar + .qtip-content {
+  border-top-width: 0 !important;
+}
+
+/* Default close button class */
+/* line 52, ../sass/modules/_jquery.qtip.scss */
+.qtip-close {
+  position: absolute;
+  right: -9px;
+  top: -9px;
+  cursor: pointer;
+  outline: medium none;
+  border-width: 1px;
+  border-style: solid;
+  border-color: transparent;
+}
+
+/* line 64, ../sass/modules/_jquery.qtip.scss */
+.qtip-titlebar .qtip-close {
+  right: 4px;
+  top: 50%;
+  margin-top: -9px;
+}
+
+/* line 69, ../sass/modules/_jquery.qtip.scss */
+* html .qtip-titlebar .qtip-close {
+  top: 16px;
+}
+
+/* IE fix */
+/* line 72, ../sass/modules/_jquery.qtip.scss */
+.qtip-titlebar .ui-icon,
+.qtip-icon .ui-icon {
+  display: block;
+  text-indent: -1000em;
+  direction: ltr;
+}
+
+/* line 78, ../sass/modules/_jquery.qtip.scss */
+.qtip-icon, .qtip-icon .ui-icon {
+  -moz-border-radius: 3px;
+  -webkit-border-radius: 3px;
+  border-radius: 3px;
+  text-decoration: none;
+}
+
+/* line 85, ../sass/modules/_jquery.qtip.scss */
+.qtip-icon .ui-icon {
+  width: 18px;
+  height: 14px;
+  line-height: 14px;
+  text-align: center;
+  text-indent: 0;
+  font: normal bold 10px/13px Tahoma, sans-serif;
+  color: inherit;
+  background: transparent none no-repeat -100em -100em;
+}
+
+/* Applied to 'focused' tooltips e.g. most recently displayed/interacted with */
+/* Applied on hover of tooltips i.e. added/removed on mouseenter/mouseleave respectively */
+/* Default tooltip style */
+/* line 105, ../sass/modules/_jquery.qtip.scss */
+.qtip-default {
+  border-width: 1px;
+  border-style: solid;
+  border-color: #F1D031;
+  background-color: #FFFFA3;
+  color: #555;
+}
+
+/* line 114, ../sass/modules/_jquery.qtip.scss */
+.qtip-default .qtip-titlebar {
+  background-color: #FFEF93;
+}
+
+/* line 118, ../sass/modules/_jquery.qtip.scss */
+.qtip-default .qtip-icon {
+  border-color: #CCC;
+  background: #F1F1F1;
+  color: #777;
+}
+
+/* line 124, ../sass/modules/_jquery.qtip.scss */
+.qtip-default .qtip-titlebar .qtip-close {
+  border-color: #AAA;
+  color: #111;
+}
+
+/* Light tooltip style */
+/* line 132, ../sass/modules/_jquery.qtip.scss */
+.qtip-light {
+  background-color: white;
+  border-color: #E2E2E2;
+  color: #454545;
+}
+
+/* line 138, ../sass/modules/_jquery.qtip.scss */
+.qtip-light .qtip-titlebar {
+  background-color: #f1f1f1;
+}
+
+/* Dark tooltip style */
+/* line 144, ../sass/modules/_jquery.qtip.scss */
+.qtip-dark {
+  background-color: #505050;
+  border-color: #303030;
+  color: #f3f3f3;
+}
+
+/* line 150, ../sass/modules/_jquery.qtip.scss */
+.qtip-dark .qtip-titlebar {
+  background-color: #404040;
+}
+
+/* line 154, ../sass/modules/_jquery.qtip.scss */
+.qtip-dark .qtip-icon {
+  border-color: #444;
+}
+
+/* line 158, ../sass/modules/_jquery.qtip.scss */
+.qtip-dark .qtip-titlebar .ui-state-hover {
+  border-color: #303030;
+}
+
+/* Cream tooltip style */
+/* line 164, ../sass/modules/_jquery.qtip.scss */
+.qtip-cream {
+  background-color: #FBF7AA;
+  border-color: #F9E98E;
+  color: #A27D35;
+}
+
+/* line 170, ../sass/modules/_jquery.qtip.scss */
+.qtip-cream .qtip-titlebar {
+  background-color: #F0DE7D;
+}
+
+/* line 174, ../sass/modules/_jquery.qtip.scss */
+.qtip-cream .qtip-close .qtip-icon {
+  background-position: -82px 0;
+}
+
+/* Red tooltip style */
+/* line 180, ../sass/modules/_jquery.qtip.scss */
+.qtip-red {
+  background-color: #F78B83;
+  border-color: #D95252;
+  color: #912323;
+}
+
+/* line 186, ../sass/modules/_jquery.qtip.scss */
+.qtip-red .qtip-titlebar {
+  background-color: #F06D65;
+}
+
+/* line 190, ../sass/modules/_jquery.qtip.scss */
+.qtip-red .qtip-close .qtip-icon {
+  background-position: -102px 0;
+}
+
+/* line 194, ../sass/modules/_jquery.qtip.scss */
+.qtip-red .qtip-icon {
+  border-color: #D95252;
+}
+
+/* line 198, ../sass/modules/_jquery.qtip.scss */
+.qtip-red .qtip-titlebar .ui-state-hover {
+  border-color: #D95252;
+}
+
+/* Green tooltip style */
+/* line 204, ../sass/modules/_jquery.qtip.scss */
+.qtip-green {
+  background-color: #CAED9E;
+  border-color: #90D93F;
+  color: #3F6219;
+}
+
+/* line 210, ../sass/modules/_jquery.qtip.scss */
+.qtip-green .qtip-titlebar {
+  background-color: #B0DE78;
+}
+
+/* line 214, ../sass/modules/_jquery.qtip.scss */
+.qtip-green .qtip-close .qtip-icon {
+  background-position: -42px 0;
+}
+
+/* Blue tooltip style */
+/* line 220, ../sass/modules/_jquery.qtip.scss */
+.qtip-blue {
+  background-color: #E5F6FE;
+  border-color: #ADD9ED;
+  color: #5E99BD;
+}
+
+/* line 226, ../sass/modules/_jquery.qtip.scss */
+.qtip-blue .qtip-titlebar {
+  background-color: #D0E9F5;
+}
+
+/* line 230, ../sass/modules/_jquery.qtip.scss */
+.qtip-blue .qtip-close .qtip-icon {
+  background-position: -2px 0;
+}
+
+/* line 236, ../sass/modules/_jquery.qtip.scss */
+.korus-tooltip p {
+  line-height: 1.2;
+  margin-bottom: 0.2em;
+}
+/* line 240, ../sass/modules/_jquery.qtip.scss */
+.korus-tooltip table {
+  margin-bottom: 0.7em;
+}
+/* line 245, ../sass/modules/_jquery.qtip.scss */
+.korus-tooltip td {
+  padding: 0.8em;
+  border: 1px solid;
+}
+
+/* line 1, ../sass/modules/_context-menu.scss */
+.webmis-menu {
+  border: 1px solid #d4d4d4;
+  min-width: 150px;
+  color: #3F3F40;
+}
+/* line 5, ../sass/modules/_context-menu.scss */
+.webmis-menu li {
+  background-color: #fff;
+  padding: .6em;
+  border-top: 1px solid #d4d4d4;
+}
+/* line 10, ../sass/modules/_context-menu.scss */
+.webmis-menu .context-menu-item.hover {
+  background-color: #d2f0fd;
+}
+/* line 13, ../sass/modules/_context-menu.scss */
+.webmis-menu .context-menu-submenu:after {
+  position: relative;
+  top: 0;
+  right: 0;
+  padding-left: .2em;
+  float: right;
+}

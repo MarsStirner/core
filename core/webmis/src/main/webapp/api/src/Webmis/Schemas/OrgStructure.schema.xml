@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="OrgStructure" phpName="OrgStructure" idMethod="native">
+    <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="createDatetime" phpName="createDatetime" type="TIMESTAMP" required="true"/>
+    <column name="createPerson_id" phpName="createPersonId" type="INTEGER" required="false"/>
+    <column name="modifyDatetime" phpName="modifyDatetime" type="TIMESTAMP" required="true"/>
+    <column name="modifyPerson_id" phpName="modifyPersonId" type="INTEGER" required="false"/>
+    <column name="deleted" phpName="deleted" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="organisation_id" phpName="organisationId" type="INTEGER" required="true"/>
+    <column name="code" phpName="code" type="VARCHAR" size="255" required="true"/>
+    <column name="name" phpName="name" type="VARCHAR" size="255" required="true"/>
+    <column name="parent_id" phpName="parentId" type="INTEGER" required="false"/>
+    <column name="type" phpName="type" type="INTEGER" required="true" defaultValue="0"/>
+    <column name="net_id" phpName="netId" type="INTEGER" required="false"/>
+    <column name="isArea" phpName="isArea" type="TINYINT" required="true" defaultValue="0"/>
+    <column name="hasHospitalBeds" phpName="hasHospitalBeds" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="hasStocks" phpName="hasStocks" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="infisCode" phpName="infisCode" type="VARCHAR" size="16" required="true"/>
+    <column name="infisInternalCode" phpName="infisInternalCode" type="VARCHAR" size="16" required="true"/>
+    <column name="infisDepTypeCode" phpName="infisDepTypeCode" type="VARCHAR" size="16" required="true"/>
+    <column name="infisTariffCode" phpName="infisTariffCode" type="VARCHAR" size="16" required="true"/>
+    <column name="availableForExternal" phpName="availableForExternal" type="INTEGER" size="1" required="true" defaultValue="1"/>
+    <column name="Address" phpName="address" type="VARCHAR" size="255" required="true"/>
+    <column name="inheritEventTypes" phpName="inheritEventTypes" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="inheritActionTypes" phpName="inheritActionTypes" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="inheritGaps" phpName="inheritGaps" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="uuid_id" phpName="uuidId" type="INTEGER" required="true" defaultValue="0"/>
+    <column name="show" phpName="show" type="INTEGER" required="true" defaultValue="1"/>
+
+    <behavior name="timestampable">
+        <parameter name="create_column" value="createDatetime" />
+        <parameter name="update_column" value="modifyDatetime" />
+    </behavior>
+
+    <index name="createPerson_id">
+      <index-column name="createPerson_id"/>
+    </index>
+    <index name="modifyPerson_id">
+      <index-column name="modifyPerson_id"/>
+    </index>
+    <index name="organisation_id">
+      <index-column name="organisation_id"/>
+    </index>
+    <index name="parent_id">
+      <index-column name="parent_id"/>
+    </index>
+    <index name="net_id">
+      <index-column name="net_id"/>
+    </index>
+    <index name="uuid_id">
+      <index-column name="uuid_id"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

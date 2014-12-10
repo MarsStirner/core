@@ -1,0 +1,22 @@
+<div class="span12">
+	<div class="pull-left">
+		<button type="button" class="back-to-document-list review-nav" data-icon-primary="icon-list">Вернуться к списку</button>
+		<%if (showStepper) {%>
+			<button type="button" class="prev-document review-nav" data-icon-primary="icon-chevron-left" data-notext="true" style="margin-left: 1em;">Предыдущий документ</button>
+			<button type="button" class="next-document review-nav" data-icon-secondary="icon-chevron-right" data-notext="true">Следующий документ</button>
+		<%}%>
+	</div>
+	<div class="pull-right">
+		<%if (selectedDocuments.length == 1) {%>
+			<!-- Old Print button
+			<button type="button" class="print-documents single-page review-nav" data-icon-primary="icon-print">Печать</button>
+			-->
+            <span class="context-print-button">	
+                <button type="button" class="" data-icon-primary="icon-print">Печать</button>
+            </span>
+		<%} else {%>
+			<button type="button" class="print-documents single-page review-nav" data-icon-primary="icon-print">Печатать вместе</button>
+			<button type="button" class="print-documents multiple-pages review-nav" data-icon-primary="icon-print">Печатать раздельно</button>
+		<%}%>
+	</div>
+</div>

@@ -1,0 +1,1071 @@
+<script id="patient-edit-common" type="text/x-jquery-tmpl">
+	<div id="page-head">
+
+	</div>
+	<section id="page" class="Clearfix TwoCol">
+		<aside class="LeftSideBar">
+
+		</aside>
+			<div class="ContentSide Clearfix">
+				<form action="">
+					<div class="ContentHolder">
+						<div class="ContentHeader Clearfix">
+							<div class="PageActions">
+								<button class="Styled Button BlueBorder Actions Save"><span>Создать</span></button>
+								<button class="Styled Button Hidden BlueBorder Actions Update"><span>Сохранить</span></button>
+								<button class="Styled Button Actions Cancel"><span>Отмена</span></button>
+								<div class="CloseHistory">
+									<button disabled class="Styled Button Disabled"><span>Штрих код</span></button>
+									<button disabled class="Styled Button Disabled"><span>Печать</span></button>
+								</div>
+							</div>
+						</div>
+						<div class="EditForm Clearfix">
+
+						</div>
+					</div>
+				</form>
+			</div>
+	</section>
+</script>
+
+<!--<script id="patient-edit-general" type="text/x-jquery-tmpl">
+	<ul class="LineBlockHolder">
+		<li>
+			<div class="LineBlock">
+				<div class="HalfCol">
+					<label>Фамилия</label>
+					<input type="text" name="name[last]" placeholder="Фамилия" tabindex="1" class="Mandatory" />
+				</div>
+				<div class="QuartCol">
+					<label>Имя</label>
+					<input type="text" name="name[first]" placeholder="Имя" tabindex="2" class="Mandatory" />
+				</div>
+				<div class="HalfCol">
+					<label>Отчество</label>
+					<input type="text" name="name[middle]" placeholder="Отчество" tabindex="3" />
+				</div>
+				<div class="QuartCol">
+					<span class="Label">Пол</span>
+					<ul class="InlineList">
+						<li>
+							<label>
+								<input type="radio" name="sex" value="male" tabindex="4" checked="checked">
+								Муж
+							</label>
+						</li>
+						<li>
+							<label>
+								<input type="radio" name="sex" value="female">
+								Жен
+							</label>
+						</li>
+					</ul>
+				</div>
+				<div class="HalfCol">
+					<button disabled class="Styled Button Disabled"><span>Поиск в БД застрахованных</span></button>
+				</div>
+			</div>
+			<div class="LineBlock">
+				<div class="QuartCol">
+					<span class="Label">Дата рождения</span>
+					<div class="DatePeriod SingleDate Mandatory">
+						<div class="FromTo">
+							<input type="text" name="birthDate" placeholder="дд.мм.гггг" tabindex="6" class="SelectDate" />
+						</div>
+						<i class="DateIcon Icon"></i>
+					</div>
+				</div>
+				<div class="SemiCol">
+					<label>Место рождения</label>
+					<input type="text" name="birthPlace" placeholder="Место рождения" tabindex="7"/>
+				</div>
+			</div>
+		</li>
+		<li>
+			<div class="LineBlock">
+				<div class="WideCol HasValidationToolTip" data-tooltip-content="#snils-tooltip">
+					<span class="Label">СНИЛС</span>
+					<div class="AnyNum">
+						<input type="text" name="snils[0]" maxlength="3" placeholder="" tabindex="8" class="Quant SNILS SNILS-part" />-
+						<input type="text" name="snils[1]" maxlength="3" placeholder="" tabindex="9" class="Quant SNILS SNILS-part" />-
+						<input type="text" name="snils[2]" maxlength="3" placeholder="" tabindex="10" class="Quant SNILS SNILS-part" />-
+						<input type="text" name="snils[3]" maxlength="2" placeholder="" tabindex="11" class="Quant SNILS SNILS-sum" />
+					</div>
+				</div>
+				<div class="ToolTip LeftTail" id="snils-tooltip">
+					<p class="Error">Неверный номер СНИЛС</p>
+				</div>
+			</div>
+		</li>
+		<li>
+			<h4>Телефоны пациента</h4>
+			<div class="LineBlock">
+				<div class="HalfCol">
+					<label>Контактный</label>
+					<input type="text" name="phones[mobile]" tabindex="12" placeholder="+7(xxx)xxx-xxx-xx">
+				</div>
+				<div class="HalfCol">
+					<label>Домашний</label>
+					<input type="text" name="phones[home]" tabindex="13" placeholder="+7(xxx)xxx-xxx-xx">
+				</div>
+				<div class="HalfCol">
+					<label>Рабочий</label>
+					<input type="text" name="phones[work]" tabindex="14" placeholder="+7(xxx)xxx-xxx-xx">
+				</div>
+			</div>
+		</li>
+		<li>
+			<h4>Доп. контакты</h4>
+			<div id="relations"></div>
+		</li>
+	</ul>
+	<div class="FormButtons">
+		<button data-step="documents" tabindex="100" class="Styled Button Actions Next"><span>Далее</span></button>
+	</div>
+</script>-->
+
+<!--<script id="patient-edit-general-relation" type="text/x-jquery-tmpl">
+	<div class="LineBlock">
+		<div class="HalfCol">
+			<label> Кем приходится</label>
+			<select class="Styled" name="relation[type]" tabindex="15">
+				<option value="" selected="selected">...</option>
+				{{each relationTypes}}
+				<option value="${id}" class="right-sex-${rightSex}">${leftName}</option>
+				{{/each}}
+			</select>
+			<div id="relation-tooltip" class="ToolTip">
+				<p class="Error">Поле "Кем приходится" должно быть заполнено</p>
+			</div>
+		</div>
+		<div class="QuartCol">
+			<label>Фамилия</label>
+			<input type="text" tabindex="16" name="relation[name][last]">
+		</div>
+		<div class="QuartCol">
+			<label>Имя</label>
+			<input type="text" tabindex="17" name="relation[name][first]">
+		</div>
+		<div class="QuartCol">
+			<label>Отчество</label>
+			<input type="text" tabindex="18" name="relation[name][middle]">
+		</div>
+		<div class="HalfCol">
+			<label>Телефон</label>
+			<input type="text" tabindex="19" name="relation[phone]" placeholder="+7(xxx)xxx-xxx-xx">
+		</div>
+		<div class="QuartCol">
+			<div class="AddLine">
+				<i class="AddIcon Icon Tiny Actions Clone"></i>
+				<i class="RemoveIcon Icon Tiny Actions Remove"></i>
+			</div>
+		</div>
+	</div>
+</script>-->
+
+
+<!--<script id="patient-edit-documents" type="text/x-jquery-tmpl">
+	<ul class="LineBlockHolder">
+		<li>
+			<div class="LineBlock">
+				<div class="LineCol">
+					<label>
+						ТФОМС
+					</label>
+					<select class="Styled" name="tfoms" tabindex="1">
+						<option value="" {{if !selectedTfoms}}selected="selected"{{/if}}>...</option>
+						{{each tfomses}}
+							<option value="${id}" {{if selectedTfoms == id}}selected="selected"{{/if}}>${value}</option>
+						{{/each}}
+					</select>
+				</div>
+			</div>
+		</li>
+		<li>
+			<h4>Полис ОМС</h4>
+			<div id="policy-oms"></div>
+		</li>
+		<li>
+			<h4>Полис ДМС</h4>
+			<div id="policy-dms"></div>
+		</li>
+		<li>
+			<h4>Удостоверение личности</h4>
+			<div id="id-cards"></div>
+		</li>
+	</ul>
+	<div class="FormButtons">
+		<button data-step="" class="Styled Button Actions Prev"><span>Назад</span></button>
+		<button data-step="address" class="Styled Button Actions Next"><span>Далее</span></button>
+	</div>
+</script>-->
+
+<script id="patient-edit-documents-policy-oms" type="text/x-jquery-tmpl">
+	<div class="LineBlock">
+		<div class="QuartCol">
+			<label>
+				Тип полиса
+			</label>
+			<select class="Styled" name="payment[policy_type][id]">
+				<option selected="selected">...</option>
+				<option value="1">ОМС территориальный</option>
+				<option value="2">ОМС производственный</option>
+				<!--<option value="3">ДМС</option>-->
+			</select>
+		</div>
+		<div class="QuartCol">
+			<label>
+				Серия
+			</label>
+			<input type="text" name="payment[series]" placeholder="Серия" />
+		</div>
+		<div class="QuartCol">
+			<label>
+				Номер
+			</label>
+			<input type="text" name="payment[number]" placeholder="Номер" />
+		</div>
+		<div class="LineCol">
+			<label>
+				Страховая компания
+			</label>
+			<select class="Styled" name="payment[smo][id]">
+				<option value="" selected="selected">...</option>
+				{{each insuranceCompanies}}
+					<option value="${id}" class="insuranceCompany tfomsid-${headId}">${value}</option>
+				{{/each}}
+				<!--<option value="1">Медпромстрой</option>
+				<option value="2">СамМедпромстрой</option>-->
+			</select>
+		</div>
+		<div class="QuartCol ActionsOnly">
+			<div class="AddLine">
+				<i class="AddIcon Icon Tiny Actions Clone"></i>
+				<i class="RemoveIcon Icon Tiny Actions Remove"></i>
+			</div>
+		</div>
+	</div>
+	<div class="LineBlock">
+		<div class="QuartCol">
+			<label>
+				Дата выдачи
+			</label>
+			<div class="DatePeriod SingleDate">
+				<div class="FromTo">
+					<input type="text" name="payment[date][start]" placeholder="дд.мм.гггг" class="SelectDate" />
+				</div>
+				<i class="DateIcon Icon"></i>
+			</div>
+		</div>
+		<div class="HalfCol">
+			<label>
+				Дата окончания действия
+			</label>
+			<div class="DatePeriod SingleDate">
+				<div class="FromTo">
+					<input type="text" name="payment[date][end]" placeholder="дд.мм.гггг" class="SelectDate" />
+				</div>
+				<i class="DateIcon Icon"></i>
+			</div>
+		</div>
+		<div class="LineCol">
+			<label>
+				Примечание
+			</label>
+			<input type="text" name="payment[comment]" placeholder="Примечание" />
+		</div>
+	</div>
+</script>
+
+<script id="patient-edit-documents-policy-dms" type="text/x-jquery-tmpl">
+	<div class="LineBlock">
+		<div class="QuartCol">
+			<label>
+				Серия
+			</label>
+			<input type="text" name="payment[series]" placeholder="Серия" />
+		</div>
+		<div class="QuartCol">
+			<label>
+				Номер
+			</label>
+			<input type="text" name="payment[number]" placeholder="Номер" />
+		</div>
+		<div class="LineCol">
+			<label>
+				Страховая компания
+			</label>
+			<select class="Styled" name="payment[smo][id]">
+				<option value="" selected="selected">...</option>
+				{{each insuranceCompanies}}
+					<option value="${id}" class="insuranceCompany tfomsid-${headId}">${value}</option>
+				{{/each}}
+				<!--<option value="1">Медпромстрой</option>
+				<option value="2">СамМедпромстрой</option>-->
+			</select>
+		</div>
+		<div class="QuartCol ActionsOnly">
+			<div class="AddLine">
+				<i class="AddIcon Icon Tiny Actions Clone"></i>
+				<i class="RemoveIcon Icon Tiny Actions Remove"></i>
+			</div>
+		</div>
+	</div>
+	<div class="LineBlock">
+		<div class="QuartCol">
+			<label>
+				Дата выдачи
+			</label>
+			<div class="DatePeriod SingleDate">
+				<div class="FromTo">
+					<input type="text" name="payment[date][start]" placeholder="дд.мм.гггг" class="SelectDate" />
+				</div>
+				<i class="DateIcon Icon"></i>
+			</div>
+		</div>
+		<div class="HalfCol">
+			<label>
+				Дата окончания действия
+			</label>
+			<div class="DatePeriod SingleDate">
+				<div class="FromTo">
+					<input type="text" name="payment[date][end]" placeholder="дд.мм.гггг" class="SelectDate" />
+				</div>
+				<i class="DateIcon Icon"></i>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="patient-edit-documents-id-card" type="text/x-jquery-tmpl">
+	<div class="LineBlock">
+		<div class="HalfCol">
+			<label>
+				Тип
+			</label>
+			<!-- Максимальная длина серии в базе -8, номера - 16 -->
+			<select class="Styled" name="id_card[doc_type][id]">
+				<option value="" selected="selected">...</option>
+				<option value="1" data-series-length="4" data-number-length="6">Паспорт гражданина Российской Федерации</option>
+				<option value="2" data-series-length="2" data-number-length="7">Загранпаспорт гражданина Российской Федерации</option>
+				<option value="3" data-series-length="0" data-number-length="16">Свидетельство о рождении</option> <!-- actual num length - 25 -->
+				<option value="4" data-series-length="2" data-number-length="7">Удостоверение личности офицера</option>
+				<option value="5" data-series-length="0" data-number-length="16">Справка об освобождении из места лишения свободы</option> <!-- actual num length - 25 -->
+				<option value="6" data-series-length="2" data-number-length="6">Паспорт Минморфлота</option>
+				<option value="7" data-series-length="2" data-number-length="7">Военный билет солдата (матроса, сержанта, старшины)</option>
+				<option value="8" data-series-length="2" data-number-length="7">Дипломатический паспорт гражданина Российской Федерации</option>
+				<option value="9" data-series-length="0" data-number-length="16">Иностранный паспорт</option> <!-- actual num length - 25 -->
+				<option value="10" data-series-length="0" data-number-length="16">Свидетельство о рассмотрении ходатайства о признании беженцем по существу</option> <!-- actual num length - 25 -->
+				<option value="11" data-series-length="0" data-number-length="16">Вид на жительство лица без гражданства</option> <!-- actual num length - 25 -->
+				<option value="12" data-series-length="0" data-number-length="16">Удостоверение беженца в Российской Федерации</option> <!-- actual num length - 25 -->
+				<option value="13" data-series-length="0" data-number-length="16">Временное удостоверение личности гражданина Российской Федерации</option> <!-- actual num length - 25 -->
+				<option value="14" data-series-length="4" data-number-length="6">Паспорт гражданина СССР</option>
+				<option value="15" data-series-length="2" data-number-length="7">Паспорт моряка</option>
+				<option value="16" data-series-length="2" data-number-length="7">Военный билет офицера запаса</option>
+			</select>
+		</div>
+		<div class="QuartCol">
+			<label>
+				Серия
+			</label>
+			<input type="text" name="id_card[series]" placeholder="Серия" />
+		</div>
+		<div class="QuartCol">
+			<label>
+				Номер
+			</label>
+			<input type="text" name="id_card[number]" placeholder="Номер" />
+		</div>
+		<div class="QuartCol">
+			<label>
+				Дата выдачи
+			</label>
+			<div class="DatePeriod SingleDate">
+				<div class="FromTo">
+					<input type="text" name="id_card[date][start]" placeholder="дд.мм.гггг" class="SelectDate" />
+				</div>
+				<i class="DateIcon Icon"></i>
+			</div>
+		</div>
+		<div class="QuartCol">
+			<label>
+				Дата окончания
+			</label>
+			<div class="DatePeriod SingleDate">
+				<div class="FromTo">
+					<input type="text" name="id_card[date][end]" placeholder="дд.мм.гггг" class="SelectDate" />
+				</div>
+				<i class="DateIcon Icon"></i>
+			</div>
+		</div>
+		<div class="QuartCol ActionsOnly">
+			<div class="AddLine">
+				<i class="AddIcon Icon Tiny Actions Clone"></i>
+				<i class="RemoveIcon Icon Tiny Actions Remove"></i>
+			</div>
+		</div>
+		<!--<div class="ToolTip doc-tooltip">
+			<p class="Error">Неверно заполнены данные о документе</p>
+		</div>-->
+	</div>
+</script>
+
+
+<script id="patient-edit-address" type="text/x-jquery-tmpl">
+	<ul class="LineBlockHolder">
+		<li>
+			<div class="LineBlock Addresses">
+
+			</div>
+			<div>
+				<label>
+					<input type="checkbox" name="addressesMatches">
+					Адрес регистрации совпадает с адресом проживания
+				</label>
+			</div>
+		</li>
+	</ul>
+	<div class="FormButtons">
+		<button data-step="documents" class="Styled Button Actions Prev"><span>Назад</span></button>
+		<button data-step="medical-info" class="Styled Button Actions Next"><span>Далее</span></button>
+	</div>
+</script>
+
+
+
+<script id="_patient-edit-address" type="text/x-jquery-tmpl">
+	<ul class="LineBlockHolder">
+		<li>
+			<div class="LineBlock">
+				<div class="LineCol Residential">
+					<fieldset class="AdressForm">
+						<legend>Адрес проживания</legend>
+						<ul>
+							<li>
+								<label>
+									Город, село
+								</label>
+								<select class="Styled" name="address[residence][city]">
+									<option value="" selected="selected">...</option>
+									<!--<option value="2">Москва</option>
+									<option value="3">Санкт-Петербург</option>
+									<option value="4">Сан-Франциско</option>
+									<option value="5">Гусь-Хрустальный</option>-->
+								</select>
+							</li>
+							<li>
+								<label>
+									<input type="checkbox" id="checkbox" name="address[residence][kladr-enabled]">
+									КЛАДР
+								</label>
+							</li>
+							<li>
+								<label>
+									Республика, край, область
+								</label>
+								<select class="Styled" name="address[residence][republic]">
+									<option value="" selected="selected">...</option>
+									<!--<option value="2">Москва</option>
+									<option value="3">Санкт-Петербург</option>
+									<option value="4">Сан-Франциско</option>
+									<option value="5">Гусь-Хрустальный</option>-->
+								</select>
+							</li>
+							<li>
+								<label>
+									Район
+								</label>
+								<select class="Styled" name="address[residence][district]">
+									<option value="" selected="selected">...</option>
+									<!--<option value="2">Владимирский пр.</option>
+									<option value="3">ул. Ленина</option>
+									<option value="4">11-я линия</option>
+									<option value="5">пр. Большевиков</option>-->
+								</select>
+							</li>
+							<li>
+								<label>
+									Города, сельсоветы
+								</label>
+								<select class="Styled" name="address[residence][city]">
+									<option value="" selected="selected">...</option>
+									<!--<option value="2">Владимирский пр.</option>
+									<option value="3">ул. Ленина</option>
+									<option value="4">11-я линия</option>
+									<option value="5">пр. Большевиков</option>-->
+								</select>
+							</li>
+							<li>
+								<label>
+									Населенный пункт
+								</label>
+								<select class="Styled" name="address[residence][locality]">
+									<option value="" selected="selected">...</option>
+									<!--<option value="2">Владимирский пр.</option>
+									<option value="3">ул. Ленина</option>
+									<option value="4">11-я линия</option>
+									<option value="5">пр. Большевиков</option>-->
+								</select>
+							</li>
+							<li>
+								<label>
+									Улица, площадь, проспект и т.д.
+								</label>
+								<select class="Styled" name="address[residence][street]">
+									<option value="" selected="selected">...</option>
+									<!--<option value="2">Владимирский пр.</option>
+									<option value="3">ул. Ленина</option>
+									<option value="4">11-я линия</option>
+									<option value="5">пр. Большевиков</option>-->
+								</select>
+							</li>
+							<li>
+								<div class="Field">
+									<label>
+										Дом
+									</label>
+									<input type="text" placeholder="№" name="address[residence][house]">
+								</div>
+								<div class="Field">
+									<label>
+										Корпус
+									</label>
+									<input type="text" name="address[residence][structure]">
+								</div>
+								<div class="Field">
+									<label>
+										Квартира
+									</label>
+									<input type="text" name="address[residence][apartment]">
+								</div>
+								<div class="Field">
+									<label>
+										Участок
+									</label>
+									<input type="text" name="address[residence][sector]">
+								</div>
+							</li>
+							<li>
+								<label>
+									Адрес
+								</label>
+								<input type="text" name="residential[fullAddress]">
+							</li>
+						</ul>
+					</fieldset>
+				</div>
+				<div class="LineCol">
+					<fieldset class="AdressForm">
+						<legend>Адрес регистрации</legend>
+						<ul>
+							<li>
+								<label>
+									Город, село
+								</label>
+								<select class="Styled" disabled="disabled" name="ward6">
+									<option value="1" selected="selected">...</option>
+									<option value="2">Москва</option>
+									<option value="3">Санкт-Петербург</option>
+									<option value="4">Сан-Франциско</option>
+									<option value="5">Гусь-Хрустальный</option>
+								</select>
+							</li>
+							<li>
+								<label>
+									<input type="checkbox" class="Disabled" id="checkbox2" disabled="disabled" name="checkbox2">
+									КЛАДР
+								</label>
+							</li>
+							<li>
+								<label>
+									Республика, край, область
+								</label>
+								<select class="Styled" disabled="disabled" name="ward6">
+									<option value="1" selected="selected">...</option>
+									<option value="2">Москва</option>
+									<option value="3">Санкт-Петербург</option>
+									<option value="4">Сан-Франциско</option>
+									<option value="5">Гусь-Хрустальный</option>
+								</select>
+							</li>
+							<li>
+								<label>
+									Район
+								</label>
+								<select class="Styled" disabled="disabled" name="ward6">
+									<option value="1" selected="selected">...</option>
+									<option value="2">Владимирский пр.</option>
+									<option value="3">ул. Ленина</option>
+									<option value="4">11-я линия</option>
+									<option value="5">пр. Большевиков</option>
+								</select>
+							</li>
+							<li>
+								<label>
+									Города, сельсоветы
+								</label>
+								<select class="Styled" disabled="disabled" name="ward6">
+									<option value="1" selected="selected">...</option>
+									<option value="2">Владимирский пр.</option>
+									<option value="3">ул. Ленина</option>
+									<option value="4">11-я линия</option>
+									<option value="5">пр. Большевиков</option>
+								</select>
+							</li>
+							<li>
+								<label>
+									Населенный пункт
+								</label>
+								<select class="Styled" disabled="disabled" name="ward6">
+									<option value="1" selected="selected">...</option>
+									<option value="2">Владимирский пр.</option>
+									<option value="3">ул. Ленина</option>
+									<option value="4">11-я линия</option>
+									<option value="5">пр. Большевиков</option>
+								</select>
+							</li>
+							<li>
+								<label>
+									Улица, площадь, проспект и т.д.
+								</label>
+								<select class="Styled" disabled="disabled" name="ward6">
+									<option value="1" selected="selected">...</option>
+									<option value="2">Владимирский пр.</option>
+									<option value="3">ул. Ленина</option>
+									<option value="4">11-я линия</option>
+									<option value="5">пр. Большевиков</option>
+								</select>
+							</li>
+							<li>
+								<div class="Field">
+									<label for="label">
+										Дом
+									</label>
+									<input type="text" class="Disabled" placeholder="Placeholder" id="label" disabled="disabled" name="label">
+								</div>
+								<div class="Field">
+									<label for="label2">
+										Корпус
+									</label>
+									<input type="text" class="Disabled" id="label2" disabled="disabled" name="textfield">
+								</div>
+								<div class="Field">
+									<label for="label3">
+										Квартира
+									</label>
+									<input type="text" class="Disabled" id="label3" disabled="disabled" name="textfield">
+								</div>
+								<div class="Field">
+									<label for="label4">
+										Участок
+									</label>
+									<input type="text" class="Disabled" id="label4" disabled="disabled" name="textfield">
+								</div>
+							</li>
+							<li>
+								<label for="label3">
+									Адрес
+								</label>
+								<input type="text" name="registered[fullAddress]">
+							</li>
+						</ul>
+					</fieldset>
+				</div>
+			</div>
+			<div>
+				<label>
+					<input type="checkbox" name="addressesMatches">
+					Адрес регистрации совпадает с адресом проживания
+				</label>
+			</div>
+		</li>
+	</ul>
+	<div class="FormButtons">
+		<button data-step="documents" class="Styled Button Actions Prev"><span>Назад</span></button>
+		<button data-step="medical-info" class="Styled Button Actions Next"><span>Далее</span></button>
+	</div>
+</script>
+
+<script id="patient-edit-medical-info" type="text/x-jquery-tmpl">
+	<ul class="LineBlockHolder">
+		<li>
+			<div class="LineBlock">
+				<div class="QuartCol">
+					<span class="Label">Гр.крови</span>
+					<select class="Styled" name="blood[id]">
+						<option value="0" selected="selected">...</option>
+						<!--<option value="1">0(I) Rh−</option>
+						<option value="2">0(I) Rh+</option>
+						<option value="3">A(II) Rh−</option>
+						<option value="4">A(II) Rh+</option>
+						<option value="5">B(III) Rh−</option>
+						<option value="6">B(III) Rh+</option>
+						<option value="7">AB(IV) Rh−</option>
+						<option value="8">AB(IV) Rh+</option>-->
+						{{each bloodTypes}}
+						<option value="${id}">${value}</option>
+						{{/each}}
+					</select>
+				</div>
+				<div class="HalfCol">
+					<span class="Label">Дата установления</span>
+					<div class="DatePeriod SingleDate">
+						<div class="FromTo">
+							<input type="text" name="blood[checking_date]" placeholder="дд.мм.гггг" class="SelectDate" />
+						</div>
+						<i class="DateIcon Icon"></i>
+					</div>
+				</div>
+			</div>
+			<!--<div class="LineBlock">
+				<div class="HalfCol">
+					<span class="Label">История изменения группы крови</span>
+					<ul class="ChangeHistory">
+						<li>
+							<span class="Field">A(II) Rh−</span> <span class="Field">18.04.1990</span>
+						</li>
+						<li>
+							<span class="Field">A(II) Rh+</span> <span class="Field">18.05.1990</span>
+						</li>
+					</ul>
+				</div>
+			</div>-->
+		</li>
+		<li>
+			<h4>Аллергия</h4>
+			<div id="allergies"></div>
+		</li>
+		<li>
+			<h4>Медикаментозная непереносимость</h4>
+			<div id="drug-intolerances"></div>
+		</li>
+	</ul>
+	<div class="FormButtons">
+		<button data-step="address" class="Styled Button Actions Prev"><span>Назад</span></button>
+		<button data-step="other" class="Styled Button Actions Next"><span>Далее</span></button>
+	</div>
+</script>
+
+<script id="patient-edit-medical-info-allergy" type="text/x-jquery-tmpl">
+	<div class="LineBlock">
+		<div class="HalfCol">
+			<label>
+				Наименование вещества
+			</label>
+			<input type="text" name="allergy[substance]">
+		</div>
+		<div class="QuartCol">
+			<span class="Label">Степень</span>
+			<select class="Styled" name="allergy[degree]">
+				<option value="0" selected="selected">...</option>
+				<option value="1">низкая</option>
+				<option value="2">средняя</option>
+				<option value="3">высокая</option>
+				<!--{{each allergyDegrees}}
+				<option value="${this['id']}">${this['24']}</option>
+				{{/each}}-->
+			</select>
+		</div>
+		<div class="HalfCol">
+			<span class="Label">Дата установления</span>
+			<div class="DatePeriod SingleDate">
+				<div class="FromTo">
+					<input type="text" name="allergy[checking_date]" placeholder="дд.мм.гггг" class="SelectDate" />
+				</div>
+				<i class="DateIcon Icon"></i>
+			</div>
+		</div>
+		<div class="HalfCol">
+			<label>
+				Примечания
+			</label>
+			<input type="text" name="allergy[comment]">
+		</div>
+		<div class="QuartCol ActionsOnly">
+			<div class="AddLine">
+				<i class="AddIcon Icon Tiny Actions Clone"></i>
+				<i class="RemoveIcon Icon Tiny Actions Remove"></i>
+			</div>
+		</div>
+	</div>
+</script>
+
+<script id="patient-edit-medical-info-drug-intolerance" type="text/x-jquery-tmpl">
+	<div class="LineBlock">
+		<div class="HalfCol">
+			<label>
+				Наименование вещества
+			</label>
+			<input type="text" name="drug_intolerance[substance]">
+		</div>
+		<div class="QuartCol">
+			<span class="Label">Степень</span>
+			<select class="Styled" name="drug_intolerance[degree]">
+				<option value="0" selected="selected">...</option>
+				<<option value="0" selected="selected">...</option>
+				<option value="1">низкая</option>
+				<option value="2">средняя</option>
+				<option value="3">высокая</option>
+				<!--{{each allergyDegrees}}
+				<option value="${this['id']}">${this['24']}</option>
+				{{/each}}-->
+			</select>
+		</div>
+		<div class="HalfCol">
+			<span class="Label">Дата установления</span>
+			<div class="DatePeriod SingleDate">
+				<div class="FromTo">
+					<input type="text" name="drug_intolerance[checking_date]" placeholder="дд.мм.гггг" class="SelectDate" />
+				</div>
+				<i class="DateIcon Icon"></i>
+			</div>
+		</div>
+		<div class="HalfCol">
+			<label>
+				Примечания
+			</label>
+			<input type="text" name="drug_intolerance[comment]">
+		</div>
+		<div class="QuartCol ActionsOnly">
+			<div class="AddLine">
+				<i class="AddIcon Icon Tiny Actions Clone"></i>
+				<i class="RemoveIcon Icon Tiny Actions Remove"></i>
+			</div>
+		</div>
+	</div>
+</script>
+
+
+<script id="patient-edit-other" type="text/x-jquery-tmpl">
+	<ul class="LineBlockHolder">
+		<li>
+			<h4>Инвалидность</h4>
+			<div id="disabilities"></div>
+		</li>
+		<li>
+			<h4>Занятость</h4>
+			<div id="occupations"></div>
+		</li>
+		<li>
+			<div class="LineBlock">
+				<div class="SemiCol">
+					<span class="Label"> Гражданство </span>
+					<select class="Styled" name="citizenship[first][id]">
+						<option value="" selected="selected">...</option>
+						{{each citizenships}}
+						<option value="${id}">${value}</option>
+						{{/each}}
+					</select>
+				</div>
+				<div class="SemiCol">
+					<span class="Label"> Второе гражданство </span>
+					<select class="Styled" name="citizenship[second][id]">
+						<option value="" selected="selected">...</option>
+						{{each citizenships}}
+						<option value="${id}">${value}</option>
+						{{/each}}
+					</select>
+				</div>
+				</div>
+		</li>
+	</ul>
+	<div class="FormButtons">
+		<button data-step="medical-info" class="Styled Button Actions Prev"><span>Назад</span></button>
+	</div>
+</script>
+
+<script id="patient-edit-other-disability" type="text/x-jquery-tmpl">
+	<div class="LineBlock">
+		<div class="HalfCol">
+			<span class="Label"> Категория льгот </span>
+			<select class="Styled" name="disability[benefits_category][id]">
+				<option selected="selected">...</option>
+				<!--<option value="32">Инвалидность</option>-->
+				{{each benefitCategoriesFederal}}
+				<option value="${id}">${this["27"]}</option>
+				{{/each}}
+				{{each benefitCategoriesRegional}}
+				<option value="${id}">${this["30"]}</option>
+				{{/each}}
+			</select>
+		</div>
+		<div class="HalfCol">
+			<span class="Label">Тип</span>
+			<select class="Styled" name="disability[disability_type][id]">
+				<option selected="selected">...</option>
+				<!--<option value="308">Ребенок-инвалид</option>
+				<option value="309">Приобретенная инвалидность</option>-->
+				{{each disabilityTypes}}
+				<option value="${id}">${value}</option>
+				{{/each}}
+			</select>
+		</div>
+		<div class="QuartCol">
+			<label>
+				Дата начала
+			</label>
+			<div class="DatePeriod SingleDate">
+				<div class="FromTo">
+					<input type="text" name="disability[date][start]" placeholder="дд.мм.гггг" class="SelectDate" />
+				</div>
+				<i class="DateIcon Icon"></i>
+			</div>
+		</div>
+		<div class="QuartCol">
+			<label>
+				Дата окончания
+			</label>
+			<div class="DatePeriod SingleDate">
+				<div class="FromTo">
+					<input type="text" name="disability[date][end]" placeholder="дд.мм.гггг" class="SelectDate" />
+				</div>
+				<i class="DateIcon Icon"></i>
+			</div>
+		</div>
+		<div class="QuartCol ActionsOnly">
+			<div class="AddLine">
+				<i class="AddIcon Icon Tiny Actions Clone"></i>
+				<i class="RemoveIcon Icon Tiny Actions Remove"></i>
+			</div>
+		</div>
+	</div>
+	<div class="LineBlock">
+		<div class="SemiCol">
+			<span class="Label"> Документ подтверждающий инвалидность </span>
+			<select class="Styled" name="disability[document][id]">
+				<option value="" selected="selected">...</option>
+				{{each disabilityApprovalDocs}}
+				<option value="${id}">${value}</option>
+				{{/each}}
+			</select>
+		</div>
+		<div class="SemiCol">
+			<label>
+				Примечание
+			</label>
+			<input type="text" name="disability[comment]" placeholder="Примечание" />
+		</div>
+	</div>
+</script>
+
+<script id="patient-edit-other-occupation" type="text/x-jquery-tmpl">
+	<div class="LineBlock">
+		<div class="LineCol">
+			<span class="Label"> Социальный статус</span>
+			<select class="Styled" id="social_status" name="occupation[social_status][id]">
+				<option value="" selected="selected">...</option>
+
+				<!--<option value="310" data-relation=".Occupation.WorkingPlace">Работающий</option>
+				<option value="312">Неработающий пенсионер</option>
+				<option value="313" data-relation=".Occupation.Preschool">Дошкольник</option>
+				<option value="314" data-relation=".Occupation.School">Учащийся</option>
+				<option value="315" data-relation=".Occupation.Military">Военнослужащий</option>
+				<option value="316">Член семьи военнослужащего</option>
+				<option value="317">БОМЖ</option>-->
+
+				{{each dirs.socialStatuses}}
+				<option value="${this['id']}" {{if model.get("socialStatus").get("id") == this['id']}}selected="selected"{{/if}} {{if this.dataRelation}}data-relation="${this.dataRelation}"{{/if}}>${this['2']}</option>
+				{{/each}}
+			</select>
+		</div>
+	</div>
+	<div class="Occupation Preschool LineBlock Hidden">
+		<div class="HalfCol">
+			<label>
+				Номер детсада, ясли
+			</label>
+
+			<input type="text" name="occupation[preschool_number]" placeholder=""/>
+		</div>
+		<div class="SemiCol">
+			<label>
+				Примечание
+			</label>
+			<input type="text" name="occupation[comment]" placeholder="Примечание"/>
+		</div>
+	</div>
+	<div class="Occupation School LineBlock Hidden">
+		<div class="QuartCol">
+			<label>
+				Номер школы
+			</label><input type="text" name="occupation[school_number]" placeholder=""/>
+		</div>
+		<div class="QuartCol">
+			<label>
+				Класс
+			</label>
+			<input type="text" name="occupation[class_number]" placeholder=""/>
+		</div>
+		<div class="SemiCol">
+			<label>
+				Примечание
+			</label>
+			<input type="text" name="occupation[comment]" placeholder="Примечание"/>
+		</div>
+	</div>
+	<div class="Occupation Military Hidden">
+		<div class="LineBlock">
+			<div class="SemiCol">
+				<span class="Label">Род войск</span>
+				<select class="Styled" name="occupation[force_branch][id]">
+					<option selected="selected">...</option>
+					<!--<option value="1">Сухопутные</option>
+					<option value="2">Морские</option>
+					<option value="3">Воздушные</option>
+					<option value="4">Космические</option>-->
+					{{each dirs.forceBranches}}
+					<option value="${this['id']}">${this['17']}</option>
+					{{/each}}
+				</select>
+			</div>
+			<div class="HalfCol">
+				<label>
+					Войсковая часть
+				</label>
+				<input type="text" name="occupation[military_unit]" placeholder="" />
+			</div>
+			<div class="HalfCol">
+				<span class="Label">Звание</span>
+				<select class="Styled" name="occupation[rank][id]">
+					<option selected="selected">...</option>
+					<!--<option value="2">Безработный</option>
+					<option value="3">Военный</option>
+					<option value="4">Студент</option>
+					<option value="5">Чиновник</option>-->
+					{{each dirs.ranks}}
+					<option value="${this['id']}">${this['20']}</option>
+					{{/each}}
+				</select>
+			</div>
+		</div>
+		<div class="SemiCol">
+			<label>
+				Примечание
+			</label>
+			<input type="text" name="occupation[comment]" placeholder="Примечание" />
+		</div>
+	</div>
+	<div class="Occupation WorkingPlace Hidden">
+		<div class="LineBlock">
+			<div class="SemiCol">
+				<label>
+					Место работы
+				</label><input type="text" name="occupation[working_place]" placeholder="" />
+			</div>
+			<div class="SemiCol">
+				<label>
+					Должность
+				</label><input type="text" name="occupation[position]" placeholder="" />
+			</div>
+		</div>
+		<div class="LineBlock">
+			<div class="SemiCol">
+				<label>
+					Примечание
+				</label>
+				<input type="text" name="occupation[comment]" placeholder="Примечание" />
+			</div>
+		</div>
+	</div>
+</script>

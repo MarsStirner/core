@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="rbStorage" phpName="RbStorage" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="uuid" phpName="uuid" type="VARCHAR" size="50" required="true"/>
+    <column name="name" phpName="name" type="VARCHAR" size="256" required="false"/>
+    <column name="orgStructure_id" phpName="orgStructureId" type="INTEGER" required="false"/>
+
+    <foreign-key foreignTable="OrgStructure" name="FK__OrgStructure">
+      <reference local="orgStructure_id" foreign="id"/>
+    </foreign-key>
+    <unique name="uuid">
+      <unique-column name="uuid"/>
+    </unique>
+    <index name="FK__OrgStructure">
+      <index-column name="orgStructure_id"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

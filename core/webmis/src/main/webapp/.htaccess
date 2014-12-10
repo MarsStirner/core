@@ -1,0 +1,28 @@
+AddDefaultCharset utf-8
+DirectoryIndex index.shtml index.html
+AddCharset utf-8 .tmpl
+AddType text/plain .tmpl
+
+#ExpiresActive On
+#ExpiresByType text/plain A1
+# Включение SSI
+#Options +Includes
+#AddOutputFilter INCLUDES .tmpl
+
+Options +FollowSymlinks
+RewriteBase /
+RewriteEngine on
+
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule   ^data/(.*)$	proxy.php [QSA,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule   ^api/v1/prescriptions/(.*)$        proxy.php [QSA,L]
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^api/(.*)$ api/web/index.php [QSA,L]
+
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteRule ^(.*)$ index.html [QSA,L]

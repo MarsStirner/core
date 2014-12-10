@@ -1,0 +1,25 @@
+<div class="ContentHeader Clearfix">
+	<div class="PageActions" style="width: inherit;">
+		<div class="InspectionPaginator Clearfix">
+			<a href="/appeals/${appealId}/examinations" class="AllPage">Все осмотры</a>
+		</div>
+	</div>
+	<div class="CloseHistory">
+		<button class="EditExam" <% if (isClosed) print('disabled="disabled"') %>>Редактировать</button>
+	</div>
+</div>
+<div class="Inspection Clearfix">
+	<div class="SingleHeader Clearfix">
+		<h2><%= examName %></h2>
+		<div class="SingleInfo">
+			<span class="Date"><%= Core.Date.formatDateTime(examEndDate) %></span> | <span class="Doctor"><%= examDoctorName +', ' + examDoctorSpecs %></span>
+		</div>
+	</div>
+	<ul>
+		<% _.each(examAttrs, function (attr) { %>
+		<li>
+			<strong><%= attr.name %>:</strong> <%= attr.value %>
+		</li>
+		<% }); %>
+	</ul>
+</div>

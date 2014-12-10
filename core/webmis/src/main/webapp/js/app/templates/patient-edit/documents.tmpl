@@ -1,0 +1,27 @@
+<li>
+	<div class="LineBlock">
+		<div class="LineCol">
+			<label>
+				ТФОМС
+			</label>
+			<select class="Styled" name="tfoms" data-subbind="true">
+				<option value="">...</option>
+				{{each dictionaries.tfomses}}
+					<option value="${id}" {{if selectedTfoms == id}}selected="selected"{{/if}}>${value}</option>
+				{{/each}}
+			</select>
+		</div>
+	</div>
+</li>
+<li>
+	<h4>Полис ОМС</h4>
+	<div id="policiesOms"></div>
+</li>
+<li>
+	<h4>Полис ДМС</h4>
+	<div id="policiesDms"></div>
+</li>
+<li>
+	<h4>Удостоверение личности</h4>
+	<div id="id-cards"></div>
+</li>

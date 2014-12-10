@@ -1,0 +1,21 @@
+<div class="ContentHeader Clearfix">
+	{{if allowToMove && !isClosed}}
+	<div class="PageActions">
+		<button id="new-move">Новое мероприятие</button>
+		<div class="DDList" style="display: block; width: 19em; top: -1.5em;">
+			<div id="move-type-list" class="Content ButtonContent">
+				<ul>
+					<li data-move-type="department" class="direction">
+						Направление или перевод в отделение
+					</li>
+					<li data-move-type="hospitalbed" id="hospitalbed-action">
+						Регистрация на койке
+					</li>
+				</ul>
+			</div>
+		</div>
+	</div>
+	{{/if}}
+</div>
+
+<div id="lab-grid"></div>

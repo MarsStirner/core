@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+    <table name="Event" phpName="Event" idMethod="native">
+        <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="createDatetime" phpName="createDatetime" type="TIMESTAMP" required="true"/>
+        <column name="createPerson_id" phpName="createPersonId" type="INTEGER" required="false"/>
+        <column name="modifyDatetime" phpName="modifyDatetime" type="TIMESTAMP" required="true"/>
+        <column name="modifyPerson_id" phpName="modifyPersonId" type="INTEGER" required="false"/>
+        <column name="deleted" phpName="deleted" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+        <column name="externalId" phpName="externalId" type="VARCHAR" size="30" required="true"/>
+        <column name="eventType_id" phpName="eventTypeId" type="INTEGER" required="true"/>
+        <column name="org_id" phpName="orgId" type="INTEGER" required="false"/>
+        <column name="client_id" phpName="clientId" type="INTEGER" required="false"/>
+        <column name="contract_id" phpName="contractId" type="INTEGER" required="false"/>
+        <column name="prevEventDate" phpName="prevEventDate" type="TIMESTAMP" required="false"/>
+        <column name="setDate" phpName="setDate" type="TIMESTAMP" required="true"/>
+        <column name="setPerson_id" phpName="setPersonId" type="INTEGER" required="false"/>
+        <column name="execDate" phpName="execDate" type="TIMESTAMP" required="false"/>
+        <column name="execPerson_id" phpName="execPersonId" type="INTEGER" required="false"/>
+        <column name="isPrimary" phpName="isPrimary" type="BOOLEAN" size="1" required="true"/>
+        <column name="order" phpName="order" type="BOOLEAN" size="1" required="true"/>
+        <column name="result_id" phpName="resultId" type="INTEGER" required="false"/>
+        <column name="nextEventDate" phpName="nextEventDate" type="TIMESTAMP" required="false"/>
+        <column name="payStatus" phpName="payStatus" type="INTEGER" required="true"/>
+        <column name="typeAsset_id" phpName="typeAssetId" type="INTEGER" required="false"/>
+        <column name="note" phpName="note" type="LONGVARCHAR" required="true"/>
+        <column name="curator_id" phpName="curatorId" type="INTEGER" required="false"/>
+        <column name="assistant_id" phpName="assistantId" type="INTEGER" required="false"/>
+        <column name="pregnancyWeek" phpName="pregnancyWeek" type="INTEGER" required="true" defaultValue="0"/>
+        <column name="MES_id" phpName="mesId" type="INTEGER" required="false"/>
+        <column name="mesSpecification_id" phpName="mesSpecificationId" type="INTEGER" required="false"/>
+        <column name="rbAcheResult_id" phpName="rbAcheResultId" type="INTEGER" required="false"/>
+        <column name="version" phpName="version" type="INTEGER" required="true" defaultValue="0"/>
+        <column name="privilege" phpName="privilege" type="BOOLEAN" size="1" required="false" defaultValue="false"/>
+        <column name="urgent" phpName="urgent" type="BOOLEAN" size="1" required="false" defaultValue="false"/>
+        <column name="orgStructure_id" phpName="orgStructureId" type="INTEGER" required="false"/>
+        <column name="uuid_id" phpName="uuidId" type="INTEGER" required="true" defaultValue="0"/>
+        <column name="lpu_transfer" phpName="lpuTransfer" type="VARCHAR" size="100" required="false"/>
+        <foreign-key foreignTable="EventType" name="Event_type">
+            <reference local="eventType_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="Client" name="Event_Client">
+            <reference local="client_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="Person" phpName="CreatePerson" name="Event_createPerson_id">
+          <reference local="createPerson_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="Person" phpName="ModifyPerson" name="Event_modifyPerson_id">
+          <reference local="modifyPerson_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="Person" phpName="SetPerson" name="Event_setPerson_id">
+          <reference local="setPerson_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="Person" phpName="Doctor" name="Event_execPerson_id">
+          <reference local="execPerson_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="OrgStructure" phpName="OrgStructure" name="Event_OrgStructure_id">
+          <reference local="orgStructure_id" foreign="id"/>
+        </foreign-key>
+<!--         <foreign-key foreignTable="rbAcheResult" name="Event_ibfk_1">
+          <reference local="rbAcheResult_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="rbMesSpecification" name="Event_mesSpecification" onDelete="SET NULL">
+          <reference local="mesSpecification_id" foreign="id"/>
+        </foreign-key> -->
+
+        <behavior name="timestampable">
+            <parameter name="create_column" value="createDatetime" />
+            <parameter name="update_column" value="modifyDatetime" />
+        </behavior>
+        <index name="createPerson_id">
+          <index-column name="createPerson_id"/>
+        </index>
+        <index name="modifyPerson_id">
+          <index-column name="modifyPerson_id"/>
+        </index>
+        <index name="eventType_id">
+          <index-column name="eventType_id"/>
+        </index>
+        <index name="contract_id">
+          <index-column name="contract_id"/>
+        </index>
+        <index name="setPerson_id">
+          <index-column name="setPerson_id"/>
+        </index>
+        <index name="execPerson_id">
+          <index-column name="execPerson_id"/>
+        </index>
+        <index name="result_id">
+          <index-column name="result_id"/>
+        </index>
+        <index name="client_id">
+          <index-column name="client_id"/>
+        </index>
+        <index name="execDate">
+          <index-column name="execDate"/>
+        </index>
+        <index name="setDate">
+          <index-column name="setDate"/>
+        </index>
+        <index name="typeAsset_id">
+          <index-column name="typeAsset_id"/>
+        </index>
+        <index name="curator_id">
+          <index-column name="curator_id"/>
+        </index>
+        <index name="assistant_id">
+          <index-column name="assistant_id"/>
+        </index>
+        <index name="MES_id">
+          <index-column name="MES_id"/>
+        </index>
+        <index name="mesSpecification_id">
+          <index-column name="mesSpecification_id"/>
+        </index>
+        <index name="uuid_id">
+          <index-column name="uuid_id"/>
+        </index>
+        <index name="rbAcheResult_id">
+          <index-column name="rbAcheResult_id"/>
+        </index>
+        <vendor type="mysql">
+          <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+</database>

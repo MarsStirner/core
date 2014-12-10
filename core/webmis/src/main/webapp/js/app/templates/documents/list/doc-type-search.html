@@ -1,0 +1,28 @@
+<div class="row-fluid" style="margin-bottom: .5em">
+	<%if (showTypeMnem) {%>
+	<div class="span4">
+		<select class="document-type-mnem Regular" style="font-size: 1em;">
+			<option value="EXAM,JOUR,ORD,EPI,NOT,OTH,CONS_POLY" selected>Все</option>
+			<option value="EXAM">Осмотры</option>
+			<option value="JOUR">Дневники</option>
+			<option value="CONS_POLY">Консультации</option>
+			<option value="ORD">Выписки</option>
+			<option value="EPI">Эпикризы</option>
+			<option value="NOT">Извещения</option>
+			<option value="OTH">Разное</option>
+		</select>
+	</div>
+	<%}%>
+	<div class="<%=showTypeMnem?'span8':'span12'%>" style="position: relative">
+		<input type="text" class="document-type-search" style="width: 100%; font-size: 1em;" placeholder="Поиск">
+		<i class="icon-search" style="position: absolute; top: .35em; right: .6em;"></i>
+	</div>
+</div>
+<div><label><input type="checkbox" class="document-type-filter-orgstruct">Только разрешённые в моём отделении</label></div>
+<span class="search-result-count" style="margin-top: .5em"></span>
+<!--
+<div class="row-fluid">
+	<div class="span12">
+
+	</div>
+</div>-->

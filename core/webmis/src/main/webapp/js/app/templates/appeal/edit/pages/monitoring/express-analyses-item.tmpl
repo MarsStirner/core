@@ -1,0 +1,25 @@
+<%if (collection.length) {%>
+	<% _.each(collection, function (item, index) {%>
+		<tr <% if(index > 0){%>style="display:none;"<%}%>>
+			<td><%=Core.Date.formatDateTime(item.get("datetime"))%></td>
+			<td><%=item.get("wbc")%></td>
+			<td><%=item.get("neut")%></td>
+			<td><%=item.get("hgb")%></td>
+			<td><%=item.get("plt")%></td>
+
+			<td><%=item.get("k")%></td>
+			<td><%=item.get("na")%></td>
+			<td><%=item.get("ca")%></td>
+
+			<td><%=item.get("glucose")%></td>
+			<td><%=item.get("protein")%></td>
+			<td><%=item.get("urea")%></td>
+			<td><%=item.get("bilubrinOb")%></td>
+			<td><%=item.get("bilubrinPr")%></td>
+		</tr>
+	<%});%>
+<%} else {%>
+	<tr>
+		<td colspan="14">Нет данных</td>
+	</tr>
+<%}%>

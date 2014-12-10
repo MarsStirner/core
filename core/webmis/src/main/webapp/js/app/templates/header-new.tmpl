@@ -1,0 +1,28 @@
+<ul class="SectionNav">
+	<% _.each(sections, function (section) { %>
+			<li class="<%= section.name === currentPage ? 'Selected' : '' %>">
+				<% if (section.uri) { %>
+				<a href="<%= section.uri %>">
+					<%= section.title %>
+				</a>
+				<% } else { %>
+					<%= section.title %>
+				<% } %>
+			</li>
+	<% }); %>
+</ul>
+<div class="UserSide">
+	<button class="LinkToProfile"><%= doctor.name.last %> <%= doctor.name.first[0] %>.</button>
+	<ul class="profile-options">
+		<li class="profile-full-name">
+			<span><%= doctor.name.last %> <%= doctor.name.first %> <%= doctor.name.middle %></span>
+		</li>
+		<%  _.each(userAvailableRoles, function (role) { %>
+			<li class="user-role" data-id="<%= role.id %>" data-role="<%= role.role %>">
+				<i class="icon-check<% if (currentRole !== role.role) { %> transparent<% } %>"></i>
+				<span><%= role.title %></span>
+			</li>
+		<% }); %>
+		<li><button class="logout">Выход</button></li>
+	</ul>
+</div>

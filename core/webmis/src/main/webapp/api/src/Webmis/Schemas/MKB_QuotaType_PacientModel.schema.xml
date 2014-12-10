@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="MKB_QuotaType_PacientModel" phpName="MkbQuotaTypePacientModel" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="MKB_id" phpName="mkbId" type="INTEGER" required="true"/>
+    <column name="pacientModel_id" phpName="pacientModelId" type="INTEGER" required="true"/>
+    <column name="quotaType_id" phpName="quotaTypeId" type="INTEGER" required="true"/>
+    <foreign-key foreignTable="QuotaType" name="MKB_QuotaType_PacientModel_ibfk_1">
+      <reference local="quotaType_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rbPacientModel" name="MKB_QuotaType_PacientModel_ibfk_2">
+      <reference local="pacientModel_id" foreign="id"/>
+    </foreign-key>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

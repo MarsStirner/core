@@ -1,0 +1,19 @@
+<label data-code="${code}" {{if groups.length}}data-parent="yes"{{/if}}>{{if groups.length }}+{{/if}} ${name}</label>
+{{if groups.length}}
+	<ul>
+		{{each groups}}
+		 <li>
+			 <label data-code="${code}" {{if groups.length}}data-parent="yes"{{/if}}>{{if groups.length}}+{{/if}} ${name}</label>
+			 {{if groups.length}}
+			 <ul>
+				 {{each groups}}
+					 <li>
+						 <label data-code="${code}" {{if groups.length}}data-parent="yes"{{/if}}>{{if groups.length}}+{{/if}} ${name}</label>
+					 </li>
+				 {{/each}}
+			 </ul>
+			 {{/if}}
+		 </li>
+		{{/each}}
+	 </ul>
+{{/if}}

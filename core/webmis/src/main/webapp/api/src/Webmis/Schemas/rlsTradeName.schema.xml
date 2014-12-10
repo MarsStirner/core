@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="rlsTradeName" phpName="rlsTradeName" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="name" phpName="name" type="VARCHAR" size="255" required="false"/>
+    <column name="localName" phpName="localName" type="VARCHAR" size="255" required="false"/>
+    <unique name="name_localName">
+      <unique-column name="name"/>
+      <unique-column name="localName"/>
+    </unique>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

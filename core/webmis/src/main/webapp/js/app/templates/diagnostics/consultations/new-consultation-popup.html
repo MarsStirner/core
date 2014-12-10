@@ -1,0 +1,107 @@
+<style>
+.list li{
+	padding: 0.2em .5em;
+}
+.list li a{
+	text-decoration:none;
+}
+.list li:hover,.list li.selected {
+	background: #118EDC;
+	color: #fff;
+}
+.list li:hover a,.list li.selected a{
+	color: #fff;
+}
+</style>
+
+<section style="padding-top: 0em;">
+<a href="#" style="color:#ffffff;outline:0;">.</a>
+<div class="row-fluid">
+<div id="errors" style="color: red;margin-bottom: 0.5em;"></div>
+</div>
+	<div class="row-fluid" style="margin-bottom:15px;">
+		<div class="span4">
+			<label for="">Список консультаций</label>
+			<div style="height:35em; border: 1px solid #ccc; width: 100%;overflow: auto;">
+				<div id="consultations"></div>
+			</div>
+
+		</div>
+		<div class="span3">
+			<div class="row-fluid" style="margin-bottom:1em;">
+				<div class="span12">
+					<label for="">Дата консультации</label>
+				</div>
+				<div class="span5">
+					<div class="date">
+						<input type="text" id="datepicker0" value=""/>
+						<i class="icon-calendar date-icon" style="right: .25em;"></i>
+					</div>
+				</div>
+			</div>
+			<div class="row-fluid">
+				<label for="">Список врачей</label>
+				<div style="height:29.3em; border: 1px solid #ccc; width: 100%;overflow-x: auto;">
+					<div id="consultants"></div>
+				</div>
+			</div>
+		</div>
+		<div class="span3" id="schedule"></div>
+	</div>
+
+	<div class="row-fluid"  style="margin-bottom:15px;">
+		<div class="span3" >
+			<label for="assign-date0">Дата и время создания</label>
+			<div class="row-fluid">
+
+				<div class="date span5">
+					<input type="text" data-mindate="0" name="assign-date0" id="assign-date0" placeholder="дд.мм.гггг" class="SelectDate"
+					 />
+					<i class="icon-calendar date-icon" style="right: .25em;"></i>
+				</div>
+
+				<div class="time span3  offset1">
+					<input type="text" class="Styled HourPicker" id="assign-time0"  placeholder="чч:мм"/>
+					<i class="icon-time time-icon" style="right: .25em;"></i>
+				</div>
+			</div>
+
+			<!-- <input type="text" id="assign-date" name="assign-date" /> -->
+		</div>
+		<div class="span5">
+			<label for="assign-person">Направивший врач</label><br />
+			<div id="assigner-outer">
+				<input
+				name="assigner"
+				id="assigner"
+				type="text"
+				style=""
+				disabled
+				value="${assigner.name.last} ${assigner.name.first} ${assigner.name.middle} ">
+				<button class="change-assigner" style=""><i class="icon-user-md"></i></button>
+			</div>
+		</div>
+		<div class="span2" style="display: none;">
+			<label for="urgent">Срочно</label><br />
+			<input type="checkbox" name="urgent" id="urgent" value="">
+		</div>
+    <div class="span2" style="display: none;">
+			<label for="over">Сверх сетки приёма</label><br />
+			<input type="checkbox" name="over" id="over" value="">
+    </div>
+
+			<!-- <select name="assign-person"  id="assign-person"  style="width:100%;">
+
+		</select> -->
+	</div>
+
+	<div class="row-fluid">
+		<div class="span9" id="mkb"></div>
+		<div class="span3">
+			<label for="finance">Вид оплаты</label><br />
+			<select name="finance" id="finance" style="width:100%;">
+				<option value=""></option>
+			</select>
+		</div>
+	</div>
+</section>

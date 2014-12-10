@@ -1,0 +1,54 @@
+<tbody>
+<tr class="patient-blood-type"></tr>
+<tr class="patient-blood-type-history"></tr>
+<tr>
+	<td>Медикаментозная непереносимость</td>
+	<td>
+		<% if (patient.medicalInfo.drugIntolerances.length && patient.medicalInfo.drugIntolerances[0].substance.length) { %>
+		<ul>
+			<% _.each(patient.medicalInfo.drugIntolerances, function (drugIntolerance) { %>
+			<li>
+				<em class="Warning">
+					<span style="font-weight: bold;"><%= drugIntolerance.substance %></span><br>
+					<% if (drugIntolerance.degree) { %>
+					<span>степень: <%= drugIntolerance.degree %></span><br>
+					<% } %>
+					<% if (drugIntolerance.checkingDate) { %>
+					<span>установлено: <%= Core.Date.format(drugIntolerance.checkingDate) %></span>
+					<% } %>
+				</em>
+			</li>
+			<% }); %>
+		</ul>
+		<% } else { %>
+		-
+		<% } %>
+	</td>
+</tr>
+<tr>
+	<td>Аллергия</td>
+	<td>
+		<% if (patient.medicalInfo.allergies.length && patient.medicalInfo.allergies[0].substance.length) { %>
+		<ul>
+			<% _.each(patient.medicalInfo.allergies, function (allergy) { %>
+			<li>
+				<em class="Warning">
+					<span style="font-weight: bold;"><%= allergy.substance %></span><br>
+					<% if (allergy.degree) { %>
+					<span>степень: <%= allergy.degree %></span><br>
+					<% } %>
+					<% if (allergy.checkingDate) { %>
+					<span>установлено: <%= Core.Date.format(allergy.checkingDate) %></span>
+					<% } %>
+				</em>
+			</li>
+			<% }); %>
+		</ul>
+		<% } else { %>
+		-
+		<% } %>
+	</td>
+</tr>
+</tbody>
+
+<tbody class="patient-bsa"></tbody>
