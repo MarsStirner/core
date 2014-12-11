@@ -6,6 +6,15 @@
                 "name": "Details",
                 "attribute": [
                     {
+                        "name": "executorId",
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "11"
+                            }
+                        ]
+                    },
+                    {
                         "code": "trfuReqBloodCompResult"
                     },
                     {
