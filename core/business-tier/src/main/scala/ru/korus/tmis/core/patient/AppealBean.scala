@@ -1147,9 +1147,26 @@ with CAPids {
       .groupBy(e => (e._1, e._2, e._4, e._6))
       .map(e => (e._1._1, e._1._2, Try(e._2.filter(_._3 != null).toList.sortBy(_._3).last._3).getOrElse(null), e._1._3, e._2.map(_._5).toList.asJava, e._1._4))
 
-    // Безумная сортировка - сначала по дате начала, потом по порядку расположения на форме редактирования (idx свойства "Дата начала")
+    // Безумная сортировка - сначала по полю "Тип терапии", дате начала, потом по порядку расположения на форме редактирования (idx свойства "Дата начала")
     val result = new util.TreeSet[(String, Date, Date, String, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, String, util.List[Integer], Integer)] {
       override def compare(o1: (String, Date, Date, String, util.List[Integer], Integer), o2: (String, Date, Date, String, util.List[Integer], Integer)): Int = {
+
+        val tt1 = if(o1._4 != null) o1._4.trim else " " // Убираем пробелы - интерфейс иногда вставляет их вперед
+        val tt2 = if(o2._4 != null) o2._4.trim else " "
+
+        // Тип терапии бывает Профилактика, Целенаправленная, Эмпирическая и может отсутствовать
+        // выводитб требуется в данном порядке, на случай путацицы написания, сравниваю только первую букву в верхнем регистре
+        if(!tt1.head.equals(tt2.head)) {
+          if(tt1.toUpperCase().startsWith("П"))
+            return -1
+          else if(tt1.toUpperCase().startsWith("Э") && !tt2.toUpperCase().startsWith("П"))
+            return 1
+          else if(tt1.toUpperCase().startsWith("Ц") && !tt2.toUpperCase().startsWith("П") && !tt2.toUpperCase().startsWith("Э"))
+            return 1
+          else
+            return -1
+        }
+
         val dateOrder = o2._2.compareTo(o1._2)
         val idxOrder = o2._6.compareTo(o1._6)
         if(dateOrder != 0)
