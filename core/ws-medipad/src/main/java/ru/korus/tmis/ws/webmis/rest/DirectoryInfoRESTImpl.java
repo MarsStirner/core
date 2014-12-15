@@ -398,7 +398,8 @@ public class DirectoryInfoRESTImpl {
 
     /**
      * Сервис получения данных о договорах, доступных в системе
-     * @param eventTypeId Если задан данный параметр, то будут возвращены доступные договора для данного типа событий
+     * @param eventTypeId Если задан данный параметр, то будут возвращены доступные договора для типа событий с заданным id
+     * @param eventTypeCode Если задан данный параметр, то будут возвращены доступные договора для типа событий с заданным кодом
      * @param showDeleted Если если данный параметр задан как true, то в список будут включены и ранее удаленные договора
      * @param showExpired Если если данный параметр задан как true, то в список будут включены просроченные договора договора
      * @return
@@ -408,9 +409,10 @@ public class DirectoryInfoRESTImpl {
     @Produces("application/x-javascript")
     public Object getContracts(
                                 @QueryParam("eventTypeId")   int eventTypeId,
+                                @QueryParam("?eventTypeId={event}") String eventTypeCode,
     @DefaultValue("false")      @QueryParam("showDeleted")   boolean showDeleted,
     @DefaultValue("false")      @QueryParam("showExpired")   boolean showExpired) {
-        return new JSONWithPadding(wsImpl.getContracts(eventTypeId, showDeleted, showExpired), this.callback);
+        return new JSONWithPadding(wsImpl.getContracts(eventTypeId, eventTypeCode, showDeleted, showExpired), this.callback);
     }
 
     /**
