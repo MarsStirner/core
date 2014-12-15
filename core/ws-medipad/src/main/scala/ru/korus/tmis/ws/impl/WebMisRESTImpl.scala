@@ -1379,12 +1379,12 @@ with CAPids {
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
 
-  def getContracts(eventTypeId: Int, showDeleted: Boolean, showExpired: Boolean) = {
+  def getContracts(eventTypeId: Int, eventTypeCode: String, showDeleted: Boolean, showExpired: Boolean) = {
     if (eventTypeId < 1)
       throw new CoreException("Идентификатор типа события не может быть меньше 1")
 
-    val e = dbEventTypeBean.getEventTypeById(eventTypeId)
-    val result = dbContractBean.getContractsByEventTypeId(eventTypeId, e.getFinance.getId, showDeleted, showExpired)
+    val e = if(eventTypeCode != null && !eventTypeCode.isEmpty()) dbEventTypeBean.getEventTypeByCode(eventTypeCode) else dbEventTypeBean.getEventTypeById(eventTypeId)
+    val result = dbContractBean.getContractsByEventTypeId(eventTypeId,  e.getFinance.getId, showDeleted, showExpired)
     if (result == null)
       new ju.ArrayList[ContractContainer]()
     else
