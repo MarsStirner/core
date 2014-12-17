@@ -213,7 +213,7 @@ class DbActionPropertyBean
     val prmList = rbAPTableFieldList.foldLeft("")( (b,a) => {
       val s = if (b.isEmpty) "" else ","
       val name = if (a.getReferenceTable == null) a.getRbAptable.getTableName +  "." + a.getFieldName else a.getReferenceTable + ".name"
-      b + s + name
+      b + s + (if(name.equals("trfuOrderIssueResult.stickerUrl")) "CONCAT('" + ConfigManager.TrfuProp.StickerBaseUrl + "'," + name + ")" else name)
     })
     val tblList =  rbAPTableFieldList.foldLeft(rbAPTable.getTableName)( (b,a) => {
       if (a.getReferenceTable == null) {
