@@ -274,6 +274,11 @@ object ConfigManager extends Configuration {
      * URL сервиса
      */
     var ServiceUrl = ""
+
+    /**
+     * Базовый URL для этикеток КК
+     */
+    var StickerBaseUrl = "file:/"
   }
 
   /**
