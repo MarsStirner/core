@@ -122,6 +122,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     private AppealData initAppealData() {
         AppealData appealData = new AppealData();
         AppealEntry data = appealData.getData();
+        data.setNumber("TEST");
         data.setUrgent(false);
         DatePeriodContainer dateTimeInfo = new DatePeriodContainer();
         dateTimeInfo.setStart(new Date());
@@ -129,7 +130,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         data.setAppealWithDeseaseThisYear("повторно");
         AppealTypeContainer appealTypeContainer = new AppealTypeContainer();
         IdNameContainer idNameContainerEventType = new IdNameContainer();
-        idNameContainerEventType.setId(2);
+        idNameContainerEventType.setId(4);
         appealTypeContainer.setEventType(idNameContainerEventType);
         data.setAppealType(appealTypeContainer);
         IdNameContainer idNameContainerHospType = new IdNameContainer();

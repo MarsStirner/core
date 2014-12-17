@@ -572,7 +572,7 @@ with CAPids {
 
   @throws(classOf[CoreException])
   def checkAppealBegEndDate(datePeriod: DatePeriodContainer) {
-    if (datePeriod.start after datePeriod.end)
+    if (datePeriod.start != null && datePeriod.end != null && (datePeriod.start after datePeriod.end))
       throw new CoreException(i18n("error.appeal.create.InvalidPeriod"))
 
     val maxDiffYears: Int = 3
