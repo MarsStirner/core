@@ -370,12 +370,6 @@
         "nextHospFinanceType": null
     },
     "orgStructStay": "28",
-    "reopening": "Нет",
-    "tempInvalid": {
-        "begDate": 1402042420115,
-        "endDate": 1402042458575,
-        "serial": "SERIAL12_SKIP",
-        "number": "NUMBER__12345678_SKIP",
-        "isByService": true
-    }
+    "reopening": "Нет"
+
 }}
