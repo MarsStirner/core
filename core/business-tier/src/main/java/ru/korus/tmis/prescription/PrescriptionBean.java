@@ -15,6 +15,7 @@ import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.pharmacy.DbDrugChartBeanLocal;
 import ru.korus.tmis.core.pharmacy.DbDrugComponentBeanLocal;
+import ru.korus.tmis.core.pharmacy.DbDrugIntervalCompParamLocal;
 import ru.korus.tmis.core.pharmacy.DbPharmacyBeanLocal;
 
 import javax.ejb.EJB;
@@ -23,8 +24,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -67,6 +67,12 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     @EJB
     DbDrugComponentBeanLocal dbDrugComponentBeanLocal;
 
+    @EJB
+    DbDrugIntervalCompParamLocal dbDrugIntervalCompParamLocal;
+
+    @EJB
+    DbDrugIntervalCompParamLocal dbDrugIntervalCompParam;
+
     @Override
     public PrescriptionsData getPrescriptions(Integer eventId, Long dateRangeMin, Long dateRangeMax, PrescriptionGroupBy groupBy, String admissionId, String drugName, String patientName, String setPersonName, String departmentId, AuthData auth) throws CoreException {
         if (eventId != null) {
@@ -74,12 +80,12 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         }
 
         PrescriptionFilter prescriptionFilter = new PrescriptionFilter(dateRangeMin, dateRangeMax, groupBy, admissionId, drugName, patientName, setPersonName, departmentId);
-        return new PrescriptionsData(prescriptionFilter, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
+        return new PrescriptionsData(prescriptionFilter, dbDrugChartBeanLocal, dbDrugIntervalCompParam, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
     }
 
     private PrescriptionsData getPrescriptionsData(Integer eventId) throws CoreException {
         Event event = getEventById(eventId);
-        return new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
+        return new PrescriptionsData(event, dbDrugChartBeanLocal, dbDrugIntervalCompParamLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
     }
 
     private Event getEventById(Integer eventId) throws CoreException {
@@ -109,9 +115,19 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         final CreatePrescriptionData data = createPrescriptionReqData.getData();
         final Event event = getEventById(data.getEventId());
         final Action action = createPrescriptionAction(createPrescriptionReqData, authData);
-        saveDrugs(action, data.getDrugs());
-        saveIntervals(action, data.getNote(), data.getAssigmentIntervals());
-        return new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
+        Map<DrugData, DrugComponent> drugComponentByDrugData = saveDrugs(action, getDrugs(data));
+        saveIntervals(action, data.getNote(), data.getAssigmentIntervals(), drugComponentByDrugData);
+        return new PrescriptionsData(event, dbDrugChartBeanLocal, dbDrugIntervalCompParamLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
+    }
+
+    private Iterable<DrugData> getDrugs(CreatePrescriptionData data) {
+        Set<DrugData> res = new HashSet<DrugData>();
+        for(AssigmentIntervalData assigmentIntervalData : data.getAssigmentIntervals() ) {
+            for (DrugData drugData : assigmentIntervalData.getDrugs()) {
+                res.add(drugData);
+            }
+        }
+        return res;
     }
 
     @Override
@@ -123,14 +139,19 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
             throw new CoreException("Назначение не найдено");
         }
         updatePrescriptionAction(action, data, auth);
+        Map<DrugData, DrugComponent> drugComponentByDrugData = updateDrugs(action, getDrugs(data));
         for (AssigmentIntervalData interval : data.getAssigmentIntervals()) {
             final Integer masterId = interval.getMasterId();
-            updateInterval(action, data, interval, masterId);
+            DrugChart drugChart = updateInterval(action, data, interval, masterId);
+            for (DrugData drugData : interval.getDrugs()) {
+                updateDrugIntervalCompParam(drugData, drugChart, drugComponentByDrugData.get(drugData));
+            }
         }
+        return new PrescriptionsData(event, dbDrugChartBeanLocal, dbDrugIntervalCompParamLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
+    }
 
-        updateDrugs(action, data.getDrugs());
-
-        return new PrescriptionsData(event, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
+    private void updateDrugIntervalCompParam(DrugData drugData, DrugChart drugChart, DrugComponent drugComponent) {
+        dbDrugIntervalCompParamLocal.update(drugChart, drugComponent, drugData.getDose(), drugData.getVoa());
     }
 
 
@@ -193,16 +214,17 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         }
     }
 
-    private void updateInterval(Action action, CreatePrescriptionData data, AssigmentIntervalData interval, Integer masterId) throws CoreException {
+    private DrugChart updateInterval(Action action, CreatePrescriptionData data, AssigmentIntervalData interval, Integer masterId) throws CoreException {
+        DrugChart drugChart = null;
         if (interval.getId() == null || interval.getId().equals(0)) {
-            dbDrugChartBeanLocal.create(action,
+            drugChart = dbDrugChartBeanLocal.create(action,
                     masterId,
                     interval.getBeginDateTime() == null ? null : new Date(interval.getBeginDateTime()),
                     interval.getEndDateTime() == null ? null : new Date(interval.getEndDateTime()),
                     interval.getStatus(),
                     interval.getNote());
         } else {
-            DrugChart drugChart = em.find(DrugChart.class, interval.getId());
+            drugChart = em.find(DrugChart.class, interval.getId());
             if (drugChart == null) {
                 throw new CoreException("Интервал назначения не найден id = " + interval.getId());
             } else {
@@ -212,6 +234,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
                 }
             }
         }
+        return drugChart;
     }
 
     private void updateInterval(DrugChart drugChart, AssigmentIntervalData interval) {
@@ -242,22 +265,27 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         }
     }
 
-    private void saveIntervals(Action action, String note, List<AssigmentIntervalData> assigmentIntervals) {
+    private void saveIntervals(Action action, String note, List<AssigmentIntervalData> assigmentIntervals, Map<DrugData, DrugComponent> drugComponentByDrugData) {
         for (AssigmentIntervalData interval : assigmentIntervals) {
             final Date endDateTime = interval.getEndDateTime() == null ? null : new Date(interval.getEndDateTime());
-            dbDrugChartBeanLocal.create(action, interval.getMasterId(), new Date(interval.getBeginDateTime()), endDateTime, interval.getStatus(), note);
+            DrugChart drugChart = dbDrugChartBeanLocal.create(action, interval.getMasterId(), new Date(interval.getBeginDateTime()), endDateTime, interval.getStatus(), note);
+            for(DrugData drugData : interval.getDrugs()) {
+                dbDrugIntervalCompParamLocal.create(drugChart, drugComponentByDrugData.get(drugData), drugData.getDose(), drugData.getVoa());
+            }
         }
     }
 
-    private void updateDrugs(Action action, List<DrugData> drugs) {
+    private  Map<DrugData, DrugComponent> updateDrugs(Action action, Iterable<DrugData> drugs) {
+        Map<DrugData, DrugComponent> res = new HashMap<DrugData, DrugComponent>();
         for (DrugData drugData : drugs) {
-            DrugComponent drugComponent = drugData.getId() == null ? null : em.find(DrugComponent.class, drugData.getId());
+            DrugComponent drugComponent = drugData.getNomen() == null ? null : em.find(DrugComponent.class, drugData.getNomen());
             if (drugComponent == null) {
-                dbDrugComponentBeanLocal.create(action, drugData.getNomen(), drugData.getName(), drugData.getDose(), drugData.getUnit());
+                drugComponent = dbDrugComponentBeanLocal.create(action, drugData.getNomen(), drugData.getName(), drugData.getDose(), drugData.getUnit());
             } else {
                 drugComponent.setAction(action);
                 em.persist(drugComponent);
             }
+            res.put(drugData, drugComponent);
         }
         List<DrugComponent> curDrugs = dbDrugComponentBeanLocal.getComponentsByPrescriptionAction(action.getId());
         final Date now = new Date();
@@ -266,9 +294,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
                 drugComp.setCancelDateTime(now);
             }
         }
+        return res;
     }
 
-    private boolean isPresrent(DrugComponent drugComp, List<DrugData> drugs) {
+    private boolean isPresrent(DrugComponent drugComp, Iterable<DrugData> drugs) {
         for (DrugData drugData : drugs) {
             if (drugComp.getId().equals(drugData.getId())) {
                 return true;
@@ -278,10 +307,13 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     }
 
 
-    private void saveDrugs(Action action, List<DrugData> drugs) {
+    private Map<DrugData, DrugComponent> saveDrugs(Action action, Iterable<DrugData> drugs) {
+        Map<DrugData, DrugComponent> res = new HashMap<DrugData, DrugComponent>();
         for (DrugData drugData : drugs) {
-            dbDrugComponentBeanLocal.create(action, drugData.getNomen(), drugData.getName(), drugData.getDose(), drugData.getUnit());
+            DrugComponent drugComponent = dbDrugComponentBeanLocal.create(action, drugData.getNomen(), drugData.getName(), drugData.getDose(), drugData.getUnit());
+            res.put(drugData, drugComponent);
         }
+        return res;
     }
 
     private Action createPrescriptionAction(CreatePrescriptionReqData createPrescriptionReqData, AuthData authData) throws CoreException {
