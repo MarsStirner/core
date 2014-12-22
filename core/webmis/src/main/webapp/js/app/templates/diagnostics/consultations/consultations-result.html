@@ -1,0 +1,29 @@
+<div class="actions" style="margin-bottom:1em;">
+    <button class="buck-to-list"><i class="icon-list"></i> Вернуться к списку</button>
+    <!-- Old Print button
+    <div class="pull-right"><div id="print-button" ><i class="icon-print"></i> Печать</div></div>
+    -->
+    <span class="context-print-button" style="float:right;">    
+    </span>
+</div>
+
+<div class="Inspection">
+<div class="" style="border-bottom:1px solid #d4d4d4;padding-bottom: .5em;margin-bottom: 1em;">
+    <h2><%= data.name %></h2>
+    <div style="color: #999999;">
+        <span class="Date"><%= data.plannedEndDate %></span> <% if (data.doctor){%>| <span class="Doctor"><%= data.doctor %></span> <%}%>
+    </div>
+</div>
+
+
+<ul>
+<% _.each(data.tests, function(test){%>
+	<% if(test.value){ %>
+		<li>
+			<strong><%= test.name %>:</strong> <%= test.value %>
+		</li>
+	<% } %>
+<%});%>
+</ul>
+</div>
+

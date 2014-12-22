@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="FDField" phpName="FDField" idMethod="native">
+    <column name="id" phpName="Id" type="INTEGER" size="10" sqlType="int(10) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="fdFieldType_id" phpName="FDFieldTypeId" type="INTEGER" size="10" sqlType="int(10) unsigned" required="true"/>
+    <column name="flatDirectory_id" phpName="FlatDirectoryId" type="INTEGER" size="10" sqlType="int(10) unsigned" required="true"/>
+    <column name="flatDirectory_code" phpName="FlatDirectoryCode" type="CHAR" size="128" required="false"/>
+    <column name="name" phpName="Name" type="VARCHAR" size="4096" required="true"/>
+    <column name="description" phpName="Description" type="VARCHAR" size="4096" required="false"/>
+    <column name="mask" phpName="Mask" type="VARCHAR" size="4096" required="false"/>
+    <column name="mandatory" phpName="Mandatory" type="BOOLEAN" size="1" required="false"/>
+    <column name="order" phpName="Order" type="INTEGER" size="10" sqlType="int(10) unsigned" required="false"/>
+    <!--    <foreign-key foreignTable="FDFieldValue" >
+      <reference local="id" foreign="fdField_id"/>
+    </foreign-key>-->
+<!--     <foreign-key foreignTable="FDFieldType" name="FK_FDField_FDFieldType">
+      <reference local="fdFieldType_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="FlatDirectory" name="FK_FDField_FlatDirectory">
+      <reference local="flatDirectory_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="FlatDirectory" name="FK_FDField_FlatDirectory_code">
+      <reference local="flatDirectory_code" foreign="code"/>
+    </foreign-key> -->
+<!--     <behavior name="timestampable">
+        <parameter name="create_column" value="createDatetime" />
+        <parameter name="update_column" value="modifyDatetime" />
+    </behavior> -->
+<!--     <index name="FK_FDField_FlatDirectory">
+      <index-column name="flatDirectory_id"/>
+    </index>
+    <index name="FK_FDField_FDFieldType">
+      <index-column name="fdFieldType_id"/>
+    </index>
+    <index name="FK_FDField_FlatDirectory_code">
+      <index-column name="flatDirectory_code"/>
+    </index> -->
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

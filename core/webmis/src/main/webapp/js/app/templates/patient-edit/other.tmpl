@@ -1,0 +1,244 @@
+<li>
+	<h4>Инвалидность</h4>
+	<div id="disabilities">
+		<div class="LineBlock">
+			<div class="SemiCol">
+				<span class="Label"> Категория льгот </span>
+				<select class="Styled" name="disabilities-${disCid}-benefitsCategory-id">
+					<option value="" selected="selected">...</option>
+					<!--<option value="32">Инвалидность</option>-->
+					{{each dicts.benefitCategoriesFederal}}
+					<option value="${id}">${this["27"]}</option>
+					{{/each}}
+					{{each dicts.benefitCategoriesRegional}}
+					<option value="${id}">${this["30"]}</option>
+					{{/each}}
+				</select>
+			</div>
+			<div class="HalfCol">
+				<span class="Label">Тип</span>
+				<select class="Styled" name="disabilities-${disCid}-disabilityType-id">
+					<option value="" selected="selected">...</option>
+					<!--<option value="308">Ребенок-инвалид</option>
+												<option value="309">Приобретенная инвалидность</option>-->
+					{{each dicts.disabilityTypes}}
+					<option value="${id}">${value}</option>
+					{{/each}}
+				</select>
+			</div>
+			<div class="QuartCol">
+				<label>
+					Дата начала
+				</label>
+				<!--<div class="DatePeriod SingleDate">
+					<div class="FromTo">-->
+				<div class="date">
+						<input type="text" name="disabilities-${disCid}-rangeDisabilityDate-start" placeholder="дд.мм.гггг" class="SelectDate" data-type="date" data-maxdate="0"/>
+					<i class="icon-calendar date-icon"></i>
+				</div>
+					<!--</div>
+					<i class="DateIcon Icon"></i>
+				</div>-->
+			</div>
+			<div class="QuartCol">
+				<label>
+					Дата окончания
+				</label>
+				<!--<div class="DatePeriod SingleDate">
+					<div class="FromTo">-->
+				<div class="date">
+						<input type="text" name="disabilities-${disCid}-rangeDisabilityDate-end" placeholder="дд.мм.гггг" class="SelectDate" data-type="date" data-mindate="1"/>
+					<i class="icon-calendar date-icon"></i>
+				</div>
+					<!--</div>
+					<i class="DateIcon Icon"></i>
+				</div>-->
+			</div>
+		</div>
+		<div class="LineBlock">
+			<div class="SemiCol">
+				<span class="Label"> Документ подтверждающий инвалидность </span>
+				<select class="Styled" name="disabilities-${disCid}-document-id">
+					<option value="" selected="selected">...</option>
+					{{each dicts.disabilityApprovalDocs}}
+					<option value="${id}">${value}</option>
+					{{/each}}
+				</select>
+			</div>
+			<div class="QuartCol">
+				<label>
+					Серия
+				</label>
+				<input type="text" name="disabilities-${disCid}-document-series" placeholder="Серия" data-maxlength="8"/>
+			</div>
+			<div class="QuartCol">
+				<label>
+					Номер
+				</label>
+				<input type="text" name="disabilities-${disCid}-document-number" placeholder="Номер" data-maxlength="16"/>
+			</div>
+			<div class="QuartCol">
+				<label>
+					Дата выдачи
+				</label>
+				<!--<div class="DatePeriod SingleDate">
+					<div class="FromTo">-->
+				<div class="date">
+						<input type="text" name="disabilities-${disCid}-document-date" placeholder="дд.мм.гггг" class="SelectDate" data-type="date" data-maxdate="0"/>
+					<i class="icon-calendar date-icon"></i>
+				</div>
+					<!--</div>
+					<i class="DateIcon Icon"></i>
+				</div>-->
+			</div>
+		</div>
+		<div class="LineBlock">
+			<div class="SemiCol">
+				<label>
+					Примечание
+				</label>
+				<input type="text" name="disabilities-${disCid}-document-comment" placeholder="Примечание" />
+			</div>
+		</div>
+	</div>
+</li>
+<li>
+	<h4>Занятость</h4>
+	<div id="occupations">
+		<div class="LineBlock">
+			<div class="SemiCol">
+				<span class="Label"> Социальный статус</span>
+				<select class="Styled" id="social_status" name="occupations-${occCid}-socialStatus-id">
+					<option value="" selected="selected">...</option>
+					{{each dicts.socialStatuses}}
+					<option value="${this['id']}" {{if this.dataRelation}}data-relation="${this.dataRelation}"{{/if}}>${this['value']}</option>
+					{{/each}}
+				</select>
+			</div>
+		</div>
+		<div class="Occupation Preschool LineBlock Hidden">
+			<div class="HalfCol">
+				<label>
+					Номер детсада, ясли
+				</label>
+				<input type="text" name="occupations-${occCid}-works-${workCid}-preschoolNumber" placeholder=""/>
+			</div>
+			<div class="SemiCol">
+				<label>
+					Примечание
+				</label>
+				<input type="text" name="occupations-${occCid}-comment" placeholder="Примечание"/>
+			</div>
+		</div>
+		<div class="Occupation School LineBlock Hidden">
+			<div class="QuartCol">
+				<label>
+					Номер школы
+				</label>
+				<input type="text" name="occupations-${occCid}-works-${workCid}-schoolNumber" placeholder=""/>
+			</div>
+			<div class="QuartCol">
+				<label>
+					Класс
+				</label>
+				<input type="text" name="occupations-${occCid}-works-${workCid}-classNumber" placeholder=""/>
+			</div>
+			<div class="SemiCol">
+				<label>
+					Примечание
+				</label>
+				<input type="text" name="occupations-${occCid}-comment" placeholder="Примечание"/>
+			</div>
+		</div>
+		<div class="Occupation Military Hidden">
+			<div class="LineBlock">
+				<div class="SemiCol">
+					<span class="Label">Род войск</span>
+					<select class="Styled" name="occupations-${occCid}-works-${workCid}-forceBranch-id">
+						<option value="" selected="selected">...</option>
+						{{each dicts.forceBranches}}
+						<option value="${this['id']}">${this['17']}</option>
+						{{/each}}
+					</select>
+				</div>
+				<div class="HalfCol">
+					<label>
+						Войсковая часть
+					</label>
+					<input type="text" name="occupations-${occCid}-works-${workCid}-militaryUnit" placeholder="" />
+				</div>
+				<div class="HalfCol">
+					<span class="Label">Звание</span>
+					<select class="Styled" name="occupations-${occCid}-works-${workCid}-rank-id">
+						<option value="" selected="selected">...</option>
+						{{each dicts.ranks}}
+						<option value="${this['id']}">${this['20']}</option>
+						{{/each}}
+					</select>
+				</div>
+			</div>
+			<div class="SemiCol">
+				<label>
+					Примечание
+				</label>
+				<input type="text" name="occupations-${occCid}-comment" placeholder="Примечание" />
+			</div>
+		</div>
+		<div class="Occupation WorkingPlace Hidden">
+			<div class="LineBlock">
+				<div class="SemiCol">
+					<label>
+						Место работы
+					</label>
+					<input type="text" name="occupations-${occCid}-works-${workCid}-workingPlace" placeholder="" />
+				</div>
+				<div class="SemiCol">
+					<label>
+						Должность
+					</label>
+					<input type="text" name="occupations-${occCid}-works-${workCid}-position" placeholder="" />
+				</div>
+			</div>
+			<div class="LineBlock">
+				<div class="SemiCol">
+					<label>
+						Примечание
+					</label>
+					<input type="text" name="occupations-${occCid}-comment" placeholder="Примечание" />
+				</div>
+			</div>
+		</div>
+		<div class="Occupation CommentOnly Hidden">
+			<div class="LineBlock">
+				<div class="SemiCol">
+					<label>
+						Примечание
+					</label>
+					<input type="text" name="occupations-${occCid}-comment" placeholder="Примечание" />
+				</div>
+			</div>
+		</div>
+	</div>
+</li>
+<li>
+	<div class="LineBlock">
+		<div class="SemiCol">
+			<span class="Label">Гражданство</span>
+			<select class="Styled" name="citizenship-first-socStatusType-id">
+				<option value="" selected="selected">...</option>
+				{{each dicts.citizenships}}
+				<option value="${id}">${value}</option>
+				{{/each}}
+			</select>
+		</div>
+		<div class="SemiCol">
+			<span class="Label">Второе гражданство</span>
+			<select class="Styled" name="citizenship-second-socStatusType-id">
+				<option value="" selected="selected">...</option>
+				{{each dicts.citizenships}}
+				<option value="${id}">${value}</option>
+				{{/each}}
+			</select>
+		</div>
+	</div>
+</li>

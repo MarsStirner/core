@@ -1,0 +1,60 @@
+{{if id}}
+<table>
+	<tr>
+		<th></th>
+		<th>Cito</th>
+		<th></th>
+	</tr>
+	<td>
+
+
+		<ul class="EventList">
+			<li><label style="width: 400px;"><input type="checkbox"/> ${name}</label>
+
+				{{if group}}
+				{{if group[1].attribute.length}}
+				<ul class="EventList">
+					{{each group[1].attribute}}
+					{{if type == "String"}}
+					<li>
+						<label>
+							<input type="checkbox" {{if properties[0].value == 'false'}}disabled="disabled"{{/if}} {{if
+							properties[1].value}}checked{{/if}} /> ${name}
+						</label>
+					</li>
+					{{/if}}
+					{{/each}}
+				</ul>
+				{{/if}}
+				{{/if}}
+			</li>
+		</ul>
+
+	</td>
+	<td><input type="checkbox"/></td>
+	<td>
+
+		<div class="HalfCol">
+
+				<div class="DateTime">
+					<div class="DatePeriod SingleDate">
+						<div class="FromTo">
+							<input type="text" id="start-date-${id}" data-relation="#start-time-${id}" data-mindate="0"
+																			 name="start-date-${id}" placeholder="дд.мм.гггг" class="SelectDate has45Datepicker"
+																			 required="required" ></div>
+						<i class="DateIcon Icon"></i></div>
+
+					<div class="SingleTime">
+						<input type="text" id="start-time-${id}" class="HourPicker "
+																				 data-relation="#start-date-${id}" name="start-time-${id}" placeholder="чч:мм"
+																				 required="required"></div>
+				</div>
+
+		</div>
+
+	</td>
+
+
+</table>
+{{/if}}
+

@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="FlatDirectory" phpName="FlatDirectory" idMethod="native">
+    <column name="id" phpName="Id" type="INTEGER" size="10" sqlType="int(10) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="name" phpName="Name" type="VARCHAR" size="4096" required="true"/>
+    <column name="code" phpName="Code" type="CHAR" size="128" required="false"/>
+    <column name="description" phpName="Description" type="VARCHAR" size="4096" required="false"/>
+<!--     <index name="FK_FlatDirectory_code">
+      <index-column name="code"/>
+    </index> -->
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

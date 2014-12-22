@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="ActionProperty_OrgStructure" phpName="ActionPropertyOrgStructure" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="index" phpName="index" type="INTEGER" primaryKey="true" required="true" defaultValue="0"/>
+    <column name="value" phpName="value" type="INTEGER" required="false"/>
+    <index name="ActionProperty_OrgStructure_value">
+      <index-column name="value"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

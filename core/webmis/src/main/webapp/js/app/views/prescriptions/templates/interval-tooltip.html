@@ -1,0 +1,63 @@
+<div class="korus-tooltip">
+<% if(data.prescription.moa){%>
+    <p>
+        Тип введения: <%= data.prescription.moa %>
+    </p>
+<%}%>
+
+<% if(data.prescription.voa){%>
+    <p>
+        Скорость введения: <%= data.prescription.voa %> мл/час
+    </p>
+<%}%>
+<% if(data.prescription.note){%>
+    <p>   
+        Примечание: <%= data.prescription.note %>
+    </p>
+<%}%>
+
+<div>
+    <p>
+    Препараты
+    </p>
+<table>
+    <tr>
+        <td>Название</td>
+        <td>Доза</td>
+        <td>Ед.</td>
+    </tr>
+    <% _.each(data.prescription.drugs, function(drug){%>
+    <tr>
+        <td><%= drug.name %></td>
+        <td><%= drug.dose %></td>
+        <td><%= drug.unitName %></td>
+    </tr>
+    <%})%>
+</table>
+</div>
+<div>
+    <p>
+        Интервал
+    </p>
+<table>
+    <tr>
+        <td>Состояние</td>
+        <td>Время</td>
+    </tr>
+        <tr>
+            <td style="background-color:<%=data.interval.backgroundColor %>;">
+                <%= data.interval.stateName %>            
+            </td>
+            <td>
+                <%= data.interval.intervalString %> 
+            </td> 
+        </tr> 
+
+</table>
+</div>
+<% if(data.prescription.setPerson){%>
+<p>
+    Назначивший врач: <%= data.prescription.setPerson.firstName %> <%= data.prescription.setPerson.lastName %>
+</p>
+<%}%>
+</div>

@@ -1,0 +1,24 @@
+<web-app>
+    <display-name>WebMIS</display-name>
+
+    <servlet>
+        <servlet-name>webmis-serlvet</servlet-name>
+        <jsp-file>/index.html</jsp-file>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>webmis-serlvet</servlet-name>
+        <url-pattern>/wm/*</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>webmis-serlvet</servlet-name>
+        <url-pattern>/auth/</url-pattern>
+    </servlet-mapping>
+
+    <servlet-mapping>
+        <servlet-name>webmis-serlvet</servlet-name>
+        <url-pattern>/data/*</url-pattern>
+    </servlet-mapping>
+
+</web-app> 

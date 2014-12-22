@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+    <table name="Client_Quoting" phpName="ClientQuoting" idMethod="native">
+        <column name="id" phpName="Id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+        <column name="createDatetime" phpName="createDatetime" type="TIMESTAMP" required="true"/>
+        <column name="createPerson_id" phpName="createPersonId" type="INTEGER" required="false"/>
+        <column name="modifyDatetime" phpName="modifyDatetime" type="TIMESTAMP" required="true"/>
+        <column name="modifyPerson_id" phpName="modifyPersonId" type="INTEGER" required="false"/>
+        <column name="deleted" phpName="deleted" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+        <column name="master_id" phpName="masterId" type="INTEGER" required="false"/>
+        <column name="identifier" phpName="identifier" type="VARCHAR" size="16" required="false"/>
+        <column name="quotaTicket" phpName="quotaTicket" type="VARCHAR" size="20" required="false"/>
+        <column name="quotaType_id" phpName="quotaTypeId" type="INTEGER" required="false"/>
+        <column name="stage" phpName="stage" type="INTEGER" size="2" required="false"/>
+        <column name="directionDate" phpName="directionDate" type="TIMESTAMP" required="true"/>
+        <column name="freeInput" phpName="freeInput" type="VARCHAR" size="128" required="false"/>
+        <column name="org_id" phpName="orgId" type="INTEGER" required="false"/>
+        <column name="amount" phpName="amount" type="INTEGER" size="1" required="true" defaultValue="0"/>
+        <column name="MKB" phpName="mkb" type="VARCHAR" size="8" required="true"/>
+        <column name="status" phpName="status" type="INTEGER" size="2" required="true" defaultValue="0"/>
+        <column name="request" phpName="request" type="INTEGER" size="1" required="true" defaultValue="0"/>
+        <column name="statment" phpName="statment" type="VARCHAR" size="255" required="false"/>
+        <column name="dateRegistration" phpName="dateRegistration" type="TIMESTAMP" required="true"/>
+        <column name="dateEnd" phpName="dateEnd" type="TIMESTAMP" required="true"/>
+        <column name="orgStructure_id" phpName="orgStructureId" type="INTEGER" required="false"/>
+        <column name="regionCode" phpName="regionCode" type="VARCHAR" size="13" required="false"/>
+        <column name="pacientModel_id" phpName="pacientModelId" type="INTEGER" required="true"/>
+        <column name="treatment_id" phpName="treatmentId" type="INTEGER" required="true"/>
+        <column name="event_id" phpName="eventId" type="INTEGER" required="false"/>
+        <column name="prevTalon_event_id" phpName="prevTalonEventId" type="INTEGER" required="false"/>
+        <column name="version" phpName="version" type="INTEGER" sqlType="int(11) unsigned" required="true"/>
+        <foreign-key foreignTable="rbTreatment" name="ClientQuoting_rbTreatment">
+            <reference local="treatment_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="rbPacientModel" name="ClientQuoting_pacientModel">
+            <reference local="pacientModel_id" foreign="id"/>
+        </foreign-key>
+        <foreign-key foreignTable="QuotaType" name="ClientQuoting_QuotaType">
+            <reference local="quotaType_id" foreign="id"/>
+        </foreign-key>
+<!--         <foreign-key foreignTable="MKB" name="ClientQuoting_MKB">
+            <reference local="MKB" foreign="DiagID"/>
+        </foreign-key> -->
+
+        <behavior name="timestampable">
+            <parameter name="create_column" value="createDatetime" />
+            <parameter name="update_column" value="modifyDatetime" />
+        </behavior>
+        <index name="createPerson_id">
+          <index-column name="createPerson_id"/>
+        </index>
+        <index name="modifyPerson_id">
+          <index-column name="modifyPerson_id"/>
+        </index>
+        <index name="regionCode">
+          <index-column name="regionCode"/>
+        </index>
+        <vendor type="mysql">
+          <parameter name="Engine" value="InnoDB"/>
+        </vendor>
+    </table>
+</database>

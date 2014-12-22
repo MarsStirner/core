@@ -1,0 +1,11 @@
+<label>
+	<input type="checkbox" class="field-toggle">
+	<%=model.get('name')%>
+</label>
+<div class="field">
+	<input type="text"
+				 class="Combo attribute-value <%=model.isReadOnly()?'Disabled':''%> <%=model.isMandatory()?'Mandatory':''%>"
+				 data-options="<%=model.get('scope').replace(/\'/g,'').split(',').join('|')%>"
+				 value="<%=model.getValue()%>"
+				 <%=model.isReadOnly()?'disabled':''%>>
+</div>

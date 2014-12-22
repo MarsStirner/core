@@ -1,0 +1,6 @@
+<select data-value="<%= data.modelKey %>" style="width: 100%;">
+    <option value="not-selected">...</option>
+	<%_.each(data.items, function(item){%>
+		<option value="<%= item.value %>"><%= item.text %></option>
+	<%})%>
+</select>

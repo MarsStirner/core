@@ -1,0 +1,111 @@
+{
+	"requestData": {
+		"filter": {
+			"code": "",
+			"eventId": 174425,
+			"plannedEndDate": null,
+			"diagnosticName": null,
+			"assignPersonId": 0,
+			"execPersonId": 0,
+			"office": null,
+			"statusId": 0,
+			"urgent": -1,
+			"mnemonic": "DI"
+		},
+		"sortingField": "plannedEndDate",
+		"sortingMethod": "desc",
+		"limit": 10,
+		"page": 1,
+		"recordsCount": 0,
+		"coreVersion": "1.0.1.1"
+	},
+	"data": [{
+		"id": 7342,
+		"plannedEndDate": 1324966331000,
+		"diagnosticName": {
+			"id": 733,
+			"name": "Электрокардиография"
+		},
+		"assignPerson": {
+			"id": 312,
+			"name": {
+				"first": "Юлия",
+				"last": "Демидова",
+				"middle": "Владимировна",
+				"raw": "Демидова Юлия Владимировна"
+			}
+		},
+		"office": "",
+		"cito": true,
+		"status": {
+			"id": 2,
+			"name": "Закончено"
+		}
+	}, {
+		"id": 7343,
+		"plannedEndDate": 1324966331000,
+		"diagnosticName": {
+			"id": 733,
+			"name": "Электрокардиография"
+		},
+		"assignPerson": {
+			"id": 312,
+			"name": {
+				"first": "Юлия",
+				"last": "Демидова",
+				"middle": "Владимировна",
+				"raw": "Демидова Юлия Владимировна"
+			}
+		},
+		"office": "",
+		"cito": false,
+		"status": {
+			"id": 0,
+			"name": "Начато"
+		}
+	}, {
+		"id": 7343,
+		"plannedEndDate": 1324966331000,
+		"diagnosticName": {
+			"id": 733,
+			"name": "Электрокардиография"
+		},
+		"assignPerson": {
+			"id": 312,
+			"name": {
+				"first": "Юлия",
+				"last": "Демидова",
+				"middle": "Владимировна",
+				"raw": "Демидова Юлия Владимировна"
+			}
+		},
+		"office": "",
+		"cito": false,
+		"status": {
+			"id": 1,
+			"name": "Ожидание"
+		}
+	}, {
+		"id": 7343,
+		"plannedEndDate": 1324966331000,
+		"diagnosticName": {
+			"id": 733,
+			"name": "Электрокардиография"
+		},
+		"assignPerson": {
+			"id": 312,
+			"name": {
+				"first": "Юлия",
+				"last": "Демидова",
+				"middle": "Владимировна",
+				"raw": "Демидова Юлия Владимировна"
+			}
+		},
+		"office": "",
+		"cito": false,
+		"status": {
+			"id": 3,
+			"name": "Отменено"
+		}
+	}]
+}

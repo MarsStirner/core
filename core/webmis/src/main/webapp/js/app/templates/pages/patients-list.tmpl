@@ -1,0 +1,69 @@
+<script id="patients-list-page" type="text/x-jquery-tmpl">
+	<section id="page" class="OneCol Clearfix">
+		<div class="ContentSide Clearfix">
+			<div class="ContentHolder">
+				<div class="Container">
+
+				</div>
+
+				<div class="GridButtons">
+					{{if allowCreateAppeal}}
+						<!--<a href="/patients/new/" class="Styled Button AddButton"><i class="Icon AddIcon Tiny"></i><span>Новая карточка</span>-->
+						<button class="AddButton">
+							<!--<i class="icon-plus"></i>-->Новая карточка
+						</button>
+
+					{{/if}}
+				</div>
+			</div>
+		</div>
+	</section>
+</script>
+
+<script id="patients-list-filters" type="text/x-jquery-tmpl">
+	<form>
+		<div class="SearchBlock">
+			<div class="EditForm Clearfix">
+				<ul class="LineBlockHolder">
+					<li>
+						<div class="LineBlock">
+							<div class="QuartCol">
+								<label>Код</label>
+								<input type="text" class="Clearable NewLineAllowed" name="patientCode" placeholder="Код" value="{{if requestData.filter && requestData.filter.patientCode}}${requestData.filter.patientCode}{{/if}}" />
+								<span class="ClearButton DeleteIcon"></span>
+							</div>
+							<div class="HalfCol">
+								<label>ФИО</label>
+								<input type="text" class="Clearable NewLineAllowed" name="fullName" placeholder="ФИО" value="{{if requestData.filter && requestData.filter.fullName}}${requestData.filter.fullName}{{/if}}" />
+								<span class="ClearButton DeleteIcon"></span>
+							</div>
+							<div class="QuartCol">
+								<label>
+									Дата рождения
+								</label>
+								<!--<div class="DatePeriod SingleDate">
+									<div class="FromTo">
+										<input type="text" name="birthDate" placeholder="дд.мм.гггг" class="SelectDate" value="{{if requestData.filter && requestData.filter.birthDate}}${requestData.filter.birthDate}{{/if}}" />
+									</div>
+									<i class="DateIcon Icon"></i>
+								</div>-->
+								<div class="date">
+									<input type="text" name="birthDate" class="SelectDate" placeholder="дд.мм.гггг" value="{{if requestData.filter && requestData.filter.birthDate}}${requestData.filter.birthDate}{{/if}}" />
+									<i class="icon-calendar date-icon"></i>
+								</div>
+							</div>
+							<div class="SemiCol">
+								<label>Документ</label>
+								<input type="text" class="Clearable NewLineAllowed" name="document" placeholder="Документ" value="{{if requestData.filter && requestData.filter.document}}${requestData.filter.document}{{/if}}" />
+								<span class="ClearButton DeleteIcon"></span>
+							</div>
+							<div class="QuartCol">
+								<button class="SearchButton">Поиск</button>
+							</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+		</div>
+	</form>
+</script>

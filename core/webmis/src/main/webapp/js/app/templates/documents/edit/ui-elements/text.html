@@ -1,0 +1,30 @@
+<label style="float: left;">
+	<input type="checkbox" class="field-toggle">
+	<%=model.get('name')%>
+</label>
+<% if(!model.isReadOnly()){%>
+<div style="float: right;" class="editor-controls">
+	<div class="wysisyg">
+		<ul>
+			<li><a data-role='bold' href='#' title="Жирный"><b>Ж</b></a></li>
+			<li><a data-role='italic' href='#' title="Курсив"><i style="font-style: italic;">К</i></a></li>
+			<li>|</li>
+			<li><a data-role='underline' href='#' title="Подчёркнутый"><em style="text-decoration: underline;">Ч</em></a></li>
+			<li><a data-role='strikeThrough' href='#' title="Зачёркнутый"><strike>abc</strike></a></li>
+			<li>|</li>
+			<li><a data-role='superscript' href='#' title="Верхний индекс">x<sup>2</sup></a></li>
+			<li><a data-role='subscript' href='#' title="Нижний индекс">x<sub>2</sub></a></li>
+			<li>|</li>
+			<li><a data-role='removeFormat' href='#' title="Очистить формат"><i class="icon-file-alt"></i></a></li>
+		</ul>
+	</div>
+</div>
+<%}%>
+<!--<div class="field">
+	<textarea class="attribute-value <%=model.isReadOnly()?'Disabled':''%> <%=model.isMandatory()?'Mandatory':''%>" style="min-height: 8em;"><%=model.getValue()%></textarea>
+</div>-->
+<div class="RichTextWrapper field">
+	<div <%=!model.isReadOnly()?'contenteditable="true"':''%>
+	class="RichText attribute-value <%=model.isReadOnly()?'Disabled':''%> <%=model.isMandatory()?'Mandatory':''%>"
+	style="min-height: 8em;max-height: 50em;"><%=model.getValue()%></div>
+</div>

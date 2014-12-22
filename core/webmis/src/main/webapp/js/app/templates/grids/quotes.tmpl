@@ -1,0 +1,59 @@
+<script id="quotes-grid-department" type="text/x-jquery-tmpl">
+	<table class="Grid">
+		<thead>
+		<!--<tr class="EditTh">-->
+		<tr>
+			<th>
+				<a class="Actions SortCol" data-field="quotaTicket"><span>Номер талона</span></a>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="request"><span>Обращение</span></a>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="amount"><span>Количество этапов</span></a>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="diagnosis"><span>Код диагноза</span></a>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="quotaType"><span>Код ВМП</span></a>
+			</th>
+			<th>
+				&nbsp;
+			</th>
+		</tr>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+</script>
+
+<script id="quotes-grid-row-department" type="text/x-jquery-tmpl">
+	<td class="QuotaIdHolder" data-quota-id="${id}">
+		${talonNumber}
+	</td>
+	<td>
+		{{if request.id == 0}}
+			Первично
+		{{else}}
+			Повторно
+		{{/if}}
+	</td>
+	<td>
+		${stageSum}
+	</td>
+	<td>
+		${mkb.code}
+	</td>
+	<td>
+		${quotaType.code}
+	</td>
+	<td class="ButtonCell">
+		<i title="Редактировать" class="EditQuota icon-pencil"></i>
+	</td>
+</script>
+
+<script id="quotes-grid-department-default" type="text/x-jquery-tmpl">
+	<h3>Нет добавленых талонов</h3>
+</script>

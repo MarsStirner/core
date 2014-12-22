@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+    <table name="EventType" phpName="EventType" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="createDatetime" phpName="createDatetime" type="TIMESTAMP" required="true"/>
+    <column name="createPerson_id" phpName="createPersonId" type="INTEGER" required="false"/>
+    <column name="modifyDatetime" phpName="modifyDatetime" type="TIMESTAMP" required="true"/>
+    <column name="modifyPerson_id" phpName="modifyPersonId" type="INTEGER" required="false"/>
+    <column name="deleted" phpName="deleted" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="code" phpName="code" type="VARCHAR" size="8" required="true"/>
+    <column name="name" phpName="name" type="VARCHAR" size="64" required="true"/>
+    <column name="purpose_id" phpName="purposeId" type="INTEGER" required="false"/>
+    <column name="finance_id" phpName="financeId" type="INTEGER" required="false"/>
+    <column name="scene_id" phpName="sceneId" type="INTEGER" required="false"/>
+    <column name="visitServiceModifier" phpName="visitServiceModifier" type="VARCHAR" size="128" required="true"/>
+    <column name="visitServiceFilter" phpName="visitServiceFilter" type="VARCHAR" size="32" required="true"/>
+    <column name="visitFinance" phpName="visitFinance" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="actionFinance" phpName="actionFinance" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="period" phpName="period" type="TINYINT" required="true"/>
+    <column name="singleInPeriod" phpName="singleinPeriod" type="TINYINT" required="true"/>
+    <column name="isLong" phpName="isLong" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="dateInput" phpName="dateInput" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="service_id" phpName="serviceId" type="INTEGER" required="false"/>
+    <column name="context" phpName="context" type="VARCHAR" size="64" required="true"/>
+    <column name="form" phpName="form" type="VARCHAR" size="64" required="true"/>
+    <column name="minDuration" phpName="minDuration" type="INTEGER" required="true" defaultValue="0"/>
+    <column name="maxDuration" phpName="maxDuration" type="INTEGER" required="true" defaultValue="0"/>
+    <column name="showStatusActionsInPlanner" phpName="showStatusActionsInPlanner" type="BOOLEAN" size="1" required="true" defaultValue="true"/>
+    <column name="showDiagnosticActionsInPlanner" phpName="showDiagnosticActionsInPlanner" type="BOOLEAN" size="1" required="true" defaultValue="true"/>
+    <column name="showCureActionsInPlanner" phpName="showCureActionsInPlanner" type="BOOLEAN" size="1" required="true" defaultValue="true"/>
+    <column name="showMiscActionsInPlanner" phpName="showMiscActionsInPlanner" type="BOOLEAN" size="1" required="true" defaultValue="true"/>
+    <column name="limitStatusActionsInput" phpName="limitStatusActionsInput" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="limitDiagnosticActionsInput" phpName="limitDiagnosticActionsInput" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="limitCureActionsInput" phpName="limitCureActionsInput" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="limitMiscActionsInput" phpName="limitMiscActionsInput" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="showTime" phpName="showTime" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="medicalAidType_id" phpName="medicalAidTypeId" type="INTEGER" required="false"/>
+    <column name="eventProfile_id" phpName="eventProfileId" type="INTEGER" required="false"/>
+    <column name="mesRequired" phpName="mesRequired" type="INTEGER" size="1" required="true" defaultValue="0"/>
+    <column name="mesCodeMask" phpName="mesCodeMask" type="VARCHAR" size="64" required="false" defaultValue=""/>
+    <column name="mesNameMask" phpName="mesNameMask" type="VARCHAR" size="64" required="false" defaultValue=""/>
+    <column name="counter_id" phpName="counterId" type="INTEGER" required="false"/>
+    <column name="isExternal" phpName="isExternal" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="isAssistant" phpName="isAssistant" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="isCurator" phpName="isCurator" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="canHavePayableActions" phpName="canHavePayableActions" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="isRequiredCoordination" phpName="isRequiredCoordination" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="isOrgStructurePriority" phpName="isOrgStructurePriority" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="isTakenTissue" phpName="isTakenTissue" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="sex" phpName="sex" type="TINYINT" required="true" defaultValue="0"/>
+    <column name="age" phpName="age" type="VARCHAR" size="9" required="true"/>
+    <column name="rbMedicalKind_id" phpName="rbMedicalKindId" type="INTEGER" required="false"/>
+    <column name="age_bu" phpName="ageBu" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="false"/>
+    <column name="age_bc" phpName="ageBc" type="SMALLINT" required="false"/>
+    <column name="age_eu" phpName="ageEu" type="TINYINT" size="3" sqlType="tinyint(3) unsigned" required="false"/>
+    <column name="age_ec" phpName="ageEc" type="SMALLINT" required="false"/>
+    <column name="requestType_id" phpName="requestTypeId" type="INTEGER" required="false"/>
+    <foreign-key foreignTable="rbEventTypePurpose" name="EventType_purpose_id">
+      <reference local="purpose_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rbResult" name="EventType_result">
+      <reference local="purpose_id" foreign="eventPurpose_id"/>
+    </foreign-key>
+<!--     <foreign-key foreignTable="rbCounter" name="EventType_counter_id">
+      <reference local="counter_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rbMedicalKind" name="EventType_ibfk_1">
+      <reference local="rbMedicalKind_id" foreign="id"/>
+    </foreign-key> -->
+
+    <behavior name="timestampable">
+        <parameter name="create_column" value="createDatetime" />
+        <parameter name="update_column" value="modifyDatetime" />
+    </behavior>
+    <index name="createPerson_id">
+      <index-column name="createPerson_id"/>
+    </index>
+    <index name="modifyPerson_id">
+      <index-column name="modifyPerson_id"/>
+    </index>
+    <index name="purpose_id">
+      <index-column name="purpose_id"/>
+    </index>
+    <index name="finance_id">
+      <index-column name="finance_id"/>
+    </index>
+    <index name="code">
+      <index-column name="code"/>
+    </index>
+    <index name="service_id">
+      <index-column name="service_id"/>
+    </index>
+    <index name="medicalAidType_id">
+      <index-column name="medicalAidType_id"/>
+    </index>
+    <index name="eventProfile_id">
+      <index-column name="eventProfile_id"/>
+    </index>
+    <index name="scene_id">
+      <index-column name="scene_id"/>
+    </index>
+    <index name="scene_id_2">
+      <index-column name="scene_id"/>
+    </index>
+    <index name="scene_id_3">
+      <index-column name="scene_id"/>
+    </index>
+    <index name="EventType_counter_id">
+      <index-column name="counter_id"/>
+    </index>
+    <index name="rbMedicalKind_id">
+      <index-column name="rbMedicalKind_id"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

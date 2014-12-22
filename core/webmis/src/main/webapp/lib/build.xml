@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="build" basedir="../">
+	<target name="rename">
+		 <move todir="images/sprites" includeemptydirs="false">
+			<fileset dir="images/sprites" includes="*.png"/>
+			<mapper type="regexp" from="_(.*)?-.*?\.png" to="\1-sprite\.png"/>
+		 </move>
+	</target>
+</project>

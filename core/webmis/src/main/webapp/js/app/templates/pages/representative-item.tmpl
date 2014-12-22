@@ -1,0 +1,24 @@
+<div class="SemiCol WithoutName">
+	<h4 style="padding-top: .4em">
+		${model.relative.name} ${Core.Date.getYear(model.relative.birthDate)} г.р.
+	</h4>
+</div>
+<div class="HalfCol">
+	<label>Степень родства</label>
+	<select name="relative_type"  class="Styled Mandatory">
+		<option value="">...</option>
+		{{each relationTypes}}
+		<option value="${id}">${value}</option>
+		{{/each}}
+	</select>
+</div>
+<div class="HalfCol">
+	<label>Примечание</label>
+	<input type="text" name="relative_note">
+</div>
+<div class="QuartCol ActionsOnly">
+	<div class="AddLine">
+		<i class="EditIcon Icon Tiny"></i>
+		<i class="RemoveIcon Icon Tiny"></i>
+	</div>
+</div>

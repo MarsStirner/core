@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="rbMethodOfAdministration" phpName="RbMethodOfAdministration" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="code" phpName="code" type="VARCHAR" size="16" required="true"/>
+    <column name="name" phpName="name" type="VARCHAR" size="64" required="true"/>
+    <index name="code">
+      <index-column name="code"/>
+    </index>
+    <index name="name">
+      <index-column name="name"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

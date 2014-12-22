@@ -1,0 +1,10 @@
+<h2><%= patientName%> (<%= patientAge %>) </h2>
+
+<ul class="SectionNav">
+    <%_.each(structure, function(item){%>
+    <li <% if(item.active){%>class="Selected"<%}%> >
+    <a href="<%= item.link %>"><%= item.name %></a>
+    </li>
+    <%})%>
+</ul>
+

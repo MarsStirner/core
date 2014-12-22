@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="FDRecord" phpName="FDRecord" idMethod="native">
+    <column name="id" phpName="Id" type="INTEGER" size="10" sqlType="int(10) unsigned" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="flatDirectory_id" phpName="FlatDirectoryId" type="INTEGER" size="10" sqlType="int(10) unsigned" required="true"/>
+    <column name="flatDirectory_code" phpName="FlatDirectoryCode" type="CHAR" size="128" required="false"/>
+    <column name="order" phpName="Order" type="INTEGER" required="false"/>
+    <column name="name" phpName="Name" type="VARCHAR" size="4096" required="false"/>
+    <column name="description" phpName="Description" type="VARCHAR" size="4096" required="false"/>
+    <column name="dateStart" phpName="DateStart" type="TIMESTAMP" required="false"/>
+    <column name="dateEnd" phpName="DateEnd" type="TIMESTAMP" required="false"/>
+    <!--    <foreign-key foreignTable="FDFieldValue" phpName="recordValues">
+      <reference local="id" foreign="fdRecord_id"/>
+    </foreign-key>
+-->
+
+<!--     <foreign-key foreignTable="FlatDirectory" name="FK_FDRecord_FlatDirectory">
+      <reference local="flatDirectory_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="FlatDirectory" name="FK_FDRecord_FlatDirectory_code">
+      <reference local="flatDirectory_code" foreign="code"/>
+    </foreign-key> -->
+<!--     <index name="FK_FDRecord_FlatDirectory">
+      <index-column name="flatDirectory_id"/>
+    </index>
+    <index name="FK_FDRecord_FlatDirectory_code">
+      <index-column name="flatDirectory_code"/>
+    </index> -->
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

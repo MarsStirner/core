@@ -1,0 +1,48 @@
+<script id="authorization-page" type="text/x-jquery-tmpl">
+
+	<div class="ServiceLogin">
+		<h2>ФГБУ «ФНКЦ ДГОИ им. Дмитрия Рогачева»<br>Минздрава России</h2>
+		<h1>Медицинская информационная система</h1>
+		<div class="LoginForm">
+
+		</div>
+	</div>
+</script>
+
+<script id="authorization-page-login-form" type="text/x-jquery-tmpl">
+	<form>
+		<ul>
+			<li>
+				<div id="auth-error" class="ToolTip">
+					<span class="Error">Введены недопустимые символы</span>
+				</div>
+			</li>
+			<li>
+				<label>Логин</label>
+				<input type="text" name="login" placeholder="Логин" />
+			</li>
+			<li>
+				<label>Пароль</label>
+				{{if (useTextForPassword)}}
+				<input type="text" name="password" placeholder="Пароль" style="-webkit-text-security: disc;"/>
+				{{else}}
+				<input type="password" name="password" placeholder="Пароль"/>
+				{{/if}}
+			</li>
+
+		</ul>
+		<div class="SubmitLine">
+			<button class="Submit"><span>Войти</span></button>
+		</div>
+	</form>
+</script>
+
+<script id="authorization-page-role-form" type="text/x-jquery-tmpl">
+	<h3>Добрый день, <strong>${name.first}&nbsp;${name.last}</strong></h3>
+	<span class="Label">Роль:</span>
+	<ul id="roles-list"></ul>
+</script>
+
+<script id="authorization-page-role" type="text/x-jquery-tmpl">
+	<button class="role" data-role-id="${id}">${name}</button>
+</script>

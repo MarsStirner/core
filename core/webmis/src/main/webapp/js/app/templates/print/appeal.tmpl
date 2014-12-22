@@ -1,0 +1,242 @@
+<script id="print-appeal" type="text/x-jquery-tmpl">
+
+		<head>
+			<meta charset="utf-8">
+			<meta http-equiv="Content-language" content="ru" />
+			<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+			<title>Печать</title>
+			<link href="/css/printpreview.css" rel="stylesheet" type="text/css" media="screen">
+			<link href="/css/print.css" rel="stylesheet" type="text/css">
+		</head>
+		<body>
+		<button class="Button Actions Print">Напечатать</button>
+
+		<div id="wrapper">
+			<div class="PrintTitle">
+				<h1>
+					ФГБУ «ФЕДЕРАЛЬНЫЙ НАУЧНО-КЛИНИЧЕСКИЙ ЦЕНТР<br> ДЕТСКОЙ ГЕМАТОЛОГИИ, ОНКОЛОГИИ И ИММУНОЛОГИИ<br>
+					ИМ. ДМИТРИЯ РОГАЧЁВА»
+				</h1>
+
+				<p class="EditLine" contenteditable="true">&nbsp;</p>
+				<p class="EditLine" contenteditable="true">&nbsp;</p>
+			</div>
+			<div class="PrintTitle">
+				<div class="Logo">
+					<p> Министерство здравоохранения РФ</p>
+					<img src="/images/logo-mis.png" alt="Лого">
+				</div>
+				<div class="FormCode">
+					<p> Код формы по ОКУД<br> <span class="EditLine" contenteditable="true">&nbsp;</span> Код учреждения по ОКПО
+						<span class="EditLine" contenteditable="true">&nbsp;</span></p>
+					<p> Медицинская документация<br> Форма 003<br> Минздравом СССР 04.10.80 №1030</p>
+				</div>
+			</div>
+			<h2> МЕДИЦИНСКАЯ КАРТА № ${number}<br> стационарного больного </h2>
+			<ul class="Form">
+				<li>
+					Дата и время поступления
+					<span class="EditLine">
+						{{if rangeAppealDateTime.start}}
+							{{formatDateTime rangeAppealDateTime.start}}
+						{{else}}
+							-
+						{{/if}}
+					</span>
+				</li>
+				<li>
+					Дата и время выписки
+					<span class="EditLine">
+						{{if rangeAppealDateTime.end}}
+							{{formatDateTime rangeAppealDateTime.end}}
+						{{else}}
+							-
+						{{/if}}
+					</span>
+				</li>
+				<li>
+					Исполнитель
+					<span class="EditLine">
+						{{if assignment.doctor}}
+							${assignment.doctor}
+						{{else}}
+							-
+						{{/if}}
+					</span>
+				</li>
+				<li>
+					Экстренность
+					<span class="EditLine">
+						{{if urgent}}
+							по экстренным показаниям
+						{{else}}
+							не срочно
+						{{/if}}
+					</span>
+				</li>
+				<li>
+					Кем направлен
+					<span class="EditLine">
+						{{if assignment.directed}}
+							${assignment.directed}
+						{{else}}
+							-
+						{{/if}}
+					</span>
+				</li>
+				<li>
+					Дата направления
+					<span class="EditLine">{{formatDate assignment.assignmentDate}}</span>
+				</li>
+				<li>
+					Номер направления
+					<span class="EditLine">${assignment.number}</span>
+				</li>
+				<li>
+					Кем доставлен
+					<span class="EditLine">${deliveredType}</span>
+				</li>
+				<li>
+					Вид транспортировки
+					<span class="EditLine">${movingType}</span>
+				</li>
+				<li>
+					Диагноз направившего учреждения
+					<span class="EditLine">
+						{{each(i, diagnosis) diagnoses}}
+							{{if diagnosis.diagnosisKind == "diagReceivedMkb"}}
+								${diagnosis.mkb.code} - ${diagnosis.mkb.diagnosis}
+							{{/if}}
+						{{/each}}
+					</span>
+				</li>
+				<li>
+					В состоянии опьянения?
+					<span class="EditLine">${stateType}</span>
+				</li>
+				<li>
+					Травма
+					<span class="EditLine">${injury}</span>
+				</li>
+				<li>
+					Доставлен в стационар от начала заболевания
+					<span class="EditLine">
+						${deliveredAfterType}
+					</span>
+				</li>
+
+				<li>
+					Группа крови
+					<span class="EditLine">${patient.medicalInfo.blood.group}</span>
+				</li>
+				<li>
+					Побочное действие лекарств (непереносимость)
+					<span class="EditLine">
+						{{each(i, drugIntolerance) patient.medicalInfo.drugIntolerances}}
+							<em class="Warning">${drugIntolerance.substance}	{{if drugIntolerance.degree}}${drugIntolerance.degree} степень{{/if}}	{{if drugIntolerance.checkingDate}}установлено: {{formatDate drugIntolerance.checkingDate}}{{/if}}</em>
+						{{/each}}
+					</span>
+				</li>
+
+
+				<li>
+					1. Фамилия, имя, отчество
+					<span class="EditLine">
+						${patient.name.last} ${patient.name.first} ${patient.name.middle}
+					</span>
+				</li>
+				<li>
+					2. Пол
+					<span class="EditLine">
+						{{if patient.sex=="male"}}
+							Мужской
+						{{else patient.sex=="female"}}
+							Женский
+						{{else}}
+							Не установлен
+						{{/if}}
+					</span>
+				</li>
+				<li>
+					3. Возраст
+					<span class="EditLine">
+						{{ageString patient.birthDate}}
+					</span>
+				</li>
+				<li>
+					4. Постоянное место жительства: город, село (подчеркнуть)
+					{{if patient.address.registered.fullAddress}}
+						${patient.address.registered.fullAddress}
+					{{else}}
+						-
+					{{/if}}
+				</li>
+				<li>
+					5. Место работы, профессия или должность <span class="EditLine" contenteditable="true">&nbsp;</span>
+
+					{{each(i, occupation) patient.occupations}}
+						<p class="EditLine">${occupation.socialStatus.name}</p>
+
+						{{if occupation.socialStatus.id == 310}}
+						<p class="EditLine">${occupation.position} в «${occupation.workingPlace}»</p>
+						{{/if}}
+
+						{{if occupation.socialStatus.id == 313}}
+						<p class="EditLine">Номер детсада, ясли: ${occupation.preschoolNumber}</p>
+						{{/if}}
+
+						{{if occupation.socialStatus.id == 314}}
+						<p class="EditLine">Номер школы: ${occupation.schoolNumber}, класс ${occupation.classNumber}</p>
+						{{/if}}
+
+						{{if occupation.socialStatus.id == 315}}
+						<p class="EditLine">${occupation.militaryUnit}</p>
+						<p class="EditLine">Войсковая часть: ${occupation.militaryUnit}</p>
+						<p class="EditLine">${occupation.rank.name}</p>
+						{{/if}}
+
+					{{/each}}
+				</li>
+			</ul>
+			<table width="100%">
+				<thead>
+				<tr>
+					<th scope="col">Диагноз клинический
+					</th>
+					<th scope="col" class="DateCol">Дата установления
+					</th>
+				</tr>
+				</thead>
+				<tbody>
+				{{each(i, diagnosis) diagnoses}}
+					<tr>
+						<td>
+							${diagnosis.mkb.code} ${diagnosis.mkb.diagnosis}
+						</td>
+						<td>
+
+						</td>
+					</tr>
+
+				{{/each}}
+				<tr>
+					<td contenteditable="true">&nbsp;</td>
+					<td contenteditable="true">&nbsp;</td>
+				</tr>
+				<tr>
+					<td contenteditable="true">&nbsp;</td>
+					<td contenteditable="true">&nbsp;</td>
+				</tr>
+				<tr>
+					<td contenteditable="true">&nbsp;</td>
+					<td contenteditable="true">&nbsp;</td>
+				</tr>
+				<tr>
+					<td contenteditable="true">&nbsp;</td>
+					<td contenteditable="true">&nbsp;</td>
+				</tr>
+				</tbody>
+			</table>
+		</div>
+		</body>
+</script>

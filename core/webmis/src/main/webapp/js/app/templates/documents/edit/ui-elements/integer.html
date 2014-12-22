@@ -1,0 +1,12 @@
+<!--<div class="SetComment">-->
+	<label>
+		<input type="checkbox" class="field-toggle">
+		<%=model.get('name')%>
+		<%if (model.getPropertyValueFor('unit')) {%>
+			<span style="font-size: .9em;">(<%=model.getPropertyValueFor('unit')%>)</span>
+		<%}%>
+	</label>
+	<div class="field">
+		<input type="text" class="attribute-value integer <%=model.isReadOnly()?'Disabled':''%> <%=model.isMandatory()?'Mandatory':''%>" value="<%=model.getValue()%>" <%=model.isReadOnly()?'disabled':''%>>
+	</div>
+<!--</div>-->

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="ActionProperty_Double" phpName="ActionPropertyDouble" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="index" phpName="index" type="INTEGER" primaryKey="true" required="true" defaultValue="0"/>
+    <column name="value" phpName="value" type="DOUBLE" required="true"/>
+
+<!--     <foreign-key foreignTable="ActionProperty" name="ActionProperty_Double" onDelete="CASCADE" onUpdate="CASCADE">
+      <reference local="id" foreign="id"/>
+    </foreign-key> -->
+
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

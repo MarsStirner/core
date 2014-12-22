@@ -1,0 +1,19 @@
+<td colspan="2">
+	<span>История изменения группы крови</span>
+	<ul>
+		<% if (bloodTypeHistory.length) { %>
+				<% bloodTypeHistory.each(function (bloodType) { %>
+					<li>
+						<span>
+							<%= Core.Date.format(bloodType.get("bloodDate")) %>:
+						</span>
+						<span class="blood-date">
+							<%= bloodType.get("bloodType").name %>
+						</span>
+					</li>
+				<% }); %>
+			<% } else { %>
+				<li>Нет данных</li>
+		<% } %>
+	</ul>
+</td>

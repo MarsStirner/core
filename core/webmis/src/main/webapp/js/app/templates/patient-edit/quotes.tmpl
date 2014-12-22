@@ -1,0 +1,103 @@
+<div class="EditForm">
+	<ul class="LineBlockHolder">
+		<li>
+			<div class="LineBlock">
+				<div class="ThirdCol">
+					<label>
+						Номер ИБ
+					</label>
+					<!--<input type="text" name="" placeholder="" />-->
+					<select class="Styled Mandatory" id="quota-appealNumber">
+						{{each(i, a) patientAppeals}}
+							<option value="${a.id}" {{if model.appealNumber == a.id}}selected{{/if}}>${a.number}</option>
+						{{/each}}
+					</select>
+				</div>
+				<div class="ThirdCol">
+					<label>
+						Этап
+					</label>
+					<select class="Styled Mandatory" id="quota-stage">
+						<option value="">...</option>
+						{{each(i, stage) dicts.stages}}
+							<option value="${stage.id}" {{if model.stage.id == stage.id}}selected{{/if}}>${stage[75]}</option>
+						{{/each}}
+					</select>
+				</div>
+			</div>
+			<div class="LineBlock">
+				<div class="ThirdCol">
+					<label>
+						Номер талона
+					</label>
+					<input type="text" id="quota-talonNumber" placeholder=""  value="${model.talonNumber}"/>
+				</div>
+				<div class="ThirdCol">
+					<label>
+						Обращение
+					</label>
+					<select class="Styled Mandatory" id="quota-request">
+						<option value="">...</option>
+						<option value="0" {{if model.request.id == 0}}selected{{/if}}>Первичный</option>
+						<option value="1" {{if model.request.id == 1}}selected{{/if}}>Повтроный</option>
+					</select>
+				</div>
+			</div>
+			<div class="LineBlock">
+				<div class="QuartCol">
+					<span class="Label"> Диагноз </span>
+					<input id="quota-diagnosis-code" type="text" placeholder="" value="{{if model.mkb && model.mkb.code}}${model.mkb.code}{{/if}}" class="Mandatory"/>
+					<span class="FieldInfo">Код по МКБ</span>
+				</div>
+				<div class="HugeCol WithoutName">
+					<input id="quota-diagnosis-desc" class="Disabled NotEditable Mandatory" disabled="disabled" type="text" placeholder="" value="{{if model.mkb && model.mkb.diagnosis}}${model.mkb.diagnosis}{{/if}}"/>
+					<span class="FieldInfo">Описание</span>
+				</div>
+				<div class="QuartCol">
+					<button class="MKBLauncher" style="top: 1.9em;"><span>МКБ-10</span></button>
+				</div>
+			</div>
+			<div class="LineBlock">
+				<div class="HugeCol">
+					<label>
+						Код ВМП
+					</label>
+					<select class="Styled Mandatory" id="quota-quotaType">
+						<option value="">...</option>
+						{{each(i, qt) quotaTypes}}
+						<optgroup label="${qt.code}">
+							{{each(j, t) qt.types}}
+							<option value="${t.id}" {{if model.quotaType.id == t.id}}selected{{/if}}>${t.code} ${t.name}</option>
+							{{/each}}
+						</optgroup>
+						{{/each}}
+					</select>
+				</div>
+			</div>
+			<div class="LineBlock">
+				<div class="ThirdCol">
+					<label>
+						Статус
+					</label>
+					<select class="Styled Mandatory" id="quota-status">
+						<option value="">...</option>
+						{{each(i, d) dicts.statuses}}
+							<option value="${d.id}" {{if model.status.id == d.id}}selected{{/if}}>${d.value}</option>
+						{{/each}}
+					</select>
+				</div>
+				<div class="ThirdCol">
+					<label>
+						Отделение
+					</label>
+					<select class="Styled departments Mandatory" id="quota-department">
+						<option value="">...</option>
+						{{each(i, d) departments}}
+							<option value="${d.id}" {{if model.department && model.department.id == d.id}}selected{{/if}}>${d.name}</option>
+						{{/each}}
+					</select>
+				</div>
+			</div>
+		</li>
+	</ul>
+</div>

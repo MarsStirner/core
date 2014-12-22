@@ -1,0 +1,594 @@
+<script id="appeals-grid-doctor" type="text/x-jquery-tmpl">
+	<table class="Grid">
+		<thead>
+			<!--<tr class="EditTh">-->
+			<tr>
+				<th>
+					<span>№</span>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="beginDate"><span>Дата и время</span></a>
+					<!--<div class="Filter Hidden">
+						<div class="DatePeriod SingleDate">
+							<div class="FromTo">
+								<input type="text" class="SelectDate" placeholder="дд.мм.гггг" name="beginDate">
+							</div>
+							<i class="DateIcon Icon"></i>
+						</div>
+					</div>-->
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="externalId"><span>№ истории болезни</span></a>
+					<div class="Filter Hidden">
+						<input type="text" name="externalId" placeholder="№" />
+					</div>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="fullName"><span>ФИО</span></a>
+					<div class="Filter Hidden">
+						<input type="text" name="fullName" placeholder="ФИО" />
+					</div>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="birthDate"><span>Дата рожд.</span></a>
+					<!--<div class="Filter Hidden">
+						<div class="DatePeriod SingleDate">
+							<div class="FromTo">
+								<input type="text" class="SelectDate" placeholder="дд.мм.гггг" name="birthDate">
+							</div>
+							<i class="DateIcon Icon"></i>
+						</div>
+					</div>-->
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="birthDate"><span>Пол</span></a>
+					<!--<div class="Filter Hidden">
+						<select class="Styled" name="sex">
+							<option value="1" selected="selected">М</option>
+							<option value="2">Ж</option>
+						</select>
+					</div>-->
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="diagnosis"><span>Направительный диагноз</span></a>
+					<!--<div class="Filter Hidden">
+						<input type="text" name="diagnosis" placeholder="Название или номер МКБ" />
+					</div>-->
+				</th>
+				<th>
+					<a class="Actions SortCol"  data-field="phone"><span>Телефон</span></a>
+				</th>
+				<th>&nbsp;</th>
+			</tr>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+</script>
+
+<script id="appeals-grid-doctor-row" type="text/x-jquery-tmpl">
+		<td {{if !havePrimary}} class="HavePrimary"{{/if}}>
+			<a href="/appeals/${id}/"  class="open-appeal"></a>
+			${_index+1}
+		</td>
+		<td {{if !havePrimary}} class="HavePrimary"{{/if}}>
+			{{if createDatetime}}
+				{{formatDateTime createDatetime}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td {{if !havePrimary}} class="HavePrimary"{{/if}}>
+			{{if number}}
+				{{decorate(number, requestData.filter.number)}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td {{if !havePrimary}} class="HavePrimary"{{/if}}>
+			{{if patient && patient.name}}
+				{{if patient.name.first || patient.name.last || patient.name.middle}}
+					{{if patient.name.last}}
+						{{decorate(patient.name.last, requestData.filter.fullName)}}
+					{{/if}}
+					{{if patient.name.first}}
+						{{decorate(patient.name.first, requestData.filter.fullName)}}
+					{{/if}}
+					{{if patient.name.middle}}
+						{{decorate(patient.name.middle, requestData.filter.fullName)}}
+					{{/if}}
+				{{else}}
+					{{if patient.name.raw}}
+						{{decorate(patient.name.raw, requestData.filter.fullName)}}
+					{{else}}
+						-
+					{{/if}}
+				{{/if}}
+			{{/if}}
+		</td>
+		<td {{if !havePrimary}} class="HavePrimary"{{/if}}>
+			{{if patient.birthDate}}
+				{{formatDate patient.birthDate}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td {{if !havePrimary}} class="HavePrimary"{{/if}}>
+			{{if patient.sex=="male"}}
+				М
+			{{else patient.sex=="female"}}
+				Ж
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td {{if !havePrimary}} class="HavePrimary"{{/if}}>
+			{{each(i, diagnosis) diagnoses}}
+				{{if diagnosis.diagnosisKind == "assignment"}}
+					${diagnosis.mkb.code} ${diagnosis.mkb.diagnosis}
+				{{/if}}
+			{{/each}}
+		</td>
+		<td {{if !havePrimary}} class="HavePrimary"{{/if}}>
+			<!-- phones -->
+			{{if patient.phones.length}}
+				{{each(i, phone) patient.phones}}
+					{{if phone.typeId == 3}}
+						${phone.number}
+					{{/if}}
+				{{/each}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			{{if urgent}}<span class="Privilege">Срочно</span>{{/if}}
+		</td>
+</script>
+
+
+<script id="appeals-grid-nurse" type="text/x-jquery-tmpl">
+	<table class="Grid">
+		<thead>
+		<!--<tr class="EditTh">-->
+		<tr>
+			<th>
+				<span>№</span>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="beginDate"><span>Дата</span></a>
+				<!--<div class="Filter Hidden">
+					<div class="DatePeriod SingleDate">
+						<div class="FromTo">
+							<input type="text" class="SelectDate" placeholder="дд.мм.гггг" name="beginDate">
+						</div>
+						<i class="DateIcon Icon"></i>
+					</div>
+				</div>-->
+
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="externalId"><span>№ истории болезни</span></a>
+				<div class="Filter Hidden">
+					<input type="text" name="externalId" placeholder="№ истории болезни" />
+				</div>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="fullName"><span>ФИО</span></a>
+				<div class="Filter Hidden">
+					<input type="text" name="fullName" placeholder="ФИО" />
+				</div>
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="birthDate"><span>Дата рожд.</span></a>
+				<!--<div class="Filter Hidden">
+					<div class="DatePeriod SingleDate">
+						<div class="FromTo">
+							<input type="text" class="SelectDate" placeholder="дд.мм.гггг" name="birthDate">
+						</div>
+						<i class="DateIcon Icon"></i>
+					</div>
+				</div>-->
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="status"><span>Статус</span></a>
+				<!--<div class="Filter Hidden">
+					<input type="text" name="status" placeholder="Статус" />
+				</div>-->
+			</th>
+			<th>
+				<a class="Actions SortCol" data-field="actions"><span>Действия / отделение</span></a>
+				<!--<div class="Hidden Filter">
+					<select class="Styled" id="deps-dictionary" name="departmentId">
+						<option value="">...</option>
+					</select>
+				</div>-->
+			</th>
+		</tr>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+</script>
+
+<script id="appeals-grid-nurse-row" type="text/x-jquery-tmpl">
+		<td>
+			<a href="/appeals/${id}/"  class="open-appeal"></a>
+			${_index+1}
+		</td>
+		<td>
+			{{if createDatetime}}
+				{{formatDateTime createDatetime}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			{{if number}}
+				{{decorate(number, requestData.filter.number)}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			{{if patient && patient.name}}
+				{{if patient.name.first || patient.name.last || patient.name.middle}}
+					{{if patient.name.last}}
+						{{decorate(patient.name.last, requestData.filter.fullName)}}
+					{{/if}}
+					{{if patient.name.first}}
+						{{decorate(patient.name.first, requestData.filter.fullName)}}
+					{{/if}}
+					{{if patient.name.middle}}
+						{{decorate(patient.name.middle, requestData.filter.fullName)}}
+					{{/if}}
+				{{else}}
+					{{if patient.name.raw}}
+						{{decorate(patient.name.raw, requestData.filter.fullName)}}
+					{{else}}
+						-
+					{{/if}}
+				{{/if}}
+			{{/if}}
+		</td>
+		<td>
+			{{if patient.birthDate}}
+				{{formatDate patient.birthDate}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			<!--{{each(i, diagnosis) diagnoses}}
+			{{if diagnosis.diagnosisKind == "main"}}
+			${diagnosis.mkb.code} ${diagnosis.mkb.diagnosis}
+			{{/if}}
+			{{/each}}-->
+			{{if status}}
+				${status}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			{{if moving}}
+				${moving.department.name}
+			{{else}}
+			{{if status=='Госпитализирован'}}
+				<a href="#">Направить в отделение</a>
+			{{else}}
+			  -
+			{{/if}}
+
+			{{/if}}
+		</td>
+</script>
+
+
+<script id="patient-appeals-grid" type="text/x-jquery-tmpl">
+	<table class="Grid">
+		<thead>
+			<!--<tr class="EditTh">-->
+			<tr>
+				<th>
+					<a class="Actions SortCol" data-field="number"><span>Номер ИБ</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="finance"><span>Источник финансирования</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="start"><span>Дата начала</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="end"><span>Дата окончания</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="department"><span>Отделение</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="doctor"><span>Врач</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="diagnosis"><span>МКБ</span></a>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+</script>
+
+<script id="patient-appeals-grid-row" type="text/x-jquery-tmpl">
+		<td>
+			<a href="/appeals/${id}/"  class="open-appeal"></a>
+			{{if number}}
+				${number}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			{{if finance}}
+				${finance.name}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			{{if rangeAppealDateTime.start}}
+				{{formatDate rangeAppealDateTime.start}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			{{if rangeAppealDateTime.end}}
+				{{formatDate rangeAppealDateTime.end}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			{{if department}}
+				${department.name}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			{{if execPerson.doctor && execPerson.doctor.name}}
+				${execPerson.doctor.name.last}{{if execPerson.doctor.name.first}} ${execPerson.doctor.name.first[0]}.{{/if}}{{if execPerson.doctor.name.middle}} ${execPerson.doctor.name.middle[0]}.{{/if}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+	{{if diagnoses.length}}
+	<td class="HasToolTip" data-tooltip-content="#tooltip_${id}">
+			${diagnoses[0].mkb.code}
+			<div id="tooltip_${id}" class="ToolTip TopTail">
+				<ul>
+					<li><dfn><b>${diagnoses[0].diagnosisKindLabel}:</b></dfn> ${diagnoses[0].mkb.code} ${diagnoses[0].mkb.diagnosis}</li>
+				</ul>
+			</div>
+	</td>
+	{{else}}
+	<td></td>
+	{{/if}}
+</script>
+
+
+<script id="appeals-grid-doctor-department" type="text/x-jquery-tmpl">
+	<table class="Grid">
+		<thead>
+			<!--<tr class="EditTh">-->
+			<tr>
+				<th>
+					<a class="Actions SortCol" data-field="number"><span>Номер</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="fullName"><span>ФИО</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="birthDate"><span>Дата рожд.</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="bed"><span>Палата/Койка</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="department"><span>Отделение</span></a>
+				</th>
+				<th>
+                    <a class="Actions SortCol" data-field="doctor"><span>Лечащий врач</span></a>
+                </th>
+                <th>
+                    <a class="Actions SortCol" data-field="date"><span>Дата поступления</span></a>
+                </th>
+                <th>
+                    <a class="Actions SortCol" data-field="checkOut"><span>Выписка через</span></a>
+                </th>
+			</tr>
+		</thead>
+		<tbody>
+		</tbody>
+	</table>
+</script>
+
+<script id="appeals-grid-doctor-department-row" type="text/x-jquery-tmpl">
+		<td>
+			<a href="/appeals/${id}/monitoring" class="open-appeal"></a>${number}
+		</td>
+		<td>
+			{{if name.first || name.last || name.middle}}
+				{{if name.last}}
+					{{decorate(name.last, requestData.filter.fullName)}}
+				{{/if}}
+				{{if name.first}}
+					{{decorate(name.first, requestData.filter.fullName)}}
+				{{/if}}
+				{{if name.middle}}
+					{{decorate(name.middle, requestData.filter.fullName)}}
+				{{/if}}
+			{{else}}
+				{{if name.raw}}
+					{{decorate(name.raw, requestData.filter.fullName)}}
+				{{else}}
+					-
+				{{/if}}
+			{{/if}}
+		</td>
+		<td>
+			{{if birthDate}}
+				{{formatDate birthDate}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>
+			{{if hospitalBed }}
+				{{if hospitalBed.room && hospitalBed.bed}}
+					${hospitalBed.room} / ${hospitalBed.bed}
+				{{/if}}
+				{{if hospitalBed.room}}
+					${hospitalBed.room}
+				{{/if}}
+				{{if hospitalBed.bed}}
+					${hospitalBed.bed}
+				{{/if}}
+			{{else}}
+				-
+			{{/if}}
+		</td>
+		<td>{{if hospitalBed && hospitalBed.department }}
+			${hospitalBed.department.name}
+			{{/if}}
+		</td>
+		<td>
+			{{if doctor && doctor.name}}
+				{{if doctor.name.last}}
+					{{decorate(doctor.name.last, requestData.filter.fullName)}}
+				{{/if}}
+				{{if doctor.name.first}}
+					{{decorate(doctor.name.first, requestData.filter.fullName)}}
+				{{/if}}
+				{{if doctor.name.middle}}
+					{{decorate(doctor.name.middle, requestData.filter.fullName)}}
+				{{/if}}
+			{{else}}
+				{{if doctor.name.raw}}
+					{{decorate(doctor.name.raw, requestData.filter.fullName)}}
+				{{else}}
+					-
+				{{/if}}
+			{{/if}}
+		</td>
+		<td>
+            {{if createDateTime}}
+                {{formatDateTime createDateTime}}
+            {{else}}
+                -
+            {{/if}}
+        </td>
+		<td>
+            ${checkOut}
+        </td>
+</script>
+
+
+<script id="appeals-grid-nurse-department" type="text/x-jquery-tmpl">
+
+	<table class="Grid">
+		<thead>
+			<!--<tr class="EditTh">-->
+			<tr>
+				<th>
+					<a class="Actions SortCol" data-field="bed"><span>Палата/Койка</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="number"><span>Номер ИБ</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="fullName"><span>ФИО</span></a>
+				</th>
+				<th colspan="2">
+						<span>Состояние</span>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="doctor"><span>Лечащий врач</span></a>
+				</th>
+				<th>
+					<a class="Actions SortCol" data-field="createDate"><span>Дата поступления</span></a>
+				</th>
+			</tr>
+		</thead>
+		<tbody>
+
+		</tbody>
+	</table>
+</script>
+
+<script id="appeals-grid-nurse-department-row" type="text/x-jquery-tmpl">
+		<td>
+			{{if (movingTo && movingTo.name)}}
+				Направлен в ${movingTo.name}
+			{{else (hospitalBed && hospitalBed.code)}}
+				${hospitalBed.code}
+			{{else}}
+			<a href="#" class="bed-registration" >Положить на койку</a>
+			{{/if}}
+		</td>
+		<td>
+			${number}
+		</td>
+		<td>
+
+
+			{{if name.full}}
+				${name.full}
+			{{else}}
+				{{if name.raw}}
+					{{decorate(name.raw, requestData.filter.fullName)}}
+				{{else}}
+					-
+				{{/if}}
+			{{/if}}
+		</td>
+		<!--<td>-->
+			<!--берём первое слово из состояния-->
+			<!--condition.state-->
+
+			<!--<span class="condition satisfactory">Удов.</span>-->
+			<!--<span class="condition good">Хор.</span>-->
+			<!--<span class="condition serious">Тяж.</span>-->
+		<!--</td>-->
+		<td>
+			{{if condition.breathingRate}}
+				ЧСС ${condition.breathingRate} уд.м
+			{{/if}}
+		<td>
+			{{if condition && condition.arterialBloodPressure && condition.arterialBloodPressure.low && condition.arterialBloodPressure.high}}
+					АД ${condition.arterialBloodPressure.low}/${condition.arterialBloodPressure.high}
+			{{/if}}
+		</td>
+		<td>
+			{{if doctor && doctor.name.fio}}
+				${doctor.name.fio}
+			{{else}}
+					-
+			{{/if}}
+        </td>
+		<td>
+			{{if createDateTime !== 0}}
+					{{formatDateTime createDateTime}}
+			{{else}}
+					-
+			{{/if}}
+		</td>
+</script>
+
+
+<script id="appeals-grid-row-default" type="text/x-jquery-tmpl">
+	<h3>Введите необходимые данные в поля фильтров</h3>
+</script>

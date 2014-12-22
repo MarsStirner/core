@@ -1,0 +1,101 @@
+<div class="LineBlock">
+	<div class="HalfCol">
+		<label>
+			Тип
+		</label>
+		<!-- Максимальная длина серии в базе -8, номера - 16 -->
+		<select class="Styled DocType" name="idCards-${cid}-docType-id" data-subbind="true">
+			<option value="" selected="selected">...</option>
+			<!--<option data-series-mask="9999"     data-number-mask="9999990" value="1">Паспорт гражданина Российской Федерации</option>
+			<option data-series-mask="r-bb"     data-number-mask="999999"  value="3">Свидетельство о рождении</option>
+			<option data-series-mask="ssssssss" data-number-mask="0"       value="2">Загранпаспорт гражданина Российской Федерации</option>
+			<option data-series-mask="bb"       data-number-mask="9999999" value="4">Удостоверение личности офицера</option>
+			<option data-series-mask="ssssssss" data-number-mask="0"       value="5">Справка об освобождении из места лишения свободы</option>
+			<option data-series-mask="bb"       data-number-mask="999999"  value="6">Паспорт Минморфлота</option>
+			<option data-series-mask="bb"       data-number-mask="9999990" value="7">Военный билет солдата (матроса, сержанта, старшины)</option>
+			<option data-series-mask="99"       data-number-mask="9999999" value="8">Дипломатический паспорт гражданина Российской Федерации</option>
+			<option data-series-mask="ssssssss" data-number-mask="0"       value="9">Иностранный паспорт</option>
+			<option data-series-mask="ssssssss" data-number-mask="0"       value="10">Свидетельство о рассмотрении ходатайства о признании беженцем по существу</option>
+			<option data-series-mask="ssssssss" data-number-mask="0"       value="11">Вид на жительство лица без гражданства</option>
+			<option data-series-mask="ssssssss" data-number-mask="0"       value="12">Удостоверение беженца в Российской Федерации</option>
+			<option data-series-mask="ssssssss" data-number-mask="0"       value="13">Временное удостоверение личности гражданина Российской Федерации</option>
+			<option data-series-mask="r-bb"     data-number-mask="999999"  value="14">Паспорт гражданина СССР</option>
+			<option data-series-mask="bb"       data-number-mask="9999990" value="15">Паспорт моряка</option>
+			<option data-series-mask="bb"       data-number-mask="999999"  value="16">Военный билет офицера запаса</option>-->
+			<option value="1">Паспорт гражданина Российской Федерации</option>
+			<option value="3">Свидетельство о рождении</option>
+			<option value="2">Загранпаспорт гражданина Российской Федерации</option>
+			<option value="4">Удостоверение личности офицера</option>
+			<option value="5">Справка об освобождении из места лишения свободы</option>
+			<option value="6">Паспорт Минморфлота</option>
+			<option value="7">Военный билет солдата (матроса, сержанта, старшины)</option>
+			<option value="8">Дипломатический паспорт гражданина Российской Федерации</option>
+			<option value="9">Иностранный паспорт</option>
+			<option value="10">Свидетельство о рассмотрении ходатайства о признании беженцем по существу</option>
+			<option value="11">Вид на жительство лица без гражданства</option>
+			<option value="12">Удостоверение беженца в Российской Федерации</option>
+			<option value="13">Временное удостоверение личности гражданина Российской Федерации</option>
+			<option value="14">Паспорт гражданина СССР</option>
+			<option value="15">Паспорт моряка</option>
+			<option value="16">Военный билет офицера запаса</option>
+		</select>
+	</div>
+	<div class="QuartCol">
+		<label>
+			Серия
+		</label>
+		<!--<input type="text" name="idCards-${cid}-series" class="DocSeries" placeholder="Серия" data-maxlength="8"/>-->
+		<input type="text" name="idCards-${cid}-series" class="DocSeries" data-subbind="true" placeholder="Серия" data-maxlength="8" value="${series}"/>
+	</div>
+	<div class="QuartCol">
+		<label>
+			Номер
+		</label>
+		<!--<input type="text" name="idCards-${cid}-number" class="DocNumber" placeholder="Номер"  data-maxlength="16"/>-->
+		<input type="text" name="idCards-${cid}-number" class="DocNumber" data-subbind="true" placeholder="Номер" data-maxlength="16" value="${number}"/>
+	</div>
+	<div class="QuartCol">
+		<label>
+			Дата выдачи
+		</label>
+		<!--<div class="DatePeriod SingleDate">
+			<div class="FromTo">-->
+		<div class="date">
+				<input type="text" name="idCards-${cid}-rangeDocumentDate-start" placeholder="дд.мм.гггг" class="SelectDate" data-type="date" data-maxdate="0"/>
+			<i class="icon-calendar date-icon"></i>
+		</div>
+			<!--</div>
+			<i class="DateIcon Icon"></i>
+		</div>-->
+	</div>
+	<div class="QuartCol">
+		<label>
+			Дата окончания
+		</label>
+		<!--<div class="DatePeriod SingleDate">
+			<div class="FromTo">-->
+		<div class="date">
+				<input type="text" name="idCards-${cid}-rangeDocumentDate-end" placeholder="дд.мм.гггг" class="SelectDate" data-type="date" data-mindate="1"/>
+			<i class="icon-calendar date-icon"></i>
+		</div>
+			<!--</div>
+			<i class="DateIcon Icon"></i>
+		</div>-->
+	</div>
+	<div class="QuartCol ActionsOnly">
+		<div class="AddLine">
+			<i class="AddIcon Icon Tiny Actions Clone"></i>
+			<i class="RemoveIcon Icon Tiny Actions Remove"></i>
+		</div>
+	</div>
+</div>
+<div class="LineBlock">
+    <div class="LineCol" style="width: 78%">
+        <label>
+            Кем выдан
+        </label>
+        <!--<input type="text" name="idCards-${cid}-issued" data-maxlength="150">-->
+				<textarea name="idCards-${cid}-issued" data-maxlength="150" cols="45" rows="3"></textarea>
+    </div>
+</div>
+

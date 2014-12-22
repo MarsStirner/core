@@ -1,0 +1,94 @@
+<section id="page" class="Clearfix EditForm">
+	<ul>
+		<li>
+			<div class="LineBlock">
+				<button class="Styled Button Actions PrintAppeal"><span>Печать госпитализации</span></button>
+			</div>
+		</li>
+		<li>
+			<div class="LineBlock">
+				<button class="Styled Button Actions PrintPatient"><span>Печать пациента</span></button>
+			</div>
+		</li>
+		<li>
+			<div class="LineBlock">
+				<button class="Styled Button Actions Print007"><span>Печать 007 формы</span></button>
+			</div>
+		</li>
+		<li>
+			<div class="LineBlock">
+				<button class="Styled Button Actions PrintConsentExam"><span>Согласие на осмотр</span></button>
+			</div>
+		</li>
+		<li>
+			<div class="LineBlock">
+				<button class="Styled Button Actions PrintExam"><span>Печать осмотра</span></button>
+			</div>
+		</li>
+	</ul>
+	<ul>
+		<li>
+			<h3>Настройки шаблонов</h3>
+		</li>
+		<li>
+			<div class="LineBlock">
+				<label> ID обращения </label>
+				<input type="text" id="appeal-id" value="12396" placeholder="" />
+			</div>
+		</li>
+		<li>
+			<div class="LineBlock">
+				<label> ID пациента </label>
+				<input type="text" id="patient-id" value="1" placeholder="" />
+			</div>
+		</li>
+		<li>
+			<div class="LineBlock">
+				<label> ID отделения </label>
+				<input type="text" id="department-id" value="25" placeholder="" />
+			</div>
+		</li>
+		<li><div class="LineBlock clearfix">
+			 <label>Период  дат</label>
+			<div class="DayScroller">
+				<a class="ScrollDay Actions Decrease" href="#">&lt;</a>
+				<div class="DateTime">
+					<div class="DatePeriod SingleDate Mandatory">
+						<div class="FromTo">
+							<input type="text" id="start-date" data-relation="#start-time" name="beginDate" placeholder="дд.мм.гггг" class="SelectDate" />
+						</div>
+						<i class="DateIcon Icon"></i>
+					</div>
+					<div class="SingleTime">
+						<input type="text" id="start-time" class="HourPicker" data-relation="#start-date" value="8:00" placeholder="чч:мм"/>
+					</div>
+				</div>
+				<span class="MDash">—</span>
+				<div class="DateTime">
+					<div class="DatePeriod SingleDate Mandatory">
+						<div class="FromTo">
+							<input type="text" id="end-date" data-relation="#end-time" name="endDate" placeholder="дд.мм.гггг" class="SelectDate" />
+						</div>
+						<i class="DateIcon Icon"></i>
+					</div>
+					<div class="SingleTime">
+						<input type="text" id="end-time" class="HourPicker" data-relation="#end-date" value="7:59" placeholder="чч:мм"/>
+					</div>
+				</div>
+				<a class="ScrollDay Actions Increase" href="#">&gt;</a>
+			</div>
+		</div></li>
+		<li>
+			<div class="LineBlock">
+				<label> ID осмотра </label>
+				<input type="text" id="exam-id" value="6974" placeholder="" />
+			</div>
+		</li>
+		<li>
+			<div class="LineBlock">
+				<label> Название шаблона (только <em>имя</em> файла) </label>
+				<input type="text" id="template-name" placeholder="По-умолчанию" />
+			</div>
+		</li>
+	</ul>
+</section>

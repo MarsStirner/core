@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="ActionType" phpName="ActionType" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="createDatetime" phpName="createDatetime" type="TIMESTAMP" required="true"/>
+    <column name="createPerson_id" phpName="createPersonId" type="INTEGER" required="false"/>
+    <column name="modifyDatetime" phpName="modifyDatetime" type="TIMESTAMP" required="true"/>
+    <column name="modifyPerson_id" phpName="modifyPersonId" type="INTEGER" required="false"/>
+    <column name="deleted" phpName="deleted" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="class" peerName="clazz" type="BOOLEAN" size="1" required="true"/>
+    <column name="group_id" phpName="groupId" type="INTEGER" required="false"/>
+    <column name="code" phpName="code" type="VARCHAR" size="25" required="true"/>
+    <column name="name" phpName="name" type="VARCHAR" size="255" required="true"/>
+    <column name="title" phpName="title" type="VARCHAR" size="255" required="true"/>
+    <column name="flatCode" phpName="flatCode" type="VARCHAR" size="64" required="true"/>
+    <column name="sex" phpName="sex" type="TINYINT" required="true"/>
+    <column name="age" phpName="age" type="VARCHAR" size="9" required="true"/>
+    <column name="age_bu" phpName="ageBu" type="TINYINT" required="false"/>
+    <column name="age_bc" phpName="ageBc" type="SMALLINT" required="false"/>
+    <column name="age_eu" phpName="ageEu" type="TINYINT" required="false"/>
+    <column name="age_ec" phpName="ageEc" type="SMALLINT" required="false"/>
+    <column name="office" phpName="office" type="VARCHAR" size="32" required="true"/>
+    <column name="showInForm" phpName="showInForm" type="BOOLEAN" size="1" required="true"/>
+    <column name="genTimetable" phpName="genTimeTable" type="BOOLEAN" size="1" required="true"/>
+    <column name="service_id" phpName="serviceId" type="INTEGER" required="false"/>
+    <column name="quotaType_id" phpName="quotaTypeId" type="INTEGER" required="false"/>
+    <column name="context" phpName="context" type="VARCHAR" size="64" required="true"/>
+    <column name="amount" phpName="amount" type="DOUBLE" required="true" defaultValue="1"/>
+    <column name="amountEvaluation" phpName="amountEvaluation" type="INTEGER" size="1" required="true" defaultValue="0"/>
+    <column name="defaultStatus" phpName="defaultStatus" type="TINYINT" required="true" defaultValue="0"/>
+    <column name="defaultDirectionDate" phpName="defaultDirectionDate" type="TINYINT" required="true" defaultValue="0"/>
+    <column name="defaultPlannedEndDate" phpName="defaultPlannedEndDate" type="BOOLEAN" size="1" required="true"/>
+    <column name="defaultEndDate" phpName="defaultEndDate" type="TINYINT" required="true" defaultValue="0"/>
+    <column name="defaultExecPerson_id" phpName="defaultExecPersonId" type="INTEGER" required="false"/>
+    <column name="defaultPersonInEvent" phpName="defaultPersonInEvent" type="TINYINT" required="true" defaultValue="0"/>
+    <column name="defaultPersonInEditor" phpName="defaultPersonInEditor" type="TINYINT" required="true" defaultValue="0"/>
+    <column name="maxOccursInEvent" phpName="maxOccursInEvent" type="INTEGER" required="true" defaultValue="0"/>
+    <column name="showTime" phpName="showTime" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="isMES" phpName="isMes" type="INTEGER" required="false"/>
+    <column name="nomenclativeService_id" phpName="nomenclativeServiceId" type="INTEGER" required="false"/>
+    <column name="isPreferable" phpName="isPreferable" type="BOOLEAN" size="1" required="true" defaultValue="true"/>
+    <column name="prescribedType_id" phpName="prescribedTypeId" type="INTEGER" required="false"/>
+    <column name="shedule_id" phpName="sheduleId" type="INTEGER" required="false"/>
+    <column name="isRequiredCoordination" phpName="isRequiredCoordination" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="isRequiredTissue" phpName="isRequiredTissue" type="BOOLEAN" size="1" required="true" defaultValue="false"/>
+    <column name="testTubeType_id" phpName="testTubeTypeId" type="INTEGER" required="false"/>
+    <column name="jobType_id" phpName="jobTypeId" type="INTEGER" required="false"/>
+    <column name="mnem" phpName="mnem" type="VARCHAR" size="32" required="false" defaultValue=""/>
+    <foreign-key foreignTable="ActionPropertyType" name="FK_ActionType_ActionPropertyType">
+      <reference local="id" foreign="actionType_id"/>
+    </foreign-key>
+   <!--  <foreign-key foreignTable="rbJobType" name="rbJobType_id_fk" onUpdate="CASCADE">
+      <reference local="jobType_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rbTestTubeType" name="rbTestTubeType_id_fk" onUpdate="CASCADE">
+      <reference local="testTubeType_id" foreign="id"/>
+    </foreign-key> -->
+
+    <behavior name="timestampable">
+        <parameter name="create_column" value="createDatetime" />
+        <parameter name="update_column" value="modifyDatetime" />
+    </behavior>
+
+    <index name="createPerson_id">
+      <index-column name="createPerson_id"/>
+    </index>
+    <index name="modifyPerson_id">
+      <index-column name="modifyPerson_id"/>
+    </index>
+    <index name="group_id">
+      <index-column name="group_id"/>
+    </index>
+    <index name="service_id">
+      <index-column name="service_id"/>
+    </index>
+    <index name="class">
+      <index-column name="class"/>
+    </index>
+    <index name="flatCode">
+      <index-column name="flatCode"/>
+    </index>
+    <index name="nomenclativeService_id">
+      <index-column name="nomenclativeService_id"/>
+    </index>
+    <index name="prescribedType_id">
+      <index-column name="prescribedType_id"/>
+    </index>
+    <index name="shedule_id">
+      <index-column name="shedule_id"/>
+    </index>
+    <index name="quotaType_id">
+      <index-column name="quotaType_id"/>
+    </index>
+    <index name="ActionType_defaultExecPerson_id">
+      <index-column name="defaultExecPerson_id"/>
+    </index>
+    <index name="rbTestTubeType_id_fk">
+      <index-column name="testTubeType_id"/>
+    </index>
+    <index name="rbJobType_id_fk">
+      <index-column name="jobType_id"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

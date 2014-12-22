@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+  <table name="rlsBalanceOfGoods" phpName="RlsBalanceOfGoods" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" autoIncrement="true" required="true"/>
+    <column name="rlsNomen_id" phpName="rlsNomenId" type="INTEGER" required="true"/>
+    <column name="value" phpName="value" type="DOUBLE" required="true"/>
+    <column name="bestBefore" phpName="bestBefore" type="DATE" required="true"/>
+    <column name="disabled" phpName="disabled" type="TINYINT" required="true" defaultValue="0"/>
+    <column name="updateDateTime" phpName="updateDateTime" type="TIMESTAMP" required="false"/>
+    <column name="storage_id" phpName="storageId" type="INTEGER" required="false"/>
+
+    <foreign-key foreignTable="rbStorage" name="FK_rlsBalanceOfGoods_rbStorage">
+      <reference local="storage_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rlsNomen" name="FK_rlsBalanceOfGoods_rlsNomen">
+      <reference local="rlsNomen_id" foreign="id"/>
+    </foreign-key>
+
+
+    <index name="FK_rlsBalanceOfGoods_rlsNomen">
+      <index-column name="rlsNomen_id"/>
+    </index>
+    <index name="storage_id">
+      <index-column name="storage_id"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>

@@ -1,0 +1,44 @@
+<div class="LineBlock">
+	<div class="HalfCol">
+		<label>
+			Наименование вещества
+		</label>
+		<input type="text" name="medicalInfo-allergies-${cid}-substance" data-maxlength="100">
+	</div>
+	<div class="HalfCol">
+		<span class="Label">Степень</span>
+		<select class="Styled" name="medicalInfo-allergies-${cid}-degree">
+			<option value="" selected="selected">...</option>
+			<option value="1">низкая</option>
+			<option value="2">средняя</option>
+			<option value="3">высокая</option>
+			<!--{{each allergyDegrees}}
+			 <option value="${this['id']}">${this['24']}</option>
+			 {{/each}}-->
+		</select>
+	</div>
+	<div class="QuartCol">
+		<span class="Label">Дата установления</span>
+		<!--<div class="DatePeriod SingleDate">
+			<div class="FromTo">-->
+		<div class="date">
+				<input type="text" name="medicalInfo-allergies-${cid}-checkingDate" placeholder="дд.мм.гггг" class="SelectDate" data-type="date" data-maxdate="0"/>
+			<i class="icon-calendar date-icon"></i>
+		</div>
+			<!--</div>
+			<i class="DateIcon Icon"></i>
+		</div>-->
+	</div>
+	<div class="HalfCol">
+		<label>
+			Примечания
+		</label>
+		<input type="text" name="medicalInfo-allergies-${cid}-comment">
+	</div>
+	<div class="QuartCol ActionsOnly">
+		<div class="AddLine">
+			<i class="AddIcon Icon Tiny Actions Clone"></i>
+			<i class="RemoveIcon Icon Tiny Actions Remove"></i>
+		</div>
+	</div>
+</div>

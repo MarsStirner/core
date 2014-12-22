@@ -1,0 +1,17 @@
+<div class="row-fluid">
+    <div class="span12"><label><%= label %></label></div>
+</div>
+<div class="row-fluid" style="margin-bottom:2em;">
+    <div class="span5">
+        <select class="select" style="width:100%;">
+            <option val="">...</option>
+            <% _.each(options, function(option){ %>
+
+                <option value="<%= option.id %>" <%if(selected == option.id){%>selected<%}%> ><%= option.name %></option>
+            <% }); %>
+        </select>
+    </div>
+    <div class="span7">
+        <div class="text"><%= text %></div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+<script id="paginator-template" type="text/x-jquery-tmpl">
+	<div class="PaginatorHolder Clearfix">
+		<ul class="Paginator">
+			{{if prevPage}}
+			<li class="PrevPage Inactive"><a href="${path}p${prevPage}" title="Предыдущая страница">◄</a></li>
+			{{/if}}
+
+			{{each Pages}}
+			<li class="{{if $value == page}}Active{{/if}}"><a href="${path}p${$value}">${$value}</a></li>
+			{{/each}}
+
+			{{if nextPage}}
+			<li class="NextPage"><a href="${path}p${nextPage}" title="Следующая страница">►</a></li>
+			{{/if}}
+		</ul>
+	</div>
+</script>

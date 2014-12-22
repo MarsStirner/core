@@ -1,0 +1,33 @@
+<div class="LineBlock">
+	<div class="HalfCol">
+		<label>Тип</label>
+		<select  name="phones-${cid}-typeId" class="Styled ContactType">
+			<option value="">...</option>
+			<option value="1">домашний телефон</option>
+			<option value="2">рабочий телефон</option>
+			<option value="3">мобильный телефон</option>
+			<option value="4">мать</option>
+			<option value="5">отец</option>
+			<option value="6">дедушка</option>
+			<option value="7">бабушка</option>
+			<option value="8">опекун</option>
+			<option value="9">e-mail</option>
+			<option value="10">Fax</option>
+
+		</select>
+	</div>
+	<div class="HalfCol">
+		<label class="ContactNumberLabel">Номер</label>
+		<input type="text" class="ContactNumber" name="phones-${cid}-number" placeholder="+7(xxx)xxx-xxx-xx" data-tooltip-position="bottom" data-type="phone" data-maxlength="32">
+	</div>
+	<div class="HalfCol">
+		<label>Примечание</label>
+		<input type="text" class="ContactComment" name="phones-${cid}-comment" data-tooltip-position="bottom" data-maxlength="64">
+	</div>
+	<div class="QuartCol ActionsOnly">
+		<div class="AddLine">
+			<i class="AddIcon Icon Tiny Actions Clone"></i>
+			<i class="RemoveIcon Icon Tiny Actions Remove"></i>
+		</div>
+	</div>
+</div>

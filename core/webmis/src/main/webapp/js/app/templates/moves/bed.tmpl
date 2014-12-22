@@ -1,0 +1,15 @@
+
+	<div class="bedBox <%if(busy == 'yes'){%> disabledBed <%}%>">
+		<input type="checkbox" class="bedCheckbox" value="<%= bedId %>" name="beds"/>
+		<span class="bedNumber">
+			<% if(code){ %>
+				<%= code %>
+			<%}else{%>
+				-
+			<% } %>
+		</span>
+        <%if(busy=='no'){%>
+<!--        <span  class="bedMenu icon-cog"></span> -->
+        <%}%>
+	</div>
+

@@ -1,0 +1,49 @@
+<li>
+	<div class="LineBlock">
+		<div class="HalfCol">
+			<span class="Label">Гр.крови</span>
+			<select class="Styled" name="medicalInfo-blood-id">
+				<option value="">...</option>
+				{{each bloodTypes}}
+				<option value="${id}">${value}</option>
+				{{/each}}
+			</select>
+
+
+		</div>
+		<div class="QuartCol">
+			<span class="Label">Дата установления</span>
+			<!--<div class="DatePeriod SingleDate">
+				<div class="FromTo">-->
+			<div class="date">
+					<input type="text" name="medicalInfo-blood-checkingDate" placeholder="дд.мм.гггг" class="SelectDate" data-type="date" data-maxdate="0"/>
+				<i class="icon-calendar date-icon"></i>
+			</div>
+				<!--</div>
+				<i class="DateIcon Icon"></i>
+			</div>-->
+		</div>
+	</div>
+	<div class="LineBlock">
+		 <div class="HalfCol">
+			{{if bloodTypesHistory.length}}
+				<span class="Label">История изменения группы крови</span>
+				<ul class="ChangeHistory">
+					{{each bloodTypesHistory}}
+					 <li>
+						 <span class="Field">${bloodType.name}</span> <span class="Field">{{formatDate bloodDate}}</span>
+					 </li>
+					{{/each}}
+				 </ul>
+			 {{/if}}
+		 </div>
+	 </div>
+</li>
+<li>
+	<h4>Аллергия</h4>
+	<div id="allergies"></div>
+</li>
+<li>
+	<h4>Медикаментозная непереносимость</h4>
+	<div id="drug-intolerances"></div>
+</li>

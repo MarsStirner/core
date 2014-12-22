@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="utf-8"?>
+<database name="Webmis-API" defaultIdMethod="native" namespace="Webmis\Models">
+ <table name="rlsNomen" phpName="rlsNomen" idMethod="native">
+    <column name="id" phpName="id" type="INTEGER" primaryKey="true" required="true"/>
+    <column name="actMatters_id" phpName="actMattersId" type="INTEGER" required="false"/>
+    <column name="tradeName_id" phpName="tradeNameId" type="INTEGER" required="true"/>
+    <column name="form_id" phpName="formId" type="INTEGER" required="false"/>
+    <column name="packing_id" phpName="packingId" type="INTEGER" required="false"/>
+    <column name="filling_id" phpName="fillingId" type="INTEGER" required="false"/>
+    <column name="unit_id" phpName="unitId" type="INTEGER" required="false"/>
+    <column name="dosageValue" phpName="dosageValue" type="VARCHAR" size="128" required="false"/>
+    <column name="dosageUnit_id" phpName="dosageUnitId" type="INTEGER" required="false"/>
+    <column name="drugLifetime" phpName="drugLifetime" type="INTEGER" required="false"/>
+    <column name="regDate" phpName="regDate" type="DATE" required="false"/>
+    <column name="annDate" phpName="annDate" type="DATE" required="false"/>
+    <foreign-key foreignTable="rbUnit" name="FK_rlsNomen_rbUnit">
+      <reference local="unit_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rbUnit" name="FK_rlsNomen_rbUnit_2">
+      <reference local="dosageUnit_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rlsFilling" name="FK_rlsNomen_rlsFilling">
+      <reference local="filling_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rlsForm" name="FK_rlsNomen_rlsForm">
+      <reference local="form_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rlsPacking" name="FK_rlsNomen_rlsPacking">
+      <reference local="packing_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rlsActMatters" name="FK_rlsNomen_rlsActMatters">
+      <reference local="actMatters_id" foreign="id"/>
+    </foreign-key>
+    <foreign-key foreignTable="rlsTradeName" name="FK_rlsNomen_rlsTradeName">
+      <reference local="tradeName_id" foreign="id"/>
+    </foreign-key>
+    <index name="tradeName_id">
+      <index-column name="tradeName_id"/>
+    </index>
+    <index name="FK_rlsNomen_rlsForm">
+      <index-column name="form_id"/>
+    </index>
+    <index name="FK_rlsNomen_rlsActMatters">
+      <index-column name="actMatters_id"/>
+    </index>
+    <index name="FK_rlsNomen_rlsPacking">
+      <index-column name="packing_id"/>
+    </index>
+    <index name="FK_rlsNomen_rlsFilling">
+      <index-column name="filling_id"/>
+    </index>
+    <index name="FK_rlsNomen_rbUnit">
+      <index-column name="unit_id"/>
+    </index>
+    <index name="FK_rlsNomen_rbUnit_2">
+      <index-column name="dosageUnit_id"/>
+    </index>
+    <vendor type="mysql">
+      <parameter name="Engine" value="InnoDB"/>
+    </vendor>
+  </table>
+</database>
