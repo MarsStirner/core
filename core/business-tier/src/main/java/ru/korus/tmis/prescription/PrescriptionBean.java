@@ -151,7 +151,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     }
 
     private void updateDrugIntervalCompParam(DrugData drugData, DrugChart drugChart, DrugComponent drugComponent) {
-        dbDrugIntervalCompParamLocal.update(drugChart, drugComponent, drugData.getDose(), drugData.getVoa());
+        dbDrugIntervalCompParamLocal.update(drugChart, drugComponent, drugData.getDose(), drugData.getVoa(), drugData.getMoa());
     }
 
 
@@ -270,7 +270,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
             final Date endDateTime = interval.getEndDateTime() == null ? null : new Date(interval.getEndDateTime());
             DrugChart drugChart = dbDrugChartBeanLocal.create(action, interval.getMasterId(), new Date(interval.getBeginDateTime()), endDateTime, interval.getStatus(), note);
             for(DrugData drugData : interval.getDrugs()) {
-                dbDrugIntervalCompParamLocal.create(drugChart, drugComponentByDrugData.get(drugData), drugData.getDose(), drugData.getVoa());
+                dbDrugIntervalCompParamLocal.create(drugChart, drugComponentByDrugData.get(drugData), drugData.getDose(), drugData.getVoa(), drugData.getMoa());
             }
         }
     }

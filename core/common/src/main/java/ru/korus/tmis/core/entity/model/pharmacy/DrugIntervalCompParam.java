@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.entity.model.pharmacy;
 
+import ru.korus.tmis.core.entity.model.RbMethodOfAdministration;
+
 import javax.persistence.*;
 
 /**
@@ -33,6 +35,10 @@ public class DrugIntervalCompParam {
     @ManyToOne
     @JoinColumn(name = "drugComponent_id", nullable = false)
     private DrugComponent drugComponent;
+
+    @ManyToOne
+    @JoinColumn(name = "moa_id", nullable = false)
+    private RbMethodOfAdministration moa;
 
     @Column
     private Double dose;
@@ -71,5 +77,21 @@ public class DrugIntervalCompParam {
 
     public Double getVoa() {
         return voa;
+    }
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public RbMethodOfAdministration getMoa() {
+        return moa;
+    }
+
+    public void setMoa(RbMethodOfAdministration moa) {
+        this.moa = moa;
     }
 }

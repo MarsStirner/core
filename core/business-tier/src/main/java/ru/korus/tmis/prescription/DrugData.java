@@ -2,6 +2,7 @@ package ru.korus.tmis.prescription;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import ru.korus.tmis.core.database.DbRbUnitBeanLocal;
+import ru.korus.tmis.core.entity.model.RbMethodOfAdministration;
 import ru.korus.tmis.core.entity.model.RbUnit;
 import ru.korus.tmis.core.entity.model.RlsNomen;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
@@ -30,6 +31,7 @@ public class DrugData {
     private String name;
     private Double dose;
     private Double voa;
+    private Integer moa;
     private Integer unit;
     private String unitName;
     private String dosageValue;
@@ -69,6 +71,8 @@ public class DrugData {
         nomen = drugIntervalParam.getDrugComponent().getNomen().getId();
         dose = drugIntervalParam.getDose();
         voa = drugIntervalParam.getVoa();
+        RbMethodOfAdministration moa = drugIntervalParam.getMoa();
+        this.moa = moa == null ? 0 : moa.getId();
         unit = drugIntervalParam.getDrugComponent().getUnit().getId();
     }
 
@@ -185,5 +189,13 @@ public class DrugData {
         int result = nomen != null ? nomen.hashCode() : 0;
         result = 31 * result + (id != null ? id.hashCode() : 0);
         return result;
+    }
+
+    public Integer getMoa() {
+        return moa;
+    }
+
+    public void setMoa(Integer moa) {
+        this.moa = moa;
     }
 }

@@ -15,9 +15,10 @@ import java.util.List;
  */
 @Local
 public interface DbDrugIntervalCompParamLocal {
-    DrugIntervalCompParam create(DrugChart drugChart, DrugComponent drugComponent, Double dose, Double voa);
 
-    void update(DrugChart drugChart, DrugComponent drugComponent, Double dose, Double voa);
+    DrugIntervalCompParam create(DrugChart drugChart, DrugComponent drugComponent, Double dose, Double voa, Integer moa);
+
+    void update(DrugChart drugChart, DrugComponent drugComponent, Double dose, Double voa, Integer moa);
 
     List<DrugIntervalCompParam> getCompParamByInterval(DrugChart drugChart);
 }
