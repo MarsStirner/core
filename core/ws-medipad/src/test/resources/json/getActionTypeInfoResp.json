@@ -817,7 +817,7 @@
         ],
         "code": "3_02",
         "isEditable": true,
-        "mnem": "THER",
+        "mnem": "",
         "editable": true,
         "typeId": 3911
     }
