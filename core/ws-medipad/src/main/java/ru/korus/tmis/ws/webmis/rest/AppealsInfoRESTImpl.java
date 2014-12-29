@@ -233,7 +233,7 @@ public class AppealsInfoRESTImpl {
     public Object getInfectionDrugMonitoringInfoByAppeal(@Context HttpServletRequest servRequest,
                                                         @PathParam("eventId")int eventId,
                                                         @QueryParam("callback") String callback) throws CoreException {
-        return new JSONWithPadding(new GenericEntity<List<List<Object>>>(wsImpl.getInfectionDrugMonitoring(eventId, mkAuth(servRequest))) {}, callback);
+        return new JSONWithPadding(wsImpl.getInfectionDrugMonitoringList(eventId), callback);
     }
 
     @GET

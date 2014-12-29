@@ -5,6 +5,7 @@ import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.patient.InfectionDrugMonitoring;
 
 import javax.ejb.Local;
 import javax.servlet.http.Cookie;
@@ -367,6 +368,8 @@ public interface WebMisREST extends Serializable {
     List<List<Object>> getInfectionMonitoring(int eventId, AuthData authData) throws CoreException;
 
     List<List<Object>> getInfectionDrugMonitoring(int eventId, AuthData authData) throws CoreException;
+
+    List<InfectionDrugMonitoring> getInfectionDrugMonitoringList(int eventId) throws CoreException;
 
     SurgicalOperationsListData getSurgicalOperationsByAppeal(int eventId, AuthData authData) throws CoreException;
 

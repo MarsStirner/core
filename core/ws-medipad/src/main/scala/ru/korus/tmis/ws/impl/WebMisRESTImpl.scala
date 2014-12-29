@@ -202,7 +202,11 @@ with CAPids {
   @EJB
   var dbRbLaboratory: DbRbLaboratory = _
 
-  @EJB var dbFdRecordBean: DbFDFieldBeanLocal = _
+  @EJB
+  var dbFdRecordBean: DbFDFieldBeanLocal = _
+
+  @EJB
+  var monitoringBeanLocal: MonitoringBeanLocal = _
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -697,7 +701,10 @@ with CAPids {
       if (lastAction == null)
         return null
 
-      val endDateProperty = lastAction.getActionProperties.find(ap => ap.getType.getCode != null && ap.getType.getCode.equals("infectDrugEndDate_" + apt.getCode.last))
+      val endDateProperty = lastAction.getActionProperties
+        .find(ap => ap.getType.getCode != null
+                    && ap.getType.getCode.startsWith("infect")
+                    && ap.getType.getCode.endsWith("EndDate_" + apt.getCode.last))
 
       val endDateValue: Date = {
         if (endDateProperty.isDefined) {
@@ -803,7 +810,7 @@ with CAPids {
           }
           outVal
         }
-        else if (IC.drugTherapyProperties.contains(apt.getCode)) {
+        else if (IC.isInfectTherapyProperties(apt.getCode)) {
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
           for (e <- events) {
@@ -1675,6 +1682,10 @@ with CAPids {
     appealBean.getInfectionDrugMonitoring(dbEventBean.getEventById(eventId).getPatient)
       .foreach(p => outList.add(List[AnyRef](p._1, ISODate(p._2), ISODate(p._3), p._4, p._5).asJava))
     outList
+  }
+
+  def getInfectionDrugMonitoringList(eventId: Int) = {
+    monitoringBeanLocal.getInfectionDrugMonitoring(dbEventBean.getEventById(eventId))
   }
 
   def getSurgicalOperationsByAppeal(eventId: Int, authData: AuthData) = {

@@ -1086,6 +1086,7 @@ with CAPids {
     result
   }
 
+
   def getInfectionDrugMonitoring(patient: Patient) = {
     val IC = InfectionControl
 
@@ -1094,12 +1095,11 @@ with CAPids {
         |e.patient = :patient
         |AND a.event = e AND a.deleted = false
         |AND ap.action = a AND ap.deleted = false
-        |AND ap.actionPropertyType.code IN :drugTherapyProperties
+        |AND (ap.actionPropertyType.code LIKE "infectProphylaxisName%" OR ap.actionPropertyType.code LIKE "infectEmpiricName%" OR ap.actionPropertyType.code LIKE "infectTelicName%")
         |AND a.actionType.code IN :documents""".stripMargin
     val r = em.createQuery(q, classOf[ActionProperty])
       .setParameter("patient", patient)
       .setParameter("documents", IC.documents.asJava)
-      .setParameter("drugTherapyProperties", IC.drugTherapyProperties.asJava)
       .getResultList
       .groupBy(e => (e.getAction.getId,  e.getType.getCode.split('_').last))
       .flatMap(e => {
@@ -1107,17 +1107,27 @@ with CAPids {
       val list = e._2
       val actionId = e._1._1
 
-      val name = list.find( p => p.getType.getCode.equals(IC.infectDrugNamePrefix + '_' + drugId))
-      val beginDate = list.find( p => p.getType.getCode.equals(IC.infectDrugBeginDatePrefix + '_' + drugId))
-      val endDate = list.find( p => p.getType.getCode.equals(IC.infectDrugEndDatePrefix + '_' + drugId))
-      val therapyType = list.find( p => p.getType.getCode.equals(IC.infectTherapyTypePrefix + '_' + drugId))
+      val (therapyType, prefix) = if ( list.find( p => p.getType.getCode.startsWith("infectProphylaxisName")) != null) {
+        ("Профилактика", "infectProphylaxisName")
+      }
+      else if (list.find( p => p.getType.getCode.startsWith("infectEmpiricName")) != null) {
+        ("Эмпирическая", "infectEmpiricName")
+      }
+      else if (list.find( p => p.getType.getCode.startsWith("infectTelicName")) != null) {
+        ("Целенаправленная", "infectTelicName")
+      }
+      else null
 
-      (name, beginDate, endDate, therapyType) match {
-        case (Some(a), Some(b), Some(c), Some(d)) =>
+      var name = list.find( p => p.getType.getCode.equals(prefix + "DrugName_" + drugId))
+      val beginDate = list.find( p => p.getType.getCode.equals(prefix + "BeginDate_" + drugId))
+      val endDate = list.find( p => p.getType.getCode.equals(prefix + "EndDate_" + drugId))
+
+      (name, beginDate ) match {
+        case (Some(a), Some(b) ) =>
           val n = actionPropertyBean.getActionPropertyValue(a)
           val bd = actionPropertyBean.getActionPropertyValue(b)
-          val ed = actionPropertyBean.getActionPropertyValue(c)
-          val t = actionPropertyBean.getActionPropertyValue(d)
+          val ed = if (endDate.isEmpty) null else actionPropertyBean.getActionPropertyValue(endDate.get)
+
 
           (n.size(), bd.size()) match {
             case (1, 1) => (n.head, bd.head) match {
@@ -1129,14 +1139,8 @@ with CAPids {
                   }
                   case _ => null
                 }
-                val ty = t.size() match {
-                  case 1 => t.head match {
-                    case p: APValueString => p.getValue.trim // Убираем пробелы - интерфейс иногда вставляет их вперед
-                    case _ => null
-                  }
-                  case _ => null
-                }
-                Some((x.getValue.trim, y.getValue, e, ty, actionId, new Integer(b.getIdx))) // Убираем пробелы - интерфейс иногда вставляет их вперед
+
+                Some((x.getValue.trim, y.getValue, e, therapyType, actionId, new Integer(b.getIdx))) // Убираем пробелы - интерфейс иногда вставляет их вперед
               case _ => None
             }
             case _ => None

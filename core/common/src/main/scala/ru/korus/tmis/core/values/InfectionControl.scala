@@ -13,7 +13,7 @@ object InfectionControl {
   val documents = Set("1_2_18", "1_2_19", "1_2_20", "1_2_22", "1_2_23")
 
   // Список ActionPropertyType.code свойств, описывающих лекарственную терапию
-  val drugTherapyProperties = Set(
+ /* val drugTherapyProperties = Set(
     "infectDrugName_1", "infectDrugBeginDate_1", "infectDrugEndDate_1", "infectTherapyType_1",
     "infectDrugName_2", "infectDrugBeginDate_2", "infectDrugEndDate_2", "infectTherapyType_2",
     "infectDrugName_3", "infectDrugBeginDate_3", "infectDrugEndDate_3", "infectTherapyType_3",
@@ -22,12 +22,13 @@ object InfectionControl {
     "infectDrugName_6", "infectDrugBeginDate_6", "infectDrugEndDate_6", "infectTherapyType_6",
     "infectDrugName_7", "infectDrugBeginDate_7", "infectDrugEndDate_7", "infectTherapyType_7",
     "infectDrugName_8", "infectDrugBeginDate_8", "infectDrugEndDate_8", "infectTherapyType_8"
-  )
+  )*/
 
-  val infectDrugNamePrefix = "infectDrugName"
-  val infectDrugBeginDatePrefix = "infectDrugBeginDate"
-  val infectDrugEndDatePrefix = "infectDrugEndDate"
-  val infectTherapyTypePrefix = "infectTherapyType"
+
+  //val infectProphylaxisPrefix = "infectProphylaxis"
+  //val infectDrugBeginDatePrefix = "infectDrugBeginDate"
+  //val infectDrugEndDatePrefix = "infectDrugEndDate"
+  //val infectTherapyTypePrefix = "infectTherapyType"
 
   // Список префиксов наименований не локальных инфекций
   val infectPrefixes = Set("infectFever", "infectBacteremia", "infectSepsis","infectSepticShok")
@@ -66,5 +67,12 @@ object InfectionControl {
 
   // Разделитель префикса и постфикса
   val separator = '-'
+
+  def isInfectTherapyProperties(actionPropCode: String): Boolean = {
+    return actionPropCode != null && (
+      actionPropCode.startsWith("infectProphylaxisName") ||
+      actionPropCode.startsWith("infectEmpiricName") ||
+      actionPropCode.startsWith("infectTelicName") )
+  }
 
 }
