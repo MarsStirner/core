@@ -729,7 +729,7 @@
                     </properties>
                     <quiet>true</quiet>
                 </configuration>
-            </plugin>             
+            </plugin>
 
         </plugins>
     </build>

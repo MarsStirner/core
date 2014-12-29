@@ -692,7 +692,7 @@ with CAPids {
     }
 
     // Получения значений для лекарственных назначений
-    def getPropertyCustom3(oldDocumentCodes: Set[String], event: Event): APValue = {
+    def getPropertyCustom3(oldDocumentCodes: Set[String], event: Event, drugType: String): APValue = {
 
       // Последний дневниковый осмотр из всех историй болезни
       val lastAction = getLastActionByTypeCodes(oldDocumentCodes, event)
@@ -810,11 +810,29 @@ with CAPids {
           }
           outVal
         }
-        else if (IC.isInfectTherapyProperties(apt.getCode)) {
+        else if (IC.drugTherapyProperties.contains(apt.getCode)) {
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
           for (e <- events) {
-            outVal = getPropertyCustom3(IC.documents, e)
+            outVal = getPropertyCustom3(IC.documents, e, "Empiric")
+            if (outVal != null) return outVal
+          }
+          outVal
+        }
+        else if (IC.TelicTherapyProperties.contains(apt.getCode)) {
+          val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
+          var outVal: APValue = null
+          for (e <- events) {
+            outVal = getPropertyCustom3(IC.documents, e, "Telic")
+            if (outVal != null) return outVal
+          }
+          outVal
+        }
+        else if (IC.ProphylaxisTherapyProperties.contains(apt.getCode)) {
+          val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
+          var outVal: APValue = null
+          for (e <- events) {
+            outVal = getPropertyCustom3(IC.documents, e, "Prophylaxis")
             if (outVal != null) return outVal
           }
           outVal
