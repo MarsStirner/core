@@ -61,7 +61,7 @@ public class ActionProperty
 
     @Basic(optional = false)
     @Column(name = "norm")
-    private String norm;
+    private String norm = "";
 
     @Basic(optional = false)
     @Column(name = "isAssigned")
@@ -298,7 +298,7 @@ public class ActionProperty
     }
 
     public void setNorm(String norm) {
-        this.norm = norm;
+        this.norm = norm == null ? "" : norm;
     }
 
     public boolean getIsAssigned() {
