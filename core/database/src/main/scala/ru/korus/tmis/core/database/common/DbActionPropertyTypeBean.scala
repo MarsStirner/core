@@ -34,7 +34,7 @@ class DbActionPropertyTypeBean
       .getResultList
 
     val apt = if(result.isEmpty) null else {
-      em.detach(apt)
+      em.detach(result(0))
       result(0)
     }
     apt
