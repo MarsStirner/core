@@ -33,7 +33,7 @@ class DbActionPropertyTypeBean
       .setParameter("id", id)
       .getResultList
 
-    val apt = result(0)
+    val apt = if(result.isEmpty) null else result(0)
     em.detach(apt)
     apt
   }
