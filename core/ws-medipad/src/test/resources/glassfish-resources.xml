@@ -31,7 +31,8 @@
            <property name="connectionAttributes" value=";create=true"></property>
        </jdbc-connection-pool>
     -->
-    <jdbc-connection-pool connection-validation-method="auto-commit" datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="s11r64-pool"
+    <jdbc-connection-pool connection-validation-method="auto-commit"
+                          datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="s11r64-pool"
                           is-connection-validation-required="true" connection-creation-retry-attempts="3" ping="true"
                           validate-atmost-once-period-in-seconds="60">
         <property name="characterEncoding" value="UTF-8"></property>
@@ -43,6 +44,7 @@
         <property name="useUnicode" value="true"></property>
         <property name="password" value="root"></property>
         <property name="ServerName" value="127.0.0.1"></property>
+        <!--<property name="ServerName" value="10.1.2.10"></property>-->
         <property name="zeroDateTimeBehavior" value="convertToNull"></property>
     </jdbc-connection-pool>
     <jdbc-resource pool-name="s11r64-pool" jndi-name="s11r64"></jdbc-resource>
@@ -59,17 +61,34 @@
          <property name="zeroDateTimeBehavior" value="convertToNull"></property>
      </jdbc-connection-pool>
      <jdbc-resource pool-name="rls-pool" jndi-name="rls"></jdbc-resource>-->
-     <jdbc-connection-pool connection-validation-method="auto-commit" datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="tmis_core-pool" is-connection-validation-required="true" connection-creation-retry-attempts="3" ping="true" validate-atmost-once-period-in-seconds="60">
-          <property name="characterEncoding" value="UTF-8"></property>
-          <property name="port" value="3306"></property>
-          <property name="DatabaseName" value="tmis_core"></property>
-          <property name="characterSetResults" value="UTF-8"></property>
-          <property name="user" value="root"></property>
-          <property name="datasourceName" value="tmis_core"></property>
-          <property name="useUnicode" value="true"></property>
-          <property name="password" value="root"></property>
-          <property name="ServerName" value="127.0.0.1"></property>
-          <property name="zeroDateTimeBehavior" value="convertToNull"></property>
-      </jdbc-connection-pool>
-      <jdbc-resource pool-name="tmis_core-pool" jndi-name="tmis_core"></jdbc-resource>
+    <jdbc-connection-pool connection-validation-method="auto-commit"
+                          datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="tmis_core-pool"
+                          is-connection-validation-required="true" connection-creation-retry-attempts="3" ping="true"
+                          validate-atmost-once-period-in-seconds="60">
+        <property name="characterEncoding" value="UTF-8"></property>
+        <property name="port" value="3306"></property>
+        <property name="DatabaseName" value="tmis_core"></property>
+        <property name="characterSetResults" value="UTF-8"></property>
+        <property name="user" value="root"></property>
+        <property name="datasourceName" value="tmis_core"></property>
+        <property name="useUnicode" value="true"></property>
+        <property name="password" value="root"></property>
+        <property name="ServerName" value="127.0.0.1"></property>
+        <property name="zeroDateTimeBehavior" value="convertToNull"></property>
+    </jdbc-connection-pool>
+    <jdbc-resource pool-name="tmis_core-pool" jndi-name="tmis_core"></jdbc-resource>
+    <admin-object-resource res-adapter="jmsra" res-type="javax.jms.Topic" jndi-name="LaboratoryTopic">
+        <property name="Name" value="LaboratoryTopic"></property>
+    </admin-object-resource>
+    <admin-object-resource res-adapter="jmsra" res-type="javax.jms.Queue" jndi-name="LaboratoryQueue">
+        <property name="Name" value="LaboratoryQueue"></property>
+    </admin-object-resource>
+    <connector-connection-pool max-pool-size="250" steady-pool-size="1" name="DefaultConnectionFactory"
+                               resource-adapter-name="jmsra"
+                               connection-definition-name="javax.jms.ConnectionFactory"></connector-connection-pool>
+    <connector-resource pool-name="DefaultConnectionFactory" jndi-name="DefaultConnectionFactory"></connector-resource>
+    <connector-connection-pool max-pool-size="250" steady-pool-size="1" name="QueueConnectionFactory"
+                               resource-adapter-name="jmsra"
+                               connection-definition-name="javax.jms.QueueConnectionFactory"></connector-connection-pool>
+    <connector-resource pool-name="QueueConnectionFactory" jndi-name="QueueConnectionFactory"></connector-resource>
 </resources>

@@ -59,13 +59,6 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     final int TEST_PATIENT_ID = 2; // id пациента, для которого создается госпитализация
 
-    /*@Resource(mappedName = "LaboratoryTopic")
-    private Topic dlq;
-
-
-    @Resource(mappedName = "DefaultConnectionFactory")
-    private ConnectionFactory factory;
-*/
     @EJB
     private AppealBeanLocal appealBean = null;
 

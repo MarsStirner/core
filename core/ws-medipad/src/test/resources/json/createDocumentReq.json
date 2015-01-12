@@ -14329,53 +14329,6 @@
                         "attributeRelations": []
                     },
                     {
-                        "id": 3915414,
-                        "version": 0,
-                        "name": "Наименование препарата",
-                        "code": "infectProphylaxisName_1",
-                        "type": "String",
-                        "scope": "Амбизом, Амикацин, Амоксиклав, Амоксициллина клавуланат, Амфолип, Аугментин, Ацикловир, Бисептол, Ванкомицин, Вифенд, Дифлюкан, Дориппрекс, Зивокс, Зиннат, Зовиракс, Изониазид, Кансидас, Кларитро/Азитромицин, Клиндамицин, Колистин, Максипим, Метроджил, Меронем, Метронидазол, Микамин, Микосист, Ноксафил, Панцеф, Роцефин, Сульперазон, Тазоцин, Тиенам, Флюконазол, Флагил, Фортум, Фторхинолоны, Цимевен, Эраксис, Эдицин",
-                        "typeId": 3915414,
-                        "mandatory": "false",
-                        "readOnly": "false",
-                        "calculatedValue": {
-                            "valueAsString": null,
-                            "valueAsId": null
-                        },
-                        "tableValues": null,
-                        "properties": [
-                            {
-                                "name": "value",
-                                "value": " Амоксиклав"
-                            },
-                            {
-                                "name": "valueId",
-                                "value": ""
-                            },
-                            {
-                                "name": "norm",
-                                "value": ""
-                            },
-                            {
-                                "name": "unit",
-                                "value": ""
-                            }
-                        ],
-                        "layoutAttributeValues": [
-                            {
-                                "id": 5593,
-                                "layoutAttribute_id": 9,
-                                "value": "286"
-                            },
-                            {
-                                "id": 5594,
-                                "layoutAttribute_id": 97,
-                                "value": "60"
-                            }
-                        ],
-                        "attributeRelations": []
-                    },
-                    {
                         "id": 3915419,
                         "version": 0,
                         "name": "Наименование препарата",

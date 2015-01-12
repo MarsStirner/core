@@ -198,8 +198,12 @@ class CommonDataProcessorBean
                 attribute.id.intValue,
                 userData,
                 now)
-              new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
-              (ap, attribute) :: list
+              if (ap != null) {
+                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
+                (ap, attribute) :: list
+              } else {
+                list
+              }
             }
           })
 
