@@ -46,9 +46,9 @@ public class MonitoringBean implements MonitoringBeanLocal {
         if(actionList == null) {
             return  allMonitoring;
         }
-        final InfectionDrugMonitoring infectionDrugMonitorings[] = new InfectionDrugMonitoring[8];
         for(Action action : actionList) {
             for(String prefix : flatCodesPrefix ) {
+                final InfectionDrugMonitoring infectionDrugMonitorings[] = new InfectionDrugMonitoring[8];
                 for(int index = 0; index < infectionDrugMonitorings.length; ++index) {
                     ActionProperty propDrugName = getPropDrugName(action, prefix, index);
                     if (propDrugName != null) {
@@ -65,6 +65,11 @@ public class MonitoringBean implements MonitoringBeanLocal {
                             infectionDrugMonitorings[index] = null;
                             addMonitoring(allMonitoring, infectionDrugMonitorings, index, infectionDrugMonitoring);
                         }
+                    }
+                }
+                for(InfectionDrugMonitoring m : infectionDrugMonitorings) {
+                    if(m != null) {
+                        allMonitoring.add(m);
                     }
                 }
             }
