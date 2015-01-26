@@ -30,36 +30,34 @@ public class MonitoringBean implements MonitoringBeanLocal {
 
     @Override
     public List<InfectionDrugMonitoring> getInfectionDrugMonitoring(Event event) throws CoreException {
-        final String[] codes  = {"1_2_18", "1_2_19", "1_2_20", "1_2_22", "1_2_23"};
-        final List<InfectionDrugMonitoring> res = new LinkedList<InfectionDrugMonitoring>();
-        for(String code : codes) {
-            Set documents = new HashSet<String>();
-            documents.add(code);
-            res.addAll(getInfectionDrugMonitoring(dbActionBean.getActionsByTypeCodeAndEventId(documents, event.getId(), "a.begDate DESC", null)));
-        }
-        return res;
+        Set documents = new HashSet<String>(){{
+            add("1_2_18"); add("1_2_19"); add("1_2_20"); add("1_2_22"); add("1_2_23");
+        }};
+        List<Action> actionList = dbActionBean.getActionsByTypeCodeAndEventId(documents, event.getId(), "a.begDate DESC", null);
+        return getInfectionDrugMonitoring(actionList);
     }
 
     private List<InfectionDrugMonitoring> getInfectionDrugMonitoring(List<Action> actionList) throws CoreException {
-        final String[]flatCodesPrefix = {"infectProphylaxis", "infectEmpiric", "infectTelic"};
-        final List<InfectionDrugMonitoring> allMonitoring = new LinkedList<InfectionDrugMonitoring>();
-        if(actionList == null) {
-            return  allMonitoring;
+        final String[] flatCodesPrefix = {"infectProphylaxis", "infectEmpiric", "infectTelic"};
+        final List<InfectionDrugMonitoring> res = new ArrayList<InfectionDrugMonitoring>();
+        if (actionList == null) {
+            return res;
         }
-        for(Action action : actionList) {
-            for(String prefix : flatCodesPrefix ) {
-                final InfectionDrugMonitoring infectionDrugMonitorings[] = new InfectionDrugMonitoring[8];
-                for(int index = 0; index < infectionDrugMonitorings.length; ++index) {
+        for (String prefix : flatCodesPrefix) {
+            final List<InfectionDrugMonitoring> allMonitoring = new LinkedList<InfectionDrugMonitoring>();
+            final InfectionDrugMonitoring infectionDrugMonitorings[] = new InfectionDrugMonitoring[8];
+            for (Action action : actionList) {
+                for (int index = 0; index < infectionDrugMonitorings.length; ++index) {
                     ActionProperty propDrugName = getPropDrugName(action, prefix, index);
                     if (propDrugName != null) {
                         InfectionDrugMonitoring infectionDrugMonitoring = toInfectionDrugMonitoring(action, propDrugName, prefix, index);
-                        if(infectionDrugMonitorings[index] == null) { //если ранее не было противоинфекционной терапии с индексом index
+                        if (infectionDrugMonitorings[index] == null) { //если ранее не было противоинфекционной терапии с индексом index
                             addMonitoring(allMonitoring, infectionDrugMonitorings, index, infectionDrugMonitoring);
-                        } else if(isCompleteDrugMonitoring(infectionDrugMonitorings[index], infectionDrugMonitoring)){
+                        } else if (isCompleteDrugMonitoring(infectionDrugMonitorings[index], infectionDrugMonitoring)) {
                             //если установлена дата окончания предыдущей противоинфекционной терапии
                             allMonitoring.add(infectionDrugMonitoring);
                             infectionDrugMonitorings[index] = null;
-                        } else if(isNewDrugMonitoring(infectionDrugMonitorings[index], infectionDrugMonitoring)) {
+                        } else if (isNewDrugMonitoring(infectionDrugMonitorings[index], infectionDrugMonitoring)) {
                             //если задана новая противоинфекционная терапия
                             allMonitoring.add(infectionDrugMonitorings[index]);
                             infectionDrugMonitorings[index] = null;
@@ -67,31 +65,33 @@ public class MonitoringBean implements MonitoringBeanLocal {
                         }
                     }
                 }
-                for(InfectionDrugMonitoring m : infectionDrugMonitorings) {
-                    if(m != null) {
-                        allMonitoring.add(m);
-                    }
+            }
+            for (InfectionDrugMonitoring m : infectionDrugMonitorings) {
+                if (m != null) {
+                    allMonitoring.add(m);
                 }
             }
+            Collections.sort(allMonitoring);
+            res.addAll(allMonitoring);
         }
-        return allMonitoring;
+        return res;
     }
 
     private boolean isNewDrugMonitoring(InfectionDrugMonitoring oldMonitoring, InfectionDrugMonitoring newMonitoring) {
-        if(oldMonitoring.getDrugName() != newMonitoring.getDrugName() &&
+        if (oldMonitoring.getDrugName() != newMonitoring.getDrugName() &&
                 oldMonitoring.getTherapyName() != newMonitoring.getTherapyName() &&
                 oldMonitoring.getBegDate() != newMonitoring.getBegDate()) {
-            return  true;
+            return true;
         }
         return false;
     }
 
     private boolean isCompleteDrugMonitoring(InfectionDrugMonitoring oldMonitoring, InfectionDrugMonitoring newMonitoring) {
-        if(newMonitoring.getEndDate() == null ||
-           oldMonitoring.getBegDate() != newMonitoring.getBegDate() ||
-           oldMonitoring.getDrugName() != newMonitoring.getDrugName() ||
-           oldMonitoring.getTherapyName() != newMonitoring.getTherapyName()) {
-           return false;
+        if (newMonitoring.getEndDate() == null ||
+                oldMonitoring.getBegDate() != newMonitoring.getBegDate() ||
+                oldMonitoring.getDrugName() != newMonitoring.getDrugName() ||
+                oldMonitoring.getTherapyName() != newMonitoring.getTherapyName()) {
+            return false;
         }
         return true;
     }
@@ -107,13 +107,13 @@ public class MonitoringBean implements MonitoringBeanLocal {
     private InfectionDrugMonitoring toInfectionDrugMonitoring(Action action, ActionProperty propDrugName, String prefix, Integer index) throws CoreException {
         InfectionDrugMonitoring res = new InfectionDrugMonitoring();
         List<APValue> actionPropValueList = dbActionPropertyBeanLocal.getActionPropertyValue(propDrugName);
-        if( !actionPropValueList.isEmpty()
-                && actionPropValueList.get(0).getValue() instanceof String ) {
-            res.setDrugName((String)actionPropValueList.get(0).getValue());
+        if (!actionPropValueList.isEmpty()
+                && actionPropValueList.get(0).getValue() instanceof String) {
+            res.setDrugName((String) actionPropValueList.get(0).getValue());
         }
-        for(ActionProperty ap : action.getActionProperties()) {
+        for (ActionProperty ap : action.getActionProperties()) {
             String code = ap.getType().getCode();
-            if(code != null ) {
+            if (code != null) {
                 if (code.startsWith(prefix + "BeginDate_" + (index + 1))) {
                     Date date = getValue(actionPropValueList, ap);
                     res.setBegDate(date);
@@ -131,9 +131,9 @@ public class MonitoringBean implements MonitoringBeanLocal {
     private Date getValue(List<APValue> actionPropValueList, ActionProperty ap) {
         try {
             List<APValue> valueList = dbActionPropertyBeanLocal.getActionPropertyValue(ap);
-            if( !valueList.isEmpty()
+            if (!valueList.isEmpty()
                     && valueList.get(0).getValue() instanceof Date) {
-                return (Date)valueList.get(0).getValue();
+                return (Date) valueList.get(0).getValue();
             }
         } catch (CoreException e) {
         }
@@ -142,14 +142,14 @@ public class MonitoringBean implements MonitoringBeanLocal {
     }
 
     private ActionProperty getPropDrugName(Action action, String prefix, Integer index) {
-        for(ActionProperty ap : action.getActionProperties()) {
-            if(ap.getType() != null && ap.getType().getCode() != null
+        for (ActionProperty ap : action.getActionProperties()) {
+            if (ap.getType() != null && ap.getType().getCode() != null
                     && ap.getType().getCode().startsWith(prefix + "Name_" + (index + 1))) {
                 try {
                     List<APValue> actionPropValueList = dbActionPropertyBeanLocal.getActionPropertyValue(ap);
-                    if( !actionPropValueList.isEmpty()
+                    if (!actionPropValueList.isEmpty()
                             && actionPropValueList.get(0).getValue() instanceof String
-                            && !((String)actionPropValueList.get(0).getValue()).isEmpty() ) {
+                            && !((String) actionPropValueList.get(0).getValue()).isEmpty()) {
                         return ap;
                     }
                 } catch (CoreException e) {

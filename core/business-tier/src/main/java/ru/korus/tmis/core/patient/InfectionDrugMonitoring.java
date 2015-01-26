@@ -15,7 +15,7 @@ import java.util.Date;
 @XmlType
 @XmlRootElement
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class InfectionDrugMonitoring {
+public class InfectionDrugMonitoring implements Comparable {
 
     private String therapyName;
 
@@ -77,5 +77,16 @@ public class InfectionDrugMonitoring {
         result = 31 * result + (drugName != null ? drugName.hashCode() : 0);
         result = 31 * result + (begDate != null ? begDate.hashCode() : 0);
         return result;
+    }
+
+
+    @Override
+    public int compareTo(Object o) {
+        if (o == null || !(o instanceof InfectionDrugMonitoring)) {
+            return -1;
+        } else if (((InfectionDrugMonitoring) o).getBegDate() == null) {
+            return 1;
+        }
+        return ((InfectionDrugMonitoring) o).getBegDate().compareTo(begDate);
     }
 }
