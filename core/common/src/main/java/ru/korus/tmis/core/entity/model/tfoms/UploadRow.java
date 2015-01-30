@@ -6,6 +6,8 @@ import java.util.Iterator;
 import java.util.Map;
 
 import static ru.korus.tmis.core.entity.model.tfoms.ObjectParser.*;
+import static ru.korus.tmis.core.entity.model.tfoms.ObjectParser.getIntegerValue;
+import static ru.korus.tmis.core.entity.model.tfoms.ObjectParser.getStringValue;
 
 /**
  * Author: Upatov Egor <br>

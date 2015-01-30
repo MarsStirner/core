@@ -1,6 +1,9 @@
 package ru.korus.tmis.core.database;
 
-import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.ClientQuoting;
+import ru.korus.tmis.core.entity.model.Mkb;
+import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function1;
 
@@ -53,7 +56,6 @@ public interface DbClientQuotingBeanLocal {
                                               int request,
                                               Mkb mkb,
                                               Patient patient,
-                                              Event event,
                                               Staff sessionUser)
             throws CoreException;
 

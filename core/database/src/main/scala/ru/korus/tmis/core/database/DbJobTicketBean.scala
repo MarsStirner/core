@@ -35,7 +35,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
   var em: EntityManager = _
 
   @EJB
-  var appLock: AuthStorageBeanLocal = _
+  var appLock: AppLockBeanLocal = _
 
   @EJB
   private var dbManager: DbManagerBeanLocal = _

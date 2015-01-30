@@ -22,6 +22,8 @@ public interface DbEventTypeBeanLocal {
      */
     EventType getEventTypeById(int eventTypeId) throws CoreException;
 
+    EventType getEventTypeByCode(String code) throws CoreException;
+
     /**
      * Запрос на справочники типов обращений.
      * @param page Выводимая страница.

@@ -1,0 +1,507 @@
+<?xml version="1.0"?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" attributeFormDefault="unqualified" elementFormDefault="qualified">
+  <xs:element name="domain" type="domainType"/>
+  <xs:complexType name="engineType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="sniffer" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="moduleType">
+    <xs:sequence>
+      <xs:element type="engineType" name="engine" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="applicationType">
+    <xs:sequence>
+      <xs:element type="propertyType" name="property" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="moduleType" name="module"/>
+      <xs:element type="resourcesType" name="resources" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="context-root" use="optional"/>
+    <xs:attribute type="xs:string" name="location" use="optional"/>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+    <xs:attribute type="xs:string" name="directory-deployed" use="optional"/>
+    <xs:attribute type="xs:string" name="object-type" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="system-applicationsType">
+    <xs:sequence>
+      <xs:element type="applicationType" name="application" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="propertyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+        <xs:attribute type="xs:string" name="value" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="jdbc-connection-poolType">
+    <xs:sequence>
+      <xs:element type="propertyType" name="property" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="connection-validation-method" use="optional"/>
+    <xs:attribute type="xs:string" name="datasource-classname" use="optional"/>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+    <xs:attribute type="xs:string" name="is-connection-validation-required" use="optional"/>
+    <xs:attribute type="xs:byte" name="connection-creation-retry-attempts" use="optional"/>
+    <xs:attribute type="xs:string" name="ping" use="optional"/>
+    <xs:attribute type="xs:byte" name="validate-atmost-once-period-in-seconds" use="optional"/>
+    <xs:attribute type="xs:string" name="res-type" use="optional"/>
+    <xs:attribute type="xs:string" name="is-isolation-level-guaranteed" use="optional"/>
+    <xs:attribute type="xs:string" name="pool-name" use="optional"/>
+    <xs:attribute type="xs:string" name="jndi-name" use="optional"/>
+    <xs:attribute type="xs:string" name="object-type" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="jdbc-resourceType" mixed="true">
+    <xs:sequence>
+      <xs:element type="propertyType" name="property" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="pool-name" use="optional"/>
+    <xs:attribute type="xs:string" name="jndi-name" use="optional"/>
+    <xs:attribute type="xs:string" name="object-type" use="optional"/>
+    <xs:attribute type="xs:string" name="connection-validation-method" use="optional"/>
+    <xs:attribute type="xs:string" name="datasource-classname" use="optional"/>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+    <xs:attribute type="xs:string" name="is-connection-validation-required" use="optional"/>
+    <xs:attribute type="xs:byte" name="connection-creation-retry-attempts" use="optional"/>
+    <xs:attribute type="xs:string" name="ping" use="optional"/>
+    <xs:attribute type="xs:byte" name="validate-atmost-once-period-in-seconds" use="optional"/>
+    <xs:attribute type="xs:string" name="res-type" use="optional"/>
+    <xs:attribute type="xs:string" name="is-isolation-level-guaranteed" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="resourcesType">
+    <xs:choice maxOccurs="unbounded" minOccurs="0">
+      <xs:element type="jdbc-connection-poolType" name="jdbc-connection-pool"/>
+      <xs:element type="jdbc-resourceType" name="jdbc-resource"/>
+      <xs:element type="admin-object-resourceType" name="admin-object-resource"/>
+    </xs:choice>
+  </xs:complexType>
+  <xs:complexType name="applicationsType">
+    <xs:sequence>
+      <xs:element type="applicationType" name="application" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="admin-object-resourceType">
+    <xs:sequence>
+      <xs:element type="propertyType" name="property"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="res-adapter" use="optional"/>
+    <xs:attribute type="xs:string" name="res-type" use="optional"/>
+    <xs:attribute type="xs:string" name="jndi-name" use="optional"/>
+    <xs:attribute type="xs:string" name="description" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="application-refType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="ref" use="optional"/>
+        <xs:attribute type="xs:string" name="virtual-servers" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="resource-refType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="ref" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="serverType">
+    <xs:sequence>
+      <xs:element type="application-refType" name="application-ref" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="resource-refType" name="resource-ref" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="name"/>
+    <xs:attribute type="xs:string" name="config-ref"/>
+  </xs:complexType>
+  <xs:complexType name="serversType">
+    <xs:sequence>
+      <xs:element type="serverType" name="server"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="nodeType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="node-host"/>
+        <xs:attribute type="xs:string" name="name"/>
+        <xs:attribute type="xs:string" name="type"/>
+        <xs:attribute type="xs:string" name="install-dir"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="nodesType">
+    <xs:sequence>
+      <xs:element type="nodeType" name="node"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="virtual-serverType" mixed="true">
+    <xs:sequence>
+      <xs:element type="propertyType" name="property" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="id" use="optional"/>
+    <xs:attribute type="xs:string" name="network-listeners" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="http-serviceType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="access-log"/>
+      <xs:element type="virtual-serverType" name="virtual-server" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="orbType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="use-thread-pool-ids" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="iiop-listenerType" mixed="true">
+    <xs:sequence>
+      <xs:element type="sslType" name="ssl" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="port" use="optional"/>
+    <xs:attribute type="xs:string" name="id" use="optional"/>
+    <xs:attribute type="xs:string" name="address" use="optional"/>
+    <xs:attribute type="xs:string" name="lazy-init" use="optional"/>
+    <xs:attribute type="xs:string" name="security-enabled" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="sslType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="classname" use="optional"/>
+        <xs:attribute type="xs:string" name="cert-nickname" use="optional"/>
+        <xs:attribute type="xs:string" name="client-auth-enabled" use="optional"/>
+        <xs:attribute type="xs:string" name="client-auth" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="iiop-serviceType">
+    <xs:sequence>
+      <xs:element type="orbType" name="orb"/>
+      <xs:element type="iiop-listenerType" name="iiop-listener" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="jmx-connectorType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="port" use="optional"/>
+        <xs:attribute type="xs:string" name="address" use="optional"/>
+        <xs:attribute type="xs:string" name="security-enabled" use="optional"/>
+        <xs:attribute type="xs:string" name="auth-realm-name" use="optional"/>
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="admin-serviceType">
+    <xs:sequence>
+      <xs:element type="jmx-connectorType" name="jmx-connector"/>
+      <xs:element type="propertyType" name="property" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="xs:string" name="das-config"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="system-jmx-connector-name" use="optional"/>
+    <xs:attribute type="xs:string" name="type" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="session-managerType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="manager-properties"/>
+      <xs:element type="xs:string" name="store-properties"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="session-configType">
+    <xs:sequence>
+      <xs:element type="session-managerType" name="session-manager"/>
+      <xs:element type="xs:string" name="session-properties"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="web-containerType">
+    <xs:sequence>
+      <xs:element type="session-configType" name="session-config"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="ejb-containerType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="ejb-timer-service"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="session-store" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="jms-hostType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="host" use="optional"/>
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+        <xs:attribute type="xs:string" name="port" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="jms-serviceType">
+    <xs:sequence>
+      <xs:element type="jms-hostType" name="jms-host"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="default-jms-host" use="optional"/>
+    <xs:attribute type="xs:string" name="addresslist-behavior" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="auth-realmType" mixed="true">
+    <xs:sequence>
+      <xs:element type="propertyType" name="property" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="classname" use="optional"/>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="jacc-providerType" mixed="true">
+    <xs:sequence>
+      <xs:element type="propertyType" name="property" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="policy-provider" use="optional"/>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+    <xs:attribute type="xs:string" name="policy-configuration-factory-provider" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="audit-moduleType">
+    <xs:sequence>
+      <xs:element type="propertyType" name="property"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="classname" use="optional"/>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="request-policyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="auth-source" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="response-policyType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="auth-source" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="provider-configType">
+    <xs:sequence>
+      <xs:element type="request-policyType" name="request-policy"/>
+      <xs:element type="response-policyType" name="response-policy"/>
+      <xs:element type="propertyType" name="property" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="provider-type" use="optional"/>
+    <xs:attribute type="xs:string" name="provider-id" use="optional"/>
+    <xs:attribute type="xs:string" name="class-name" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="message-security-configType">
+    <xs:sequence>
+      <xs:element type="provider-configType" name="provider-config" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="auth-layer" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="security-serviceType">
+    <xs:sequence>
+      <xs:element type="auth-realmType" name="auth-realm" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="jacc-providerType" name="jacc-provider" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="audit-moduleType" name="audit-module"/>
+      <xs:element type="message-security-configType" name="message-security-config" maxOccurs="unbounded" minOccurs="0"/>
+      <xs:element type="propertyType" name="property" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="transaction-serviceType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="tx-log-dir" use="optional"/>
+        <xs:attribute type="xs:string" name="automatic-recovery" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="java-configType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="jvm-options" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="debug-options" use="optional"/>
+    <xs:attribute type="xs:string" name="system-classpath" use="optional"/>
+    <xs:attribute type="xs:string" name="classpath-suffix" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="httpType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="file-cache"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="default-virtual-server" use="optional"/>
+    <xs:attribute type="xs:short" name="max-connections" use="optional"/>
+    <xs:attribute type="xs:string" name="encoded-slash-enabled" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="protocolType">
+    <xs:sequence>
+      <xs:element type="httpType" name="http" minOccurs="0"/>
+      <xs:element type="sslType" name="ssl" minOccurs="0"/>
+      <xs:element type="http-redirectType" name="http-redirect" minOccurs="0"/>
+      <xs:element type="port-unificationType" name="port-unification" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+    <xs:attribute type="xs:string" name="security-enabled" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="protocolsType">
+    <xs:sequence>
+      <xs:element type="protocolType" name="protocol" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="network-listenerType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="port" use="optional"/>
+        <xs:attribute type="xs:string" name="protocol" use="optional"/>
+        <xs:attribute type="xs:string" name="transport" use="optional"/>
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+        <xs:attribute type="xs:string" name="thread-pool" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="network-listenersType">
+    <xs:sequence>
+      <xs:element type="network-listenerType" name="network-listener" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="transportType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="transportsType">
+    <xs:sequence>
+      <xs:element type="transportType" name="transport"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="network-configType">
+    <xs:sequence>
+      <xs:element type="protocolsType" name="protocols"/>
+      <xs:element type="network-listenersType" name="network-listeners"/>
+      <xs:element type="transportsType" name="transports"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="thread-poolType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+        <xs:attribute type="xs:short" name="max-thread-pool-size" use="optional"/>
+        <xs:attribute type="xs:short" name="max-queue-size" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="thread-poolsType">
+    <xs:sequence>
+      <xs:element type="thread-poolType" name="thread-pool" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="monitoring-serviceType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="module-monitoring-levels"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="group-management-serviceType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="failure-detection"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="configType">
+    <xs:choice maxOccurs="unbounded" minOccurs="0">
+      <xs:element type="http-serviceType" name="http-service"/>
+      <xs:element type="iiop-serviceType" name="iiop-service"/>
+      <xs:element type="admin-serviceType" name="admin-service"/>
+      <xs:element type="xs:string" name="connector-service"/>
+      <xs:element type="web-containerType" name="web-container"/>
+      <xs:element type="ejb-containerType" name="ejb-container"/>
+      <xs:element type="xs:string" name="mdb-container"/>
+      <xs:element type="jms-serviceType" name="jms-service"/>
+      <xs:element type="security-serviceType" name="security-service"/>
+      <xs:element type="transaction-serviceType" name="transaction-service"/>
+      <xs:element type="java-configType" name="java-config"/>
+      <xs:element type="network-configType" name="network-config"/>
+      <xs:element type="thread-poolsType" name="thread-pools"/>
+      <xs:element type="monitoring-serviceType" name="monitoring-service"/>
+      <xs:element type="group-management-serviceType" name="group-management-service"/>
+      <xs:element type="log-serviceType" name="log-service"/>
+      <xs:element type="xs:string" name="diagnostic-service"/>
+      <xs:element type="availability-serviceType" name="availability-service"/>
+      <xs:element type="xs:string" name="management-rules"/>
+      <xs:element type="propertyType" name="system-property"/>
+    </xs:choice>
+    <xs:attribute type="xs:string" name="name" use="optional"/>
+  </xs:complexType>
+  <xs:complexType name="log-serviceType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="module-log-levels"/>
+    </xs:sequence>
+    <xs:attribute type="xs:int" name="log-rotation-limit-in-bytes"/>
+    <xs:attribute type="xs:string" name="file"/>
+  </xs:complexType>
+  <xs:complexType name="ejb-container-availabilityType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="sfsb-store-pool-name"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="availability-serviceType">
+    <xs:sequence>
+      <xs:element type="xs:string" name="web-container-availability"/>
+      <xs:element type="ejb-container-availabilityType" name="ejb-container-availability"/>
+      <xs:element type="xs:string" name="jms-availability"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="http-redirectType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="secure"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="protocol-finderType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="protocol" use="optional"/>
+        <xs:attribute type="xs:string" name="name" use="optional"/>
+        <xs:attribute type="xs:string" name="classname" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="port-unificationType">
+    <xs:sequence>
+      <xs:element type="protocol-finderType" name="protocol-finder" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="configsType">
+    <xs:sequence>
+      <xs:element type="configType" name="config" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+  </xs:complexType>
+  <xs:complexType name="secure-admin-principalType">
+    <xs:simpleContent>
+      <xs:extension base="xs:string">
+        <xs:attribute type="xs:string" name="dn" use="optional"/>
+      </xs:extension>
+    </xs:simpleContent>
+  </xs:complexType>
+  <xs:complexType name="secure-adminType">
+    <xs:sequence>
+      <xs:element type="secure-admin-principalType" name="secure-admin-principal" maxOccurs="unbounded" minOccurs="0"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="special-admin-indicator"/>
+  </xs:complexType>
+  <xs:complexType name="domainType">
+    <xs:sequence>
+      <xs:element type="system-applicationsType" name="system-applications"/>
+      <xs:element type="applicationsType" name="applications"/>
+      <xs:element type="resourcesType" name="resources"/>
+      <xs:element type="serversType" name="servers"/>
+      <xs:element type="nodesType" name="nodes"/>
+      <xs:element type="configsType" name="configs"/>
+      <xs:element type="propertyType" name="property"/>
+      <xs:element type="secure-adminType" name="secure-admin"/>
+      <xs:element type="xs:string" name="load-balancers"/>
+      <xs:element type="xs:string" name="lb-configs"/>
+      <xs:element type="xs:string" name="clusters"/>
+    </xs:sequence>
+    <xs:attribute type="xs:string" name="log-root"/>
+    <xs:attribute type="xs:string" name="application-root"/>
+    <xs:attribute type="xs:byte" name="version"/>
+  </xs:complexType>
+</xs:schema>

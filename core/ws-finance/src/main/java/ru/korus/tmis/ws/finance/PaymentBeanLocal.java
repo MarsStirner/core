@@ -1,5 +1,7 @@
 package ru.korus.tmis.ws.finance;
 
+import ru.korus.tmis.core.database.finance.PersonName;
+import ru.korus.tmis.core.database.finance.ServicePaidInfo;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;

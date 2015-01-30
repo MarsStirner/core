@@ -55,14 +55,4 @@ class DbRbTempInvalidDocumentBean
       }
     }
   }
-
-  def getRbTempInvalidDocumentByCode(code: String): RbTempInvalidDocument = {
-    val result = em.createNamedQuery("RbTempInvalidDocument.findByCode",
-      classOf[RbTempInvalidDocument]).setParameter("code", code).getResultList
-    if (result.isEmpty) {
-      return null
-    } else {
-      return result.iterator.next
-    }
-  }
 }

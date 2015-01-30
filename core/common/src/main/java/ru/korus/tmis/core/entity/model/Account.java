@@ -17,7 +17,7 @@ import java.util.Date;
         @NamedQuery(name = "Account.getUndeleted",
                 query = "SELECT a FROM Account a WHERE a.deleted = false ORDER BY a.settleDate desc"),
         @NamedQuery(name = "Account.getPacketNumber",
-                query = "SELECT (COUNT(a)+ 1) FROM Account a WHERE a.deleted = false " +
+                query = "SELECT COUNT(a) FROM Account a WHERE a.deleted = false " +
                         "AND a.begDate = :begDate AND a.endDate = :endDate AND a.contract.id = :contractId"),
         @NamedQuery(name = "Account.deleteAccount",
                 query = "DELETE FROM Account a WHERE a.id = :id"),

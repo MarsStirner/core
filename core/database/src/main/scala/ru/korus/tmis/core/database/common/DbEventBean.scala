@@ -113,7 +113,7 @@ class DbEventBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def createEvent(patientId: Int, appealTypeId: Int, begDate: Date, endDate: Date, contractId:Int, authData: AuthData): Event = {
+  def createEvent(patientId: Int, appealTypeId: Int, begDate: Date, endDate: Date, contractId:Int, result: RbResult, acheResult: RbAcheResult, execPerson: Staff, authData: AuthData): Event = {
 
     val patient = patientBean.getPatientById(patientId)
     val eventType = this.getEventTypeById(appealTypeId)
@@ -151,6 +151,9 @@ class DbEventBean
       //val contract = contractBean.getContractForEventType(eventType)
       newEvent.setContract(contractBean.getContractById(contractId))
       newEvent.setUuid(dbUUIDBeanLocal.createUUID())
+      newEvent.setResult(result)
+      newEvent.setAcheResult(acheResult)
+      newEvent.setExecutor(execPerson)
       //newEvent.setExecDate(endDate)
     }
     catch {

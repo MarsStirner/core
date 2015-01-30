@@ -19,6 +19,8 @@ public interface DbContractBeanLocal {
 
     Contract getContractById(int id) throws CoreException;
 
+    Contract getContractByNumber(String  number) throws CoreException;
+
     /**
      * Поведение данного метода неверно - контрактов для одного типа событий
      * может быть несколько. Используйте {@link #getContractsByEventTypeId(int, int, boolean, boolean) getContractsByEventTypeId}

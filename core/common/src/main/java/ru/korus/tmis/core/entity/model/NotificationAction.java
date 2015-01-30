@@ -40,7 +40,9 @@ public class NotificationAction implements Serializable, Transmittable {
 	@JoinColumn(name="action_id", nullable=false, insertable=false, updatable=false)
 	private Action action;
 
-	public NotificationAction() {
+    private String method;
+
+    public NotificationAction() {
 	}
 
 	public int getActionId() {
@@ -69,7 +71,7 @@ public class NotificationAction implements Serializable, Transmittable {
 	}
 
 	public void setInfo(String info) {
-		this.info = info;
+		this.info = info == null ? null : info.substring(0, Math.min(info.length(), 1024));
 	}
 
 	public Timestamp getSendTime() {
@@ -89,5 +91,11 @@ public class NotificationAction implements Serializable, Transmittable {
 	}
 
 
+    public String getMethod() {
+        return method;
+    }
 
+    public void setMethod(String method) {
+        this.method = method;
+    }
 }

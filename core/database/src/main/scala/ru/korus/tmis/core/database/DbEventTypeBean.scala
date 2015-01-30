@@ -38,6 +38,22 @@ class DbEventTypeBean
     }
   }
 
+  def getEventTypeByCode(code: String) = {
+    val result = em.createQuery(EventTypeByCodeQuery, classOf[EventType])
+      .setParameter("code", code)
+      .getResultList
+
+    if (result== null || result.size()<=0){
+      throw new CoreException(
+        ConfigManager.ErrorCodes.EventTypeNotFound,
+        i18n("error.eventTypeNotFound").format(code))
+    } else {
+      result.foreach(em.detach(_))
+      result.iterator().next()
+    }
+  }
+
+
   def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
     val queryStr = filter.toQueryStructure()
@@ -71,6 +87,18 @@ class DbEventTypeBean
     AND
       et.deleted = '0'
     """
+
+  val EventTypeByCodeQuery =
+    """
+    SELECT et
+    FROM
+      EventType et
+    WHERE
+      et.code = :code
+    AND
+      et.deleted = '0'
+    """
+
 
   val EventTypesByRequestTypeIdAndFinanceIdQuery =
     """

@@ -5,9 +5,7 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbRbSpecialVariablesPreferencesBeanLocal;
 import ru.korus.tmis.core.entity.model.RbSpecialVariablesPreferences;
 import ru.korus.tmis.core.entity.model.VariablesforSQL;
-import ru.korus.tmis.core.entity.model.tfoms.ObjectParser;
 
-import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.List;
@@ -32,44 +30,45 @@ public class SpecialVariablesPreferencesQueryCache {
         this.specialVariablesPreferencesBean = specialVariablesPreferencesBean;
     }
 
-    public void clearCache() {
-        this.cachedQueries.clear();
-    }
-
     public void cacheQueries() {
-        //Основные запросы
-        cacheQuery(Constants.QUERY_NAME_STATIONARY_MAIN);
-        cacheQuery(Constants.QUERY_NAME_POLICLINIC_MAIN);
-        cacheQuery(Constants.QUERY_NAME_POLICLINIC_ADDITIONAL);
-        cacheQuery(Constants.QUERY_NAME_DISPANSERIZATION_ADDITIONAL);
-        //PreSelect section
-        cacheQuery(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_MAIN_DIAGNOSIS);
-        cacheQuery(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_SECONDARY_DIAGNOSIS);
-        cacheQuery(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_RESULT);
-        cacheQuery(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_ISHOD);
-        cacheQuery(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_CSG);
-        cacheQuery(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_HOSPITAL_BED_PROFILE);
-        cacheQuery(Constants.QUERY_NAME_STATIONARY_PROPERTY_TYPE_STAGE);
-
-        cacheQuery(Constants.QUERY_NAME_MULTIPLE_BIRTH_CONTACT_TYPE);
+        cachedQueries.clear();
+        //Поликлиника
+        cacheQuery(Constants.POLICLINIC_SELECT_STATEMENT);
+        cacheQuery(Constants.POLICLINIC_PROPERTIES);
+        cacheQuery(Constants.POLICLINIC_TARIFF);
+        cacheQuery(Constants.POLICLINIC_EXCEPTION);
+        cacheQuery(Constants.POLICLINIC_USL_PROPERTIES);
+        cacheQuery(Constants.POLICLINIC_CODE_MES1);
+        cacheQuery(Constants.POLICLINIC_CODE_MES2);
         //Проверка позиций счета
-        cacheQuery(Constants.QUERY_NAME_ACCOUNTITEM_CHECK_ADDITIONAL);
-        cacheQuery(Constants.QUERY_NAME_ACCOUNTITEM_CHECK_PRIMARY);
+        cacheQuery(Constants.ACCOUNTITEM_CHECK_ADDITIONAL);
+        cacheQuery(Constants.ACCOUNTITEM_CHECK_PRIMARY);
+        //Стационар
+        cacheQuery(Constants.STATIONARY_SELECT_STATEMENT);
+        cacheQuery(Constants.STATIONARY_PROPERTIES);
+        cacheQuery(Constants.STATIONARY_TARIFF);
+        cacheQuery(Constants.STATIONARY_EXCEPTION);
+        cacheQuery(Constants.STATIONARY_USL_PROPERTIES);
+        cacheQuery(Constants.STATIONARY_CODE_MES1);
+        cacheQuery(Constants.STATIONARY_CODE_MES2);
         // Свойства пациента
-        cacheQuery(Constants.QUERY_NAME_PATIENT_PROPERTIES);
-        cacheQuery(Constants.QUERY_NAME_PATIENT_DOCUMENT);
-        cacheQuery(Constants.QUERY_NAME_PATIENT_POLICY);
-        cacheQuery(Constants.QUERY_NAME_PATIENT_OKATOG);
-        cacheQuery(Constants.QUERY_NAME_PATIENT_OKATOP);
-        cacheQuery(Constants.QUERY_NAME_PATIENT_SPOKESMAN);
+        cacheQuery(Constants.PATIENT_PROPERTIES);
+        cacheQuery(Constants.PATIENT_DOCUMENT);
+        cacheQuery(Constants.PATIENT_POLICY);
+        cacheQuery(Constants.PATIENT_OKATOG);
+        cacheQuery(Constants.PATIENT_OKATOP);
+        cacheQuery(Constants.PATIENT_SPOKESMAN);
+
+        cacheQuery(Constants.SLUCH_PROPERTIES);
 
         cacheQuery(Constants.OS_SLUCH);
 
-        // PreSelect queries
-        cacheQuery(Constants.QUERY_NAME_MOVING_ACTION_TYPE);
+        cacheQuery(Constants.ADDITIONAL_POLICLINIC_SELECT_STATEMENT);
+        cacheQuery(Constants.ADDITIONAL_DISPANSERIZATION_SELECT_STATEMENT);
+        cacheQuery(Constants.ADDITIONAL_DISPANSERIZATION_TARIFF);
     }
 
-    public boolean cacheQuery(final String queryName) {
+    private void cacheQuery(final String queryName) {
         final Map<RbSpecialVariablesPreferences, List<VariablesforSQL>> queryWithVariables =
                 specialVariablesPreferencesBean.getQueryWithVariablesByQueryName(queryName);
         if (queryWithVariables != null && !queryWithVariables.isEmpty()) {
@@ -80,15 +79,12 @@ public class SpecialVariablesPreferencesQueryCache {
                 newQuery.addQueryParameter(currentVariable.getName());
             }
             this.cachedQueries.add(newQuery);
-            return true;
         } else {
             logger.error("Query with name[{}] not exists", queryName);
-            return false;
         }
     }
 
     public void printSummaryUsage() {
-        logger.info("Summary usage of Special Queries:");
         for (CachedQuery current : cachedQueries) {
             logger.info(current.timingSummary());
         }
@@ -128,7 +124,6 @@ public class SpecialVariablesPreferencesQueryCache {
         return null;
     }
 
-
     public void setStartedParameters(final Map<String, String> parameters) {
         for (CachedQuery current : cachedQueries) {
             String currentQuery = current.getQuery();
@@ -161,7 +156,7 @@ public class SpecialVariablesPreferencesQueryCache {
             final long startTime = System.currentTimeMillis();
             final List resultSet = specialVariablesPreferencesBean.executeNamedQuery(sqlQuery);
             neededQuery.addTiming(System.currentTimeMillis() - startTime);
-            if (!resultSet.isEmpty()) {
+            if(!resultSet.isEmpty()){
                 return resultSet.iterator().next().toString();
             }
         } else {
@@ -170,34 +165,20 @@ public class SpecialVariablesPreferencesQueryCache {
         return null;
     }
 
-    public Integer executeNamedQueryForIntegerResult(final String queryName, final Map<String, String> parameters) {
-        final CachedQuery neededQuery = getCachedQueryByName(queryName);
-        if (neededQuery != null) {
-            final String sqlQuery = getQueryWithSettedParams(neededQuery, parameters);
-            final long startTime = System.currentTimeMillis();
-            final List resultSet = specialVariablesPreferencesBean.executeNamedQuery(sqlQuery);
-            neededQuery.addTiming(System.currentTimeMillis() - startTime);
-            if (!resultSet.isEmpty()) {
-                return ObjectParser.getIntegerValue(resultSet.iterator().next());
-            }
-        } else {
-            logger.info("Query with name={} not exists. Return emptyResultSet.", queryName);
-        }
-        return null;
-    }
-
-    public <T> List<T> executeNamedQuery(final String queryName, final Map<String, String> parameters, Class<T> entityClass) {
+    public<T> List<T> executeNamedQuery(final String queryName, final Map<String, String> parameters, Class<T> entityClass) {
         final CachedQuery neededQuery = getCachedQueryByName(queryName);
         if (neededQuery != null) {
             final String sqlQuery = getQueryWithSettedParams(neededQuery, parameters);
             //logger.debug(sqlQuery);
             final long startTime = System.currentTimeMillis();
             final List<Object[]> resultSet = specialVariablesPreferencesBean.executeNamedQuery(sqlQuery);
+
             neededQuery.addTiming(System.currentTimeMillis() - startTime);
+
             final List<T> typedResultList = new ArrayList<T>(resultSet.size());
             for (Object[] current : resultSet) {
                 try {
-                    typedResultList.add(entityClass.getDeclaredConstructor(Object[].class).newInstance(new Object[]{current}));
+                    typedResultList.add(entityClass.getDeclaredConstructor(Object[].class).newInstance(new Object[] {current}));
                 } catch (InstantiationException e) {
                     e.printStackTrace();
                 } catch (IllegalAccessException e) {
@@ -205,78 +186,6 @@ public class SpecialVariablesPreferencesQueryCache {
                 } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 } catch (NoSuchMethodException e) {
-                    e.printStackTrace();
-                }
-            }
-            return typedResultList;
-        } else {
-            logger.info("Query with name={} not exists. Return emptyResultSet.", queryName);
-            return new ArrayList<T>(0);
-        }
-    }
-
-    public <T> List<T> executeNamedQuery(final String queryName, Class<T> resultClass, Map<String, String> queryParameters, boolean queryToLog) {
-        final CachedQuery neededQuery = getCachedQueryByName(queryName);
-        if (neededQuery != null) {
-            final String sqlQuery = getQueryWithSettedParams(neededQuery, queryParameters);
-            if (queryToLog) {
-                logger.debug(sqlQuery);
-            }
-            final long startTime = System.currentTimeMillis();
-            final List<Object[]> resultSet = specialVariablesPreferencesBean.executeNamedQuery(sqlQuery);
-            neededQuery.addTiming(System.currentTimeMillis() - startTime);
-            final List<T> typedResultList = new ArrayList<T>(resultSet.size());
-            final Constructor<T> constructor;
-            try {
-                constructor = resultClass.getDeclaredConstructor(Object[].class);
-            } catch (NoSuchMethodException e) {
-                logger.error("No such constructor for Object[] args.", e);
-                return new ArrayList<T>(0);
-            }
-            for (Object[] current : resultSet) {
-                try {
-                    typedResultList.add(constructor.newInstance(new Object[]{current}));
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
-                    e.printStackTrace();
-                }
-            }
-            return typedResultList;
-        } else {
-            logger.info("Query with name={} not exists. Return emptyResultSet.", queryName);
-            return new ArrayList<T>(0);
-        }
-    }
-
-    public <T> List<T> executeNamedQueryWithMap(final String queryName, Class<T> resultClass, Map<String, String> queryParameters, boolean queryToLog) {
-        final CachedQuery neededQuery = getCachedQueryByName(queryName);
-        if (neededQuery != null) {
-            final String sqlQuery = getQueryWithSettedParams(neededQuery, queryParameters);
-            if (queryToLog) {
-                logger.debug(sqlQuery);
-            }
-            final long startTime = System.currentTimeMillis();
-            final List<Map> resultSet = specialVariablesPreferencesBean.executeNamedQueryForMap(sqlQuery);
-            neededQuery.addTiming(System.currentTimeMillis() - startTime);
-            final List<T> typedResultList = new ArrayList<T>(resultSet.size());
-            final Constructor<T> constructor;
-            try {
-                constructor = resultClass.getDeclaredConstructor(Map.class);
-            } catch (NoSuchMethodException e) {
-                logger.error("No such constructor for Object[] args.", e);
-                return new ArrayList<T>(0);
-            }
-            for (Map current : resultSet) {
-                try {
-                    typedResultList.add(constructor.newInstance(current));
-                } catch (InstantiationException e) {
-                    e.printStackTrace();
-                } catch (IllegalAccessException e) {
-                    e.printStackTrace();
-                } catch (InvocationTargetException e) {
                     e.printStackTrace();
                 }
             }
@@ -298,7 +207,6 @@ public class SpecialVariablesPreferencesQueryCache {
             this.queryName = queryName;
             this.query = query;
             this.timings = new ArrayList<Long>();
-            this.queryParameters = new ArrayList<String>();
         }
 
         public String getQueryName() {
@@ -331,13 +239,16 @@ public class SpecialVariablesPreferencesQueryCache {
                     max = current;
                 }
             }
-            if (timings.isEmpty()) {
+            if(timings.isEmpty()){
                 return "NAME=\'" + queryName + "\' Calls: " + timings.size();
             }
             return "NAME=\'" + queryName + "\' Calls: " + timings.size() + " Average: " + total / timings.size() + " TotalTime: " + total / 1000 + " MAXTime: " + max;
         }
 
         public void addQueryParameter(final String paramName) {
+            if (this.queryParameters == null) {
+                this.queryParameters = new ArrayList<String>();
+            }
             queryParameters.add(paramName);
         }
 

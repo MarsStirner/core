@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.patient
 
-import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
+import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common._
@@ -90,7 +90,7 @@ class PatientBean
   var dbSchemeKladrBean: DbSchemeKladrBeanLocal = _
 
   @EJB
-  var appLock: AuthStorageBeanLocal = _
+  var appLock: AppLockBeanLocal = _
 
   @EJB
   var dbStaff: DbStaffBeanLocal = _

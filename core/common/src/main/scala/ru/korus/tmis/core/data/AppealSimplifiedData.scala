@@ -213,7 +213,7 @@ class AppealSimplifiedData {
     this.number = event.getExternalId
     this.rangeAppealDateTime = new DatePeriodContainer(event.getSetDate, event.getExecDate)
     val fin = event.getEventType.getFinance
-    this.finance = new IdNameAndCodeContainer(fin.getId, fin.getName, fin.getCode)
+    this.finance = if ( fin == null) null else new IdNameAndCodeContainer(fin.getId, fin.getName, fin.getCode)
 
     this.execPerson = if (event.getExecutor != null) {new ComplexPersonContainer(event.getExecutor)} else {new ComplexPersonContainer}
     if(diagnoses!=null || diagnoses.size()>0){

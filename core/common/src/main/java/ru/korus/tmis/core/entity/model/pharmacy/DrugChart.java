@@ -1,13 +1,10 @@
 package ru.korus.tmis.core.entity.model.pharmacy;
 
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.UUID;
 
 import javax.persistence.*;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Author: Upatov Egor <br>
@@ -18,9 +15,7 @@ import java.util.List;
 
 @NamedQueries(
         {
-                @NamedQuery(name = "DrugChart.findByEvent", query = "SELECT i FROM DrugChart i WHERE i.action.event.id = :eventId"),
-                @NamedQuery(name = "DrugChart.getPrescriptionList", query = "SELECT dc FROM DrugChart dc WHERE dc.action.event.id = :eventId"),
-                @NamedQuery(name = "DrugChart.updateStatus", query = "UPDATE DrugChart dc SET dc.status = :status WHERE dc.id IN :intervalIds")
+                @NamedQuery(name = "DrugChart.findByEvent", query = "SELECT i FROM DrugChart i WHERE i.action.event.id = :eventId")
         })
 @Entity
 @Table(name = "DrugChart")
@@ -60,11 +55,6 @@ public class DrugChart {
     @Basic(optional = true)
     @Column(name = "note")
     private String note;
-
-
-    @Basic(optional = true)
-    @Column(name = "uuid")
-    private String uuid;
 
     public DrugChart() {
     }
@@ -165,12 +155,4 @@ public class DrugChart {
         return id != null ? id.hashCode() : 0;
     }
 
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
-    }
 }

@@ -15,8 +15,13 @@ import javax.xml.bind.annotation.XmlType;
 @NamedQueries(
         {
                 @NamedQuery(name = "ActionType.findAll", query = "SELECT a FROM ActionType a"),
-                @NamedQuery(name = "ActionType.getQueueActionType", query = "SELECT a FROM ActionType a WHERE a.code = 'queue'"),
-                @NamedQuery(name = "ActionType.findByFlatCodes", query = "SELECT a FROM ActionType a WHERE a.flatCode IN :flatCodes" )
+                @NamedQuery(name = "ActionType.getQueueActionType",
+                        query = "SELECT a FROM ActionType a WHERE a.code = 'queue'"),
+                @NamedQuery(name= "ActionType.findRisarActionType",
+                        query = "SELECT at FROM ActionType at WHERE " +
+                                "at.id IN (SELECT atp.actionType.id FROM ActionPropertyType atp WHERE atp.code LIKE 'recommendations') AND " +
+                                "at.id IN (SELECT atpD.actionType.id FROM ActionPropertyType atpD WHERE atp.code LIKE 'diagnosis') AND " +
+                                "at.id NOT IN (SELECT n.actionType.id FROM NotificationActionType n WHERE n.baseUrl LIKE '%ws-risar/api/notification/new/exam%')" )
         })
 @XmlType(name = "actionType")
 @XmlRootElement(name = "actionType")

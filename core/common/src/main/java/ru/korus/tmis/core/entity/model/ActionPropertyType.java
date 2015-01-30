@@ -1,17 +1,33 @@
 package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
-import java.util.Set;
 
-import javax.persistence.*;
+import javax.persistence.Basic;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
+import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
+import javax.persistence.Table;
+import javax.persistence.Transient;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 
 import ru.korus.tmis.util.PublicClonable;
+
 @Entity
 @Table(name = "ActionPropertyType")
 @NamedQueries(
 {
         @NamedQuery(name = "ActionPropertyType.findAll", query = "SELECT a FROM ActionPropertyType a")
 })
+@XmlType(name = "actionPropertyType")
+@XmlRootElement(name = "actionPropertyType")
 public class ActionPropertyType implements Serializable, PublicClonable<ActionPropertyType> {
 
     private static final long serialVersionUID = 1L;
@@ -126,9 +142,6 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
     @Column(name = "readOnly")
     private boolean readOnly;
 
-    @OneToMany(mappedBy = "objectType", cascade = CascadeType.ALL)
-    private Set<ActionPropertyRelation> actionPropertyRelation;
-
     // //////////////////////////////////////////////////////////////////////////
     // Custom stuff
     // //////////////////////////////////////////////////////////////////////////
@@ -165,7 +178,7 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
 
     @Transient
     public boolean isConstructor() {
-        return typeName != null && typeName.equals("Constructor");
+        return typeName != null ? typeName.equals("Constructor") : false;
     }
 
     @Transient
@@ -437,13 +450,5 @@ public class ActionPropertyType implements Serializable, PublicClonable<ActionPr
         that.visibleInJobTicket = visibleInJobTicket;
 
         return that;
-    }
-
-    public Set<ActionPropertyRelation> getActionPropertyRelation() {
-        return actionPropertyRelation;
-    }
-
-    public void setActionPropertyRelation(Set<ActionPropertyRelation> actionPropertyRelation) {
-        this.actionPropertyRelation = actionPropertyRelation;
     }
 }

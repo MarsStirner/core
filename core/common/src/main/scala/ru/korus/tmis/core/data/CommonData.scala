@@ -3,8 +3,9 @@ package ru.korus.tmis.core.data
 
 import scala.beans.BeanProperty
 import java.lang.Integer
-import java.util.Date
+import java.util.{Date, LinkedList, HashMap}
 import javax.xml.bind.annotation._
+import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
 import ru.korus.tmis.scala.util.ConfigManager
@@ -327,14 +328,10 @@ class CommonAttributeWithLayout(id: Integer,
                                 mandatory: String,
                                 readOnly: String,
                                 scope: String,
-                                props: Map[String, String],
-                                relations: util.List[ActionPropertyRelationWrapper]) extends CommonAttribute (id, version, name, code, aType, mandatory, readOnly, scope, null, props){
+                                props: Map[String, String]) extends CommonAttribute (id, version, name, code, aType, mandatory, readOnly, scope, null, props){
 
   @BeanProperty
   var layoutAttributeValues = new util.LinkedList[LayoutAttributeSimplifyDataContainer]
-
-  @BeanProperty
-  var attributeRelations: util.List[ActionPropertyRelationWrapper] = relations
 
   def this(id: Integer,
            version: Integer,
@@ -343,18 +340,16 @@ class CommonAttributeWithLayout(id: Integer,
            aType: String,
            scope: String,
            props: Map[String, String],
-           relations: util.List[ActionPropertyRelationWrapper],
            layout: List[LayoutAttributeValue],
            mandatory: String,
            readOnly: String) = {
-    this(id, version, name, code, aType, mandatory, readOnly, scope, props, relations)
+    this(id, version, name, code, aType, mandatory, readOnly, scope, props)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 
   def this (ca: CommonAttribute,
-            layout: List[LayoutAttributeValue],
-            relations: util.List[ActionPropertyRelationWrapper] ) = {
-    this(ca.id, ca.version, ca.name, ca.code, ca.`type`, ca.mandatory, ca.readOnly, ca.scope,  ca.getPropertiesMap, relations)
+            layout: List[LayoutAttributeValue] ) = {
+    this(ca.id, ca.version, ca.name, ca.code, ca.`type`, ca.mandatory, ca.readOnly, ca.scope,  ca.getPropertiesMap)
     this.tableValues = ca.tableValues
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }

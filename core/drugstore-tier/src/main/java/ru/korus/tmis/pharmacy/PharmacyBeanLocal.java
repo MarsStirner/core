@@ -1,6 +1,5 @@
 package ru.korus.tmis.pharmacy;
 
-import misexchange.MISExchangePortType;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -24,5 +23,4 @@ public interface PharmacyBeanLocal {
      */
     void  sendPrescriptionTo1C() throws CoreException;
 
-    void setMisExchangeSoap(MISExchangePortType misExchangeSoap);
 }

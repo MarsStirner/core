@@ -33,7 +33,7 @@ public class AppLockDetail implements Serializable {
 	}
 
     public AppLockDetail(String tableName, Integer recordId) {
-        id = new  AppLockDetailPK(tableName, recordId);
+        id = new AppLockDetailPK(tableName, recordId);
     }
 
     public AppLock getAppLock() {

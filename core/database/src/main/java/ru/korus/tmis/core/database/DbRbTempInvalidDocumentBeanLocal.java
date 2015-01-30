@@ -12,5 +12,4 @@ public interface DbRbTempInvalidDocumentBeanLocal {
 
     RbTempInvalidDocument getRbTempInvalidDocumentById(int id);
 
-    RbTempInvalidDocument getRbTempInvalidDocumentByCode(String code);
 }

@@ -408,7 +408,7 @@ public class BakResult implements BakResultService {
         } catch (Exception e) {
             toLog.addN("Exception " + e);
             logger.error("Exception " + e, e);
-            throw new CoreException("Не удалось сохранить данные по БАК-посеву", e);
+            throw new CoreException("Не удалось сохранить данные по БАК-посеву");
         }
     }
 

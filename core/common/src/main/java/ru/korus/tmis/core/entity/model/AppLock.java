@@ -2,7 +2,6 @@ package ru.korus.tmis.core.entity.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
-import java.sql.Timestamp;
 import java.util.Date;
 
 

@@ -16,11 +16,12 @@ public interface DbTempInvalidBeanLocal {
     TempInvalid getTempInvalidById(int id);
 
     TempInvalid insertOrUpdateTempInvalid(
-            TempInvalid tempInvalid,
+            int id,
+            String comment,
             Date beginDate,
             Date endDate,
             short docType,
-            String reasonCode,
+            int reasonId,
             Date caseBegDate,
             String serail,
             String number,

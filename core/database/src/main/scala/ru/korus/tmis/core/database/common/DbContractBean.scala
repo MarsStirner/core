@@ -40,6 +40,14 @@ class DbContractBean
       c.id = :id
                       """
 
+  val FindByNumberQuery = """
+    SELECT c
+    FROM
+      Contract c
+    WHERE
+      c.number = :number
+                      """
+
   val FindContractForEventQuery = """
     SELECT c
     FROM
@@ -86,6 +94,29 @@ class DbContractBean
       }
     }
   }
+
+  def getContractByNumber(number: String) = {
+    val result = em.createQuery(FindByNumberQuery,
+      classOf[Contract])
+      .setParameter("number", number)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        throw new NoSuchEntityException(
+          ConfigManager.ErrorCodes.ContractNotFound,
+          0,
+          i18n("error.ContractNotFound"))
+      }
+      case size => {
+        result.foreach((r) => {
+          em.detach(r)
+        })
+        result(0)
+      }
+    }
+  }
+
 
 
   /**

@@ -56,13 +56,4 @@ class DbRbTempInvalidReasonBean
     }
   }
 
-  def getRbTempInvalidReasonByCode(code: String): RbTempInvalidReason = {
-    val result = em.createNamedQuery("RbTempInvalidReason.findByCode",
-      classOf[RbTempInvalidReason]).setParameter("code", code).getResultList
-    if (result.isEmpty) {
-      return null
-    } else {
-      return result.iterator.next
-    }
-  }
 }
