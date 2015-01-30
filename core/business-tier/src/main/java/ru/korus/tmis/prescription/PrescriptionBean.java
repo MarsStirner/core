@@ -278,9 +278,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     private  Map<DrugData, DrugComponent> updateDrugs(Action action, Iterable<DrugData> drugs) {
         Map<DrugData, DrugComponent> res = new HashMap<DrugData, DrugComponent>();
         for (DrugData drugData : drugs) {
-            DrugComponent drugComponent = drugData.getNomen() == null ? null : em.find(DrugComponent.class, drugData.getNomen());
+            DrugComponent drugComponent = drugData.getId() == null ? null : em.find(DrugComponent.class, drugData.getId());
             if (drugComponent == null) {
                 drugComponent = dbDrugComponentBeanLocal.create(action, drugData.getNomen(), drugData.getName(), drugData.getDose(), drugData.getUnit());
+                drugData.setId(drugComponent.getId());
             } else {
                 drugComponent.setAction(action);
                 em.persist(drugComponent);
