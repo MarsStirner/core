@@ -38,6 +38,7 @@ public class DbDrugComponentBean implements DbDrugComponentBeanLocal {
         res.setCreateDateTime(new Date());
         initDrugComp(action, nomen, name, dose, unit, res);
         em.persist(res);
+        em.flush();
         return res;
     }
 
