@@ -32,7 +32,7 @@ public class DbDrugIntervalCompParam implements DbDrugIntervalCompParamLocal {
         res.setDrugComponent(drugComponent);
         res.setDose(dose);
         res.setVoa(voa);
-        if(moa > 0) {
+        if(moa != null && moa > 0) {
             res.setMoa(dbRbMethodOfAdministrationLocal.getById(moa));
         }
         em.persist(res);
