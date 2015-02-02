@@ -200,15 +200,23 @@ public class BakResult implements BakResultService {
     private void saveIFA(final IFA ifa, final ToLog toLog) throws CoreException {
         try {
             final Action action = dbAction.getActionById(ifa.getActionId());
-            int aptId = 0;
+            int ifaResultPropId = 0;
+            int ifaCommentPropId = 0;
             for (ActionProperty property : action.getActionProperties()) {
                 final ActionPropertyType type = property.getType();
                 if (type.getCode() != null && "ifa".equals(type.getCode())) {
-                    aptId = type.getId();
+                    ifaResultPropId = type.getId();
+                } else if(type.getCode() != null && "comment".equals(type.getCode())) {
+                    ifaCommentPropId = type.getId();
                 }
             }
-            db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), aptId, true);
-            toLog.addN("Save IFA result [#], aptId [#]", ifa.getFullResult(), aptId);
+            if(ifaResultPropId > 0)
+                db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), ifaResultPropId, true);
+            else if(ifa.getFullResult().equals("NO CHRG"))
+                ; //TODO Дефект биоматериала комментарий запишется в свойство, но, возможно, требуется отразить еще как-то
+            if(ifaCommentPropId > 0 && ifa.getComment() != null)
+                db.addSinglePropBasic(ifa.getComment(), APValueString.class, ifa.getActionId(), ifaCommentPropId, true);
+            toLog.addN("Save IFA result [#], ifaResultPropId [#]", ifa.getFullResult(), ifaResultPropId);
             // Изменяем статус действия на "Закончено"
             if (ifa.isComplete()) {
                 dbAction.updateActionStatusWithFlush(action.getId(), ActionStatus.FINISHED.getCode());
@@ -217,7 +225,7 @@ public class BakResult implements BakResultService {
         } catch (Exception e) {
             logger.error("Exception: " + e, e);
             toLog.add("Problem save to ActionProperty IFA values: " + e + "]\n");
-            throw new CoreException("Не удалось сохранить данные по ИФА");
+            throw new CoreException("Не удалось сохранить данные по ИФА", e);
         }
     }
 
@@ -647,7 +655,7 @@ public class BakResult implements BakResultService {
                             @WebParam(name = "orderBiomaterialName", targetNamespace = Namespace)
                             String orderBiomaterialName) throws CoreException {
 
-        logger.info("Bak Delivered [{}],[{}],[{}],[{}]", orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName);
+        logger.info("Bak Delivered [{}],[{}],[{}],[{}]", new Object[] {orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName});
         return 0;
     }
 }

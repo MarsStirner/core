@@ -204,7 +204,9 @@ class DbCustomQueryBean
       case _ => new QueryDataStructure()
     }
 
-    var typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("a", i18n("db.action.diagnosticClass"), queryStr.query, sorting), classOf[Action])
+    val query = if(queryStr.query.trim().toUpperCase.startsWith("AND")) queryStr.query.trim.substring(3) else queryStr.query
+
+    val typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("a", query, sorting), classOf[Action])
       .setMaxResults(limit)
       .setFirstResult(limit * page)
 
@@ -224,7 +226,9 @@ class DbCustomQueryBean
       case _ => new QueryDataStructure()
     }
 
-    var typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("count(a)", i18n("db.action.diagnosticClass"), queryStr.query, ""), classOf[Long])
+    val query = if(queryStr.query.trim().toUpperCase.startsWith("AND")) queryStr.query.trim.substring(3) else queryStr.query
+
+    val typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("count(a)", query, ""), classOf[Long])
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -1479,7 +1483,6 @@ AND ap.deleted = 0
     FROM
       Action a
     WHERE
-      a.actionType.clazz = %s
     %s
     AND
       a.deleted = 0

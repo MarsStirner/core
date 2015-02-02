@@ -68,24 +68,7 @@
             "code": null
         }
     ],
-    "drugs": [
-        {
-            "nomen": 6060,
-            "name": "Анальгин",
-            "dose": "111",
-            "unit": 327,
-            "units": [
-                {
-                    "id": 327,
-                    "code": "мг"
-                },
-                {
-                    "id": 9,
-                    "code": "мл"
-                }
-            ]
-        }
-    ],
+
     "assigmentIntervals": [
         {
             "beginDateTime": 1400252400000,
@@ -99,7 +82,27 @@
             "canBeCanceled": false,
             "canBeExecuted": true,
             "canBeCanceledExecution": false,
-            "canBeAddedStop": true
+            "canBeAddedStop": true,
+            "drugs": [
+                {
+                    "nomen": 6060,
+                    "name": "Анальгин",
+                    "dose": "111",
+                    "unit": 327,
+                    "voa" : "1111",
+                    "moa" : 3,
+                    "units": [
+                        {
+                            "id": 327,
+                            "code": "мг"
+                        },
+                        {
+                            "id": 9,
+                            "code": "мл"
+                        }
+                    ]
+                }
+            ]
         }
     ]
 }}

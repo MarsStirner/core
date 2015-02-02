@@ -1,7 +1,13 @@
 package ru.korus.tmis.core.entity.model;
 
+import org.joda.time.*;
+import org.joda.time.base.BaseSingleFieldPeriod;
+import ru.korus.tmis.core.exception.CoreException;
+
 import java.io.Serializable;
 import java.util.Date;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -15,7 +21,7 @@ import javax.xml.bind.annotation.XmlType;
         })
 @XmlType(name = "eventType")
 @XmlRootElement(name = "eventType")
-public class EventType implements Serializable {
+public class EventType implements AgeSpecific, SexSpecific, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -203,7 +209,7 @@ public class EventType implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "sex")
-    private short sex;
+    @Enumerated(EnumType.ORDINAL) private Sex sex;
 
     @Basic(optional = false)
     @Column(name = "age")
@@ -585,11 +591,11 @@ public class EventType implements Serializable {
         this.isTakenTissue = isTakenTissue;
     }
 
-    public short getSex() {
+    public Sex getSex() {
         return sex;
     }
 
-    public void setSex(short sex) {
+    public void setSex(Sex sex) {
         this.sex = sex;
     }
 
@@ -615,6 +621,41 @@ public class EventType implements Serializable {
 
     public void setRequestType(RbRequestType requestType) {
         this.requestType = requestType;
+    }
+
+    @Override
+    public boolean isAgeValid(Date birthDate) throws CoreException {
+        if(age == null || age.isEmpty()) return true;
+
+        Pattern p = Pattern.compile("(\\d+)(д|н|м|г)-(\\d+)(д|н|м|г)", Pattern.CASE_INSENSITIVE | Pattern.UNICODE_CASE);
+        try {
+            Matcher m = p.matcher(age);
+            if (m.find()) {
+                LocalDate birth = new LocalDate(birthDate);
+                LocalDate now = new LocalDate();
+                LocalDate lowerBound = birth.plus(getPeriodFromBound(m.group(2).charAt(0), Integer.parseInt(m.group(1))));
+                LocalDate upperPeriod = birth.plus(getPeriodFromBound(m.group(4).charAt(0), Integer.parseInt(m.group(3)) + 1)); // Верхняя граница "включительно"
+                return  lowerBound.isBefore(now) && upperPeriod.isAfter(now);
+            } else
+                throw new CoreException("Неверный синтакс колонки записи age в таблице EventType - " + age);
+        } catch (RuntimeException e) {
+            throw new CoreException("Неверный синтакс записи age в таблице EventType - " + age, e);
+        }
+    }
+
+    private ReadablePeriod getPeriodFromBound(char s, int count) throws CoreException {
+        switch (Character.toLowerCase(s)) {
+            case 'д': return Days.days(count);
+            case 'н': return Weeks.weeks(count);
+            case 'м': return Months.months(count);
+            case 'г': return Years.years(count);
+        }
+        throw new CoreException("Неверный идентификатор времени записи age в таблице EventType - " + s);
+    }
+
+    @Override
+    public boolean isSexValid(Sex s) throws CoreException {
+        return sex == Sex.UNDEFINED || sex == s;
     }
 
     @Override

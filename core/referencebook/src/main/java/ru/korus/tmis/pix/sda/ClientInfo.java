@@ -398,7 +398,7 @@ public class ClientInfo {
         for (ClientSocStatus clientSocStatus : client.getClientSocStatuses()) {
             if( clientSocStatus.getSocStatusClass() != null && CITIZENSHIP_CODE.equals(clientSocStatus.getSocStatusClass().getCode()) ) {
                 RbSocStatusType socStatusType = clientSocStatus.getSocStatusType();
-                res = new CodeNameSystem(null, socStatusType.getName());
+                res = CodeNameSystem.newInstance(null, socStatusType.getName(), null);
             }
         }
         return res;
@@ -744,7 +744,7 @@ public class ClientInfo {
             area = insurer == null ? null : RbManager.get(RbManager.RbType.KLD116, CodeNameSystem.newInstance(insurer.getArea(), null, "1.2.643.5.1.13.2.1.1.635"));
             okato = insurer == null ? null : insurer.getOkato();
             final RbPolicyType policyType = clientPolicy.getPolicyType();
-            policyTypeName = policyType == null ? null : new CodeNameSystem(null, policyType.getName());
+            policyTypeName = policyType == null ? null : CodeNameSystem.newInstance(null, policyType.getName(), null);
         }
 
         public CodeNameSystem getOrganization() {

@@ -4,7 +4,7 @@ import java.net.{Authenticator, PasswordAuthentication}
 import java.text.SimpleDateFormat
 import java.util
 import java.util.{Collections, Date, GregorianCalendar}
-import javax.ejb.{EJB, Stateless}
+import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
 import javax.interceptor.Interceptors
 import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 import javax.xml.namespace.QName
@@ -55,6 +55,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
   @EJB
   var dbManager: DbManagerBeanLocal = _
+
 
 
   def getAcrossLab: lab2.IAcrossIntf_FNKC = {
@@ -261,7 +262,15 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     val comment = a.getNote
     info("Request:Comment" + comment)
 
-    val department = getOrgStructureByEvent(a.getEvent)
+    val department = if(
+      a.getEvent.getEventType.getRequestType != null && Seq(RbRequestType.POLIKLINIKA_CODE, RbRequestType.DIAGNOSTIKA_CODE)
+      .contains(a.getEvent.getEventType.getRequestType.getCode)) {
+      a.getEvent.getOrgStructure
+    } else if(a.getEvent.getEventType.getRequestType == null)
+      null
+    else {
+      getOrgStructureByEvent(a.getEvent)
+    }
     // DepartmentName (string) -- название подразделения - отделение
     // DepartmentCode (string) -- уникальный код подразделения (отделения)
     val (depName, depCode) = department match {
@@ -701,6 +710,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   /**
    * Отправить запрос на анализы в ЛИС Акрос
    **/
+  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW) // Чтобы при выбрасовании Exception откатывалась дочерняя, а не родительская транзакция
   def sendAnalysisRequestToAcross(actionId: Int) {
     // sendTestLis2AnalysisRequest()
     val (patientInfo, requestInfo, biomaterialInfo, orderInfo) = getAnalysisRequest(actionId)
@@ -722,7 +732,10 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
       getAcrossLab.queryAnalysis(patientInfo, requestInfo, biomaterialInfo, orderInfo)
       info("successfully interacted with Across LIS webservice...")
     } catch {
-      case e: Throwable => error("Error response from Across LIS webservice", e)
+      case e: Throwable =>
+        val c = new CoreException(e.getMessage, e)
+        error("Error response from Across LIS webservice", c)
+        throw c
     }
   }
 }

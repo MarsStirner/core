@@ -24,7 +24,7 @@ class AuthLoggingInterceptor extends Logging with TmisLogging {
     var message: String = ""
 
     try {
-      ctx proceed
+      ctx.proceed
     } catch {
       case ex: AuthenticationException => {
         message = ex.getClass.getSimpleName + " -> " + ex.getId + ": " + ex.getMessage

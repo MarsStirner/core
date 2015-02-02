@@ -198,8 +198,12 @@ class CommonDataProcessorBean
                 attribute.id.intValue,
                 userData,
                 now)
-              new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
-              (ap, attribute) :: list
+              if (ap != null) {
+                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
+                (ap, attribute) :: list
+              } else {
+                list
+              }
             }
           })
 
@@ -499,10 +503,15 @@ class CommonDataProcessorBean
         entities.filter(_.isInstanceOf[ActionProperty]).map(_.asInstanceOf[ActionProperty]).toList,
         entities.filter(_.isInstanceOf[APValue]).map(_.asInstanceOf[APValue]).toList,
         userData))
-
-
       r
 
+    } catch {
+      case t: Throwable =>
+        val msg = "Ошибка при сохранении документа с actionId = " + actionId + " (WEBMIS-136_WAITING)"
+        t.printStackTrace()
+        System.out.println(msg)
+        logger.error(msg, t)
+        throw new CoreException(msg, t)
     } finally {
       appLock.releaseLock(lockId)
     }

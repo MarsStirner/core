@@ -86,7 +86,7 @@ class ClonerTest {
     assertFalse(bb.v eq ba.v)
 
 
-    val cc = scala.collection.mutable.LinkedList(1, 2, 3)
+    val cc = scala.collection.mutable.ListBuffer(1, 2, 3)
     val ccopy = deepClone(cc)
 
     assertEquals(cc, ccopy)

@@ -23,7 +23,7 @@ public class CreatePrescriptionData {
     private Integer actionTypeId = null;
     private Integer eventId = null;
     private List<ActionPropertyTypeData> properties = new LinkedList<ActionPropertyTypeData>();
-    private List<DrugData> drugs = new LinkedList<DrugData>();
+
     private List<AssigmentIntervalData> assigmentIntervals = new LinkedList<AssigmentIntervalData>();
     private String note = null;
     private boolean isUrgent = false;
@@ -52,10 +52,6 @@ public class CreatePrescriptionData {
         return eventId;
     }
 
-    public List<DrugData> getDrugs() {
-        return drugs;
-    }
-
     public List<AssigmentIntervalData> getAssigmentIntervals() {
         return assigmentIntervals;
     }
@@ -70,10 +66,6 @@ public class CreatePrescriptionData {
 
     public void setProperties(List<ActionPropertyTypeData> properties) {
         this.properties = properties;
-    }
-
-    public void setDrugs(List<DrugData> drugs) {
-        this.drugs = drugs;
     }
 
     public void setAssigmentIntervals(List<AssigmentIntervalData> assigmentIntervals) {

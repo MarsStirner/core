@@ -57,12 +57,12 @@ public class DbRbDispInfoBean implements DbRbDispInfoBeanLocal {
         final int months = Months.monthsBetween(birthDate, checkDate).getMonths();
         final int weeks = Weeks.weeksBetween(birthDate, checkDate).getWeeks();
         final int days = Days.daysBetween(birthDate, checkDate).getDays();
-        logger.debug("Patient age is: {} Years, {} Month, {} Weeks, {} Days", years, months, weeks, days);
+        logger.debug("Patient age is: {} Years, {} Month, {} Weeks, {} Days", new Object[] {years, months, weeks, days} );
         for (RbDispInfo current : dispInfoList) {
             if (current.getAge().contains("-")) {
                 String firstPart = current.getAge().substring(0, current.getAge().indexOf('-'));
                 String secondPart = current.getAge().substring(current.getAge().indexOf('-') + 1);
-                logger.debug("ID[{}] FP[{}] SP[{}]", current.getId(), firstPart, secondPart);
+                logger.debug("ID[{}] FP[{}] SP[{}]", new Object[] {current.getId(), firstPart, secondPart});
                 boolean firstPartIsGood = firstPart.isEmpty();
                 boolean secondPartIsGood = secondPart.isEmpty();
                 //Check the firstPart

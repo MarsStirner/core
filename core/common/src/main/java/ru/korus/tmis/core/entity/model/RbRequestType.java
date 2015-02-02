@@ -22,6 +22,15 @@ public class RbRequestType  implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public static final String DNEVNOI_STACIONAR_CODE = "clinic";
+    public static final String KRUGLOSUTOCHNII_STACIONAR_CODE = "hospital";
+    public static final String POLIKLINIKA_CODE = "policlinic";
+    public static final String DIAGNOSTIKA_CODE = "4";
+    public static final String DISPANSERIZACIYA_CODE = "5";
+    public static final String KONSULTATIVNII_CODE = "6";
+    public static final String STACIONAR_CODE = "stationary";
+
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)

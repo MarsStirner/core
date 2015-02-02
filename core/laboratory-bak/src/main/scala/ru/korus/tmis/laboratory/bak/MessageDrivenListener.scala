@@ -18,6 +18,7 @@ import ru.korus.tmis.lis.data.{BiomaterialInfo, DiagnosticRequestInfo, Indicator
 import ru.korus.tmis.scala.util.ConfigManager
 import ru.korus.tmis.util.Utils
 import ru.korus.tmis.util.logs.ToLog
+import collection.JavaConversions._
 
 import scala.collection.JavaConverters._
 
@@ -38,14 +39,14 @@ class MessageDrivenListener extends LISMessageReceiver {
   private final val FACTORY_BAK: ObjectFactory = new ObjectFactory
   private final val CUSTODIAN_NAME: String = "ФГБУ &quot;ФНКЦ ДГОИ им. Дмитрия Рогачева&quot; Минздрава России"
   private final val DATE_FORMAT: String = "YYYY-MM-dd HH:mm"
-  private final val LAB_CODE: String = "0102"
+  private final val LAB_CODES: Array[String] = Array( "0102", "0103", "0104", "0105")
 
 
   override protected def sendToLis(data: LaboratoryCreateRequestData): Unit = {
     sendRequestToLIS(data)
   }
 
-  override protected def getLaboratoryCode: String = LAB_CODE
+  override protected def getLaboratoryCode: java.util.List[String] =  LAB_CODES.toSeq
 
   private def sendRequestToLIS(a: LaboratoryCreateRequestData) {
     logger.info(System.getProperty(BakSend.CGM_BAK_URL_SYSTEM_PROPERTY))
@@ -60,7 +61,7 @@ class MessageDrivenListener extends LISMessageReceiver {
       logger.info("Result id[" + id.value + "], guid [" + guid.value + "]")
     } catch {
       case e: Throwable =>
-        logger.error("Sending error:" + e.getMessage, e)
+        logger.error("Sending error: " + e.getMessage, e)
         throw e
     }
   }

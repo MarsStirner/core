@@ -1,7 +1,6 @@
 package ru.korus.tmis.scala.util
 
 import ru.korus.tmis.util.reflect.Configuration
-import ru.korus.tmis.scala.util.StringId
 
 object ActionPropertyWrapperInfo extends Configuration {
   apwi =>

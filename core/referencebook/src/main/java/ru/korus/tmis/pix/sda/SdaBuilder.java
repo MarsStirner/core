@@ -1031,7 +1031,7 @@ public class SdaBuilder {
         //Профиль койки
         if(serviceInfo.getBedProfile() != null) {
             res = res == null ? SDAFactory.createMedService() : res;
-            res.setBedProfile(getCodeAndName(new CodeNameSystem(null, serviceInfo.getBedProfile())));
+            res.setBedProfile(getCodeAndName(CodeNameSystem.newInstance(null, serviceInfo.getBedProfile(), null)));
         }
 
         //Способ оплаты медицинской помощи

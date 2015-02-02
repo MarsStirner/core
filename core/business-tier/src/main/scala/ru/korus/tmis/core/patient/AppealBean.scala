@@ -20,6 +20,7 @@ import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import org.joda.time.{DateTime, Years}
 import scala.language.reflectiveCalls
 import scala.collection.JavaConverters._
+import scala.util.Try
 
 @Stateless
 class AppealBean extends AppealBeanLocal
@@ -100,7 +101,7 @@ with CAPids {
 */
 
   private class IndexOf[T](seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
+    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
   }
 
   val list = List(iCapIds("db.rbCAP.hosp.primary.id.directed").toInt, //Кем направлен
@@ -571,7 +572,7 @@ with CAPids {
 
   @throws(classOf[CoreException])
   def checkAppealBegEndDate(datePeriod: DatePeriodContainer) {
-    if (datePeriod.start after datePeriod.end)
+    if (datePeriod.start != null && datePeriod.end != null && (datePeriod.start after datePeriod.end))
       throw new CoreException(i18n("error.appeal.create.InvalidPeriod"))
 
     val maxDiffYears: Int = 3
@@ -583,8 +584,6 @@ with CAPids {
 
   def updateTempInvalid(event: Event, tempInvalidCont: TempInvalidAppealContainer, authDate: AuthData) {
     if (tempInvalidCont != null &&
-        tempInvalidCont.begDate != null &&
-        tempInvalidCont.endDate != null &&
         tempInvalidCont.serial != null &&
         tempInvalidCont.number != null) {
 
@@ -620,7 +619,7 @@ with CAPids {
 
 
     var event: Event = null
-    val now: Date = new Date;
+    val now: Date = new Date
     if (flgCreate) {
       //Создаем новое
       if (id <= 0) {
@@ -642,6 +641,20 @@ with CAPids {
         throw new CoreException(i18n("error.appeal.create.ContractIsExpired"))
 
       checkAppealBegEndDate(appealData.getData.rangeAppealDateTime)
+
+      val patient = dbPatientBean.getPatientById(id)
+      val et = dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId)
+      if(!et.isAgeValid(patient.getBirthDate))
+        throw new CoreException(i18n("error.appeal.create.InvalidPatientAge").format(et.getName, et.getAge))
+
+      val patientSex = patient.getSex match {
+        case 0 => Sex.UNDEFINED
+        case 1 => Sex.MEN
+        case 2 => Sex.WOMEN
+      }
+
+      if(!et.isSexValid(patientSex))
+        throw new CoreException(i18n("error.appeal.create.InvalidPatientSex").format(et.getName, et.getSex))
 
       event = dbEventBean.createEvent(id,
         //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
@@ -688,43 +701,28 @@ with CAPids {
 
     event.setOrganisation(organizationBeanLocal.getOrganizationById(ConfigManager.Common.OrgId))
 
-    return event
+    event
   }
 
   private def AnyToSetOfString(that: AnyRef, sec: String): Set[String] = {
-    if (that == null)
-      return null //Set.empty[String]     //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
-
-    if (that.isInstanceOf[Date]) {
-      return Set(ConfigManager.DateFormatter.format(that))
-    }
-    else if (that.isInstanceOf[LinkedList[ /*IdValueContainer*/ LegalRepresentativeContainer]]) {
-      var hospWith = Set.empty[String]
-      that.asInstanceOf[LinkedList[LegalRepresentativeContainer]].foreach(e => {
-        if (e.getRelative.getId > 0) {
-          sec match {
-            case "relative" => hospWith += e.getRelative.getId.toString
-            case "note" => hospWith += e.getNote.toString
-            case _ => hospWith += e.getRelative.getId.toString
+    that match {
+      case null => null //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
+      case x: Date => Set(ConfigManager.DateFormatter.format(that))
+      case x: IdNameContainer => if(x.getId > 0) Set(x.getId.toString) else Set.empty[String]
+      case x: util.LinkedList[LegalRepresentativeContainer] =>
+        var hospWith = Set.empty[String]
+        x.foreach(e => {
+          if (e.getRelative.getId > 0) {
+            sec match {
+              case "relative" => hospWith += e.getRelative.getId.toString
+              case "note" => hospWith += e.getNote.toString
+              case _ => hospWith += e.getRelative.getId.toString
+            }
           }
-        }
-      })
-      return hospWith
-    }
-    else if (that.isInstanceOf[IdNameContainer]) {
-
-      return if (that.asInstanceOf[IdNameContainer].getId > 0)
-        Set(that.asInstanceOf[IdNameContainer].getId.toString)
-      else Set.empty[String]
-    }
-    else {
-      try {
-        return Set(that.toString)
-      }
-      catch {
-        case e: Exception => {
-          throw new CoreException("Не могу преобразовать данные типа: %s в строковый массив".format(that.getClass.getName))
-        }
+        })
+        hospWith
+      case _ => try { Set(that.toString) } catch {
+        case e: Exception => throw new CoreException("Не могу преобразовать данные типа: %s в строковый массив".format(that.getClass.getName))
       }
     }
   }
@@ -1011,11 +1009,19 @@ with CAPids {
       new MonitoringInfoListData()
   }
 
-  def getInfectionMonitoring(eventId: Int): java.util.Set[(String, Date, Date, java.util.List[Integer])] = {
+  def getInfectionMonitoring(patient: Patient) = {
     val IC = InfectionControl
-    actionBean.getActionsByEvent(eventId)
-    .filter(p => IC.documents.contains(p.getActionType.getCode))
-    .flatMap(_.getActionProperties)
+
+    val q =
+      """SELECT ap FROM Event e, Action a, ActionProperty ap WHERE
+        |e.patient = :patient
+        |AND a.event = e AND a.deleted = false
+        |AND ap.action = a AND ap.deleted = false
+        |AND a.actionType.code IN :documents""".stripMargin
+    val r = em.createQuery(q, classOf[ActionProperty])
+      .setParameter("patient", patient)
+      .setParameter("documents", IC.documents.asJava)
+      .getResultList
     .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
     .groupBy( e => (e.getAction.getId,  e.getType.getCode.split(IC.separator).head))
     .flatMap(e => {
@@ -1023,7 +1029,13 @@ with CAPids {
       val list = e._2
       val name = {
         list.find( p => p.getType.getCode.equals(e._1._2)) match {
-          case Some(x) => Some(x.getType.getName)
+          case Some(x) =>
+            if(x.getType.getCode.endsWith(IC.customInfectionPostfix)) // Поля "Другое", название инфекции получаем из значения свойства
+              actionPropertyBean.getActionPropertyValue(x).headOption match {
+                case Some(y) => Some(y.getValue.toString)
+                case _ => None
+              }
+            else Some(x.getType.getName)
           case None => None
         }
       }
@@ -1036,15 +1048,15 @@ with CAPids {
           val ed = actionPropertyBean.getActionPropertyValue(z)
           (bd.size(), ed.size()) match {
             case (1, 1) => (bd.head, ed.head) match {
-              case (begin: APValueDate, end: APValueDate) => Some((x, begin.getValue, end.getValue, actionId))
+              case (begin: APValueDate, end: APValueDate) => Some((x, begin.getValue, end.getValue, actionId, new Integer(y.getIdx)))
               case _ => None
             }
             case (1, 0) => bd.head match {
-              case b: APValueDate => Some(x, b.getValue, null, actionId)
+              case b: APValueDate => Some(x, b.getValue, null, actionId, new Integer(y.getIdx))
               case _ => None
             }
             case (0, 1) => ed.head match {
-              case end: APValueDate => Some(x, end.getValue, null, actionId)
+              case end: APValueDate => Some(x, end.getValue, null, actionId, new Integer(y.getIdx))
               case _ => None
             }
             case _ => None
@@ -1052,32 +1064,70 @@ with CAPids {
         case _ => None
       }
     })
-    .groupBy(p => (p._1, p._2, p._3)).map(e => (e._1._1, e._1._2, e._1._3, e._2.map(_._4).toList.asJava)).toSet.asJava
+    .groupBy(p => (p._1, p._2, p._5)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava, e._1._3))
+
+    // Безумная сортировка - сначала по дате начала, потом по порядку расположения на форме редактирования (idx свойства "Дата начала")
+    val result = new util.TreeSet[(String, Date, Date, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, util.List[Integer], Integer)] {
+      override def compare(o1: (String, Date, Date, util.List[Integer], Integer), o2: (String, Date, Date, util.List[Integer], Integer)): Int = {
+        val dateOrder =  o2._2.compareTo(o1._2)
+        val idxOrder = o2._5.compareTo(o1._5)
+        if(dateOrder != 0)
+          dateOrder
+        else if(idxOrder != 0)
+          idxOrder
+        else if(o1.equals(o2))
+          0
+        else
+          1
+      }
+    })
+
+    r.foreach(result.add)
+    result
   }
 
-  def getInfectionDrugMonitoring(eventId: Int): java.util.Set[(String, Date, Date, String, java.util.List[Integer])] = {
+
+  def getInfectionDrugMonitoring(patient: Patient) = {
     val IC = InfectionControl
-    val r = actionBean.getActionsByEvent(eventId)
-      .filter(p => IC.documents.contains(p.getActionType.getCode))
-      .flatMap(_.getActionProperties)
-      .filter(e => e.getType.getCode != null && IC.drugTherapyProperties.contains(e.getType.getCode))
+
+    val q =
+      """SELECT ap FROM Event e, Action a, ActionProperty ap WHERE
+        |e.patient = :patient
+        |AND a.event = e AND a.deleted = false
+        |AND ap.action = a AND ap.deleted = false
+        |AND (ap.actionPropertyType.code LIKE "infectProphylaxisName%" OR ap.actionPropertyType.code LIKE "infectEmpiricName%" OR ap.actionPropertyType.code LIKE "infectTelicName%")
+        |AND a.actionType.code IN :documents""".stripMargin
+    val r = em.createQuery(q, classOf[ActionProperty])
+      .setParameter("patient", patient)
+      .setParameter("documents", IC.documents.asJava)
+      .getResultList
       .groupBy(e => (e.getAction.getId,  e.getType.getCode.split('_').last))
       .flatMap(e => {
       val drugId = e._1._2
       val list = e._2
       val actionId = e._1._1
 
-      val name = list.find( p => p.getType.getCode.equals(IC.infectDrugNamePrefix + '_' + drugId))
-      val beginDate = list.find( p => p.getType.getCode.equals(IC.infectDrugBeginDatePrefix + '_' + drugId))
-      val endDate = list.find( p => p.getType.getCode.equals(IC.infectDrugEndDatePrefix + '_' + drugId))
-      val therapyType = list.find( p => p.getType.getCode.equals(IC.infectTherapyTypePrefix + '_' + drugId))
+      val (therapyType, prefix) = if ( list.find( p => p.getType.getCode.startsWith("infectProphylaxisName")) != null) {
+        ("Профилактика", "infectProphylaxisName")
+      }
+      else if (list.find( p => p.getType.getCode.startsWith("infectEmpiricName")) != null) {
+        ("Эмпирическая", "infectEmpiricName")
+      }
+      else if (list.find( p => p.getType.getCode.startsWith("infectTelicName")) != null) {
+        ("Целенаправленная", "infectTelicName")
+      }
+      else null
 
-      (name, beginDate, endDate, therapyType) match {
-        case (Some(a), Some(b), Some(c), Some(d)) =>
+      var name = list.find( p => p.getType.getCode.equals(prefix + "DrugName_" + drugId))
+      val beginDate = list.find( p => p.getType.getCode.equals(prefix + "BeginDate_" + drugId))
+      val endDate = list.find( p => p.getType.getCode.equals(prefix + "EndDate_" + drugId))
+
+      (name, beginDate ) match {
+        case (Some(a), Some(b) ) =>
           val n = actionPropertyBean.getActionPropertyValue(a)
           val bd = actionPropertyBean.getActionPropertyValue(b)
-          val ed = actionPropertyBean.getActionPropertyValue(c)
-          val t = actionPropertyBean.getActionPropertyValue(d)
+          val ed = if (endDate.isEmpty) null else actionPropertyBean.getActionPropertyValue(endDate.get)
+
 
           (n.size(), bd.size()) match {
             case (1, 1) => (n.head, bd.head) match {
@@ -1089,14 +1139,8 @@ with CAPids {
                   }
                   case _ => null
                 }
-                val ty = t.size() match {
-                  case 1 => t.head match {
-                    case p: APValueString => p.getValue
-                    case _ => null
-                  }
-                  case _ => null
-                }
-                Some((x.getValue, y.getValue, e, ty, actionId))
+
+                Some((x.getValue.trim, y.getValue, e, therapyType, actionId, new Integer(b.getIdx))) // Убираем пробелы - интерфейс иногда вставляет их вперед
               case _ => None
             }
             case _ => None
@@ -1104,9 +1148,43 @@ with CAPids {
         case _ => None
       }
     })
-    r
-      .groupBy(e => (e._1, e._2, e._3, e._4))
-      .map(e => (e._1._1, e._1._2, e._1._3, e._1._4, e._2.map(_._5).toList.asJava)).toSet.asJava
+      .groupBy(e => (e._1, e._2, e._4, e._6))
+      .map(e => (e._1._1, e._1._2, Try(e._2.filter(_._3 != null).toList.sortBy(_._3).last._3).getOrElse(null), e._1._3, e._2.map(_._5).toList.asJava, e._1._4))
+
+    // Безумная сортировка - сначала по полю "Тип терапии", дате начала, потом по порядку расположения на форме редактирования (idx свойства "Дата начала")
+    val result = new util.TreeSet[(String, Date, Date, String, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, String, util.List[Integer], Integer)] {
+      override def compare(o1: (String, Date, Date, String, util.List[Integer], Integer), o2: (String, Date, Date, String, util.List[Integer], Integer)): Int = {
+
+        val tt1 = if(o1._4 != null) o1._4.trim else " " // Убираем пробелы - интерфейс иногда вставляет их вперед
+        val tt2 = if(o2._4 != null) o2._4.trim else " "
+
+        // Тип терапии бывает Профилактика, Целенаправленная, Эмпирическая и может отсутствовать
+        // выводитб требуется в данном порядке, на случай путацицы написания, сравниваю только первую букву в верхнем регистре
+        if(!tt1.head.equals(tt2.head)) {
+          if(tt1.toUpperCase().startsWith("П"))
+            return -1
+          else if(tt1.toUpperCase().startsWith("Э") && !tt2.toUpperCase().startsWith("П"))
+            return 1
+          else if(tt1.toUpperCase().startsWith("Ц") && !tt2.toUpperCase().startsWith("П") && !tt2.toUpperCase().startsWith("Э"))
+            return 1
+          else
+            return -1
+        }
+
+        val dateOrder = o2._2.compareTo(o1._2)
+        val idxOrder = o2._6.compareTo(o1._6)
+        if(dateOrder != 0)
+          dateOrder
+        else if(idxOrder != 0)
+          idxOrder
+        else if(o1.equals(o2))
+          0
+        else
+          1
+      }
+    } )
+    r.foreach(result.add)
+    result
   }
 
   def getSurgicalOperations(eventId: Int, authData: AuthData) = {

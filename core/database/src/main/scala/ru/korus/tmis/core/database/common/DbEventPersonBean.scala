@@ -110,17 +110,13 @@ class DbEventPersonBean
 
     val result = query.getResultList
     result.size match {
-      case 0 => {  null
+      case 0 =>
         throw new CoreException(
           ConfigManager.ErrorCodes.EventPersonForEventAndUserNotFound,
           i18n("error.eventPersonForEventAndUserNotFound").format(eventId))
-      }
-      case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+      case size =>
+        result.foreach(rbType => { em.detach(rbType) })
         result(0)
-      }
     }
   }
 

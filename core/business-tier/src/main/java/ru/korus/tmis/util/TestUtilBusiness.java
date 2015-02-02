@@ -5,6 +5,7 @@ import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.common.CommonDataProcessorBean;
 import ru.korus.tmis.core.diagnostic.DiagnosticBeanLocal;
 import ru.korus.tmis.core.patient.AppealBean;
+import ru.korus.tmis.core.patient.impl.MonitoringBean;
 import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal;
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal;
 import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal;
@@ -28,7 +29,8 @@ public class TestUtilBusiness implements TestUtil {
                 ThesaurusBeanLocal.class.getPackage(),        // ru.korus.tmis.core.thesaurus
                 PrescriptionBeanLocal.class.getPackage(),     // ru.korus.tmis.prescription
                 AcrossBusinessBeanLocal.class.getPackage(),
-                BakBusinessBeanLocal.class.getPackage()
+                BakBusinessBeanLocal.class.getPackage(),
+                MonitoringBean.class.getPackage(),             //ru.korus.tmis.core.patient.impl
         };
     }
 

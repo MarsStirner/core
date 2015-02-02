@@ -14,7 +14,7 @@ import java.util.Date;
  * Description: Компоненты Лекарства для Листов Назначений <br>
  */
 @Entity
-@Table(name = "DrugComponent", schema = "", catalog = "")
+@Table(name = "DrugComponent")
 @NamedQueries(
         {
                 @NamedQuery(name = "DrugComponent.getByActionId", query = "SELECT dc FROM DrugComponent dc WHERE dc.action.id = :actionId AND dc.cancelDateTime IS NULL"),

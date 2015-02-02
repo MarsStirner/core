@@ -9,7 +9,7 @@ import ru.korus.tmis.scala.util.Defaultible
 import Defaultible._
 import ru.korus.tmis.laboratory.across.ws.Tindicator
 import ru.korus.tmis.scala.util.Defaultible
-import scala.language.reflectiveCalls
+import scala.language.implicitConversions
 
 sealed case class OrderInfo(
                              diagnosticCode: Option[String] = None,

@@ -1,7 +1,9 @@
 package ru.korus.tmis.core.data
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import ru.korus.tmis.core.data.adapters.DateTimeAdapter
 import scala.beans.BeanProperty
 import java.util.{Calendar, Date}
 import ru.korus.tmis.core.entity.model._
@@ -9,6 +11,7 @@ import ru.korus.tmis.util.reflect.{LoggingManager, TmisLogging}
 import java.text.SimpleDateFormat
 import java.util.LinkedList
 import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 import java.util
 import collection.JavaConversions
 import ru.korus.tmis.scala.util.ConfigManager
@@ -89,26 +92,28 @@ class TakingOfBiomaterialRequesDataFilter {
   var jobTicketId: Int = -1
   @BeanProperty
   var departmentId: Int = _
-  @BeanProperty
-  var beginDate: Date = _
-  @BeanProperty
-  var endDate: Date = _
+  @XmlJavaTypeAdapter(classOf[DateTimeAdapter]) @BeanProperty var beginDate: Date = _
+  @XmlJavaTypeAdapter(classOf[DateTimeAdapter]) @BeanProperty var endDate: Date = _
   @BeanProperty
   var status: Short = -1
   @BeanProperty
   var biomaterial: Int = -1
+  @BeanProperty
+  var labs: util.List[String] = _
 
   def this( jobTicketId: Int,
             departmentId: Int,
             beginDate: Long,
             endDate: Long,
             status: Short,
-            biomaterial: Int) {
+            biomaterial: Int,
+            lab: util.List[String] = null) {
     this()
     this.jobTicketId = jobTicketId
     this.departmentId = departmentId
     this.status = status
     this.biomaterial = biomaterial
+    this.labs = lab
 
     //Анализ дат
     if(beginDate>0 && endDate>0) {
@@ -180,7 +185,7 @@ class ActionInfoDataContainer {
   @BeanProperty
   var actionType: IdNameContainer = _           //ActionType.id + ActionType.name
   @BeanProperty
-  var takenTissueJournal: Int = _            //номер истолии болезни
+  var takenTissueJournal: Int = _               //номер истолии болезни
   @BeanProperty
   var urgent: Boolean = false                   //Срочность
   @BeanProperty
@@ -189,6 +194,8 @@ class ActionInfoDataContainer {
   var tubeType: TestTubeTypeInfoContainer = _   //Тип пробирки
   @BeanProperty
   var patient: PatientInfoDataContainer = _     //Основная информация о пациенте
+  @BeanProperty
+  var labs: util.Set[String] = _                //Лаборатории, к которым привязан Action через ActionPropertyTypes
 
   def this(action: Action, tissueType: ActionTypeTissueType) {
     this()
@@ -201,6 +208,9 @@ class ActionInfoDataContainer {
         this.patient = new PatientInfoDataContainer(action.getEvent.getPatient)
       if (action.getTakenTissue!=null)
         this.takenTissueJournal = action.getTakenTissue.getBarcode
+      labs = action.getActionType.getActionPropertyTypes
+        .flatMap(p => Option(p.getTest))
+        .map(_.getRbLaboratoryTest.getRbLaboratory.getName).toSet.asJava
     }
     if(tissueType!=null)
       this.biomaterial = new TissueTypeContainer(tissueType)
@@ -320,8 +330,7 @@ class JobTicketInfoContainer {
 
   @BeanProperty
   var id: Int = _
-  @BeanProperty
-  var date: Date = _                            //Дата и время
+  @XmlJavaTypeAdapter(classOf[DateTimeAdapter]) @BeanProperty var date: Date = _                            //Дата и время
   @BeanProperty
   var status: Int = _                           //Статус
   @BeanProperty

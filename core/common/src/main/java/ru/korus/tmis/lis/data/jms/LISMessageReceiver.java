@@ -8,6 +8,7 @@ import javax.ejb.ActivationConfigProperty;
 import javax.ejb.MessageDriven;
 import javax.jms.*;
 import java.lang.annotation.Annotation;
+import java.util.List;
 
 /**
  * Абстактный класс для создания использования на стороне модулей интеграции лабораторий
@@ -72,7 +73,7 @@ public abstract class LISMessageReceiver implements MessageListener {
             if(m == null ||
                !(m instanceof ObjectMessage) ||
                !JMS_TYPE.equals(m.getJMSType()) ||
-               !m.getStringProperty(JMS_LAB_PROPERTY_NAME).equals(getLaboratoryCode()))
+               !getLaboratoryCode().contains(m.getStringProperty(JMS_LAB_PROPERTY_NAME)))
                 return;
 
             LabModuleSendingResponse response = new LabModuleSendingResponse();
@@ -140,6 +141,6 @@ public abstract class LISMessageReceiver implements MessageListener {
      * Указан в БД в таблице ***
      * @return КОд лаборатории в виде строки в БД
      */
-    abstract protected String getLaboratoryCode();
+    abstract protected List<String> getLaboratoryCode();
 
 }

@@ -5,6 +5,7 @@ import ru.korus.tmis.core.auth.AuthToken;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.core.patient.InfectionDrugMonitoring;
 
 import javax.ejb.Local;
 import javax.servlet.http.Cookie;
@@ -12,7 +13,6 @@ import java.io.Serializable;
 import java.net.URI;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 
 /**
  * User: idmitriev
@@ -30,11 +30,11 @@ public interface WebMisREST extends Serializable {
 
     PatientCardData getPatientById(int id, AuthData auth)  throws CoreException;
 
-    String insertAppealForPatient(AppealData appealData,  int patientId, AuthData auth) throws CoreException;
+    AppealData insertAppealForPatient(AppealData appealData,  int patientId, AuthData auth) throws CoreException;
 
-    String updateAppeal(AppealData appealData,  int eventId, AuthData auth) throws CoreException;
+    AppealData updateAppeal(AppealData appealData,  int eventId, AuthData auth) throws CoreException;
 
-    String getAppealById(int id, AuthData auth) throws CoreException;
+    AppealData getAppealById(int id, AuthData auth) throws CoreException;
 
     String getAppealPrintFormById(int id, AuthData auth) throws CoreException;
 
@@ -365,9 +365,11 @@ public interface WebMisREST extends Serializable {
      */
     MonitoringInfoListData getMonitoringInfoByAppeal(int eventId, int condition, AuthData authData) throws CoreException;
 
-    Set<List<Object>> getInfectionMonitoring(int eventId, AuthData authData) throws CoreException;
+    List<List<Object>> getInfectionMonitoring(int eventId, AuthData authData) throws CoreException;
 
-    Set<List<Object>> getInfectionDrugMonitoring(int eventId, AuthData authData) throws CoreException;
+    List<List<Object>> getInfectionDrugMonitoring(int eventId, AuthData authData) throws CoreException;
+
+    List<InfectionDrugMonitoring> getInfectionDrugMonitoringList(int eventId) throws CoreException;
 
     SurgicalOperationsListData getSurgicalOperationsByAppeal(int eventId, AuthData authData) throws CoreException;
 
@@ -474,6 +476,10 @@ public interface WebMisREST extends Serializable {
     Nomenclature getRlsById(int id) throws CoreException;
 
     List<Nomenclature> getRlsByText(String text) throws CoreException;
+
+    List<RbLaboratory> getLabs();
+
+    List<TherapyContainer> getTherapiesInfo(int eventId) throws CoreException;
 
     /**
      * Залочить действие

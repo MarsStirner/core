@@ -7,6 +7,7 @@ import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Tuple4;
 import scala.Tuple5;
+import scala.Tuple6;
 
 import javax.ejb.Local;
 import java.util.*;
@@ -129,9 +130,9 @@ public interface AppealBeanLocal {
 
     MonitoringInfoListData getMonitoringInfo(int eventId, int condition, AuthData authData) throws CoreException;
 
-    Set<Tuple4<String, Date, Date, List<Integer>>> getInfectionMonitoring(int eventId) throws CoreException;
+    SortedSet<Tuple5<String, Date, Date, List<Integer>, Integer>> getInfectionMonitoring(Patient patient) throws CoreException;
 
-    Set<Tuple5<String, Date, Date, String, List<Integer>>> getInfectionDrugMonitoring(int eventId) throws CoreException;
+    SortedSet<Tuple6<String, Date, Date, String, List<Integer>, Integer>> getInfectionDrugMonitoring(Patient patient) throws CoreException;
 
     SurgicalOperationsListData getSurgicalOperations(int eventId, AuthData authData) throws CoreException;
 

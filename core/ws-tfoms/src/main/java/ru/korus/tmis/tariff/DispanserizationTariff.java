@@ -91,7 +91,7 @@ public class DispanserizationTariff extends TariffEntry {
                 logger.debug("Selected services:");
                 for (RbService currentService : serviceList) {
                     logger.debug("RbService[{}] infis = {} name = {}",
-                            currentService.getId(), currentService.getInfis(), currentService.getName());
+                            new Object[] { currentService.getId(), currentService.getInfis(), currentService.getName() });
                 }
             }
         }
@@ -106,12 +106,12 @@ public class DispanserizationTariff extends TariffEntry {
             if (logger.isDebugEnabled()) {
                 for (MedicalKindUnit currentMku : mkuList) {
                     logger.debug("MKU[{}] medicalKind={} eventType={} aidUnit={} paytype={} tariffType={}",
-                            currentMku.getId(),
+                            new Object[] { currentMku.getId(),
                             currentMku.getMedicalKind().getCode(),
                             currentMku.getEventType().getId(),
                             currentMku.getMedicalAidUnit().getCode(),
                             currentMku.getPayType().getCode(),
-                            currentMku.getTariffType().getCode());
+                            currentMku.getTariffType().getCode() });
                 }
             }
         }

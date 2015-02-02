@@ -195,7 +195,7 @@ class BakResults extends BakResultService {
   }
 
   override def bakDelivered(orderBarCode: Integer, takenTissueJournal: String, tissueTime: String, orderBiomaterialName: String): Int = {
-    LoggerFactory.getLogger(classOf[BakResults]).info("Bak Delivered [{}],[{}],[{}],[{}]", orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName)
+    LoggerFactory.getLogger(classOf[BakResults]).info("Bak Delivered [{}],[{}],[{}],[{}]", Array[Object](orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName))
     0
   }
 

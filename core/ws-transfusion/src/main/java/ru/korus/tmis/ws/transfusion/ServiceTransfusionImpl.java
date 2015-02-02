@@ -59,7 +59,7 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
             @WebParam(name = "orderComment", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final String orderComment) {
         final IssueResult res = new IssueResult();
         logger.info("Entered in transfusion service 'setOrderIssueResult' with parameters: requestId: {}, factDate: {}, listOrderIssueInfo.size: {}",
-                requestId, factDate, components == null ? null : components.size());
+                new Object[]{requestId, factDate, components == null ? null : components.size()});
         if (requestId == null || components == null || components.isEmpty() || factDate == null ) {
             res.setDescription("Error: illegal arguments for setOrderIssueResult");
             res.setResult(false);
@@ -93,7 +93,7 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
                     @WebParam(name = "Measures", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final List<LaboratoryMeasure> measures,
                     @WebParam(name = "finalVolumeList", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final List<FinalVolume> finalVolume) {
         logger.info("Entered in transfusion service 'setProcedureResult' with parameters: {}; {}; {}; measures.size = {}; finalVolume.size = {}",
-                patientCredentials, procedureInfo, eritrocyteMass, measures != null ? measures.size() : null, finalVolume != null ? finalVolume.size() : null);
+                new Object[] {patientCredentials, procedureInfo, eritrocyteMass, measures != null ? measures.size() : null, finalVolume != null ? finalVolume.size() : null});
         return regProcedureResult.save(patientCredentials, procedureInfo, eritrocyteMass, measures, finalVolume);
     }
 

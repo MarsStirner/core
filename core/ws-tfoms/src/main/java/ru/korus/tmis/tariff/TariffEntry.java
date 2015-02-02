@@ -54,7 +54,7 @@ public abstract class TariffEntry {
         this.endDate = DateConvertions.convertUTCMillisecondsToLocalDate(currentTariff.getDate_e());
         this.summ = currentTariff.getSumm_tar();
         logger.debug("Start processing #{}[{}] Actual from {} to {} Price={}",
-                currentTariffNumber, ctar, begDate, endDate, summ);
+                new Object[] { currentTariffNumber, ctar, begDate, endDate, summ });
         this.result = new Result(currentTariffNumber, ctar);
         this.tariffList = new ArrayList<ContractTariff>(4);
         this.sexAndAgeList = new ArrayList<Helper.SexAndAge>(1);
@@ -220,13 +220,13 @@ public abstract class TariffEntry {
 
     public void printSummary() {
         logger.debug("Founded values for #{}", currentTariffNumber);
-        logger.debug("rbMedicalKind[{}] - {} - {}", medicalKind.getId(), medicalKind.getCode(), medicalKind.getName());
+        logger.debug("rbMedicalKind[{}] - {} - {}", new Object[] { medicalKind.getId(), medicalKind.getCode(), medicalKind.getName() });
         logger.debug("SEX and AGE restrictions:");
         for (Helper.SexAndAge currentSexAndAge : sexAndAgeList) {
             logger.debug(currentSexAndAge.toString());
         }
-        logger.debug("rbServiceFinance[{}] - {} - {}", serviceFinance.getId(), serviceFinance.getCode(), serviceFinance.getName());
-        logger.debug("rbMedicalAidUnit[{}] - {} - {}", aidUnit.getId(), aidUnit.getCode(), aidUnit.getName());
+        logger.debug("rbServiceFinance[{}] - {} - {}", new Object[] { serviceFinance.getId(), serviceFinance.getCode(), serviceFinance.getName() });
+        logger.debug("rbMedicalAidUnit[{}] - {} - {}", new Object[] { aidUnit.getId(), aidUnit.getCode(), aidUnit.getName() });
     }
 
     /**

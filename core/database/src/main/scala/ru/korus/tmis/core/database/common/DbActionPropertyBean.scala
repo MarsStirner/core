@@ -125,8 +125,11 @@ class DbActionPropertyBean
     ap
   }
 
-  def createActionPropertyWithDate(a: Action, aptId: Int, userData: AuthData, now: Date) = {
+  def createActionPropertyWithDate(a: Action, aptId: Int, userData: AuthData, now: Date): ActionProperty = {
     val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
+    if(apt == null) {
+      return null;
+    }
     val ap = new ActionProperty
 
     ap.setCreateDatetime(now)
@@ -213,7 +216,7 @@ class DbActionPropertyBean
     val prmList = rbAPTableFieldList.foldLeft("")( (b,a) => {
       val s = if (b.isEmpty) "" else ","
       val name = if (a.getReferenceTable == null) a.getRbAptable.getTableName +  "." + a.getFieldName else a.getReferenceTable + ".name"
-      b + s + name
+      b + s + (if(name.equals("trfuOrderIssueResult.stickerUrl")) "CONCAT('" + ConfigManager.TrfuProp.StickerBaseUrl + "'," + name + ")" else name)
     })
     val tblList =  rbAPTableFieldList.foldLeft(rbAPTable.getTableName)( (b,a) => {
       if (a.getReferenceTable == null) {

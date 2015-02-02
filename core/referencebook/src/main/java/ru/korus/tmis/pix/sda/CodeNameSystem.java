@@ -14,14 +14,6 @@ public class CodeNameSystem {
 
     private final String codingSystem;
 
-    //TODO remove! use  CodeNameSystem.newInstance()
-    @Deprecated
-    CodeNameSystem(String code, String name) {
-        this.code = code;
-        this.name = name;
-        this.codingSystem = null;
-    }
-
     private CodeNameSystem(String code, String name, String codingSystem) {
         this.code = code;
         this.name = name;

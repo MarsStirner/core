@@ -76,7 +76,7 @@
             <docNum>571655</docNum>
             <docDate>2000-04-01+04:00</docDate>
             <docSource>6 УФМС по району</docSource>
-            <expirationDate>2140-01-01+04:00</expirationDate>
+            <expirationDate>2140-01-01+03:00</expirationDate>
         </identityDocument>
         <birthCertificate>
             <docType>
@@ -88,7 +88,7 @@
             <docNum>715169</docNum>
             <docDate>1913-04-05+02:30</docDate>
             <docSource>ЗАГС</docSource>
-            <expirationDate>2174-03-03+04:00</expirationDate>
+            <expirationDate>2174-03-03+03:00</expirationDate>
         </birthCertificate>
         <omsInsurance>
             <insuranceCompany>
@@ -103,7 +103,7 @@
             <policySer>111</policySer>
             <policyNum>5801989121913368</policyNum>
             <effectiveDate>2009-11-25+03:00</effectiveDate>
-            <expirationDate>2019-11-25+04:00</expirationDate>
+            <expirationDate>2019-11-25+03:00</expirationDate>
             <insuranceCompanyKladr>
                 <code>7700000000000</code>
                 <codingSystem>KLD116</codingSystem>

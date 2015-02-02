@@ -1,22 +1,22 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
-<ns2:rcmrin000002UV02 xmlns:ns2="MISExchange" xmlns="urn:hl7-org:v3">
-    <ns2:Message ITSVersion="XML_1.0">
-        <id root="TEST"/>
-        <creationTime value="20140622100818"/>
-        <interactionId root="2.16.840.1.113883.1.18" extension="RCMR_IN000002UV02"/>
-        <processingCode code="P"/>
-        <processingModeCode code="T"/>
-        <acceptAckCode code="AL"/>
-        <receiver typeCode="RCV">
-            <device classCode="DEV" determinerCode="INSTANCE">
-                <id nullFlavor="NI"/>
-            </device>
-        </receiver>
-        <sender typeCode="SND">
-            <device classCode="DEV" determinerCode="INSTANCE">
-                <id nullFlavor="NI"/>
-            </device>
-        </sender>
-        <controlActProcess classCode="CACT" moodCode="RQO"/>
-    </ns2:Message>
-</ns2:rcmrin000002UV02>
+<rcmrin000002UV02 xmlns:ns2="urn:hl7-org:v3" xmlns="MISExchange">
+    <Message ITSVersion="XML_1.0">
+        <ns2:id root="TEST"/>
+        <ns2:creationTime value="20140622100818"/>
+        <ns2:interactionId root="2.16.840.1.113883.1.18" extension="RCMR_IN000002UV02"/>
+        <ns2:processingCode code="P"/>
+        <ns2:processingModeCode code="T"/>
+        <ns2:acceptAckCode code="AL"/>
+        <ns2:receiver typeCode="RCV">
+            <ns2:device classCode="DEV" determinerCode="INSTANCE">
+                <ns2:id nullFlavor="NI"/>
+            </ns2:device>
+        </ns2:receiver>
+        <ns2:sender typeCode="SND">
+            <ns2:device classCode="DEV" determinerCode="INSTANCE">
+                <ns2:id nullFlavor="NI"/>
+            </ns2:device>
+        </ns2:sender>
+        <ns2:controlActProcess classCode="CACT" moodCode="RQO"/>
+    </Message>
+</rcmrin000002UV02>

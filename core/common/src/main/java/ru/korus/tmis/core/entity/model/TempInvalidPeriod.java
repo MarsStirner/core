@@ -20,7 +20,6 @@ public class TempInvalidPeriod implements Serializable {
 	private int id;
 
 	@Temporal(TemporalType.DATE)
-	@Column(nullable=false)
 	private Date begDate;
 
     @ManyToOne
@@ -35,15 +34,14 @@ public class TempInvalidPeriod implements Serializable {
 	private Diagnosis diagnosis;
 
 	@Temporal(TemporalType.DATE)
-	@Column(nullable=false)
 	private Date endDate;
 
     @ManyToOne
     @JoinColumn(name = "endPerson_id")
 	private Staff endPerson;
 
-	@Column(nullable=false)
-	private byte isExternal;
+	@Column(name = "isExternal", nullable=false)
+	private boolean isExternal;
 
     @ManyToOne
     @JoinColumn(name = "master_id", nullable=false)
@@ -117,11 +115,11 @@ public class TempInvalidPeriod implements Serializable {
 		this.endPerson = endPerson;
 	}
 
-	public byte getIsExternal() {
+	public boolean getIsExternal() {
 		return this.isExternal;
 	}
 
-	public void setIsExternal(byte isExternal) {
+	public void setIsExternal(boolean isExternal) {
 		this.isExternal = isExternal;
 	}
 

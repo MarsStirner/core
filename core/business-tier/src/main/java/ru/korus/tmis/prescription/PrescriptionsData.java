@@ -6,6 +6,8 @@ import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.pharmacy.DbDrugChartBeanLocal;
+import ru.korus.tmis.core.pharmacy.DbDrugIntervalCompParam;
+import ru.korus.tmis.core.pharmacy.DbDrugIntervalCompParamLocal;
 import ru.korus.tmis.core.pharmacy.DbPharmacyBeanLocal;
 
 import javax.xml.bind.annotation.XmlRootElement;
@@ -28,24 +30,26 @@ public class PrescriptionsData {
 
     public PrescriptionsData(Event event,
                              DbDrugChartBeanLocal dbDrugChartBeanLocal,
+                             DbDrugIntervalCompParamLocal dbDrugIntervalCompParam,
                              DbPharmacyBeanLocal dbPharmacyBeanLocal,
                              DbRbUnitBeanLocal dbRbUnitBeanLocal,
                              DbActionPropertyBeanLocal dbActionPropertyBeanLocal) throws CoreException {
         List<Action> actionList = dbPharmacyBeanLocal.getPrescriptionForEvent(event);
-        getPrescriptionDate(actionList, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
+        getPrescriptionDate(actionList, dbDrugChartBeanLocal, dbDrugIntervalCompParam, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
     }
 
     private void getPrescriptionDate(List<Action> actionList,
                                      DbDrugChartBeanLocal dbDrugChartBeanLocal,
+                                     DbDrugIntervalCompParamLocal dbDrugIntervalCompParam,
                                      DbPharmacyBeanLocal dbPharmacyBeanLocal,
                                      DbRbUnitBeanLocal dbRbUnitBeanLocal,
                                      DbActionPropertyBeanLocal dbActionPropertyBeanLocal) throws CoreException {
         for (Action action : actionList) {
-            data.add(new PrescriptionData(action, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal));
+            data.add(new PrescriptionData(action, dbDrugChartBeanLocal, dbDrugIntervalCompParam, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal));
         }
     }
 
-    public PrescriptionsData(Event event,
+   /* public PrescriptionsData(Event event,
                              String message,
                              DbDrugChartBeanLocal dbDrugChartBeanLocal,
                              DbPharmacyBeanLocal dbPharmacyBeanLocal,
@@ -57,7 +61,7 @@ public class PrescriptionsData {
                 dbRbUnitBeanLocal,
                 dbActionPropertyBeanLocal);
         this.message = message;
-    }
+    }*/
 
 
     public PrescriptionsData() {
@@ -66,13 +70,14 @@ public class PrescriptionsData {
 
     public PrescriptionsData(PrescriptionFilter prescriptionFilter,
                              DbDrugChartBeanLocal dbDrugChartBeanLocal,
+                             DbDrugIntervalCompParamLocal dbDrugIntervalCompParam,
                              DbPharmacyBeanLocal dbPharmacyBeanLocal,
                              DbRbUnitBeanLocal dbRbUnitBeanLocal,
                              DbActionPropertyBeanLocal dbActionPropertyBeanLocal) throws CoreException {
         Date begDate = new Date(prescriptionFilter.getDateRangeMin() * 1000L);
         Date endDate = new Date(prescriptionFilter.getDateRangeMax() * 1000L);
         List<Action> actionList = filterByDepartmentId(prescriptionFilter.getDepartmentId(), dbPharmacyBeanLocal.getPrescriptionForTimeInterval(begDate, endDate));
-        getPrescriptionDate(actionList, dbDrugChartBeanLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
+        getPrescriptionDate(actionList, dbDrugChartBeanLocal, dbDrugIntervalCompParam, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
         filter(prescriptionFilter);
         sort(prescriptionFilter);
     }

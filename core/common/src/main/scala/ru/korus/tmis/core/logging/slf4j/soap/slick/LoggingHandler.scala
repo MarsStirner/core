@@ -10,7 +10,8 @@ import javax.servlet.http.HttpServletRequest
 
 import ru.korus.tmis.scala.util.{General, I18nable}
 import General.nullity_implicits
-import ru.korus.tmis.scala.util.I18nable
+import scala.language.reflectiveCalls
+
 
 // slf4j to soap logging adapter, logging only ips
 class LoggingHandler
@@ -35,7 +36,6 @@ class LoggingHandler
         }
           getOrElse "Unknown host") +
         "]"
-      case _ => "???"
     }
 
 

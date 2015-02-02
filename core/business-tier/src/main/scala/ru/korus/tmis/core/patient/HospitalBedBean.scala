@@ -68,7 +68,7 @@ with TmisLogging {
   var dbOrgStructureHospitalBed: DbOrgStructureHospitalBedBeanLocal = _
 
   private class IndexOf[T](seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos ==) map (seq indexOf _)
+    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
   }
 
   private val list = List(iCapIds("db.rbCAP.moving.id.movedFrom").toInt,
@@ -526,7 +526,7 @@ with TmisLogging {
           listMovAP)
         if (oldLastValues != null) {
           val result = oldLastValues.find(p => p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospitalBed")) == 0).getOrElse(null)
-          if (result != null && result._2 != 0 && result._2.size() > 0) {
+          if (result != null && result._2 != null && result._2.size() > 0) {
             bed = result._2.get(0).getValue.asInstanceOf[OrgStructureHospitalBed]
             val result2 = dbOrgStructureHospitalBed.getBusyHospitalBedByIds(asJavaCollection(asJavaCollection(Set(bed.getId))))
             if (result2 != null && result2.size() > 0) {

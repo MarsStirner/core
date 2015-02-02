@@ -1,87 +1,86 @@
-{"data": {
-    "actionTypeId": 123,
-    "eventId": null,
+{"message": "templateAction", "data": {
     "properties": [
         {
-            "actionPropertyTypeId": 1810,
-            "mandatory": true,
+            "id": null,
             "name": "Наименование",
-            "valueDomain": "",
+            "value": null,
             "type": "RLS",
             "code": "nomen",
-            "value": null,
-            "valueId": null,
-            "id": null
+            "valueDomain": "",
+            "actionPropertyTypeId": 1810,
+            "mandatory": true,
+            "valueId": null
         },
         {
-            "actionPropertyTypeId": 1811,
-            "mandatory": false,
+            "id": null,
             "name": "Скорость введения",
-            "valueDomain": "",
+            "value": null,
             "type": "String",
             "code": "voa",
-            "value": null,
-            "valueId": null,
-            "id": null
+            "valueDomain": "",
+            "actionPropertyTypeId": 1811,
+            "mandatory": false,
+            "valueId": null
         },
         {
-            "actionPropertyTypeId": 5176,
-            "mandatory": false,
+            "id": null,
             "name": "Способ введения",
-            "valueDomain": "rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER",
+            "value": null,
             "type": "ReferenceRb",
             "code": "moa",
-            "value": null,
-            "valueId": null,
-            "id": null
+            "valueDomain": "rbMethodOfAdministration; IV, PO, IM, SC, AP, IN, IT, IO, B, ID, IH, IA, IP, IS, NG, GU, TP, PR, OTHER",
+            "actionPropertyTypeId": 5176,
+            "mandatory": false,
+            "valueId": null
         },
         {
-            "actionPropertyTypeId": 11848,
-            "mandatory": false,
+            "id": null,
             "name": "Единицы",
-            "valueDomain": "'мг','мкг','гр','мл',*",
+            "value": null,
             "type": "String",
             "code": "units",
-            "value": null,
-            "valueId": null,
-            "id": null
+            "valueDomain": "'мг','мкг','гр','мл',*",
+            "actionPropertyTypeId": 11848,
+            "mandatory": false,
+            "valueId": null
         },
         {
+            "id": null,
+            "name": "Примечания",
+            "value": null,
+            "type": "String",
+            "code": null,
+            "valueDomain": "",
             "actionPropertyTypeId": 24638,
             "mandatory": false,
-            "name": "Примечания",
-            "valueDomain": "",
-            "type": "String",
-            "code": null,
-            "value": null,
-            "valueId": null,
-            "id": null
+            "valueId": null
         },
         {
-            "actionPropertyTypeId": 24642,
-            "mandatory": false,
+            "id": null,
             "name": "Дозировка",
-            "valueDomain": "",
+            "value": null,
             "type": "String",
             "code": "dosage",
-            "value": null,
-            "valueId": null,
-            "id": null
+            "valueDomain": "",
+            "actionPropertyTypeId": 24642,
+            "mandatory": false,
+            "valueId": null
         },
         {
-            "actionPropertyTypeId": 24643,
-            "mandatory": false,
+            "id": null,
             "name": "Доза",
-            "valueDomain": "",
+            "value": null,
             "type": "Double",
             "code": null,
-            "value": null,
-            "valueId": null,
-            "id": null
+            "valueDomain": "",
+            "actionPropertyTypeId": 24643,
+            "mandatory": false,
+            "valueId": null
         }
     ],
-    "drugs": [],
-    "assigmentIntervals": [],
     "note": null,
+    "assigmentIntervals": [],
+    "actionTypeId": 123,
+    "eventId": null,
     "isUrgent": false
-}, "message": "templateAction"}
+}}

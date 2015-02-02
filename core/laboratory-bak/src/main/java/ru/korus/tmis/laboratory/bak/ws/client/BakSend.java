@@ -117,7 +117,7 @@ public class BakSend extends Service {
             Map<String, Object> requestContext = service.getRequestContext();
             requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, serviceUrl);
         } else
-            throw new CoreException("No system property [" + CGM_BAK_URL_SYSTEM_PROPERTY +"]");
+            throw new CoreException("Не задан адрес информационной системы БАК через System Property [" + CGM_BAK_URL_SYSTEM_PROPERTY +"]");
     }
 
     private static URL __getWsdlLocation() {

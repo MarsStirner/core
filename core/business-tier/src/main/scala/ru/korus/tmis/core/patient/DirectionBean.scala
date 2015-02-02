@@ -207,7 +207,9 @@ with I18nable {
       val tissueType = dbTakenTissue.getActionTypeTissueTypeByMasterId(a.getActionType.getId.intValue())
       if (tissueType == null)
         throw new CoreException(
-          ConfigManager.ErrorCodes.TakenTissueNotFound, i18n("error.TissueTypeNotFound").format(a.getActionType.getId.intValue())) //TODO Код ошибки не соответствует ошибке, нет соответствующего кодя для данной ошибки
+          ConfigManager.ErrorCodes.TakenTissueNotFound, i18n("error.TissueTypeNotFound").format(
+          actions.filter(_.getActionType.getActionTypeTissueType == null).map(_.getActionType.getName).toSet.mkString(", ")
+          ))
 
       if (jobAndTicket == null) {
         val fromList = list.find((p) => p._1.getId == null &&
@@ -324,7 +326,8 @@ with I18nable {
         catch {
           case e: Exception => {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
-            jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString))
+            val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+            jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + p._1.getId + "'." + e.getMessage + "\n")
             jt.setLabel("##Ошибка отправки в ЛИС##")
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
@@ -339,8 +342,9 @@ with I18nable {
         catch {
           case e: Exception => {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
-            jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(p._1.getId.toString)  + e.getMessage)
-            jt.setLabel("##Ошибка отправки в ЛИС## " + e.getMessage)
+            val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+            jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + p._1.getId + "'." + e.getMessage + "\n")
+            jt.setLabel("##Ошибка отправки в ЛИС## ")
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
           }
@@ -649,13 +653,13 @@ with I18nable {
               actionBean.updateActionStatusWithFlush(a.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
             }
             catch {
-              case e: Exception => {
+              case e: Throwable =>
                 val jt = dbJobTicketBean.getJobTicketById(f.getId)
-                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString)  + e.getMessage)
+                val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+                jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + a.getId + "'." + e.getMessage + "\n")
                 jt.setLabel("##Ошибка отправки в ЛИС##")
                 isAllActionSent = false
                 em.merge(jt)
-              }
             }
           } else if (labCode != null) {
             // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
@@ -667,7 +671,8 @@ with I18nable {
             catch {
               case e: Exception => {
                 val jt = dbJobTicketBean.getJobTicketById(f.getId)
-                jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(a.getId.toString)  + e.getMessage)
+                val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+                jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + a.getId + "'." + e.getMessage + "\n")
                 jt.setLabel("##Ошибка отправки в ЛИС##")
                 isAllActionSent = false
                 em.merge(jt)

@@ -1,41 +1,68 @@
-{"requestData": null, "data": {
-    "id": 257,
+{"data": {
+    "context": "f066",
+    "id": 841700,
+    "number": "2014/212",
+    "result": null,
+    "assignment": {
+        "number": "",
+        "doctor": "",
+        "assignmentDate": null,
+        "directed": ""
+    },
     "version": 2,
-    "number": "2014/473",
+    "hospitalizationWith": [],
+    "stateType": "",
     "urgent": false,
-    "setPerson": {
-        "doctor": {
-            "id": 1,
-            "name": {
-                "first": "",
-                "last": "Админ",
-                "middle": "",
-                "raw": "Админ  "
-            }
+    "patient": {
+        "id": "2"
+    },
+    "contract": null,
+    "laboratory": null,
+    "diagnoses": [
+        {
+            "description": "",
+            "mkb": {
+                "id": 11439,
+                "diagnosis": "",
+                "code": ""
+            },
+            "diagnosisKind": "diagReceivedMkb",
+            "diagnosticId": 202,
+            "injury": ""
         },
-        "department": {
-            "id": 0,
-            "name": null
+        {
+            "description": "",
+            "mkb": {
+                "id": 11439,
+                "diagnosis": "",
+                "code": ""
+            },
+            "diagnosisKind": "aftereffectMkb",
+            "diagnosticId": 204,
+            "injury": ""
+        },
+        {
+            "description": "",
+            "mkb": {
+                "id": 11439,
+                "diagnosis": "",
+                "code": ""
+            },
+            "diagnosisKind": "attendantMkb",
+            "diagnosticId": 203,
+            "injury": ""
         }
-    },
-    "execPerson": {
-        "id": 1,
-        "name": {
-            "first": "",
-            "last": "Админ",
-            "middle": "",
-            "raw": "Админ  "
-        }
-    },
+    ],
     "ambulanceNumber": "",
     "rangeAppealDateTime": {
         "start": 1402042420000,
         "end": 1402042458000
     },
-    "patient": {
-        "id": "2"
-    },
     "appealType": {
+        "finance": {
+            "id": 1,
+            "name": "Бюджет"
+        },
         "eventType": {
             "id": 53,
             "name": "Дневной стационар(бюджет)"
@@ -43,34 +70,16 @@
         "requestType": {
             "id": 1,
             "name": "Дневной стационар"
-        },
-        "finance": {
-            "id": 1,
-            "name": "Бюджет"
         }
     },
     "agreedType": null,
     "agreedDoctor": "",
-    "assignment": {
-        "assignmentDate": null,
-        "number": "",
-        "directed": "",
-        "doctor": ""
-    },
     "hospitalizationType": null,
     "hospitalizationPointType": null,
-    "hospitalizationChannelType": {
-        "id": -1,
-        "name": null
-    },
-    "hospitalizationWith": [],
     "deliveredType": "",
     "deliveredAfterType": "",
     "movingType": "может идти",
-    "stateType": "",
     "physicalParameters": {
-        "height": 0.0,
-        "weight": 0.0,
         "temperature": 0.0,
         "bloodPressure": {
             "left": {
@@ -81,54 +90,54 @@
                 "diast": 0.0,
                 "syst": 0.0
             }
-        }
+        },
+        "height": 0.0,
+        "weight": 0.0
     },
-    "diagnoses": [
-        {
-            "diagnosticId": 15,
-            "diagnosisKind": "diagReceivedMkb",
-            "description": "",
-            "injury": "",
-            "mkb": {
-                "id": 11439,
-                "code": "",
-                "diagnosis": ""
-            }
-        },
-        {
-            "diagnosticId": 14,
-            "diagnosisKind": "aftereffectMkb",
-            "description": "",
-            "injury": "",
-            "mkb": {
-                "id": 11439,
-                "code": "",
-                "diagnosis": ""
-            }
-        },
-        {
-            "diagnosticId": 16,
-            "diagnosisKind": "attendantMkb",
-            "description": "",
-            "injury": "",
-            "mkb": {
-                "id": 11439,
-                "code": "",
-                "diagnosis": ""
-            }
-        }
-    ],
-    "injury": "",
     "refuseAppealReason": "",
     "appealWithDeseaseThisYear": "повторно",
     "havePrimary": false,
-    "contract": null,
-    "ward": null,
-    "totalDays": null,
+    "tempInvalid": null,
+    "preHospitalDefects": null,
+    "closeDateTime": null,
+    "orgStructStay": 0,
+    "orgStructDirectedFrom": 0,
+    "setPerson": {
+        "doctor": {
+            "id": 41,
+            "name": {
+                "first": "test",
+                "last": "test",
+                "raw": "test test test",
+                "middle": "test"
+            }
+        },
+        "department": {
+            "id": 24,
+            "name": "Боксированное отделение гематологии/онкологии"
+        }
+    },
+    "execPerson": {
+        "id": 41,
+        "name": {
+            "first": "test",
+            "last": "test",
+            "raw": "test test test",
+            "middle": "test"
+        }
+    },
+    "closed": false,
+    "injury": "",
     "currentDepartment": {
         "id": 28,
         "name": "Приемное отделение"
     },
+    "hospitalizationChannelType": {
+        "id": -1,
+        "name": null
+    },
+    "ward": null,
+    "totalDays": null,
     "leaved": {
         "nextHospDate": null,
         "nextHospDepartment": null,
@@ -138,14 +147,5 @@
         "outcomeDate": null,
         "leavedDoctor": null
     },
-    "result": null,
-    "tempInvalid": null,
-    "laboratory": null,
-    "preHospitalDefects": null,
-    "closed": false,
-    "closeDateTime": null,
-    "orgStructStay": 0,
-    "orgStructDirectedFrom": 0,
-    "reopening": "null",
-    "context": "f066"
-}}
+    "reopening": "null"
+}, "requestData": null}

@@ -5,9 +5,9 @@ import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugIntervalCompParam;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.pharmacy.DbDrugChartBeanLocal;
-import ru.korus.tmis.core.pharmacy.DbPharmacyBeanLocal;
+import ru.korus.tmis.core.pharmacy.*;
 
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
@@ -66,6 +66,7 @@ public class PrescriptionData {
 
     public PrescriptionData(Action action,
                             DbDrugChartBeanLocal dbDrugChartBeanLocal,
+                            DbDrugIntervalCompParamLocal dbDrugIntervalCompParam,
                             DbPharmacyBeanLocal dbPharmacyBeanLocal,
                             DbRbUnitBeanLocal dbRbUnitBeanLocal,
                             DbActionPropertyBeanLocal dbActionPropertyBeanLocal) throws CoreException {
@@ -79,13 +80,14 @@ public class PrescriptionData {
         isUrgent = action.getIsUrgent();
         note = action.getNote();
         client = (event == null || event.getPatient() == null) ?  null : new PersonData(event.getPatient());
+        List<DrugComponent> drugComponentList = dbPharmacyBeanLocal.getDrugComponent(action);
         List<DrugChart> prescriptionIntervals = dbDrugChartBeanLocal.getPrescriptionIntervals(id);
         for (DrugChart drugChart : prescriptionIntervals) {
-            assigmentIntervals.add(new AssigmentIntervalData(drugChart, dbDrugChartBeanLocal));
+            List<DrugIntervalCompParam>  drugParams = dbDrugIntervalCompParam.getCompParamByInterval(drugChart);
+            assigmentIntervals.add(new AssigmentIntervalData(drugChart, drugParams, dbDrugChartBeanLocal));
         }
         createPerson = action.getCreatePerson() == null ? null : new PersonData(action.getCreatePerson());
         doctor = event == null || event.getExecutor() == null ? null : new PersonData(event.getExecutor());
-        List<DrugComponent> drugComponentList = dbPharmacyBeanLocal.getDrugComponent(action);
         for (DrugComponent drugComponent : drugComponentList) {
             drugs.add(new DrugData(drugComponent, dbRbUnitBeanLocal));
         }

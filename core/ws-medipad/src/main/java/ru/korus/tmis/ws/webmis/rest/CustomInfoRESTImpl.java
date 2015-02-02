@@ -1,6 +1,9 @@
 package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
+import org.joda.time.DateTime;
+import org.joda.time.format.DateTimeFormatter;
+import org.joda.time.format.ISODateTimeFormat;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.JobTicketStatusDataList;
 import ru.korus.tmis.core.data.PatientsListRequestData;
@@ -8,6 +11,7 @@ import ru.korus.tmis.core.data.TakingOfBiomaterialRequesData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
+import ru.korus.tmis.core.entity.model.RbLaboratory;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
 
@@ -17,7 +21,9 @@ import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
+import javax.ws.rs.core.GenericEntity;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -121,9 +127,9 @@ public class CustomInfoRESTImpl {
      * @since 1.0.0.64
      * @param departmentId Фильтр по идентификатору отделения (В url: filter[departmentId]=...)<pre>
      * &#15; По умолчанию значение достается из авторизационной роли</pre>
-     * @param beginDate Фильтр по дате начала выборки (В url: filter[beginDate]=...)<pre>
+     * @param bd Фильтр по дате начала выборки (В url: filter[beginDate]=...)<pre>
      * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 00:00).</pre>
-     * @param endDate  Фильтр по дате окончания выборки (В url: filter[endDate]=...)<pre>
+     * @param ed  Фильтр по дате окончания выборки (В url: filter[endDate]=...)<pre>
      * &#15; По умолчанию - начало текущих суток (Dd.Mm.Year 23:59).</pre>
      * @param status Фильтр по статусу забора (В url: filter[status]=...)<pre>
      * &#15; По умолчанию - 0.</pre>
@@ -144,23 +150,34 @@ public class CustomInfoRESTImpl {
                                          @QueryParam("sortingMethod") String sortingMethod,
                                          @QueryParam("filter[jobTicketId]")int jobTicketId,
                                          @QueryParam("filter[departmentId]")int departmentId,
-                                         @QueryParam("filter[beginDate]")long beginDate,
-                                         @QueryParam("filter[endDate]")long endDate,
+                                         @QueryParam("filter[beginDate]")String bd,
+                                         @QueryParam("filter[endDate]")String ed,
+                                         @QueryParam("filter[lab]")List<String> labs,
                                          @QueryParam("filter[status]") String status,
                                          @QueryParam("filter[biomaterial]") int biomaterial) throws CoreException {
+        AuthData auth = mkAuth(servRequest);
+        Date beginDate;
+        Date endDate;
+        DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
+
+        try { beginDate = parser.parseDateTime(bd).toDate();
+        } catch (RuntimeException e) { beginDate = bd == null ? null : new Date(Long.parseLong(bd)); }
+
+        try { endDate = parser.parseDateTime(ed).toDate(); }
+        catch (RuntimeException e) { endDate = ed == null ? null : new Date(Long.parseLong(ed)); }
 
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
-        final int depId = getCurDepartamentOrDefault(departmentId, mkAuth(servRequest));
+        final int depId = getCurDepartamentOrDefault(departmentId, auth);
         final short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
 
         TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(jobTicketId,
                                                                                             depId,
-                                                                                            beginDate,
-                                                                                            endDate,
+                                                                                            beginDate == null ? 0 : beginDate.getTime(),
+                                                                                            endDate == null ? 0 : endDate.getTime(),
                                                                                             statusS,
-                                                                                            biomaterial);
+                                                                                            biomaterial, labs);
         TakingOfBiomaterialRequesData request = new TakingOfBiomaterialRequesData(sortingField, sortingMethod, filter);
-        return new JSONWithPadding(wsImpl.getTakingOfBiomaterial(request, mkAuth(servRequest)),callback);
+        return new JSONWithPadding(wsImpl.getTakingOfBiomaterial(request, auth),callback);
     }
 
     private int getCurDepartamentOrDefault(int departmentId, AuthData auth) {
@@ -253,6 +270,15 @@ public class CustomInfoRESTImpl {
 
     @Path("/organization")
     public Object getOrganizationById() { return organizationImpl; }
+
+
+    @GET
+    @Path("/labs")
+    @Produces({"application/javascript", "application/xml"})
+    public Object getLabs(@QueryParam("callback") String callback) {
+        return new JSONWithPadding(new GenericEntity<List<RbLaboratory>>(wsImpl.getLabs()) {}, callback);
+    }
+
 
     private AuthData mkAuth(HttpServletRequest servRequest) {
         return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));

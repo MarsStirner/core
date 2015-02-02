@@ -2,6 +2,7 @@ package ru.korus.tmis.prescription;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
+import ru.korus.tmis.core.entity.model.pharmacy.DrugIntervalCompParam;
 import ru.korus.tmis.core.pharmacy.DbDrugChartBeanLocal;
 
 import javax.xml.bind.annotation.XmlType;
@@ -51,9 +52,11 @@ public class AssigmentIntervalData {
 
     private String note;
 
+    final private List<DrugData> drugs = new LinkedList<DrugData>();
+
     private List<AssigmentIntervalData> executionIntervals = new LinkedList<AssigmentIntervalData>();
 
-    public AssigmentIntervalData(DrugChart drugChart, DbDrugChartBeanLocal dbDrugChartBeanLocal) {
+    public AssigmentIntervalData(DrugChart drugChart,  List<DrugIntervalCompParam> drugParams, DbDrugChartBeanLocal dbDrugChartBeanLocal) {
 
         id = drugChart.getId();
         actionId = drugChart.getAction() == null ? null : drugChart.getAction().getId();
@@ -67,9 +70,13 @@ public class AssigmentIntervalData {
         status = drugChart.getStatus();
         note = drugChart.getNote();
 
+        for(DrugIntervalCompParam drugIntervalParam : drugParams) {
+            drugs.add(new DrugData(drugIntervalParam));
+        }
+
         List<DrugChart> intervals = dbDrugChartBeanLocal.getExecIntervals(actionId, id);
         for (DrugChart interval : intervals) {
-            executionIntervals.add(new AssigmentIntervalData(interval, dbDrugChartBeanLocal));
+            executionIntervals.add(new AssigmentIntervalData(interval, new LinkedList<DrugIntervalCompParam>(), dbDrugChartBeanLocal));
         }
     }
 
@@ -163,5 +170,9 @@ public class AssigmentIntervalData {
 
     public void setExecutionIntervals(List<AssigmentIntervalData> executionIntervals) {
         this.executionIntervals = executionIntervals;
+    }
+
+    public List<DrugData> getDrugs() {
+        return drugs;
     }
 }

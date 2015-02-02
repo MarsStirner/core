@@ -5,6 +5,7 @@ import ru.korus.tmis.laboratory.altey.{ws => lab}
 
 import ru.korus.tmis.scala.util.Defaultible
 import Defaultible._
+import scala.language.implicitConversions
 
 
 sealed case class IndicatorMetodic(

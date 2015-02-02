@@ -1,7 +1,7 @@
 package ru.korus.tmis.laboratory.altey.accept
 
 import ru.korus.tmis.laboratory.altey.{accept2 => lab}
-import scala.language.reflectiveCalls
+import scala.language.implicitConversions
 
 final object ImageValue {
   implicit def fromLab1(v: ru.korus.tmis.laboratory.altey.accept2.ImageValue) = {

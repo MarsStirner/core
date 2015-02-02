@@ -19,4 +19,16 @@ public enum Sex {
         }
         return null;
     }
+
+    @Override
+    public String toString() {
+        if(this == UNDEFINED)
+            return "Любой";
+        else if (this == MEN)
+            return "Мужской";
+        else if (this == WOMEN)
+            return "Женский";
+        else
+            throw new IllegalStateException("Unknown state of Sex instance");
+    }
 }
