@@ -49,7 +49,7 @@ public class DbDrugIntervalCompParam implements DbDrugIntervalCompParamLocal {
         for(DrugIntervalCompParam compParamn : params) {
             compParamn.setDose(dose);
             compParamn.setVoa(voa);
-            if(moa > 0) {
+            if(moa != null && moa > 0) {
                 compParamn.setMoa(dbRbMethodOfAdministrationLocal.getById(moa));
             }
             em.merge(compParamn);
