@@ -6,6 +6,7 @@ import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
 import org.joda.time.DateMidnight;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.*;
@@ -324,7 +325,7 @@ public class TFOMSServer implements TFOMSService.Iface {
         logger.info("#{} Call method -> getXMLRegisters(contract_id={}, beginDate={}, endDate={}, infisCode=\"{}\","
                         + "obsoleteInfisCode=\"{}\" smoNumber=\"{}\", primaryAccont={}, levelMO={})",
                 new Object[] { currentRequestNum, contractId, beginDate, endDate, organisationInfis,
-                obsoleteInfisCode, smoNumber, primaryAccount, levelMO }
+                        obsoleteInfisCode, smoNumber, primaryAccount, levelMO }
         );
         logger.info("PatientOptionalFields={}", patientOptionalFields);
         logger.info("SluchOptionalFields={}", sluchOptionalFields);
@@ -356,11 +357,9 @@ public class TFOMSServer implements TFOMSService.Iface {
         //Method RETURN result
         final XMLRegisters result = new XMLRegisters();
         //Дата формирования реестра
-        final Date formDate = new DateMidnight().toDate();
-
+        final Date formDate = new LocalDate().toDate();
         //http://helpdesk.korusconsulting.ru/browse/WMIS-84
-        //при выгрузке за прошедший месяц в номере счета и в названиях реестров фигурирует текущи месяц
-
+        //при выгрузке за прошедший месяц в номере счета и в названиях реестров фигурирует текущий месяц
         logger.debug("Forming date = \"{}\", packetNumber = {}", formDate, packetNumber);
         result.setData(DateConvertions.convertDateToUTCMilliseconds(formDate));
         //Значение тега PR_NOV
@@ -399,7 +398,8 @@ public class TFOMSServer implements TFOMSService.Iface {
                 organisation,
                 orgStructureIdList,
                 obsoleteInfisCode,
-                levelMO
+                levelMO,
+                smoNumber
         );
         if (logger.isDebugEnabled()) {
             logger.debug("Parameter map:\n {}", uploadParam.toString());
@@ -422,28 +422,16 @@ public class TFOMSServer implements TFOMSService.Iface {
         logger.debug("Persisted {}", resultAccount.getInfo());
 
         //Заполняем кэш запросов
+        queryChache.clearCache();
         queryChache.cacheQueries();
+        //Предвыборка некоторых идентификаторов
+        XMLHelper.preSelectParameters(uploadParam);
         queryChache.setStartedParameters(uploadParam);
 
+
         final boolean needForSpokesman = XMLHelper.isSpokesmanNeeded(personOptionalFields);
-
-        logger.info("############POLICLINIC#######################");
-        long startTime = System.currentTimeMillis();
-        XMLHelper.processPoliclinicSluch(
-                registry,
-                primaryAccount,
-                resultAccount,
-                organisationInfis,
-                obsoleteInfisCode,
-                patientOptionalFields,
-                personOptionalFields,
-                sluchOptionalFields,
-                needForSpokesman
-        );
-        logger.info("Processing policlinic Sluch finished in {} seconds", (float) (System.currentTimeMillis() - startTime) / 1000);
-
         logger.info("############STATIONARY#######################");
-        startTime = System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         XMLHelper.processStationarySluch(
                 registry,
                 primaryAccount,
@@ -457,11 +445,22 @@ public class TFOMSServer implements TFOMSService.Iface {
         );
         logger.info("Processing stationary Sluch finished in {} seconds", (float) (System.currentTimeMillis() - startTime) / 1000);
 
-        queryChache.printSummaryUsage();
-
+        logger.info("############POLICLINIC#######################");
+        startTime = System.currentTimeMillis();
+        XMLHelper.processPoliclinicSluch(
+                registry,
+                primaryAccount,
+                resultAccount,
+                organisationInfis,
+                obsoleteInfisCode,
+                patientOptionalFields,
+                personOptionalFields,
+                sluchOptionalFields,
+                needForSpokesman
+        );
+        logger.info("Processing policlinic Sluch finished in {} seconds", (float) (System.currentTimeMillis() - startTime) / 1000);
         //Формирование записей в таблице Account_AktInfo
         formAccount_AktInfo(resultAccount, registry, patientFileName, serviceFileName);
-
         if (registry.isEmpty()) {
             logger.info("End of #{}. Empty registry", currentRequestNum);
             throw TFOMSErrors.EMPTY_REGISTRY.getException();
@@ -475,9 +474,8 @@ public class TFOMSServer implements TFOMSService.Iface {
         final Schet resultSchet = ThriftStructBuilder.createSchet(organisation, formDate, newAccountNumber, "58000", resultAccount);
         result.setSchet(resultSchet);
         logger.debug("SHET = {}", resultSchet);
-
-
         int sluchCount = printUploadResultToLog(result);
+        queryChache.printSummaryUsage();
         logger.info("End of #{} getXMLRegisters. Return \"{}\" patients in result and \"{}\" sluch.",
                 new Object[] { currentRequestNum, result.getRegistrySize(), sluchCount });
         return result;
@@ -631,8 +629,8 @@ public class TFOMSServer implements TFOMSService.Iface {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> changeClientPolicy(patientId = {}, newPolicy = {}",
                 new Object[] { currentRequestNum,
-                patientId,
-                newPolicy });
+                        patientId,
+                        newPolicy });
         int result;
         ru.korus.tmis.core.entity.model.Patient patient;
         if (newPolicy.getNumber().length() > Constants.POLICY_NUMBER_MAX_LENGTH) {
@@ -647,8 +645,8 @@ public class TFOMSServer implements TFOMSService.Iface {
             patient = dbPatientBean.getPatientById(patientId);
             logger.debug("Patient founded. FIO= {} {} {}",
                     new Object[] { patient.getLastName(),
-                    patient.getFirstName(),
-                    patient.getPatrName() });
+                            patient.getFirstName(),
+                            patient.getPatrName() });
             final RbPolicyType newPolicyType = policyTypeBean.findByCode(String.valueOf(newPolicy.getPolicyTypeCode()));
             List<ClientPolicy> clientPolicies = clientPolicyBean.getActivePoliciesByClientAndType(patientId, newPolicyType);
             //Проверка на совпадение

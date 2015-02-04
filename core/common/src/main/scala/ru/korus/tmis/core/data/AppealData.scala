@@ -301,6 +301,8 @@ class AppealEntry extends I18nable {
   @BeanProperty
   var result: IdNameContainer = _
   @BeanProperty
+  var acheResult: IdNameContainer = _
+  @BeanProperty
   var tempInvalid: TempInvalidAppealContainer = _   //
   @BeanProperty
   var laboratory: LaboratoryPropertiesContainer = _ //

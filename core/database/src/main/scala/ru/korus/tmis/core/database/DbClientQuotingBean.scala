@@ -7,7 +7,7 @@ import grizzled.slf4j.Logging
 import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.{EntityManager, PersistenceContext}
 import java.util.Date
-import ru.korus.tmis.core.entity.model.{Mkb, Patient, Staff, ClientQuoting}
+import ru.korus.tmis.core.entity.model.{Mkb, Patient, Staff, ClientQuoting, Event}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.exception.CoreException
 import javax.swing.table.TableModel
@@ -82,6 +82,7 @@ class DbClientQuotingBean
                                   request: Int,
                                   mkb: Mkb,
                                   patient: Patient,
+                                  event: Event,
                                   sessionUser: Staff): ClientQuoting = {
 
     var cq: ClientQuoting = null
@@ -116,6 +117,7 @@ class DbClientQuotingBean
     cq.setDeleted(false)
     cq.setModifyPerson(sessionUser)
     cq.setModifyDatetime(now)
+    cq.setEvent(event)
     cq
   }
 

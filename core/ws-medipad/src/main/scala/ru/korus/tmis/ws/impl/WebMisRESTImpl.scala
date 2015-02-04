@@ -20,7 +20,7 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.entity.model.fd.APValueFlatDirectory
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.lock.ActionWithLockInfo
-import ru.korus.tmis.core.notification.NotificationBeanLocal
+import ru.korus.tmis.core.notification.{DbNotificationActionBeanLocal, NotificationBeanLocal}
 import ru.korus.tmis.core.patient._
 import ru.korus.tmis.core.values.InfectionControl
 import ru.korus.tmis.scala.util._
@@ -207,6 +207,10 @@ with CAPids {
 
   @EJB
   var monitoringBeanLocal: MonitoringBeanLocal = _
+
+  @EJB
+  var dbNotificationActionBeanLocal: DbNotificationActionBeanLocal = _
+
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -549,7 +553,7 @@ with CAPids {
 
   private def notifyAction(actions: java.util.List[Action], baseUri: URI): java.lang.Boolean = {
     actions.toList.foreach(action => {
-      notificationBeanLocal.sendNotification(action)
+      dbNotificationActionBeanLocal.pullDb()
     })
     true
   }

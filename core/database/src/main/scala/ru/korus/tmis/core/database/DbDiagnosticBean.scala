@@ -8,7 +8,7 @@ import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.{Speciality, Diagnosis, Diagnostic}
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import java.util.Date
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
@@ -28,7 +28,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
   var em: EntityManager = _
 
   @EJB
-  var appLock: AppLockBeanLocal = _
+  var appLock: AuthStorageBeanLocal = _
 
   @EJB
   var dbEventBean: DbEventBeanLocal = _

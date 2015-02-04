@@ -2,11 +2,13 @@ package ru.korus.tmis.core.pharmacy;
 
 import org.joda.time.DateTime;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -93,4 +95,13 @@ public interface DbPharmacyBeanLocal {
     List<Action> getVirtualActionsAfterDate(DateTime after);
 
     List<Action> getAssignmentForToday(DateTime dateTime);
+
+    /**
+     * Получения листа назначений для обращения
+     * @param event - обращение
+     * @return
+     */
+    List<Action> getPrescriptionForEvent(Event event);
+
+    List<Action> getPrescriptionForTimeInterval(Date begDate, Date endDate);
 }

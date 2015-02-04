@@ -28,13 +28,6 @@ public class QuotesRegistryRESTImpl {
     @EJB
     private WebMisREST wsImpl;
 
-    public QuotesRegistryRESTImpl(WebMisREST wsImpl, int eventId, String callback, AuthData auth) {
-        this.eventId = eventId;
-        this.auth = auth;
-        this.wsImpl = wsImpl;
-        this.callback = callback;
-    }
-
     /**
      * Сервис сохранения квоты <br>
      * url: /appeals/{appealId}/quotes

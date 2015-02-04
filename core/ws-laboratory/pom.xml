@@ -29,11 +29,10 @@
             <version>2.5.30.5-SNAPSHOT</version>
             <type>ejb</type>
         </dependency>
-
         <dependency>
-            <groupId>ru.korus.tmis.laboratory</groupId>
-            <artifactId>tmis-laboratory-tier</artifactId>
-            <version>2.5.30.5-SNAPSHOT</version>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-business</artifactId>
+            <version>${version.tmis.core}</version>
             <type>ejb</type>
         </dependency>
 

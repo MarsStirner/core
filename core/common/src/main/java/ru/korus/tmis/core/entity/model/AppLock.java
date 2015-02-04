@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 

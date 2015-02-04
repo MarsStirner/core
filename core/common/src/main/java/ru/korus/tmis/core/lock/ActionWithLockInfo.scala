@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.lock
 
-import ru.korus.tmis.core.entity.model.{Staff, Action}
+import ru.korus.tmis.core.entity.model.{Action, Staff}
 
 /**
  * Author:      Sergey A. Zagrebelny <br>

@@ -12,6 +12,7 @@ import collection.mutable.Buffer
 import java.util.{List => JList}
 import java.util
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import ru.korus.tmis.scala.util.ConfigManager._
 
 @Startup
 //@Interceptors(Array(classOf[LoggingInterceptor]))
@@ -72,5 +73,21 @@ with I18nable {
       new util.ArrayList(0)
     }
     resultList
+  }
+
+  def updateSetting(path: String, value: String): Boolean = {
+    if (setSetting(path, value)) {
+      info("Successfully changed setting: " + path + " : " + value)
+      var setting: Setting = getSetting(tmis_core, path)
+      if (setting == null) {
+        setting = new Setting
+        setting.setPath(path)
+        tmis_core.persist(setting)
+      }
+      setting.setValue(value)
+      tmis_core.flush()
+      true
+    }
+    false
   }
 }

@@ -42,7 +42,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                     }
                 }
                 if (cookies != null && countAuthToken == 1) {
-                    authData = authStorageBeanLocal.checkTokenCookies(request);
+                    authData = authStorageBeanLocal.checkTokenCookies(Arrays.asList(request.getCookies()));
                 } else if (countAuthToken > 1) {
                     clearCooke(response, cookies);
                 }

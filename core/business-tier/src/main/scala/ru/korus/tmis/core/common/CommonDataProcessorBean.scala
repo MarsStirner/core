@@ -5,7 +5,6 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.event._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
@@ -28,6 +27,7 @@ import ru.korus.tmis.core.entity.model.ActionStatus
 import javax.persistence.{EntityManager, PersistenceContext}
 import scala.List
 import scala.collection.JavaConverters._
+import scala.language.reflectiveCalls
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
@@ -211,9 +211,10 @@ class CommonDataProcessorBean
                  attribute.typeId = apt.getId;
                 }
               }
-              val ap = dbActionProperty.createActionPropertyWithDate(
+
+              val ap = if(attribute.typeId == null) null else dbActionProperty.createActionPropertyWithDate(
                 action,
-                attribute.typeId.intValue,
+                attribute.typeId.intValue, //TODO attribute.typeId ??????????
                 userData,
                 now)
               if (ap != null) {

@@ -29,7 +29,6 @@
             <version>2.5.30.5-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
-
         <dependency>
             <groupId>ru.korus.tmis.laboratory</groupId>
             <artifactId>tmis-ws-laboratory</artifactId>

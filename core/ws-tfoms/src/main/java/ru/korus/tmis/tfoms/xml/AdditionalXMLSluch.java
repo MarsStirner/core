@@ -3,15 +3,18 @@ package ru.korus.tmis.tfoms.xml;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.core.entity.model.Account;
 import ru.korus.tmis.core.entity.model.tfoms.Informationable;
-import ru.korus.tmis.core.entity.model.tfoms.UploadRow;
 import ru.korus.tmis.tfoms.DateConvertions;
 import ru.korus.tmis.tfoms.TFOMSServer;
-import ru.korus.tmis.tfoms.thriftgen.*;
+import ru.korus.tmis.tfoms.thriftgen.Sluch;
+import ru.korus.tmis.tfoms.thriftgen.SluchOptionalFields;
+import ru.korus.tmis.tfoms.thriftgen.Usl;
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Set;
 
 /**
  * Author: Upatov Egor <br>

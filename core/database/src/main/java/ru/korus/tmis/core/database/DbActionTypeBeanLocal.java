@@ -32,9 +32,6 @@ public interface DbActionTypeBeanLocal {
     ActionType getActionTypeByCode(String code)
             throws CoreException;
 
-    ActionType getActionTypeByFlatCode(String code)
-            throws CoreException;
-
     Set<ActionType> getActionTypesByCode(String code)
             throws CoreException;
 
@@ -43,4 +40,6 @@ public interface DbActionTypeBeanLocal {
 
     long getCountAllActionTypeWithFilter(Object filter)
             throws CoreException;
+
+    List<ActionType> getActionTypeByCode(List<String> flatCodeList);
 }

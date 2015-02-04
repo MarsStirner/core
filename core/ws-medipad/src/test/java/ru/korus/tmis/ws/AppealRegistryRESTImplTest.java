@@ -20,6 +20,7 @@ import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.auth.JsonPerson;
 import ru.korus.tmis.core.auth.UsersMgrLocal;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.database.DbEnumBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
@@ -73,6 +74,9 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     @EJB
     private DbEventBeanLocal eventBeanLocal = null;
+
+    @EJB
+    private DbEnumBeanLocal dbEnumBeanLocal = null;
 
     private DbUtil dbUtil;
 
@@ -242,6 +246,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test(dependsOnMethods = "testGetLisAcrossResults")
     public void testGetLabResearchResult() {
         try {
+            dbEnumBeanLocal.init();
             URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/appeals/189/diagnostics/laboratory/" + labTestLabResearchId);
             HttpURLConnection connection = WebMisBase.openConnection(url, labTestAuthData, "GET");
             connection.setRequestProperty("Accept", "application/x-javascript");
@@ -286,6 +291,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test
     public void testCreateBakLabResearch() {
         try {
+            dbEnumBeanLocal.init();
             //createTestUser();
             bakLabTestAuthData = WebMisBase.auth(authStorageBeanLocal);
             System.out.println(bakLabTestAuthData);

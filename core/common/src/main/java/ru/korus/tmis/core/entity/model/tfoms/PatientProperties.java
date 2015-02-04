@@ -6,6 +6,8 @@ import javax.persistence.*;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+import static ru.korus.tmis.core.entity.model.tfoms.ObjectParser.*;
+
 /**
  * Author: Upatov Egor <br>
  * Date: 05.02.14, 18:03 <br>
@@ -13,7 +15,7 @@ import java.util.Date;
  * Description: <br>
  */
 // @Entity
-public class PatientProperties implements  Informationable{
+public class PatientProperties implements Informationable {
     private static SimpleDateFormat datetimeFormat = new SimpleDateFormat("yyyy-MM-dd");
     //@Id
     @Column(name = "id")
@@ -45,17 +47,55 @@ public class PatientProperties implements  Informationable{
     private String VNOV_D;
 
     public PatientProperties(final Object[] args) {
-        if(args.length >= 9){
-            this.id = (Integer) args[0];
-            this.FAM = (String) args[1];
-            this.IM = (String) args[2];
-            this.OT = (String) args[3];
-            this.sex = (Integer) args[4];
-            this.DR = (Date) args[5];
-            this.MR = (String) args[6];
-            this.SNILS = (String) args[7];
-            this.VNOV_D = (String) args[8];
+        if (args.length >= 9) {
+            this.id = getIntegerValue(args[0]);
+            this.FAM = getStringValue(args[1]);
+            this.IM = getStringValue(args[2]);
+            this.OT = getStringValue(args[3]);
+            this.sex = getIntegerValue(args[4]);
+            this.DR = getDateValue(args[5]);
+            this.MR = getStringValue(args[6]);
+            this.SNILS = getStringValue(args[7]);
+            this.VNOV_D = getStringValue(args[8]);
         }
+    }
+
+    public PatientProperties(final Integer id,
+                             final String FAM,
+                             final String IM,
+                             final String OT,
+                             final Integer sex,
+                             final Date DR,
+                             final String MR,
+                             final String SNILS,
+                             final String VNOV_D
+    ) {
+        this.id = id;
+        this.FAM = FAM;
+        this.IM = IM;
+        this.OT = OT;
+        this.sex = sex;
+        this.DR = DR;
+        this.MR = MR;
+        this.SNILS = SNILS;
+        this.VNOV_D = VNOV_D;
+    }
+
+    public PatientProperties(final Integer id,
+                             final String FAM,
+                             final String IM,
+                             final String OT,
+                             final Integer sex,
+                             final Date DR
+    ) {
+        this.id = id;
+        this.FAM = FAM;
+        this.IM = IM;
+        this.OT = OT;
+        this.sex = sex;
+        this.DR = DR;
+        this.SNILS = "";
+        this.VNOV_D = "";
     }
 
     @Override
@@ -72,6 +112,11 @@ public class PatientProperties implements  Informationable{
         result.append(" VNOV_D=").append(VNOV_D);
         result.append(" ]");
         return result.toString();
+    }
+
+    @Override
+    public String toString(){
+        return getInfo();
     }
 
     public PatientProperties() {

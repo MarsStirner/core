@@ -6,7 +6,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.annotation.{Resource, PostConstruct}
 import javax.ejb._
 import javax.interceptor.Interceptors
-import javax.persistence.{EntityManager, PersistenceContext}
+import javax.persistence.{Query, EntityManager, PersistenceContext}
 import javax.transaction.UserTransaction
 
 import grizzled.slf4j.Logging
@@ -71,8 +71,10 @@ class DbEnumBean
   }
 
   def processEnums(em: EntityManager, e: Class[DbEnumerable]) = {
-    val enums = em
-      .createNamedQuery(e.getSimpleName + ".findAll")
+    val s: String = e.getSimpleName + ".findAll"
+    val namedQuery: Query = em
+      .createNamedQuery(s, e)
+    val enums = namedQuery
       .getResultList
       .map(_.asInstanceOf[DbEnumerable])
     enums.foreach(em.detach(_))

@@ -94,11 +94,8 @@ with CAPids {
   @EJB
   var dbTempInvalidBean: DbTempInvalidBeanLocal = _
 
-/*
-  @Inject
-  @Any
-  var actionEvent: javax.enterprise.event.Event[Notification] = _
-*/
+  @EJB
+  private var dbRbResultBeanLocal: DbRbResultBeanLocal = _
 
   private class IndexOf[T](seq: Seq[T]) {
     def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
@@ -388,9 +385,10 @@ with CAPids {
 
     //Создание/редактирование диагнозов (отд. записи)
     var map = Map.empty[String, java.util.Set[AnyRef]]
-    Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
-      i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
-      i18n("appeal.diagnosis.diagnosisKind.attendantMkb")).foreach(flatCode => {
+
+    var diagFlatCodes: Set[String] = Set()
+    appealData.data.diagnoses.foreach(f => if(f.getDiagnosisKind != null && !f.getDiagnosisKind.isEmpty) diagFlatCodes += f.getDiagnosisKind)
+    diagFlatCodes.foreach(flatCode => {
       val values = appealData.data.diagnoses.filter(p => p.getDiagnosisKind.compareTo(flatCode) == 0)
         .map(f => {
         var mkb: Mkb = null
@@ -403,7 +401,7 @@ with CAPids {
           f.getDescription,
           if (mkb != null) Integer.valueOf(mkb.getId.intValue) else -1,
           0, // characterId
-          0) // stageId
+          0)// stageId
       })
         .toSet[AnyRef]
       map += (flatCode -> values)
@@ -656,6 +654,18 @@ with CAPids {
       if(!et.isSexValid(patientSex))
         throw new CoreException(i18n("error.appeal.create.InvalidPatientSex").format(et.getName, et.getSex))
 
+      val result : RbResult = if (appealData.data.result == null) null
+      else
+        dbRbResultBeanLocal.getRbResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.result.code)
+
+      val acheResult : RbAcheResult = if (appealData.data.result == null) null
+      else
+        dbRbResultBeanLocal.getRbAcheResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.acheResult.code)
+
+      val execPerson = if (appealData.data.execPerson == null || appealData.data.execPerson.getId == null) null
+      else
+        dbStaff.getStaffById(appealData.data.execPerson.getId)
+
       event = dbEventBean.createEvent(id,
         //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
         appealData.data.appealType.eventType.getId,
@@ -663,6 +673,9 @@ with CAPids {
         appealData.data.rangeAppealDateTime.getStart(),
         /*appealData.data.rangeAppealDateTime.getEnd()*/ null,
         appealData.getData.getContract.getId,
+        result,
+        acheResult,
+        execPerson,
         authData)
     }
     else {
@@ -695,7 +708,12 @@ with CAPids {
 
     if (appealData.data.appealWithDeseaseThisYear != null && !appealData.data.appealWithDeseaseThisYear.isEmpty) {
       val value = appealData.data.appealWithDeseaseThisYear
-      val isPrim = if (value.contains("первично")) 1 else if (value.contains("повторно")) 2 else 0 //TODO: ! Материть Сашу
+      val isPrim = if (value.contains("первично")) 1
+      else if (value.contains("повторно")) 2
+      else if (value.contains("активное посещение")) 3
+      else if (value.contains("перевозка")) 4
+      else if (value.contains("амбулаторно")) 5
+      else 0 //TODO: ! Материть Сашу
       event.setIsPrimary(isPrim)
     } else event.setIsPrimary(0)
 
