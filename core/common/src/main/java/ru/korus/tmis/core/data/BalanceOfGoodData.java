@@ -43,5 +43,45 @@ public class BalanceOfGoodData {
         OrgStructure orgStructure = rbStorage == null ? null : rbStorage.getOrgStructure();
         orgStructureId = orgStructure == null ? null : orgStructure.getId();
     }
+
+    public Date getBestBefore() {
+        return bestBefore;
+    }
+
+    public void setBestBefore(Date bestBefore) {
+        this.bestBefore = bestBefore;
+    }
+
+    public byte getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(byte disabled) {
+        this.disabled = disabled;
+    }
+
+    public Date getUpdateDateTime() {
+        return updateDateTime;
+    }
+
+    public void setUpdateDateTime(Date updateDateTime) {
+        this.updateDateTime = updateDateTime;
+    }
+
+    public double getValue() {
+        return value;
+    }
+
+    public void setValue(double value) {
+        this.value = value;
+    }
+
+    public Integer getOrgStructureId() {
+        return orgStructureId;
+    }
+
+    public void setOrgStructureId(Integer orgStructureId) {
+        this.orgStructureId = orgStructureId;
+    }
 }
 
