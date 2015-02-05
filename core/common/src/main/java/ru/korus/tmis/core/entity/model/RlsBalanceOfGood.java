@@ -24,7 +24,9 @@ import javax.persistence.TemporalType;
 @Table(name = "rlsBalanceOfGoods")
 @NamedQueries(
 { @NamedQuery(name = "RlsBalanceOfGood.findByCodeAndStore",
-        query = "SELECT b FROM RlsBalanceOfGood b WHERE b.rlsNomen.id = :code AND b.rbStorage.uuid = :uuid AND b.bestBefore = :date")
+        query = "SELECT b FROM RlsBalanceOfGood b WHERE b.rlsNomen.id = :code AND b.rbStorage.uuid = :uuid AND b.bestBefore = :date"),
+  @NamedQuery(name = "RlsBalanceOfGood.findByCode",
+        query = "SELECT b FROM RlsBalanceOfGood b WHERE b.rlsNomen.id = :code ")
 })
 public class RlsBalanceOfGood implements Serializable {
     private static final long serialVersionUID = 1L;

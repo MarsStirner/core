@@ -473,9 +473,9 @@ public interface WebMisREST extends Serializable {
      */
     void deleteAutoSaveField(String id, AuthData auth) throws CoreException;
 
-    Nomenclature getRlsById(int id) throws CoreException;
+    DrugData getRlsById(int id) throws CoreException;
 
-    List<Nomenclature> getRlsByText(String text) throws CoreException;
+    List<DrugData> getRlsByText(String text) throws CoreException;
 
     List<RbLaboratory> getLabs();
 

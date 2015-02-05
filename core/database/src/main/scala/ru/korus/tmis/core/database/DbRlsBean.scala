@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.database
 
+import java.util
+
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging
@@ -8,7 +10,7 @@ import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.entity.model.Nomenclature
+import ru.korus.tmis.core.entity.model.{RlsBalanceOfGood, Nomenclature}
 import ru.korus.tmis.core.exception.CoreException
 
 @Interceptors(Array(classOf[LoggingInterceptor]))
@@ -56,4 +58,12 @@ class DbRlsBean
        SELECT r FROM Nomenclature r WHERE r.tradeLocalName LIKE :value
     """
 
+  override def getRlsBalanceOfGood(nomen: Nomenclature): util.List[RlsBalanceOfGood] = {
+    val l = em.
+      createNamedQuery("RlsBalanceOfGood.findByCode", classOf[RlsBalanceOfGood]).
+      setParameter("code", if(nomen == null) 0 else nomen.getId).
+      getResultList
+    l.foreach(em.detach(_))
+    l
+  }
 }

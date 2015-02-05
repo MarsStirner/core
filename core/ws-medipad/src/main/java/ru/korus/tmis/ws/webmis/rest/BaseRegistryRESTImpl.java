@@ -23,62 +23,96 @@ public class BaseRegistryRESTImpl implements Serializable {
 
     private static final long serialVersionUID = 2L;
 
-    @EJB private WebMisREST wsImpl;
+    @EJB
+    private WebMisREST wsImpl;
 
-    @EJB private PatientRegistryRESTImpl patientRegistryREST;
+    @EJB
+    private PatientRegistryRESTImpl patientRegistryREST;
 
-    @EJB private JobImpl jobImpl;
+    @EJB
+    private JobImpl jobImpl;
 
-    @EJB private PrescriptionsRESTImpl prescriptionsRESTImpl;
+    @EJB
+    private PrescriptionsRESTImpl prescriptionsRESTImpl;
 
-    @EJB private AppealsInfoRESTImpl appealsInfoREST;
+    @EJB
+    private AppealsInfoRESTImpl appealsInfoREST;
 
-    @EJB private RlsDataImpl rlsData;
+    @EJB
+    private RlsDataImpl rlsData;
 
-    @EJB private AutoSaveStorageREST autoSaveStorageREST;
+    @EJB
+    private AutoSaveStorageREST autoSaveStorageREST;
 
-    @EJB private HospitalBedsInfoRESTImpl hospitalBedsInfoREST;
+    @EJB
+    private HospitalBedsInfoRESTImpl hospitalBedsInfoREST;
 
-    @EJB private DiagnosticsInfoRESTImpl diagnosticsInfoREST;
+    @EJB
+    private DiagnosticsInfoRESTImpl diagnosticsInfoREST;
 
-    @EJB private DirectoryInfoRESTImpl directoryInfoREST;
+    @EJB
+    private DirectoryInfoRESTImpl directoryInfoREST;
 
-    @EJB private CustomInfoRESTImpl customInfoREST;
+    @EJB
+    private CustomInfoRESTImpl customInfoREST;
 
-    @EJB private APQLEndPoint apqlEndPoint;
+    @EJB
+    private APQLEndPoint apqlEndPoint;
 
 
     @Path("/")
-    public CustomInfoRESTImpl getCustomInfoRESTImpl() { return customInfoREST; }
+    public CustomInfoRESTImpl getCustomInfoRESTImpl() {
+        return customInfoREST;
+    }
 
     @Path("/dir/")
-    public DirectoryInfoRESTImpl getDirectoryInfoRESTImpl() { return directoryInfoREST; }
+    public DirectoryInfoRESTImpl getDirectoryInfoRESTImpl() {
+        return directoryInfoREST;
+    }
 
     @Path("/patients/")
-    public PatientRegistryRESTImpl getPatientRegistryRESTImpl() { return patientRegistryREST; }
+    public PatientRegistryRESTImpl getPatientRegistryRESTImpl() {
+        return patientRegistryREST;
+    }
 
     @Path("/appeals/")
-    public AppealsInfoRESTImpl getAppealsInfoRESTImpl() { return appealsInfoREST; }
+    public AppealsInfoRESTImpl getAppealsInfoRESTImpl() {
+        return appealsInfoREST;
+    }
 
     @Path("/diagnostics/")
-    public DiagnosticsInfoRESTImpl getDiagnosticsInfoRESTImpl() { return diagnosticsInfoREST; }
+    public DiagnosticsInfoRESTImpl getDiagnosticsInfoRESTImpl() {
+        return diagnosticsInfoREST;
+    }
 
     @Path("/hospitalbed/")
-    public HospitalBedsInfoRESTImpl getHospitalBedsInfoRESTImpl() { return hospitalBedsInfoREST; }
+    public HospitalBedsInfoRESTImpl getHospitalBedsInfoRESTImpl() {
+        return hospitalBedsInfoREST;
+    }
 
     @Path("/autosave")
-    public AutoSaveStorageREST getAutoSaveStorage() { return autoSaveStorageREST; }
+    public AutoSaveStorageREST getAutoSaveStorage() {
+        return autoSaveStorageREST;
+    }
 
     @Path("/rls")
-    public RlsDataImpl getRlsDataImpl() { return rlsData; }
+    public RlsDataImpl getRlsDataImpl() {
+        return rlsData;
+    }
 
     @Path("/prescriptions")
-    public PrescriptionsRESTImpl getPrescriptions() { return prescriptionsRESTImpl; }
+    public PrescriptionsRESTImpl getPrescriptions() {
+        return prescriptionsRESTImpl;
+    }
 
     @Path("/job")
-    public JobImpl getJobImpl() { return jobImpl; }
+    public JobImpl getJobImpl() {
+        return jobImpl;
+    }
 
     @Path("/apql")
-    public APQLEndPoint getAPQL() { return apqlEndPoint; }
+    public APQLEndPoint getAPQL() {
+        return apqlEndPoint;
+    }
 
 }

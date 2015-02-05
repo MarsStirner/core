@@ -1804,12 +1804,15 @@ with CAPids {
     dbAutoSaveStorageLocal.delete(id, auth.getUserId)
   }
   
-  override def getRlsById(id: Int): Nomenclature = {
-    dbRlsBean.getRlsById(id)
+  override def getRlsById(id: Int): DrugData = {
+    val n: Nomenclature = dbRlsBean.getRlsById(id)
+    new DrugData(n, dbRlsBean.getRlsBalanceOfGood(n))
   }
 
-  override def getRlsByText(text: String): ju.List[Nomenclature] = {
-    dbRlsBean.getRlsByText(text)
+  override def getRlsByText(text: String): ju.List[DrugData] = {
+    val res = new ju.LinkedList[DrugData]();
+    dbRlsBean.getRlsByText(text).foreach(n => {res.add(new DrugData(n, dbRlsBean.getRlsBalanceOfGood(n)))})
+    return res
   }
 
   def getLabs: java.util.List[RbLaboratory] = dbRbLaboratory.getAllLabs

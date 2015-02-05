@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.entity.model
 
 import javax.persistence._
+import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import scala.beans.BeanProperty
 import java.util.Date
 
@@ -13,6 +14,8 @@ import java.util.Date
 @Entity
 @Table(name = "vNomen")
 @NamedQueries(Array(new NamedQuery(name = "Nomenclature.findAll", query = "SELECT n FROM Nomenclature n")))
+@XmlType
+@XmlRootElement
 class Nomenclature {
 
   @Id

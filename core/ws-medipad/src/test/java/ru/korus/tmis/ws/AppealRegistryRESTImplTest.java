@@ -28,6 +28,8 @@ import ru.korus.tmis.core.patient.AppealBeanLocal;
 import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.testutil.DbUtil;
 import ru.korus.tmis.testutil.WebMisBase;
+import ru.korus.tmis.ws.webmis.rest.RlsDataImpl;
+import ru.korus.tmis.ws.webmis.rest.WebMisREST;
 
 import javax.annotation.Resource;
 import javax.ejb.EJB;
@@ -315,7 +317,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             labTestBakBarcode = a.getTakenTissue().getBarcode();
         } catch (Exception e) {
             e.printStackTrace();
-            assert (false);
+            Assert.fail();
         }
     }
 
@@ -338,7 +340,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             WebMisBase.getResponseData(connection, code);
         } catch (Exception e) {
             e.printStackTrace();
-            assert (false);
+            Assert.fail();
         }
     }
 
@@ -363,7 +365,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             WebMisBase.getResponseData(connection, code);
         } catch (Exception e) {
             e.printStackTrace();
-            assert (false);
+            Assert.fail();
         }
     }
 
@@ -388,7 +390,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             WebMisBase.getResponseData(connection, code);
         } catch (Exception e) {
             e.printStackTrace();
-            assert (false);
+            Assert.fail();
         }
     }
 
@@ -875,6 +877,33 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             Assert.assertNotNull(jsonActionId);
           //  createdActionId = jsonActionId.getAsInt();
 
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        }
+    }
+
+    @EJB
+    RlsDataImpl tmp;
+
+    //@Test
+    public void testGetRlsNomensByText(){
+        System.out.println("**************************** testGetActionTypes() started...");
+        try {
+            AuthData authData =WebMisBase.auth(authStorageBeanLocal);
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/rls/?text=%D0%B1%D1%80%D0%BE%D0%BC");
+            url = WebMisBase.addGetParam(url, "callback", WebMisBase.TST_CALLBACK);
+            url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
+            System.out.println("Send GET to..." + url.toString());
+            HttpURLConnection conn = WebMisBase.openConnectionGet(url, authData);
+            int code = WebMisBase.getResponseCode(conn);
+            String res = WebMisBase.getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            res = WebMisBase.removePadding(res, WebMisBase.TST_CALLBACK);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/getRlsNomensByText.json"))));
+            Assert.assertEquals(resJson, expected);
         } catch (Exception ex) {
             ex.printStackTrace();
             Assert.fail();
