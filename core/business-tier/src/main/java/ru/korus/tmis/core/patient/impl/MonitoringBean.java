@@ -30,10 +30,14 @@ public class MonitoringBean implements MonitoringBeanLocal {
 
     @Override
     public List<InfectionDrugMonitoring> getInfectionDrugMonitoring(Event event) throws CoreException {
-        Set documents = new HashSet<String>(){{
-            add("1_2_18"); add("1_2_19"); add("1_2_20"); add("1_2_22"); add("1_2_23");
+        Set documents = new HashSet<String>() {{
+            add("1_2_18");
+            add("1_2_19");
+            add("1_2_20");
+            add("1_2_22");
+            add("1_2_23");
         }};
-        List<Action> actionList = dbActionBean.getActionsByTypeCodeAndEventId(documents, event.getId(), "a.begDate DESC", null);
+        List<Action> actionList = dbActionBean.getActionsByTypeCodeAndEventId(documents, event.getId(), "a.begDate ASC", null);
         return getInfectionDrugMonitoring(actionList);
     }
 
@@ -87,10 +91,15 @@ public class MonitoringBean implements MonitoringBeanLocal {
     }
 
     private boolean isCompleteDrugMonitoring(InfectionDrugMonitoring oldMonitoring, InfectionDrugMonitoring newMonitoring) {
+        if (oldMonitoring.getBegDate() == null ||
+                oldMonitoring.getDrugName() == null ||
+                oldMonitoring.getTherapyName() == null) {
+            return false;
+        }
         if (newMonitoring.getEndDate() == null ||
-                oldMonitoring.getBegDate() != newMonitoring.getBegDate() ||
-                oldMonitoring.getDrugName() != newMonitoring.getDrugName() ||
-                oldMonitoring.getTherapyName() != newMonitoring.getTherapyName()) {
+                !oldMonitoring.getBegDate().equals(newMonitoring.getBegDate()) ||
+                !oldMonitoring.getDrugName().equals(newMonitoring.getDrugName()) ||
+                !oldMonitoring.getTherapyName().equals(newMonitoring.getTherapyName()) ) {
             return false;
         }
         return true;
