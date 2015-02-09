@@ -1,375 +1,52 @@
 {"requestData": {}, "data": {
-    "number": "",
-    "urgent": false,
-    "ambulanceNumber": "",
+    "appealType": {
+        "eventType": {
+            "code": "12"
+        }
+    },
+    "execPerson" : {
+        "id" : "7"
+    },
+    "hospitalizationType": {
+        "id": "220"
+    },
+    "contract": {
+        "number": "2009/5"
+    },
+
     "rangeAppealDateTime": {
         "start": 1402042420115,
         "end": 1402042458575
     },
-    "refuseAppealReason": "",
     "appealWithDeseaseThisYear": "повторно",
-    "patient": {
-        "version": 0,
-        "sex": "male",
-        "patientCode": 2,
-        "birthDate": 649454400000,
-        "birthPlace": "",
-        "snils": "",
-        "name": {
-            "first": "Сергей",
-            "last": "Милонов",
-            "middle": "Игоревич",
-            "raw": "Милонов Сергей Игоревич",
-            "fio": "Милонов С. И.",
-            "full": "Милонов Сергей Игоревич"
-        },
-        "address": {
-            "registered": {
-                "localityType": 1,
-                "kladr": false,
-                "house": "",
-                "building": "",
-                "flat": "",
-                "fullAddress": "Тюмень, улица Ленина, дом 56, квартира12",
-                "district": {
-                    "code": "",
-                    "name": "",
-                    "socr": "",
-                    "index": ""
-                },
-                "locality": {
-                    "code": "",
-                    "name": "",
-                    "socr": "",
-                    "index": ""
-                },
-                "street": {
-                    "code": "",
-                    "name": "",
-                    "socr": "",
-                    "index": ""
-                },
-                "city": {
-                    "code": "",
-                    "name": "",
-                    "socr": "",
-                    "index": ""
-                },
-                "republic": {
-                    "code": "",
-                    "name": "",
-                    "socr": "",
-                    "index": ""
-                }
-            },
-            "residential": {
-                "localityType": 1,
-                "kladr": true,
-                "house": "",
-                "building": "",
-                "flat": "",
-                "fullAddress": "Тюмень, улица Ленина, дом 56, квартира12",
-                "district": {
-                    "code": "",
-                    "name": "",
-                    "socr": "",
-                    "index": ""
-                },
-                "locality": {
-                    "code": "",
-                    "name": "",
-                    "socr": "",
-                    "index": ""
-                },
-                "street": {
-                    "code": "",
-                    "name": "",
-                    "socr": "",
-                    "index": ""
-                },
-                "city": {
-                    "code": "",
-                    "name": "",
-                    "socr": "",
-                    "index": ""
-                },
-                "republic": {
-                    "code": "7700000000000",
-                    "name": "Москва",
-                    "socr": "г",
-                    "index": ""
-                }
-            }
-        },
-        "phones": [
-            {
-                "number": "8(652)1234575",
-                "typeId": 7,
-                "typeName": "бабушка",
-                "comment": "Зинаида Павловна",
-                "id": 3
-            }
-        ],
-        "payments": [
-            {
-                "policyType": {
-                    "id": null
-                },
-                "series": "",
-                "number": null,
-                "comment": "",
-                "issued": "",
-                "smo": {},
-                "rangePolicyDate": {
-                    "start": "",
-                    "end": ""
-                }
-            }
-        ],
-        "relations": [
-            {
-                "name": {
-                    "first": "",
-                    "last": "",
-                    "middle": "",
-                    "raw": "",
-                    "fio": "",
-                    "full": "  "
-                },
-                "phones": [
-                    {
-                        "number": "",
-                        "typeId": "",
-                        "typeName": "",
-                        "comment": ""
-                    }
-                ],
-                "relationType": {
-                    "id": "",
-                    "name": ""
-                }
-            }
-        ],
-        "idCards": [
-            {
-                "series": "4005",
-                "number": "8745252",
-                "issued": "6 УФМС по району",
-                "rangeDocumentDate": {
-                    "start": 1360526400000,
-                    "end": ""
-                },
-                "docType": {
-                    "name": "ПАСПОРТ РФ",
-                    "id": 1
-                },
-                "id": 3
-            }
-        ],
-        "disabilities": [
-            {
-                "disabilityType": {
-                    "name": ""
-                },
-                "document": {
-                    "series": "",
-                    "number": "",
-                    "date": "",
-                    "comment": ""
-                },
-                "benefitsCategory": {
-                    "category": ""
-                },
-                "rangeDisabilityDate": {
-                    "start": "",
-                    "end": ""
-                }
-            }
-        ],
-        "occupations": [
-            {
-                "comment": "",
-                "socialStatus": {
-                    "status": "Неорганизован",
-                    "id": 319
-                },
-                "works": [
-                    {
-                        "preschoolNumber": null,
-                        "schoolNumber": null,
-                        "classNumber": null,
-                        "militaryUnit": null,
-                        "workingPlace": "",
-                        "position": "",
-                        "rank": null,
-                        "forceBranch": null,
-                        "relationType": null,
-                        "id": 2
-                    }
-                ],
-                "id": 2
-            }
-        ],
-        "medicalInfo": {
-            "blood": {
-                "group": "",
-                "checkingDate": "",
-                "id": -1
-            },
-            "allergies": [
-                {
-                    "substance": "",
-                    "degree": "",
-                    "checkingDate": "",
-                    "comment": ""
-                }
-            ],
-            "drugIntolerances": [
-                {
-                    "substance": "",
-                    "degree": "",
-                    "checkingDate": "",
-                    "comment": ""
-                }
-            ]
-        },
-        "citizenship": {
-            "first": {
-                "comment": "",
-                "socStatusType": {
-                    "name": ""
-                }
-            },
-            "second": {
-                "comment": "",
-                "socStatusType": {
-                    "name": ""
-                }
-            }
-        },
-        "id": 2,
-        "idCardsShortString": "ПАСПОРТ РФ:4005-8745252 "
+
+    "result": {
+        "code" : "5"
     },
-    "appealType": {
-        "eventType": {
-            "id": "53",
-            "name": "",
-            "value": "Дневной стационар(бюджет)"
-        },
-        "requestType": {
-            "id": "1",
-            "name": ""
-        },
-        "finance": {
-            "id": "1",
-            "name": ""
-        }
+
+    "acheResult": {
+        "code" : "105"
     },
-    "assignment": {
-        "directed": "",
-        "doctor": "",
-        "assignmentDate": "",
-        "number": ""
-    },
-    "hospitalizationType": {
-        "id": "220",
-        "name": ""
-    },
-    "hospitalizationPointType": {
-        "id": "134",
-        "name": ""
-    },
-    "deliveredType": "",
-    "deliveredAfterType": "",
-    "movingType": "может идти",
-    "stateType": "",
-    "physicalParameters": {
-        "bloodPressure": {
-            "left": {
-            },
-            "right": {
-            }
-        }
-    },
-    "branchType": {
-        "id": -1,
-        "name": ""
-    },
-    "placeType": {
-        "id": -1,
-        "name": ""
-    },
+
     "diagnoses": [
         {
-            "diagnosisKind": "diagReceivedMkb",
-            "description": "",
+            "diagnosisKind": "mainDiagMkb",
             "mkb": {
-                "code": "",
-                "diagnosis": "",
-                "parent": null
+                "code": "I10"
             }
         },
         {
-            "diagnosisKind": "aftereffectMkb",
-            "description": "",
+            "diagnosisKind": "assocDiagMkb",
             "mkb": {
-                "code": "",
-                "diagnosis": "",
-                "parent": null
+                "code": "E21"
             }
         },
         {
-            "diagnosisKind": "attendantMkb",
-            "description": "",
+            "diagnosisKind": "diagComplMkb",
             "mkb": {
-                "code": "",
-                "diagnosis": "",
-                "parent": null
+                "code": "C43"
             }
         }
-    ],
-    "agreedDoctor": "",
-    "agreedType": {
-    },
-    "injury": "",
-    "hospitalizationWith": [],
-    "havePrimary": false,
-    "setPerson": {
-        "doctor": {
-            "name": {
-                "first": "",
-                "last": "",
-                "middle": "",
-                "raw": "",
-                "fio": "",
-                "full": "  "
-            },
-            "specs": {
-                "name": {}
-            },
-            "department": {
-                "name": ""
-            }
-        },
-        "department": {
-            "name": ""
-        }
-    },
-    "contract": {
-        "number": "2009/5",
-        "begDate": 1262293200000,
-        "finance": {
-            "id": 1,
-            "name": "Бюджет"
-        },
-        "id": 61
-    },
-    "leaved": {
-        "nextHospDate": null,
-        "nextHospDepartment": null,
-        "nextHospFinanceType": null
-    },
-    "orgStructStay": "28",
-    "reopening": "Нет"
+    ]
 
 }}

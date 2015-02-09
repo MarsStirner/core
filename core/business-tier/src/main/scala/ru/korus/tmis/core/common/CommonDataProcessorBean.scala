@@ -191,7 +191,7 @@ class CommonDataProcessorBean
           if (plannedEndDate != null) action.setPlannedEndDate(plannedEndDate)
 
 
-          val actionType = dbActionType.getActionTypeById(entity.id.intValue)
+          val actionType = dbActionType.getActionTypeById(entity.typeId.intValue)
           val aw = new ActionWrapper(action)
 
           // Collect all ActionProperties sent from the client

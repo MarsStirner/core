@@ -96,6 +96,21 @@ class DbActionTypeBean
     }
   }
 
+  //Вернем ActionType по значению flatCode
+  def getActionTypeByFlatCode(code: String) = {
+    val result = em.createQuery(ActionTypeByFlatCodeQuery, classOf[ActionType])
+      .setParameter("flatCode", code)
+      .getResultList
+
+    if (result != null && result.size() > 0) {
+      val at = result(0)
+      em.detach(at)
+      at
+    } else {
+      null
+    }
+  }
+
   def getActionTypesByCode(code: String) = {
     val result = em.createQuery(ActionTypeByCodeQuery, classOf[ActionType])
       .setParameter("code", code)
@@ -143,6 +158,16 @@ class DbActionTypeBean
   def getActionTypeByCode(flatCodeList: util.List[String]): util.List[ActionType] = {
     em.createNamedQuery("ActionType.findByFlatCodes", classOf[ActionType]).setParameter("flatCodes", flatCodeList).getResultList
   }
+
+  val ActionTypeByFlatCodeQuery = """
+    SELECT at
+    FROM
+      ActionType at
+    WHERE
+      at.flatCode = :flatCode
+    AND
+      at.deleted = 0
+                                  """
 
   val ActionTypeByIdQuery = """
     SELECT at

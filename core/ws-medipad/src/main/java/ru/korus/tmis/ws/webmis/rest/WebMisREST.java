@@ -250,7 +250,7 @@ public interface WebMisREST extends Serializable {
      */
     String getEventTypes(ListDataRequest request, AuthData authData) throws CoreException;
 
-    List<ContractContainer> getContracts(int eventTypeId, boolean showDeleted, boolean showExpired);
+    List<ContractContainer> getContracts(int eventTypeId, String eventTypeCode, boolean showDeleted, boolean showExpired);
 
     /**
      * Сервис на получении списка пациентов из открытых госпитализаций, которые лежат на койке

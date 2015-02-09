@@ -860,10 +860,23 @@ with CAPids {
 
   }
 
+  def initActionTypeIdByFlatCode(data: JSONCommonData) {
+    data.getData.foreach(d => {
+      if (d.getFlatCode != null && !d.getFlatCode.isEmpty) {
+        val at = actionTypeBean.getActionTypeByFlatCode(d.getFlatCode())
+        if (d.getTypeId == null && at != null)
+          d.setTypeId(at.getId)
+      }
+    })
+
+  }
+
   //создание первичного мед. осмотра
   def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI) = {
 
     validateDocumentsAvailability(eventId)
+
+    initActionTypeIdByFlatCode(data);
 
     val isPrimary = data.getData.find(ce => ce.getTypeId.compareTo(i18n("db.actionType.primary").toInt) == 0).orNull != null //Врач прописывается только для первичного осмотра  (ид=139)
     if (isPrimary)
@@ -1620,17 +1633,13 @@ with CAPids {
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
 
-  def getContracts(eventTypeId: Int, showDeleted: Boolean, showExpired: Boolean) = {
-    if (eventTypeId < 1)
-      throw new CoreException("Идентификатор типа события не может быть меньше 1")
-
-    val e = dbEventTypeBean.getEventTypeById(eventTypeId)
+  def getContracts(eventTypeId: Int, eventTypeCode: String, showDeleted: Boolean, showExpired: Boolean) = {
+    val e = if(eventTypeCode != null && !eventTypeCode.isEmpty()) dbEventTypeBean.getEventTypeByCode(eventTypeCode) else dbEventTypeBean.getEventTypeById(eventTypeId)
     val result = dbContractBean.getContractsByEventTypeId(eventTypeId, e.getFinance.getId, showDeleted, showExpired)
     if (result == null)
       new ju.ArrayList[ContractContainer]()
     else
       result.map(x => new ContractContainer(x)).asJava
-
   }
 
   def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
