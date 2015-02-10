@@ -703,7 +703,7 @@ with CAPids {
 
       val endDateProperty = lastAction.getActionProperties
         .find(ap => ap.getType.getCode != null
-                    && ap.getType.getCode.startsWith("infect")
+                    && ap.getType.getCode.startsWith("infect" + drugType)
                     && ap.getType.getCode.endsWith("EndDate_" + apt.getCode.last))
 
       val endDateValue: Date = {
@@ -810,7 +810,7 @@ with CAPids {
           }
           outVal
         }
-        else if (IC.drugTherapyProperties.contains(apt.getCode)) {
+        else if (IC.EmpiricTherapyProperties.contains(apt.getCode)) {
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
           for (e <- events) {
