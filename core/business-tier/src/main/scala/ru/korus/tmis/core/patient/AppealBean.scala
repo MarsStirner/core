@@ -71,6 +71,10 @@ with CAPids {
   var dbClientRelation: DbClientRelationBeanLocal = _
 
   @EJB
+  var dbEventClientRelation: DbEventClientRelationBeanLocal = _
+
+
+  @EJB
   var dbClientQuoting: DbClientQuotingBeanLocal = _
 
   @EJB
@@ -145,7 +149,6 @@ with CAPids {
     //1. Event и проверка данных на валидность
     val newEvent = this.verificationData(patientId, authData, appealData, true)
     dbManager.persist(newEvent)
-    dbManager.detach(newEvent)
     val res = insertOrModifyAppeal(appealData, newEvent, true, authData)
     updateTempInvalid(newEvent, appealData.data.tempInvalid, authData)
     res
@@ -297,7 +300,6 @@ with CAPids {
       })
 
       if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
-      dbManager.detach(action)
       /*
      if (!flgCreate) {
        val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
@@ -346,7 +348,6 @@ with CAPids {
         flgEventRewrite = true
       }
       if (flgEventRewrite == true) {
-        newEvent.setVersion(newEvent.getVersion)
         dbManager.merge(newEvent)
       }
     }
@@ -372,7 +373,12 @@ with CAPids {
             parent,
             patient,
             authData.user)
+
+          dbEventClientRelation.insertOrUpdate(newEvent, tempServerRelation);
+          em.flush()
           setRel += tempServerRelation
+        } else {
+          dbEventClientRelation.insertOrUpdate(newEvent, serverRelation);
         }
       })
     }
@@ -698,9 +704,9 @@ with CAPids {
 
       event.setModifyDatetime(now)
       event.setModifyPerson(authData.user)
+      dbManager.merge(event)
       event.setSetDate(appealData.data.rangeAppealDateTime.getStart())
       event.setEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId))
-      event.setVersion(appealData.getData().getVersion())
     }
 
     val hosptype = if (appealData.data.hospitalizationType != null) appealData.data.hospitalizationType.getId else 0
@@ -951,7 +957,6 @@ with CAPids {
         null
       }
       case size => {
-        diagType.foreach(dt => em.detach(dt))
         diagType(0)
       }
     }
@@ -966,7 +971,6 @@ with CAPids {
         null
       }
       case size => {
-        rbResult.foreach(res => em.detach(res))
         rbResult(0)
       }
     }
@@ -1257,7 +1261,6 @@ with CAPids {
       event.setExecutor(execPerson)
       event.setModifyDatetime(new Date())
       event.setModifyPerson(authData.getUser)
-      event.setVersion(event.getVersion)
       dbManager.merge(event)
 
       true

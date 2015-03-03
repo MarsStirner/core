@@ -10,6 +10,17 @@
     "hospitalizationType": {
         "id": "220"
     },
+
+    "hospitalizationWith": [{
+        "relative" : {
+            "id": 1
+        },
+        "relativeType" : {
+            "id": 11
+        },
+        "note": "text"
+    }],
+
     "contract": {
         "number": "2009/5"
     },

@@ -87,9 +87,6 @@ class DbContractBean
           i18n("error.ContractNotFound"))
       }
       case size => {
-        result.foreach((r) => {
-          em.detach(r)
-        })
         result(0)
       }
     }

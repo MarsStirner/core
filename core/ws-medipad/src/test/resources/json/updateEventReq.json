@@ -1,0 +1,41 @@
+{"requestData": {}, "data": {
+    "appealType": {
+        "eventType": {
+            "id": 53
+        }
+    },
+    "execPerson": {
+        "id": 339
+    },
+    "hospitalizationType": {
+        "id": "220"
+    },
+    "contract": {
+        "number": "2012/3"
+    },
+    "rangeAppealDateTime": {
+        "start": 1422925200000,
+        "end": 1423702784000
+    },
+    "appealWithDeseaseThisYear": "первичное",
+    "result": {
+        "code": "301"
+    },
+    "acheResult": {
+        "code": "302"
+    },
+    "diagnoses": [
+        {
+            "diagnosisKind": "mainDiagMkb",
+            "mkb": {
+                "code": "Z33"
+            }
+        },
+        {
+            "diagnosisKind": "assocDiagMkb",
+            "mkb": {
+                "code": "O84.0"
+            }
+        }
+    ]
+} }

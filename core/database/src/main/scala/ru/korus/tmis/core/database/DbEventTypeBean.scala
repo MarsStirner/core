@@ -33,7 +33,6 @@ class DbEventTypeBean
         ConfigManager.ErrorCodes.EventTypeNotFound,
         i18n("error.eventTypeNotFound").format(id))
     } else {
-      result.foreach(em.detach(_))
       result.iterator().next()
     }
   }

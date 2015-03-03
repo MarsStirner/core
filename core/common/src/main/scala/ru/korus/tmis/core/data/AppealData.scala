@@ -75,7 +75,7 @@ class AppealData extends I18nable {
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            requestData: AppealRequestData,
            postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int,
-           mRelationByRelativeId: (Int)=> ClientRelation,
+           eventClientRelations: java.util.List[EventClientRelation],
            mAdmissionDiagnosis: (Int , java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            contract: Contract,
            currentDepartment: OrgStructure,
@@ -134,9 +134,9 @@ class AppealData extends I18nable {
       val extractId = postProcessing(event.getId.intValue(), setExtractATIds)
       val extractProperties = if (mAdmissionDiagnosis!=null && extractId>0) mAdmissionDiagnosis(extractId, setExtractIds) else null
 
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, null, contract, currentDepartment, diagnostics, tempInvalid)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), eventClientRelations, admissions, extractProperties, null, contract, currentDepartment, diagnostics, tempInvalid)
     } else {
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, null, contract, currentDepartment, diagnostics, tempInvalid)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, eventClientRelations, null, null, null, contract, currentDepartment, diagnostics, tempInvalid)
      }
   }
 }
@@ -348,7 +348,7 @@ class AppealEntry extends I18nable {
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            havePrimary: Boolean,
-           mRelationByRelativeId: (Int)=> ClientRelation,
+           eventClientRelations: java.util.List[EventClientRelation],
            admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
            extractProperties: java.util.Map[ActionProperty, java.util.List[APValue]],
            corrList: java.util.List[RbCoreActionProperty],
@@ -463,23 +463,8 @@ class AppealEntry extends I18nable {
     else
       this.hospitalizationChannelType = new IdNameContainer(-1, exValue.get(0).asInstanceOf[String])
 
-    if (mRelationByRelativeId!=null){
-      val exRepresantative = this.extractValuesInNumberedMap(LinkedHashSet(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.hospitalizationWith").toInt :java.lang.Integer,
-                                                                           ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.note").toInt :java.lang.Integer), values)
-      val relativeIds = exRepresantative.get("0")
-      val notes = exRepresantative.get("1")
 
-      for(i <- 0 until relativeIds.size)  {
-        if(relativeIds.get(i).isInstanceOf[java.lang.Integer] && relativeIds.get(i).asInstanceOf[java.lang.Integer]!=null){
-          val representativeId = relativeIds.get(i).asInstanceOf[java.lang.Integer].intValue()
-          if (representativeId>0){
-            val clientRelation = mRelationByRelativeId(representativeId)
-            val note = if (i<notes.size()) notes.get(i).asInstanceOf[String] else ""
-            this.hospitalizationWith += new LegalRepresentativeContainer(clientRelation, note)
-          }
-        }
-      }
-    }
+    eventClientRelations.foreach(ecr =>  this.hospitalizationWith += new LegalRepresentativeContainer(ecr.getClientRelation, ""))
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.deliveredType").toInt :java.lang.Integer), values).get("0")
     this.deliveredType = exValue.get(0).asInstanceOf[String]

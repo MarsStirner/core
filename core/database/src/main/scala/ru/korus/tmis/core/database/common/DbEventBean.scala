@@ -79,7 +79,6 @@ class DbEventBean
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEventById(id: Int) = {
     val e = em.find(classOf[Event], id)
-    if(e != null) em.detach(e)
     e
   }
 
@@ -89,7 +88,6 @@ class DbEventBean
       .setParameter("id", eventId)
       .getResultList
 
-    result.foreach(em.detach(_))
     new java.util.HashSet(result)
   }
 
@@ -107,7 +105,7 @@ class DbEventBean
       .asInstanceOf[Option[OrgStructure]]
 
     result match {
-      case Some(org) => em detach org; org
+      case Some(org) => org
       case None => throw new CoreException("OrgStructure for Event id = " + eventId + " not found")
     }
   }
@@ -119,11 +117,12 @@ class DbEventBean
     val eventType = this.getEventTypeById(appealTypeId)
 
     val now = new Date
+    val contract: Contract = contractBean.getContractById(contractId)
     val newEvent = new Event
     //1. Инсертим /Инициализируем структуру Event по пациенту
     try {
       //Анализ и инкремент счетчика
-      if (eventType.getCounterId != null) {
+      val externalId = if (eventType.getCounterId != null) {
         val rbCounter = rbCounterBean.getRbCounterById(eventType.getCounterId.intValue())
         val result = em.merge(rbCounterBean.setRbCounterValue(rbCounter, rbCounter.getValue.intValue() + 1))
         //берем коунтер и получаем НИБ
@@ -131,9 +130,12 @@ class DbEventBean
           .get(Calendar.YEAR).toString
           .concat(rbCounter.getSeparator)
           .concat(rbCounter.getValue.toString)
-        newEvent.setExternalId(externalId) //НИБ
+        externalId
+      } else {
+        ""
       }
 
+      newEvent.setExternalId(if (externalId == null) "" else externalId) //НИБ
       newEvent.setPatient(patient)
       newEvent.setEventType(eventType)
       newEvent.setCreateDatetime(now)
@@ -149,7 +151,7 @@ class DbEventBean
       newEvent.setDeleted(false)
       newEvent.setPayStatus(0)
       //val contract = contractBean.getContractForEventType(eventType)
-      newEvent.setContract(contractBean.getContractById(contractId))
+      newEvent.setContract(contract)
       newEvent.setUuid(dbUUIDBeanLocal.createUUID())
       newEvent.setResult(result)
       newEvent.setAcheResult(acheResult)
@@ -211,7 +213,6 @@ class DbEventBean
       .getResultList
 
     val et = result(0)
-    result.foreach(em.detach(_))
     et
   }
 
@@ -222,7 +223,6 @@ class DbEventBean
     val result = em.createQuery(EventByPatientQuery, classOf[Event])
       .setParameter("patient", patient)
       .getResultList
-    result.foreach(em.detach(_))
     result
   }
 
@@ -235,7 +235,6 @@ class DbEventBean
       .setParameter("patient", patient)
       .setParameter("actionType", actionType)
       .getResultList
-    result.foreach(em.detach(_))
     result
   }
 
@@ -264,7 +263,6 @@ class DbEventBean
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList
-    result.foreach(em.detach(_))
     result
   }
 
@@ -302,7 +300,6 @@ class DbEventBean
     }
 
     val result = typed.getResultList
-    result.foreach(e=>em.detach(e))
     result
   }
 
@@ -313,7 +310,6 @@ class DbEventBean
       .setParameter("code", code)
       .getResultList
     val et = result(0)
-    result.foreach(em.detach(_))
     et
   }
 

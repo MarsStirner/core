@@ -211,6 +211,9 @@ with CAPids {
   @EJB
   var dbNotificationActionBeanLocal: DbNotificationActionBeanLocal = _
 
+  @EJB
+  var dbEventClientRelation: DbEventClientRelationBeanLocal = _
+
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -306,7 +309,8 @@ with CAPids {
       val street = patientBean.getKLADRStreetForPatient(patient)
       val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(ide)
 
-      new AppealData(positionE._1,
+      val event: Event = positionE._1
+      new AppealData(event,
         positionA._1,
         values,
         null,
@@ -315,7 +319,7 @@ with CAPids {
         street,
         null,
         actionBean.getLastActionByActionTypeIdAndEventId, //havePrimary
-        dbClientRelation.getClientRelationByRelativeId,
+        dbEventClientRelation.getByEvent(event),
         null,
         if (positionA._1.getContractId != null) {
           dbContractBean.getContractById(positionA._1.getContractId.intValue())
@@ -324,7 +328,7 @@ with CAPids {
         },
         currentDepartment,
         dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
-        dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
+        dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue())
       )
     } else {
       throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
@@ -345,7 +349,8 @@ with CAPids {
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
-    new AppealData(positionE._1,
+    val event: Event = positionE._1
+    new AppealData(event,
       positionA._1,
       values,
       null,
@@ -354,16 +359,16 @@ with CAPids {
       null,
       null,
       actionBean.getLastActionByActionTypeIdAndEventId, //havePrimary
-      dbClientRelation.getClientRelationByRelativeId,
+      dbEventClientRelation.getByEvent(event),
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes,
-      if (positionE._1.getContract != null) {
-        dbContractBean.getContractById(positionE._1.getContract.getId.intValue())
+      if (event.getContract != null) {
+        dbContractBean.getContractById(event.getContract.getId.intValue())
       } else {
         null
       },
       currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
-      dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
+      dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue())
     )
   }
 
@@ -380,7 +385,8 @@ with CAPids {
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
-    mapper.writeValueAsString(new AppealData(positionE._1,
+    val event: Event = positionE._1
+    mapper.writeValueAsString(new AppealData(event,
       positionA._1,
       values,
       actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes,
@@ -389,7 +395,7 @@ with CAPids {
       street,
       null,
       actionBean.getLastActionByActionTypeIdAndEventId, //havePrimary
-      dbClientRelation.getClientRelationByRelativeId,
+      dbEventClientRelation.getByEvent(event),
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes, //в тч Admission Diagnosis
       if (positionA._1.getContractId != null) {
         dbContractBean.getContractById(positionA._1.getContractId.intValue())
@@ -398,7 +404,7 @@ with CAPids {
       },
       currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
-      dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
+      dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue())
     ))
 
   }

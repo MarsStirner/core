@@ -115,7 +115,7 @@ class DbManagerBean
       case e: OptimisticLockException => {
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
-          i18n("error.entryIsChanged"))
+          i18n("error.entryIsChanged"), e)
       }
     }
   }
@@ -127,10 +127,10 @@ class DbManagerBean
       trace("Merged " + entity)
       result
     } catch {
-      case entity: OptimisticLockException => {
+      case e: OptimisticLockException => {
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
-          i18n("error.entryIsChanged"))
+          i18n("error.entryIsChanged"), e)
       }
     }
   }
@@ -145,7 +145,7 @@ class DbManagerBean
       case e: OptimisticLockException => {
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
-          i18n("error.entryIsChanged"))
+          i18n("error.entryIsChanged"), e)
       }
     }
   }
