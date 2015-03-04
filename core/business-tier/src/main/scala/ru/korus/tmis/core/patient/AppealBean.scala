@@ -3,6 +3,7 @@ package ru.korus.tmis.core.patient
 import java.util
 
 import grizzled.slf4j.Logging
+import ru.korus.tmis.core.database.finance.DbEventLocalContractLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless}
@@ -100,6 +101,9 @@ with CAPids {
 
   @EJB
   private var dbRbResultBeanLocal: DbRbResultBeanLocal = _
+
+  @EJB
+  private var dbEventLocalContract: DbEventLocalContractLocal = _
 
   private class IndexOf[T](seq: Seq[T]) {
     def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
@@ -429,6 +433,9 @@ with CAPids {
     ).toList
     dbManager.mergeAll(mergedItems)
     dbManager.persistAll(persistedItems)
+
+    if (appealData.data.getPayer != null
+        && appealData.data.getPaymentContract != null) dbEventLocalContract.insertOrUpdate(newEvent, appealData.data.getPayer, appealData.data.getPaymentContract )
 
     newEvent.getId.intValue()
   }

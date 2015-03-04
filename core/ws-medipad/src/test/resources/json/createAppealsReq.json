@@ -58,6 +58,23 @@
                 "code": "C43"
             }
         }
-    ]
+    ],
+
+    "payer": {
+        "firstName": "",
+        "lastName": "",
+        "middleName": "",
+        "documentType": "",
+        "documentSeriesLeft": "",
+        "documentSeriesRight": "",
+        "documentNumber": "",
+        "company": "",
+        "address": ""
+    },
+
+    "paymentContract": {
+        "number": "1",
+        "date": 1402042458575
+    }
 
 }}

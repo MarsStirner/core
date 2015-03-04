@@ -16,6 +16,7 @@ import ru.korus.tmis.core.data.adapters.ISODate
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.bak.{DbBbtResponseBeanLocal, DbBbtResultOrganismBeanLocal, DbBbtResultTextBeanLocal}
 import ru.korus.tmis.core.database.common._
+import ru.korus.tmis.core.database.finance.DbEventLocalContractLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.entity.model.fd.APValueFlatDirectory
 import ru.korus.tmis.core.exception.CoreException
@@ -214,6 +215,9 @@ with CAPids {
   @EJB
   var dbEventClientRelation: DbEventClientRelationBeanLocal = _
 
+  @EJB
+  var dbEventLocalContractLocal: DbEventLocalContractLocal = _
+
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -310,7 +314,8 @@ with CAPids {
       val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(ide)
 
       val event: Event = positionE._1
-      new AppealData(event,
+
+      new AppealData( event,
         positionA._1,
         values,
         null,
@@ -328,8 +333,8 @@ with CAPids {
         },
         currentDepartment,
         dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
-        dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue())
-      )
+        dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue()),
+        dbEventLocalContractLocal.getByEventId(event.getId))
     } else {
       throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
     }
@@ -368,7 +373,8 @@ with CAPids {
       },
       currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
-      dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue())
+      dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue()),
+      dbEventLocalContractLocal.getByEventId(event.getId)
     )
   }
 
@@ -386,7 +392,15 @@ with CAPids {
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
     val event: Event = positionE._1
-    mapper.writeValueAsString(new AppealData(event,
+    val eventLocalContract: EventLocalContract = dbEventLocalContractLocal.getByEventId(event.getId)
+    val template: TempInvalid = dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue())
+    val contract: Contract = if (positionA._1.getContractId != null) {
+      dbContractBean.getContractById(positionA._1.getContractId.intValue())
+    } else {
+      null
+    }
+
+    val appealData: AppealData = new AppealData(event,
       positionA._1,
       values,
       actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes,
@@ -397,15 +411,13 @@ with CAPids {
       actionBean.getLastActionByActionTypeIdAndEventId, //havePrimary
       dbEventClientRelation.getByEvent(event),
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes, //в тч Admission Diagnosis
-      if (positionA._1.getContractId != null) {
-        dbContractBean.getContractById(positionA._1.getContractId.intValue())
-      } else {
-        null
-      },
+      contract,
       currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
-      dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue())
-    ))
+      template,
+      eventLocalContract)
+
+    mapper.writeValueAsString(appealData)
 
   }
 

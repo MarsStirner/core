@@ -61,7 +61,7 @@ class AppealData extends I18nable {
    * @param street Информация об адресах Street
    * @param requestData Данные из запроса с клиента как AppealRequestData
    * @param postProcessing Делегируемый метод по поиску идентификатора первичного осмотра по идентификатору обращения.
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+
    * @param contract Контракт
    * @param mDiagnosticList Делегируемый метод по получению диагностик госпитализации
    */
@@ -69,7 +69,7 @@ class AppealData extends I18nable {
   def this(event: Event,
            appeal: Action,
            values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]],
-           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int, Boolean) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
+           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int, Boolean) => java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
@@ -80,9 +80,11 @@ class AppealData extends I18nable {
            contract: Contract,
            currentDepartment: OrgStructure,
            mDiagnosticList: (Int, java.util.Set[String]) => java.util.List[Diagnostic],
-           tempInvalid: TempInvalid) {
+           tempInvalid: TempInvalid,
+           eventLocalContract: EventLocalContract) {
     this ()
-    this.requestData = requestData
+
+    setRequestData(requestData)
 
     val setMovingIds = JavaConversions.setAsJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
                                                      i18n("db.apt.moving.codes.orgStructTransfer")))
@@ -134,9 +136,9 @@ class AppealData extends I18nable {
       val extractId = postProcessing(event.getId.intValue(), setExtractATIds)
       val extractProperties = if (mAdmissionDiagnosis!=null && extractId>0) mAdmissionDiagnosis(extractId, setExtractIds) else null
 
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), eventClientRelations, admissions, extractProperties, null, contract, currentDepartment, diagnostics, tempInvalid)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), eventClientRelations, admissions, extractProperties, null, contract, currentDepartment, diagnostics, tempInvalid, eventLocalContract)
     } else {
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, eventClientRelations, null, null, null, contract, currentDepartment, diagnostics, tempInvalid)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, eventClientRelations, null, null, null, contract, currentDepartment, diagnostics, tempInvalid, eventLocalContract)
      }
   }
 }
@@ -320,6 +322,10 @@ class AppealEntry extends I18nable {
   var reopening: String = _                         //Повторное обращение
   @BeanProperty
   var context: String = _                           //Контекст печати
+  @BeanProperty
+  var payer: PayerInfo = _                          //Плательщик
+  @BeanProperty
+  var paymentContract: PaymentContractInfo = _
 
   /**
    * Конструктор класса AppealEntry
@@ -334,7 +340,7 @@ class AppealEntry extends I18nable {
    * @param map Информация об адресах КЛАДР
    * @param street Информация об адресах Street
    * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   * @param eventClientRelations представители
    * @param extractProperties Список свойств действия с данными из выписки
    * @param corrList Список RbCoreActionProperty для поиска соответствия идентификаторов
    * @param contract Контракт
@@ -355,7 +361,8 @@ class AppealEntry extends I18nable {
            contract: Contract,
            currentDepartment: OrgStructure,
            diagnostics: java.util.List[Diagnostic],
-           tempInvalid: TempInvalid) {
+           tempInvalid: TempInvalid,
+           eventLocalContract: EventLocalContract) {
     this()
     var exValue: java.util.List[Object] = null
 
@@ -369,7 +376,8 @@ class AppealEntry extends I18nable {
     this.execPerson = new DoctorContainer(event.getExecutor)
     this.urgent = action.getIsUrgent
     this.context = if (event.getEventType != null) event.getEventType.getContext else null
-
+    this.payer = if (eventLocalContract == null) null else new PayerInfo(eventLocalContract)
+    this.paymentContract = if (eventLocalContract == null) null else new PaymentContractInfo(eventLocalContract)
 
     val getOrgStructPropByCode: String => Integer = (code: String) => {
       val orgs = values.entrySet.filter(e => {
