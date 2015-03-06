@@ -102,14 +102,14 @@ public class DbSchemeKladrBean implements DbSchemeKladrBeanLocal {
 
     }
 
-    private Street getStreetByCode(String code, boolean isAll) {
+    private List<Street> getStreetByCode(String code, boolean isAll) {
         String baseUrl = ConfigManager.RbManagerSetting().ServiceUrl();
         RestTemplate restTemplate = new RestTemplate();
         String url = baseUrl + "/api/kladr/street/search/" + getCityCode(code) + "/"
                 + (isAll ? "" : (getStreetCode(code) + "/"));
         try {
             StreetKladr res = restTemplate.getForObject(url, StreetKladr.class);
-            return res.getData().isEmpty() ? null : res.getData().get(0);
+            return res.getData();
         } catch (RestClientException ex) {
             ex.printStackTrace();
             return null;
@@ -119,7 +119,8 @@ public class DbSchemeKladrBean implements DbSchemeKladrBeanLocal {
 
     @Override
     public Street getStreetByCode(String code) throws CoreException {
-        return getStreetByCode(code, false);
+        List<Street> streetsByCode = getStreetByCode(code, false);
+        return streetsByCode.isEmpty() ? null : streetsByCode.get(0);
     }
 
     @Override
@@ -133,11 +134,7 @@ public class DbSchemeKladrBean implements DbSchemeKladrBeanLocal {
         if(filter instanceof DictionaryListRequestDataFilter) {
             DictionaryListRequestDataFilter kladrFilter = (DictionaryListRequestDataFilter) filter;
             if(kladrFilter.getLevel().equals("street")) {
-                Street streetByCode = getStreetByCode(kladrFilter.getParent(), true);
-                if(streetByCode != null) {
-                   res.add(streetByCode);
-               }
-
+                res.addAll(getStreetByCode(kladrFilter.getParent(), true));
             } else {
                 RequestPrm requestPrm = new RequestPrm();
                 requestPrm.setLevel(levelsMap.get(kladrFilter.getLevel()));
