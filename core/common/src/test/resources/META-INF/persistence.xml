@@ -16,7 +16,6 @@
             <property name="eclipselink.descriptor.customizer.RbCounter" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.descriptor.customizer.DbVersions" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.descriptor.customizer.FDRecord" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
-            <property name="eclipselink.descriptor.customizer.Kladr" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.descriptor.customizer.APValueOrgStructure" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.descriptor.customizer.RbTempInvalidReason" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.descriptor.customizer.TempInvalid" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
@@ -74,8 +73,6 @@
         <exclude-unlisted-classes>false</exclude-unlisted-classes>
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
-            <property name="eclipselink.descriptor.customizer.Kladr" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
-            <property name="eclipselink.descriptor.customizer.Street" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.descriptor.customizer.SocrBase" value="ru.korus.tmis.util.DbDescriptorCustomizer"/>
             <property name="eclipselink.logging.level" value="WARNING"/>
             <property name="javax.persistence.validation.mode" value="NONE" />
