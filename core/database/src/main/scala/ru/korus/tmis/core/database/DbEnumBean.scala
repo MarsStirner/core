@@ -6,7 +6,7 @@ import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.annotation.{Resource, PostConstruct}
 import javax.ejb._
 import javax.interceptor.Interceptors
-import javax.persistence.{Query, EntityManager, PersistenceContext}
+import javax.persistence.{EntityManager, PersistenceContext}
 import javax.transaction.UserTransaction
 
 import grizzled.slf4j.Logging
@@ -30,22 +30,16 @@ class DbEnumBean
 
   var enums: List[(String, Class[_ <: DbEnumerable])] =
     List[(String, Class[_ <: DbEnumerable])](
-      ("s11r64", classOf[RbAnalysisStatus]),
-      ("rls", classOf[Nomenclature])
+      ("s11r64", classOf[RbAnalysisStatus])
     )
 
   @PostConstruct
   def init() = {
     syncEnums_s11r64()
-    syncEnums_rls()
   }
 
   def syncEnums_s11r64() = {
     syncEnums(s11r64, "s11r64")
-  }
-
-  def syncEnums_rls() = {
-    syncEnums(s11r64, "rls")
   }
 
   def syncEnums(em: EntityManager, EmId: String) = {
@@ -71,10 +65,8 @@ class DbEnumBean
   }
 
   def processEnums(em: EntityManager, e: Class[DbEnumerable]) = {
-    val s: String = e.getSimpleName + ".findAll"
-    val namedQuery: Query = em
-      .createNamedQuery(s, e)
-    val enums = namedQuery
+    val enums = em
+      .createNamedQuery(e.getSimpleName + ".findAll")
       .getResultList
       .map(_.asInstanceOf[DbEnumerable])
     enums.foreach(em.detach(_))

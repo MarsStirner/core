@@ -32,7 +32,7 @@ public class APValueRLSWrapper implements Serializable, APValue {
 
     @Override
     public String getValueAsId() {
-        return Integer.toString(nomenclature.getCode());
+        return Integer.toString(nomenclature.getId());
     }
 
     @Override
