@@ -20,6 +20,7 @@ import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.auth.JsonPerson;
 import ru.korus.tmis.core.auth.UsersMgrLocal;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.database.DbEnumBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
@@ -75,6 +76,9 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     @EJB
     private DbEventBeanLocal eventBeanLocal = null;
+
+    @EJB
+    private DbEnumBeanLocal dbEnumBeanLocal = null;
 
     private DbUtil dbUtil;
 
@@ -244,6 +248,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test(dependsOnMethods = "testGetLisAcrossResults")
     public void testGetLabResearchResult() {
         try {
+            dbEnumBeanLocal.init();
             URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + "/tms-registry/appeals/189/diagnostics/laboratory/" + labTestLabResearchId);
             HttpURLConnection connection = WebMisBase.openConnection(url, labTestAuthData, "GET");
             connection.setRequestProperty("Accept", "application/x-javascript");
@@ -288,6 +293,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
     @Test
     public void testCreateBakLabResearch() {
         try {
+            dbEnumBeanLocal.init();
             //createTestUser();
             bakLabTestAuthData = WebMisBase.auth(authStorageBeanLocal);
             System.out.println(bakLabTestAuthData);
@@ -693,6 +699,38 @@ public class AppealRegistryRESTImplTest extends Arquillian {
         }
     }
 
+    @Test(dependsOnMethods = "testDeleteAction")
+    public void testUpdateEvent() {
+        System.out.println("**************************** testUpdateEvent() started...");
+        final Integer actionId = 259;
+        try {
+            AuthData authData = WebMisBase.auth(authStorageBeanLocal);
+            //http://10.128.51.85/api/v1/prescriptions/983378?callback=jQuery182040639712987467647_1400594935328
+            URL url = new URL(WebMisBase.getBaseUrlRest(WAR_NAME) + String.format("/tms-registry/appeals/%d",  WebMisBase.TEST_EVENT_ID));
+            final String tstCallback = "tstCallback";
+            url = WebMisBase.addGetParam(url, "callback", tstCallback);
+            url = WebMisBase.addGetParam(url, "_", authData.getAuthToken().getId());
+            System.out.println("Send PUT to..." + url.toString());
+            HttpURLConnection conn = WebMisBase.openConnectionPut(url, authData);
+            WebMisBase.toPostStream(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/updateEventReq.json"))), conn);
+            int code = WebMisBase.getResponseCode(conn);
+            String res = WebMisBase.getResponseData(conn, code);
+            Assert.assertTrue(code == 200);
+            res = WebMisBase.removePadding(res, tstCallback);
+            JsonParser parser = new JsonParser();
+            JsonElement resJson = parser.parse(res);
+            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/updateeventReq.json"))));
+            //Assert.assertEquals(resJson, expected);
+            //TODO перед тестом почистить БД!
+            //Assert.assertEquals(resJson, expected);
+            Assert.assertTrue(res.contains("\"number\""));
+
+        } catch (Exception ex) {
+            ex.printStackTrace();
+            Assert.fail();
+        }
+    }
+
     @Test
     public void testGetActionTypeInfo() {
         System.out.println("**************************** testGetActionTypeInfo() started...");
@@ -909,5 +947,8 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             Assert.fail();
         }
     }
+
+
+
 
 }

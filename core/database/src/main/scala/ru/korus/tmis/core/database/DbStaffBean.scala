@@ -45,7 +45,7 @@ class DbStaffBean
         login,
         i18n("error.staffNotFound"))
     }
-    staffs.foreach(em.detach(_))
+    //staffs.foreach(em.detach(_))
     staffs(0)
   }
 
@@ -55,7 +55,7 @@ class DbStaffBean
       .setParameter("id", id)
       .getResultList
 
-    result.foreach(em.detach(_))
+    //result.foreach(em.detach(_))
     result.get(0)
   }
 

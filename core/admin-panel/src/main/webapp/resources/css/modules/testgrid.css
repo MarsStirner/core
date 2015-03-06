@@ -1,0 +1,60 @@
+@charset "UTF-8";
+/*
+*	FONTS
+*/
+/* line 6, ../../sass/modules/testgrid.scss */
+.TestGrid {
+  width: 1000px;
+  margin: 0 auto;
+  color: #414142;
+  font-size: 12px;
+}
+/* line 12, ../../sass/modules/testgrid.scss */
+.TestGrid th {
+  padding: 10px;
+  border-bottom: 1px solid black;
+}
+/* line 16, ../../sass/modules/testgrid.scss */
+.TestGrid th .Actions {
+  border: none;
+  color: #6D6D71;
+  text-decoration: underline;
+  cursor: pointer;
+}
+/* line 22, ../../sass/modules/testgrid.scss */
+.TestGrid th .Actions:hover {
+  text-decoration: none;
+}
+/* line 28, ../../sass/modules/testgrid.scss */
+.TestGrid th.Active .Actions {
+  text-decoration: none;
+}
+/* line 31, ../../sass/modules/testgrid.scss */
+.TestGrid th.Active .Actions::after {
+  /*content:"▼";*/
+  /*Don't work :( */
+  content: "▼";
+  color: #000;
+  font-size: 0.8em;
+}
+/* line 41, ../../sass/modules/testgrid.scss */
+.TestGrid th.Active.SortUp .Actions::after {
+  /*content:"▲";*/
+  /*Don't work :( */
+  content: "↑";
+}
+/* line 50, ../../sass/modules/testgrid.scss */
+.TestGrid td {
+  border-bottom: 1px solid #d9d9d9;
+  padding: 10px;
+  cursor: pointer;
+}
+/* line 55, ../../sass/modules/testgrid.scss */
+.TestGrid td a {
+  color: #414142;
+  text-decoration: none;
+}
+/* line 61, ../../sass/modules/testgrid.scss */
+.TestGrid tr:hover td {
+  background: #f5f4f4;
+}

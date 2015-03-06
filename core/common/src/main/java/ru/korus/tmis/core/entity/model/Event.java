@@ -165,10 +165,6 @@ public class Event implements Serializable {
     @JoinColumn(name = "client_id")
     private Patient patient;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "localContract_id")
-    private EventLocalContract eventLocalContract;
-
 
     public Patient getPatient() {
         return patient;
@@ -503,13 +499,5 @@ public class Event implements Serializable {
         }
 
         return newEvent;
-    }
-
-    public EventLocalContract getEventLocalContract() {
-        return eventLocalContract;
-    }
-
-    public void setEventLocalContract(EventLocalContract eventLocalContract) {
-        this.eventLocalContract = eventLocalContract;
     }
 }

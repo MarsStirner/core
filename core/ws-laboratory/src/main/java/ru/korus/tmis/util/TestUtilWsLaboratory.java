@@ -18,12 +18,12 @@ public class TestUtilWsLaboratory implements TestUtil {
     public Package[] getPackagesForTest( ) {
         return new Package[]{
                 AcrossRequest.class.getPackage(),
-                AlteyRequestService.class.getPackage(),
-                BakRequestService.class.getPackage(),
-                JsonSetting.class.getPackage(),
-                IRule.class.getPackage(),
+                ru.korus.tmis.laboratory.altey.AlteyRequestService.class.getPackage(),
+                ru.korus.tmis.laboratory.bak.BakRequestService.class.getPackage(),
+                ru.korus.tmis.settings.JsonSetting.class.getPackage(),
+                ru.korus.validation.rules.IRule.class.getPackage(),
                 Validator.class.getPackage(),
-                AcrossRequestService.class.getPackage()
+                ru.korus.tmis.laboratory.across.AcrossRequestService.class.getPackage()
         };
     }
 

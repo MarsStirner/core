@@ -11,8 +11,7 @@ import javax.persistence.*;
 @Table(name = "rbTempInvalidReason")
 @NamedQueries(
         {
-                @NamedQuery(name = "RbTempInvalidReason.findAll", query = "SELECT r FROM RbTempInvalidReason r"),
-                @NamedQuery(name = "RbTempInvalidReason.findByCode", query = "SELECT r FROM RbTempInvalidReason r WHERE r.code = :code")
+                @NamedQuery(name = "RbTempInvalidReason.findAll", query = "SELECT r FROM RbTempInvalidReason r")
         })
 public class RbTempInvalidReason implements Serializable {
     private static final long serialVersionUID = 1L;

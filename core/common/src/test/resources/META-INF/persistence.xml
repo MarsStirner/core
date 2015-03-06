@@ -23,7 +23,7 @@
             <property name="eclipselink.logging.level" value="WARNING"/>
             <property name="eclipselink.logging.level.sql" value="OFF"/>
             <property name="eclipselink.logging.parameters" value="false"/>
-            <property name="javax.persistence.jdbc.show_sql" value="false"/>
+            <property name="javax.persistence.jdbc.show_sql" value="true"/>
             <property name="eclipselink.ddl-generation" value="update-tables"/>
             <property name="eclipselink.cache.shared.default" value="false"/>
             <property name="eclipselink.cache.size.default" value="0"/>

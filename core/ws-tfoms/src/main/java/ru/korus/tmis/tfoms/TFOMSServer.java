@@ -325,7 +325,7 @@ public class TFOMSServer implements TFOMSService.Iface {
         logger.info("#{} Call method -> getXMLRegisters(contract_id={}, beginDate={}, endDate={}, infisCode=\"{}\","
                         + "obsoleteInfisCode=\"{}\" smoNumber=\"{}\", primaryAccont={}, levelMO={})",
                 new Object[] { currentRequestNum, contractId, beginDate, endDate, organisationInfis,
-                obsoleteInfisCode, smoNumber, primaryAccount, levelMO }
+                        obsoleteInfisCode, smoNumber, primaryAccount, levelMO }
         );
         logger.info("PatientOptionalFields={}", patientOptionalFields);
         logger.info("SluchOptionalFields={}", sluchOptionalFields);
@@ -629,8 +629,8 @@ public class TFOMSServer implements TFOMSService.Iface {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> changeClientPolicy(patientId = {}, newPolicy = {}",
                 new Object[] { currentRequestNum,
-                patientId,
-                newPolicy });
+                        patientId,
+                        newPolicy });
         int result;
         ru.korus.tmis.core.entity.model.Patient patient;
         if (newPolicy.getNumber().length() > Constants.POLICY_NUMBER_MAX_LENGTH) {
@@ -645,8 +645,8 @@ public class TFOMSServer implements TFOMSService.Iface {
             patient = dbPatientBean.getPatientById(patientId);
             logger.debug("Patient founded. FIO= {} {} {}",
                     new Object[] { patient.getLastName(),
-                    patient.getFirstName(),
-                    patient.getPatrName() });
+                            patient.getFirstName(),
+                            patient.getPatrName() });
             final RbPolicyType newPolicyType = policyTypeBean.findByCode(String.valueOf(newPolicy.getPolicyTypeCode()));
             List<ClientPolicy> clientPolicies = clientPolicyBean.getActivePoliciesByClientAndType(patientId, newPolicyType);
             //Проверка на совпадение

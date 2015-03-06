@@ -3,7 +3,7 @@ package ru.korus.tmis.core.common
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
-import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
+import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.logging.LoggingInterceptor
@@ -70,6 +70,13 @@ class CommonDataProcessorBean
 
   @EJB
   var dbLayoutAttributeValueBean: DbLayoutAttributeValueBeanLocal = _
+
+  @EJB
+  var dbActionPropertyTypeBeanLocal: DbActionPropertyTypeBeanLocal =  _
+
+  
+
+  //////////////////////////////////////////////////////////////////////////////
 
   def createActionForEventFromCommonData(eventId: Int,
                                          data: CommonData,
@@ -157,9 +164,14 @@ class CommonDataProcessorBean
         while (i < multiplicity) {
 
           val action = dbAction.createAction(eventId,
-            entity.id.intValue,
+            entity.getTypeId.intValue,
             userData)
-          val isPrimaryAction = entity.id.intValue == 139 || entity.id.intValue == 112 || entity.id.intValue == 2456
+
+          /* ActionType.id = 139 - Осмотр врача приемного отделения (первичная госпитализация)
+             ActionType.id = 112 - Поступление
+             ActionType.id = 139 - Осмотр врача приемного отделения (повторная госпитализация)
+           */
+          val isPrimaryAction = entity.typeId.intValue == 139 || entity.typeId.intValue == 112 || entity.typeId.intValue == 2456
           if (isPrimaryAction) {
             action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
           }
@@ -179,7 +191,7 @@ class CommonDataProcessorBean
           if (plannedEndDate != null) action.setPlannedEndDate(plannedEndDate)
 
 
-          val actionType = dbActionType.getActionTypeById(entity.id.intValue)
+          val actionType = dbActionType.getActionTypeById(entity.typeId.intValue)
           val aw = new ActionWrapper(action)
 
           // Collect all ActionProperties sent from the client
@@ -193,9 +205,16 @@ class CommonDataProcessorBean
             if (AWI.isSupported(attribute.name)) {
               list
             } else {
-              val ap = dbActionProperty.createActionPropertyWithDate(
+              if(attribute.typeId == null && attribute.code != null) {
+                val apt: ActionPropertyType = dbActionPropertyTypeBeanLocal.getActionPropertyTypeByActionTypeIdAndTypeCode(actionType.getId, attribute.code, false)
+                if (apt != null) {
+                 attribute.typeId = apt.getId;
+                }
+              }
+
+              val ap = if(attribute.typeId == null) null else dbActionProperty.createActionPropertyWithDate(
                 action,
-                attribute.id.intValue,
+                attribute.typeId.intValue, //TODO attribute.typeId ??????????
                 userData,
                 now)
               if (ap != null) {
@@ -278,7 +297,12 @@ class CommonDataProcessorBean
     })
 
     val r = dbManager.detachAll[Action](result).toList
-
+    /*
+    r.foreach(a => {
+      val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
+      actionEvent.fire(new CreateActionNotification(a, values))
+    })
+    */
     r
   }
 
@@ -411,10 +435,18 @@ class CommonDataProcessorBean
             case Some(x) => x.toInt
           }
         }
+        /*res = aps.find(p => p.name == AWI.toOrder.toString).getOrElse(null)
+        if (res != null) {
+          toOrder = res.properties.get(APWI.Value.toString) match {
+            case None | Some("") => false
+            case Some(x) => x.toBoolean
+          }
+        }*/
 
         if (beginDate != null) a.setBegDate(beginDate)
 
         if (finance > 0) a.setFinanceId(finance)
+        //a.setToOrder(toOrder)
         if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
         if (assignerId > 0) a.setAssigner(new Staff(assignerId))
         if (executorId > 0) a.setExecutor(new Staff(executorId))
@@ -430,7 +462,7 @@ class CommonDataProcessorBean
           } else {
             (attribute.getPropertiesMap.get("valueId"), attribute.getPropertiesMap.get("value")) match {
 
-              case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
+              case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
                 new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
@@ -503,15 +535,18 @@ class CommonDataProcessorBean
         entities.filter(_.isInstanceOf[ActionProperty]).map(_.asInstanceOf[ActionProperty]).toList,
         entities.filter(_.isInstanceOf[APValue]).map(_.asInstanceOf[APValue]).toList,
         userData))
+
+      /*
+      r.foreach(newAction => {
+        val newValues = dbActionProperty.getActionPropertiesByActionId(newAction.getId.intValue)
+        actionEvent.fire(new ModifyActionNotification(oldAction,
+          oldValues,
+          newAction,
+          newValues))
+      })
+      */
       r
 
-    } catch {
-      case t: Throwable =>
-        val msg = "Ошибка при сохранении документа с actionId = " + actionId + " (WEBMIS-136_WAITING)"
-        t.printStackTrace()
-        System.out.println(msg)
-        logger.error(msg, t)
-        throw new CoreException(msg, t)
     } finally {
       appLock.releaseLock(lockId)
     }
@@ -597,7 +632,19 @@ class CommonDataProcessorBean
 
     val ActionStatus = ConfigManager.ActionStatus.immutable
 
+    status match {
+      case ActionStatus.Canceled => {
+        /*
+        r.foreach(a => {
+          val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
+          actionEvent.fire(new CancelActionNotification(a, values))
+        })
+        */
+      }
+      case _ => {
 
+      }
+    }
     true
   }
 
@@ -833,19 +880,19 @@ class CommonDataProcessorBean
     // Проверяем формат, в котором задана нижняя граница (днях, неделях, месяцах или годах)
     // и сверяем возраст пациента с заданной границей
     val lowLimit = apt.getAge_bu match {
-      case 1 => age.getDay   >= apt.getAge_bc   // Дни
-      case 2 => age.getWeek  >= apt.getAge_bc   // Недели
-      case 3 => age.getMonth >= apt.getAge_bc   // Месяцы
-      case 4 => age.getYear  >= apt.getAge_bc   // Года
+      case 1 => age.getDay   > apt.getAge_bc   // Дни
+      case 2 => age.getWeek  > apt.getAge_bc   // Недели
+      case 3 => age.getMonth > apt.getAge_bc   // Месяцы
+      case 4 => age.getWeek  > apt.getAge_bc   // Года
       case _ => true //Если значение не задано - то будем считать, что возраст пациента удовлетворяет
     }
 
     // Аналогично, но в обратную сторону проверяем соответствие возраста верхней границе
     val topLimit = apt.getAge_eu match {
-      case 1 => age.getDay   <= apt.getAge_ec
-      case 2 => age.getWeek  <= apt.getAge_ec
-      case 3 => age.getMonth <= apt.getAge_ec
-      case 4 => age.getYear  <= apt.getAge_ec
+      case 1 => age.getDay   < apt.getAge_ec
+      case 2 => age.getWeek  < apt.getAge_ec
+      case 3 => age.getMonth < apt.getAge_ec
+      case 4 => age.getYear  < apt.getAge_ec
       case _ => true
     }
 

@@ -10,6 +10,7 @@ import org.codehaus.jackson.annotate.{JsonIgnoreProperties, JsonSubTypes, JsonTy
 import org.codehaus.jackson.map.ObjectMapper
 import org.codehaus.jackson.map.annotate.JsonView
 import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.entity.model.kladr.{Street, Kladr}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.{AbstractListDataFilter, ListDataFilter}
 import ru.korus.tmis.scala.util.ConfigManager
@@ -1161,10 +1162,12 @@ class DictionaryListData {
 
         this.requestData.filter.asInstanceOf[DictionaryListRequestDataFilter].dictName match {
           case "KLADR" => {
-            if (dict.isInstanceOf[(java.lang.String, java.lang.String, java.lang.String, java.lang.String)]) {
-              //KLADR
-              var elem = dict.asInstanceOf[(java.lang.String, java.lang.String, java.lang.String, java.lang.String)]
-              this.data.add(new DictionaryContainer(elem._1, elem._2, elem._3, elem._4))
+            if (dict.isInstanceOf[Kladr]) {
+              var elem = dict.asInstanceOf[Kladr]
+              this.data.add(new DictionaryContainer(elem.getCode, elem.getName, elem.getSocr, elem.getIndex))
+            } else if (dict.isInstanceOf[Street]){
+              var elem = dict.asInstanceOf[Street]
+              this.data.add(new DictionaryContainer(elem.getCode, elem.getName, elem.getSocr, elem.getIndex))
             } else {
               this.data.add(new DictionaryContainer(0, ""))
             }

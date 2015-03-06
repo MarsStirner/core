@@ -23,8 +23,8 @@ public interface DbEventPaymentLocal {
      * @param date - дата платежа
      * @param eventLocalContract
      * @param paidName
-     * @param serviceFinanceInfo - информация об оплаченной услуги
+     * @param servicePaidInfo - информация об оплаченной услуги
      */
-    void savePaidInfo(Event event, Date date, EventLocalContract eventLocalContract, PersonFIO paidName, Action action, ServicePaidFinanceInfo servicePaidFinanceInfo);
+    void savePaidInfo(Event event, Date date, EventLocalContract eventLocalContract, PersonFIO paidName, Action action, ServicePaidInfo servicePaidInfo);
 
 }

@@ -234,7 +234,6 @@ public class Staff implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "uuid_id")
-    // @Transient
     private UUID uuid;
     // //////////////////////////////////////////////////////////////////////////
     // Custom mappings

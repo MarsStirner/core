@@ -1,9 +1,6 @@
 package ru.korus.tmis.ws.finance;
 
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.RbService;
-
-import java.math.BigInteger;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -16,7 +13,7 @@ public class ServiceInfo {
     /**
      * ID услуги в МИС (в БД МИС  - Action.id)
      */
-    private BigInteger idService;
+    private Integer idService;
     /**
      * код услуги в МИС (в БД МИС  - rbService.code)
      */
@@ -27,13 +24,12 @@ public class ServiceInfo {
     private Double amount;
 
     public ServiceInfo(Action action) {
-        idService = BigInteger.valueOf(action.getId());
-        final RbService service = action.getActionType().getService();
-        codeService = service == null ? null : service.getCode();
+        idService = action.getId();
+        codeService = action.getActionType().getService().getCode();
         amount = action.getAmount();
     }
 
-    public BigInteger getIdService() {
+    public Integer getIdService() {
         return idService;
     }
 
@@ -78,7 +74,7 @@ public class ServiceInfo {
         return sb.toString();
     }
 
-    public void setIdService(BigInteger idService) {
+    public void setIdService(Integer idService) {
         this.idService = idService;
     }
 

@@ -129,7 +129,6 @@ class DbPatientBean
       }
       case size => {
         val patient = result.iterator.next()
-        em.detach(patient)
         patient
       }
     }

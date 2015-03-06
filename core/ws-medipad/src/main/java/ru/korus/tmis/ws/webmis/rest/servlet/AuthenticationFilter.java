@@ -1,8 +1,10 @@
 package ru.korus.tmis.ws.webmis.rest.servlet;
 
 import java.io.IOException;
+import java.util.Date;
 import java.util.concurrent.atomic.AtomicLong;
 
+import javax.ejb.EJB;
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -16,6 +18,7 @@ import javax.servlet.http.HttpSession;
 
 import ru.korus.tmis.util.reflect.LoggingManager;
 import ru.korus.tmis.util.reflect.LoggingManager$;
+import scala.Enumeration;
 
 /**
  * Created with IntelliJ IDEA.

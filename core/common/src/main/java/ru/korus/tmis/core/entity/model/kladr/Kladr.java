@@ -1,70 +1,39 @@
 package ru.korus.tmis.core.entity.model.kladr;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import java.io.Serializable;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.web.client.RestTemplate;
 
-@Entity
-@Table(name = "KLADR", catalog = "", schema = "kladr")
-@NamedQueries(
-        {
-                @NamedQuery(name = "Kladr.findAll", query = "SELECT kl FROM Kladr kl")
-        })
-@XmlType(name = "kladr")
-@XmlRootElement(name = "kladr")
-public class    Kladr
-        implements Serializable, Cloneable {
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class  Kladr {
 
     private static final long serialVersionUID = 1L;
 
     //Поля таблицы
 
-    @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "CODE")
     private String code;
 
-    @Basic(optional = false)
-    @Column(name = "NAME")
     private String name;
 
-    @Basic(optional = false)
-    @Column(name = "SOCR")
+    @JsonProperty("shorttype")
     private String socr;
 
-    @Basic(optional = false)
-    @Column(name = "INDEX")
+
+    @JsonProperty("postindex")
     private String index;
 
-    @Basic(optional = false)
-    @Column(name = "GNINMB")
     private String gninmb;
 
-    @Basic(optional = false)
-    @Column(name = "UNO")
     private String uno;
 
-    @Basic(optional = false)
-    @Column(name = "OCATD")
+    @JsonProperty("okato")
     private String ocatd;
 
-    @Basic(optional = false)
-    @Column(name = "STATUS")
+    @JsonProperty("codestate")
     private String status;
 
-    @Basic(optional = false)
-    @Column(name = "parent")
+    @JsonProperty("identparent")
     private String parent;
-
-    @Basic(optional = false)
-    @Column(name = "infis")
-    private String infis;
-
-    @Basic(optional = false)
-    @Column(name = "prefix")
-    private String prefix;
 
     //Конструкторы
 
@@ -101,14 +70,6 @@ public class    Kladr
         this.socr = socr;
     }
 
-    public String getIndex() {
-        return index;
-    }
-
-    public void setIndex(String index) {
-        this.index = index;
-    }
-
     public String getGninmb() {
         return gninmb;
     }
@@ -142,27 +103,19 @@ public class    Kladr
     }
 
     public String getParent() {
-        return parent;
+        return parent == null ? "" : parent;
     }
 
     public void setParent(String parent) {
         this.parent = parent;
     }
 
-    public String getInfis() {
-        return infis;
+    public String getIndex() {
+        return index;
     }
 
-    public void setInfis(String infis) {
-        this.infis = infis;
-    }
-
-    public String getPrefix() {
-        return prefix;
-    }
-
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
+    public void setIndex(String index) {
+        this.index = index;
     }
 
     //Переопределенные методы
@@ -199,14 +152,11 @@ public class    Kladr
         sb.append("code='").append(code).append('\'');
         sb.append(", name='").append(name).append('\'');
         sb.append(", socr='").append(socr).append('\'');
-        sb.append(", index='").append(index).append('\'');
         sb.append(", gninmb='").append(gninmb).append('\'');
         sb.append(", uno='").append(uno).append('\'');
         sb.append(", ocatd='").append(ocatd).append('\'');
         sb.append(", status='").append(status).append('\'');
         sb.append(", parent='").append(parent).append('\'');
-        sb.append(", infis='").append(infis).append('\'');
-        sb.append(", prefix='").append(prefix).append('\'');
         sb.append('}');
         return sb.toString();
     }

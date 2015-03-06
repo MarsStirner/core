@@ -3,6 +3,7 @@ package ru.korus.tmis.core.patient
 import java.util
 
 import grizzled.slf4j.Logging
+import ru.korus.tmis.core.database.finance.DbEventLocalContractLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless}
@@ -71,6 +72,10 @@ with CAPids {
   var dbClientRelation: DbClientRelationBeanLocal = _
 
   @EJB
+  var dbEventClientRelation: DbEventClientRelationBeanLocal = _
+
+
+  @EJB
   var dbClientQuoting: DbClientQuotingBeanLocal = _
 
   @EJB
@@ -94,11 +99,11 @@ with CAPids {
   @EJB
   var dbTempInvalidBean: DbTempInvalidBeanLocal = _
 
-/*
-  @Inject
-  @Any
-  var actionEvent: javax.enterprise.event.Event[Notification] = _
-*/
+  @EJB
+  private var dbRbResultBeanLocal: DbRbResultBeanLocal = _
+
+  @EJB
+  private var dbEventLocalContract: DbEventLocalContractLocal = _
 
   private class IndexOf[T](seq: Seq[T]) {
     def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
@@ -148,7 +153,6 @@ with CAPids {
     //1. Event и проверка данных на валидность
     val newEvent = this.verificationData(patientId, authData, appealData, true)
     dbManager.persist(newEvent)
-    dbManager.detach(newEvent)
     val res = insertOrModifyAppeal(appealData, newEvent, true, authData)
     updateTempInvalid(newEvent, appealData.data.tempInvalid, authData)
     res
@@ -300,7 +304,6 @@ with CAPids {
       })
 
       if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
-      dbManager.detach(action)
       /*
      if (!flgCreate) {
        val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
@@ -349,7 +352,6 @@ with CAPids {
         flgEventRewrite = true
       }
       if (flgEventRewrite == true) {
-        newEvent.setVersion(newEvent.getVersion)
         dbManager.merge(newEvent)
       }
     }
@@ -375,7 +377,12 @@ with CAPids {
             parent,
             patient,
             authData.user)
+
+          dbEventClientRelation.insertOrUpdate(newEvent, tempServerRelation);
+          em.flush()
           setRel += tempServerRelation
+        } else {
+          dbEventClientRelation.insertOrUpdate(newEvent, serverRelation);
         }
       })
     }
@@ -388,9 +395,10 @@ with CAPids {
 
     //Создание/редактирование диагнозов (отд. записи)
     var map = Map.empty[String, java.util.Set[AnyRef]]
-    Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
-      i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
-      i18n("appeal.diagnosis.diagnosisKind.attendantMkb")).foreach(flatCode => {
+
+    var diagFlatCodes: Set[String] = Set()
+    appealData.data.diagnoses.foreach(f => if(f.getDiagnosisKind != null && !f.getDiagnosisKind.isEmpty) diagFlatCodes += f.getDiagnosisKind)
+    diagFlatCodes.foreach(flatCode => {
       val values = appealData.data.diagnoses.filter(p => p.getDiagnosisKind.compareTo(flatCode) == 0)
         .map(f => {
         var mkb: Mkb = null
@@ -403,7 +411,7 @@ with CAPids {
           f.getDescription,
           if (mkb != null) Integer.valueOf(mkb.getId.intValue) else -1,
           0, // characterId
-          0) // stageId
+          0)// stageId
       })
         .toSet[AnyRef]
       map += (flatCode -> values)
@@ -425,6 +433,9 @@ with CAPids {
     ).toList
     dbManager.mergeAll(mergedItems)
     dbManager.persistAll(persistedItems)
+
+    if (appealData.data.getPayer != null
+        && appealData.data.getPaymentContract != null) dbEventLocalContract.insertOrUpdate(newEvent, appealData.data.getPayer, appealData.data.getPaymentContract )
 
     newEvent.getId.intValue()
   }
@@ -626,10 +637,20 @@ with CAPids {
         throw new CoreException(i18n("error.appeal.create.InvalidPatientData").format(id))
       }
 
+      if (appealData.data.appealType.eventType != null && appealData.data.appealType.eventType.id < 1) {
+        val et = dbEventTypeBean.getEventTypeByCode(appealData.data.appealType.eventType.getCode)
+        appealData.data.appealType.eventType.id = et.getId
+      }
+
       if (appealData.data.appealType == null ||
         appealData.data.appealType.eventType == null ||
         appealData.data.appealType.eventType.getId <= 0) {
         throw new CoreException(i18n("error.appeal.create.NoAppealType"))
+      }
+
+      if (appealData.data.contract != null && appealData.data.contract.getId < 1) {
+        val contract: Contract = dbContractBean.getContractByNumber(appealData.data.contract.getNumber);
+        appealData.data.contract.id = contract.getId
       }
 
       if (appealData.data.contract == null || appealData.data.contract.getId < 1)
@@ -656,6 +677,18 @@ with CAPids {
       if(!et.isSexValid(patientSex))
         throw new CoreException(i18n("error.appeal.create.InvalidPatientSex").format(et.getName, et.getSex))
 
+      val result : RbResult = if (appealData.data.result == null) null
+      else
+        dbRbResultBeanLocal.getRbResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.result.code)
+
+      val acheResult : RbAcheResult = if (appealData.data.result == null) null
+      else
+        dbRbResultBeanLocal.getRbAcheResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.acheResult.code)
+
+      val execPerson = if (appealData.data.execPerson == null || appealData.data.execPerson.getId == null) null
+      else
+        dbStaff.getStaffById(appealData.data.execPerson.getId)
+
       event = dbEventBean.createEvent(id,
         //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
         appealData.data.appealType.eventType.getId,
@@ -663,6 +696,9 @@ with CAPids {
         appealData.data.rangeAppealDateTime.getStart(),
         /*appealData.data.rangeAppealDateTime.getEnd()*/ null,
         appealData.getData.getContract.getId,
+        result,
+        acheResult,
+        execPerson,
         authData)
     }
     else {
@@ -675,15 +711,16 @@ with CAPids {
 
       event.setModifyDatetime(now)
       event.setModifyPerson(authData.user)
+      dbManager.merge(event)
       event.setSetDate(appealData.data.rangeAppealDateTime.getStart())
       event.setEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId))
-      event.setVersion(appealData.getData().getVersion())
     }
 
     val hosptype = if (appealData.data.hospitalizationType != null) appealData.data.hospitalizationType.getId else 0
     if (hosptype > 0) {
       //val value = dbFDRecordBean.getFDRecordById(hosptype)
       //if (value!=null) {            //TODO: ! Материть Сашу
+      // 'Порядок наступления (1-плановый, 2-экстренный, 3-самотёком, 4-принудительный)',
       val order = if ( /*value.getId.intValue()*/ hosptype == 220) 1
       else if ( /*value.getId.intValue()*/ hosptype == 221) 2
       else if ( /*value.getId.intValue()*/ hosptype == 222) 3
@@ -695,7 +732,12 @@ with CAPids {
 
     if (appealData.data.appealWithDeseaseThisYear != null && !appealData.data.appealWithDeseaseThisYear.isEmpty) {
       val value = appealData.data.appealWithDeseaseThisYear
-      val isPrim = if (value.contains("первично")) 1 else if (value.contains("повторно")) 2 else 0 //TODO: ! Материть Сашу
+      val isPrim = if (value.contains("первично")) 1
+      else if (value.contains("повторно")) 2
+      else if (value.contains("активное посещение")) 3
+      else if (value.contains("перевозка")) 4
+      else if (value.contains("амбулаторно")) 5
+      else 0 //TODO: ! Материть Сашу
       event.setIsPrimary(isPrim)
     } else event.setIsPrimary(0)
 
@@ -734,45 +776,49 @@ with CAPids {
     if (cap == null) {
       this.AnyToSetOfString(null, "")
     } else {
-      cap.getId.intValue() match {
-        case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed, "") //Кем направлен
-        case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number, "") //Номер направления
-        case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType, "") //Кем доставлен
-        case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", false) //Диагноз направившего учреждения
-        case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType, "") //Доставлен в стационар от начала заболевания
-        case listNdx(5) => this.AnyToSetOfString(null, "") //Направлен в отделение
-        case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason, "") //Причина отказа в госпитализации
-        case listNdx(7) => this.AnyToSetOfString(appealData.data.appealWithDeseaseThisYear, "") //Госпитализирован по поводу данного заболевания в текущем году
-        case listNdx(8) => this.AnyToSetOfString(appealData.data.movingType, "") //Вид транспортировки
-        case listNdx(9) => this.AnyToSetOfString(null, "") //Профиль койки
-        case listNdx(10) => this.AnyToSetOfString(appealData.data.stateType, "") //Доставлен в состоянии опьянения
-        case listNdx(11) => this.AnyToSetOfString(appealData.data.injury, "") //Травма
-        case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate, "") //Дата направления
-        case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType, "") //Канал госпитализации
-        case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor, "") //Направивший врач
-        case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", true) //Клиническое описание
-        case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", false) //Диагноз направившего учреждения (осложнения)
-        case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", true) //Клиническое описание (осложнения)
-        case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber, "") //Номер наряда СП
-        case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast), "") //Артериальное давление (левая рука Диаст)
-        case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst), "") //Артериальное давление (левая рука Сист)
-        case listNdx(21) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.temperature), "") //t температура тела
-        case listNdx(22) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.weight), "") //Вес при поступлении
-        case listNdx(23) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.height), "") //Рост
-        case listNdx(24) => this.AnyToSetOfString(appealData.data.agreedType, "") //Тип согласования
-        case listNdx(25) => this.AnyToSetOfString(appealData.data.agreedDoctor, "") //Комментарий к согласованию
-        case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "relative") //Законный представитель
-        case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType, "") //Тип госпитализации
-        case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType, "") //Цель госпитализации
-        case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", false) //Диагноз направившего учреждения (сопутствующий)
-        case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", true) //Клиническое описание (сопутствующий)
-        case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast), "") //Артериальное давление (правая рука)
-        case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst), "")
-        case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note") //Примечание
-        case listNdx(34) => this.AnyToSetOfString(appealData.data.orgStructStay.toString, "orgStructStay") //Отделение поступления
-        case listNdx(35) => this.AnyToSetOfString(appealData.data.orgStructDirectedFrom.toString, "orgStructDirectedFrom") //Напрвлен из
-        case listNdx(36) => this.AnyToSetOfString(appealData.data.reopening, "reopening") //Переоткрытие ИБ
-        case _ => this.AnyToSetOfString(null, "")
+      try {
+        cap.getId.intValue() match {
+          case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed, "") //Кем направлен
+          case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number, "") //Номер направления
+          case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType, "") //Кем доставлен
+          case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", false) //Диагноз направившего учреждения
+          case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType, "") //Доставлен в стационар от начала заболевания
+          case listNdx(5) => this.AnyToSetOfString(null, "") //Направлен в отделение
+          case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason, "") //Причина отказа в госпитализации
+          case listNdx(7) => this.AnyToSetOfString(appealData.data.appealWithDeseaseThisYear, "") //Госпитализирован по поводу данного заболевания в текущем году
+          case listNdx(8) => this.AnyToSetOfString(appealData.data.movingType, "") //Вид транспортировки
+          case listNdx(9) => this.AnyToSetOfString(null, "") //Профиль койки
+          case listNdx(10) => this.AnyToSetOfString(appealData.data.stateType, "") //Доставлен в состоянии опьянения
+          case listNdx(11) => this.AnyToSetOfString(appealData.data.injury, "") //Травма
+          case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate, "") //Дата направления
+          case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType, "") //Канал госпитализации
+          case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor, "") //Направивший врач
+          case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", true) //Клиническое описание
+          case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", false) //Диагноз направившего учреждения (осложнения)
+          case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", true) //Клиническое описание (осложнения)
+          case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber, "") //Номер наряда СП
+          case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast), "") //Артериальное давление (левая рука Диаст)
+          case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst), "") //Артериальное давление (левая рука Сист)
+          case listNdx(21) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.temperature), "") //t температура тела
+          case listNdx(22) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.weight), "") //Вес при поступлении
+          case listNdx(23) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.height), "") //Рост
+          case listNdx(24) => this.AnyToSetOfString(appealData.data.agreedType, "") //Тип согласования
+          case listNdx(25) => this.AnyToSetOfString(appealData.data.agreedDoctor, "") //Комментарий к согласованию
+          case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "relative") //Законный представитель
+          case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType, "") //Тип госпитализации
+          case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType, "") //Цель госпитализации
+          case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", false) //Диагноз направившего учреждения (сопутствующий)
+          case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", true) //Клиническое описание (сопутствующий)
+          case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast), "") //Артериальное давление (правая рука)
+          case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst), "")
+          case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note") //Примечание
+          case listNdx(34) => this.AnyToSetOfString(appealData.data.orgStructStay.toString, "orgStructStay") //Отделение поступления
+          case listNdx(35) => this.AnyToSetOfString(appealData.data.orgStructDirectedFrom.toString, "orgStructDirectedFrom") //Напрвлен из
+          case listNdx(36) => this.AnyToSetOfString(appealData.data.reopening, "reopening") //Переоткрытие ИБ
+          case _ => this.AnyToSetOfString(null, "")
+        }
+      } catch {
+        case e: NullPointerException => this.AnyToSetOfString(null, "")
       }
     }
   }
@@ -918,7 +964,6 @@ with CAPids {
         null
       }
       case size => {
-        diagType.foreach(dt => em.detach(dt))
         diagType(0)
       }
     }
@@ -933,7 +978,6 @@ with CAPids {
         null
       }
       case size => {
-        rbResult.foreach(res => em.detach(res))
         rbResult(0)
       }
     }
@@ -1224,7 +1268,6 @@ with CAPids {
       event.setExecutor(execPerson)
       event.setModifyDatetime(new Date())
       event.setModifyPerson(authData.getUser)
-      event.setVersion(event.getVersion)
       dbManager.merge(event)
 
       true

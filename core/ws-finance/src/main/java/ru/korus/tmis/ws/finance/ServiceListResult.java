@@ -23,15 +23,12 @@ public class ServiceListResult {
     /**
      * массив с информацией о заказанных услугах
      */
-    private ServiceListArray serviceListArray = new ServiceListArray();
-
+    private List<ServiceInfo> listService = new LinkedList<ServiceInfo>();
 
     public ServiceListResult(Event event, DbActionBeanLocal dbActionBeanLocal) {
-        if (event != null) {
-            this.idTreatment = event.getId();
-            for(Action action : dbActionBeanLocal.getActionsByEvent(event.getId())) {
-                serviceListArray.getListService().add(new ServiceInfo(action));
-            }
+        this.idTreatment = event.getId();
+        for(Action action : dbActionBeanLocal.getServiceList(event.getId())) {
+           listService.add(new ServiceInfo(action));
         }
     }
 
@@ -39,15 +36,15 @@ public class ServiceListResult {
         return idTreatment;
     }
 
+    public List<ServiceInfo> getListService() {
+        return listService;
+    }
+
     public void setIdTreatment(Integer idTreatment) {
         this.idTreatment = idTreatment;
     }
 
-    public ServiceListArray getServiceListArray() {
-        return serviceListArray;
-    }
-
-    public void setServiceListArray(ServiceListArray serviceListArray) {
-        this.serviceListArray = serviceListArray;
+    public void setListService(List<ServiceInfo> listService) {
+        this.listService = listService;
     }
 }

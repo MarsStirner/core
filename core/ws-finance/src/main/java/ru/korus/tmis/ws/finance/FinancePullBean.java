@@ -83,7 +83,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     }
 
     private void sendNewAction(Object entity, ActionToODVD actionsToODVD) throws CoreException {
-        logger.info("processing ActionToODVD.event_id = {}", actionsToODVD.getActionId());
+        logger.info("processing ActionToODVD.event_id = ", actionsToODVD.getActionId());
         List<Action> actionList = new LinkedList<Action>();
         final Action action = actionsToODVD.getAction();
         if (action == null) {
@@ -105,7 +105,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     public void sendClosedActions(Event event, List<Action> actionList) {
         assert event != null;
         assert !actionList.isEmpty();
-        EventLocalContract eventLocalContract = event.getEventLocalContract();
+        EventLocalContract eventLocalContract = dbEventLocalContractLocal.getByEventId(event.getId());
         final TableName paidName = odvdObjectFactory.createTableName();
         final RowTableName paidRowName = odvdObjectFactory.createRowTableName();
         paidName.getPatientName().add(paidRowName);

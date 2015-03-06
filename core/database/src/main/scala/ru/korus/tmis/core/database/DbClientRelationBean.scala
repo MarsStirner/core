@@ -222,6 +222,7 @@ class DbClientRelationBean
                                                     sessionUser: Staff): ClientRelation = {
     var d: ClientRelation = null
     val now = new Date
+    var isNew = false
     if (id > 0) {
       d = getClientRelationById(id)
     }
@@ -229,6 +230,7 @@ class DbClientRelationBean
       d = new ClientRelation
       d.setCreatePerson(sessionUser)
       d.setCreateDatetime(now)
+      isNew = true
     }
 
 
@@ -248,7 +250,9 @@ class DbClientRelationBean
     d.setModifyPerson(sessionUser)
     d.setModifyDatetime(now)
 
+    em.merge(d)
     d
+
   }
 
   def deleteClientRelation(id: Int,

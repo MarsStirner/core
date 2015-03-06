@@ -319,7 +319,7 @@ public class Diagnostic implements Serializable {
     }
 
     public void setNotes(String notes) {
-        this.notes = notes;
+        this.notes = notes == null ? "" : notes;
     }
 
     public int getVersion() {

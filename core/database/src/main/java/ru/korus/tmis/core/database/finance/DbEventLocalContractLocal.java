@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.database.finance;
 
+import ru.korus.tmis.core.data.PayerInfo;
+import ru.korus.tmis.core.data.PaymentContractInfo;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.EventLocalContract;
 import ru.korus.tmis.core.exception.CoreException;
@@ -15,6 +17,13 @@ import java.util.Date;
  */
 @Local
 public interface DbEventLocalContractLocal {
+
+    /**
+     * Получить договор по ID обращения
+     * @param eventId - ID обращения
+     * @return Договор или null, если договор не найден
+     */
+    EventLocalContract getByEventId(Integer eventId);
 
     /**
      * Получить договор по номеру
@@ -34,5 +43,7 @@ public interface DbEventLocalContractLocal {
      * @throws CoreException если договор
      */
     EventLocalContract create(String code, Date dateContract, Event event, PersonFIO paidName, Date birthDate) throws CoreException;
+
+    EventLocalContract insertOrUpdate(Event event, PayerInfo payerInfo, PaymentContractInfo paymentContractInfo) throws CoreException;
 
 }

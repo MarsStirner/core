@@ -482,7 +482,7 @@ class AddressContainer {
 
 @XmlType(name = "addressEntryContainer")
 @XmlRootElement(name = "addressEntryContainer")
-//@JsonIgnoreProperties(ignoreUnknown = true)
+@JsonIgnoreProperties(ignoreUnknown = true)
 class AddressEntryContainer {
 
   @BeanProperty

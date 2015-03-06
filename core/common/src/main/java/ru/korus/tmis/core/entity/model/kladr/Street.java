@@ -1,18 +1,14 @@
 package ru.korus.tmis.core.entity.model.kladr;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "STREET", catalog = "", schema = "kladr")
-@NamedQueries(
-        {
-                @NamedQuery(name = "Street.findAll", query = "SELECT st FROM Street st")
-        })
-@XmlType(name = "street")
-@XmlRootElement(name = "street")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Street
         implements Serializable, Cloneable {
 
@@ -20,38 +16,23 @@ public class Street
 
     //Поля таблицы
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "CODE")
     private String code;
 
-    @Basic(optional = false)
-    @Column(name = "NAME")
     private String name;
 
-    @Basic(optional = false)
-    @Column(name = "SOCR")
+    @JsonProperty("shorttype")
     private String socr;
 
-    @Basic(optional = false)
-    @Column(name = "INDEX")
+    @JsonProperty("postindex")
     private String index;
 
-    @Basic(optional = false)
-    @Column(name = "GNINMB")
     private String gninmb;
 
-    @Basic(optional = false)
-    @Column(name = "UNO")
     private String uno;
 
-    @Basic(optional = false)
-    @Column(name = "OCATD")
+    @JsonProperty("okato")
     private String ocatd;
 
-    @Basic(optional = false)
-    @Column(name = "infis")
     private String infis;
 
     //Конструкторы

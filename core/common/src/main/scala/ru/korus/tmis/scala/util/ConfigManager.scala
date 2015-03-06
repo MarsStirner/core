@@ -37,6 +37,8 @@ object ConfigManager extends Configuration {
     var notificationActive = "on"
 
     def isNotificationActive = "on".equals(notificationActive)
+
+    def version = ConfigManager.Messages("misCore.assembly.version")
   }
 
   var RbManagerSetting = new RbManagerClass
@@ -45,7 +47,7 @@ object ConfigManager extends Configuration {
     /**
      * URL сервиса подсистемы управления справочниками
      */
-    var ServiceUrl = "http://192.168.1.123:5005"
+    var ServiceUrl = "http://10.1.2.11:5005"
 
     /**
      * Отладочный режим
@@ -628,12 +630,12 @@ object ConfigManager extends Configuration {
   class Codes extends Configuration {
     val bundle = ResourceBundle.getBundle("codes", Utf8ResourceBundleControl.Singleton)
 
-    def getValue(key: String): java.lang.String = {
+    def getValue(key : String) : java.lang.String = {
       bundle.getString(key)
     }
 
-    def getValueList(key: String): java.util.List[String] = {
-      val l: java.util.ArrayList[String] = new util.ArrayList[String]()
+    def getValueList(key: String) : java.util.List[String] = {
+      val l : java.util.ArrayList[String] = new util.ArrayList[String]()
       bundle.getString(key).split(",").foreach(e => l.add(e))
       l
     }

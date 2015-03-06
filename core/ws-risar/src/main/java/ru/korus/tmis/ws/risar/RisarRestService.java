@@ -1,5 +1,7 @@
 package ru.korus.tmis.ws.risar;
 
+import com.google.gson.Gson;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.util.LinkedMultiValueMap;
@@ -16,14 +18,13 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.*;
+import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
+import java.io.PrintWriter;
+import java.io.StringWriter;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -50,11 +51,26 @@ public class RisarRestService {
     @EJB
     DbActionPropertyBeanLocal dbActionPropertyBeanLocal;
 
+    @POST
+    @Path("/new/exam/{actionId}")
+    @Produces(MediaType.TEXT_HTML + ";charset=UTF-8")
+    public Response newExam(@PathParam(value = "actionId") Integer actionId) throws WebApplicationException {
+        logger.info("RISAR notification. New exam with actionId: " + actionId);
+        return saveExam(actionId);
+    }
+
     @PUT
     @Path("/new/exam/{actionId}")
-    public String newExam(@PathParam(value = "actionId") Integer actionId) {
+    @Produces(MediaType.TEXT_HTML + ";charset=UTF-8")
+    public Response updateExam(@PathParam(value = "actionId") Integer actionId) throws WebApplicationException {
+        logger.info("RISAR notification. Update exam with actionId: " + actionId);
+        return saveExam(actionId);
+    }
+
+
+    private Response saveExam(Integer actionId) {
         try {
-            logger.info("RISAR notification. New exam with actionId: " + actionId);
+            logger.info("RISAR notification. Save exam with actionId: " + actionId);
             Action action = dbActionBean.getActionById(actionId);
 
             final Integer clientId = action.getEvent().getPatient().getId();
@@ -64,14 +80,97 @@ public class RisarRestService {
                     em.createNamedQuery("ClientIdentification.findByPatientAndSystem").
                             setParameter("clientId", clientId).setParameter("code", "rs").setMaxResults(100).getResultList();
             logger.info("RISAR notification. RISAR identification count: " + clientIdentificationList.size());
+            if (clientIdentificationList.isEmpty()) {
+                clientIdentificationList.addAll(findByPatientInfo(action.getEvent().getPatient()));
+            }
             for (ClientIdentification clientIdentification : clientIdentificationList) {
                 logger.info("RISAR notification. RISAR identifier: " + clientIdentification.getIdentifier());
                 sendExamToRisar(action, clientIdentification);
             }
+
         } catch (CoreException ex) {
-            throw new WebApplicationException(ex);
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(ex.getMessage()).build();
+        } catch (Exception ex) {
+            StringWriter sw = new StringWriter();
+            PrintWriter pw = new PrintWriter(sw);
+            ex.printStackTrace(pw);
+            logger.error(sw.toString());
+            return Response.status(Response.Status.INTERNAL_SERVER_ERROR).entity(sw.toString()).build();
         }
-        return "ok";
+
+        return Response.ok().build();
+    }
+
+    private List<ClientIdentification> findByPatientInfo(Patient patient) throws CoreException {
+
+        RestTemplate rest = new RestTemplate();
+        MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
+        map.add("patientFIO[name]", patient.getFirstName());
+        map.add("patientFIO[surname]", patient.getLastName());
+        map.add("patientFIO[middlename]", patient.getPatrName());
+        Date birthDate = patient.getBirthDate();
+        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+        if (birthDate != null) {
+            String birthDateStr = simpleDateFormat.format(birthDate);
+            map.add("birthDate", birthDateStr);
+        }
+        int index = 0;
+        for (ClientDocument doc : patient.getClientDocuments()) {
+            String codeType = doc.getDocumentType() == null ? null : doc.getDocumentType().getCode();
+            addToRequest("codeType", codeType, index, map);
+            addToRequest("number", doc.getNumber(), index, map);
+            addToRequest("series", doc.getSerial(), index, map);
+            Date createDate = doc.getDate();
+            if (createDate != null) {
+                String createDateStr = simpleDateFormat.format(createDate);
+                if( !createDateStr.contains("1800")) {
+                    addToRequest("registry_date", createDateStr, index, map);
+                }
+            }
+            ++index;
+        }
+        logger.info("RISAR notification. Find patient param: " + map);
+        final String url = ConfigManager.Risar().ServiceUrl() + "/api/patients/v2/find/";
+        logger.info("RISAR notification. Find patientt url: " + url);
+        String resultStr = rest.postForObject(url, map, String.class);
+        logger.info("RISAR notification. Find result: " + resultStr);
+        RisarResponse result =  new Gson().fromJson(resultStr, RisarResponse.class);
+        if (!result.isOk()) {
+            throw new CoreException("RISAR notification. Find patient error:" + result);
+        }
+
+        List<ClientIdentification> res = new LinkedList<ClientIdentification>();
+        res.add(createNewIdentification(patient, result));
+        return res;
+    }
+
+    private ClientIdentification createNewIdentification(Patient patient, RisarResponse result) throws CoreException {
+        final ClientIdentification identification = new ClientIdentification();
+        identification.setClient(patient);
+        identification.setIdentifier(result.getPatientId());
+        identification.setCreateDatetime(new Date());
+        identification.setModifyDatetime(new Date());
+        identification.setDeleted(false);
+        identification.setCheckDate(new Date());
+        final AccountingSystem accountingSystem = findOrCreateAccountingSystem();
+        identification.setAccountingSystem(accountingSystem);
+        em.persist(identification);
+        return identification;
+    }
+
+    private AccountingSystem findOrCreateAccountingSystem() throws CoreException {
+        List<AccountingSystem> res = em.createQuery("SELECT accountingSystem FROM AccountingSystem accountingSystem WHERE accountingSystem.code = 'rs'", AccountingSystem.class).
+                setMaxResults(100).getResultList();
+        if (res.isEmpty()) {
+            throw new CoreException("RISAR notification. Patient registration error. Not found rbAccountingSystem.code = 'rs'");
+        }
+        return res.iterator().next();
+    }
+
+    private void addToRequest(String param, String value, int index, MultiValueMap<String, String> map) {
+        if (value != null && !value.isEmpty()) {
+            map.add("patientDocuments[" + index + "]" + "[" + param + "]", value);
+        }
     }
 
     private void sendExamToRisar(Action action, ClientIdentification clientIdentification) throws CoreException {
@@ -79,7 +178,7 @@ public class RisarRestService {
         MultiValueMap<String, String> map = new LinkedMultiValueMap<String, String>();
         map.add("inspectationID", String.valueOf(action.getId()));
         map.add("patiendID", clientIdentification.getIdentifier());
-        final Staff staff = action.getModifyPerson();
+        final Staff staff = action.getExecutor();
         if (staff != null) {
             map.add("doctorFIO[surname]", staff.getLastName());
             map.add("doctorFIO[name]", staff.getFirstName());
@@ -87,9 +186,10 @@ public class RisarRestService {
             if (patrName != null && !patrName.isEmpty()) {
                 map.add("doctorFIO[middlename]", patrName);
             }
-            final RbPost post = staff.getPost();
-            if (post != null) {
-                map.add("position", post.getName());
+            final Speciality speciality = staff.getSpeciality();
+            if (speciality != null) {
+                //map.add("position", post.getName());
+                map.add("specialityCode", speciality.getOKSOCode());
             }
         }
         try {
@@ -111,15 +211,15 @@ public class RisarRestService {
             Map<ActionProperty, List<APValue>> actionProp =
                     dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList(diagCode));
             if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
-                Object value = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
+                Object value = actionProp.entrySet().iterator().next().getValue().iterator().next();
                 if (value instanceof APValueMKB) {
                     map.add("diagnosisCode", ((APValueMKB) value).getMkb().getDiagID());
                 }
             }
             actionProp =
-                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList("recommended", "resort"));
+                    dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList("recommendations", "resort"));
             if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
-                Object value = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
+                Object value = actionProp.entrySet().iterator().next().getValue().iterator().next();
                 if (value instanceof APValue) {
                     map.add("recommendations", ((APValue) value).getValueAsString());
                 }
@@ -128,13 +228,17 @@ public class RisarRestService {
             logger.error("RISAR notification. Cannot set INN and title of organization.", e);
         }
 
-        map.add("visitDate", (new SimpleDateFormat("yyyy-MM-dd")).format(action.getModifyDatetime()));
-        map.add("visitTime", (new SimpleDateFormat("HH:mm:ss")).format(action.getModifyDatetime()));
+        final Date date = action.getBegDate();
+        if (date != null) {
+            map.add("visitDate", (new SimpleDateFormat("yyyy-MM-dd")).format(date));
+            map.add("visitTime", (new SimpleDateFormat("HH:mm:ss")).format(date));
+        }
 
         logger.info("RISAR notification. Request param: " + map);
         final String url = ConfigManager.Risar().ServiceUrl() + "/api/patient/v1/saveInspectionResults/";
+        logger.info("RISAR notification. Request url: " + url);
         String result = rest.postForObject(url, map, String.class);
-        logger.info("RISAR notification. Request url: " + url + " Request result: " + result);
+        logger.info("RISAR notification. Request result: " + result);
         if (result.contains("\"failed\"")) {
             throw new CoreException("RISAR notification error:" + result);
         }
@@ -143,4 +247,5 @@ public class RisarRestService {
             throw new CoreException(("RISAR notification error:" + result));
         }*/
     }
+
 }

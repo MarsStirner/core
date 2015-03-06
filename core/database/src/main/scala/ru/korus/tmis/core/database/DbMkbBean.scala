@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.Mkb
+import ru.korus.tmis.core.entity.model.{Mkb, Nomenclature}
 import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import grizzled.slf4j.Logging

@@ -3,6 +3,7 @@ package ru.korus.tmis.core.entity.model;
 import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 @Embeddable
 public class IndexedId implements Serializable {
@@ -51,7 +52,14 @@ public class IndexedId implements Serializable {
 
         final IndexedId indexedId = (IndexedId) o;
 
-        return id == indexedId.id && index == indexedId.index;
+        if (id != indexedId.id) {
+            return false;
+        }
+        if (index != indexedId.index) {
+            return false;
+        }
+
+        return true;
     }
 
     @Override

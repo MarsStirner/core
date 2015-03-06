@@ -16,11 +16,12 @@ import ru.korus.tmis.core.data.adapters.ISODate
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.bak.{DbBbtResponseBeanLocal, DbBbtResultOrganismBeanLocal, DbBbtResultTextBeanLocal}
 import ru.korus.tmis.core.database.common._
+import ru.korus.tmis.core.database.finance.DbEventLocalContractLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.entity.model.fd.APValueFlatDirectory
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.lock.ActionWithLockInfo
-import ru.korus.tmis.core.notification.NotificationBeanLocal
+import ru.korus.tmis.core.notification.{DbNotificationActionBeanLocal, NotificationBeanLocal}
 import ru.korus.tmis.core.patient._
 import ru.korus.tmis.core.values.InfectionControl
 import ru.korus.tmis.scala.util._
@@ -208,6 +209,16 @@ with CAPids {
   @EJB
   var monitoringBeanLocal: MonitoringBeanLocal = _
 
+  @EJB
+  var dbNotificationActionBeanLocal: DbNotificationActionBeanLocal = _
+
+  @EJB
+  var dbEventClientRelation: DbEventClientRelationBeanLocal = _
+
+  @EJB
+  var dbEventLocalContractLocal: DbEventLocalContractLocal = _
+
+
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
       val patients = patientBean.getAllPatients(requestData)
@@ -302,7 +313,9 @@ with CAPids {
       val street = patientBean.getKLADRStreetForPatient(patient)
       val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(ide)
 
-      new AppealData(positionE._1,
+      val event: Event = positionE._1
+
+      new AppealData( event,
         positionA._1,
         values,
         null,
@@ -311,7 +324,7 @@ with CAPids {
         street,
         null,
         actionBean.getLastActionByActionTypeIdAndEventId, //havePrimary
-        dbClientRelation.getClientRelationByRelativeId,
+        dbEventClientRelation.getByEvent(event),
         null,
         if (positionA._1.getContractId != null) {
           dbContractBean.getContractById(positionA._1.getContractId.intValue())
@@ -320,8 +333,8 @@ with CAPids {
         },
         currentDepartment,
         dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
-        dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
-      )
+        dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue()),
+        dbEventLocalContractLocal.getByEventId(event.getId))
     } else {
       throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
     }
@@ -341,7 +354,8 @@ with CAPids {
     //val appType = dbFDRecordBean.getIdValueFDRecordByEventTypeId(25, positionE._1.getEventType.getId.intValue())
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
-    new AppealData(positionE._1,
+    val event: Event = positionE._1
+    new AppealData(event,
       positionA._1,
       values,
       null,
@@ -350,16 +364,17 @@ with CAPids {
       null,
       null,
       actionBean.getLastActionByActionTypeIdAndEventId, //havePrimary
-      dbClientRelation.getClientRelationByRelativeId,
+      dbEventClientRelation.getByEvent(event),
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes,
-      if (positionE._1.getContract != null) {
-        dbContractBean.getContractById(positionE._1.getContract.getId.intValue())
+      if (event.getContract != null) {
+        dbContractBean.getContractById(event.getContract.getId.intValue())
       } else {
         null
       },
       currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
-      dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
+      dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue()),
+      dbEventLocalContractLocal.getByEventId(event.getId)
     )
   }
 
@@ -376,7 +391,16 @@ with CAPids {
     val street = patientBean.getKLADRStreetForPatient(positionE._1.getPatient)
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
-    mapper.writeValueAsString(new AppealData(positionE._1,
+    val event: Event = positionE._1
+    val eventLocalContract: EventLocalContract = dbEventLocalContractLocal.getByEventId(event.getId)
+    val template: TempInvalid = dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue())
+    val contract: Contract = if (positionA._1.getContractId != null) {
+      dbContractBean.getContractById(positionA._1.getContractId.intValue())
+    } else {
+      null
+    }
+
+    val appealData: AppealData = new AppealData(event,
       positionA._1,
       values,
       actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes,
@@ -385,17 +409,15 @@ with CAPids {
       street,
       null,
       actionBean.getLastActionByActionTypeIdAndEventId, //havePrimary
-      dbClientRelation.getClientRelationByRelativeId,
+      dbEventClientRelation.getByEvent(event),
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes, //в тч Admission Diagnosis
-      if (positionA._1.getContractId != null) {
-        dbContractBean.getContractById(positionA._1.getContractId.intValue())
-      } else {
-        null
-      },
+      contract,
       currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
-      dbTempInvalidBean.getTempInvalidByEventId(positionE._1.getId.intValue())
-    ))
+      template,
+      eventLocalContract)
+
+    mapper.writeValueAsString(appealData)
 
   }
 
@@ -549,7 +571,7 @@ with CAPids {
 
   private def notifyAction(actions: java.util.List[Action], baseUri: URI): java.lang.Boolean = {
     actions.toList.foreach(action => {
-      notificationBeanLocal.sendNotification(action)
+      dbNotificationActionBeanLocal.pullDb()
     })
     true
   }
@@ -856,10 +878,23 @@ with CAPids {
 
   }
 
+  def initActionTypeIdByFlatCode(data: JSONCommonData) {
+    data.getData.foreach(d => {
+      if (d.getFlatCode != null && !d.getFlatCode.isEmpty) {
+        val at = actionTypeBean.getActionTypeByFlatCode(d.getFlatCode())
+        if (d.getTypeId == null && at != null)
+          d.setTypeId(at.getId)
+      }
+    })
+
+  }
+
   //создание первичного мед. осмотра
   def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI) = {
 
     validateDocumentsAvailability(eventId)
+
+    initActionTypeIdByFlatCode(data);
 
     val isPrimary = data.getData.find(ce => ce.getTypeId.compareTo(i18n("db.actionType.primary").toInt) == 0).orNull != null //Врач прописывается только для первичного осмотра  (ид=139)
     if (isPrimary)
@@ -1426,7 +1461,7 @@ with CAPids {
 
     val mapper: ObjectMapper = new ObjectMapper()
 
-    val list: java.util.LinkedList[Object] = dictName match {
+    val list: java.util.List[Object] = dictName match {
       case null => null
       case "bloodTypes" | "bloodPhenotype" =>
         //Группы крови
@@ -1616,17 +1651,13 @@ with CAPids {
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
 
-  def getContracts(eventTypeId: Int, showDeleted: Boolean, showExpired: Boolean) = {
-    if (eventTypeId < 1)
-      throw new CoreException("Идентификатор типа события не может быть меньше 1")
-
-    val e = dbEventTypeBean.getEventTypeById(eventTypeId)
+  def getContracts(eventTypeId: Int, eventTypeCode: String, showDeleted: Boolean, showExpired: Boolean) = {
+    val e = if(eventTypeCode != null && !eventTypeCode.isEmpty()) dbEventTypeBean.getEventTypeByCode(eventTypeCode) else dbEventTypeBean.getEventTypeById(eventTypeId)
     val result = dbContractBean.getContractsByEventTypeId(eventTypeId, e.getFinance.getId, showDeleted, showExpired)
     if (result == null)
       new ju.ArrayList[ContractContainer]()
     else
       result.map(x => new ContractContainer(x)).asJava
-
   }
 
   def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {

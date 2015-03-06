@@ -102,9 +102,6 @@ public class PatientProperties implements Informationable {
     public String getInfo() {
         final StringBuilder result = new StringBuilder("PatientProperties");
         result.append("[ ID=").append(id);
-        if(id == 1353709 ){
-            ;
-        }
         result.append(" FAM=").append(FAM);
         result.append(" IM=").append(IM);
         result.append(" OT=").append(OT);
