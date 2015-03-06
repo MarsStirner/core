@@ -63,7 +63,7 @@ public class DbUtil {
             new TableMaxIndex("`Action`", 259),
             new TableMaxIndex("`Event`", 254),
             new TableMaxIndex("`Person`", 25),
-            new TableMaxIndex("`Event_LocalContract`", 0),
+            //new TableMaxIndex("`Event_LocalContract`", 0),
             new TableMaxIndex("`Event_ClientRelation`", 0),
     };
 

@@ -13,8 +13,7 @@ import ru.korus.tmis.scala.util.I18nable
 import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal
 
 
-@Stateless
-class DbSchemeKladrBean
+class DbSchemeKladrBeanOld
   extends DbSchemeKladrBeanLocal
   with Logging
   with I18nable {

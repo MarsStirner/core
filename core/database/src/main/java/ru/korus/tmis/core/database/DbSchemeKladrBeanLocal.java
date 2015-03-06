@@ -13,7 +13,7 @@ public interface DbSchemeKladrBeanLocal {
     long getCountOfKladrRecordsWithFilter(Object filter)
             throws CoreException;
 
-    java.util.LinkedList<Object> getAllKladrRecordsWithFilter(int page, int limit, String sorting, ListDataFilter filter)
+    java.util.List<Object> getAllKladrRecordsWithFilter(int page, int limit, String sorting, ListDataFilter filter)
             throws CoreException;
 
     Kladr getKladrByCode(String code) throws CoreException;

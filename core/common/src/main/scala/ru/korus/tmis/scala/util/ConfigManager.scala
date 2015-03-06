@@ -47,7 +47,7 @@ object ConfigManager extends Configuration {
     /**
      * URL сервиса подсистемы управления справочниками
      */
-    var ServiceUrl = "http://192.168.1.123:5005"
+    var ServiceUrl = "http://10.1.2.11:5005"
 
     /**
      * Отладочный режим

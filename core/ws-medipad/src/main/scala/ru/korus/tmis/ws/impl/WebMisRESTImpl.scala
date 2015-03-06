@@ -1461,7 +1461,7 @@ with CAPids {
 
     val mapper: ObjectMapper = new ObjectMapper()
 
-    val list: java.util.LinkedList[Object] = dictName match {
+    val list: java.util.List[Object] = dictName match {
       case null => null
       case "bloodTypes" | "bloodPhenotype" =>
         //Группы крови
