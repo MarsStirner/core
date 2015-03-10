@@ -32,7 +32,7 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-business</artifactId>
-            <version>${version.tmis.core}</version>
+            <version>2.5.57-SNAPSHOT</version>
             <type>ejb</type>
         </dependency>
 

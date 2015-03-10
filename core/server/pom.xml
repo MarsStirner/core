@@ -65,24 +65,10 @@
         <dependency>
             <groupId>ru.korus.tmis</groupId>
             <artifactId>laboratory-bak</artifactId>
-            <version>${version.tmis.core}</version>
+            <version>2.5.57-SNAPSHOT</version>
             <scope>provided</scope>
             <type>war</type>
         </dependency>
-
-        <!--<dependency>-->
-            <!--<groupId>ru.korus.tmis.drugstore</groupId>-->
-            <!--<artifactId>tmis-ws-drugstore</artifactId>-->
-            <!--<version>${version.tmis.core}</version>-->
-            <!--<type>war</type>-->
-        <!--</dependency>-->
-
-        <!--<dependency>-->
-        <!--<groupId>ru.korus.tmis.hl7</groupId>-->
-        <!--<artifactId>tmis-hl7</artifactId>-->
-        <!--<version>${version.tmis.core}</version>-->
-        <!--<type>war</type>-->
-        <!--</dependency>-->
 
         <dependency>
             <groupId>ru.korus.tmis.ws.finance</groupId>

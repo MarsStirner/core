@@ -6,6 +6,7 @@
         <artifactId>tmis-core</artifactId>
         <groupId>ru.korus.tmis</groupId>
         <version>2.5.57-SNAPSHOT</version>
+        <relativePath>../</relativePath>
     </parent>
     <groupId>ru.korus.tmis.admin</groupId>
     <artifactId>admin-panel</artifactId>
