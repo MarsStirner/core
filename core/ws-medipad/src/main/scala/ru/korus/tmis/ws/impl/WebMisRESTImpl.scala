@@ -315,7 +315,7 @@ with CAPids {
 
       val event: Event = positionE._1
 
-      new AppealData( event,
+      new AppealData(event,
         positionA._1,
         values,
         null,
@@ -539,33 +539,37 @@ with CAPids {
     val APValueCache = mutable.HashMap[ActionProperty, java.util.List[APValue]]()
     val pastActionsCache = mutable.HashMap[(Set[String], Int, String), java.util.List[Action]]()
 
-    jData.data.get(0).group.get(1).attribute.foreach(ap => {
-      if (ap.typeId == null || ap.typeId.intValue() <= 0) {
-        if (reWriteId.booleanValue) //в id -> apt.id
-          ap.typeId = ap.id
-        else
-          ap.typeId = actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
-      }
-
-      // Вычисляем "подтягивающиеся" из прошлых документов значение
-      if (event != null) {
-        val aProp = try {
-          actionPropertyTypeBean.getActionPropertyTypeById(ap.getId)
-        } catch {
-          case e: Throwable => null
-        }
-        val at = try {
-          actionTypeBean.getActionTypeById(jData.getData.get(0).getId) //TODO: jData.getData.get(0).getId это Action.id, но не ActionType.id
-        } catch {
-          case e: Throwable => null
-        }
-
-        if (aProp != null && at != null) {
-          ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp, cache, APValueCache, pastActionsCache))
-        }
-      }
+    val at = try {
+      actionTypeBean.getActionTypeById(jData.getData.get(0).getId) //TODO: jData.getData.get(0).getId это Action.id, но не ActionType.id
+    } catch {
+      case e: Throwable => null
     }
-    )
+    if (at != null) {
+      val aptList = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(at.getId);
+      jData.data.get(0).group.get(1).attribute.par.foreach(ap => {
+        if (ap.typeId == null || ap.typeId.intValue() <= 0) {
+          if (reWriteId.booleanValue) //в id -> apt.id
+            ap.typeId = ap.id
+          else
+            ap.typeId = actionPropertyBean.getActionPropertyById(ap.id.intValue()).getType.getId.intValue()
+        }
+
+        // Вычисляем "подтягивающиеся" из прошлых документов значение
+        if (event != null) {
+          val aProp = try {
+            aptList.find(p => p.getId == ap.getId).get
+            //actionPropertyTypeBean.getActionPropertyTypeById(ap.getId)
+          } catch {
+            case e: Throwable => null
+          }
+
+          if (aProp != null) {
+            ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp, cache, APValueCache, pastActionsCache))
+          }
+        }
+      }
+      )
+    }
     jData
   }
 
@@ -725,8 +729,8 @@ with CAPids {
 
       val endDateProperty = lastAction.getActionProperties
         .find(ap => ap.getType.getCode != null
-                    && ap.getType.getCode.startsWith("infect" + drugType)
-                    && ap.getType.getCode.endsWith("EndDate_" + apt.getCode.last))
+        && ap.getType.getCode.startsWith("infect" + drugType)
+        && ap.getType.getCode.endsWith("EndDate_" + apt.getCode.last))
 
       val endDateValue: Date = {
         if (endDateProperty.isDefined) {
@@ -1652,7 +1656,7 @@ with CAPids {
   }
 
   def getContracts(eventTypeId: Int, eventTypeCode: String, showDeleted: Boolean, showExpired: Boolean) = {
-    val e = if(eventTypeCode != null && !eventTypeCode.isEmpty()) dbEventTypeBean.getEventTypeByCode(eventTypeCode) else dbEventTypeBean.getEventTypeById(eventTypeId)
+    val e = if (eventTypeCode != null && !eventTypeCode.isEmpty()) dbEventTypeBean.getEventTypeByCode(eventTypeCode) else dbEventTypeBean.getEventTypeById(eventTypeId)
     val result = dbContractBean.getContractsByEventTypeId(eventTypeId, e.getFinance.getId, showDeleted, showExpired)
     if (result == null)
       new ju.ArrayList[ContractContainer]()
@@ -1722,7 +1726,7 @@ with CAPids {
   def getInfectionMonitoring(eventId: Int, authData: AuthData) = {
     val outList = new java.util.ArrayList[java.util.List[AnyRef]]()
     appealBean.getInfectionMonitoring(dbEventBean.getEventById(eventId).getPatient)
-    .foreach(p => outList.add(List[AnyRef](p._1, ISODate(p._2), ISODate(p._3), p._4)))
+      .foreach(p => outList.add(List[AnyRef](p._1, ISODate(p._2), ISODate(p._3), p._4)))
     outList
   }
 
@@ -1834,7 +1838,7 @@ with CAPids {
   def deleteAutoSaveField(id: String, auth: AuthData) {
     dbAutoSaveStorageLocal.delete(id, auth.getUserId)
   }
-  
+
   override def getRlsById(id: Int): DrugData = {
     val n: Nomenclature = dbRlsBean.getRlsById(id)
     new DrugData(n, dbRlsBean.getRlsBalanceOfGood(n))
@@ -1842,7 +1846,9 @@ with CAPids {
 
   override def getRlsByText(text: String): ju.List[DrugData] = {
     val res = new ju.LinkedList[DrugData]();
-    dbRlsBean.getRlsByText(text).foreach(n => {res.add(new DrugData(n, dbRlsBean.getRlsBalanceOfGood(n)))})
+    dbRlsBean.getRlsByText(text).foreach(n => {
+      res.add(new DrugData(n, dbRlsBean.getRlsBalanceOfGood(n)))
+    })
     return res
   }
 
@@ -1856,7 +1862,7 @@ with CAPids {
 
     val actions = actionBean.getAllActionsOfPatientThatHasActionProperty(patientId, "therapyTitle")
 
-    val l = actions.flatMap(a =>  {
+    val l = actions.flatMap(a => {
 
       val properties = a.getActionProperties
 
@@ -1866,7 +1872,10 @@ with CAPids {
           case 1 =>
             val values = actionPropertyBean.getActionPropertyValue(props.head)
             values.size match {
-              case 1 => values.head match { case h: APValueFlatDirectory => Option(h); case _ => None }
+              case 1 => values.head match {
+                case h: APValueFlatDirectory => Option(h);
+                case _ => None
+              }
               case 0 => None
               case _ => throw new CoreException("Invalid action property values " + props.head)
             }
@@ -1880,7 +1889,10 @@ with CAPids {
           case 1 =>
             val values = actionPropertyBean.getActionPropertyValue(props.head)
             values.size match {
-              case 1 => values.head match { case h: APValueDate => Option(h.getValue); case _ => None }
+              case 1 => values.head match {
+                case h: APValueDate => Option(h.getValue);
+                case _ => None
+              }
               case 0 => None
               case _ => throw new CoreException("Invalid action property values " + props.head)
             }
@@ -1894,7 +1906,10 @@ with CAPids {
           case 1 =>
             val values = actionPropertyBean.getActionPropertyValue(props.head)
             values.size match {
-              case 1 => values.head match { case h: APValueDate => Option(h.getValue); case _ => None }
+              case 1 => values.head match {
+                case h: APValueDate => Option(h.getValue);
+                case _ => None
+              }
               case 0 => None
               case _ => throw new CoreException("Invalid action property values " + props.head)
             }
@@ -1908,7 +1923,10 @@ with CAPids {
           case 1 =>
             val values = actionPropertyBean.getActionPropertyValue(props.head)
             values.size match {
-              case 1 => values.head match { case h: APValueFlatDirectory => Option(h.getValue); case _ => None }
+              case 1 => values.head match {
+                case h: APValueFlatDirectory => Option(h.getValue);
+                case _ => None
+              }
               case 0 => None
               case _ => throw new CoreException("Invalid action property values " + props.head)
             }
@@ -1922,7 +1940,10 @@ with CAPids {
           case 1 =>
             val values = actionPropertyBean.getActionPropertyValue(props.head)
             values.size match {
-              case 1 => values.head match { case h: APValueDate => Option(h.getValue); case _ => None }
+              case 1 => values.head match {
+                case h: APValueDate => Option(h.getValue);
+                case _ => None
+              }
               case 0 => None
               case _ => throw new CoreException("Invalid action property values " + props.head)
             }
@@ -1936,7 +1957,10 @@ with CAPids {
           case 1 =>
             val values = actionPropertyBean.getActionPropertyValue(props.head)
             values.size match {
-              case 1 => values.head match { case h: APValueDate => Option(h.getValue); case _ => None }
+              case 1 => values.head match {
+                case h: APValueDate => Option(h.getValue);
+                case _ => None
+              }
               case 0 => None
               case _ => throw new CoreException("Invalid action property values " + props.head)
             }
@@ -1950,7 +1974,10 @@ with CAPids {
           case 1 =>
             val values = actionPropertyBean.getActionPropertyValue(props.head)
             values.size match {
-              case 1 => values.head match { case h: APValueString => Option(h.getValue); case _ => None }
+              case 1 => values.head match {
+                case h: APValueString => Option(h.getValue);
+                case _ => None
+              }
               case 0 => None
               case _ => throw new CoreException("Invalid action property values " + props.head)
             }
@@ -1989,7 +2016,7 @@ with CAPids {
       val e = p._2.groupBy(s => (s._6, s._7, s._8, s._9, s._10)).map(t => {
         val therapyPhaseEndDateInGroup = t._2.map(_._11).toList.sorted.last.orNull
         val d = t._2.map(y => new TherapyDay(y._12.orNull, y._13, y._14, y._15)).toList.sortBy(_.createDate).asJava
-        val event = if(!d.isEmpty) d.head.getEventId else 0
+        val event = if (!d.isEmpty) d.head.getEventId else 0
         new TherapyPhase(event, t._1._2, t._1._3, t._1._4, t._1._5.orNull, therapyPhaseEndDateInGroup, d)
       }).toList.asJava
       new TherapyContainer(p._1._1, p._1._2, p._1._3, p._1._4.orNull, therapyEndDateInGroup, e)
