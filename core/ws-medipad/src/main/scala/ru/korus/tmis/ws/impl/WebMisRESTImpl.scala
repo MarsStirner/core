@@ -558,7 +558,6 @@ with CAPids {
         if (event != null) {
           val aProp = try {
             aptList.find(p => p.getId == ap.getId).get
-            //actionPropertyTypeBean.getActionPropertyTypeById(ap.getId)
           } catch {
             case e: Throwable => null
           }
