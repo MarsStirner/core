@@ -13,7 +13,7 @@ import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.entity.model.RbLaboratory;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -33,7 +33,7 @@ import java.util.List;
  * Since: 1.0.0.81
  */
 @Stateless
-@Interceptors(ServicesLoggingInterceptor.class)
+
 public class CustomInfoRESTImpl {
 
     @EJB private WebMisREST wsImpl;

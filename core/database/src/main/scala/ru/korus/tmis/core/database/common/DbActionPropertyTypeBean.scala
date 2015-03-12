@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database.common
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import ru.korus.tmis.core.entity.model.ActionPropertyType
 
 import grizzled.slf4j.Logging
@@ -17,7 +17,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.I18nable
 import scala.language.reflectiveCalls
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbActionPropertyTypeBean
   extends DbActionPropertyTypeBeanLocal

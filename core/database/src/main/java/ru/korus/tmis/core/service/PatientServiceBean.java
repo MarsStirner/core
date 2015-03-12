@@ -3,7 +3,7 @@ package ru.korus.tmis.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
+
 import ru.korus.tmis.core.database.common.DbUUIDBeanLocal;
 import ru.korus.tmis.core.service.interfaces.PatientService;
 
@@ -21,7 +21,6 @@ import java.util.List;
  *         Date: 28.08.13 23:34
  */
 @Stateless
-@Interceptors(LoggingInterceptor.class)
 public class PatientServiceBean implements PatientService {
     private static final Logger log = LoggerFactory.getLogger(PatientServiceBean.class);
 

@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database
 
 import javax.persistence.{PersistenceContext, EntityManager}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.entity.model.fd.FDRecord
 import scala.collection.JavaConversions._
@@ -10,7 +10,6 @@ import javax.ejb.{TransactionAttributeType, TransactionAttribute, Stateless}
 import ru.korus.tmis.scala.util.I18nable
 
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbFDRecordBean extends DbFDRecordBeanLocal
 with Logging

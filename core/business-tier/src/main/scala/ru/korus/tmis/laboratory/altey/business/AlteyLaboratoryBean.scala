@@ -28,7 +28,7 @@ import java.net.{PasswordAuthentication, Authenticator}
 import java.util.{LinkedList, Date}
 import ru.korus.tmis.laboratory.altey.request._
 import ru.korus.tmis.laboratory.altey.accept.AnalysisResult
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.xml.rpc.Stub
 
 import org.apache.axis.client.{Stub => AxisStub}
@@ -39,8 +39,6 @@ import scala.Some
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
-//@Remote(Array(classOf[LaboratoryBeanLocal]))
 @Stateless
 class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18nable {
   @EJB

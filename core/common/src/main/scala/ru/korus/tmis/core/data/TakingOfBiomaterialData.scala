@@ -7,7 +7,6 @@ import ru.korus.tmis.core.data.adapters.DateTimeAdapter
 import scala.beans.BeanProperty
 import java.util.{Calendar, Date}
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.util.reflect.{LoggingManager, TmisLogging}
 import java.text.SimpleDateFormat
 import java.util.LinkedList
 import scala.collection.JavaConversions._
@@ -278,10 +277,6 @@ class PatientInfoDataContainer {
         case 2 => "female"
         case _ => "unknown"
       }
-    } else {
-      LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
-      LoggingManager.warning("code " + ConfigManager.ErrorCodes.PatientIsNull +
-        "PatientInfoDataContainer не заполнен данными: " + ConfigManager.Messages("error.patientIsNull"))
     }
 
   }
@@ -315,10 +310,6 @@ class TestTubeTypeInfoContainer {
       this.volume = tubeType.getVolume
       this.covCol = tubeType.getCovCol
       this.color = tubeType.getColor
-    } else {
-      LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
-      LoggingManager.warning("code " + ConfigManager.ErrorCodes.RbTestTubeTypeIsNull +
-        "TestTubeTypeInfoContainer не заполнен данными: " + ConfigManager.Messages("error.rbTestTubeTypeIsNull"))
     }
   }
 }
@@ -393,10 +384,6 @@ class JobTicketInfoContainer {
         }
         actionValues.foreach(a => this.actions += new ActionInfoDataContainer(a._1, a._2))
       }
-    } else {
-      LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
-      LoggingManager.warning("code " + ConfigManager.ErrorCodes.JobTicketIsNull +
-        "JobTicketInfoContainer не заполнен данными: " + ConfigManager.Messages("error.rbTestTubeTypeIsNull"))
     }
   }
 }

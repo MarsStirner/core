@@ -7,7 +7,7 @@ import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{QuotaTypesListRequestDataFilter, DictionaryListRequestDataFilter, QueryDataStructure}
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.{EJB, Stateless}
 import java.util.Date
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}

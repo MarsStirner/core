@@ -18,14 +18,14 @@ import javax.ws.rs.core.Context;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 import com.sun.jersey.api.json.JSONWithPadding;
 
 /**
  * Сервисы для работы с ядром TMIS посредством Web-клиента
  */
 @Stateless
-@Interceptors(ServicesLoggingInterceptor.class)
+
 public class PatientRegistryRESTImpl {
 
     @EJB

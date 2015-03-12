@@ -884,7 +884,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
 
     @Test
     public void testCreateDocument() {
-        System.out.println("**************************** testCreateAction() started...");
+        System.out.println("**************************** testCreateDocument() started...");
         try {
             AuthData authData =WebMisBase.auth(authStorageBeanLocal);
             //http://webmis/data/appeals/325/documents/?callback=jQuery18205675772596150637_1394525601248

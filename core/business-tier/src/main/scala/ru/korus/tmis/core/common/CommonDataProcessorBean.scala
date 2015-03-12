@@ -6,7 +6,7 @@ import ru.korus.tmis.core.database._
 import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import grizzled.slf4j.Logging
 import javax.ejb.{Stateless, EJB}
@@ -29,7 +29,6 @@ import scala.List
 import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class CommonDataProcessorBean
   extends CommonDataProcessorBeanLocal

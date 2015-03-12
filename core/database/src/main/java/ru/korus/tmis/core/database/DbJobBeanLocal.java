@@ -24,7 +24,7 @@ public interface DbJobBeanLocal {
      * @see Job
      * @see CoreException
      */
-    Job getJobById(int id) throws CoreException;;
+    Job getJobById(int id) throws CoreException;
 
     /**
      * Создание или редактирование работы Job

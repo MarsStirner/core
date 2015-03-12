@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database.common
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import ru.korus.tmis.core.entity.model.{OrgStructure, ActionType, Event}
 
 import grizzled.slf4j.Logging
@@ -26,7 +26,7 @@ import com.google.common.collect.{Multimap, HashMultimap}
 import java.util
 import scala.language.reflectiveCalls
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbEventBean
   extends DbEventBeanLocal

@@ -3,7 +3,7 @@ package ru.korus.tmis.ws.webmis.rest;
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 import ru.korus.tmis.prescription.AssigmentIntervalDataArray;
 import ru.korus.tmis.prescription.CreatePrescriptionReqData;
 import ru.korus.tmis.prescription.ExecuteIntervalsData;
@@ -25,7 +25,7 @@ import java.util.Arrays;
  * Description:  <br>
  */
 @Stateless
-@Interceptors(ServicesLoggingInterceptor.class)
+
 public class PrescriptionsRESTImpl {
 
     @EJB

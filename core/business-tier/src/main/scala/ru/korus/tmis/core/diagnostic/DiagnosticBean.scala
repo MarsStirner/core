@@ -6,7 +6,6 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common._
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import ConfigManager.APWI
 
@@ -17,7 +16,6 @@ import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DiagnosticBean
   extends DiagnosticBeanLocal

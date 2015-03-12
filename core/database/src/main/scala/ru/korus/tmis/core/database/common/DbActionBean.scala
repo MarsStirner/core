@@ -19,7 +19,7 @@ import ru.korus.tmis.core.database.DbActionTypeBeanLocal
 import org.joda.time.{DateTimeConstants, DateTime}
 import scala.language.reflectiveCalls
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbActionBean
   extends DbActionBeanLocal

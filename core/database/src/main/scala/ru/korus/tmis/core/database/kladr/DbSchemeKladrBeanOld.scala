@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database.kladr
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}

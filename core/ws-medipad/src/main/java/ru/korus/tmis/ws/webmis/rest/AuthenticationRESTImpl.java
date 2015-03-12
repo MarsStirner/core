@@ -9,7 +9,7 @@ import javax.ws.rs.core.Context;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.*;
-import ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor;
+
 import ru.korus.tmis.core.data.RoleData;
 import ru.korus.tmis.core.exception.AuthenticationException;
 import ru.korus.tmis.ws.medipad.AuthenticationWebService;
@@ -20,7 +20,6 @@ import java.util.Arrays;
 /**
  * Description: Сервисы авторизации
  */
-@Interceptors(AuthLoggingInterceptor.class)
 @Singleton
 @Path("/tms-auth/")
 @Produces("application/json")

@@ -19,14 +19,12 @@ import ru.korus.tmis.core.exception.CoreException
 import org.codehaus.jackson.map.ObjectMapper
 import javax.ejb._
 import scala.util.control.Breaks._
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import java.util
 import util.Calendar
 import ru.korus.tmis.scala.util.{General, I18nable, ConfigManager}
 import ru.korus.tmis.core.entity.model.kladr.{Street, Kladr}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class PatientBean
   extends PatientBeanLocal

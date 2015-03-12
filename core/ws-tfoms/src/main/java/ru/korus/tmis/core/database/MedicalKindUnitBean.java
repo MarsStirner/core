@@ -2,7 +2,6 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
 
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -16,7 +15,7 @@ import java.util.List;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Interceptors(value = {LoggingInterceptor.class})
+
 @Stateless
 public class MedicalKindUnitBean implements MedicalKindUnitBeanLocal {
 

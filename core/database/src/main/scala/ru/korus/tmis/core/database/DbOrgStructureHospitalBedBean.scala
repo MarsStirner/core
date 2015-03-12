@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -15,7 +15,7 @@ import scala.language.reflectiveCalls
  * Date: 8/19/13
  * Time: 11:09 AM
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbOrgStructureHospitalBedBean extends DbOrgStructureHospitalBedBeanLocal
                                     with Logging

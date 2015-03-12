@@ -4,12 +4,12 @@ import ru.korus.tmis.core.entity.model.RbHospitalBedProfile
 import javax.persistence.{PersistenceContext, EntityManager}
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.interceptor.Interceptors
 import java.lang.Iterable
 import ru.korus.tmis.scala.util.I18nable
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbHospitalBedProfileBean
   extends DbRbHospitalBedProfileBeanLocal

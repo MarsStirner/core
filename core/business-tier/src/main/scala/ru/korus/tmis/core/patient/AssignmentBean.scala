@@ -2,7 +2,6 @@ package ru.korus.tmis.core.patient
 
 import grizzled.slf4j.Logging
 import javax.ejb.{EJB, Stateless}
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
@@ -19,7 +18,6 @@ import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class AssignmentBean extends AssignmentBeanLocal
 with Logging

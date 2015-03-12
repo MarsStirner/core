@@ -4,7 +4,7 @@ import ru.korus.tmis.core.entity.model.{TempInvalidPeriod, TempInvalid, Staff, P
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
 import ru.korus.tmis.core.exception.NoSuchRbTempInvalidDocumentException
@@ -13,7 +13,7 @@ import javax.ejb.EJB
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbTempInvalidBean
   extends DbTempInvalidBeanLocal

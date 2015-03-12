@@ -17,7 +17,6 @@ import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
 import ru.korus.tmis.laboratory.across.accept.AnalysisResultAcross
 import ru.korus.tmis.laboratory.across.accept2.{AnalysisResult => AResult2}
@@ -31,8 +30,6 @@ import scala.language.reflectiveCalls
 import scala.collection.JavaConversions._
 import scala.collection.mutable
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
-//@Remote(Array(classOf[LaboratoryBeanLocal]))
 @Stateless
 class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18nable {
   @EJB

@@ -15,7 +15,7 @@ import ru.korus.tmis.core.database.common.DbOrgStructureBeanLocal
 /**
  * Класс для работы с формой 007
  */
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class SeventhFormBean extends SeventhFormBeanLocal
 with Logging

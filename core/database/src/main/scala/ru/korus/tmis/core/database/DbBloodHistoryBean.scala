@@ -2,7 +2,6 @@ package ru.korus.tmis.core.database
 
 import common.{DbRbBloodTypeBeanLocal, DbPatientBeanLocal}
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -14,7 +13,6 @@ import java.util.Date
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbBloodHistoryBean extends DbBloodHistoryBeanLocal
                             with Logging

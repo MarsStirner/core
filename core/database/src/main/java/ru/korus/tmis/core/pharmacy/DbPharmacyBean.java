@@ -14,7 +14,6 @@ import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.entity.model.pharmacy.Pharmacy;
 import ru.korus.tmis.core.entity.model.pharmacy.PharmacyStatus;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

@@ -19,7 +19,6 @@ import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.ActionsListDataFilter
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
 import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal
 import ru.korus.tmis.lis.data._
@@ -38,7 +37,6 @@ import scala.language.reflectiveCalls
  * @author mmakankov Systema-Soft
  * @since 1.0.0.70
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DirectionBean extends DirectionBeanLocal
 with Logging

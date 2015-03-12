@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.database
 
 import java.lang.Iterable
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
@@ -13,7 +12,6 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbClientIntoleranceMedicamentBean
   extends DbClientIntoleranceMedicamentBeanLocal

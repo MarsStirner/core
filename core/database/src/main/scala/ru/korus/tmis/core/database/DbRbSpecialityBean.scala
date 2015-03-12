@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -18,7 +18,7 @@ import ru.korus.tmis.scala.util.I18nable
  * Time: 11:35
  * To change this template use File | Settings | File Templates.
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbSpecialityBean extends DbRbSpecialityBeanLocal
 with Logging

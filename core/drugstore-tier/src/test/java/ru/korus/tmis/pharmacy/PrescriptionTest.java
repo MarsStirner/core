@@ -27,7 +27,7 @@ import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionsTo1C;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
+
 import ru.korus.tmis.core.pharmacy.*;
 import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.util.TestUtilBusiness;

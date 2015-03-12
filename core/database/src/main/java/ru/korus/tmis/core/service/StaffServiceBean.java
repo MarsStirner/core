@@ -3,7 +3,7 @@ package ru.korus.tmis.core.service;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.Staff;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
+
 import ru.korus.tmis.core.service.interfaces.StaffService;
 
 import javax.ejb.Stateless;
@@ -16,7 +16,6 @@ import javax.persistence.PersistenceContext;
  *         Date: 08.08.13 0:54
  */
 @Stateless
-@Interceptors(LoggingInterceptor.class)
 public class StaffServiceBean implements StaffService {
 
     private static final Logger log = LoggerFactory.getLogger(StaffServiceBean.class);

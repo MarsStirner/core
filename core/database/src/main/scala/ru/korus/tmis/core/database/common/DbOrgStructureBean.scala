@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database.common
 
 import ru.korus.tmis.core.entity.model.{OrgStructureAddress, Staff, OrgStructure, ActionType}
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
 import javax.interceptor.Interceptors
@@ -14,7 +14,7 @@ import ru.korus.tmis.core.filter.{ListDataFilter, AbstractListDataFilter}
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbOrgStructureBean
   extends DbOrgStructureBeanLocal

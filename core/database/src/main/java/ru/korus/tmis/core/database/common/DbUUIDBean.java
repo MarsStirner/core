@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.database.common;
 
 import ru.korus.tmis.core.entity.model.UUID;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;

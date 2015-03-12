@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database
 
 import java.util
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -13,7 +13,7 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.{RlsBalanceOfGood, Nomenclature}
 import ru.korus.tmis.core.exception.CoreException
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRlsBean
   extends DbRlsBeanLocal

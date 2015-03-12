@@ -86,7 +86,7 @@ class ActionPropertyWrapper(ap: ActionProperty, apValueConverter: (ActionPropert
       } else {
         null
       }
-    new CommonAttribute(ap.getId,
+    val res = new CommonAttribute(ap.getId,
       ap.getVersion.intValue,
       apt.getName,
       apt.getCode,
@@ -96,6 +96,8 @@ class ActionPropertyWrapper(ap: ActionProperty, apValueConverter: (ActionPropert
       scope,
       tableValue,
       map)
+    res.setTypeId(apt.getId)
+    res
   }
 
   def set(value: CommonAttribute) = {

@@ -2,7 +2,7 @@ package ru.korus.tmis.core.auth
 
 import ru.korus.tmis.core.database.common.DbSettingsBeanLocal
 import ru.korus.tmis.core.database.{AppLockStatusType, AppLockStatus, AppLockBeanLocal, DbStaffBeanLocal}
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import grizzled.slf4j.Logging
 import java.util.Date
@@ -12,7 +12,7 @@ import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import javax.servlet.http.Cookie
 import ru.korus.tmis.core.exception.{CoreException, AuthenticationException, NoSuchUserException}
-import ru.korus.tmis.util.reflect.TmisLogging
+
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import java.util
 import java.lang
@@ -20,13 +20,12 @@ import ru.korus.tmis.core.entity.model.{Action, AppLockDetailPK, AppLockDetail, 
 import ru.korus.tmis.core.lock.{EntityLockInfo, ActionWithLockInfo}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
 @Singleton
 class AuthStorageBean
   extends AuthStorageBeanLocal
   with Logging
-  with TmisLogging
   with I18nable {
 
   @EJB
@@ -47,9 +46,6 @@ class AuthStorageBean
   @Lock(LockType.WRITE)
   def createToken(login: String, password: String, roleId: Int): AuthData = {
 
-    logTmis.setValueForKey(logTmis.LoggingKeys.Login, login, logTmis.StatusKeys.Success)
-    logTmis.setValueForKey(logTmis.LoggingKeys.Password, password, logTmis.StatusKeys.Success)
-    logTmis.setValueForKey(logTmis.LoggingKeys.Role, roleId.toString, logTmis.StatusKeys.Success)
     // Пытаемся получить сотрудника по л огину
     val staff = dbStaff.getStaffByLogin(login)
 
@@ -213,8 +209,7 @@ class AuthStorageBean
           ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
           i18n("error.invalidToken"))
       }
-      logTmis.setValueForKey(logTmis.LoggingKeys.User, authData.getUser.getId, logTmis.StatusKeys.Success)
-      logTmis.setValueForKey(logTmis.LoggingKeys.Role, authData.getUserRole.getId, logTmis.StatusKeys.Success)
+
     }
     else {
       throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.invalidToken"))

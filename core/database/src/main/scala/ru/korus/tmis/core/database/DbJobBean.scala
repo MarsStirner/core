@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database
 
 import scala.collection.JavaConversions._
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -19,7 +19,6 @@ import scala.language.reflectiveCalls
  * @author mmakankov Systema-Soft
  * @since 1.0.0.70
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbJobBean extends DbJobBeanLocal
                 with Logging

@@ -4,7 +4,7 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AssignmentData;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 
@@ -14,7 +14,7 @@ import javax.ws.rs.*;
  * Date: 3/20/13 5:06 PM
  * Since: 1.0.0.74
  */
-@Interceptors(ServicesLoggingInterceptor.class)
+
 public class AssignmentsRegistryRESTImpl {
 
     //protected static final String PATH = AppealsInfoRESTImpl.PATH + "{eventId}/assignment/";

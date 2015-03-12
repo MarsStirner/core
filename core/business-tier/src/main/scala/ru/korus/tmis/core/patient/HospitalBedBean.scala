@@ -2,7 +2,6 @@ package ru.korus.tmis.core.patient
 
 import grizzled.slf4j.Logging
 import javax.ejb.{EJB, Stateless}
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import javax.persistence.{PersistenceContext, EntityManager}
 import ru.korus.tmis.core.data.{HospitalBedDataListFilter, HospitalBedData}
@@ -19,17 +18,14 @@ import javax.enterprise.inject.Any
 import collection.JavaConversions
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import java.util.Date
-import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class HospitalBedBean extends HospitalBedBeanLocal
 with Logging
 with I18nable
-with CAPids
-with TmisLogging {
+with CAPids {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _

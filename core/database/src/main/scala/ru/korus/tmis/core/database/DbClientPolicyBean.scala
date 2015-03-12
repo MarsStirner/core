@@ -2,7 +2,6 @@ package ru.korus.tmis.core.database
 
 import common.DbOrganizationBeanLocal
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import java.lang.Iterable
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -15,7 +14,6 @@ import java.util
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbClientPolicyBean
   extends DbClientPolicyBeanLocal

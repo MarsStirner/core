@@ -16,8 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import ru.korus.tmis.util.reflect.LoggingManager;
-import ru.korus.tmis.util.reflect.LoggingManager$;
 import scala.Enumeration;
 
 /**
@@ -44,18 +42,6 @@ public class AuthenticationFilter implements Filter {
                          FilterChain chain) throws IOException, ServletException {
 
         try {
-            HttpServletRequest request = (HttpServletRequest) req;
-            HttpServletResponse response = (HttpServletResponse) res;
-            HttpSession session = request.getSession(true);
-
-            String url = request.getRequestURL().toString(); //URL
-            String ip = request.getRemoteAddr();
-            String userAgent = request.getHeader("user-agent");
-
-            LoggingManager.setValueForKey(LoggingManager$.MODULE$.getFirstCall(), "111", LoggingManager$.MODULE$.getOkStatus());
-            LoggingManager.setValueForKey(LoggingManager$.MODULE$.getURL(),url, LoggingManager$.MODULE$.getOkStatus());
-            LoggingManager.setValueForKey(LoggingManager$.MODULE$.getIP(),ip, LoggingManager$.MODULE$.getOkStatus());
-            LoggingManager.setValueForKey(LoggingManager$.MODULE$.getUserAgent(), userAgent, LoggingManager$.MODULE$.getOkStatus());
 
             chain.doFilter(req, res); // Logged-in user found, so just continue request.
 

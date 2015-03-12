@@ -1,8 +1,6 @@
 package ru.korus.tmis.core.common
 
 import ru.korus.tmis.core.entity.model.ActionType
-import ru.korus.tmis.core.logging.LoggingInterceptor
-
 
 import grizzled.slf4j.Logging
 import javax.ejb.{EJB, Stateless}
@@ -11,7 +9,6 @@ import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.database.common.{DbOrgStructureBeanLocal, DbEventBeanLocal}
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class TypeFilterBean
   extends TypeFilterBeanLocal

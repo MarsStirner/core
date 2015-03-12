@@ -4,14 +4,11 @@ import common.DbOrgStructureBeanLocal
 import javax.interceptor.Interceptors
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.{EntityManager, PersistenceContext}
 import java.util.Date
 import ru.korus.tmis.core.entity.model.{Mkb, Patient, Staff, ClientQuoting, Event}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.exception.CoreException
-import javax.swing.table.TableModel
-import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
@@ -22,13 +19,11 @@ import scala.language.reflectiveCalls
  * @see DbClientQuotingBeanLocal
  */
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbClientQuotingBean
   extends DbClientQuotingBeanLocal
   with Logging
-  with I18nable
-  with TmisLogging {
+  with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -145,17 +140,8 @@ class DbClientQuotingBean
       .setFirstResult(limit * page)
     val result = typed.getResultList
 
-    result.size match {
-      case 0 => {
-        logTmis.setLoggerType(logTmis.LoggingTypes.Debug)
-        logTmis.warning("code " + ConfigManager.ErrorCodes.ClientQuotingAllNotFound + ": " + i18n("error.clientQuotingAllNotFound"))
-      }
-      case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
-      }
-    }
+    result.foreach(rbType => {em.detach(rbType)})
+
     result
   }
 

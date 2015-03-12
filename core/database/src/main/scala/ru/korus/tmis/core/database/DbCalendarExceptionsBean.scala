@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.database
 
 import javax.ejb.Stateless
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.interceptor.Interceptors
@@ -20,7 +19,6 @@ import ru.korus.tmis.scala.util.{CAPids, I18nable}
  * To change this template use File | Settings | File Templates.
  */
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbCalendarExceptionsBean extends DbCalendarExceptionsBeanLocal
     with Logging

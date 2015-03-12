@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database.common
 
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import grizzled.slf4j.Logging
 import java.util.Collection
@@ -16,7 +16,7 @@ import javax.annotation.Resource
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbManagerBean
   extends DbManagerBeanLocal

@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -15,7 +15,7 @@ import ru.korus.tmis.scala.util.I18nable
  * @author Ivan Dmitriev
  * @since 1.0.0.45
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbFinanceBean   extends DbRbFinanceBeanLocal
                         with Logging

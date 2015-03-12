@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import common.DbManagerBeanLocal
 import javax.interceptor.Interceptors
 import org.joda.time._
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -12,7 +12,6 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{TakingOfBiomaterialRequesData, TakingOfBiomaterialRequesDataFilter}
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.util.reflect.LoggingManager
 import java.util.Date
 import java.text.SimpleDateFormat
 import java.util
@@ -24,7 +23,6 @@ import scala.language.reflectiveCalls
  * @author idmitriev Systema-Soft
  * @since 1.0.0.64
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbJobTicketBean extends DbJobTicketBeanLocal
                          with Logging
@@ -180,10 +178,6 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       } finally {
         //appLock.releaseLock(lockId)
       }
-    } else {
-      LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
-      LoggingManager.warning("code " + ConfigManager.ErrorCodes.JobTicketNotFound +
-        "Невозможно отредактировать" + ConfigManager.Messages("error.jobTicketNotFound").format(id))
     }
     isComplete
   }

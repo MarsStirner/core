@@ -3,7 +3,6 @@ package ru.korus.tmis.core.database;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.QuotingByTime;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
 
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;
@@ -19,7 +18,7 @@ import java.util.List;
  * Date: 28.01.13 at 17:25<br>
  * Company Korus Consulting IT<br>
  */
-@Interceptors(value = {LoggingInterceptor.class})
+
 @Stateless
 public class DbQuotingByTimeBean implements DbQuotingByTimeBeanLocal {
     final static Logger logger = LoggerFactory.getLogger(DbQuotingByTimeBean.class);

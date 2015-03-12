@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.entity.model.DbVersions
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -11,7 +11,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.DbVersions
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbVersionBean
   extends DbVersionBeanLocal

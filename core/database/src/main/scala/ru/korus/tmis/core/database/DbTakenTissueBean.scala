@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import common.DbManagerBeanLocal
 import scala.collection.JavaConversions._
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{FlushModeType, EntityManager, PersistenceContext}
@@ -21,7 +21,7 @@ import scala.language.reflectiveCalls
  * @since 1.0.0.70
  */
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbTakenTissueBean extends DbTakenTissueBeanLocal
                         with Logging

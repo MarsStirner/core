@@ -3,7 +3,7 @@ package ru.korus.tmis.ws.webmis.rest;
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.data.ListDataRequest;
 import ru.korus.tmis.core.data.PersonsListDataFilter;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 import ru.korus.tmis.ws.impl.TestRESTClientImpl;
 import ru.korus.tmis.ws.impl.WebMisRESTImpl;
 
@@ -22,7 +22,7 @@ import java.io.Serializable;
  * Date: 5/13/13 13:58 PM
  * Since: 1.0.1.10
  */
-@Interceptors(ServicesLoggingInterceptor.class)
+
 @Singleton
 @Path("/tms-test/")
 @Produces("application/json")

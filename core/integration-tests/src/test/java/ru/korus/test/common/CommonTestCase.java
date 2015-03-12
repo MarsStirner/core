@@ -83,8 +83,6 @@ public class CommonTestCase {
                 FDFieldValueId.class, FDRecord.class, FlatDirectory.class,
                 FDFieldValue.class, FDField.class, FDFieldType.class,
                 ClientFlatDirectory.class, ClientFDProperty.class,
-
-                ru.korus.tmis.core.logging.LoggingInterceptor.class,
         };
 
         /*

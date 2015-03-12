@@ -1,11 +1,9 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.entity.model.{Nomenclature, RbAnalysisStatus, DbEnumerable}
-import ru.korus.tmis.core.logging.LoggingInterceptor
 
 import javax.annotation.{Resource, PostConstruct}
 import javax.ejb._
-import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.transaction.UserTransaction
 
@@ -14,7 +12,6 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.I18nable
 
 @Startup
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Singleton
 @TransactionManagement(TransactionManagementType.BEAN)
 class DbEnumBean

@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.auth.AuthData
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import grizzled.slf4j.Logging
 import java.lang.String
@@ -17,7 +17,6 @@ import ru.korus.tmis.core.lock.{EntityLockInfo, ActionWithLockInfo}
 import scala.collection.JavaConversions._
 
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class AppLockBean
   extends AppLockBeanLocal

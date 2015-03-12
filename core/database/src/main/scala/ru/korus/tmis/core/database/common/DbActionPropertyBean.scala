@@ -15,7 +15,7 @@ import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import java.util
 import scala.language.reflectiveCalls
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbActionPropertyBean
   extends DbActionPropertyBeanLocal

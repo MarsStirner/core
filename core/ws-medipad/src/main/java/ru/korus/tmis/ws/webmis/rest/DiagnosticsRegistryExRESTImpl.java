@@ -4,7 +4,7 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 import javax.interceptor.Interceptors;
 import javax.ws.rs.*;
 import java.util.ArrayList;
@@ -16,7 +16,7 @@ import java.util.List;
  * Date: 3/20/13 1:43PM
  * Since: 1.0.0.74
  */
-@Interceptors(ServicesLoggingInterceptor.class)
+
 public class DiagnosticsRegistryExRESTImpl {
 
     //protected static final String PATH = AppealsInfoRESTImpl.PATH + "{eventId}/diagnostics/";

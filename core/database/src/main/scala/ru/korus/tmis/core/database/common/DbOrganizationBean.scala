@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database.common
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import javax.ejb.Stateless
 import javax.interceptor.Interceptors
@@ -13,7 +13,7 @@ import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFil
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.ListDataFilter
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbOrganizationBean
   extends DbOrganizationBeanLocal

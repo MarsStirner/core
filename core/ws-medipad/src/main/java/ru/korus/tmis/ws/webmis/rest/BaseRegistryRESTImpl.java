@@ -1,6 +1,6 @@
 package ru.korus.tmis.ws.webmis.rest;
 
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -15,7 +15,7 @@ import java.io.Serializable;
  * Date: 3/21/13 13:58 PM
  * Since: 1.0.0.74
  */
-@Interceptors(ServicesLoggingInterceptor.class)
+
 @Stateless
 @Path("/tms-registry/")
 @Produces("application/json")

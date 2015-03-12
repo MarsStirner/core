@@ -2,8 +2,6 @@ package ru.korus.tmis.core.database
 
 import javax.persistence.{PersistenceContext, EntityManager}
 import javax.ejb.{Stateless, EJB}
-import ru.korus.tmis.core.logging.LoggingInterceptor
-import javax.interceptor.Interceptors
 import grizzled.slf4j.Logging
 import ru.korus.tmis.core.exception.NoSuchEntityException
 import java.util.Date
@@ -13,7 +11,6 @@ import ru.korus.tmis.core.entity.model.fd.FDRecord
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbClientWorkBean
   extends DbClientWorkBeanLocal

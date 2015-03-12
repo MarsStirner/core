@@ -5,7 +5,7 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.QuotaData;
 import ru.korus.tmis.core.data.QuotaRequestData;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -22,7 +22,7 @@ import java.util.Arrays;
  * Since: 1.0.0.74
  */
 @Stateless
-@Interceptors(ServicesLoggingInterceptor.class)
+
 public class QuotesRegistryRESTImpl {
 
     @EJB

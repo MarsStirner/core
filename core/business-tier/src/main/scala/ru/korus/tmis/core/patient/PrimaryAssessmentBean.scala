@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.patient
 
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
@@ -16,7 +15,6 @@ import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.data._
 import scala.collection.JavaConverters._
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class PrimaryAssessmentBean
   extends PrimaryAssessmentBeanLocal

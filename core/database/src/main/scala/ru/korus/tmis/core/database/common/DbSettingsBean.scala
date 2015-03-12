@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database.common
 
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import grizzled.slf4j.Logging
 import javax.persistence._
 import javax.annotation.PostConstruct
@@ -15,7 +15,7 @@ import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import ru.korus.tmis.scala.util.ConfigManager._
 
 @Startup
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Singleton
 @TransactionManagement(TransactionManagementType.BEAN)
 class DbSettingsBean extends DbSettingsBeanLocal

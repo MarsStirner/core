@@ -4,7 +4,6 @@ import java.util.Date
 import ru.korus.tmis.core.entity.model.{AutosaveStoragePK, AutoSaveStorage}
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.Stateless
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.ConfigManager
@@ -16,7 +15,6 @@ import scala.language.reflectiveCalls
  * Date: 4/21/14
  * Time: 8:15 PM
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbAutoSaveStorage extends  DbAutoSaveStorageLocal {
 
