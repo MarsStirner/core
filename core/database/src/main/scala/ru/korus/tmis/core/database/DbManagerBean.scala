@@ -27,9 +27,6 @@ class DbManagerBean
   var em: EntityManager = _
   var vendorJpaEm: JpaEntityManager = _
 
-  @Resource
-  protected var ctx: SessionContext = _
-
   def getEntityId[T](entity: T) = {
     //## TODO: работает строго через раз: каждый второй раз vendorJpaEm.getServerSession() == null
     //##    if (vendorJpaEm == null) {
@@ -184,7 +181,4 @@ class DbManagerBean
     em.refresh(entity)
   }
 
-  def rollbackTransaction[T]() = {
-    ctx.setRollbackOnly();
-  }
 }

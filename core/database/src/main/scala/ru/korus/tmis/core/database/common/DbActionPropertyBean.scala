@@ -52,7 +52,7 @@ class DbActionPropertyBean
       }
       case size => {
         val actionProperty = result.iterator.next()
-        em.detach(actionProperty) //временно закрыл
+
         actionProperty
       }
     }
@@ -67,7 +67,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap)
+
         map.put(ap, getActionPropertyValue(ap))
         map
       }
@@ -360,7 +360,7 @@ class DbActionPropertyBean
       .setParameter("typeId", typeId)
       .getResultList
 
-    result.foreach(v => em.detach(v))
+
     result
   }
 
@@ -373,7 +373,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap)
+
         map.put(ap, getActionPropertyValue(ap))
         map
       }
@@ -389,7 +389,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap)
+
         map.put(ap, getActionPropertyValue(ap))
         map
       }
@@ -405,7 +405,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap)
+
         map.put(ap, getActionPropertyValue(ap))
         map
       }
@@ -422,7 +422,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap(0).asInstanceOf[ActionProperty])
+
         map.put(ap(0).asInstanceOf[ActionProperty], getActionPropertyValue(ap(0).asInstanceOf[ActionProperty]))
         map
       }
@@ -484,7 +484,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap)
+
         map.put(ap, getActionPropertyValue(ap))
         map
       }
@@ -506,7 +506,7 @@ class DbActionPropertyBean
         null
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

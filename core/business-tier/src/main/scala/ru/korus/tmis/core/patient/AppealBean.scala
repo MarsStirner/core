@@ -417,22 +417,6 @@ with CAPids {
       map += (flatCode -> values)
     })
     val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), mapAsJavaMap(map), authData)
-    val mergedItems = diagnoses.filter(p => (p.isInstanceOf[Diagnosis] &&
-      p.asInstanceOf[Diagnosis].getId != null &&
-      p.asInstanceOf[Diagnosis].getId.intValue() > 0) ||
-      (p.isInstanceOf[Diagnostic] &&
-        p.asInstanceOf[Diagnostic].getId != null &&
-        p.asInstanceOf[Diagnostic].getId.intValue() > 0)
-    ).toList
-    val persistedItems = diagnoses.filter(p => (p.isInstanceOf[Diagnosis] &&
-      (p.asInstanceOf[Diagnosis].getId == null ||
-        p.asInstanceOf[Diagnosis].getId.intValue() <= 0)) ||
-      (p.isInstanceOf[Diagnostic] &&
-        (p.asInstanceOf[Diagnostic].getId == null ||
-          p.asInstanceOf[Diagnostic].getId.intValue() <= 0))
-    ).toList
-    dbManager.mergeAll(mergedItems)
-    dbManager.persistAll(persistedItems)
 
     if (appealData.data.getPayer != null
         && appealData.data.getPaymentContract != null) dbEventLocalContract.insertOrUpdate(newEvent, appealData.data.getPayer, appealData.data.getPaymentContract )

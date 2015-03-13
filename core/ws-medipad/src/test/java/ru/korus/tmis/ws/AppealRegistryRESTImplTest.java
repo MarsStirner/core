@@ -719,7 +719,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             res = WebMisBase.removePadding(res, tstCallback);
             JsonParser parser = new JsonParser();
             JsonElement resJson = parser.parse(res);
-            JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/updateeventReq.json"))));
+            //JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/updatEeventResp.json"))));
             //Assert.assertEquals(resJson, expected);
             //TODO перед тестом почистить БД!
             //Assert.assertEquals(resJson, expected);

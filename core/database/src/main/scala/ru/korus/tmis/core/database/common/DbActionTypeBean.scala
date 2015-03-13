@@ -36,7 +36,6 @@ class DbActionTypeBean
     val at = result.headOption.getOrElse {
       throw new CoreException(i18n("error.actionTypeNotFound"))
     }
-    em.detach(at)
     at
   }
 

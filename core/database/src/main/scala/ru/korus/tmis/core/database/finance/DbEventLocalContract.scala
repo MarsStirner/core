@@ -93,6 +93,9 @@ with I18nable {
 
   def insertOrUpdate(event: Event, payerInfo: PayerInfo, paymentContract: PaymentContractInfo): EventLocalContract = {
 
+    if(paymentContract.getDate == null) {
+      return null
+    }
     var isNew = false
     var eventLocalContract: EventLocalContract = getByEventId(event.getId)
     if(eventLocalContract == null) {
@@ -118,7 +121,7 @@ with I18nable {
     eventLocalContract.setRegAddress(payerInfo.getAddress)
     try {
       eventLocalContract.setOrganisation(
-        if (payerInfo.getDocumentType == null) null else dbOrganizationBeanLocal.getOrganizationById(payerInfo.getCompany))
+        if (payerInfo.getCompany == null) null else dbOrganizationBeanLocal.getOrganizationById(payerInfo.getCompany))
     } catch {
       case ex: CoreException =>
     }

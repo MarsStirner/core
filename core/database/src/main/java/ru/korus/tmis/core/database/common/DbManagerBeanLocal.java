@@ -39,5 +39,4 @@ public interface DbManagerBeanLocal {
 
     <T> void refresh(T entity) throws CoreException;
 
-    <T> void rollbackTransaction() throws CoreException;
 }

@@ -127,7 +127,6 @@ class DbActionPropertyTypeBean
       classOf[ActionPropertyType])
       .setParameter("rolesId", actionTypeId)
       .getResultList
-    result.foreach((apt) => em.detach((apt)))
     result
   }
 
