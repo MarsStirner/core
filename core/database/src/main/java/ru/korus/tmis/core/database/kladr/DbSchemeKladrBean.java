@@ -112,7 +112,7 @@ public class DbSchemeKladrBean implements DbSchemeKladrBeanLocal {
             return res.getData();
         } catch (RestClientException ex) {
             ex.printStackTrace();
-            return null;
+            return new LinkedList<Street>();
         }
     }
 
