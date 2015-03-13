@@ -207,6 +207,9 @@ class AppealSimplifiedData {
   @BeanProperty
   var finance: IdNameAndCodeContainer = _               //Источник финансирования
 
+  @BeanProperty
+  var requestType: String = _                           //Код типа обращения: clinic,hospital,policlinic
+
   def this(event: Event, diagnoses: java.util.Map[Object,  Object]) {
     this()
     this.id = event.getId.intValue()
@@ -214,6 +217,7 @@ class AppealSimplifiedData {
     this.rangeAppealDateTime = new DatePeriodContainer(event.getSetDate, event.getExecDate)
     val fin = event.getEventType.getFinance
     this.finance = if ( fin == null) null else new IdNameAndCodeContainer(fin.getId, fin.getName, fin.getCode)
+    this.requestType = if(event.getEventType.getRequestType == null) null else event.getEventType.getRequestType.getCode
 
     this.execPerson = if (event.getExecutor != null) {new ComplexPersonContainer(event.getExecutor)} else {new ComplexPersonContainer}
     if(diagnoses!=null || diagnoses.size()>0){
