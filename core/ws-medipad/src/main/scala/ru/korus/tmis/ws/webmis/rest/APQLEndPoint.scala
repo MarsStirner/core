@@ -27,15 +27,18 @@ class APQLEndPoint {
   def runQuery(@Context servRequest: HttpServletRequest,
                @QueryParam("callback") callback: String,
                query: String) = {
-    val p = new APQLParser
-    val parseResult = p.parse(query)
-    parseResult match {
-      case x: p.NoSuccess => throw new CoreException(x.msg)
-      case x: p.Success[IfThenExpr] => apqlProcessor.process(x.get) match {
-        case Some(y) => new JSONWithPadding(y.asJava, callback)
-        case None => new JSONWithPadding("", callback)
+    try {
+      val p = new APQLParser
+      val parseResult = p.parse(query)
+      parseResult match {
+        case x: p.NoSuccess => throw new CoreException(x.msg)
+        case x: p.Success[IfThenExpr] => apqlProcessor.process(x.get) match {
+          case Some(y) => new JSONWithPadding(y.asJava, callback)
+          case None => new JSONWithPadding("", callback)
+        }
       }
-
+    } catch {
+      case t: Throwable => throw new Exception(t)
     }
 
   }

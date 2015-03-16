@@ -36,7 +36,7 @@ class APQLParser extends StdTokenParsers with PackratParsers {
   lazy val ifLiteral: PackratParser[Expr] = ident ^^ { case "IF" => IF}
   lazy val thenLiteral: PackratParser[Expr] = ident ^^ { case "THEN" => THEN }
 
-  lazy val expr: PackratParser[Expr] = method | number | string | boolean
+  lazy val expr: PackratParser[Expr] = method | number | string | boolean | list
 
   lazy val method: PackratParser[MethodCall] = expr.? ~ ".".? ~ ident ~ "(" ~ args ~ ")" ^^ {
     case expression ~ dot ~ name ~ "(" ~ arguments ~ ")" => MethodCall(expression, name, arguments)
@@ -50,6 +50,8 @@ class APQLParser extends StdTokenParsers with PackratParsers {
     case "true" => BooleanLiteral(true)
     case "false" => BooleanLiteral(false)
   }
+
+  lazy val list: PackratParser[Expr] = "(" ~> args <~ ")" ^^ { case x =>  ValuesList(x)}
 
   def parse(source: String): ParseResult[IfThenExpr] = {
     val tokens = new lexical.Scanner(source)
