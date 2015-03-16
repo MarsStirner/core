@@ -39,7 +39,7 @@ class DbRbDiseaseStageBean extends DbRbDiseaseStageBeanLocal
           i18n("error.rbDiseaseStageNotFound").format(id))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

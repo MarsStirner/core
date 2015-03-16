@@ -90,7 +90,7 @@ class DbRbBloodTypeBean
     val result = typed.getResultList
     val list = new java.util.LinkedList[Object]
     result.foreach(f => {
-      //em.detach(f)
+
       list.add((f(0).asInstanceOf[java.lang.Integer], f(1).asInstanceOf[java.lang.String]))
     })
     list
@@ -123,9 +123,7 @@ class DbRbBloodTypeBean
           i18n("error.rbBloodTypeNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

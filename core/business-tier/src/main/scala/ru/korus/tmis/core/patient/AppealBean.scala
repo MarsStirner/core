@@ -228,8 +228,8 @@ with CAPids {
         action.setEndDate(appealData.data.rangeAppealDateTime.getEnd)
       }
 
-      if (!flgCreate)
-        entities = entities + action
+     /* if (!flgCreate)
+        entities = entities + action*/
 
       //3. Action Property
 
@@ -241,12 +241,14 @@ with CAPids {
             res
           }
           else {
-            actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
+            val apUpdate = actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
               f.asInstanceOf[ActionProperty].getVersion.intValue,
               authData)
+            em.merge(apUpdate)
+            apUpdate
           }
-        if (!flgCreate)
-          entities = entities + ap
+       /* if (!flgCreate)
+          entities = entities + ap*/
 
         var values = this.getValueByCase(ap.getType.getId.intValue(), appealData, authData)
         if (values != null) {
@@ -293,9 +295,9 @@ with CAPids {
                 values = Set(i18n("db.dayHospital.id"))
 
               values.foreach(value => {
-                val apv = actionPropertyBean.setActionPropertyValue(ap, value, it)
-                if (apv != null)
-                  entities = entities + apv.unwrap
+                val apv = em.merge(actionPropertyBean.setActionPropertyValue(ap, value, it))
+               /* if (apv != null)
+                  entities = entities + apv.unwrap*/
                 it = it + 1
               })
             }

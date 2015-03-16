@@ -69,7 +69,7 @@ class DbJobBean extends DbJobBeanLocal
           i18n("error.jobNotFound").format(id))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

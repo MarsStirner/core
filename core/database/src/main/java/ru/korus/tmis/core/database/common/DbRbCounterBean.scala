@@ -49,7 +49,7 @@ class DbRbCounterBean
       }
       case size => {
         val rbCounter = result.iterator.next()
-        em.detach(rbCounter)
+
         rbCounter
       }
     }

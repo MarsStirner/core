@@ -40,7 +40,7 @@ class DbCalendarExceptionsBean extends DbCalendarExceptionsBeanLocal
         null
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -66,7 +66,7 @@ class DbCalendarExceptionsBean extends DbCalendarExceptionsBeanLocal
         null
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -87,7 +87,7 @@ class DbCalendarExceptionsBean extends DbCalendarExceptionsBeanLocal
         null
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

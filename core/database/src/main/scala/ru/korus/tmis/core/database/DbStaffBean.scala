@@ -45,7 +45,7 @@ class DbStaffBean
         login,
         i18n("error.staffNotFound"))
     }
-    //staffs.foreach(em.detach(_))
+
     staffs(0)
   }
 
@@ -55,7 +55,7 @@ class DbStaffBean
       .setParameter("id", id)
       .getResultList
 
-    //result.foreach(em.detach(_))
+
     result.get(0)
   }
 
@@ -135,7 +135,7 @@ class DbStaffBean
           if (f(1).isInstanceOf[APValueTime]) {
             val time = f(1).asInstanceOf[APValueTime]
             var timeList = new util.LinkedList[APValueTime]
-            em.detach(time)
+
             timeList.add(time)
             retMap.put(staff, timeList)
           }
@@ -143,15 +143,15 @@ class DbStaffBean
         else {
           if (f(1).isInstanceOf[APValueTime]) {
             val time = (f(1).asInstanceOf[APValueTime])
-            em.detach(time)
-            //retMap.remove(staff)
-            //retMap.put(staff, time)
+
+
+
             var curList = retMap.get(staff)
             curList.add(time)
           }
         }
 
-        em.detach(staff)
+
         staff
       }
     })
@@ -179,7 +179,7 @@ class DbStaffBean
      if (retList.contains(s)) {
        retList.remove(s)
      }
-     em.detach(s)
+
    })
    */
     retMap
@@ -197,7 +197,7 @@ class DbStaffBean
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
     val result = typed.getResultList
-    result.foreach(em.detach(_))
+
     if (result.size() > 0) {
       result.get(0)
     } else {

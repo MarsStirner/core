@@ -44,7 +44,7 @@ class DbQuotaTypeBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }
@@ -66,7 +66,7 @@ class DbQuotaTypeBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }
@@ -94,7 +94,7 @@ class DbQuotaTypeBean
 
     val result = typed.getResultList
     result.foreach(f => {
-      em.detach(f)
+
     })
     result
   }

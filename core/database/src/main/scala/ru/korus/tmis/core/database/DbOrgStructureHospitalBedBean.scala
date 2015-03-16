@@ -28,7 +28,7 @@ class DbOrgStructureHospitalBedBean extends DbOrgStructureHospitalBedBeanLocal
     val result = em.createQuery(AllHospitalBedsByDepartmentIdQuery, classOf[OrgStructureHospitalBed])
                   .setParameter("departmentId", departmentId)
                   .getResultList
-    result.foreach(em.detach(_))
+
     result
   }
 
@@ -38,7 +38,7 @@ class DbOrgStructureHospitalBedBean extends DbOrgStructureHospitalBedBeanLocal
                                 classOf[OrgStructureHospitalBed])
                   .setParameter("ids", asJavaCollection(ids))
                   .getResultList
-    result.foreach(em.detach(_))
+
     result
   }
 

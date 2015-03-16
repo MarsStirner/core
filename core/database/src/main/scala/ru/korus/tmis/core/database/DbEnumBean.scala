@@ -66,7 +66,7 @@ class DbEnumBean
       .createNamedQuery(e.getSimpleName + ".findAll")
       .getResultList
       .map(_.asInstanceOf[DbEnumerable])
-    enums.foreach(em.detach(_))
+
     info("Reloading DB enums of " + e.getSimpleName)
     e.newInstance().loadEnums(enums)
   }

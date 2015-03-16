@@ -29,7 +29,7 @@ public class DbRbServiceFinanceBean implements DbRbServiceFinanceBeanLocal {
                 .setParameter("code", code).getResultList();
         if(!resultList.isEmpty()){
             RbServiceFinance serviceFinance = resultList.get(0);
-            em.detach(serviceFinance);
+
             return serviceFinance;
         }
         return null;

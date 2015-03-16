@@ -50,7 +50,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       case 0 =>
         throw new CoreException( ConfigManager.ErrorCodes.JobTicketNotFound, i18n("error.jobTicketNotFound").format(id))
       case size =>
-        result.foreach(em.detach(_))
+
         result(0)
     }
   }
@@ -151,9 +151,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
               &&
             (filter.getJobTicketId < 1 || aj._2.getId == filter.getJobTicketId)
             ) {
-              em.detach(aj._1)
-              em.detach(aj._2)
-              em.detach(aj._3)
+
               list.add((aj._1, aj._3, aj._2))
             }
             list
@@ -205,8 +203,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       case size =>
         /*val jobAndJobTicket = result.foldLeft(new java.util.LinkedList[(JobTicket, TakenTissue)])(
           (list, aj) => {
-            em.detach(aj(0))
-            em.detach(aj(1))
+
             list.add((aj(0).asInstanceOf[JobTicket], aj(1).asInstanceOf[TakenTissue]))
             list
           }
@@ -214,8 +211,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
         jobAndJobTicket.get(0)*/
         val jt = result.get(0)(0).asInstanceOf[JobTicket]
         val tt = result.get(0)(1).asInstanceOf[TakenTissue]
-        em.detach(jt)
-        em.detach(tt)
+
         (jt, tt)
     }
   }
@@ -233,7 +229,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.jobNotFound").format(id))          */
       case size =>
-        result.foreach(em.detach(_))
+
         result(0)
     }
   }
@@ -260,7 +256,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.jobNotFound").format(id))          */
       case size =>
-        result.foreach(jt => em.detach(jt))
+
         result.get(0)
     }
   }
@@ -280,7 +276,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
           i18n("error.ActionsForJobTicketNotFound").format(jobTicketId))
           */
       case size => {
-        result.foreach(a => {em.detach(a)})
+
       }
       result
     }

@@ -147,21 +147,6 @@ class DbManagerBean
     }
   }
 
-  def detach[T](entity: T) = {
-    em.detach(entity)
-    trace("Detached " + entity)
-    entity
-  }
-
-  def detachAll[T](entities: Collection[T]) = {
-    val result = entities.map(e => {
-      em.detach(e)
-      e
-    })
-    result.foreach(e => trace("Detached " + e))
-    asJavaCollection(result)
-  }
-
   def removeAll[T](entities: Collection[T]) = {
     try {
       val merged = entities.map(e => em.merge(e))

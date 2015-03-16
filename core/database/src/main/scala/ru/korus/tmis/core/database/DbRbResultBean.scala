@@ -40,9 +40,7 @@ class DbRbResultBean
           i18n("error.rbResultForEventNotFound").format(id))
       }
       case size => {
-        result.foreach(rbStatus => {
-          em.detach(rbStatus)
-        })
+
         result(0)
       }
     }
@@ -62,9 +60,7 @@ class DbRbResultBean
           i18n("error.rbResultForEventNotFound").format(et.getId))
       }
       case size => {
-        result.foreach(rbStatus => {
-          em.detach(rbStatus)
-        })
+
         result(0)
       }
     }
@@ -84,9 +80,7 @@ class DbRbResultBean
           i18n("error.rbResultForEventNotFound").format(et.getId))
       }
       case size => {
-        result.foreach(rbStatus => {
-          em.detach(rbStatus)
-        })
+
         result(0)
       }
     }

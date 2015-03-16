@@ -293,9 +293,9 @@ with CAPids {
         })
       }
       result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
-      val r = dbManager.detachAll[Action](result).toList
 
-      return r.get(0)
+
+      return result.get(0)
     }
     finally {
       appLock.releaseLock(lockId)
@@ -386,8 +386,8 @@ with CAPids {
           })
         }
         result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
-        val r = dbManager.detachAll[Action](result).toList
-        return r.get(0)
+
+        return result.get(0)
       }
       finally {
         appLock.releaseLock(lockId)
@@ -458,10 +458,10 @@ with CAPids {
       //Помечаем действие как "Удалено"
       action.setModifyPerson(authData.user)
       action.setModifyDatetime(new Date())
-      action.setVersion(oldAction.getVersion.intValue)
+
       action.setDeleted(true)
       dbManager.merge(action)
-      dbManager.detach(action)
+
 
       //создаем акшен del_moving
       val del_movingAction = actionBean.createAction(action.getEvent.getId.intValue(), 3871, authData)
@@ -515,7 +515,7 @@ with CAPids {
         val action = actionBean.getActionById(oldLastAction.getId.intValue())
         action.setModifyPerson(authData.user)
         action.setModifyDatetime(new Date())
-        action.setVersion(oldLastAction.getVersion.intValue)
+
 
         //Редактируем значения свойств действия
         val oldLastValues = actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(oldLastAction.getId.intValue,
@@ -583,7 +583,7 @@ with CAPids {
 
         dbManager.removeAll(apvs_removed)
         resultA = dbManager.mergeAll(entities).filter(resultA.contains(_)).map(_.asInstanceOf[Action]).toList
-        val r = dbManager.detachAll[Action](resultA).toList
+
 
       }
       finally {
@@ -730,7 +730,7 @@ with CAPids {
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result.iterator().next
       }
     }

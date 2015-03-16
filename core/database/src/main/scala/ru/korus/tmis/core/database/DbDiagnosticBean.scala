@@ -57,7 +57,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
           i18n("error.diagnosticNotFound").format(id))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -68,7 +68,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
                     .setParameter("eventId", eventId)
                     .getResultList
 
-    result.foreach(em.detach(_))
+
     result
   }
 
@@ -139,7 +139,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
                     .setParameter("flatCodes", asJavaCollection(diagnosisTypeFlatCodes))
                     .getResultList
 
-    result.foreach(em.detach(_))
+
     result
   }
 
@@ -149,7 +149,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       .setParameter("flatCode", diagnosisTypeFlatCode)
       .getResultList
 
-    result.foreach(em.detach(_))
+
     if (result != null && result.size() > 0) {
       result.get(0)
     } else null

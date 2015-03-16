@@ -30,7 +30,7 @@ class DbBloodHistoryBean extends DbBloodHistoryBeanLocal
     val result = em.createNamedQuery("BloodHistory.findByPatientId", classOf[BloodHistory])
                    .setParameter("patientId", patientId)
                    .getResultList
-    result.foreach(em.detach(_))
+
     result
   }
 

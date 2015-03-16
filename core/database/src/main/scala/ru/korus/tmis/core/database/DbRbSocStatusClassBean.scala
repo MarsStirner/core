@@ -50,9 +50,7 @@ with I18nable {
           i18n("error.ClientSocStatusClassNotFound"))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

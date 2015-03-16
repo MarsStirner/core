@@ -173,7 +173,7 @@ class DbEventBean
    * @param person Врач, которому назначено событие                  
    * @param begDate Время начала события
    * @param endDate Время окончания события
-   * @return Новый экземпляр события, сохраненный в БД и не открепленный (without  em.detach())
+   * @return Новый экземпляр события, сохраненный в БД и не открепленный (without detach)
    */
   def createEvent(patient: Patient, eventType: EventType, person: Staff, begDate: Date, endDate: Date): Event = {
     val now = new Date

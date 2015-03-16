@@ -65,7 +65,7 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
         null
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -77,7 +77,7 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
       .getSingleResult
 
     if (result != null) {
-      em.detach(result)
+
       result
     } else {
       null
@@ -96,7 +96,7 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
           i18n("error.TakenTissueNotFound").format(id))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

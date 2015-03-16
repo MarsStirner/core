@@ -22,7 +22,7 @@ class DbLayoutAttributeValueBean extends DbLayoutAttributeValueBeanLocal
     val values = em.createNamedQuery("LayoutAttributeValue.findByActionPropertyTypeId", classOf[LayoutAttributeValue])
                        .setParameter("id", aptId)
                        .getResultList
-    values.foreach(em.detach(_))
+
     values
   }
 }

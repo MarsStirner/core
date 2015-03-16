@@ -52,7 +52,7 @@ class DbSchemeKladrBeanOld
       .setParameter("code", code)
       .getResultList
 
-    //result.foreach(fdr=>em.detach(fdr))
+
     result.size() match {
       case 0 => {
         null
@@ -68,7 +68,7 @@ class DbSchemeKladrBeanOld
       .setParameter("code", code)
       .getResultList
 
-    //result.foreach(fdr=>em.detach(fdr))
+
     result.size() match {
       case 0 => {
         null

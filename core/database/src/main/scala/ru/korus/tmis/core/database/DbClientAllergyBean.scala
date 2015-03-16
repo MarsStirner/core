@@ -47,7 +47,7 @@ class DbClientAllergyBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }

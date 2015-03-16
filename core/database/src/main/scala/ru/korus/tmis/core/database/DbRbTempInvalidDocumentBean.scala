@@ -50,7 +50,7 @@ class DbRbTempInvalidDocumentBean
       }
       case size => {
         val rbTempInvalidReason = result.iterator.next()
-        em.detach(rbTempInvalidReason)
+
         rbTempInvalidReason
       }
     }

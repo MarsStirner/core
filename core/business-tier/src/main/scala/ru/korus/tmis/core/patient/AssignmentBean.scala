@@ -174,7 +174,7 @@ with I18nable {
         }
       })
       em.flush()
-      em.detach(action)
+
     }
     finally {
       if (lockId > 0) appLock.releaseLock(lockId)

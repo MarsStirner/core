@@ -51,9 +51,7 @@ class DbRbPolicyTypeBean
           i18n("error.rbDocumentTypeNotFound"))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

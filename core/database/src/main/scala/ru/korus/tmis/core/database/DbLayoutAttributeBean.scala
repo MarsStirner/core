@@ -19,7 +19,7 @@ class DbLayoutAttributeBean extends DbLayoutAttributeBeanLocal
 
   def getAllLayoutAttributes = {
     val attributes = em.createNamedQuery("LayoutAttribute.findAll", classOf[LayoutAttribute]).getResultList
-    attributes.foreach(em.detach(_))
+
     attributes
   }
 }

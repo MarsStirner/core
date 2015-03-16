@@ -28,7 +28,7 @@ class DbRlsBean
         throw new IllegalArgumentException("Invalid id value id=" + id)
 
       val n = em.find(classOf[Nomenclature], id)
-      em.detach(n)
+
       n
     } catch {
       case e: Throwable => throw new CoreException(e.getMessage, e)
@@ -45,7 +45,7 @@ class DbRlsBean
         createQuery(rlsByTextContainingQuery, classOf[Nomenclature]).
         setParameter("value", findText).
         getResultList
-      l.foreach(em.detach(_))
+
       l
     } catch {
       case e: Throwable => throw new CoreException(e.getMessage, e)
@@ -63,7 +63,7 @@ class DbRlsBean
       createNamedQuery("RlsBalanceOfGood.findByCode", classOf[RlsBalanceOfGood]).
       setParameter("code", if(nomen == null) 0 else nomen.getId).
       getResultList
-    l.foreach(em.detach(_))
+
     l
   }
 }

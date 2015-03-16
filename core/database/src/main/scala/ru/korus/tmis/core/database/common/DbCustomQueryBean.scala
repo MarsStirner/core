@@ -49,7 +49,7 @@ class DbCustomQueryBean
       .setParameter("period", period)
       .getResultList.headOption
     result.map {
-      it => em.detach(it); it
+      it => it
     }.orNull
   }
 
@@ -59,7 +59,7 @@ class DbCustomQueryBean
       .setParameter("doctorId", id)
       .getResultList
 
-    result.foreach((event) => em.detach(event))
+
     result
   }
 
@@ -70,7 +70,7 @@ class DbCustomQueryBean
       .getResultList
 
     val events = result.map((e) => e(0).asInstanceOf[Event])
-    events.foreach((event) => em.detach(event))
+
     events
   }
 
@@ -111,7 +111,7 @@ class DbCustomQueryBean
         var entryMap = Map.empty[ActionProperty, ju.List[APValue]]
         entryMap += (e -> dbActionPropertyBean.getActionPropertyValue(e))
         map += (e.getAction -> entryMap)
-        em.detach(e)
+
         map
       })
     //Перепишем общее количество записей для запроса
@@ -174,8 +174,7 @@ class DbCustomQueryBean
       (map, pair) => {
         val event = pair(0).asInstanceOf[Event]
         val entity = pair(1).asInstanceOf[T]
-        em.detach(event)
-        em.detach(entity)
+
         map.put(event, entity)
         map
       }
@@ -215,7 +214,7 @@ class DbCustomQueryBean
     }
 
     val result = typed.getResultList
-    result.foreach(a => em.detach(a))
+
     result
   }
 
@@ -242,7 +241,7 @@ class DbCustomQueryBean
       .setParameter("eventId", eventId)
       .getResultList
 
-    result.foreach((a) => em.detach(a))
+
     result
   }
 
@@ -295,7 +294,7 @@ class DbCustomQueryBean
         .setParameter("actionTypeId", actionTypeId)
         .getResultList
     }
-    ts.foreach(em.detach(_))
+
     ts
   }
 
@@ -313,7 +312,7 @@ class DbCustomQueryBean
         .setParameter("eventId", eventId)
         .getResultList
     }
-    ts.foreach(em.detach(_))
+
     ts
   }
 
@@ -433,7 +432,7 @@ class DbCustomQueryBean
 
       org_value = depArray.foldLeft(new java.util.HashMap[Event, OrgStructure])(
         (map, pair) => {
-          em.detach(pair)
+
           val ap_values = dbActionPropertyBean.getActionPropertyValue(pair)
           val department: OrgStructure =
             if (ap_values != null && ap_values.size() > 0)
@@ -472,9 +471,7 @@ class DbCustomQueryBean
           val internalMap = new java.util.HashMap[Object, Object]
           internalMap.put(f(1), f(2))
           ret_value.put(f(0).asInstanceOf[Event], internalMap)
-          em.detach(f(0))
-          em.detach(f(1))
-          em.detach(f(2))
+
         })
         i = i + 1
       }
@@ -566,9 +563,7 @@ class DbCustomQueryBean
         val internalMap = new java.util.HashMap[Object, Object]
         internalMap.put(f(1), f(2))
         ret_value.put(f(0).asInstanceOf[Event], internalMap)
-        //em.detach(f(0))
-        //em.detach(f(1))
-        //em.detach(f(2))
+
       })
       i = i + 1
       if (res2 != null && res2.size() > 0) {
@@ -580,7 +575,7 @@ class DbCustomQueryBean
             .getResultList
 
           val asd = qwe.get(0)
-          em.detach(asd)
+
           return asd
           //return res2(0)(2).asInstanceOf[Mkb]
         }
@@ -734,9 +729,7 @@ class DbCustomQueryBean
     }
 
     val result = typed.getResultList
-    result.foreach(f => {
-      em.detach(f)
-    })
+
     result
   }
 
@@ -795,9 +788,7 @@ class DbCustomQueryBean
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
     val result = typed.getResultList
-    result.foreach(f => {
-      em.detach(f)
-    })
+
     result
   }
 
@@ -814,7 +805,7 @@ class DbCustomQueryBean
         null
       }
       case _ => {
-        result.foreach(a => em.detach(a))
+
         result.iterator().next()
       }
     }

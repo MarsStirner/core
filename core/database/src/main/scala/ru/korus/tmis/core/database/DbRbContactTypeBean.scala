@@ -68,7 +68,7 @@ class DbRbContactTypeBean
       }
       case size => {
         val rbContactType = result.iterator.next()
-        em.detach(rbContactType)
+
         rbContactType
       }
     }

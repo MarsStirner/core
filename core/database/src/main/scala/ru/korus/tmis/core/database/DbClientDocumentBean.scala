@@ -53,7 +53,7 @@ class DbClientDocumentBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }
@@ -71,7 +71,7 @@ class DbClientDocumentBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         true
       }

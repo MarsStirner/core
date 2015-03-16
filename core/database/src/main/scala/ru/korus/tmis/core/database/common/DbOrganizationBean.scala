@@ -175,9 +175,7 @@ class DbOrganizationBean
         //          i18n("error.OrganisationNotFound"))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

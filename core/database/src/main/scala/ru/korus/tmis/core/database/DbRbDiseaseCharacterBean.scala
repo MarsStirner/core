@@ -39,7 +39,7 @@ class DbRbDiseaseCharacterBean extends DbRbDiseaseCharacterBeanLocal
           i18n("error.rbDiseaseCharacterNotFound").format(id))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

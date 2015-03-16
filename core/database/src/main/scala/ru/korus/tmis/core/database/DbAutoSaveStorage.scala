@@ -38,7 +38,7 @@ class DbAutoSaveStorage extends  DbAutoSaveStorageLocal {
     try {
       val elem = Option(em.find(classOf[AutoSaveStorage], new AutosaveStoragePK(id, userId)))
         .getOrElse(new AutoSaveStorage(id, userId, new Date, ""))
-      em.detach(elem)
+
       new AutoSaveOutputDataContainer(elem)
     } catch {
       case e: Throwable => throw new CoreException(e)

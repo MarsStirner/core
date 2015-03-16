@@ -295,14 +295,9 @@ class CommonDataProcessorBean
       }
     })
 
-    val r = dbManager.detachAll[Action](result).toList
-    /*
-    r.foreach(a => {
-      val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
-      actionEvent.fire(new CreateActionNotification(a, values))
-    })
-    */
-    r
+
+
+    result
   }
 
 
@@ -525,7 +520,7 @@ class CommonDataProcessorBean
         .map(_.asInstanceOf[Action])
         .toList
 
-      val r = dbManager.detachAll[Action](result).toList
+
 
       //Сохранение диагнозов в таблицу Диагностик
       //var apsForDiag = new util.LinkedList[ActionProperty]()
@@ -544,7 +539,7 @@ class CommonDataProcessorBean
           newValues))
       })
       */
-      r
+      result
 
     } finally {
       appLock.releaseLock(lockId)

@@ -71,9 +71,7 @@ class DbEventPersonBean
       //    i18n("error.eventPersonNotFound").format(eventId))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }
@@ -92,9 +90,7 @@ class DbEventPersonBean
         //  i18n("error.eventPersonNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }
@@ -115,7 +111,7 @@ class DbEventPersonBean
           ConfigManager.ErrorCodes.EventPersonForEventAndUserNotFound,
           i18n("error.eventPersonForEventAndUserNotFound").format(eventId))
       case size =>
-        result.foreach(rbType => { em.detach(rbType) })
+
         result(0)
     }
   }

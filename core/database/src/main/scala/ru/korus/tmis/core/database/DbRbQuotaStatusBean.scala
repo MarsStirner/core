@@ -44,9 +44,7 @@ class DbRbQuotaStatusBean
           i18n("error.rbQuotaStatusNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

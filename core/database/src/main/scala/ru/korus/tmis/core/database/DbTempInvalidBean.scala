@@ -80,7 +80,7 @@ class DbTempInvalidBean
       }
       case size => {
         var ti = result.iterator.next()
-        em.detach(ti)
+
         ti
       }
     }

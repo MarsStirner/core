@@ -54,7 +54,7 @@ class DbDiagnosisBean  extends DbDiagnosisBeanLocal
                                  i18n("error.diagnosisNotFound").format(id))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

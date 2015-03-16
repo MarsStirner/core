@@ -58,9 +58,7 @@ class DbClientQuotingBean
           i18n("error.clientQuotingNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }
@@ -140,7 +138,7 @@ class DbClientQuotingBean
       .setFirstResult(limit * page)
     val result = typed.getResultList
 
-    result.foreach(rbType => {em.detach(rbType)})
+
 
     result
   }

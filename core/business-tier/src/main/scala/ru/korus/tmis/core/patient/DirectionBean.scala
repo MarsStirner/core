@@ -614,8 +614,7 @@ with I18nable {
               //val event29 = action19.getEvent
               action19.setDeleted(true)
               //event29.setDeleted(true)
-              //em.detach(event29)
-              //em.merge(event29)
+
               em.merge(action19)
             }
           }
@@ -624,7 +623,7 @@ with I18nable {
           }
         }
         a.setDeleted(true)
-        //em.detach(a)
+
         em.merge(a)
       }
       else {
@@ -727,7 +726,7 @@ with I18nable {
 
   private def sendJMSLabRequest(actionId: Int, labCode: String) = {
     val action = actionBean.getActionById(actionId)
-    em.detach(action)
+
 
     if(action == null)
       throw new Exception("Action ")
@@ -748,9 +747,7 @@ with I18nable {
       val biomaterialInfo: BiomaterialInfo = getBiomaterialInfo(action)
       val orderInfo: OrderInfo = getOrderInfo(action, actionType)
 
-      em.detach(actionType)
-      em.detach(eventInfo)
-      em.detach(patientInfo)
+
 
       val requestObject = new LaboratoryCreateRequestData(action, requestInfo, patientInfo, eventInfo, biomaterialInfo, orderInfo)
       connection = connectionFactory.createConnection()

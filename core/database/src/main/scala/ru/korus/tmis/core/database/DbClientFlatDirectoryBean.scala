@@ -78,7 +78,7 @@ class DbClientFlatDirectoryBean
       }
       case size => {
         val fdClient = result.iterator.next()
-        em.detach(fdClient)
+
         fdClient
       }
     }
@@ -97,7 +97,7 @@ class DbClientFlatDirectoryBean
       }
       case size => {
         val сlientProperty = result.iterator.next()
-        em.detach(сlientProperty)
+
         сlientProperty
       }
     }
@@ -116,7 +116,7 @@ class DbClientFlatDirectoryBean
       }
       case size => {
         val record = result.iterator.next()
-        em.detach(record)
+
         record
       }
     }

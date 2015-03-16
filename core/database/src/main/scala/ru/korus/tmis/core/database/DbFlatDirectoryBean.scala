@@ -36,7 +36,7 @@ with I18nable {
     }
     val result = typed.getResultList
 
-    result.foreach(fd => em.detach(fd))
+
     result
   }
 
@@ -80,9 +80,7 @@ with I18nable {
             }
           }
         }
-        if (a(0).isInstanceOf[FlatDirectory]) em.detach(a(0).asInstanceOf[FlatDirectory])
-        if (a(1).isInstanceOf[FDRecord]) em.detach(a(1).asInstanceOf[FDRecord])
-        if (a(2).isInstanceOf[FDFieldValue]) em.detach(a(2).asInstanceOf[FDFieldValue])
+
         map
       })
 

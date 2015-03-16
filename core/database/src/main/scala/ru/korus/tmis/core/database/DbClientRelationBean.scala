@@ -68,9 +68,7 @@ class DbClientRelationBean
           i18n("error.clientRelationNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }
@@ -90,9 +88,7 @@ class DbClientRelationBean
           i18n("error.clientRelationNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

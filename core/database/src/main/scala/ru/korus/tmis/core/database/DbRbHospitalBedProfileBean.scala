@@ -31,7 +31,7 @@ class DbRbHospitalBedProfileBean
       }
       case size => {
         val bedProfile = result.iterator().next()
-        em.detach(bedProfile)
+
         bedProfile
       }
     }
@@ -49,7 +49,7 @@ class DbRbHospitalBedProfileBean
       }
       case size => {
         val bedProfile = result.iterator().next()
-        em.detach(bedProfile)
+
         bedProfile
       }
     }

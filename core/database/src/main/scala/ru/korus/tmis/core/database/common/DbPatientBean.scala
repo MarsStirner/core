@@ -110,7 +110,7 @@ class DbPatientBean
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList
-    result.foreach(em.detach(_))
+
     result
   }
 

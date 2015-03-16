@@ -74,7 +74,7 @@ public class DbAccountBean implements DbAccountBeanLocal {
         em.createNamedQuery("Account.deleteAccount")
                 .setParameter("id", toDelete.getId())
                 .executeUpdate();
-        em.detach(toDelete);
+
     }
 
     @Override

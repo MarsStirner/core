@@ -34,7 +34,7 @@ class DbMkbBean
         throw new CoreException(ConfigManager.ErrorCodes.JobNotFound, i18n("error.mkbWithIdNotFound").format(id))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -50,7 +50,7 @@ class DbMkbBean
         throw new CoreException(ConfigManager.ErrorCodes.JobNotFound, i18n("error.mkbWithCodeNotFound").format(code))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

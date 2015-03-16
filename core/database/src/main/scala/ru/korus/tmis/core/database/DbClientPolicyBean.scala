@@ -66,7 +66,7 @@ class DbClientPolicyBean
           i18n("error.clientPolicyNotFound"))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -143,7 +143,7 @@ class DbClientPolicyBean
     result.size match {
       case 0 => {}
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -166,7 +166,7 @@ class DbClientPolicyBean
         null
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

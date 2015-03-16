@@ -28,7 +28,7 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result.iterator().next()
       }
     }
@@ -45,7 +45,7 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result.iterator().next()
       }
     }
@@ -60,7 +60,7 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result
       }
     }
@@ -75,7 +75,7 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result
       }
     }
@@ -104,7 +104,7 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result.iterator().next()
       }
     }

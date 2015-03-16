@@ -21,7 +21,7 @@ class DbRbPrintTemplateBean extends DbRbPrintTemplateBeanLocal {
       .createNamedQuery("RbPrintTemplate.findByIds", classOf[RbPrintTemplate])
       .setParameter("values", asJavaCollection(ids))
       .getResultList.toList
-    l.foreach(em.detach(_))
+
     l
   }
 
@@ -30,7 +30,7 @@ class DbRbPrintTemplateBean extends DbRbPrintTemplateBeanLocal {
       .createNamedQuery("RbPrintTemplate.findByContexts", classOf[RbPrintTemplate])
       .setParameter("values", asJavaCollection(contexts))
       .getResultList.toList
-    l.foreach(em.detach(_))
+
     l
   }
 

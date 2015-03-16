@@ -36,7 +36,7 @@ class DbRbDiagnosisTypeBean  extends DbRbDiagnosisTypeBeanLocal
                                                   i18n("error.rbDiagnosisTypeNotFound").format("id: %d".format(id)))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -54,7 +54,7 @@ class DbRbDiagnosisTypeBean  extends DbRbDiagnosisTypeBeanLocal
           i18n("error.rbDiagnosisTypeNotFound").format("flatCode: %s".format(flatCode)))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

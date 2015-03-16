@@ -60,9 +60,7 @@ class DbClientSocStatusBean
           i18n("error.ClientSocStatusNotFound"))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

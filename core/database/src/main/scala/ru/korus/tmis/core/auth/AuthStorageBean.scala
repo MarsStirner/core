@@ -182,6 +182,7 @@ class AuthStorageBean
       authData = this.getAuthData(authToken)
       if (authData != null) {
         info("Authentication data found: " + authData)
+        authData.setUser(dbStaff.getStaffById(authData.getUserId))
       } else {
         warn("No authentication data found")
         throw new AuthenticationException(

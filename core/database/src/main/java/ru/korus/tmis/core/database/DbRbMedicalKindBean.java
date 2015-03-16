@@ -36,7 +36,7 @@ public class DbRbMedicalKindBean implements DbRbMedicalKindBeanLocal {
                 .setParameter("code", code).getResultList();
         if (!resultList.isEmpty()) {
             final RbMedicalKind result = resultList.get(0);
-            em.detach(result);
+
             return result;
         }
         return null;

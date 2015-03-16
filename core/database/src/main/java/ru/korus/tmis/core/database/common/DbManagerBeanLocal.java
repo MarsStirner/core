@@ -28,12 +28,6 @@ public interface DbManagerBeanLocal {
     <T> Collection<T> mergeAll(Collection<T> entities)
             throws CoreException;
 
-    <T> T detach(T entity)
-            throws CoreException;
-
-    <T> Collection<T> detachAll(Collection<T> entities)
-            throws CoreException;
-
     <T> void removeAll(Collection<T> entities)
             throws CoreException;
 

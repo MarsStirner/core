@@ -63,7 +63,7 @@ class DbActionBean
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionById(id: Int) = {
     val res: Action = getActionIdWithoutDetach(id)
-    em.detach(res)
+
     res
   }
 
@@ -110,7 +110,7 @@ class DbActionBean
       }
       case size => {
         val action = result.iterator.next()
-        em.detach(action)
+
         action
       }
     }
@@ -175,10 +175,11 @@ class DbActionBean
     }
 
     a.setModifyDatetime(now)
-    a.setVersion(version)
+
     a.setBegDate(now)
     //a.setEndDate(now)
 
+    em.merge(a)
     a
   }
 
@@ -209,7 +210,6 @@ class DbActionBean
         null
       }
       case size => {
-        result.foreach(a => em.detach(a))
         result.iterator().next
       }
     }
@@ -226,7 +226,7 @@ class DbActionBean
         null
       }
       case size => {
-        result.foreach(a => em.detach(a))
+
         val action = result.iterator().next
         action
       }
@@ -239,7 +239,7 @@ class DbActionBean
       .setParameter("actionType", actionType)
       .getResultList
 
-    result.foreach(a => em.detach(a))
+
     result.iterator().next()
   }
 
@@ -265,7 +265,7 @@ class DbActionBean
     queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList
-    result.foreach(a => em.detach(a))
+
     result
   }
 
@@ -275,7 +275,6 @@ class DbActionBean
       .setParameter("code", code)
       .getResultList
 
-    result.foreach(a => em.detach(a))
     result
   }
 
@@ -289,7 +288,7 @@ class DbActionBean
     result.size match {
       case 0 => null
       case size => {
-        result.foreach(a => em.detach(a))
+
         result
       }
     }
@@ -345,7 +344,7 @@ class DbActionBean
     result.size match {
       case 0 => null
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -571,7 +570,7 @@ class DbActionBean
     val result = em.createQuery(ActionTypeByCodeQuery, classOf[ActionType]).setParameter("code", code)
       .getResultList
     val et = result(0)
-    result.foreach(em.detach(_))
+
     et
   }
 
@@ -629,7 +628,6 @@ class DbActionBean
       .setParameter("code", code)
       .getResultList
 
-    result.foreach(a => em.detach(a))
     result
   }
 
@@ -762,7 +760,7 @@ class DbActionBean
       .setParameter("patientId", patientId)
       .setParameter("code", actionPropertyCode)
       .getResultList
-    r.foreach(em.detach(_))
+
     r
   }
 }

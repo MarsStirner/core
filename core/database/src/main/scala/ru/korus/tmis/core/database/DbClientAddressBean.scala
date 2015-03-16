@@ -61,7 +61,7 @@ class DbClientAddressBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }
@@ -83,7 +83,7 @@ class DbClientAddressBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }

@@ -44,7 +44,7 @@ with I18nable {
         null
       }
       case size => {
-        result.foreach(fdr => em.detach(fdr))
+
         result.get(0)
       }
     }

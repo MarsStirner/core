@@ -44,7 +44,7 @@ class DbEventTypeBean
         ConfigManager.ErrorCodes.EventTypeNotFound,
         i18n("error.eventTypeNotFound").format(code))
     } else {
-      result.foreach(em.detach(_))
+
       result.iterator().next()
     }
   }
@@ -57,7 +57,7 @@ class DbEventTypeBean
     val typed = em.createQuery(EventTypesByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     val result = typed.getResultList
-    result.foreach(em.detach(_))
+
 
     //Перепишем общее количество записей для запроса
     if (records!=null) records(result.size)
