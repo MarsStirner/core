@@ -19,6 +19,7 @@ case class MethodCall(expr: Option[Expr], name: String, args: List[Expr]) extend
 case class NumericLiteral(value: String) extends Expr
 case class StringLiteral(value: String) extends Expr
 case class BooleanLiteral(value: Boolean) extends Expr
+case class ValuesList(values: List[Expr]) extends Expr
 object OR extends Expr
 object AND extends Expr
 object IF extends Expr

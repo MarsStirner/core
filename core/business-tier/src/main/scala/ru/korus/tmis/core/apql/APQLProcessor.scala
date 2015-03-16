@@ -53,6 +53,8 @@ class APQLProcessor {
         case Some(x) => processExpression(x).apply(method.name, args)
         case None => GlobalObject(method.name, args)
       }
+    case l: ValuesList =>
+      new ExpressionList(l.values.map(processExpression))
     case l: NumericLiteral => new IntegerValue(Integer.valueOf(l.value))
     case l: StringLiteral => new StringValue(l.value)
     case l: BooleanLiteral => new BooleanValue(l.value)
@@ -76,12 +78,28 @@ class APQLProcessor {
       }
     )
 
+    val getActionsByEventIdAndFilterByCodes = Method( "getActionsByEvent", List(classOf[IntegerValue], classOf[ExpressionList]),
+      (args: List[ExpressionValue]) => {
+        val eventId = args.head.asInstanceOf[IntegerValue].value
+        val actionTypeCodes = {
+          val vals = args.last.asInstanceOf[ExpressionList].values
+          if (vals.exists(!_.isInstanceOf[StringValue]))
+            throw new Exception()
+          else
+            vals.map(_.asInstanceOf[StringValue].value)
+        }
+        getActionsByEvent(eventId, actionTypeCodes).getOrElse(throw new CoreException("Cannot find actions of event with id ["
+          + eventId + "] and ActionType codes [" + actionTypeCodes + "]"))
+      }
+    )
+
     val getNowDateTime = Method("getNowDateTime", Nil, (args: List[ExpressionValue]) => { new DateValue(new Date()) })
 
     override def methods: List[APQLProcessor.this.GlobalObject.Method] =
       List(
         getActionsByEventId,
         getActionsByEventIdAndFilterByCode,
+        getActionsByEventIdAndFilterByCodes,
         getNowDateTime)
 
     private def getActionsByEvent(id: Int): Try[ActionList] = {
@@ -90,6 +108,10 @@ class APQLProcessor {
 
     private def getActionsByEvent(id: Int, actionTypeCode: String): Try[ActionList] = {
       Try(new ActionList(actionBean.getActionsByEvent(id).asScala.toList.filter(p => p.getActionType.getCode.equals(actionTypeCode))))
+    }
+
+    private def getActionsByEvent(id: Int, actionTypeCodes: List[String]): Try[ActionList] = {
+      Try(new ActionList(actionBean.getActionsByEvent(id).asScala.toList.filter(p => actionTypeCodes.contains(p.getActionType.getCode))))
     }
 
   }
@@ -162,6 +184,11 @@ class APQLProcessor {
 
   }
 
+  private class ExpressionList(val values: List[ExpressionValue]) extends ExpressionValue {
+
+    override def methods: List[Method] = List()
+
+  }
 
   private class ActionList(val value: List[Action]) extends ExpressionValue {
 
