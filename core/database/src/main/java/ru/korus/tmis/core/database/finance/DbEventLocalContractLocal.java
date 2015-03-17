@@ -23,7 +23,7 @@ public interface DbEventLocalContractLocal {
      * @param eventId - ID обращения
      * @return Договор или null, если договор не найден
      */
-    EventLocalContract getByEventId(Integer eventId);
+    /*EventLocalContract getByEventId(Integer eventId);*/
 
     /**
      * Получить договор по номеру

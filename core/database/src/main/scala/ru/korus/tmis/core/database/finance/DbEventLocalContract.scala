@@ -35,7 +35,7 @@ with I18nable {
   var dbOrganizationBeanLocal: DbOrganizationBeanLocal = _
 
 
-  def getByEventId(eventId: Integer): EventLocalContract = {
+ /* def getByEventId(eventId: Integer): EventLocalContract = {
     val resList = em.createNamedQuery("EventLocalContract.findByEventId", classOf[EventLocalContract])
       .setParameter("eventId", eventId)
       .getResultList
@@ -43,7 +43,7 @@ with I18nable {
       return null
     else
       return resList.get(0)
-  }
+  }*/
 
   def getByContractNumber(numberOfContract: String): EventLocalContract = {
     val resList = em.createNamedQuery("EventLocalContract.findByContractCode", classOf[EventLocalContract])
@@ -97,14 +97,13 @@ with I18nable {
       return null
     }
     var isNew = false
-    var eventLocalContract: EventLocalContract = getByEventId(event.getId)
+    var eventLocalContract: EventLocalContract =  event.getEventLocalContract
     if(eventLocalContract == null) {
       eventLocalContract = initDefault(new EventLocalContract())
       isNew = true
 
     }
 
-    eventLocalContract.setEvent(event)
     eventLocalContract.setFirstName(payerInfo.getFirstName)
     eventLocalContract.setLastName(payerInfo.getLastName)
     eventLocalContract.setPatrName(payerInfo.getMiddleName)

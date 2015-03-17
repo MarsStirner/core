@@ -154,8 +154,11 @@ public class Event implements Serializable {
     private int version;
 
     @ManyToOne(cascade = CascadeType.ALL)
+    @JoinColumn(name = "localContract_id")
+    private EventLocalContract eventLocalContract;
+
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
-    // @Transient
     private UUID uuid;
     // //////////////////////////////////////////////////////////////////////////
     // Custom mappings
@@ -456,6 +459,14 @@ public class Event implements Serializable {
         return orgStructure;
     }
 
+    public EventLocalContract getEventLocalContract() {
+        return eventLocalContract;
+    }
+
+    public void setEventLocalContract(EventLocalContract eventLocalContract) {
+        this.eventLocalContract = eventLocalContract;
+    }
+
     public void setOrgStructure(OrgStructure orgStructure) {
         this.orgStructure = orgStructure;
     }
@@ -500,4 +511,5 @@ public class Event implements Serializable {
 
         return newEvent;
     }
+
 }

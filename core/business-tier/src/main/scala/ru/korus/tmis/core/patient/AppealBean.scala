@@ -421,7 +421,11 @@ with CAPids {
     val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), mapAsJavaMap(map), authData)
 
     if (appealData.data.getPayer != null
-        && appealData.data.getPaymentContract != null) dbEventLocalContract.insertOrUpdate(newEvent, appealData.data.getPayer, appealData.data.getPaymentContract )
+        && appealData.data.getPaymentContract != null) {
+
+      event.setEventLocalContract(
+        dbEventLocalContract.insertOrUpdate(newEvent, appealData.data.getPayer, appealData.data.getPaymentContract))
+    }
 
     newEvent.getId.intValue()
   }

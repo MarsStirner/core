@@ -334,7 +334,7 @@ with CAPids {
         currentDepartment,
         dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
         dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue()),
-        dbEventLocalContractLocal.getByEventId(event.getId))
+        event.getEventLocalContract)
     } else {
       throw new CoreException("Неудачная попытка сохранения(изменения) обращения")
     }
@@ -374,7 +374,7 @@ with CAPids {
       currentDepartment,
       dbDiagnosticBean.getDiagnosticsByEventIdAndTypes,
       dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue()),
-      dbEventLocalContractLocal.getByEventId(event.getId)
+      event.getEventLocalContract
     )
   }
 
@@ -392,7 +392,7 @@ with CAPids {
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
     val event: Event = positionE._1
-    val eventLocalContract: EventLocalContract = dbEventLocalContractLocal.getByEventId(event.getId)
+    val eventLocalContract: EventLocalContract =  event.getEventLocalContract
     val template: TempInvalid = dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue())
     val contract: Contract = if (positionA._1.getContractId != null) {
       dbContractBean.getContractById(positionA._1.getContractId.intValue())
