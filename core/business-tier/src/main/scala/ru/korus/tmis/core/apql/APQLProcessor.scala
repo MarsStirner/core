@@ -197,7 +197,28 @@ class APQLProcessor {
       case Nil => throw new CoreException("Cannot get first element of empty List")
     })
 
-    override def methods: List[Method] = List(first)
+    val sort = Method("sort", List(classOf[StringValue], classOf[StringValue]),
+      (args: List[ExpressionValue]) => {
+        args match {
+          case x :: y :: Nil => (x, y) match {
+            case (x:StringValue, y: StringValue) => {
+              val l = x.value match {
+                case "createDatetime" => value.sortBy(_.getCreateDatetime)
+                case _ => throw new Exception("Unknown sorting field [" + x.value + "], use createDatetime");
+              }
+              y.value match {
+                case "ASC" => new ActionList(l)
+                case "DESC" => new ActionList(l.reverse)
+                case _ =>  throw new Exception("Unknown sorting direction [" + y.value + "], use ASC or DESC");
+              }
+            }
+            case _ => throw new Exception("Invalid args of sort method [" + args + "], use sort([String], [String])")
+          }
+        }
+
+      })
+
+    override def methods: List[Method] = List(first, sort)
 
   }
 
