@@ -110,8 +110,8 @@ with I18nable {
     eventLocalContract.setPatrName(payerInfo.getMiddleName)
     eventLocalContract.setBirthDate(payerInfo.getBirthDate)
     try {
-      eventLocalContract.setRbDocumentType(
-        if (payerInfo.getDocumentType == null) null else dbRbDocumentTypeBeanLocal.getRbDocumentTypeById(payerInfo.getDocumentType))
+      val rbDocumentType = if (payerInfo.getDocumentType == null) null else dbRbDocumentTypeBeanLocal.getRbDocumentTypeById(payerInfo.getDocumentType)
+      eventLocalContract.setRbDocumentType(rbDocumentType)
     } catch {
       case ex: CoreException =>
     }

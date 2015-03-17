@@ -190,7 +190,7 @@ public class EventLocalContract implements Serializable {
 		return this.rbDocumentType;
 	}
 
-	public void setRbDocumentType(RbDocumentType RbDocumentType) {
+	public void setRbDocumentType(RbDocumentType rbDocumentType) {
 		this.rbDocumentType = rbDocumentType;
 	}
 
