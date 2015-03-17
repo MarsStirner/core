@@ -27,7 +27,7 @@ public class PaymentContractInfo {
 
     public PaymentContractInfo(EventLocalContract eventLocalContract) {
 
-        number = eventLocalContract.getNumber();
+        number = eventLocalContract.getNumberContract();
 
         date = eventLocalContract.getDateContract();
     }
