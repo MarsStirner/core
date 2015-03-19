@@ -546,6 +546,9 @@ with CAPids {
     }
     if (at != null) {
       val aptList = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(at.getId);
+      // Последний дневниковый осмотр из всех историй болезни
+      val IC = InfectionControl
+      val lastAction = if(event == null) null else actionBean.getLastActionByActionTypesAndClientId(IC.documents.toList, event.getPatient.getId)
       jData.data.get(0).group.get(1).attribute.par.foreach(ap => {
         if (ap.typeId == null || ap.typeId.intValue() <= 0) {
           if (reWriteId.booleanValue) //в id -> apt.id
@@ -563,7 +566,7 @@ with CAPids {
           }
 
           if (aProp != null) {
-            ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp, cache, APValueCache, pastActionsCache))
+            ap setCalculatedValue new APValueContainer(calculateActionPropertyValue(event, at, aProp, cache, APValueCache, pastActionsCache, lastAction))
           }
         }
       }
@@ -602,7 +605,9 @@ with CAPids {
   private def calculateActionPropertyValue(event: Event, at: ActionType, apt: ActionPropertyType,
                                            cache: mutable.HashMap[Int, java.util.List[Action]],
                                            apValueCache: mutable.HashMap[ActionProperty, java.util.List[APValue]],
-                                           pastActionsCache: mutable.HashMap[(Set[String], Int, String), java.util.List[Action]]): APValue = {
+                                           pastActionsCache: mutable.HashMap[(Set[String], Int, String),
+                                           java.util.List[Action]],
+                                           lastAction : Action): APValue = {
 
     val IC = InfectionControl
 
@@ -628,17 +633,8 @@ with CAPids {
       null
     }
 
-    def getLastActionByTypeCodes(typeCode: Iterable[String], event: Event): Action = {
-      val l = cache.getOrElseUpdate(event.getId, {
-        actionBean.getActionsByEvent(event.getId)
-      })
-      val list = l.filter(a => typeCode.contains(a.getActionType.getCode))
-        .sortBy(_.getCreateDatetime)
-
-      if (list.nonEmpty)
-        list.last
-      else
-        null
+    def getLastActionByTypeCodes(typeCode: List[String], event: Event): Action = {
+      actionBean.getLastActionByEventAndActionTypes(event.getId, typeCode )
     }
 
     // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
@@ -673,13 +669,10 @@ with CAPids {
     }
 
     // Получение значений свойств по свойствам инфекционного контроля
-    def getPropertyCustom2(oldDocumentCodes: Set[String], actionTypeCodesPrefix: String, event: Event): APValue = {
+    def getPropertyCustom2( actionTypeCodesPrefix: String, event: Event, lastAction: Action): APValue = {
 
-      if (!apt.getCode.startsWith(actionTypeCodesPrefix) || !(oldDocumentCodes contains at.getCode))
+      if (!apt.getCode.startsWith(actionTypeCodesPrefix) )
         return null
-
-      // Последний дневниковый осмотр из всех историй болезни
-      val lastAction = getLastActionByTypeCodes(oldDocumentCodes, event)
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
       if (lastAction == null)
@@ -717,10 +710,7 @@ with CAPids {
     }
 
     // Получения значений для лекарственных назначений
-    def getPropertyCustom3(oldDocumentCodes: Set[String], event: Event, drugType: String): APValue = {
-
-      // Последний дневниковый осмотр из всех историй болезни
-      val lastAction = getLastActionByTypeCodes(oldDocumentCodes, event)
+    def getPropertyCustom3(event: Event, drugType: String, lastAction: Action): APValue = {
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
       if (lastAction == null)
@@ -760,9 +750,7 @@ with CAPids {
     }
 
     // Получение значения поля "Локальная инфекция"
-    def getPropertyCustom4(oldDocumentCodes: Set[String], event: Event): APValue = {
-      // Последний дневниковый осмотр из всех историй болезни
-      val lastAction = getLastActionByTypeCodes(oldDocumentCodes, event)
+    def getPropertyCustom4(event: Event, lastAction: Action): APValue = {
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
       if (lastAction == null)
@@ -821,7 +809,7 @@ with CAPids {
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
           for (e <- events) {
-            outVal = getPropertyCustom2(IC.documents, IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, e)
+            outVal = getPropertyCustom2(IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, e, lastAction)
             if (outVal != null) return outVal
           }
           outVal
@@ -830,7 +818,7 @@ with CAPids {
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
           for (e <- events) {
-            outVal = getPropertyCustom4(IC.documents, e)
+            outVal = getPropertyCustom4(e, lastAction)
             if (outVal != null) return outVal
           }
           outVal
@@ -839,7 +827,7 @@ with CAPids {
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
           for (e <- events) {
-            outVal = getPropertyCustom3(IC.documents, e, "Empiric")
+            outVal = getPropertyCustom3(e, "Empiric", lastAction)
             if (outVal != null) return outVal
           }
           outVal
@@ -848,7 +836,7 @@ with CAPids {
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
           for (e <- events) {
-            outVal = getPropertyCustom3(IC.documents, e, "Telic")
+            outVal = getPropertyCustom3( e, "Telic", lastAction)
             if (outVal != null) return outVal
           }
           outVal
@@ -857,7 +845,7 @@ with CAPids {
           val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
           var outVal: APValue = null
           for (e <- events) {
-            outVal = getPropertyCustom3(IC.documents, e, "Prophylaxis")
+            outVal = getPropertyCustom3( e, "Prophylaxis", lastAction)
             if (outVal != null) return outVal
           }
           outVal
@@ -870,13 +858,16 @@ with CAPids {
   }
 
   def calculateActionPropertyValue(eventId: Int, actionTypeId: Int, actionPropertyId: Int) = {
+    val IC = InfectionControl
+    val event: Event = dbEventBean.getEventById(eventId)
     calculateActionPropertyValue(
-      dbEventBean.getEventById(eventId),
+      event,
       actionTypeBean.getActionTypeById(actionTypeId),
       actionPropertyTypeBean.getActionPropertyTypeById(actionPropertyId),
       mutable.HashMap[Int, java.util.List[Action]](),
       mutable.HashMap[ActionProperty, java.util.List[APValue]](),
-      mutable.HashMap[(Set[String], Int, String), java.util.List[Action]]()
+      mutable.HashMap[(Set[String], Int, String), java.util.List[Action]](),
+      actionBean.getLastActionByActionTypesAndClientId(IC.documents.toList, event.getPatient.getId)
     )
 
   }

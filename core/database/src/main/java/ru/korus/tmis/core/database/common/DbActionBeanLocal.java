@@ -116,7 +116,7 @@ public interface DbActionBeanLocal {
      * @param externalId Номер истории болезни
      * @return Действие (Action).
      * @throws CoreException
-     * @deprecated Использовать метод с фильтром по НИБ {@link #getActionsByEventIdWithFilter(int, ru.korus.tmis.core.auth.AuthData, ru.korus.tmis.core.data.AssessmentsListRequestData)}
+     * @deprecated Использовать метод с фильтром по НИБ
      */
     Action getActionByEventExternalId(String externalId)
             throws CoreException;
@@ -249,6 +249,10 @@ public interface DbActionBeanLocal {
      */
     List<Action> getActionsByEvent(Integer eventId);
 
+    Action getLastActionByEventAndActionTypes(Integer eventId, List<String> flatCodeList);
+
+    Action getLastActionByActionTypesAndClientId(List<String> codeList, Integer clientId);
+
     /**
      * Получить список действий требуемых типов для обращения
      * @param eventId - обращение
@@ -259,7 +263,6 @@ public interface DbActionBeanLocal {
 
     /**
      * Получить новейшее движение пациента для обращения action.eventId
-     * @param action
      * @return
      */
     Action getLatestMove(Event event);

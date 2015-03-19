@@ -62,6 +62,7 @@ class DbEventPersonBean
     val query = em.createQuery(LastEventPersonByEventIdFindQuery,
       classOf[EventPerson])
       .setParameter("eventId", eventId)
+     .setMaxResults(1)
 
     val result = query.getResultList
     result.size match {

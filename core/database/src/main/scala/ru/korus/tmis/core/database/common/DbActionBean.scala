@@ -324,7 +324,9 @@ class DbActionBean
     val result = em.createQuery(ActionsByATypeIdAndEventId, classOf[Int])
       .setParameter("id", eventId)
       .setParameter("atIds", asJavaCollection(actionTypeIds))
+      .setMaxResults(1)
       .getResultList
+
 
     result.size match {
       case 0 => 0
@@ -737,9 +739,30 @@ class DbActionBean
   }
 
   def getLatestMove(event: Event): Action = {
-    val actions =  em.createNamedQuery("Action.findLatestMove", classOf[Action]).setParameter("eventId", event.getId).getResultList
-    return if(actions.isEmpty) null else actions.get(0);
+    val actions = em.createNamedQuery("Action.findLatestMove", classOf[Action])
+      .setParameter("eventId", event.getId)
+      .setMaxResults(1).getResultList
+    return if (actions.isEmpty) null else actions.get(0);
   }
+
+  override def getLastActionByEventAndActionTypes(eventId: Integer, flatCodeList: util.List[String]): Action =  {
+    val actions = em.createNamedQuery("Action.findLastByFlatCodesAndEventId", classOf[Action])
+      .setParameter("eventId", eventId)
+      .setParameter("flatCodes", flatCodeList)
+      .setMaxResults(1)
+      .getResultList
+    return if (actions.isEmpty) null else actions.get(0);
+  }
+
+  override def getLastActionByActionTypesAndClientId(codeList: util.List[String], clientId: Integer): Action =  {
+    val actions = em.createNamedQuery("Action.findLastByActionTypesAndClientId", classOf[Action])
+      .setParameter("codes", codeList)
+      .setParameter("clientId", clientId)
+      .setMaxResults(1)
+      .getResultList
+    return if (actions.isEmpty) null else actions.get(0);
+  }
+
 
   def getAllActionsOfPatientThatHasActionProperty(patientId: Int, actionPropertyCode: String): util.List[Action] = {
     val query =
@@ -755,7 +778,7 @@ class DbActionBean
         |     ap.action.id = a.id AND
         |     apt.id = ap.actionPropertyType.id AND
         |     apt.code = :code
-        |""".stripMargin
+        | """.stripMargin
     val r = em.createQuery(query, classOf[Action])
       .setParameter("patientId", patientId)
       .setParameter("code", actionPropertyCode)
@@ -763,4 +786,5 @@ class DbActionBean
 
     r
   }
+
 }

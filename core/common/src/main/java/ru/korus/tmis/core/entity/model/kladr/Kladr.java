@@ -62,10 +62,12 @@ public class  Kladr {
         this.name = name;
     }
 
+    @JsonProperty("shorttype")
     public String getSocr() {
         return socr;
     }
 
+    @JsonProperty("shorttype")
     public void setSocr(String socr) {
         this.socr = socr;
     }
@@ -110,10 +112,12 @@ public class  Kladr {
         this.parent = parent;
     }
 
+    @JsonProperty("postindex")
     public String getIndex() {
         return index;
     }
 
+    @JsonProperty("postindex")
     public void setIndex(String index) {
         this.index = index;
     }
