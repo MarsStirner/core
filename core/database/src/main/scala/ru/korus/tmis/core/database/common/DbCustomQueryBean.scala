@@ -89,21 +89,41 @@ class DbCustomQueryBean
       case _ => new QueryDataStructure()
     }
 
-    val typed = em.createQuery(ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx
-      .format(queryStr.query,
-      i18n("db.apt.moving.codes.hospitalBed"),
-      i18n("db.apt.moving.codes.hospOrgStruct"),
-      sorting), classOf[ActionProperty])
+    val queryLastMovesByEvents = LastMovesByEvents.format(queryStr.query)
+    val query: String = ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx
+      .format(
+        i18n("db.apt.moving.codes.hospitalBed"),
+        i18n("db.apt.moving.codes.hospOrgStruct"),
+        sorting)
+
+    val typedLastMoves = em.createQuery(queryLastMovesByEvents, classOf[List[Integer]])
+    typedLastMoves.setParameter("flatCodes", asJavaCollection(Set(i18n("db.action.admissionFlatCode"),
+      i18n("db.action.movingFlatCode"))))
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => {
+        if(queryLastMovesByEvents.contains(qdp.name))
+          typedLastMoves.setParameter(qdp.name, qdp.value)
+      })
+    }
+
+    if (limit * (page + 1) > 0) typedLastMoves.setMaxResults(limit * (page + 1))
+    var lastMovedsId = typedLastMoves.getResultList
+    val typed = em.createQuery(query, classOf[ActionProperty])
 
     if (queryStr.data.size() > 0) {
-      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
+      queryStr.data.foreach(qdp => {
+        if(query.contains(qdp.name))
+          typed.setParameter(qdp.name, qdp.value)
+      })
     }
+
+    typed.setParameter("lastMovedsId",lastMovedsId)
 
     typed.setParameter("transferCodes", asJavaCollection(Set(i18n("db.apt.moving.codes.orgStructTransfer"),
       i18n("db.apt.received.codes.orgStructDirection"))))
 
-    typed.setParameter("flatCodes", asJavaCollection(Set(i18n("db.action.admissionFlatCode"),
-      i18n("db.action.movingFlatCode"))))
+    //typed.setParameter("flatCodes", asJavaCollection(Set(i18n("db.action.admissionFlatCode"), i18n("db.action.movingFlatCode"))))
+    if (limit * (page + 1) > 0) typed.setMaxResults(limit * (page + 1))
     var result = typed.getResultList
 
     var actions = result.foldLeft(mutable.LinkedHashMap.empty[Action, ju.Map[ActionProperty, ju.List[APValue]]])(
@@ -167,7 +187,7 @@ class DbCustomQueryBean
     val result = em.createQuery(query,
       classOf[Array[AnyRef]])
       .setParameter("eventIds",
-      asJavaCollection(ids))
+        asJavaCollection(ids))
       .getResultList
 
     result.foldLeft(mutable.LinkedHashMap.empty[Event, T])(
@@ -203,7 +223,7 @@ class DbCustomQueryBean
       case _ => new QueryDataStructure()
     }
 
-    val query = if(queryStr.query.trim().toUpperCase.startsWith("AND")) queryStr.query.trim.substring(3) else queryStr.query
+    val query = if (queryStr.query.trim().toUpperCase.startsWith("AND")) queryStr.query.trim.substring(3) else queryStr.query
 
     val typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("a", query, sorting), classOf[Action])
       .setMaxResults(limit)
@@ -225,7 +245,7 @@ class DbCustomQueryBean
       case _ => new QueryDataStructure()
     }
 
-    val query = if(queryStr.query.trim().toUpperCase.startsWith("AND")) queryStr.query.trim.substring(3) else queryStr.query
+    val query = if (queryStr.query.trim().toUpperCase.startsWith("AND")) queryStr.query.trim.substring(3) else queryStr.query
 
     val typed = em.createQuery(AllDiagnosticsByEventIdAndFiltredByCodeQuery.format("count(a)", query, ""), classOf[Long])
 
@@ -466,7 +486,9 @@ class DbCustomQueryBean
         val res2 = typed2.setParameter("ids", asJavaCollection(ids)).getResultList
 
         res2.foreach(f => {
-          f.head match { case e: Event => ids remove e.getId }
+          f.head match {
+            case e: Event => ids remove e.getId
+          }
 
           val internalMap = new java.util.HashMap[Object, Object]
           internalMap.put(f(1), f(2))
@@ -509,14 +531,16 @@ class DbCustomQueryBean
     } else if (flgAppealNumberSort) {
       //Cортировка по AppealNumber (externalId) как int
       try {
-      if (sortingMethod.compareTo("desc") == 0) //desc
-        ListMap(ret_value_sorted.toList.sortWith(_._1.getExternalId.substring(5).toInt > _._1.getExternalId.substring(5).toInt)
-          .sortWith(_._1.getExternalId.substring(0, 4).toInt > _._1.getExternalId.substring(0, 4).toInt): _*)
-      else //asc
-        ListMap(ret_value_sorted.toList.sortBy(m => (m._1.getExternalId.substring(0, 4).toInt, m._1.getExternalId.substring(5).toInt)): _*)
+        if (sortingMethod.compareTo("desc") == 0) //desc
+          ListMap(ret_value_sorted.toList.sortWith(_._1.getExternalId.substring(5).toInt > _._1.getExternalId.substring(5).toInt)
+            .sortWith(_._1.getExternalId.substring(0, 4).toInt > _._1.getExternalId.substring(0, 4).toInt): _*)
+        else //asc
+          ListMap(ret_value_sorted.toList.sortBy(m => (m._1.getExternalId.substring(0, 4).toInt, m._1.getExternalId.substring(5).toInt)): _*)
       } catch {
-        case e:StringIndexOutOfBoundsException => { ListMap(ret_value_sorted.toList: _*) }
-     }
+        case e: StringIndexOutOfBoundsException => {
+          ListMap(ret_value_sorted.toList: _*)
+        }
+      }
     } else {
       ListMap(ret_value_sorted.toList: _*)
     }
@@ -598,10 +622,10 @@ class DbCustomQueryBean
 
     val res1 = res.getResultList
       .foldLeft(new java.util.LinkedHashMap[String, Mkb])(
-      (map, mkb) => {
-        map.put(mkb(0).asInstanceOf[String], mkb(1).asInstanceOf[Mkb])
-        map
-      })
+        (map, mkb) => {
+          map.put(mkb(0).asInstanceOf[String], mkb(1).asInstanceOf[Mkb])
+          map
+        })
     by.put(key, res1)
   }
 
@@ -1139,28 +1163,31 @@ AND
         AND leaved.deleted = 0
     )
    */
-  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx = """
-SELECT ap
-FROM ActionProperty ap
-WHERE ap.action.id IN (
-    SELECT a.id
-    FROM Action a
-    WHERE (a.event.execDate IS NULL OR a.event.execDate > :endDate )
-    %s
-    AND a.event.deleted = '0'
 
-    AND a.begDate <= :endDate
-    AND a.actionType.flatCode IN :flatCodes
-    AND a.deleted = '0'
-    AND a.createDatetime = (
-        SELECT Max(a2.createDatetime)
-        FROM Action a2
-        WHERE a2.event.id = a.event.id
+  val LastMovesByEvents = """
+      SELECT a.id
+  FROM Action a
+  WHERE (a.event.execDate IS NULL OR a.event.execDate > :endDate )
+  %s
+  AND a.event.deleted = '0'
+  AND a.begDate <= :endDate
+  AND a.actionType.flatCode IN :flatCodes
+  AND a.deleted = '0'
+  AND a.createDatetime = (
+    SELECT Max(a2.createDatetime)
+      FROM Action a2
+      WHERE a2.event.id = a.event.id
         AND a2.begDate <= :endDate
         AND a2.actionType.flatCode IN :flatCodes
         AND a2.deleted = '0'
     )
-)
+  ORDER BY a.createDatetime DESC
+  """
+
+  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx = """
+SELECT ap
+FROM ActionProperty ap
+WHERE ap.action.id IN :lastMovedsId
 AND
 (
     (
@@ -1206,7 +1233,7 @@ AND
 )
 AND ap.deleted = 0
 %s
-                                                                 """
+                                                                  """
 
   val ActionsByEventIdsAndFlatCodeQuery = """
     SELECT e, a
@@ -1258,8 +1285,8 @@ AND ap.deleted = 0
     ORDER BY
       ap.createDatetime ASC
                                     """.format(
-    i18n("db.action.movingFlatCode"),
-    i18n("db.apt.hospitalBedName"))
+      i18n("db.action.movingFlatCode"),
+      i18n("db.apt.hospitalBedName"))
 
   val AnamnesesByEventIdsQuery = """
     SELECT e, ap
@@ -1293,10 +1320,10 @@ AND ap.deleted = 0
     ORDER BY
       ap.createDatetime ASC
                                  """.format(
-    i18n("db.action.preAssessmentGroupName"),
-    i18n("db.apt.anamnesisName"),
-    i18n("db.apt.anamnesisDename"),
-    i18n("db.apt.allergoanamnesisName"))
+      i18n("db.action.preAssessmentGroupName"),
+      i18n("db.apt.anamnesisName"),
+      i18n("db.apt.anamnesisDename"),
+      i18n("db.apt.allergoanamnesisName"))
 
   val AllergoAnamnesesByEventIdsQuery = """
     SELECT e, ap
@@ -1328,8 +1355,8 @@ AND ap.deleted = 0
     ORDER BY
       ap.createDatetime ASC
                                         """.format(
-    i18n("db.action.preAssessmentGroupName"),
-    i18n("db.apt.allergoanamnesisName"))
+      i18n("db.action.preAssessmentGroupName"),
+      i18n("db.apt.allergoanamnesisName"))
 
   /*
   JOIN (select MAX(a1.createDatetime) maxCDT
@@ -1414,10 +1441,10 @@ AND ap.deleted = 0
     ORDER BY
       ap.createDatetime ASC
                                  """.format(
-    i18n("db.action.preAssessmentGroupName"),
-    i18n("db.action.epicrisisGroupName"),
-    i18n("db.apt.diagnosisName01"),
-    i18n("db.apt.diagnosisName02"))
+      i18n("db.action.preAssessmentGroupName"),
+      i18n("db.action.epicrisisGroupName"),
+      i18n("db.apt.diagnosisName01"),
+      i18n("db.apt.diagnosisName02"))
 
   val DiagnosisSubstantiationByEventIdsQuery = """
     SELECT e, a
@@ -1443,7 +1470,7 @@ AND ap.deleted = 0
     ORDER BY
       a.createDatetime ASC
                                                """.format(i18n("db.action.preAssessmentGroupName"),
-    i18n("db.action.diagnosisSubstantiation"))
+      i18n("db.action.diagnosisSubstantiation"))
 
   val AllAssessmentsByEventIdQuery = """
     SELECT a
@@ -1748,7 +1775,7 @@ AND ap.deleted = 0
       .setParameter(3, "mainDiagMkb")
       .getSingleResult
 
-    if (res!=null) {
+    if (res != null) {
       val objects: Array[Object] = res.asInstanceOf[Array[Object]]
       new BakDiagnosis(objects(0).asInstanceOf[java.lang.String], objects(1).asInstanceOf[java.lang.String])
     } else {
