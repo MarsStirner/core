@@ -124,7 +124,8 @@ class DbCustomQueryBean
 
     //typed.setParameter("flatCodes", asJavaCollection(Set(i18n("db.action.admissionFlatCode"), i18n("db.action.movingFlatCode"))))
     if (limit * (page + 1) > 0) typed.setMaxResults(limit * (page + 1))
-    var result = typed.getResultList
+
+    var result = if (lastMovedsId.isEmpty) new java.util.LinkedList[ActionProperty] else typed.getResultList
 
     var actions = result.foldLeft(mutable.LinkedHashMap.empty[Action, ju.Map[ActionProperty, ju.List[APValue]]])(
       (map, e) => {
