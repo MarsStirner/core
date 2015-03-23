@@ -20,18 +20,18 @@ public class Street
 
     private String name;
 
-    @JsonProperty("shorttype")
-    private String socr;
+    @JsonProperty("socr")
+    private String shorttype;
 
-    @JsonProperty("postindex")
-    private String index;
+    @JsonProperty("index")
+    private String postindex;
 
     private String gninmb;
 
     private String uno;
 
-    @JsonProperty("okato")
-    private String ocatd;
+    @JsonProperty("ocatd")
+    private String okato;
 
     private String infis;
 
@@ -63,19 +63,11 @@ public class Street
     }
 
     public String getSocr() {
-        return socr;
-    }
-
-    public void setSocr(String socr) {
-        this.socr = socr;
+        return shorttype;
     }
 
     public String getIndex() {
-        return index;
-    }
-
-    public void setIndex(String index) {
-        this.index = index;
+        return postindex;
     }
 
     public String getGninmb() {
@@ -95,11 +87,7 @@ public class Street
     }
 
     public String getOcatd() {
-        return ocatd;
-    }
-
-    public void setOcatd(String ocatd) {
-        this.ocatd = ocatd;
+        return okato;
     }
 
     public String getInfis() {
@@ -108,6 +96,30 @@ public class Street
 
     public void setInfis(String infis) {
         this.infis = infis;
+    }
+
+    public String getShorttype() {
+        return shorttype;
+    }
+
+    public void setShorttype(String shorttype) {
+        this.shorttype = shorttype;
+    }
+
+    public String getPostindex() {
+        return postindex;
+    }
+
+    public void setPostindex(String postindex) {
+        this.postindex = postindex;
+    }
+
+    public String getOkato() {
+        return okato;
+    }
+
+    public void setOkato(String okato) {
+        this.okato = okato;
     }
 
     //Переопределенные методы
@@ -143,11 +155,11 @@ public class Street
         final StringBuilder sb = new StringBuilder("Street{");
         sb.append("code='").append(code).append('\'');
         sb.append(", name='").append(name).append('\'');
-        sb.append(", socr='").append(socr).append('\'');
-        sb.append(", index='").append(index).append('\'');
+        sb.append(", socr='").append(shorttype).append('\'');
+        sb.append(", index='").append(postindex).append('\'');
         sb.append(", gninmb='").append(gninmb).append('\'');
         sb.append(", uno='").append(uno).append('\'');
-        sb.append(", ocatd='").append(ocatd).append('\'');
+        sb.append(", ocatd='").append(okato).append('\'');
         sb.append(", infis='").append(infis).append('\'');
         sb.append('}');
         return sb.toString();

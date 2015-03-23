@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.entity.model.kladr;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.springframework.web.client.RestTemplate;
 
@@ -16,24 +17,24 @@ public class  Kladr {
     private String name;
 
     @JsonProperty("shorttype")
-    private String socr;
+    private String shorttype;
 
 
-    @JsonProperty("postindex")
-    private String index;
+    @JsonProperty("index")
+    private String postindex;
 
     private String gninmb;
 
     private String uno;
 
-    @JsonProperty("okato")
-    private String ocatd;
+    @JsonProperty("ocatd")
+    private String okato;
 
-    @JsonProperty("codestate")
-    private String status;
+    @JsonProperty("status")
+    private String codestate;
 
-    @JsonProperty("identparent")
-    private String parent;
+    @JsonProperty("parent")
+    private String identparent;
 
     //Конструкторы
 
@@ -62,14 +63,17 @@ public class  Kladr {
         this.name = name;
     }
 
-    @JsonProperty("shorttype")
     public String getSocr() {
-        return socr;
+        return shorttype;
     }
 
-    @JsonProperty("shorttype")
-    public void setSocr(String socr) {
-        this.socr = socr;
+
+    public String getShorttype() {
+        return shorttype;
+    }
+
+    public void setShorttype(String shorttype) {
+        this.shorttype = shorttype;
     }
 
     public String getGninmb() {
@@ -89,37 +93,51 @@ public class  Kladr {
     }
 
     public String getOcatd() {
-        return ocatd;
-    }
-
-    public void setOcatd(String ocatd) {
-        this.ocatd = ocatd;
+        return okato;
     }
 
     public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+        return codestate;
     }
 
     public String getParent() {
-        return parent == null ? "" : parent;
+        return identparent == null ? "" : identparent;
     }
 
-    public void setParent(String parent) {
-        this.parent = parent;
-    }
-
-    @JsonProperty("postindex")
     public String getIndex() {
-        return index;
+        return postindex;
     }
 
-    @JsonProperty("postindex")
-    public void setIndex(String index) {
-        this.index = index;
+    public String getPostindex() {
+        return postindex;
+    }
+
+    public void setPostindex(String postindex) {
+        this.postindex = postindex;
+    }
+
+    public String getOkato() {
+        return okato;
+    }
+
+    public void setOkato(String okato) {
+        this.okato = okato;
+    }
+
+    public String getCodestate() {
+        return codestate;
+    }
+
+    public void setCodestate(String codestate) {
+        this.codestate = codestate;
+    }
+
+    public String getIdentparent() {
+        return identparent;
+    }
+
+    public void setIdentparent(String identparent) {
+        this.identparent = identparent;
     }
 
     //Переопределенные методы
@@ -155,12 +173,12 @@ public class  Kladr {
         final StringBuilder sb = new StringBuilder("Kladr{");
         sb.append("code='").append(code).append('\'');
         sb.append(", name='").append(name).append('\'');
-        sb.append(", socr='").append(socr).append('\'');
+        sb.append(", socr='").append(shorttype).append('\'');
         sb.append(", gninmb='").append(gninmb).append('\'');
         sb.append(", uno='").append(uno).append('\'');
-        sb.append(", ocatd='").append(ocatd).append('\'');
-        sb.append(", status='").append(status).append('\'');
-        sb.append(", parent='").append(parent).append('\'');
+        sb.append(", ocatd='").append(okato).append('\'');
+        sb.append(", status='").append(codestate).append('\'');
+        sb.append(", parent='").append(identparent).append('\'');
         sb.append('}');
         return sb.toString();
     }
