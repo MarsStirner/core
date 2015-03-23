@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.*;
+
 import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 
 @Entity
@@ -21,8 +22,13 @@ import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
                 @NamedQuery(name = "Action.findLastByFlatCodesAndEventId", query = "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCodes AND a.event.id = :eventId AND a.deleted = 0  ORDER BY a.createDatetime DESC"),
                 @NamedQuery(name = "Action.findLastByActionTypesAndClientId", query = "SELECT a FROM Action a WHERE a.actionType.code IN :codes AND a.deleted = 0 AND a.event.patient.id = :clientId ORDER BY a.createDatetime DESC"),
                 @NamedQuery(name = "Action.findLatestMove", query = "SELECT a FROM Action a WHERE (a.actionType.flatCode = 'moving' OR a.actionType.flatCode = 'received')" +
-                        " AND a.event.id = :eventId AND a.deleted = 0 ORDER BY a.createDatetime DESC")
-})
+                        " AND a.event.id = :eventId AND a.deleted = 0 ORDER BY a.createDatetime DESC"),
+                @NamedQuery(name = "Action.AllActionsOfPatientThatHasActionProperty",
+                        query = "SELECT a FROM Action a, ActionProperty ap, ActionPropertyType apt WHERE " +
+                                "a.event.patient.id = :patientId " +
+                                "AND ap.action.id = a.id AND apt.id = ap.actionPropertyType.id AND apt.code = :code")
+
+        })
 @XmlType(name = "action")
 @XmlRootElement(name = "action")
 public class Action

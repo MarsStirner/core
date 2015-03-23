@@ -779,7 +779,7 @@ class DbActionBean
         |     apt.id = ap.actionPropertyType.id AND
         |     apt.code = :code
         | """.stripMargin
-    val r = em.createQuery(query, classOf[Action])
+    val r = em.createNamedQuery("Action.AllActionsOfPatientThatHasActionProperty", classOf[Action])
       .setParameter("patientId", patientId)
       .setParameter("code", actionPropertyCode)
       .getResultList
