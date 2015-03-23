@@ -669,7 +669,7 @@ with CAPids {
     }
 
     // Получение значений свойств по свойствам инфекционного контроля
-    def getPropertyCustom2( actionTypeCodesPrefix: String, event: Event, lastAction: Action): APValue = {
+    def getPropertyCustom2( actionTypeCodesPrefix: String, lastAction: Action): APValue = {
 
       if (!apt.getCode.startsWith(actionTypeCodesPrefix) )
         return null
@@ -710,7 +710,7 @@ with CAPids {
     }
 
     // Получения значений для лекарственных назначений
-    def getPropertyCustom3(event: Event, drugType: String, lastAction: Action): APValue = {
+    def getPropertyCustom3(drugType: String, lastAction: Action): APValue = {
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
       if (lastAction == null)
@@ -750,7 +750,7 @@ with CAPids {
     }
 
     // Получение значения поля "Локальная инфекция"
-    def getPropertyCustom4(event: Event, lastAction: Action): APValue = {
+    def getPropertyCustom4(lastAction: Action): APValue = {
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
       if (lastAction == null)
@@ -806,49 +806,19 @@ with CAPids {
           getPropertyCustom1(IC.documents, therapySet, event)
         else if (IC.allInfectPrefixes.exists(p => apt.getCode != null && (apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)))) {
           // или для полей инфекционного контроля
-          val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
-          var outVal: APValue = null
-          for (e <- events) {
-            outVal = getPropertyCustom2(IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, e, lastAction)
-            if (outVal != null) return outVal
-          }
-          outVal
+            return getPropertyCustom2(IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, lastAction)
         }
         else if (apt.getCode != null && apt.getCode.equals(IC.localInfectionChecker)) {
-          val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
-          var outVal: APValue = null
-          for (e <- events) {
-            outVal = getPropertyCustom4(e, lastAction)
-            if (outVal != null) return outVal
-          }
-          outVal
+            return getPropertyCustom4(lastAction)
         }
         else if (IC.EmpiricTherapyProperties.contains(apt.getCode)) {
-          val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
-          var outVal: APValue = null
-          for (e <- events) {
-            outVal = getPropertyCustom3(e, "Empiric", lastAction)
-            if (outVal != null) return outVal
-          }
-          outVal
+            return getPropertyCustom3("Empiric", lastAction)
         }
         else if (IC.TelicTherapyProperties.contains(apt.getCode)) {
-          val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
-          var outVal: APValue = null
-          for (e <- events) {
-            outVal = getPropertyCustom3( e, "Telic", lastAction)
-            if (outVal != null) return outVal
-          }
-          outVal
+            return getPropertyCustom3( "Telic", lastAction)
         }
         else if (IC.ProphylaxisTherapyProperties.contains(apt.getCode)) {
-          val events = event +: event.getPatient.getEvents.filter(_.getCreateDatetime.before(event.getCreateDatetime)).sortBy(_.getCreateDatetime).reverse
-          var outVal: APValue = null
-          for (e <- events) {
-            outVal = getPropertyCustom3( e, "Prophylaxis", lastAction)
-            if (outVal != null) return outVal
-          }
-          outVal
+            return getPropertyCustom3( "Prophylaxis", lastAction)
         }
         else
           null
