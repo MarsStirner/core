@@ -43,9 +43,6 @@ class DbActionBean
 
   @EJB
   private var dbSetting: DbSettingsBeanLocal = _
-  
-  @EJB
-  private var dbStaffBeanLocal: DbStaffBeanLocal = _
 
   def getCountRecordsOrPagesQuery(enterPosition: String, filterQuery: String): TypedQuery[Long] = {
 
@@ -127,10 +124,9 @@ class DbActionBean
     val a = new Action
 
     if (userData != null) {
-      val user: Staff = dbStaffBeanLocal.getStaffById(userData.user.getId)
-      a.setCreatePerson(user)
+      a.setCreatePerson(userData.user)
       a.setCreateDatetime(now)
-      a.setModifyPerson(user)
+      a.setModifyPerson(userData.user)
       a.setModifyDatetime(now)
 
       var eventPerson: EventPerson = null
@@ -139,14 +135,14 @@ class DbActionBean
         if (eventPerson != null) {
           a.setAssigner(eventPerson.getPerson)
         } else {
-          a.setAssigner(user)
+          a.setAssigner(userData.user)
         }
       }
       else
-        a.setAssigner(user)
+        a.setAssigner(userData.user)
 
       // Исправление дефолтного значения от 03.07.2013 по задаче WEBMIS-873
-      a.setExecutor(user) //a.setExecutor(at.getDefaultExecutor)
+      a.setExecutor(userData.user) //a.setExecutor(at.getDefaultExecutor)
 
     }
 
@@ -169,12 +165,10 @@ class DbActionBean
     val now = new Date
 
     if (userData != null) {
-      val user: Staff = dbStaffBeanLocal.getStaffById(userData.user.getId)
-      a.setModifyPerson(user)
       var eventPerson: EventPerson = null
       if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
         eventPerson = dbEventPerson.getLastEventPersonForEventId(a.getEvent.getId.intValue())
-        if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(user)
+        if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(userData.user)
       }
       //a.setExecutor(userData.user)
     }

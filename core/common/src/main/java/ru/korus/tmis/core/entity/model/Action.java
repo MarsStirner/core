@@ -143,7 +143,7 @@ public class Action
     @Column(name = "prescription_id")
     private Integer prescriptionId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "takenTissueJournal_id")
     private TakenTissue takenTissue;
 
