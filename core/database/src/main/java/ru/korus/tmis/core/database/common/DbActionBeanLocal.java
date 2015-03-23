@@ -124,7 +124,6 @@ public interface DbActionBeanLocal {
     /**
      * Получение списка действий с динамической фильтрацией результатов для заданного обращения
      *
-     * @param userData Авторизационные данные как AuthData.
      * @return Список действий (Action).
      * @throws CoreException
      * @see Action
@@ -134,21 +133,9 @@ public interface DbActionBeanLocal {
                                       int page,
                                       String sorting,
                                       ListDataFilter filter,
-                                      Function1<Long, Boolean> setRecCount,
-                                      AuthData userData)
+                                      Function1<Long, Boolean> setRecCount)
             throws CoreException;
 
-    /**
-     * Получение списка действий по коду типа действия.
-     *
-     * @param code     Код типа действия s11r64.ActionType.code.
-     * @param userData Авторизационные данные как AuthData.
-     * @return Список действий (Action).
-     * @throws CoreException
-     * @deprecated Использовать {@link #getActionsByTypeCodeAndEventId(java.util.Set, int, String, ru.korus.tmis.core.auth.AuthData)}
-     */
-    List<Action> getActionsByTypeCode(String code, AuthData userData)
-            throws CoreException;
 
     /**
      * Получение списка действий.

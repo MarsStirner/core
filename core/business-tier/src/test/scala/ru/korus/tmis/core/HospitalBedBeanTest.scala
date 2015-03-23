@@ -232,7 +232,7 @@ class HospitalBedBeanTest {
         .format(TEvent_id, mapper.writeValueAsString(hbData), mapper.writeValueAsString(authData)))
 
       when(eventBean.getEventById(TEvent_id)).thenReturn(testEvent)
-      when(actionBean.getActionsWithFilter(anyInt(), anyInt(), anyString(), anyObject(), anyObject(), anyObject())).thenReturn(seqAsJavaList(List(testLastAction)))
+      when(actionBean.getActionsWithFilter(anyInt(), anyInt(), anyString(), anyObject(), anyObject())).thenReturn(seqAsJavaList(List(testLastAction)))
       when(actionBean.createAction(anyInt(), anyInt(), anyObject())).thenReturn(testAction)
       when(actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(ConfigManager.Messages("db.actionType.moving").toInt)).thenReturn(list_apt)
       when(dbOrgStructureBean.getOrgStructureByHospitalBedId(hbData.data.bedRegistration.bedId.intValue())).thenReturn(department)
@@ -435,7 +435,7 @@ class HospitalBedBeanTest {
     {
       logger.info("Request data for method is: {}", "filter=%s, auth=%s".format(mapper.writeValueAsString(filter), mapper.writeValueAsString(auth)))
 
-      when(actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null, auth)).thenReturn(actions)
+      when(actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null)).thenReturn(actions)
       when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(1, codes_receive)).thenReturn(data_receive)
       when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(1, codes_move)).thenReturn(data_move)
       when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(2, codes_receive)).thenReturn(data_receive)
@@ -443,7 +443,7 @@ class HospitalBedBeanTest {
       when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(3, codes_receive)).thenReturn(data_receive)
       when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(3, codes_move)).thenReturn(data_move)
       val result = hospitalBedBean.getMovingListByEventIdAndFilter(filter, auth)
-      verify(actionBean).getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null, auth)
+      verify(actionBean).getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null)
       //verify(actionPropertyBean).getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())
 
       Assert.assertNotNull(result)

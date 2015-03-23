@@ -256,7 +256,7 @@ with I18nable {
           -1,
           false,
           true) //за текущий день
-        val last = actionBean.getActionsWithFilter(0, 0, "", filter.unwrap(), null, null)
+        val last = actionBean.getActionsWithFilter(0, 0, "", filter.unwrap(), null)
         if (last != null && last.size() > 0 && jobTicket.getStatus == 2 && !a.getIsUrgent) {
           a.setStatus(2)
         }

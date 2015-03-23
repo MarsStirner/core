@@ -22,7 +22,6 @@ import java.util.Arrays;
  * Since: 1.0.0.74
  */
 @Stateless
-
 public class QuotesRegistryRESTImpl {
 
     @EJB

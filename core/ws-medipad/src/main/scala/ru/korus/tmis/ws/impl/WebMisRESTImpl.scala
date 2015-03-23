@@ -959,8 +959,7 @@ with CAPids {
       requestData.page - 1,
       requestData.sortingFieldInternal,
       requestData.filter.unwrap(),
-      requestData.rewriteRecordsCount,
-      auth)
+      requestData.rewriteRecordsCount)
     val actionWithLockInfoList = getActionWithLockInfoList(action_list)
     //actionBean.getActionsByEventIdWithFilter(requestData.eventId, auth, requestData)
     val assessments: AssessmentsListData = new AssessmentsListData(actionWithLockInfoList, requestData)
@@ -990,9 +989,8 @@ with CAPids {
 
   //Регистрирует пациента на койке
   def registryPatientToHospitalBed(eventId: Int, data: HospitalBedData, authData: AuthData) = {
-
+    authData.setUser(dbStaff.getStaffById(authData.getUser.getId));
     val action = hospitalBedBean.registryPatientToHospitalBed(eventId, data, authData)
-
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationView]))
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))
@@ -1000,9 +998,8 @@ with CAPids {
 
   //Редактирует регистрацию пациента на койке
   def modifyPatientToHospitalBed(actionId: Int, data: HospitalBedData, authData: AuthData) = {
-
+    authData.setUser(dbStaff.getStaffById(authData.getUser.getId));
     val action = hospitalBedBean.modifyPatientToHospitalBed(actionId, data, authData)
-
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationView]))
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action, authData))

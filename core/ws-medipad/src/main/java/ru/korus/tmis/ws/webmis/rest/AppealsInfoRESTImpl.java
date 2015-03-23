@@ -34,24 +34,32 @@ public class AppealsInfoRESTImpl {
     private WebMisREST wsImpl;
 
     @EJB
-    ExaminationsRegistryRESTImpl examinationsRegistryREST;
+    private ExaminationsRegistryRESTImpl examinationsRegistryREST;
 
     @EJB
-    QuotesRegistryRESTImpl quotesRegistryREST;
+    private QuotesRegistryRESTImpl quotesRegistryREST;
 
+    @EJB
+    private HospitalBedRegistryRESTImpl hospitalBedRegistryRESTImpl;
+
+    @EJB
+    private AssignmentsRegistryRESTImpl assignmentsRegistryRESTImpl;
+
+    @EJB
+    private DiagnosticsRegistryExRESTImpl diagnosticsRegistryExRESTImpl;
 
     @Path("/{eventId}/hospitalbed/")
     public HospitalBedRegistryRESTImpl getHospitalBedRegistryRESTImpl(@Context HttpServletRequest servRequest,
                                                                       @PathParam("eventId") int eventId,
                                                                       @QueryParam("callback") String callback) {
-        return new HospitalBedRegistryRESTImpl(wsImpl, eventId, callback, mkAuth(servRequest)) ;
+        return hospitalBedRegistryRESTImpl;
     }
 
     @Path("/{eventId}/assignments/")
     public AssignmentsRegistryRESTImpl getAssignmentsRegistryRESTImpl(@Context HttpServletRequest servRequest,
                                                                       @PathParam("eventId") int eventId,
                                                                       @QueryParam("callback") String callback) {
-        return new AssignmentsRegistryRESTImpl(wsImpl, eventId, callback, mkAuth(servRequest)) ;
+        return assignmentsRegistryRESTImpl;
     }
 
     @Path("/{eventId}/documents/")
@@ -63,7 +71,7 @@ public class AppealsInfoRESTImpl {
     public DiagnosticsRegistryExRESTImpl getDiagnosticsRegistryRESTImpl(@Context HttpServletRequest servRequest,
                                                                         @PathParam("eventId") int eventId,
                                                                         @QueryParam("callback") String callback) {
-        return new DiagnosticsRegistryExRESTImpl(wsImpl, eventId, callback, mkAuth(servRequest)) ;
+        return diagnosticsRegistryExRESTImpl;
     }
 
     @Path("/{eventId}/quotes/")

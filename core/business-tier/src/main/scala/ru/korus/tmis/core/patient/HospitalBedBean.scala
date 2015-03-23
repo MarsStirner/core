@@ -88,7 +88,7 @@ with CAPids {
     var date: Date = null
     //Последний action (moving or received)
     val filter = new HospitalBedDataListFilter(eventId)
-    val lastActions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "desc"), filter.unwrap, null, authData)
+    val lastActions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "desc"), filter.unwrap, null)
     val lastAction: Action = if (lastActions != null && lastActions.size() > 0) lastActions.get(0) else null
 
     //if(hbData.data.bedRegistration!=null && hbData.data.bedRegistration.moveDatetime!=null)
@@ -308,7 +308,7 @@ with CAPids {
     if (!this.verificationData(eventId, -1, hbData, 0)) return null
 
     val filter = new HospitalBedDataListFilter(eventId)
-    val actions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "desc"), filter.unwrap, null, authData)
+    val actions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "desc"), filter.unwrap, null)
     if (actions != null && actions.size() > 0) {
 
       var action = actions.get(0)
@@ -434,7 +434,7 @@ with CAPids {
   }
 
   def getMovingListByEventIdAndFilter(filter: HospitalBedDataListFilter, authData: AuthData): HospitalBedData = {
-    val actions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null, authData)
+    val actions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null)
     return new HospitalBedData(actions,
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
       null)

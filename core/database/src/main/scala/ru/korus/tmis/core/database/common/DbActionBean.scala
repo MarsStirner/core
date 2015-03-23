@@ -15,7 +15,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import java.text.SimpleDateFormat
 import ru.korus.tmis.schedule.QueueActionParam
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import ru.korus.tmis.core.database.DbActionTypeBeanLocal
+import ru.korus.tmis.core.database.{DbStaffBeanLocal, DbActionTypeBeanLocal}
 import org.joda.time.{DateTimeConstants, DateTime}
 import scala.language.reflectiveCalls
 
@@ -43,6 +43,9 @@ class DbActionBean
 
   @EJB
   private var dbSetting: DbSettingsBeanLocal = _
+  
+  @EJB
+  private var dbStaffBeanLocal: DbStaffBeanLocal = _
 
   def getCountRecordsOrPagesQuery(enterPosition: String, filterQuery: String): TypedQuery[Long] = {
 
@@ -124,9 +127,10 @@ class DbActionBean
     val a = new Action
 
     if (userData != null) {
-      a.setCreatePerson(userData.user)
+      val user: Staff = dbStaffBeanLocal.getStaffById(userData.user.getId)
+      a.setCreatePerson(user)
       a.setCreateDatetime(now)
-      a.setModifyPerson(userData.user)
+      a.setModifyPerson(user)
       a.setModifyDatetime(now)
 
       var eventPerson: EventPerson = null
@@ -135,14 +139,14 @@ class DbActionBean
         if (eventPerson != null) {
           a.setAssigner(eventPerson.getPerson)
         } else {
-          a.setAssigner(userData.user)
+          a.setAssigner(user)
         }
       }
       else
-        a.setAssigner(userData.user)
+        a.setAssigner(user)
 
       // Исправление дефолтного значения от 03.07.2013 по задаче WEBMIS-873
-      a.setExecutor(userData.user) //a.setExecutor(at.getDefaultExecutor)
+      a.setExecutor(user) //a.setExecutor(at.getDefaultExecutor)
 
     }
 
@@ -165,11 +169,12 @@ class DbActionBean
     val now = new Date
 
     if (userData != null) {
-      a.setModifyPerson(userData.user)
+      val user: Staff = dbStaffBeanLocal.getStaffById(userData.user.getId)
+      a.setModifyPerson(user)
       var eventPerson: EventPerson = null
       if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
         eventPerson = dbEventPerson.getLastEventPersonForEventId(a.getEvent.getId.intValue())
-        if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(userData.user)
+        if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(user)
       }
       //a.setExecutor(userData.user)
     }
@@ -247,8 +252,7 @@ class DbActionBean
                            page: Int,
                            sorting: String,
                            filter: ListDataFilter,
-                           records: (java.lang.Long) => java.lang.Boolean,
-                           userData: AuthData) = {
+                           records: (java.lang.Long) => java.lang.Boolean) = {
 
     val queryStr: QueryDataStructure = filter.toQueryStructure
 
@@ -269,14 +273,6 @@ class DbActionBean
     result
   }
 
-  def getActionsByTypeCode(code: String) = {
-    val result = em.createQuery(ActionsByCodeQuery,
-      classOf[Action])
-      .setParameter("code", code)
-      .getResultList
-
-    result
-  }
 
   def getActionsByTypeCodeAndEventId(codes: java.util.Set[String], eventId: Int, sort: String, userData: AuthData) = {
     val result = em.createQuery(ActionsByCodeAndEventQuery.format(sort),
@@ -624,7 +620,7 @@ class DbActionBean
     getActionById(action.getId)
   }
 
-  def getActionsByTypeCode(code: String, userData: AuthData) = {
+  def getActionsByTypeCode(code: String) = {
     val result = em.createQuery(ActionsByCodeQuery,
       classOf[Action])
       .setParameter("code", code)
