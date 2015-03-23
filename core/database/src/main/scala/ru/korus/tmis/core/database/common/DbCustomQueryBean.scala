@@ -91,8 +91,7 @@ class DbCustomQueryBean
 
     val queryLastMovesByEvents = LastMovesByEvents.format(queryStr.query)
     val query: String = ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx
-      .format(
-        i18n("db.apt.moving.codes.hospitalBed"),
+      .format(i18n("db.apt.moving.codes.hospitalBed"),
         i18n("db.apt.moving.codes.hospOrgStruct"),
         sorting)
 
@@ -101,7 +100,7 @@ class DbCustomQueryBean
       i18n("db.action.movingFlatCode"))))
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => {
-        if(queryLastMovesByEvents.contains(qdp.name))
+        if (queryLastMovesByEvents.contains(qdp.name))
           typedLastMoves.setParameter(qdp.name, qdp.value)
       })
     }
@@ -112,12 +111,12 @@ class DbCustomQueryBean
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => {
-        if(query.contains(qdp.name))
+        if (query.contains(qdp.name))
           typed.setParameter(qdp.name, qdp.value)
       })
     }
 
-    typed.setParameter("lastMovedsId",lastMovedsId)
+    typed.setParameter("lastMovedsId", lastMovedsId)
 
     typed.setParameter("transferCodes", asJavaCollection(Set(i18n("db.apt.moving.codes.orgStructTransfer"),
       i18n("db.apt.received.codes.orgStructDirection"))))
@@ -442,14 +441,23 @@ class DbCustomQueryBean
       res.foreach(e => ids.add(e.getId))
 
       //Получение отделения из последнего экшена движения
-      val depArrayTyped = em.createQuery(OrgStructureSubQuery.format(department_filter), classOf[ActionProperty])
+      val depArrayTypedMoves = em.createQuery(OrgStructureSubQueryMoves, classOf[List[Integer]])
         .setParameter("ids", asJavaCollection(ids))
         .setParameter("flatCode", setAsJavaSet(Set(i18n("db.action.movingFlatCode"), i18n("db.action.admissionFlatCode"))))
-        .setParameter("code", i18n("db.apt.moving.codes.hospOrgStruct"))
-      if (flgDepartmentSwitched)
-        depArrayTyped.setParameter("departmentId", filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId)
-      val depArray = depArrayTyped.getResultList
+        .setMaxResults(1)
+      val lastMovesIds = depArrayTypedMoves.getResultList
 
+      val depArray = if (lastMovesIds.isEmpty) {
+        new java.util.LinkedList[ActionProperty]()
+      }
+      else {
+        val depArrayTyped = em.createQuery(OrgStructureSubQuery.format(department_filter), classOf[ActionProperty])
+          .setParameter("actionIds", lastMovesIds)
+          .setParameter("code", i18n("db.apt.moving.codes.hospOrgStruct"))
+        if (flgDepartmentSwitched)
+          depArrayTyped.setParameter("departmentId", filter.asInstanceOf[AppealSimplifiedRequestDataFilter].departmentId)
+        depArrayTyped.getResultList
+      }
 
       org_value = depArray.foldLeft(new java.util.HashMap[Event, OrgStructure])(
         (map, pair) => {
@@ -1183,7 +1191,7 @@ AND
         AND a2.deleted = '0'
     )
   ORDER BY a.createDatetime DESC
-  """
+                          """
 
   val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx = """
 SELECT ap
@@ -1234,7 +1242,7 @@ AND
 )
 AND ap.deleted = 0
 %s
-                                                                  """
+                                                                 """
 
   val ActionsByEventIdsAndFlatCodeQuery = """
     SELECT e, a
@@ -1703,53 +1711,23 @@ AND ap.deleted = 0
     d.mkb = :mkb
                             """
   //
+  val OrgStructureSubQueryMoves = """
+    SELECT a.id
+    FROM Action a
+    WHERE a.event.id IN :ids
+    AND a.actionType.flatCode IN :flatCode
+    AND a.deleted = '0'
+    ORDER BY a.createDatetime DESC"""
+
   val OrgStructureSubQuery =
     """
       SELECT ap
       FROM ActionProperty ap
       WHERE
-        ap.action.id IN (
-          SELECT a.id
-          FROM Action a
-          WHERE a.event.id IN :ids
-          AND a.actionType.flatCode IN :flatCode
-          AND a.deleted = '0'
-          AND a.createDatetime = (
-            SELECT Max(a2.createDatetime)
-            FROM Action a2
-            WHERE a2.event.id = a.event.id
-            AND a2.actionType.flatCode IN :flatCode
-            AND a2.deleted = '0'
-          )
-        )
+        ap.action.id IN :actionIds
       AND ap.actionPropertyType.code = :code
       %s
     """
-  /*"""
-  SELECT e, apv.value, MAX(a.createDatetime)
-  FROM
-    ActionProperty ap
-      JOIN ap.action a
-      JOIN a.event e
-      JOIN a.actionType at
-      JOIN ap.actionPropertyType apt,
-    APValueOrgStructure apv
-  WHERE
-    e.id IN :ids
-  AND
-    at.id = '%s'
-  AND
-    apt.id IN (
-       SELECT cap.actionPropertyType.id
-       FROM RbCoreActionProperty cap
-       WHERE cap.actionType.id = at.id
-       AND cap.id = '%s'
-    )
-  AND ap.id = apv.id.id
-  AND apv.value IS NOT NULL
-  %s
-  GROUP BY e
-                           """ */
 
   /**
    * @see
