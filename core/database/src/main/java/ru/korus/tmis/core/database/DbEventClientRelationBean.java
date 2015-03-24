@@ -22,10 +22,10 @@ public class DbEventClientRelationBean implements DbEventClientRelationBeanLocal
     private EntityManager em = null;
 
     @Override
-    public EventClientRelation insertOrUpdate(Event event, ClientRelation clientRelation) {
+    public EventClientRelation insertOrUpdate(Event event, ClientRelation clientRelation, String note) {
         EventClientRelation res = findByEventAndClientRelation(event, clientRelation);
         if(res == null) {
-            res = insertNew(event, clientRelation);
+            res = insertNew(event, clientRelation, note);
         }
         return res;
     }
@@ -37,10 +37,11 @@ public class DbEventClientRelationBean implements DbEventClientRelationBeanLocal
                 .getResultList();
     }
 
-    private EventClientRelation insertNew(Event event, ClientRelation clientRelation) {
+    private EventClientRelation insertNew(Event event, ClientRelation clientRelation, String note) {
         EventClientRelation res = new EventClientRelation();
         res.setEvent(event);
         res.setClientRelation(clientRelation);
+        res.setNote(note);
         em.persist(res);
         return res;
     }

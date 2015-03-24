@@ -472,7 +472,7 @@ class AppealEntry extends I18nable {
       this.hospitalizationChannelType = new IdNameContainer(-1, exValue.get(0).asInstanceOf[String])
 
 
-    eventClientRelations.foreach(ecr =>  this.hospitalizationWith += new LegalRepresentativeContainer(ecr.getClientRelation, ""))
+    eventClientRelations.foreach(ecr =>  this.hospitalizationWith += new LegalRepresentativeContainer(ecr.getClientRelation, ecr.getNote))
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.deliveredType").toInt :java.lang.Integer), values).get("0")
     this.deliveredType = exValue.get(0).asInstanceOf[String]

@@ -16,7 +16,7 @@ import java.util.List;
 @Local
 public interface DbEventClientRelationBeanLocal {
 
-    EventClientRelation insertOrUpdate(Event event, ClientRelation clientRelation);
+    EventClientRelation insertOrUpdate(Event event, ClientRelation clientRelation, String note);
 
     List<EventClientRelation> getByEvent(Event event);
 

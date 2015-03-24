@@ -115,6 +115,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         final CreatePrescriptionData data = createPrescriptionReqData.getData();
         final Event event = getEventById(data.getEventId());
         final Action action = createPrescriptionAction(createPrescriptionReqData, authData);
+        action.setNote(data.getNote());
         Map<DrugData, DrugComponent> drugComponentByDrugData = saveDrugs(action, getDrugs(data));
         saveIntervals(action, data.getAssigmentIntervals(), drugComponentByDrugData);
         return new PrescriptionsData(event, dbDrugChartBeanLocal, dbDrugIntervalCompParamLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
