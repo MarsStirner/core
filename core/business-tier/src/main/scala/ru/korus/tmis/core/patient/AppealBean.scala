@@ -228,8 +228,8 @@ with CAPids {
         action.setEndDate(appealData.data.rangeAppealDateTime.getEnd)
       }
 
-     /* if (!flgCreate)
-        entities = entities + action*/
+      /* if (!flgCreate)
+         entities = entities + action*/
 
       //3. Action Property
 
@@ -247,8 +247,8 @@ with CAPids {
             em.merge(apUpdate)
             apUpdate
           }
-       /* if (!flgCreate)
-          entities = entities + ap*/
+        /* if (!flgCreate)
+           entities = entities + ap*/
 
         var values = this.getValueByCase(ap.getType.getId.intValue(), appealData, authData)
         if (values != null) {
@@ -296,8 +296,8 @@ with CAPids {
 
               values.foreach(value => {
                 val apv = em.merge(actionPropertyBean.setActionPropertyValue(ap, value, it))
-               /* if (apv != null)
-                  entities = entities + apv.unwrap*/
+                /* if (apv != null)
+                   entities = entities + apv.unwrap*/
                 it = it + 1
               })
             }
@@ -364,28 +364,36 @@ with CAPids {
     if (clientRelations != null && clientRelations.size() > 0) {
       //Если законные представители заполнены
       val patient = newEvent.getPatient
-      val serverRelations = patient.getActiveClientRelatives()
+      val eventClientRelationList = dbEventClientRelation.getByEvent(newEvent)
 
       clientRelations.foreach(f => {
-        val serverRelation = serverRelations.find(element => ((element.getRelative.getId.intValue() == f.getRelative.getId) &&
-          (element.getRelativeType.getId.intValue() == f.getRelativeType.getId)))
-          .getOrElse(null)
-        if (serverRelation == null) {
-          val updateRelation = serverRelations.find(element => element.getRelative.getId.intValue() == f.getRelative.getId).getOrElse(null)
-          val relationId = if (updateRelation == null) -1 else updateRelation.getId.intValue()
+        val curEventClientRel:  EventClientRelation= eventClientRelationList.find(ecl => ecl.getClientRelation.getRelativeType.getId.intValue() == f.getRelativeType.getId)
+          .getOrElse({
           val parent = dbPatientBean.getPatientById(f.getRelative.getId)
-          val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson(relationId,
+          val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson(-1,
             f.getRelativeType.getId,
             parent,
             patient,
             authData.user)
 
-          dbEventClientRelation.insertOrUpdate(newEvent, tempServerRelation);
+          val res = dbEventClientRelation.insertOrUpdate(newEvent, tempServerRelation, f.getNote)
           em.flush()
           setRel += tempServerRelation
-        } else {
-          dbEventClientRelation.insertOrUpdate(newEvent, serverRelation);
+          res
+        })
+        if(!curEventClientRel.getClientRelation.getRelative.getId.equals(f.getRelative.getId) ||
+          !curEventClientRel.getNote.equals(f.getNote)) {
+          curEventClientRel.getClientRelation.setRelative(dbPatientBean.getPatientById(f.getRelative.getId))
+          curEventClientRel.setNote(f.getNote)
+          em.merge(curEventClientRel)
         }
+      })
+      eventClientRelationList.foreach(f => {
+        val cr = clientRelations.find(cl => f.getClientRelation.getRelativeType.getId.intValue() == cl.getRelativeType.getId)
+          .getOrElse({
+          f.setDeleted(true)
+          em.merge(f)
+        })
       })
     }
     if (setRel != null && setRel.size > 0) dbManager.mergeAll(setRel)
@@ -399,7 +407,7 @@ with CAPids {
     var map = Map.empty[String, java.util.Set[AnyRef]]
 
     var diagFlatCodes: Set[String] = Set()
-    appealData.data.diagnoses.foreach(f => if(f.getDiagnosisKind != null && !f.getDiagnosisKind.isEmpty) diagFlatCodes += f.getDiagnosisKind)
+    appealData.data.diagnoses.foreach(f => if (f.getDiagnosisKind != null && !f.getDiagnosisKind.isEmpty) diagFlatCodes += f.getDiagnosisKind)
     diagFlatCodes.foreach(flatCode => {
       val values = appealData.data.diagnoses.filter(p => p.getDiagnosisKind.compareTo(flatCode) == 0)
         .map(f => {
@@ -413,7 +421,7 @@ with CAPids {
           f.getDescription,
           if (mkb != null) Integer.valueOf(mkb.getId.intValue) else -1,
           0, // characterId
-          0)// stageId
+          0) // stageId
       })
         .toSet[AnyRef]
       map += (flatCode -> values)
@@ -421,7 +429,7 @@ with CAPids {
     val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), mapAsJavaMap(map), authData)
 
     if (appealData.data.getPayer != null
-        && appealData.data.getPaymentContract != null) {
+      && appealData.data.getPaymentContract != null) {
 
       event.setEventLocalContract(
         dbEventLocalContract.insertOrUpdate(newEvent, appealData.data.getPayer, appealData.data.getPaymentContract))
@@ -585,28 +593,28 @@ with CAPids {
 
   def updateTempInvalid(event: Event, tempInvalidCont: TempInvalidAppealContainer, authDate: AuthData) {
     if (tempInvalidCont != null &&
-        tempInvalidCont.serial != null &&
-        tempInvalidCont.number != null) {
+      tempInvalidCont.serial != null &&
+      tempInvalidCont.number != null) {
 
-      var tempInvalid = if(event.getId == null) new TempInvalid() else dbTempInvalidBean.getTempInvalidByEventId(event.getId)
+      var tempInvalid = if (event.getId == null) new TempInvalid() else dbTempInvalidBean.getTempInvalidByEventId(event.getId)
       if (tempInvalid == null) {
         tempInvalid = new TempInvalid()
       }
       tempInvalid.setEvent(event)
       dbTempInvalidBean.insertOrUpdateTempInvalid(tempInvalid,
-        tempInvalidCont.begDate,//Date beginDate,
+        tempInvalidCont.begDate, //Date beginDate,
         tempInvalidCont.endDate, //Date endDate,
-        0,//short docType,
-        if (tempInvalidCont.isByService) "09" else "01",//int reasonId,
-        tempInvalidCont.begDate,//Date caseBegDate,
+        0, //short docType,
+        if (tempInvalidCont.isByService) "09" else "01", //int reasonId,
+        tempInvalidCont.begDate, //Date caseBegDate,
         tempInvalidCont.serial, //String serial,
         tempInvalidCont.number, //String number,
-        0,//short sex,
-        0,//byte age,
-        0,//int duration,
-        0,//short closed,
-        event.getPatient,// Patient patient,
-        authDate.getUser//Staff sessionUser)
+        0, //short sex,
+        0, //byte age,
+        0, //int duration,
+        0, //short closed,
+        event.getPatient, // Patient patient,
+        authDate.getUser //Staff sessionUser)
       )
     }
   }
@@ -655,7 +663,7 @@ with CAPids {
 
       val patient = dbPatientBean.getPatientById(id)
       val et = dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId)
-      if(!et.isAgeValid(patient.getBirthDate))
+      if (!et.isAgeValid(patient.getBirthDate))
         throw new CoreException(i18n("error.appeal.create.InvalidPatientAge").format(et.getName, et.getAge))
 
       val patientSex = patient.getSex match {
@@ -664,14 +672,14 @@ with CAPids {
         case 2 => Sex.WOMEN
       }
 
-      if(!et.isSexValid(patientSex))
+      if (!et.isSexValid(patientSex))
         throw new CoreException(i18n("error.appeal.create.InvalidPatientSex").format(et.getName, et.getSex))
 
-      val result : RbResult = if (appealData.data.result == null) null
+      val result: RbResult = if (appealData.data.result == null) null
       else
         dbRbResultBeanLocal.getRbResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.result.code)
 
-      val acheResult : RbAcheResult = if (appealData.data.result == null) null
+      val acheResult: RbAcheResult = if (appealData.data.result == null) null
       else
         dbRbResultBeanLocal.getRbAcheResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.acheResult.code)
 
@@ -740,7 +748,7 @@ with CAPids {
     that match {
       case null => null //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
       case x: Date => Set(ConfigManager.DateFormatter.format(that))
-      case x: IdNameContainer => if(x.getId > 0) Set(x.getId.toString) else Set.empty[String]
+      case x: IdNameContainer => if (x.getId > 0) Set(x.getId.toString) else Set.empty[String]
       case x: util.LinkedList[LegalRepresentativeContainer] =>
         var hospWith = Set.empty[String]
         x.foreach(e => {
@@ -753,7 +761,9 @@ with CAPids {
           }
         })
         hospWith
-      case _ => try { Set(that.toString) } catch {
+      case _ => try {
+        Set(that.toString)
+      } catch {
         case e: Exception => throw new CoreException("Не могу преобразовать данные типа: %s в строковый массив".format(that.getClass.getName))
       }
     }
@@ -1046,8 +1056,8 @@ with CAPids {
   def getInfectionMonitoring(patient: Patient) = {
     val IC = InfectionControl
     val infectIntervalCode = IC.allInfectPrefixes.foldLeft(new java.util.LinkedList[String]())((l, c) => {
-      l add (c +  IC.separator + IC.beginDatePostfix)
-      l add (c +  IC.separator + IC.endDatePostfix)
+      l add (c + IC.separator + IC.beginDatePostfix)
+      l add (c + IC.separator + IC.endDatePostfix)
       l
     });
     val qInfectActionIds =
@@ -1072,15 +1082,15 @@ with CAPids {
       .setParameter("actionIds", actionIds)
       .getResultList
     val r = properties
-    .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
-    .groupBy( e => (e.getAction.getId,  e.getType.getCode.split(IC.separator).head))
-    .flatMap(e => {
+      .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
+      .groupBy(e => (e.getAction.getId, e.getType.getCode.split(IC.separator).head))
+      .flatMap(e => {
       val actionId = e._1._1
       val list = e._2
       val name = {
-        list.find( p => p.getType.getCode.equals(e._1._2)) match {
+        list.find(p => p.getType.getCode.equals(e._1._2)) match {
           case Some(x) =>
-            if(x.getType.getCode.endsWith(IC.customInfectionPostfix)) // Поля "Другое", название инфекции получаем из значения свойства
+            if (x.getType.getCode.endsWith(IC.customInfectionPostfix)) // Поля "Другое", название инфекции получаем из значения свойства
               actionPropertyBean.getActionPropertyValue(x).headOption match {
                 case Some(y) => Some(y.getValue.toString)
                 case _ => None
@@ -1089,8 +1099,8 @@ with CAPids {
           case None => None
         }
       }
-      val beginDate = list.find( p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.beginDatePostfix))
-      val endDate = list.find( p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.endDatePostfix))
+      val beginDate = list.find(p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.beginDatePostfix))
+      val endDate = list.find(p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.endDatePostfix))
 
       (name, beginDate, endDate) match {
         case (Some(x), Some(y), Some(z)) =>
@@ -1114,18 +1124,18 @@ with CAPids {
         case _ => None
       }
     })
-    .groupBy(p => (p._1, p._2, p._5)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava, e._1._3))
+      .groupBy(p => (p._1, p._2, p._5)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava, e._1._3))
 
     // Безумная сортировка - сначала по дате начала, потом по порядку расположения на форме редактирования (idx свойства "Дата начала")
     val result = new util.TreeSet[(String, Date, Date, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, util.List[Integer], Integer)] {
       override def compare(o1: (String, Date, Date, util.List[Integer], Integer), o2: (String, Date, Date, util.List[Integer], Integer)): Int = {
-        val dateOrder =  o2._2.compareTo(o1._2)
+        val dateOrder = o2._2.compareTo(o1._2)
         val idxOrder = o2._5.compareTo(o1._5)
-        if(dateOrder != 0)
+        if (dateOrder != 0)
           dateOrder
-        else if(idxOrder != 0)
+        else if (idxOrder != 0)
           idxOrder
-        else if(o1.equals(o2))
+        else if (o1.equals(o2))
           0
         else
           1
@@ -1151,29 +1161,29 @@ with CAPids {
       .setParameter("patient", patient)
       .setParameter("documents", IC.documents.asJava)
       .getResultList
-      .groupBy(e => (e.getAction.getId,  e.getType.getCode.split('_').last))
+      .groupBy(e => (e.getAction.getId, e.getType.getCode.split('_').last))
       .flatMap(e => {
       val drugId = e._1._2
       val list = e._2
       val actionId = e._1._1
 
-      val (therapyType, prefix) = if ( list.find( p => p.getType.getCode.startsWith("infectProphylaxisName")) != null) {
+      val (therapyType, prefix) = if (list.find(p => p.getType.getCode.startsWith("infectProphylaxisName")) != null) {
         ("Профилактика", "infectProphylaxisName")
       }
-      else if (list.find( p => p.getType.getCode.startsWith("infectEmpiricName")) != null) {
+      else if (list.find(p => p.getType.getCode.startsWith("infectEmpiricName")) != null) {
         ("Эмпирическая", "infectEmpiricName")
       }
-      else if (list.find( p => p.getType.getCode.startsWith("infectTelicName")) != null) {
+      else if (list.find(p => p.getType.getCode.startsWith("infectTelicName")) != null) {
         ("Целенаправленная", "infectTelicName")
       }
       else null
 
-      var name = list.find( p => p.getType.getCode.equals(prefix + "DrugName_" + drugId))
-      val beginDate = list.find( p => p.getType.getCode.equals(prefix + "BeginDate_" + drugId))
-      val endDate = list.find( p => p.getType.getCode.equals(prefix + "EndDate_" + drugId))
+      var name = list.find(p => p.getType.getCode.equals(prefix + "DrugName_" + drugId))
+      val beginDate = list.find(p => p.getType.getCode.equals(prefix + "BeginDate_" + drugId))
+      val endDate = list.find(p => p.getType.getCode.equals(prefix + "EndDate_" + drugId))
 
-      (name, beginDate ) match {
-        case (Some(a), Some(b) ) =>
+      (name, beginDate) match {
+        case (Some(a), Some(b)) =>
           val n = actionPropertyBean.getActionPropertyValue(a)
           val bd = actionPropertyBean.getActionPropertyValue(b)
           val ed = if (endDate.isEmpty) null else actionPropertyBean.getActionPropertyValue(endDate.get)
@@ -1205,17 +1215,17 @@ with CAPids {
     val result = new util.TreeSet[(String, Date, Date, String, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, String, util.List[Integer], Integer)] {
       override def compare(o1: (String, Date, Date, String, util.List[Integer], Integer), o2: (String, Date, Date, String, util.List[Integer], Integer)): Int = {
 
-        val tt1 = if(o1._4 != null) o1._4.trim else " " // Убираем пробелы - интерфейс иногда вставляет их вперед
-        val tt2 = if(o2._4 != null) o2._4.trim else " "
+        val tt1 = if (o1._4 != null) o1._4.trim else " " // Убираем пробелы - интерфейс иногда вставляет их вперед
+        val tt2 = if (o2._4 != null) o2._4.trim else " "
 
         // Тип терапии бывает Профилактика, Целенаправленная, Эмпирическая и может отсутствовать
         // выводитб требуется в данном порядке, на случай путацицы написания, сравниваю только первую букву в верхнем регистре
-        if(!tt1.head.equals(tt2.head)) {
-          if(tt1.toUpperCase().startsWith("П"))
+        if (!tt1.head.equals(tt2.head)) {
+          if (tt1.toUpperCase().startsWith("П"))
             return -1
-          else if(tt1.toUpperCase().startsWith("Э") && !tt2.toUpperCase().startsWith("П"))
+          else if (tt1.toUpperCase().startsWith("Э") && !tt2.toUpperCase().startsWith("П"))
             return 1
-          else if(tt1.toUpperCase().startsWith("Ц") && !tt2.toUpperCase().startsWith("П") && !tt2.toUpperCase().startsWith("Э"))
+          else if (tt1.toUpperCase().startsWith("Ц") && !tt2.toUpperCase().startsWith("П") && !tt2.toUpperCase().startsWith("Э"))
             return 1
           else
             return -1
@@ -1223,16 +1233,16 @@ with CAPids {
 
         val dateOrder = o2._2.compareTo(o1._2)
         val idxOrder = o2._6.compareTo(o1._6)
-        if(dateOrder != 0)
+        if (dateOrder != 0)
           dateOrder
-        else if(idxOrder != 0)
+        else if (idxOrder != 0)
           idxOrder
-        else if(o1.equals(o2))
+        else if (o1.equals(o2))
           0
         else
           1
       }
-    } )
+    })
     r.foreach(result.add)
     result
   }

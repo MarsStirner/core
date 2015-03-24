@@ -13,10 +13,10 @@ import javax.persistence.*;
 @NamedQueries(
         {
                 @NamedQuery(name = "Event_ClientRelation.findByEvent",
-                        query = "SELECT e FROM EventClientRelation e WHERE e.event.id = :eventId"),
+                        query = "SELECT e FROM EventClientRelation e WHERE e.event.id = :eventId AND e.deleted = 0"),
                 @NamedQuery(name = "Event_ClientRelation.findByEventAndClientRealtion",
                         query = "SELECT e FROM EventClientRelation e WHERE " +
-                                "e.event.id = :eventId AND e.clientRelation.id = :clientRelationId")
+                                "e.event.id = :eventId AND e.clientRelation.id = :clientRelationId AND e.deleted = 0")
         }
 )
 public class EventClientRelation {
@@ -33,6 +33,15 @@ public class EventClientRelation {
     @JoinColumn(name = "clientRelation_id", referencedColumnName = "id")
     private ClientRelation clientRelation;
 
+    @Basic(optional = false)
+    @Column(name = "deleted")
+    private boolean deleted;
+
+    @Basic(optional = false)
+    @Lob
+    @Column(name = "note")
+    private String note = "";
+
     public int getId() {
         return id;
     }
@@ -47,6 +56,26 @@ public class EventClientRelation {
 
     public void setEvent(Event event) {
         this.event = event;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
+    }
+
+    public boolean getDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 
     public ClientRelation getClientRelation() {
