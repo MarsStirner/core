@@ -116,7 +116,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         final Event event = getEventById(data.getEventId());
         final Action action = createPrescriptionAction(createPrescriptionReqData, authData);
         Map<DrugData, DrugComponent> drugComponentByDrugData = saveDrugs(action, getDrugs(data));
-        saveIntervals(action, data.getNote(), data.getAssigmentIntervals(), drugComponentByDrugData);
+        saveIntervals(action, data.getAssigmentIntervals(), drugComponentByDrugData);
         return new PrescriptionsData(event, dbDrugChartBeanLocal, dbDrugIntervalCompParamLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
     }
 
@@ -265,10 +265,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         }
     }
 
-    private void saveIntervals(Action action, String note, List<AssigmentIntervalData> assigmentIntervals, Map<DrugData, DrugComponent> drugComponentByDrugData) {
+    private void saveIntervals(Action action, List<AssigmentIntervalData> assigmentIntervals, Map<DrugData, DrugComponent> drugComponentByDrugData) {
         for (AssigmentIntervalData interval : assigmentIntervals) {
             final Date endDateTime = interval.getEndDateTime() == null ? null : new Date(interval.getEndDateTime());
-            DrugChart drugChart = dbDrugChartBeanLocal.create(action, interval.getMasterId(), new Date(interval.getBeginDateTime()), endDateTime, interval.getStatus(), note);
+            DrugChart drugChart = dbDrugChartBeanLocal.create(action, interval.getMasterId(), new Date(interval.getBeginDateTime()), endDateTime, interval.getStatus(), interval.getNote());
             for(DrugData drugData : interval.getDrugs()) {
                 dbDrugIntervalCompParamLocal.create(drugChart, drugComponentByDrugData.get(drugData), drugData.getDose(), drugData.getVoa(), drugData.getMoa());
             }
