@@ -1045,17 +1045,33 @@ with CAPids {
 
   def getInfectionMonitoring(patient: Patient) = {
     val IC = InfectionControl
-
-    val q =
-      """SELECT ap FROM Event e, Action a, ActionProperty ap WHERE
-        |e.patient = :patient
-        |AND a.event = e AND a.deleted = false
-        |AND ap.action = a AND ap.deleted = false
-        |AND a.actionType.code IN :documents""".stripMargin
-    val r = em.createQuery(q, classOf[ActionProperty])
+    val infectIntervalCode = IC.allInfectPrefixes.foldLeft(new java.util.LinkedList[String]())((l, c) => {
+      l add (c +  IC.separator + IC.beginDatePostfix)
+      l add (c +  IC.separator + IC.endDatePostfix)
+      l
+    });
+    val qInfectActionIds =
+      """SELECT ap.action.id FROM ActionProperty ap WHERE ap.action.event.patient = :patient
+        AND ap.action.event.deleted = false
+        AND ap.action.deleted = false
+        AND ap.deleted = false
+        AND ap.actionPropertyType.code IN :infectIntervalCode
+        AND ap.action.actionType.code IN :documents
+        AND exists ( SELECT apvd.id FROM APValueDate apvd WHERE apvd.id.id = ap.id )
+      """
+    val actionIds = em.createQuery(qInfectActionIds, classOf[java.util.List[Integer]])
       .setParameter("patient", patient)
+      .setParameter("infectIntervalCode", infectIntervalCode)
       .setParameter("documents", IC.documents.asJava)
       .getResultList
+    val q =
+      """SELECT ap FROM  ActionProperty ap WHERE ap.action.id IN :actionIds
+        |AND ap.deleted = false""".stripMargin
+    val properties: util.List[ActionProperty] = if (actionIds.isEmpty) new java.util.LinkedList[ActionProperty]
+    else em.createQuery(q, classOf[ActionProperty])
+      .setParameter("actionIds", actionIds)
+      .getResultList
+    val r = properties
     .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
     .groupBy( e => (e.getAction.getId,  e.getType.getCode.split(IC.separator).head))
     .flatMap(e => {
