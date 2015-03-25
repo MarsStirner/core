@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.risar</groupId>
     <artifactId>ws-risar</artifactId>
-    <version>2.5.59-SNAPSHOT</version>
+    <version>2.5.60-SNAPSHOT</version>
     <packaging>war</packaging>
     <name>TMIS RISAR integration</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-core</artifactId>
-        <version>2.5.59-SNAPSHOT</version>
+        <version>2.5.60-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -20,21 +20,21 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>2.5.59-SNAPSHOT</version>
+            <version>2.5.60-SNAPSHOT</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-business</artifactId>
-            <version>2.5.59-SNAPSHOT</version>
+            <version>2.5.60-SNAPSHOT</version>
             <type>ejb</type>
         </dependency>
 
        <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>2.5.59-SNAPSHOT</version>
+            <version>2.5.60-SNAPSHOT</version>
             <type>ejb</type>
         </dependency>
 
