@@ -359,43 +359,45 @@ with CAPids {
     }
     //******
     //Создание/Редактирование записей для законных представителей
-    val clientRelations = appealData.data.getHospitalizationWith
-    var setRel = Set.empty[ClientRelation]
-    if (clientRelations != null && clientRelations.size() > 0) {
-      //Если законные представители заполнены
-      val patient = newEvent.getPatient
-      val eventClientRelationList = dbEventClientRelation.getByEvent(newEvent)
-
-      clientRelations.foreach(f => {
-        val curEventClientRel:  EventClientRelation= eventClientRelationList.find(ecl => ecl.getClientRelation.getRelativeType.getId.intValue() == f.getRelativeType.getId)
-          .getOrElse({
-          val parent = dbPatientBean.getPatientById(f.getRelative.getId)
-          val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson(-1,
-            f.getRelativeType.getId,
-            parent,
-            patient,
-            authData.user)
-
-          val res = dbEventClientRelation.insertOrUpdate(newEvent, tempServerRelation, f.getNote)
-          em.flush()
-          setRel += tempServerRelation
-          res
-        })
-        if(!curEventClientRel.getClientRelation.getRelative.getId.equals(f.getRelative.getId) ||
-          !curEventClientRel.getNote.equals(f.getNote)) {
-          curEventClientRel.getClientRelation.setRelative(dbPatientBean.getPatientById(f.getRelative.getId))
-          curEventClientRel.setNote(f.getNote)
-          em.merge(curEventClientRel)
-        }
-      })
-      eventClientRelationList.foreach(f => {
-        val cr = clientRelations.find(cl => f.getClientRelation.getRelativeType.getId.intValue() == cl.getRelativeType.getId)
-          .getOrElse({
-          f.setDeleted(true)
-          em.merge(f)
-        })
-      })
+    val clientRelations = if (appealData.data.getHospitalizationWith == null) {
+      new java.util.LinkedList[LegalRepresentativeContainer]()
+    } else {
+      appealData.data.getHospitalizationWith
     }
+    var setRel = Set.empty[ClientRelation]
+    //Если законные представители заполнены
+    val patient = newEvent.getPatient
+    val eventClientRelationList = dbEventClientRelation.getByEvent(newEvent)
+
+    clientRelations.foreach(f => {
+      val curEventClientRel: EventClientRelation = eventClientRelationList.find(ecl => ecl.getClientRelation.getRelativeType.getId.intValue() == f.getRelativeType.getId)
+        .getOrElse({
+        val parent = dbPatientBean.getPatientById(f.getRelative.getId)
+        val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson(-1,
+          f.getRelativeType.getId,
+          parent,
+          patient,
+          authData.user)
+
+        val res = dbEventClientRelation.insertOrUpdate(newEvent, tempServerRelation, f.getNote)
+        em.flush()
+        setRel += tempServerRelation
+        res
+      })
+      if (!curEventClientRel.getClientRelation.getRelative.getId.equals(f.getRelative.getId) ||
+        !curEventClientRel.getNote.equals(f.getNote)) {
+        curEventClientRel.getClientRelation.setRelative(dbPatientBean.getPatientById(f.getRelative.getId))
+        curEventClientRel.setNote(f.getNote)
+        em.merge(curEventClientRel)
+      }
+    })
+    eventClientRelationList.foreach(f => {
+      val cr = clientRelations.find(cl => f.getClientRelation.getRelativeType.getId.intValue() == cl.getRelativeType.getId)
+        .getOrElse({
+        f.setDeleted(true)
+        em.merge(f)
+      })
+    })
     if (setRel != null && setRel.size > 0) dbManager.mergeAll(setRel)
     //*****
     //Создание/редактирование записи для Event_Persons
