@@ -39,6 +39,8 @@ object ConfigManager extends Configuration {
     def isNotificationActive = "on".equals(notificationActive)
 
     def version = ConfigManager.Messages("misCore.assembly.version")
+
+    def defaultPoliclinicOrgStructureId = 42
   }
 
   var RbManagerSetting = new RbManagerClass

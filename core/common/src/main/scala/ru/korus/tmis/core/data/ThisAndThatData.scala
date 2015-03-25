@@ -1172,6 +1172,11 @@ class DictionaryListData {
               this.data.add(new DictionaryContainer(0, ""))
             }
           }
+          case "relationships" =>   {
+            var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.Integer, java.lang.Integer)]
+            this.data.add(new DictionaryContainer(elem._1.intValue(),
+              elem._2, elem._3.intValue(), elem._4.intValue() ))
+          }
           case _ => {
             if (dict.isInstanceOf[(java.lang.Integer, java.lang.String)]) {
               var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String)]
@@ -1239,11 +1244,27 @@ class DictionaryContainer {
   @BeanProperty
   var value: String = _
 
+  @BeanProperty
+  var leftSex: Int = _
+
+  @BeanProperty
+  var rightSex: Int = _
+
+
   def this(id: Int,
            value: String) {
     this()
     this.id = id
     this.value = value
+  }
+
+  def this(id: Int,
+           value: String,
+            leftSex: Int,
+            rightSex: Int) {
+    this(id, value)
+    this.leftSex = leftSex
+    this.rightSex = rightSex
   }
 
   def this(id: Int,

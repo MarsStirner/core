@@ -19,7 +19,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.core.database.bak.BakDiagnosis
 import scala.collection.mutable
 import java.{util => ju}
-import ru.korus.tmis.scala.util.{General, CAPids, I18nable}
+import ru.korus.tmis.scala.util.{ConfigManager, General, CAPids, I18nable}
 import scala.language.reflectiveCalls
 
 //
@@ -404,7 +404,10 @@ class DbCustomQueryBean
       flgDepartmentSort = true
     if (sortingField.contains("%s")) sorting = "ORDER BY %s".format(sortingField.format(sortingMethod, sortingMethod, sortingMethod)) //костыль для докторв
 
-    val default_org = orgStructure.getAllOrgStructures.filter(element => element.getType == 4).toList.get(0) //Приемное отделение
+    val allOrgStructures: List[OrgStructure] = orgStructure.getAllOrgStructures
+    val default_org: OrgStructure = allOrgStructures.filter(element => element.getType == 4).toList.get(0) //Приемное отделение
+    val default_org_poly = allOrgStructures.find(s => s.getId.equals(ConfigManager.Common.defaultPoliclinicOrgStructureId))
+        .getOrElse(default_org)
 
     val queryStr: QueryDataStructure = filter match {
       case f: TalonSPODataListFilter => f.toQueryStructure
@@ -444,7 +447,6 @@ class DbCustomQueryBean
       val depArrayTypedMoves = em.createQuery(OrgStructureSubQueryMoves, classOf[List[Integer]])
         .setParameter("ids", asJavaCollection(ids))
         .setParameter("flatCode", setAsJavaSet(Set(i18n("db.action.movingFlatCode"), i18n("db.action.admissionFlatCode"))))
-        .setMaxResults(1)
       val lastMovesIds = depArrayTypedMoves.getResultList
 
       val depArray = if (lastMovesIds.isEmpty) {
@@ -526,7 +528,11 @@ class DbCustomQueryBean
           }
         }
         else if (!flgDepartmentSwitched) {
-          ret_value_sorted.put(e, (pos, default_org))
+          if ("policlinic".equals(e.getEventType.getRequestType.getCode)) {
+            ret_value_sorted.put(e, (pos, if (e.getOrgStructure == null) default_org_poly else e.getOrgStructure))
+          } else {
+            ret_value_sorted.put(e, (pos, default_org))
+          }
         }
       }
     })
