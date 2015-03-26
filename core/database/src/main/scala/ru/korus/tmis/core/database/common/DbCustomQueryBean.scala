@@ -105,7 +105,7 @@ class DbCustomQueryBean
       })
     }
 
-    if (limit * (page + 1) > 0) typedLastMoves.setMaxResults(limit * (page + 1))
+   // if (limit * (page + 1) > 0) typedLastMoves.setMaxResults(limit * (page + 1))
     var lastMovedsId = typedLastMoves.getResultList
     val typed = em.createQuery(query, classOf[ActionProperty])
 
@@ -122,7 +122,7 @@ class DbCustomQueryBean
       i18n("db.apt.received.codes.orgStructDirection"))))
 
     //typed.setParameter("flatCodes", asJavaCollection(Set(i18n("db.action.admissionFlatCode"), i18n("db.action.movingFlatCode"))))
-    if (limit * (page + 1) > 0) typed.setMaxResults(limit * (page + 1))
+    //if (limit * (page + 1) > 0) typed.setMaxResults(limit * (page + 1))
 
     var result = if (lastMovedsId.isEmpty) new java.util.LinkedList[ActionProperty] else typed.getResultList
 

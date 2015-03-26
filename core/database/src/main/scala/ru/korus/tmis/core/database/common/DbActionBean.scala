@@ -755,20 +755,7 @@ class DbActionBean
 
 
   def getAllActionsOfPatientThatHasActionProperty(patientId: Int, actionPropertyCode: String): util.List[Action] = {
-    val query =
-      """
-        |SELECT a
-        |FROM Action a,
-        |     Event e,
-        |     ActionProperty ap,
-        |     ActionPropertyType apt
-        |WHERE
-        |     e.patient.id = :patientId AND
-        |     a.event.id = e.id AND
-        |     ap.action.id = a.id AND
-        |     apt.id = ap.actionPropertyType.id AND
-        |     apt.code = :code
-        | """.stripMargin
+
     val r = em.createNamedQuery("Action.AllActionsOfPatientThatHasActionProperty", classOf[Action])
       .setParameter("patientId", patientId)
       .setParameter("code", actionPropertyCode)
