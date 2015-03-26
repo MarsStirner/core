@@ -878,7 +878,7 @@ class CommonDataProcessorBean
       case 1 => age.getDay   > apt.getAge_bc   // Дни
       case 2 => age.getWeek  > apt.getAge_bc   // Недели
       case 3 => age.getMonth > apt.getAge_bc   // Месяцы
-      case 4 => age.getWeek  > apt.getAge_bc   // Года
+      case 4 => age.getYear  > apt.getAge_bc   // Года
       case _ => true //Если значение не задано - то будем считать, что возраст пациента удовлетворяет
     }
 
