@@ -699,7 +699,7 @@ class CommonDataProcessorBean
       case _           => apt.getTypeName
     }
 
-    new CommonAttributeWithLayout(apt.getId,
+    new CommonAttributeWithLayout(0,
       0,
       apt.getName,
       apt.getCode,
@@ -709,7 +709,8 @@ class CommonDataProcessorBean
       (for(r <- apt.getActionPropertyRelation) yield new ActionPropertyRelationWrapper(r)).toList.asJava,
       dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList,
       apt.isMandatory.toString,
-      apt.isReadOnly.toString)
+      apt.isReadOnly.toString,
+      apt.getId)
   }
 
   def fromActionTypesForWebClient(actionType: ActionType,

@@ -346,9 +346,11 @@ class CommonAttributeWithLayout(id: Integer,
            relations: util.List[ActionPropertyRelationWrapper],
            layout: List[LayoutAttributeValue],
            mandatory: String,
-           readOnly: String) = {
+           readOnly: String,
+           typeId: Integer) = {
     this(id, version, name, code, aType, mandatory, readOnly, scope, props, relations)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
+    this.typeId = typeId
   }
 
   def this (ca: CommonAttribute,
