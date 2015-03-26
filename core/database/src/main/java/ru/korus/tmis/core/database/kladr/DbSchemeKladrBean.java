@@ -63,6 +63,8 @@ public class DbSchemeKladrBean implements DbSchemeKladrBeanLocal {
 
         private String identparent;
 
+        private String is_actual;
+
         public String getLevel() {
             return level;
         }
@@ -78,6 +80,14 @@ public class DbSchemeKladrBean implements DbSchemeKladrBeanLocal {
         public void setIdentparent(String identparent) {
             this.identparent = identparent;
         }
+
+        public String getIs_actual() {
+            return is_actual;
+        }
+
+        public void setIs_actual(String is_actual) {
+            this.is_actual = is_actual;
+        }
     }
 
     private static final Map<String, String> levelsMap= new HashMap<String, String>() {{
@@ -91,7 +101,7 @@ public class DbSchemeKladrBean implements DbSchemeKladrBeanLocal {
         String baseUrl = ConfigManager.RbManagerSetting().ServiceUrl();
         RestTemplate restTemplate = new RestTemplate();
         String cityCode = getCityCode(code);
-        String url = baseUrl + "/api/kladr/city/search/" + cityCode + "/";
+        String url = baseUrl + "/api/kladr/city/" + cityCode + "/";
         try {
             CityKladr res = restTemplate.getForObject(url, DbSchemeKladrBean.CityKladr.class);
             return res.getData().isEmpty() ? null : res.getData().get(0);
@@ -105,8 +115,7 @@ public class DbSchemeKladrBean implements DbSchemeKladrBeanLocal {
     private List<Street> getStreetByCode(String code, boolean isAll) {
         String baseUrl = ConfigManager.RbManagerSetting().ServiceUrl();
         RestTemplate restTemplate = new RestTemplate();
-        String url = baseUrl + "/api/kladr/street/search/" + getCityCode(code) + "/"
-                + (isAll ? "" : (getStreetCode(code) + "/"));
+        String url = baseUrl + "/api/kladr/street/" + ( isAll ?  "search/" + getCityCode(code) + "/" : (getStreetCode(code) + "/"));
         try {
             StreetKladr res = restTemplate.getForObject(url, StreetKladr.class);
             return res.getData();
@@ -137,6 +146,7 @@ public class DbSchemeKladrBean implements DbSchemeKladrBeanLocal {
                 res.addAll(getStreetByCode(kladrFilter.getParent(), true));
             } else {
                 RequestPrm requestPrm = new RequestPrm();
+                requestPrm.setIs_actual("1");
                 requestPrm.setLevel(levelsMap.get(kladrFilter.getLevel()));
                 if(requestPrm.level != null) {
                     if( !"1".equals(requestPrm.level)) {
