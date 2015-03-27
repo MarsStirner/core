@@ -546,6 +546,7 @@ class DbCustomQueryBean
     } else if (flgAppealNumberSort) {
       //Cортировка по AppealNumber (externalId) как int
       try {
+        //TODO
         if (sortingMethod.compareTo("desc") == 0) //desc
           ListMap(ret_value_sorted.toList.sortWith(_._1.getExternalId.substring(5).toInt > _._1.getExternalId.substring(5).toInt)
             .sortWith(_._1.getExternalId.substring(0, 4).toInt > _._1.getExternalId.substring(0, 4).toInt): _*)
