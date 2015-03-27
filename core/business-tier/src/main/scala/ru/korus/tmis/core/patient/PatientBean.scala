@@ -548,9 +548,11 @@ class PatientBean
         if( p.getPolicyType.getCode != null) {
           p.getPolicyType.setId(policyTypes.find(_.getCode.equals(p.getPolicyType.getCode)).get.getId)
         }
-        val t = policyTypes.find(_.getId == p.getPolicyType.getId).
-          getOrElse(throw new CoreException(i18n("error.patient.policy.CannotFindPolicyType").format(p.getPolicyType.getId)))
-        t.getInsuranceType == InsuranceType.OMS
+        if(p.getPolicyType.getId == null) false else {
+          val t = policyTypes.find(_.getId == p.getPolicyType.getId).
+            getOrElse(throw new CoreException(i18n("error.patient.policy.CannotFindPolicyType").format(p.getPolicyType.getId)))
+          t.getInsuranceType == InsuranceType.OMS
+        }
       })
 
       omsPolicies.foreach(p => {

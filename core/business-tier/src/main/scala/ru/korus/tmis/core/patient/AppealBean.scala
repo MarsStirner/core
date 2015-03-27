@@ -373,7 +373,7 @@ with CAPids {
       val curEventClientRel: EventClientRelation = eventClientRelationList.find(ecl => ecl.getClientRelation.getRelativeType.getId.intValue() == f.getRelativeType.getId)
         .getOrElse({
         val parent = dbPatientBean.getPatientById(f.getRelative.getId)
-        val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson(-1,
+        val tempServerRelation = dbClientRelation.createClientRelationByRelativePerson(
           f.getRelativeType.getId,
           parent,
           patient,

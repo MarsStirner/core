@@ -699,7 +699,7 @@ class CommonDataProcessorBean
       case _           => apt.getTypeName
     }
 
-    new CommonAttributeWithLayout(0,
+    new CommonAttributeWithLayout(apt.getId,
       0,
       apt.getName,
       apt.getCode,
@@ -875,10 +875,10 @@ class CommonDataProcessorBean
     // Проверяем формат, в котором задана нижняя граница (днях, неделях, месяцах или годах)
     // и сверяем возраст пациента с заданной границей
     val lowLimit = apt.getAge_bu match {
-      case 1 => age.getDay   > apt.getAge_bc   // Дни
-      case 2 => age.getWeek  > apt.getAge_bc   // Недели
-      case 3 => age.getMonth > apt.getAge_bc   // Месяцы
-      case 4 => age.getYear  > apt.getAge_bc   // Года
+      case 1 => age.getDay   >= apt.getAge_bc   // Дни
+      case 2 => age.getWeek  >= apt.getAge_bc   // Недели
+      case 3 => age.getMonth >= apt.getAge_bc   // Месяцы
+      case 4 => age.getYear  >= apt.getAge_bc   // Года
       case _ => true //Если значение не задано - то будем считать, что возраст пациента удовлетворяет
     }
 
@@ -887,7 +887,7 @@ class CommonDataProcessorBean
       case 1 => age.getDay   < apt.getAge_ec
       case 2 => age.getWeek  < apt.getAge_ec
       case 3 => age.getMonth < apt.getAge_ec
-      case 4 => age.getYear  < apt.getAge_ec
+      case 4 => age.getYear  <= apt.getAge_ec
       case _ => true
     }
 

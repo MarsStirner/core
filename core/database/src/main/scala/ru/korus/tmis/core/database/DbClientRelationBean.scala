@@ -47,7 +47,7 @@ class DbClientRelationBean
       ClientRelation d
     WHERE
       d.relative.id = :id
-                                """
+                                          """
 
 
   def getAllClientRelations(patientId: Int): Iterable[ClientRelation] = {
@@ -209,23 +209,15 @@ class DbClientRelationBean
     d
   }
 
-  def insertOrUpdateClientRelationByRelativePerson( id: Int,
-                                                    rbRelationTypeId: Int,
+  override def createClientRelationByRelativePerson(rbRelationTypeId: Int,
                                                     relative: Patient,
                                                     patient: Patient,
                                                     sessionUser: Staff): ClientRelation = {
     var d: ClientRelation = null
     val now = new Date
-    var isNew = false
-    if (id > 0) {
-      d = getClientRelationById(id)
-    }
-    else {
-      d = new ClientRelation
-      d.setCreatePerson(sessionUser)
-      d.setCreateDatetime(now)
-      isNew = true
-    }
+    d = new ClientRelation
+    d.setCreatePerson(sessionUser)
+    d.setCreateDatetime(now)
 
 
     if (rbRelationTypeId > 0) {
@@ -244,7 +236,7 @@ class DbClientRelationBean
     d.setModifyPerson(sessionUser)
     d.setModifyDatetime(now)
 
-    em.merge(d)
+    em.persist(d)
     d
 
   }
