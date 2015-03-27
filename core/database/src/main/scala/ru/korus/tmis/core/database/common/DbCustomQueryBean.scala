@@ -548,10 +548,11 @@ class DbCustomQueryBean
       try {
         //TODO
         if (sortingMethod.compareTo("desc") == 0) //desc
-          ListMap(ret_value_sorted.toList.sortWith(_._1.getExternalId.substring(5).toInt > _._1.getExternalId.substring(5).toInt)
+          ListMap(ret_value_sorted.toList
+            .sortWith(_._1.getExternalId.split("[^\\d]+").last.toInt > _._1.getExternalId.split("[^\\d]+").last.toInt)
             .sortWith(_._1.getExternalId.substring(0, 4).toInt > _._1.getExternalId.substring(0, 4).toInt): _*)
         else //asc
-          ListMap(ret_value_sorted.toList.sortBy(m => (m._1.getExternalId.substring(0, 4).toInt, m._1.getExternalId.substring(5).toInt)): _*)
+          ListMap(ret_value_sorted.toList.sortBy(m => (m._1.getExternalId.substring(0, 4).toInt, m._1.getExternalId.split("[^\\d]+").last.toInt)): _*)
       } catch {
         case e: StringIndexOutOfBoundsException => {
           ListMap(ret_value_sorted.toList: _*)
@@ -925,10 +926,10 @@ class DbCustomQueryBean
       case "number" => {
         if (method.compareTo("desc") == 0)
           (a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt > b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt) ||
-            (a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt == b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt && a.asInstanceOf[Event].getExternalId.substring(5).toInt > b.asInstanceOf[Event].getExternalId.substring(5).toInt)
+            (a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt == b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt && a.asInstanceOf[Event].getExternalId.split("[^\\d]+").last.toInt > b.asInstanceOf[Event].getExternalId.split("[^\\d]+").last.toInt)
         else
           (b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt > a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt) ||
-            (b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt == a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt && b.asInstanceOf[Event].getExternalId.substring(5).toInt > a.asInstanceOf[Event].getExternalId.substring(5).toInt)
+            (b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt == a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt && b.asInstanceOf[Event].getExternalId.split("[^\\d]+").last.toInt > a.asInstanceOf[Event].getExternalId.split("[^\\d]+").last.toInt)
       }
       case _ => false
     }
