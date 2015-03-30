@@ -1104,7 +1104,7 @@ class LegalRepresentativeContainer {
         if(rel!=null)
           new IdNameDateContainer(rel.getId.intValue(),
                                   "%s %s %s".format(rel.getLastName, rel.getFirstName, rel.getPatrName),
-                                  relation.getRelative.getBirthDate)
+                                  relation.getRelative.getBirthDate, relation.getRelative.getSex)
         else
           new IdNameDateContainer()
 
@@ -1135,11 +1135,19 @@ class IdNameDateContainer {
   @BeanProperty
   var birthDate: Date = _  // — Дата рождения
 
-  def this( id : Int, name : String, birthDate : Date) = {
+  @BeanProperty
+  var sex: String = _  // — Дата рождения
+
+  def this( id : Int, name : String, birthDate : Date, sex: Int) = {
     this()
-    this.id = id;
+    this.id = id
     this.name = name
     this.birthDate = birthDate
+    this.sex = sex match {
+      case 1 => "male"
+      case 2 => "female"
+      case _ => null
+    }
   }
 
 }
