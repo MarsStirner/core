@@ -394,9 +394,6 @@ class DbCustomQueryBean
     var flgDepartmentSort: Boolean = false
     var flgAppealNumberSort: Boolean = false
     if (sortingField.compareTo("e.externalId") == 0) {
-      //sorting = "ORDER BY CAST(LEFT(%s,LOCATE('/',%s)) AS int) %s, CAST(SUBSTRING(%s, LOCATE('/', %s)+1) AS int) %s".format(sortingField, sortingField, sortingMethod, sortingField, sortingField, sortingMethod)
-      //sorting = "ORDER BY SUBSTRING(%s, LOCATE('/', %s)-1) %s, SUBSTRING(%s, LOCATE('/', %s)+1) %s".format(sortingField, sortingField, sortingMethod, sortingField, sortingField, sortingMethod)
-      //SUBSTRING_INDEX(%s, '/', -1) %s
       flgAppealNumberSort = true
     } else if (sortingField.compareTo("department") != 0)
       sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
@@ -1735,6 +1732,7 @@ AND ap.deleted = 0
         ap.action.id IN :actionIds
       AND ap.actionPropertyType.code = :code
       %s
+      ORDER BY ap.id ASC
     """
 
   /**
