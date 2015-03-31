@@ -57,7 +57,7 @@ public class ActionProperty
 
     @ManyToOne
     @JoinColumn(name = "action_id")
-    private Integer actionId;
+    private Action Action;
 
     @ManyToOne
     @JoinColumn(name = "unit_id")

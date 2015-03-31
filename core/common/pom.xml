@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.core</groupId>
     <artifactId>tmis-core-common</artifactId>
-    <version>2.5.61-SNAPSHOT</version>
+    <version>2.5.62-SNAPSHOT</version>
     <packaging>jar</packaging>
     <name>TMIS Core Common API JAR</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-core</artifactId>
-        <version>2.5.61-SNAPSHOT</version>
+        <version>2.5.62-SNAPSHOT</version>
         <relativePath>../</relativePath>
     </parent>
 
