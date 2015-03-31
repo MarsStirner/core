@@ -605,7 +605,7 @@ class PolicyEntryContainer {
     policy.getPolicyType() match {
       case null => {}
       case policyType: RbPolicyType => {
-        this.policyType = new IdNameContainer(policyType.getId().intValue(),policyType.getName())
+        this.policyType = new IdNameContainer(policyType.getId().intValue(), policyType.getCode(), policyType.getName())
       }
     }
     this.series = policy.getSerial()
