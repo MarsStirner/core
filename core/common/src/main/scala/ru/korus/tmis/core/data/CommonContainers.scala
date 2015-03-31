@@ -28,6 +28,11 @@ class IdNameContainer {
     this.name = name
   }
 
+  def this( id : Int, code: String, name : String) = {
+    this(id, name)
+    this.code = code;
+  }
+
   def toMap = {
     var map = new java.util.HashMap[String, Object]
     map.put("id", this.id.toString)

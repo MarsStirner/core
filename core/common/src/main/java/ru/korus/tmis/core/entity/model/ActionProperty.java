@@ -56,10 +56,6 @@ public class ActionProperty
     private ActionPropertyType actionPropertyType;
 
     @ManyToOne
-    @JoinColumn(name = "action_id")
-    private Action Action;
-
-    @ManyToOne
     @JoinColumn(name = "unit_id")
     private RbUnit unit;
 
