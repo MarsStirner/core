@@ -674,7 +674,7 @@ class DbActionBean
     }
 
     val closeIntervalInDays: Int = try {
-      dbSetting.getSettingByPathInMainSettings(i18n("settings.path.eventBlockTime")).getValue.toInt
+      ConfigManager.Common.eventEditableDays
     } catch {
       case e: Throwable => {
         logger.warn("Cannot receive value of " + i18n("settings.path.eventBlockTime") + " setting. Set as 2 days.")

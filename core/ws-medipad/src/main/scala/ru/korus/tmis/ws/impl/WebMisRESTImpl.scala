@@ -901,20 +901,20 @@ with CAPids {
   private def validateDocumentsAvailability(eventId: Int) = {
     val event = dbEventBean.getEventById(eventId)
     if (event == null)
-      throw new CoreException(i18n("settings.path.eventBlockTime").format(eventId))
+      throw new CoreException(i18n("error.event.NotFound").format(eventId))
 
     //, Нельзя создавать документы для закрытой госпитализации,
     // если прошло больше дней, чем указанно в конфигурации
     val closeDate = event.getExecDate
     if (closeDate != null) {
-      val availableDays = dbSettingsBean.getSettingByPathInMainSettings(i18n("settings.path.eventBlockTime")).getValue
+      val availableDays = ConfigManager.Common.eventEditableDays
       try {
-        if (new DateTime(closeDate).plusDays(Integer.parseInt(availableDays)).getMillis < new DateTime().getMillis) {
-          throw new CoreException("Редактирование документов разрешено только в течении " + Integer.parseInt(availableDays) + " после закрытия истории болезни")
+        if (new DateTime(closeDate).plusDays(availableDays).getMillis < new DateTime().getMillis) {
+          throw new CoreException("Редактирование документов разрешено только в течении " + availableDays + " после закрытия истории болезни")
         }
       } catch {
         case e: NumberFormatException =>
-          throw new CoreException("Невозможно обработать значение свойства " + i18n("settings.path.eventBlockTime") + " - " + availableDays)
+          throw new CoreException("Невозможно обработать значение свойства 'Common.eventEditableDays': " + availableDays)
         case e: Throwable =>
           throw new CoreException(i18n("error.unknownError"))
       }
@@ -1104,19 +1104,6 @@ with CAPids {
 
     null
   }*/
-
-  def getAllTalonsForPatient(requestData: TalonSPOListRequestData) = {
-
-    //TODO: подключить анализ авторизационных данных и доступных ролей
-    //requestData.setRecordsCount(dbCustomQueryBean.getCountOfAppealsWithFilter(requestData.filter))
-    val map = dbCustomQueryBean.getAllAppealsWithFilter(requestData.limit,
-      requestData.page - 1,
-      requestData.sortingFieldInternal,
-      requestData.sortingMethod,
-      requestData.filter,
-      requestData.rewriteRecordsCount)
-    new TalonSPODataList(map, requestData)
-  }
 
   def getAllPersons(requestData: ListDataRequest) = {
 

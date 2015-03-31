@@ -100,8 +100,6 @@ public interface WebMisREST extends Serializable {
 
     String  closeLastMovingOfAppeal(int eventId, AuthData authData, Date date) throws CoreException;
 
-    TalonSPODataList getAllTalonsForPatient(TalonSPOListRequestData requestData) throws CoreException;
-
     AllDepartmentsListData getAllDepartments(ListDataRequest requestData) throws CoreException;
 
     /**

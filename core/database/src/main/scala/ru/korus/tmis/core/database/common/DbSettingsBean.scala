@@ -52,8 +52,6 @@ with I18nable {
 
   def getSettingByPath(path: String): Setting  = getSetting(tmis_core, path)
 
-  def getSettingByPathInMainSettings(path: String): Setting = getSetting(s11r64, path)
-
   private def getSetting(em: EntityManager, path: String ): Setting = {
     val result = em.createQuery("SELECT s FROM Setting s WHERE s.path = :path", classOf[Setting]).setParameter("path", path)
     var s: Setting = new Setting

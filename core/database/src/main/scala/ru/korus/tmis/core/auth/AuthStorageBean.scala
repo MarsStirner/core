@@ -332,18 +332,7 @@ class AuthStorageBean
   }
 
   def getAuthTokenLifeTime: Int = {
-    val value = dbSetting.getSettingByPath(i18n("settings.path.authTokenLife")).getValue
-    if(value != null && !value.isEmpty) {
-      try {
-        value.toInt
-      }
-      catch {
-        case e: Throwable =>
-          // TODO Log - incorrect setting value
-          ConfigManager.TmisAuth.AuthTokenPeriod
-      }
-    } else
-      ConfigManager.TmisAuth.AuthTokenPeriod
+    ConfigManager.TmisAuth.AuthTokenPeriod
   }
 
 }

@@ -32,6 +32,8 @@ object ConfigManager extends Configuration {
 
     var lockTimeoutSec = 60 // время таймаута в секундах, после которого снимется лок документа
 
+    var eventEditableDays = 2 // кол-во дней после закрытия обращения, когда разрешено его редактировать
+
     var ServerUrl = "http://localhost:8080/"
 
     var notificationActive = "on"
@@ -41,6 +43,7 @@ object ConfigManager extends Configuration {
     def version = ConfigManager.Messages("misCore.assembly.version")
 
     def defaultPoliclinicOrgStructureId = 42
+
   }
 
   var RbManagerSetting = new RbManagerClass

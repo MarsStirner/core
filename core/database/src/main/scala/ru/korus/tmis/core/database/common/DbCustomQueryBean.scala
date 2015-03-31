@@ -368,7 +368,6 @@ class DbCustomQueryBean
   def getCountOfAppealsWithFilter(filter: Object) = {
 
     val queryStr: QueryDataStructure = filter match {
-      case f: TalonSPODataListFilter => f.toQueryStructure
       case f: AppealSimplifiedRequestDataFilter => f.toQueryStructure
       case _ => new QueryDataStructure()
     }
@@ -407,7 +406,6 @@ class DbCustomQueryBean
         .getOrElse(default_org)
 
     val queryStr: QueryDataStructure = filter match {
-      case f: TalonSPODataListFilter => f.toQueryStructure
       case f: AppealSimplifiedRequestDataFilter => {
         if (f.diagnosis != null && !f.diagnosis.isEmpty) {
           diagnostic_filter = "AND upper(mkb.diagID) LIKE upper(:diagnosis)\n"
@@ -432,12 +430,11 @@ class DbCustomQueryBean
     }
     var res = typed.getResultList
 
-
-    val ids = new java.util.HashSet[java.lang.Integer]
     val ret_value = new java.util.LinkedHashMap[Event, java.util.Map[Object, Object]]
     var org_value = new java.util.HashMap[Event, OrgStructure]
 
     if (res.size() > 0) {
+      val ids = new java.util.HashSet[java.lang.Integer]
       res.foreach(e => ids.add(e.getId))
 
       //Получение отделения из последнего экшена движения
@@ -512,6 +509,7 @@ class DbCustomQueryBean
       }
       ids.clear()
     }
+
     //вернуть первоначальную сортировку и прописать отделения (учитывая страницу и лимит)
     val ret_value_sorted = mutable.LinkedHashMap.empty[Event, Object]
     res.foreach(e => {

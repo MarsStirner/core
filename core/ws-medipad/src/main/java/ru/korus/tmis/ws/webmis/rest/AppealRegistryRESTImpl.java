@@ -97,13 +97,6 @@ public class AppealRegistryRESTImpl {
         return new JSONWithPadding(wsImpl.getAllAppealsByPatient(request, mkAuth(servRequest)), callback);
     }
 
-    //Основные сведения истории болезни
-    /*@GET
-    @Path("/basicinfo")
-    @Produces("application/x-javascript")
-    public Object getBasicInfoOfDiseaseHistory(@QueryParam("externalId") String externalId){
-          return wsImpl.getBasicInfoOfDiseaseHistory(patientId, externalId).toString();
-    }*/
 
     private AuthData mkAuth(HttpServletRequest servRequest) {
         return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
