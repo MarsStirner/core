@@ -197,7 +197,7 @@ with CAPids {
           actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(),
           authData)
         action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
-        dbManager.persist(action)
+        dbManager.merge(action)
         list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
       }
       else {
@@ -212,11 +212,8 @@ with CAPids {
           val filtred = list.filter(pp => pp.asInstanceOf[ActionProperty].getType.getId == p.getId)
           if (filtred == null || filtred.size == 0) true else false
         })
-        list2.foreach(ff => {
-          //создание недостающих акшен пропертей
-          val res = actionPropertyBean.createActionProperty(action, ff.getId.intValue(), authData)
-          em.persist(res)
-        })
+        //создание недостающих акшен пропертей
+        list2.foreach(ff => actionPropertyBean.createActionProperty(action, ff.getId.intValue(), authData))
         //пересобираем лист акшенПропертей
         list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
       }
@@ -236,16 +233,14 @@ with CAPids {
       list.foreach(f => {
         val ap: ActionProperty =
           if (flgCreate && f.isInstanceOf[ActionPropertyType]) {
-            val res = actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), authData)
-            em.persist(res)
-            res
+            actionPropertyBean.createActionProperty(action,
+              f.asInstanceOf[ActionPropertyType].getId.intValue(),
+              authData)
           }
           else {
-            val apUpdate = actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
+            actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
               f.asInstanceOf[ActionProperty].getVersion.intValue,
               authData)
-            em.merge(apUpdate)
-            apUpdate
           }
         /* if (!flgCreate)
            entities = entities + ap*/

@@ -64,7 +64,6 @@ class PrimaryAssessmentBean
       AWI.doctorSpecs,
       AWI.executorPost,
       AWI.urgent,
-      AWI.multiplicity,
       AWI.Status,
       AWI.Finance,
       AWI.PlannedEndDate//,

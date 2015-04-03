@@ -176,7 +176,6 @@ public class PrescriptionTest extends Arquillian {
         actionPrescription.setUuid(dbUUIDBeanLocal.createUUID());
         final int executorId = 1;
         actionPrescription.setExecutor(em.find(Staff.class, executorId));
-        em.persist(actionPrescription);
         em.merge(actionPrescription);
         em.flush();
         createInterval(actionPrescription);

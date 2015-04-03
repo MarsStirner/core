@@ -71,9 +71,8 @@ class CommonDataProcessorBean
   var dbLayoutAttributeValueBean: DbLayoutAttributeValueBeanLocal = _
 
   @EJB
-  var dbActionPropertyTypeBeanLocal: DbActionPropertyTypeBeanLocal =  _
+  var dbActionPropertyTypeBeanLocal: DbActionPropertyTypeBeanLocal = _
 
-  
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -87,219 +86,181 @@ class CommonDataProcessorBean
     }
 
     var result = List.empty[Action]
-    var entities = Set.empty[AnyRef]
 
     data.entity.foreach(entity => {
-      try {
+
+      // Collect all ActionProperties sent from the client
+      val aps = entity.group.foldLeft(List.empty[CommonAttribute])(
+        (list, group) => list ++ group.attribute)
+
+      var beginDate: Date = null
+      var endDate: Date = null
+      var plannedEndDate: Date = null
+      var finance: Int = -1
+      val now = new Date()
+      var assignerId: Int = -1
+      var executorId: Int = -1
+
+      aps.foreach(attribute => {
+        if (attribute.name == AWI.assessmentBeginDate.toString) {
+          beginDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            case None | Some("") => null
+            case Some(x) => ConfigManager.DateFormatter.parse(x)
+          }
+        }
+        else if (attribute.name == AWI.assessmentEndDate.toString) {
+          endDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            case None | Some("") => null
+            case Some(x) => ConfigManager.DateFormatter.parse(x)
+          }
+        }
+        else if (attribute.name == AWI.finance.toString) {
+          finance = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            case None | Some("") => 0
+            case Some(x) => x.toInt
+          }
+        }
+        else if (attribute.name == AWI.plannedEndDate.toString) {
+          plannedEndDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            case None | Some("") => null
+            case Some(x) => ConfigManager.DateFormatter.parse(x)
+          }
+        }
+        else if (attribute.name == AWI.assignerId.toString) {
+          //ид. направившего врача
+          assignerId = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            case None | Some("") => 0
+            case Some(x) => x.toInt
+          }
+        }
+        else if (attribute.name == AWI.executorId.toString) {
+          //ид. исполнителя
+          executorId = attribute.getPropertiesMap.get(APWI.Value.toString) match {
+            case None | Some("") => 0
+            case Some(x) => x.toInt
+          }
+        }
+      })
+
+      var i = 0
+      while (i < 1) {
+
+        val action = dbAction.createAction(eventId,
+          entity.getTypeId.intValue,
+          userData)
+
+        /* ActionType.id = 139 - Осмотр врача приемного отделения (первичная госпитализация)
+           ActionType.id = 112 - Поступление
+           ActionType.id = 139 - Осмотр врача приемного отделения (повторная госпитализация)
+         */
+        val isPrimaryAction = entity.typeId.intValue == 139 || entity.typeId.intValue == 112 || entity.typeId.intValue == 2456
+        if (isPrimaryAction) {
+          action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
+        }
+        //plannedEndDate
+        if (finance > 0) action.setFinanceId(finance)
+        //выбран направивший врач вручную (https://docs.google.com/spreadsheet/ccc?key=0Au-ED6EnawLcdHo0Z3BiSkRJRVYtLUxhaG5uYkNWaGc#gid=6 (строка 57))
+        if (assignerId > 0) action.setAssigner(new Staff(assignerId))
+        if (executorId > 0) action.setExecutor(new Staff(executorId))
+        //action.setToOrder(toOrder)
+        //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
+        //Для первичного осмотра в качестве дефолтных значений вставим текущее время(не понравилось - убираю (WEBMIS-837: Документ создается сразу же закрытым))
+        if (beginDate != null) action.setBegDate(beginDate) else if (isPrimaryAction) action.setBegDate(now)
+        if (endDate != null) {
+          action.setEndDate(endDate)
+          action.setStatus(ActionStatus.FINISHED.getCode) //WEBMIS-880
+        } //else if (isPrimaryAction) action.setEndDate(now)
+        if (plannedEndDate != null) action.setPlannedEndDate(plannedEndDate)
+
+
+        val actionType = dbActionType.getActionTypeById(entity.typeId.intValue)
+        val aw = new ActionWrapper(action)
 
         // Collect all ActionProperties sent from the client
         val aps = entity.group.foldLeft(List.empty[CommonAttribute])(
           (list, group) => list ++ group.attribute)
 
-        var multiplicity: Int = 1
-        var beginDate: Date = null
-        var endDate: Date = null
-        var plannedEndDate: Date = null
-        var finance: Int = -1
-        val now = new Date()
-        var assignerId: Int = -1
-        var executorId: Int = -1
-        //var toOrder: Boolean = false
+        // Create sent APs
+        val apList = aps.foldLeft(
+          List.empty[(ActionProperty, CommonAttribute)]
+        )((list, attribute) => {
+          if (AWI.isSupported(attribute.name)) {
+            list
+          } else {
+            if (attribute.typeId == null && attribute.code != null) {
+              val apt: ActionPropertyType = dbActionPropertyTypeBeanLocal.getActionPropertyTypeByActionTypeIdAndTypeCode(actionType.getId, attribute.code, false)
+              if (apt != null) {
+                attribute.typeId = apt.getId;
+              }
+            }
 
-        aps.foreach(attribute => {
-          if (attribute.name == AWI.Multiplicity.toString) {
-            multiplicity = attribute.getPropertiesMap.get(APWI.Value.toString) match {
-              case None | Some("") => 1
-              case Some(x) => x.toInt
+            val ap = if (attribute.typeId == null) null
+            else dbActionProperty.createActionPropertyWithDate(
+              action,
+              attribute.typeId.intValue,
+              userData,
+              now)
+            if (ap != null) {
+              new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
+              (ap, attribute) :: list
+            } else {
+              list
             }
           }
-          else if (attribute.name == AWI.assessmentBeginDate.toString) {
-            beginDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
-              case None | Some("") => null
-              case Some(x) => ConfigManager.DateFormatter.parse(x)
-            }
-          }
-          else if (attribute.name == AWI.assessmentEndDate.toString) {
-            endDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
-              case None | Some("") => null
-              case Some(x) => ConfigManager.DateFormatter.parse(x)
-            }
-          }
-          else if (attribute.name == AWI.finance.toString) {
-            finance = attribute.getPropertiesMap.get(APWI.Value.toString) match {
-              case None | Some("") => 0
-              case Some(x) => x.toInt
-            }
-          }
-          else if (attribute.name == AWI.plannedEndDate.toString) {
-            plannedEndDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
-              case None | Some("") => null
-              case Some(x) => ConfigManager.DateFormatter.parse(x)
-            }
-          }
-          else if (attribute.name == AWI.assignerId.toString) {
-            //ид. направившего врача
-            assignerId = attribute.getPropertiesMap.get(APWI.Value.toString) match {
-              case None | Some("") => 0
-              case Some(x) => x.toInt
-            }
-          }
-          else if (attribute.name == AWI.executorId.toString) {
-            //ид. исполнителя
-            executorId = attribute.getPropertiesMap.get(APWI.Value.toString) match {
-              case None | Some("") => 0
-              case Some(x) => x.toInt
-            }
-          }
-          /*else if (attribute.name == AWI.toOrder.toString) {
-            toOrder = attribute.properties.get(APWI.Value.toString) match {
-              case None | Some("") => false
-              case Some(x) => x.toBoolean
-            }
-          }*/
         })
 
-        var i = 0
-        while (i < multiplicity) {
+        // Create empty APs not sent from the client
+        val emptyApts = actionType.getActionPropertyTypes
+        emptyApts.removeAll(apList.map(_._1.getType))
 
-          val action = dbAction.createAction(eventId,
-            entity.getTypeId.intValue,
-            userData)
-
-          /* ActionType.id = 139 - Осмотр врача приемного отделения (первичная госпитализация)
-             ActionType.id = 112 - Поступление
-             ActionType.id = 139 - Осмотр врача приемного отделения (повторная госпитализация)
-           */
-          val isPrimaryAction = entity.typeId.intValue == 139 || entity.typeId.intValue == 112 || entity.typeId.intValue == 2456
-          if (isPrimaryAction) {
-            action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
-          }
-          //plannedEndDate
-          if (finance > 0) action.setFinanceId(finance)
-          //выбран направивший врач вручную (https://docs.google.com/spreadsheet/ccc?key=0Au-ED6EnawLcdHo0Z3BiSkRJRVYtLUxhaG5uYkNWaGc#gid=6 (строка 57))
-          if (assignerId > 0) action.setAssigner(new Staff(assignerId))
-          if (executorId > 0) action.setExecutor(new Staff(executorId))
-          //action.setToOrder(toOrder)
-          //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
-          //Для первичного осмотра в качестве дефолтных значений вставим текущее время(не понравилось - убираю (WEBMIS-837: Документ создается сразу же закрытым))
-          if (beginDate != null) action.setBegDate(beginDate) else if (isPrimaryAction) action.setBegDate(now)
-          if (endDate != null) {
-            action.setEndDate(endDate)
-            action.setStatus(ActionStatus.FINISHED.getCode) //WEBMIS-880
-          } //else if (isPrimaryAction) action.setEndDate(now)
-          if (plannedEndDate != null) action.setPlannedEndDate(plannedEndDate)
-
-
-          val actionType = dbActionType.getActionTypeById(entity.typeId.intValue)
-          val aw = new ActionWrapper(action)
-
-          // Collect all ActionProperties sent from the client
-          val aps = entity.group.foldLeft(List.empty[CommonAttribute])(
-            (list, group) => list ++ group.attribute)
-
-          // Create sent APs
-          val apList = aps.foldLeft(
-            List.empty[(ActionProperty, CommonAttribute)]
-          )((list, attribute) => {
-            if (AWI.isSupported(attribute.name)) {
-              list
-            } else {
-              if(attribute.typeId == null && attribute.code != null) {
-                val apt: ActionPropertyType = dbActionPropertyTypeBeanLocal.getActionPropertyTypeByActionTypeIdAndTypeCode(actionType.getId, attribute.code, false)
-                if (apt != null) {
-                 attribute.typeId = apt.getId;
-                }
-              }
-
-              val ap = if(attribute.typeId == null) null else dbActionProperty.createActionPropertyWithDate(
-                action,
-                attribute.typeId.intValue, //TODO attribute.typeId ??????????
+        val emptyApList = new java.util.LinkedList[ActionProperty]
+        emptyApts.foreach(
+          apt => {
+            if (!apt.getIsAssignable) {
+              emptyApList.add(dbActionProperty.createActionPropertyWithDate(action,
+                apt.getId.intValue,
                 userData,
-                now)
-              if (ap != null) {
-                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
-                (ap, attribute) :: list
-              } else {
-                list
-              }
+                now))
             }
           })
 
-          // Create empty APs not sent from the client
-          val emptyApts = actionType.getActionPropertyTypes
-          emptyApts.removeAll(apList.map(_._1.getType))
+        // Save sent AP values
+        val apvList = apList.foldLeft(
+          List.empty[APValue]
+        )((list, entry) => {
+          toActionPropertyValue(entry, list)
+        })
 
-          val emptyApList = new java.util.LinkedList[ActionProperty]
-          emptyApts.foreach(
-            apt => {
-              if (!apt.getIsAssignable) {
-                emptyApList.add(dbActionProperty.createActionPropertyWithDate(action,
-                  apt.getId.intValue,
-                  userData,
-                  now))
-              }
-            })
+        dbManager.persistAll(this.saveDiagnoses(eventId,
+          apList.map(_._1).toList,
+          apvList,
+          userData))
 
-          entities = entities + action
-          dbManager.persistAll(List(action))
-
-          // Save sent AP values
-          val apvList = apList.foldLeft(
-            List.empty[APValue]
-          )((list, entry) => {
-            toActionPropertyValue(entry, list)
-          })
-
-          //
-          entities = (entities /: apvList)(_ + _)
-          dbManager.persistAll(apvList)
-          //Сохранение диагнозов в таблицу Диагностик
-          //var apsForDiag = new util.LinkedList[ActionProperty]()
-          //apList.foreach(f => apsForDiag.add(f._1))
-          dbManager.persistAll(this.saveDiagnoses(eventId,
-            apList.map(_._1).toList,
-            apvList,
-            userData))
-
-          // Save empty AP values (set to default values)
-          //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
-          val emptyApvList = emptyApList.filter(p => p.getType.getTypeName.compareTo("FlatDictionary") != 0 && p.getType.getTypeName.compareTo("FlatDirectory") != 0).map(
+        // Save empty AP values (set to default values)
+        //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
+        val emptyApvList = emptyApList
+          .filter(p => p.getType.getTypeName.compareTo("FlatDictionary") != 0 && p.getType.getTypeName.compareTo("FlatDirectory") != 0)
+          .map(
             ap => {
               dbActionProperty.setActionPropertyValue(ap, ap.getType.getDefaultValue, 0)
             })
 
-          entities = (entities /: emptyApvList)(_ + _)
-          dbManager.persistAll(emptyApvList)
+        // Set AWI values
+        aps.foreach(attribute => {
+          if (AWI.isSupported(attribute.name)) {
+            aw.set(attribute)
+          }
+        })
 
-          // Set AWI values
-          aps.foreach(attribute => {
-            if (AWI.isSupported(attribute.name)) {
-              aw.set(attribute)
-            }
-          })
+        dbManager.merge(action)
 
-          val updatedAction =
-            dbManager.mergeAll[Action](List(action)).iterator().next()
-          entities = entities - action + updatedAction
+        result = action :: result
 
-          result = updatedAction :: result
-
-          i = i + 1
-        }
-
-      } catch {
-        case e: Exception => {
-          dbManager.removeAll(entities)
-          throw e
-        }
+        i = i + 1
       }
     })
-
-
-
     result
   }
-
 
   /**
    * Метод получения APValue из входных данных в виде [[ru.korus.tmis.core.data.CommonAttribute]]
@@ -316,9 +277,7 @@ class CommonDataProcessorBean
           !ap.getType.getTypeName.equals("Table")) {
           if (ap.getType.getDefaultValue.compareTo("нет") != 0) {
             //костылик для мкб
-            val apv = dbActionProperty.setActionPropertyValue(ap,
-              null,
-              0)
+            val apv = dbActionProperty.setActionPropertyValue(ap, null, 0)
             if (apv != null)
               apv :: list
             else
@@ -327,14 +286,14 @@ class CommonDataProcessorBean
         } else list
       }
       case (None | Some(null) | Some(""), Some(value)) => {
-        if(ap.getType.getTypeName.equals("Date") && attribute.getPropertiesMap.get("value").getOrElse("").equals("0000-00-00 00:00:00"))
+        if (ap.getType.getTypeName.equals("Date") && attribute.getPropertiesMap.get("value").getOrElse("").equals("0000-00-00 00:00:00"))
           list
         else {
-        val apv = dbActionProperty.setActionPropertyValue(
-          ap,
-          value,
-          0)
-        apv :: list
+          val apv = dbActionProperty.setActionPropertyValue(
+            ap,
+            value,
+            0)
+          apv :: list
         }
       }
       case (Some(valueId), _) => {
@@ -559,7 +518,7 @@ class CommonDataProcessorBean
     val characterAPV = if (characterAP != null) {
       apValue.filter(apv =>
         apv.unwrap().isInstanceOf[APValueString] &&
-        apv.unwrap().asInstanceOf[APValueString].getId.getId.equals(characterAP.getId)
+          apv.unwrap().asInstanceOf[APValueString].getId.getId.equals(characterAP.getId)
       ).toList
     } else null
     if (characterAPV != null && characterAPV.size > 0 && characterAPV.get(0).getValueAsId.compareTo("") != 0) {
@@ -597,7 +556,7 @@ class CommonDataProcessorBean
           //val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
           val mkbAPV = apValue.filter(apv => apv.unwrap().isInstanceOf[APValueMKB] &&
             apv.unwrap().asInstanceOf[APValueMKB].getId.getId.equals(ap.getId)
-            ).toList
+          ).toList
           val descAPV = apValue.filter(apv => apv.unwrap().isInstanceOf[APValueString] &&
             descriptionAP != null &&
             apv.unwrap().asInstanceOf[APValueString].getId.getId.equals(descriptionAP.getId)
@@ -667,7 +626,6 @@ class CommonDataProcessorBean
   }
 
 
-
   def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
 
     val map = list.foldLeft(Map.empty[String, String])(
@@ -694,9 +652,9 @@ class CommonDataProcessorBean
         str_key + (key -> value)
       })
 
-    val typeName =  apt.getTypeName match {
+    val typeName = apt.getTypeName match {
       case "Reference" => "String"
-      case _           => apt.getTypeName
+      case _ => apt.getTypeName
     }
 
     new CommonAttributeWithLayout(apt.getId,
@@ -706,7 +664,7 @@ class CommonDataProcessorBean
       typeName,
       dbActionProperty.convertScope(apt), //apt.getConstructorValueDomain,
       map,
-      (for(r <- apt.getActionPropertyRelation) yield new ActionPropertyRelationWrapper(r)).toList.asJava,
+      (for (r <- apt.getActionPropertyRelation) yield new ActionPropertyRelationWrapper(r)).toList.asJava,
       dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList,
       apt.isMandatory.toString,
       apt.isReadOnly.toString,
@@ -834,7 +792,7 @@ class CommonDataProcessorBean
                     wrapper: ActionWrapper,
                     attributeNames: java.util.List[StringId]) = {
     attributeNames.foldLeft(group)(
-      (group, attributeName) => group add wrapper.get(attributeName)
+      (group, attributeName) => group.add(wrapper.get(attributeName))
     )
   }
 
@@ -868,26 +826,26 @@ class CommonDataProcessorBean
    *         пол у пациента или типа свойства не задан - возвращается true
    */
   def checkActionPropertyTypeForPatientAgeAndSex(patient: Patient, apt: ActionPropertyType): Boolean = {
-    if(patient == null || apt == null)
+    if (patient == null || apt == null)
       throw new IllegalArgumentException("Входящие параметры не могут быть null")
 
     val age = defineAgeOfPatient(patient)
     // Проверяем формат, в котором задана нижняя граница (днях, неделях, месяцах или годах)
     // и сверяем возраст пациента с заданной границей
     val lowLimit = apt.getAge_bu match {
-      case 1 => age.getDay   >= apt.getAge_bc   // Дни
-      case 2 => age.getWeek  >= apt.getAge_bc   // Недели
-      case 3 => age.getMonth >= apt.getAge_bc   // Месяцы
-      case 4 => age.getYear  >= apt.getAge_bc   // Года
+      case 1 => age.getDay >= apt.getAge_bc // Дни
+      case 2 => age.getWeek >= apt.getAge_bc // Недели
+      case 3 => age.getMonth >= apt.getAge_bc // Месяцы
+      case 4 => age.getYear >= apt.getAge_bc // Года
       case _ => true //Если значение не задано - то будем считать, что возраст пациента удовлетворяет
     }
 
     // Аналогично, но в обратную сторону проверяем соответствие возраста верхней границе
     val topLimit = apt.getAge_eu match {
-      case 1 => age.getDay   < apt.getAge_ec
-      case 2 => age.getWeek  < apt.getAge_ec
+      case 1 => age.getDay < apt.getAge_ec
+      case 2 => age.getWeek < apt.getAge_ec
       case 3 => age.getMonth < apt.getAge_ec
-      case 4 => age.getYear  <= apt.getAge_ec
+      case 4 => age.getYear <= apt.getAge_ec
       case _ => true
     }
 

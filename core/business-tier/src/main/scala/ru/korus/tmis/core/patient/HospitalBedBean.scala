@@ -108,7 +108,7 @@ with CAPids {
       authData)
     action.setBegDate(date)
     action.setEndDate(null: java.util.Date)
-    dbManager.persist(action)
+    dbManager.merge(action)
 
     if (hbData.data.bedRegistration != null) {
 

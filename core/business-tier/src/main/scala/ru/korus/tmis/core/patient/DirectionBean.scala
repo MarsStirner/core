@@ -116,7 +116,6 @@ with I18nable {
       AWI.assignerMiddleName,
       AWI.assignerSpecs,
       AWI.urgent,
-      AWI.multiplicity,
       AWI.Status,
       AWI.Finance,
       AWI.PlannedEndDate,
@@ -476,40 +475,31 @@ with I18nable {
     if (request.assignerId > 0)
       action.setAssigner(dbStaffBean.getStaffById(request.assignerId))
 
-    em.persist(action)
+    em.merge(action)
 
-    //empty action property
-    var apSet = Set.empty[AnyRef]
 
     actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(request.actionTypeId.intValue())
       .toList
       .foreach((apt) => {
       val ap = actionPropertyBean.createActionProperty(action, apt.getId.intValue(), userData)
-      em.persist(ap)
 
       if (ap.getType.getTypeName.compareTo("MKB") == 0 && request.diagnosis != null && request.diagnosis.getCode != null) {
         //запишем диагноз, который пришел с клиента
         val mkb = dbMkbBean.getMkbByCode(request.diagnosis.getCode)
         if (mkb != null) {
-          val apv = actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0)
-          if (apv != null)
-            apSet = apSet + apv.unwrap
+          actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0)
         } else {
           //если диагноз не пришел, то запишем дефолтный
           var props = actionPropertyBean.getActionPropertyValue(ap)
           if (props.get(0).getValueAsString.compareTo("") == 0) {
             val diagnosis = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(action.getEvent.getId.intValue())
             if (diagnosis != null) {
-              val apv = actionPropertyBean.setActionPropertyValue(ap, diagnosis.getId.intValue().toString, 0)
-              if (apv != null)
-                apSet = apSet + apv.unwrap
+              actionPropertyBean.setActionPropertyValue(ap, diagnosis.getId.intValue().toString, 0)
             }
           }
         }
-      } //else if (ap.getType.getTypeName.compareTo("queue") == 0) {
+      }
     })
-    apSet.foreach(f => em.persist(f))
-    em.flush()
     action
   }
 

@@ -99,6 +99,9 @@ public class DbUtil {
             System.out.print("Clear table" + table.tableName);
             s.executeUpdate("DELETE FROM " + table.tableName + " WHERE `id` > " + table.maxIndex);
             System.out.println("A rows with has been removed. Table: " + table.tableName + " max index: " + table.maxIndex);
+            if(!"`rbBloodComponentType`".equals(table.tableName)) {
+                s.executeUpdate("ALTER TABLE " + table.tableName + "AUTO_INCREMENT=" + table.maxIndex);
+            }
         }
     }
 

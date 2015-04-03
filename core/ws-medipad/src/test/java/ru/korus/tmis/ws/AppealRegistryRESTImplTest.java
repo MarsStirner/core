@@ -621,9 +621,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             JsonParser parser = new JsonParser();
             JsonElement resJson = parser.parse(res);
             JsonElement expected = parser.parse(new String(Files.readAllBytes(Paths.get("./src/test/resources/json/createActionResp.json"))));
-            //TODO remove id  from json or clear DB
-            //Assert.assertEquals(resJson, expected);
-            Assert.assertTrue(res.contains("\"typeId\":3911"));
+            Assert.assertEquals(resJson, expected);
             final JsonElement jsonData = resJson.getAsJsonObject().get("data");
             Assert.assertNotNull(jsonData);
             final JsonArray jsonActionInfoArray = jsonData.getAsJsonArray();

@@ -3,6 +3,29 @@
         "flatCode": "TransfusionTherapy",
         "group": [
             {
+                "name": "Summary",
+                "attribute": [
+                    {
+                        "name": "assessmentBeginDate",
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "2015-04-01 19:54:06"
+                            }
+                        ]
+                    },
+                    {
+                        "name": "plannedEndDate",
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "2015-04-11 19:54:06"
+                            }
+                        ]
+                    }
+                    ]
+            },
+            {
                 "name": "Details",
                 "attribute": [
                     {

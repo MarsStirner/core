@@ -321,15 +321,11 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     private Action createPrescriptionAction(CreatePrescriptionReqData createPrescriptionReqData, AuthData authData) throws CoreException {
         final CreatePrescriptionData data = createPrescriptionReqData.getData();
         Action action = dbActionBeanLocal.createAction(data.getEventId(), data.getActionTypeId(), authData);
-        em.persist(action);
         for (ActionPropertyTypeData prop : data.getProperties()) {
             ActionProperty ap = dbActionPropertyBeanLocal.createActionProperty(action, prop.getActionPropertyTypeId(), authData);
-            em.persist(ap);
             final String value = prop.getValue() == null ? (prop.getValueId() == null ? null : String.valueOf(prop.getValueId())) : prop.getValue();
             if (value != null && !value.isEmpty()) {
-                em.flush();
-                APValue apv = dbActionPropertyBeanLocal.setActionPropertyValue(ap, value, 0);
-                em.persist(apv);
+                dbActionPropertyBeanLocal.setActionPropertyValue(ap, value, 0);
             }
         }
         return action;

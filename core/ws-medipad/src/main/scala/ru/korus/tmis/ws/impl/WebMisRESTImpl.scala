@@ -492,7 +492,6 @@ with CAPids {
     listForSummary.add(ActionWrapperInfo.assignerSpecs)
     listForSummary.add(ActionWrapperInfo.assignerPost)
     listForSummary.add(ActionWrapperInfo.urgent)
-    listForSummary.add(ActionWrapperInfo.multiplicity)
     listForSummary.add(ActionWrapperInfo.finance)
     listForSummary.add(ActionWrapperInfo.plannedEndDate)
 
@@ -1238,7 +1237,6 @@ with CAPids {
         listForSummary.add(ActionWrapperInfo.assignerSpecs)
         listForSummary.add(ActionWrapperInfo.assignerPost)
         listForSummary.add(ActionWrapperInfo.urgent)
-        listForSummary.add(ActionWrapperInfo.multiplicity)
         listForSummary.add(ActionWrapperInfo.finance)
         listForSummary.add(ActionWrapperInfo.plannedEndDate)
 

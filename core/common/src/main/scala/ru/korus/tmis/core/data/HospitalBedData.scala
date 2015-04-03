@@ -455,7 +455,7 @@ class MovesListHospitalBedContainer {
     if (this.leave!=null && this.admission!=null) {
       this.days = (this.leave.getTime - this.admission.getTime)/(1000*60*60*24)
       this.bedDays = this.days
-      if (unit.compareTo("Приемное отделение")!=0 && this.days!=0) {
+      if (unit != null && unit.compareTo("Приемное отделение")!=0 && this.days!=0) {
         if (eventRequestCode.compareTo("hospital")==0) {     //hospital
           this.bedDays = this.bedDays + 1
         } else {                                             //clinic

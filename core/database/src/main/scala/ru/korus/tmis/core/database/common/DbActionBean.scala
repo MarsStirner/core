@@ -156,7 +156,7 @@ class DbActionBean
 
     a.setStatus(ActionStatus.STARTED.getCode)
     a.setUuid(dbUUIDBeanLocal.createUUID())
-
+    em.persist(a)
     a
   }
 

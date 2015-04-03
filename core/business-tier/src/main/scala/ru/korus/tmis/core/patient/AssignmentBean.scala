@@ -101,8 +101,6 @@ with I18nable {
         action = actionBean.createAction(eventId,
           assignmentData.data.assignmentType.getId.intValue(),
           authData)
-        em.persist(action)
-        //dbManager.persist(action)
         list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(assignmentData.data.assignmentType.getId.intValue()).toList
       }
       else {
@@ -124,16 +122,12 @@ with I18nable {
       list.foreach(f => {
         val ap: ActionProperty =
           if (flgCreate) {
-            val res = actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), authData)
-            em.persist(res)
-            //dbManager.persist(res)
-            res
+            actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), authData)
           }
           else {
-            val res = actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
+            actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
               f.asInstanceOf[ActionProperty].getVersion.intValue,
               authData)
-            em.merge(res)
           }
 
         val values = this.getValueByCase(ap.getType.getId.intValue(), assignmentData, authData)

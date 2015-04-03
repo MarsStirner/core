@@ -121,7 +121,7 @@ class DbActionPropertyBean
 
     ap.setAction(a)
     ap.setType(apt)
-
+    em.persist(ap)
     ap
   }
 
@@ -144,7 +144,7 @@ class DbActionPropertyBean
 
     ap.setAction(a)
     ap.setType(apt)
-
+    em.persist(ap)
     ap
   }
 
@@ -154,11 +154,14 @@ class DbActionPropertyBean
     ap.setModifyPerson(userData.user)
     ap.setModifyDatetime(new Date)
     ap.setVersion(version)
-
+    em.merge(ap)
     ap
   }
 
   def setActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
+    if(ap.getId == null) {
+      em.flush()
+    }
     val apvs = getActionPropertyValue(ap)
 
     apvs.size match {
@@ -182,9 +185,10 @@ class DbActionPropertyBean
             } else {
               if (apv.unwrap.setValueFromString(value)) apv else null
             }
+            em.merge(apv)
           }
           else {
-            em remove apv
+            em.remove(apv)
             null
           }
         }
@@ -238,8 +242,7 @@ class DbActionPropertyBean
       res.add(new util.LinkedList[String])
       d.asInstanceOf[Array[Object]].foreach(v => {res.getLast.add("" + v)})
     })
-    res
-  }
+    res }
 
 
   def convertValue(apt: ActionPropertyType, value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
@@ -260,6 +263,7 @@ class DbActionPropertyBean
     propertyType.getTypeName match {
       case "Reference" => getScopeForReference(propertyType)
       case "Table" => getScopeForTable(propertyType)
+      case "Diagnosis" => getScopeForDiagnosis(propertyType)
       case _ => propertyType.getValueDomain
     }
   }
@@ -280,6 +284,13 @@ class DbActionPropertyBean
     rbAPTableFieldList.foldLeft("")((b, a) => {
       b + a.getName + ","
     })
+  }
+
+  def getScopeForDiagnosis(propertyType: ActionPropertyType) = {
+    val diagTableHeader = Array(
+      "Дата начала", "Дата окончания", 	"МКБ", "Тип",	"Характер",	"Результат", "Исход",  "Врач",	"Примечание"
+    )
+    diagTableHeader.foldLeft("")((b, a) => {b + a + ","})
   }
 
 
@@ -306,7 +317,11 @@ class DbActionPropertyBean
         value
       }
       // Записываем значение
-      if (apv.setValueFromString(v)) apv else null
+      if (apv.setValueFromString(v)) {
+        em.persist(apv)
+        apv
+      }
+      else null
     } else
       null
   }
