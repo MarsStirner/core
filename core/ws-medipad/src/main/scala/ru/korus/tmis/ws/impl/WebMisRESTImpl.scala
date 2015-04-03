@@ -1053,9 +1053,6 @@ with CAPids {
     val lastAction = actionBean.getLastActionByActionTypeIdAndEventId(eventId, actionTypes)
     val action = actionBean.getActionById(lastAction)
 
-    // Проверяем входные значения
-    if (actionBean.getActionsByTypeFlatCodeAndEventId(eventId, "leaved").size < 1)
-      throw new CoreException("Для закрытия последнего движения требуется наличие выписки")
     if (date.before(action.getBegDate))
       throw new CoreException("Дата закрытия движения не может быть раньше даты начала движения")
 
