@@ -313,7 +313,8 @@ class CommonDataProcessorBean
       case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
         if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 &&
           ap.getType.getTypeName.compareTo("FlatDictionary") != 0 &&
-          !ap.getType.getTypeName.equals("Table")) {
+          !ap.getType.getTypeName.equals("Table") &&
+          !ap.getType.getTypeName.equals("Diagnosis")) {
           if (ap.getType.getDefaultValue.compareTo("нет") != 0) {
             //костылик для мкб
             val apv = dbActionProperty.setActionPropertyValue(ap,

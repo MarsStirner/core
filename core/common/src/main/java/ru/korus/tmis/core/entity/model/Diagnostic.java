@@ -131,6 +131,10 @@ public class Diagnostic implements Serializable {
     @Column(name = "version")
     private int version;
 
+    @ManyToOne
+    @JoinColumn(name = "rbAcheResult_id", nullable = true)
+    private RbAcheResult acheResult;
+
     public Diagnostic() {
     }
 
@@ -328,6 +332,18 @@ public class Diagnostic implements Serializable {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public RbAcheResult getAcheResult() {
+        return acheResult;
+    }
+
+    public void setAcheResult(RbAcheResult acheResult) {
+        this.acheResult = acheResult;
     }
 
     @Override

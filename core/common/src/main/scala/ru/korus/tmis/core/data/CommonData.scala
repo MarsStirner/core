@@ -225,7 +225,7 @@ class CommonAttribute{
     this()
     this.id = id
     this.name = name
-    this.`type` = aType
+    this.`type` = if ("Diagnosis".equals(aType)) "Table" else aType
     this.scope = scope
   }
 
