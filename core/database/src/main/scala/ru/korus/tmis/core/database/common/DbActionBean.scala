@@ -284,6 +284,23 @@ class DbActionBean
     }
   }
 
+  def getActionsByTypeCodeAndPatientOrderByDate(codes: java.util.Set[String], patient: Patient) = {
+    val result = em.createNamedQuery("Action.actionByTypeCodeAndPatientOrderByDate",
+      classOf[Action])
+      .setParameter("codes", asJavaCollection(codes))
+      .setParameter("patientId", patient.getId)
+      .getResultList
+
+    result.size match {
+      case 0 => null
+      case size => {
+
+        result
+      }
+    }
+  }
+
+
   def getActionIdWithCopyByEventId(eventId: Int, actionTypeId: Int) = {
     /*
      Для первичного осмотра ищется последний осмотр заданного типа во всех предыдущих обращениях
