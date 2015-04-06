@@ -26,7 +26,13 @@ import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
                 @NamedQuery(name = "Action.AllActionsOfPatientThatHasActionProperty",
                         query = "SELECT a FROM Action a, ActionProperty ap, ActionPropertyType apt WHERE a.deleted = 0 AND " +
                                 "a.event.patient.id = :patientId " +
-                                "AND ap.action.id = a.id AND apt.id = ap.actionPropertyType.id AND apt.code = :code")
+                                "AND ap.action.id = a.id AND apt.id = ap.actionPropertyType.id AND apt.code = :code"),
+                @NamedQuery(name = "Action.actionByTypeCodeAndPatientOrderByDate", query = "SELECT a FROM Action a WHERE" +
+                        " a.actionType.code IN :codes " +
+                        "AND a.event.deleted = 0 " +
+                        "AND a.event.patient.id = :patientId " +
+                        "AND a.deleted = 0 " +
+                        "ORDER BY a.begDate ASC")
 
         })
 @XmlType(name = "action")

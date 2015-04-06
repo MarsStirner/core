@@ -2,10 +2,7 @@ package ru.korus.tmis.core.database.common;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.AssessmentsListRequestData;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionType;
-import ru.korus.tmis.core.entity.model.Event;
-import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
 import ru.korus.tmis.schedule.QueueActionParam;
@@ -148,6 +145,9 @@ public interface DbActionBeanLocal {
      * @throws CoreException
      */
     List<Action> getActionsByTypeCodeAndEventId(Set<String> codes, int eventId, String sort, AuthData userData)
+            throws CoreException;
+
+    List<Action> getActionsByTypeCodeAndPatientOrderByDate(Set<String> codes, Patient patient)
             throws CoreException;
 
     /**

@@ -81,7 +81,7 @@ class ActionPropertyWrapper(ap: ActionProperty, apValueConverter: (ActionPropert
     val typeName = if ("Reference".equals(apt.getTypeName)) "String" else apt.getTypeName
     val scope = apScopeConverter(apt)
     val tableValue: util.LinkedList[util.LinkedList[String]] =
-      if ("Table".equals(typeName) && apv != null && apv.getValueAsString != null && !"".equals(apv.getValueAsString)) {
+      if ( ("Table".equals(typeName) || "Diagnosis".equals(typeName)) && apv != null && apv.getValueAsString != null && !"".equals(apv.getValueAsString)) {
         apValueConverter(apt, apv.getValueAsString)
       } else {
         null

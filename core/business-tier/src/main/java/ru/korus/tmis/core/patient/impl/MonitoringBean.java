@@ -37,7 +37,8 @@ public class MonitoringBean implements MonitoringBeanLocal {
             add("1_2_22");
             add("1_2_23");
         }};
-        List<Action> actionList = dbActionBean.getActionsByTypeCodeAndEventId(documents, event.getId(), "a.begDate ASC", null);
+        List<Action> actionList = event.getPatient() == null ? new LinkedList<Action>() :
+            dbActionBean.getActionsByTypeCodeAndPatientOrderByDate(documents, event.getPatient());
         return getInfectionDrugMonitoring(actionList);
     }
 

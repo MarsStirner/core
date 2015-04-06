@@ -1,6 +1,9 @@
 package ru.korus.tmis.core.database.common
 
+import java.text.SimpleDateFormat
+
 import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.core.database.DbDiagnosticBeanLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 
@@ -31,6 +34,9 @@ class DbActionPropertyBean
 
   @EJB
   var dbActionPropertyType: DbActionPropertyTypeBeanLocal = _
+
+  @EJB
+  var dbbDiagnosticBeanLocal: DbDiagnosticBeanLocal = _
 
   private val FILTER_ID = 0
   private val FILTER_NAME = 1
@@ -244,10 +250,11 @@ class DbActionPropertyBean
     })
     res }
 
-
   def convertValue(apt: ActionPropertyType, value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
     if ("Table".equals(apt.getTypeName)) {
       return convertTableValue(apt, value)
+    } else if ("Diagnosis".equals(apt.getTypeName)) {
+      return convertDiagValue(value)
     }
     val res = new java.util.LinkedList[java.util.LinkedList[String]]
     res.add(new util.LinkedList[String])
@@ -291,6 +298,33 @@ class DbActionPropertyBean
       "Дата начала", "Дата окончания", 	"МКБ", "Тип",	"Характер",	"Результат", "Исход",  "Врач",	"Примечание"
     )
     diagTableHeader.foldLeft("")((b, a) => {b + a + ","})
+  }
+
+
+
+  def convertDiagValue(value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
+    val res = new java.util.LinkedList[java.util.LinkedList[String]]
+    try {
+      val formatter = new SimpleDateFormat("yyyy-MM-dd")
+      val d: Diagnostic = dbbDiagnosticBeanLocal.getDiagnosticById(Integer.parseInt(value))
+      val diagnosis: Diagnosis = d.getDiagnosis
+      if(d != null && diagnosis != null) {
+        res.add(new util.LinkedList[String])
+        res.get(0).add(if (diagnosis.getSetDate == null) "" else formatter.format(diagnosis.getSetDate))
+        res.get(0).add(if (diagnosis.getEndDate == null) "" else formatter.format(diagnosis.getSetDate))
+        res.get(0).add(if (diagnosis.getMkb == null) "" else diagnosis.getMkb.getDiagID)
+        res.get(0).add(if (diagnosis.getDiagnosisType == null) "" else diagnosis.getDiagnosisType.getName)
+        res.get(0).add(if (diagnosis.getCharacter == null) "" else diagnosis.getCharacter.getName)
+        res.get(0).add(if (d.getResult == null) "" else d.getResult.getName)
+        res.get(0).add(if (d.getAcheResult == null) "" else d.getAcheResult.getName)
+        res.get(0).add(if (d.getDiagnosis.getPerson == null) "" else d.getDiagnosis.getPerson.getFullName)
+        res.get(0).add(d.getNotes)
+      }
+    } catch {
+      case e: NumberFormatException =>
+        throw new CoreException("Невозможно обработать значение свойства типа 'Diagnosis: " + value)
+    }
+    res
   }
 
 
