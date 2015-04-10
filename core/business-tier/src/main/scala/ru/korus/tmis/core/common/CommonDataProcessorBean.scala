@@ -106,13 +106,7 @@ class CommonDataProcessorBean
         //var toOrder: Boolean = false
 
         aps.foreach(attribute => {
-          if (attribute.name == AWI.Multiplicity.toString) {
-            multiplicity = attribute.getPropertiesMap.get(APWI.Value.toString) match {
-              case None | Some("") => 1
-              case Some(x) => x.toInt
-            }
-          }
-          else if (attribute.name == AWI.assessmentBeginDate.toString) {
+          if (attribute.name == AWI.assessmentBeginDate.toString) {
             beginDate = attribute.getPropertiesMap.get(APWI.Value.toString) match {
               case None | Some("") => null
               case Some(x) => ConfigManager.DateFormatter.parse(x)
