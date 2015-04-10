@@ -513,7 +513,7 @@
                                 "id": 123,
                                 "values": [
                                     {
-                                        "value": null,
+                                        "value": 1423581309000,
                                         "valueType": "Date"
                                     },
                                     {

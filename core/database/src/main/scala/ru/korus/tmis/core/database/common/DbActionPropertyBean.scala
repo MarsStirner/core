@@ -323,7 +323,7 @@ class DbActionPropertyBean
       val diagnosis: Diagnosis = d.getDiagnosis
       if (d != null && diagnosis != null) {
         val col: TableCol = new TableCol(id)
-        col.values.add(new TableValue(diagnosis.getSetDate, ActionProperty.DATE))
+        col.values.add(new TableValue(d.getSetDate, ActionProperty.DATE))
         col.values.add(new TableValue(diagnosis.getEndDate, ActionProperty.DATE))
         col.values.add(new TableValue(if (diagnosis.getMkb == null) "" else diagnosis.getMkb.getDiagID,
           ActionProperty.MKB))
@@ -335,7 +335,7 @@ class DbActionPropertyBean
           "rbResult"))
         col.values.add(new TableValue(if (d.getAcheResult == null) "" else d.getAcheResult.getName,
           "rbAcheResult"))
-        col.values.add(new TableValue(if (d.getDiagnosis.getPerson == null) "" else d.getDiagnosis.getPerson.getFullName,
+        col.values.add(new TableValue(if (diagnosis.getPerson == null) "" else diagnosis.getPerson.getFullName,
           "Person"))
         col.values.add(new TableValue((d.getNotes)))
         list.add(col)
