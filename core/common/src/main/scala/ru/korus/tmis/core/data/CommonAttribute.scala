@@ -177,6 +177,11 @@ class PropertyPair {
 @JsonIgnoreProperties(ignoreUnknown = true)
 class TableCol(id: Integer = null,
                val values: java.util.List[TableValue] = new java.util.LinkedList[TableValue]()) {
+
+  def getId: Integer = id
+
+  def getValues: java.util.List[TableValue] = values
+
   def this() = {
     this(null)
   }
@@ -187,6 +192,11 @@ class TableCol(id: Integer = null,
 @JsonIgnoreProperties(ignoreUnknown = true)
 class TableValue(val value: Object,
                  valueType: String = null) {
+
+  def getValue: Object = value
+
+  def getValueType: String = valueType
+
   def this() = {
     this(null)
   }

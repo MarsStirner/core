@@ -33,6 +33,7 @@ public class DbUtil {
 
     private Connection conn = null;
     final TableMaxIndex tables[] = {
+            new TableMaxIndex("`trfuOrderIssueResult`", 1456),
             new TableMaxIndex("`ActionProperty`", 1456),
             new TableMaxIndex("`ActionProperty_Action`", 1456),
             new TableMaxIndex("`ActionProperty_Date`", 1456),
@@ -95,6 +96,7 @@ public class DbUtil {
 
     private void clear() throws SQLException {
         final Statement s = conn.createStatement();
+        s.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
         for (TableMaxIndex table : tables) {
             System.out.print("Clear table" + table.tableName);
             s.executeUpdate("DELETE FROM " + table.tableName + " WHERE `id` > " + table.maxIndex);
@@ -103,6 +105,7 @@ public class DbUtil {
                 s.executeUpdate("ALTER TABLE " + table.tableName + "AUTO_INCREMENT=" + table.maxIndex);
             }
         }
+        s.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
     }
 
     /**

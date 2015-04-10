@@ -585,7 +585,45 @@
                         "mandatory": "false",
                         "readOnly": "true",
                         "calculatedValue": null,
-                        "tableValues": null,
+                        "tableValues": [
+                            {
+                                "id": null,
+                                "values": [
+                                    {
+                                        "value": "56839",
+                                        "valueType": null
+                                    },
+                                    {
+                                        "value": "17974",
+                                        "valueType": null
+                                    },
+                                    {
+                                        "value": "Лейкотромбомасса с фильтром",
+                                        "valueType": null
+                                    },
+                                    {
+                                        "value": "AB(IV)Rh+",
+                                        "valueType": null
+                                    },
+                                    {
+                                        "value": "280",
+                                        "valueType": null
+                                    },
+                                    {
+                                        "value": "1.0",
+                                        "valueType": null
+                                    },
+                                    {
+                                        "value": "8672",
+                                        "valueType": null
+                                    },
+                                    {
+                                        "value": "file://UNDEFINED/56839.png",
+                                        "valueType": null
+                                    }
+                                ]
+                            }
+                        ],
                         "properties": [
                             {
                                 "name": "value",
