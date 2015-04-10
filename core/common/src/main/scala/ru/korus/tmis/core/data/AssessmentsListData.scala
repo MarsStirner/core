@@ -249,6 +249,9 @@ class AssessmentsListEntry {
   var doctor: DoctorSpecsContainer = new DoctorSpecsContainer() //Врач
 
   @BeanProperty
+  var executor: DoctorSpecsContainer = new DoctorSpecsContainer() //Исполнитель
+
+  @BeanProperty
   var mnemonic: String = _
 
   @BeanProperty
@@ -270,6 +273,7 @@ class AssessmentsListEntry {
     closeDate = action.getEndDate
     assessmentName = new IdNameAndCodeContainer(action.getActionType.getId.intValue(), action.getActionType.getName, action.getActionType.getCode)
     doctor = new DoctorSpecsContainer(action.getCreatePerson)
+    executor = new DoctorSpecsContainer(action.getExecutor)
     flatCode = action.getActionType.getFlatCode
     mnemonic = action.getActionType.getMnemonic
     readOnly = actionWithLockInfo.lockInfo != null
@@ -314,13 +318,15 @@ class DoctorSpecsContainer {
 
   def this(person: Staff) {
     this()
-    this.id = person.getId.intValue()
-    this.name = new PersonNameContainer(person)
-    if (person.getSpeciality != null) {
-      this.specs = new IdNameContainer(person.getSpeciality.getId.intValue(), person.getSpeciality.getName)
-    }
-    if (person.getOrgStructure != null) {
-      this.department = new IdNameContainer(person.getOrgStructure.getId.intValue(), person.getOrgStructure.getName)
+    if(person != null) {
+      this.id = person.getId.intValue()
+      this.name = new PersonNameContainer(person)
+      if (person.getSpeciality != null) {
+        this.specs = new IdNameContainer(person.getSpeciality.getId.intValue(), person.getSpeciality.getName)
+      }
+      if (person.getOrgStructure != null) {
+        this.department = new IdNameContainer(person.getOrgStructure.getId.intValue(), person.getOrgStructure.getName)
+      }
     }
   }
 }
