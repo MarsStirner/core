@@ -71,9 +71,8 @@ class CommonDataProcessorBean
   var dbLayoutAttributeValueBean: DbLayoutAttributeValueBeanLocal = _
 
   @EJB
-  var dbActionPropertyTypeBeanLocal: DbActionPropertyTypeBeanLocal =  _
+  var dbActionPropertyTypeBeanLocal: DbActionPropertyTypeBeanLocal = _
 
-  
 
   //////////////////////////////////////////////////////////////////////////////
 
@@ -177,8 +176,8 @@ class CommonDataProcessorBean
           //plannedEndDate
           if (finance > 0) action.setFinanceId(finance)
           //выбран направивший врач вручную (https://docs.google.com/spreadsheet/ccc?key=0Au-ED6EnawLcdHo0Z3BiSkRJRVYtLUxhaG5uYkNWaGc#gid=6 (строка 57))
-          if (assignerId > 0) action.setAssigner(new Staff(assignerId))
-          if (executorId > 0) action.setExecutor(new Staff(executorId))
+          if (assignerId > 0) setStaff(assignerId, action.setAssigner)
+          if (executorId > 0) setStaff(executorId, action.setExecutor)
           //action.setToOrder(toOrder)
           //Если пришли значения Даты начала и дата конца, то перепишем дефолтные
           //Для первичного осмотра в качестве дефолтных значений вставим текущее время(не понравилось - убираю (WEBMIS-837: Документ создается сразу же закрытым))
@@ -204,14 +203,15 @@ class CommonDataProcessorBean
             if (AWI.isSupported(attribute.name)) {
               list
             } else {
-              if(attribute.typeId == null && attribute.code != null) {
+              if (attribute.typeId == null && attribute.code != null) {
                 val apt: ActionPropertyType = dbActionPropertyTypeBeanLocal.getActionPropertyTypeByActionTypeIdAndTypeCode(actionType.getId, attribute.code, false)
                 if (apt != null) {
-                 attribute.typeId = apt.getId;
+                  attribute.typeId = apt.getId;
                 }
               }
 
-              val ap = if(attribute.typeId == null) null else dbActionProperty.createActionPropertyWithDate(
+              val ap = if (attribute.typeId == null) null
+              else dbActionProperty.createActionPropertyWithDate(
                 action,
                 attribute.typeId.intValue, //TODO attribute.typeId ??????????
                 userData,
@@ -328,14 +328,14 @@ class CommonDataProcessorBean
         } else list
       }
       case (None | Some(null) | Some(""), Some(value)) => {
-        if(ap.getType.getTypeName.equals("Date") && attribute.getPropertiesMap.get("value").getOrElse("").equals("0000-00-00 00:00:00"))
+        if (ap.getType.getTypeName.equals("Date") && attribute.getPropertiesMap.get("value").getOrElse("").equals("0000-00-00 00:00:00"))
           list
         else {
-        val apv = dbActionProperty.setActionPropertyValue(
-          ap,
-          value,
-          0)
-        apv :: list
+          val apv = dbActionProperty.setActionPropertyValue(
+            ap,
+            value,
+            0)
+          apv :: list
         }
       }
       case (Some(valueId), _) => {
@@ -443,8 +443,9 @@ class CommonDataProcessorBean
         if (finance > 0) a.setFinanceId(finance)
         //a.setToOrder(toOrder)
         if (plannedEndDate != null) a.setPlannedEndDate(plannedEndDate)
-        if (assignerId > 0) a.setAssigner(new Staff(assignerId))
-        if (executorId > 0) a.setExecutor(new Staff(executorId))
+        if (assignerId > 0) setStaff(assignerId, a.setAssigner)
+        if (executorId > 0) setStaff(executorId, a.setExecutor)
+
 
         result = a :: result
         entities = entities + a
@@ -547,6 +548,10 @@ class CommonDataProcessorBean
     }
   }
 
+  def setStaff(id: Int, setPerson: (Staff) => Unit) {
+    setPerson(em.find(classOf[Staff], id))
+  }
+
   private def saveDiagnoses(eventId: Int, apList: java.util.List[ActionProperty], apValue: java.util.List[APValue], userData: AuthData): java.util.List[AnyRef] = {
 
     var map = Map.empty[String, java.util.Set[AnyRef]]
@@ -560,7 +565,7 @@ class CommonDataProcessorBean
     val characterAPV = if (characterAP != null) {
       apValue.filter(apv =>
         apv.unwrap().isInstanceOf[APValueString] &&
-        apv.unwrap().asInstanceOf[APValueString].getId.getId.equals(characterAP.getId)
+          apv.unwrap().asInstanceOf[APValueString].getId.getId.equals(characterAP.getId)
       ).toList
     } else null
     if (characterAPV != null && characterAPV.size > 0 && characterAPV.get(0).getValueAsId.compareTo("") != 0) {
@@ -598,7 +603,7 @@ class CommonDataProcessorBean
           //val descAPV = if (descriptionAP!=null) dbActionProperty.getActionPropertyValue(descriptionAP) else null
           val mkbAPV = apValue.filter(apv => apv.unwrap().isInstanceOf[APValueMKB] &&
             apv.unwrap().asInstanceOf[APValueMKB].getId.getId.equals(ap.getId)
-            ).toList
+          ).toList
           val descAPV = apValue.filter(apv => apv.unwrap().isInstanceOf[APValueString] &&
             descriptionAP != null &&
             apv.unwrap().asInstanceOf[APValueString].getId.getId.equals(descriptionAP.getId)
@@ -668,7 +673,6 @@ class CommonDataProcessorBean
   }
 
 
-
   def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
 
     val map = list.foldLeft(Map.empty[String, String])(
@@ -695,9 +699,9 @@ class CommonDataProcessorBean
         str_key + (key -> value)
       })
 
-    val typeName =  apt.getTypeName match {
+    val typeName = apt.getTypeName match {
       case "Reference" => "String"
-      case _           => apt.getTypeName
+      case _ => apt.getTypeName
     }
 
     new CommonAttributeWithLayout(apt.getId,
@@ -707,7 +711,7 @@ class CommonDataProcessorBean
       typeName,
       dbActionProperty.convertScope(apt), //apt.getConstructorValueDomain,
       map,
-      (for(r <- apt.getActionPropertyRelation) yield new ActionPropertyRelationWrapper(r)).toList.asJava,
+      (for (r <- apt.getActionPropertyRelation) yield new ActionPropertyRelationWrapper(r)).toList.asJava,
       dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList,
       apt.isMandatory.toString,
       apt.isReadOnly.toString,
@@ -869,26 +873,26 @@ class CommonDataProcessorBean
    *         пол у пациента или типа свойства не задан - возвращается true
    */
   def checkActionPropertyTypeForPatientAgeAndSex(patient: Patient, apt: ActionPropertyType): Boolean = {
-    if(patient == null || apt == null)
+    if (patient == null || apt == null)
       throw new IllegalArgumentException("Входящие параметры не могут быть null")
 
     val age = defineAgeOfPatient(patient)
     // Проверяем формат, в котором задана нижняя граница (днях, неделях, месяцах или годах)
     // и сверяем возраст пациента с заданной границей
     val lowLimit = apt.getAge_bu match {
-      case 1 => age.getDay   >= apt.getAge_bc   // Дни
-      case 2 => age.getWeek  >= apt.getAge_bc   // Недели
-      case 3 => age.getMonth >= apt.getAge_bc   // Месяцы
-      case 4 => age.getYear  >= apt.getAge_bc   // Года
+      case 1 => age.getDay >= apt.getAge_bc // Дни
+      case 2 => age.getWeek >= apt.getAge_bc // Недели
+      case 3 => age.getMonth >= apt.getAge_bc // Месяцы
+      case 4 => age.getYear >= apt.getAge_bc // Года
       case _ => true //Если значение не задано - то будем считать, что возраст пациента удовлетворяет
     }
 
     // Аналогично, но в обратную сторону проверяем соответствие возраста верхней границе
     val topLimit = apt.getAge_eu match {
-      case 1 => age.getDay   < apt.getAge_ec
-      case 2 => age.getWeek  < apt.getAge_ec
+      case 1 => age.getDay < apt.getAge_ec
+      case 2 => age.getWeek < apt.getAge_ec
       case 3 => age.getMonth < apt.getAge_ec
-      case 4 => age.getYear  <= apt.getAge_ec
+      case 4 => age.getYear <= apt.getAge_ec
       case _ => true
     }
 
