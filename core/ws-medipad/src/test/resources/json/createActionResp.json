@@ -1,7 +1,7 @@
 {"requestData": {}, "data": [
     {
         "id": 260,
-        "version": 2,
+        "version": 1,
         "name": "Гемотрансфузионная терапия",
         "type": "Document",
         "typeId": 3911,
@@ -19,7 +19,7 @@
                 "attribute": [
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "assessmentId",
                         "code": null,
                         "type": "Integer",
@@ -42,7 +42,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "assessmentName",
                         "code": null,
                         "type": "String",
@@ -65,7 +65,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "assessmentBeginDate",
                         "code": null,
                         "type": "Datetime",
@@ -88,7 +88,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "assessmentEndDate",
                         "code": null,
                         "type": "Datetime",
@@ -111,7 +111,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "doctorLastName",
                         "code": null,
                         "type": "String",
@@ -134,7 +134,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "doctorFirstName",
                         "code": null,
                         "type": "String",
@@ -157,7 +157,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "doctorMiddleName",
                         "code": null,
                         "type": "String",
@@ -180,7 +180,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "doctorSpecs",
                         "code": null,
                         "type": "String",
@@ -203,7 +203,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "executorPost",
                         "code": null,
                         "type": "String",
@@ -234,7 +234,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "urgent",
                         "code": null,
                         "type": "Boolean",
@@ -257,7 +257,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "actionStatus",
                         "code": null,
                         "type": "Integer",
@@ -280,7 +280,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "finance",
                         "code": null,
                         "type": "String",
@@ -303,7 +303,7 @@
                     },
                     {
                         "id": 260,
-                        "version": 2,
+                        "version": 1,
                         "name": "plannedEndDate",
                         "code": null,
                         "type": "Datetime",
@@ -502,13 +502,55 @@
                         "version": 1,
                         "name": "Основной клинический диагноз",
                         "code": "trfuReqBloodCompDiagnosis",
-                        "type": "String",
-                        "scope": "",
+                        "type": "Table",
+                        "scope": "Дата начала,Дата окончания,МКБ,Тип,Характер,Результат,Исход,Врач,Примечание,",
                         "typeId": 1602601,
                         "mandatory": "true",
                         "readOnly": "false",
                         "calculatedValue": null,
-                        "tableValues": null,
+                        "tableValues": [
+                            {
+                                "id": 123,
+                                "values": [
+                                    {
+                                        "value": null,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "value": 1423512000000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "value": "C43",
+                                        "valueType": "MKB"
+                                    },
+                                    {
+                                        "value": "осложнение основного",
+                                        "valueType": "rbDiagnosisType"
+                                    },
+                                    {
+                                        "value": "хроническое известное",
+                                        "valueType": "rbDiseaseCharacter"
+                                    },
+                                    {
+                                        "value": "",
+                                        "valueType": "rbResult"
+                                    },
+                                    {
+                                        "value": "",
+                                        "valueType": "rbAcheResult"
+                                    },
+                                    {
+                                        "value": "test test test",
+                                        "valueType": "Person"
+                                    },
+                                    {
+                                        "value": "",
+                                        "valueType": null
+                                    }
+                                ]
+                            }
+                        ],
                         "properties": [
                             {
                                 "name": "value",

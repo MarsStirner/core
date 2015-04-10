@@ -104,15 +104,6 @@
                                 "value": "260"
                             }
                         ]
-                    },
-                    {
-                        "code": "trfuReqBloodCompDiagnosis",
-                        "properties": [
-                            {
-                                "name": "value",
-                                "value": "376"
-                            }
-                        ]
                     }
                 ]
             }

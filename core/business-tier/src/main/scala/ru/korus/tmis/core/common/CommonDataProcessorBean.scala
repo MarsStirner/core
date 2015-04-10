@@ -89,7 +89,6 @@ class CommonDataProcessorBean
     var entities = Set.empty[AnyRef]
 
     data.entity.foreach(entity => {
-      try {
 
         // Collect all ActionProperties sent from the client
         val aps = entity.group.foldLeft(List.empty[CommonAttribute])(
@@ -144,12 +143,6 @@ class CommonDataProcessorBean
               case Some(x) => x.toInt
             }
           }
-          /*else if (attribute.name == AWI.toOrder.toString) {
-            toOrder = attribute.properties.get(APWI.Value.toString) match {
-              case None | Some("") => false
-              case Some(x) => x.toBoolean
-            }
-          }*/
         })
 
         var i = 0
@@ -234,9 +227,6 @@ class CommonDataProcessorBean
               }
             })
 
-          entities = entities + action
-          dbManager.persistAll(List(action))
-
           // Save sent AP values
           val apvList = apList.foldLeft(
             List.empty[APValue]
@@ -244,12 +234,6 @@ class CommonDataProcessorBean
             toActionPropertyValue(entry, list)
           })
 
-          //
-          entities = (entities /: apvList)(_ + _)
-          dbManager.persistAll(apvList)
-          //Сохранение диагнозов в таблицу Диагностик
-          //var apsForDiag = new util.LinkedList[ActionProperty]()
-          //apList.foreach(f => apsForDiag.add(f._1))
           dbManager.persistAll(this.saveDiagnoses(eventId,
             apList.map(_._1).toList,
             apvList,
@@ -261,9 +245,6 @@ class CommonDataProcessorBean
             ap => {
               dbActionProperty.setActionPropertyValue(ap, ap.getType.getDefaultValue, 0)
             })
-
-          entities = (entities /: emptyApvList)(_ + _)
-          dbManager.persistAll(emptyApvList)
 
           // Set AWI values
           aps.foreach(attribute => {
@@ -280,17 +261,7 @@ class CommonDataProcessorBean
 
           i = i + 1
         }
-
-      } catch {
-        case e: Exception => {
-          dbManager.removeAll(entities)
-          throw e
-        }
-      }
     })
-
-
-
     result
   }
 
