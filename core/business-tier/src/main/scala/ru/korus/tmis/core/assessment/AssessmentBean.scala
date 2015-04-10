@@ -130,21 +130,7 @@ class AssessmentBean
       (p) => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-
-        apvs.size match {
-          case 0 => {
-            group add apw.get(null, List(APWI.Unit,
-              APWI.Norm))
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              group add apw.get(apv, List(APWI.Value,
-                APWI.ValueId,
-                APWI.Unit,
-                APWI.Norm))
-            })
-          }
-        }
+        group.add(apw.get(apvs.toList,List(APWI.Value, APWI.ValueId, APWI.Unit,APWI.Norm)))
       })
 
     group
@@ -169,15 +155,15 @@ class AssessmentBean
       endDate)
     val gT = temps.foldLeft(
       new CommonGroup(cdTemperatureId, "Temperature values"))(
-      (g, t) => {
-        g.add(new CA(t.getId,
-          0,
-          t.getName,
-          ConfigManager.Types.Double,
-          null,
-          Map("value" -> t.getValue.toString,
-            "datetime" -> CMDF.format(t.getDate))))
-      })
+        (g, t) => {
+          g.add(new CA(t.getId,
+            0,
+            t.getName,
+            ConfigManager.Types.Double,
+            null,
+            Map("value" -> t.getValue.toString,
+              "datetime" -> CMDF.format(t.getDate))))
+        })
     e.add(gT)
 
     // Добавляем значения АД верхн. - верхней границы артериального давления
@@ -188,15 +174,15 @@ class AssessmentBean
       endDate)
     val gph = pressHigh.foldLeft(
       new CommonGroup(cdPressureHighId, "Blood pressure high values"))(
-      (g, p) => {
-        g.add(new CA(p.getId,
-          0,
-          p.getName,
-          ConfigManager.Types.Double,
-          null,
-          Map("value" -> p.getValue.toString,
-            "datetime" -> CMDF.format(p.getDate))))
-      })
+        (g, p) => {
+          g.add(new CA(p.getId,
+            0,
+            p.getName,
+            ConfigManager.Types.Double,
+            null,
+            Map("value" -> p.getValue.toString,
+              "datetime" -> CMDF.format(p.getDate))))
+        })
     e.add(gph)
 
     // Добавляем значения АД верхн. - верхней границы артериального давления
@@ -207,15 +193,15 @@ class AssessmentBean
       endDate)
     val gpl = pressLow.foldLeft(
       new CommonGroup(cdPressureLowId, "Blood pressure low values"))(
-      (g, p) => {
-        g.add(new CA(p.getId,
-          0,
-          p.getName,
-          ConfigManager.Types.Double,
-          null,
-          Map("value" -> p.getValue.toString,
-            "datetime" -> CMDF.format(p.getDate))))
-      })
+        (g, p) => {
+          g.add(new CA(p.getId,
+            0,
+            p.getName,
+            ConfigManager.Types.Double,
+            null,
+            Map("value" -> p.getValue.toString,
+              "datetime" -> CMDF.format(p.getDate))))
+        })
     e.add(gpl)
 
     // Добавляем значения ЧДД - частоты дыхательных движений
@@ -226,15 +212,15 @@ class AssessmentBean
       endDate)
     val gB = breath.foldLeft(
       new CommonGroup(cdBreathingId, "Breathing frequency values"))(
-      (g, b) => {
-        g.add(new CA(b.getId,
-          0,
-          b.getName,
-          ConfigManager.Types.Double,
-          null,
-          Map("value" -> b.getValue.toString,
-            "datetime" -> CMDF.format(b.getDate))))
-      })
+        (g, b) => {
+          g.add(new CA(b.getId,
+            0,
+            b.getName,
+            ConfigManager.Types.Double,
+            null,
+            Map("value" -> b.getValue.toString,
+              "datetime" -> CMDF.format(b.getDate))))
+        })
     e.add(gB)
 
     // Добавляем значения ЧСС - частоты сердечных сокращений
@@ -245,15 +231,15 @@ class AssessmentBean
       endDate)
     val gH = heartBeat.foldLeft(
       new CommonGroup(cdHeartBeatId, "Heart beat values"))(
-      (g, h) => {
-        g.add(new CA(h.getId,
-          0,
-          h.getName,
-          ConfigManager.Types.Double,
-          null,
-          Map("value" -> h.getValue.toString,
-            "datetime" -> CMDF.format(h.getDate))))
-      })
+        (g, h) => {
+          g.add(new CA(h.getId,
+            0,
+            h.getName,
+            ConfigManager.Types.Double,
+            null,
+            Map("value" -> h.getValue.toString,
+              "datetime" -> CMDF.format(h.getDate))))
+        })
     e.add(gH)
 
     cd

@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import javax.xml.bind.annotation.adapters.{XmlJavaTypeAdapter, XmlAdapter}
 
+import scala.beans.BeanProperty
+
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
  * Date: 10/31/14
@@ -27,7 +29,7 @@ private val dateFormat = new SimpleDateFormat("yyyy-MM-dd") // ISO 8601 date
 
 class DateTimeAdapter extends XmlAdapter[String, Date] {
 
-  private val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss") // ISO 8601 local datetime
+   val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss") // ISO 8601 local datetime
 
   @throws(classOf[Exception])
   override def marshal(v: Date) = {

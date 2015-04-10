@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.data
 
+import java.util
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import scala.beans.BeanProperty
@@ -13,6 +14,51 @@ import scala.collection.JavaConversions._
  * Date: 5/15/13 9:52 PM
  * Since: 1.0.1.10
  */
+
+class CommonAttributeWithLayout(id: Integer,
+                                version: Integer,
+                                name: String,
+                                code: String,
+                                aType: String,
+                                mandatory: String,
+                                readOnly: String,
+                                scope: String,
+                                props: Map[String, String],
+                                relations: util.List[ActionPropertyRelationWrapper])
+  extends CommonAttribute (id, version, name, code, aType, mandatory, readOnly, scope, null, props){
+
+  @BeanProperty
+  var layoutAttributeValues = new util.LinkedList[LayoutAttributeSimplifyDataContainer]
+
+  @BeanProperty
+  var attributeRelations: util.List[ActionPropertyRelationWrapper] = relations
+
+  def this(id: Integer,
+           version: Integer,
+           name: String,
+           code: String,
+           aType: String,
+           scope: String,
+           props: Map[String, String],
+           relations: util.List[ActionPropertyRelationWrapper],
+           layout: List[LayoutAttributeValue],
+           mandatory: String,
+           readOnly: String,
+           typeId: Integer) = {
+    this(id, version, name, code, aType, mandatory, readOnly, scope, props, relations)
+    layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
+    this.typeId = typeId
+  }
+
+  def this (ca: CommonAttribute,
+            layout: List[LayoutAttributeValue],
+            relations: util.List[ActionPropertyRelationWrapper] ) = {
+    this(ca.id, ca.version, ca.name, ca.code, ca.`type`, ca.mandatory, ca.readOnly, ca.scope,  ca.getPropertiesMap, relations)
+    this.tableValues = ca.tableValues
+    layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
+  }
+}
+
 @XmlType(name = "layoutAttributeListData")
 @XmlRootElement(name = "layoutAttributeListData")
 @JsonIgnoreProperties(ignoreUnknown = true)

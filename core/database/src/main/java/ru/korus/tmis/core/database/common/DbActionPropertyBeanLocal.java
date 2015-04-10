@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database.common;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.data.TableCol;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -147,5 +148,5 @@ public interface DbActionPropertyBeanLocal {
 
     String convertScope(ActionPropertyType apt);
 
-    LinkedList<LinkedList<String>> convertValue(ActionPropertyType apt, String value);
+    java.util.List<TableCol> convertValue(ActionPropertyType apt,  java.util.List<APValue> value);
 }

@@ -588,6 +588,14 @@
                         "tableValues": null,
                         "properties": [
                             {
+                                "name": "value",
+                                "value": "260"
+                            },
+                            {
+                                "name": "valueId",
+                                "value": ""
+                            },
+                            {
                                 "name": "norm",
                                 "value": ""
                             }

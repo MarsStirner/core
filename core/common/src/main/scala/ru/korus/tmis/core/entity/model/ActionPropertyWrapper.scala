@@ -1,88 +1,86 @@
 package ru.korus.tmis.core.entity.model
 
-import ru.korus.tmis.core.data.CommonAttribute
+import ru.korus.tmis.core.data.{TableCol, CommonAttribute}
 
 import grizzled.slf4j.Logging
 import java.lang.Boolean
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.{StringId, ConfigManager}
-import java.util
 import scala.language.reflectiveCalls
+import scala.collection.JavaConversions._
 
-class ActionPropertyWrapper(ap: ActionProperty, apValueConverter: (ActionPropertyType, String) => java.util.LinkedList[java.util.LinkedList[String]], apScopeConverter: ActionPropertyType => String)
+class ActionPropertyWrapper(ap: ActionProperty,
+                            apValueConverter: (ActionPropertyType, java.util.List[APValue]) => java.util.List[TableCol],
+                            apScopeConverter: ActionPropertyType => String)
   extends Logging {
 
-  val a = ap.getAction
-  val apt = ap.getType
 
   val APWI = ConfigManager.APWI.immutable
 
-
-  def get(apv: APValue, names: List[StringId]) = {
-    val map = names.foldLeft(Map[String, String]())(
+  def get(apvs: List[APValue], names: List[StringId]) = {
+    val apt = ap.getType
+    val map = (if(apvs.isEmpty) List(null) else apvs).foldLeft(Map[String, String]())((map, apv) => names.foldLeft(map)(
       (map, name) => {
         val id = APWI(name)
         val xmlName = name.toString
-
-        import APWI._
-
         id match {
-          case Value => {
+          case APWI.Value => {
             apv match {
               case null => map
               case _ => {
-                if (this.apt.getTypeName.compareTo("Html") == 0 || this.apt.getTypeName.compareTo("Text") == 0 || this.apt.getTypeName.compareTo("Constructor") == 0) {
+                if (apt.getTypeName.compareTo("Html") == 0 || apt.getTypeName.compareTo("Text") == 0 || apt.getTypeName.compareTo("Constructor") == 0) {
                   map + (xmlName -> apv.getValue.toString)
                 } else if ("Reference".equals(apt.getTypeName)) {
-                  map + (xmlName -> apValueConverter(apt, apv.getValueAsString).get(0).get(0))
+                  map + (xmlName -> apValueConverter(apt, apvs).get(0).values.get(0).asString)
                 } else {
                   map + (xmlName -> apv.getValueAsString)
                 }
               }
             }
           }
-          case ValueId => {
+          case APWI.ValueId => {
             apv match {
               case null => map
               case _ => map + (xmlName -> apv.getValueAsId)
             }
           }
-          case Norm => {
+          case APWI.Norm => {
             this.ap.getNorm match {
               case null | "" => {
-                this.apt match {
+                apt match {
                   case null => map
-                  case _ => map + (xmlName -> this.apt.getNorm)
+                  case _ => map + (xmlName -> apt.getNorm)
                 }
               }
               case norm => map + (xmlName -> norm)
             }
             map + (xmlName -> this.ap.getNorm)
           }
-          case Unit => {
+          case APWI.Unit => {
             this.ap.getUnit match {
               case null => map
               case unit => map + (xmlName -> unit.getCode)
             }
           }
-          case IsAssignable => {
-            this.apt match {
+          case APWI.IsAssignable => {
+            apt match {
               case null => map
-              case _ => map + (xmlName -> this.apt.getIsAssignable.toString)
+              case _ => map + (xmlName -> apt.getIsAssignable.toString)
             }
           }
-          case IsAssigned => {
+          case APWI.IsAssigned => {
             map + (xmlName -> this.ap.getIsAssigned.toString)
           }
           case _ => throw new CoreException("Unknown ActionPropertyWrapped field")
         }
-      })
+      }
+    ))
 
     val typeName = if ("Reference".equals(apt.getTypeName)) "String" else apt.getTypeName
     val scope = apScopeConverter(apt)
-    val tableValue: util.LinkedList[util.LinkedList[String]] =
-      if ( ("Table".equals(typeName) || "Diagnosis".equals(typeName)) && apv != null && apv.getValueAsString != null && !"".equals(apv.getValueAsString)) {
-        apValueConverter(apt, apv.getValueAsString)
+    val tableValue: java.util.List[TableCol] =
+      if (("Table".equals(typeName) || "Diagnosis".equals(typeName))) {
+        apValueConverter(apt, apvs)
       } else {
         null
       }
@@ -103,11 +101,8 @@ class ActionPropertyWrapper(ap: ActionProperty, apValueConverter: (ActionPropert
   def set(value: CommonAttribute) = {
     value.getPropertiesMap.foreach(p => {
       val (name, value) = p
-
-      import APWI._
-
       StringId(name) match {
-        case IsAssigned => {
+        case APWI.IsAssigned => {
           try {
             this.ap.setIsAssigned(Boolean.parseBoolean(value))
           } catch {
@@ -116,7 +111,7 @@ class ActionPropertyWrapper(ap: ActionProperty, apValueConverter: (ActionPropert
             }
           }
         }
-        case Value => {}
+        case APWI.Value => {}
         case _ => {
           debug("APW: Cannot set <" + name + "> to <" + value + ">")
         }

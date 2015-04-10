@@ -1,8 +1,10 @@
 package ru.korus.tmis.core.database.common
 
 import java.text.SimpleDateFormat
+import javax.swing.text.TabableView
 
 import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.core.data.{TableCol, TableValue}
 import ru.korus.tmis.core.database.DbDiagnosticBeanLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
@@ -17,6 +19,8 @@ import scala.collection.mutable.LinkedHashMap
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import java.util
 import scala.language.reflectiveCalls
+import ru.korus.tmis.core.data.adapters.DateTimeAdapter
+
 
 //
 @Stateless
@@ -133,7 +137,7 @@ class DbActionPropertyBean
 
   def createActionPropertyWithDate(a: Action, aptId: Int, userData: AuthData, now: Date): ActionProperty = {
     val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
-    if(apt == null) {
+    if (apt == null) {
       return null;
     }
     val ap = new ActionProperty
@@ -165,7 +169,7 @@ class DbActionPropertyBean
   }
 
   def setActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
-    if(ap.getId == null) {
+    if (ap.getId == null) {
       em.flush()
     }
     val apvs = getActionPropertyValue(ap)
@@ -187,7 +191,7 @@ class DbActionPropertyBean
           if (value != null) {
             val apt = ap.getType()
             if ("Reference".equals(apt.getTypeName)) {
-              if (apv.unwrap().setValue(toRefValue(ap, value)) ) apv else null
+              if (apv.unwrap().setValue(toRefValue(ap, value))) apv else null
             } else {
               if (apv.unwrap.setValueFromString(value)) apv else null
             }
@@ -205,7 +209,7 @@ class DbActionPropertyBean
   def toRefValue(ap: ActionProperty, value: String): String = {
     val code = value.split("-")(0).trim
     val res = em.createNativeQuery("SELECT `id` FROM %s WHERE `code` = '%s'".format(ap.getType.getValueDomain, code)).getResultList
-    if(res.isEmpty) {
+    if (res.isEmpty) {
       return ""
     }
     String.valueOf(res(0))
@@ -222,47 +226,56 @@ class DbActionPropertyBean
     res
   }
 
-  def convertTableValue(apt: ActionPropertyType, value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
-    val res = new java.util.LinkedList[java.util.LinkedList[String]]
+  def convertTableValue(apt: ActionPropertyType, value: String): java.util.LinkedList[TableCol] = {
+
+    val res = new java.util.LinkedList[TableCol]
     val rbAPTableFieldList = em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", apt.getValueDomain).getResultList
     val rbAPTable = rbAPTableFieldList.get(0).getRbAptable
-    val prmList = rbAPTableFieldList.foldLeft("")( (b,a) => {
+    val prmList = rbAPTableFieldList.foldLeft("")((b, a) => {
       val s = if (b.isEmpty) "" else ","
-      val name = if (a.getReferenceTable == null) a.getRbAptable.getTableName +  "." + a.getFieldName else a.getReferenceTable + ".name"
-      b + s + (if(name.equals("trfuOrderIssueResult.stickerUrl")) "CONCAT('" + ConfigManager.TrfuProp.StickerBaseUrl + "'," + name + ")" else name)
+      val name = if (a.getReferenceTable == null) a.getRbAptable.getTableName + "." + a.getFieldName else a.getReferenceTable + ".name"
+      b + s + (if (name.equals("trfuOrderIssueResult.stickerUrl")) "CONCAT('" + ConfigManager.TrfuProp.StickerBaseUrl + "'," + name + ")" else name)
     })
-    val tblList =  rbAPTableFieldList.foldLeft(rbAPTable.getTableName)( (b,a) => {
+    val tblList = rbAPTableFieldList.foldLeft(rbAPTable.getTableName)((b, a) => {
       if (a.getReferenceTable == null) {
         b
       } else {
-           b + " INNER JOIN " + a.getReferenceTable + " ON " + a.getReferenceTable + ".id=" + rbAPTable.getTableName + "." + a.getFieldName
+        b + " INNER JOIN " + a.getReferenceTable + " ON " + a.getReferenceTable + ".id=" + rbAPTable.getTableName + "." + a.getFieldName
       }
     })
     val query: String = "SELECT %s FROM %s WHERE %s.%s=%s".format(prmList, tblList, rbAPTable.getTableName, rbAPTable.getMasterField, value)
     val data = em.createNativeQuery(query).getResultList
     if (data.isEmpty) {
-      res.add(new util.LinkedList[String])
+      res.add(new TableCol())
     }
 
     data.foreach(d => {
-      res.add(new util.LinkedList[String])
-      d.asInstanceOf[Array[Object]].foreach(v => {res.getLast.add("" + v)})
+      res.add(new TableCol())
+      d.asInstanceOf[Array[Object]].foreach(v => {
+        res.getLast.values.add(new TableValue("" + v))
+      })
     })
-    res }
+    res
+  }
 
-  def convertValue(apt: ActionPropertyType, value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
+  override def convertValue(apt: ActionPropertyType, values: java.util.List[APValue]): java.util.List[TableCol] = {
+    if (values.isEmpty) {
+      return  new java.util.LinkedList[TableCol]
+    }
     if ("Table".equals(apt.getTypeName)) {
-      return convertTableValue(apt, value)
+      return convertTableValue(apt, values.get(0).getValueAsString)
     } else if ("Diagnosis".equals(apt.getTypeName)) {
-      return convertDiagValue(value)
+      return convertDiagValue(values)
     }
-    val res = new java.util.LinkedList[java.util.LinkedList[String]]
-    res.add(new util.LinkedList[String])
-    if ("Reference".equals(apt.getTypeName)) {
-      res.get(0).add(fromRefValue(apt, value));
-    } else {
-      res.get(0).add(value);
-    }
+    val tableValue: TableValue = new TableValue(
+      if ("Reference".equals(apt.getTypeName))
+        fromRefValue(apt, values.get(0).getValueAsString)
+      else
+        values.get(0).getValueAsString
+    )
+    val res = new java.util.LinkedList[TableCol]
+    res.add(new TableCol)
+    res.get(0).values.add(tableValue)
     res
   }
 
@@ -295,36 +308,44 @@ class DbActionPropertyBean
 
   def getScopeForDiagnosis(propertyType: ActionPropertyType) = {
     val diagTableHeader = Array(
-      "Дата начала", "Дата окончания", 	"МКБ", "Тип",	"Характер",	"Результат", "Исход",  "Врач",	"Примечание"
+      "Дата начала", "Дата окончания", "МКБ", "Тип", "Характер", "Результат", "Исход", "Врач", "Примечание"
     )
-    diagTableHeader.foldLeft("")((b, a) => {b + a + ","})
+    diagTableHeader.foldLeft("")((b, a) => {
+      b + a + ","
+    })
   }
 
-
-
-  def convertDiagValue(value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
-    val res = new java.util.LinkedList[java.util.LinkedList[String]]
+  def convertDiagValue(values: java.util.List[APValue]): java.util.List[TableCol] = {
     try {
-      val formatter = new SimpleDateFormat("yyyy-MM-dd")
-      val d: Diagnostic = dbbDiagnosticBeanLocal.getDiagnosticById(Integer.parseInt(value))
+    values.toList.foldLeft(new java.util.LinkedList[TableCol]())((list, value) => {
+      val id: Int = Integer.parseInt(value.getValueAsString)
+      val d: Diagnostic = dbbDiagnosticBeanLocal.getDiagnosticById(id)
       val diagnosis: Diagnosis = d.getDiagnosis
-      if(d != null && diagnosis != null) {
-        res.add(new util.LinkedList[String])
-        res.get(0).add(if (diagnosis.getSetDate == null) "" else formatter.format(diagnosis.getSetDate))
-        res.get(0).add(if (diagnosis.getEndDate == null) "" else formatter.format(diagnosis.getSetDate))
-        res.get(0).add(if (diagnosis.getMkb == null) "" else diagnosis.getMkb.getDiagID)
-        res.get(0).add(if (diagnosis.getDiagnosisType == null) "" else diagnosis.getDiagnosisType.getName)
-        res.get(0).add(if (diagnosis.getCharacter == null) "" else diagnosis.getCharacter.getName)
-        res.get(0).add(if (d.getResult == null) "" else d.getResult.getName)
-        res.get(0).add(if (d.getAcheResult == null) "" else d.getAcheResult.getName)
-        res.get(0).add(if (d.getDiagnosis.getPerson == null) "" else d.getDiagnosis.getPerson.getFullName)
-        res.get(0).add(d.getNotes)
+      if (d != null && diagnosis != null) {
+        val col: TableCol = new TableCol(id)
+        col.values.add(new TableValue(diagnosis.getSetDate, ActionProperty.DATE))
+        col.values.add(new TableValue(diagnosis.getEndDate, ActionProperty.DATE))
+        col.values.add(new TableValue(if (diagnosis.getMkb == null) "" else diagnosis.getMkb.getDiagID,
+          ActionProperty.MKB))
+        col.values.add(new TableValue(if (diagnosis.getDiagnosisType == null) "" else diagnosis.getDiagnosisType.getName,
+          "rbDiagnosisType"))
+        col.values.add(new TableValue(if (diagnosis.getCharacter == null) "" else diagnosis.getCharacter.getName,
+          "rbDiseaseCharacter"))
+        col.values.add(new TableValue(if (d.getResult == null) "" else d.getResult.getName,
+          "rbResult"))
+        col.values.add(new TableValue(if (d.getAcheResult == null) "" else d.getAcheResult.getName,
+          "rbAcheResult"))
+        col.values.add(new TableValue(if (d.getDiagnosis.getPerson == null) "" else d.getDiagnosis.getPerson.getFullName,
+          "Person"))
+        col.values.add(new TableValue((d.getNotes)))
+        list.add(col)
       }
+      list
+    })
     } catch {
       case e: NumberFormatException =>
-        throw new CoreException("Невозможно обработать значение свойства типа 'Diagnosis: " + value)
+        throw new CoreException("Невозможно обработать значение свойства типа 'Diagnosis' " )
     }
-    res
   }
 
 

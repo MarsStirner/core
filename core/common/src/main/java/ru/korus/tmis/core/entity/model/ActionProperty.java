@@ -105,12 +105,16 @@ public class ActionProperty
     private static Map<String, Class> valueTypeMap =
             new HashMap<String, Class>();
 
+    public static final String DATE = "Date";
+
+    public static final String MKB = "MKB";
+
     static {
         valueTypeMap.put("Action", APValueAction.class);
         valueTypeMap.put("OperationType", APValueInteger.class);
         valueTypeMap.put("AnalysisStatus", APValueAnalysisStatus.class);
         valueTypeMap.put("Constructor", APValueString.class);
-        valueTypeMap.put("Date", APValueDate.class);
+        valueTypeMap.put(DATE, APValueDate.class);
         valueTypeMap.put("Double", APValueDouble.class);
         valueTypeMap.put("HospitalBed", APValueHospitalBed.class);
         valueTypeMap.put("HospitalBedProfile", APValueHospitalBedProfile.class);
@@ -124,7 +128,7 @@ public class ActionProperty
         valueTypeMap.put("Text", APValueString.class);
         valueTypeMap.put("Time", APValueTime.class);
         valueTypeMap.put("RLS", APValueRLS.class);
-        valueTypeMap.put("MKB", APValueMKB.class);
+        valueTypeMap.put(MKB, APValueMKB.class);
         valueTypeMap.put("Image", APValueImage.class);
         valueTypeMap.put("Жалобы", APValueString.class);
         valueTypeMap.put("DiagnosticEpicrisisPartitional", APValueString.class);

@@ -9,7 +9,7 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.scala.util.{StringId, I18nable, ConfigManager}
 import ConfigManager.APWI
-import java.util.{LinkedList, HashSet, Date}
+
 import ru.korus.tmis.core.database._
 import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.data._
@@ -66,7 +66,7 @@ class PrimaryAssessmentBean
       AWI.urgent,
       AWI.Status,
       AWI.Finance,
-      AWI.PlannedEndDate//,
+      AWI.PlannedEndDate //,
       //AWI.ToOrder
     )
 
@@ -86,21 +86,10 @@ class PrimaryAssessmentBean
       (p) => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-
-        apvs.size match {
-          case 0 => {
-            group add apw.get(null, List(APWI.Unit,
-              APWI.Norm))
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              group add apw.get(apv, List(APWI.Value,
-                APWI.ValueId,
-                APWI.Unit,
-                APWI.Norm))
-            })
-          }
-        }
+        group add apw.get(apvs.toList, List(APWI.Value,
+          APWI.ValueId,
+          APWI.Unit,
+          APWI.Norm))
       })
 
     group
@@ -116,25 +105,11 @@ class PrimaryAssessmentBean
       (p) => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-
-        apvs.size match {
-          case 0 => {
-            val ca = apw.get(null, List(APWI.Unit, APWI.Norm))
-            group add new CommonAttributeWithLayout(
-              ca,
-              dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
-              ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava)
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              val ca = apw.get(apv, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
-              group add new CommonAttributeWithLayout(
-                ca,
-                dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
-                ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava)
-            })
-          }
-        }
+        val ca = apw.get(apvs.toList, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
+        group.add(new CommonAttributeWithLayout(
+          ca,
+          dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
+          ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava))
       })
 
     group
@@ -150,13 +125,13 @@ class PrimaryAssessmentBean
 
     var json_data = new JSONCommonData()
     val cd = commonDataProcessor.fromActionTypesForWebClient(actionTypeBean.getActionTypeById(atId),
-                                                             title,
-                                                             listForSummary,
-                                                             listForConverter,
-                                                             patient)
+      title,
+      listForSummary,
+      listForConverter,
+      patient)
     json_data.data = cd.entity
     if (postProcessing != null) {
-      json_data =  postProcessing(json_data, true)
+      json_data = postProcessing(json_data, true)
     }
     json_data
   }
@@ -168,19 +143,19 @@ class PrimaryAssessmentBean
   */
 
   def createOrUpdatePrimaryAssessmentForEventId(eventId: java.lang.Integer,
-                                        assessment: JSONCommonData,
-                                        assessmentId: java.lang.Integer,
-                                        userData: AuthData,
-                                        baseUri: java.net.URI,
-                                        notify: (java.util.List[Action], java.net.URI) =>  java.lang.Boolean,
-                                        postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+                                                assessment: JSONCommonData,
+                                                assessmentId: java.lang.Integer,
+                                                userData: AuthData,
+                                                baseUri: java.net.URI,
+                                                notify: (java.util.List[Action], java.net.URI) => java.lang.Boolean,
+                                                postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
 
     var json_data = assessment
 
     var com_data = new CommonData()
     com_data.entity = json_data.data
 
-    val actions: java.util.List[Action] = if (assessmentId == null ) {
+    val actions: java.util.List[Action] = if (assessmentId == null) {
       commonDataProcessor.createActionForEventFromCommonData(eventId, com_data, userData)
     } else {
       commonDataProcessor.modifyActionFromCommonData(assessmentId, com_data, userData)
@@ -194,7 +169,7 @@ class PrimaryAssessmentBean
 
     json_data.data = com_data.entity
     if (postProcessing != null) {
-      json_data =  postProcessing(json_data, false)
+      json_data = postProcessing(json_data, false)
     }
     json_data
   }
@@ -206,7 +181,7 @@ class PrimaryAssessmentBean
                                postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
                                reId: java.lang.Boolean) = {
     val action = actionBean.getActionById(assessmentId)
-    var actions: java.util.List[Action] = new LinkedList[Action]
+    var actions: java.util.List[Action] = new java.util.LinkedList[Action]
     actions.add(action)
 
     val com_data = commonDataProcessor.fromActions(
@@ -217,7 +192,7 @@ class PrimaryAssessmentBean
     var json_data = new JSONCommonData()
     json_data.data = com_data.entity
     if (postProcessing != null) {
-      json_data =  postProcessing(json_data, reId)
+      json_data = postProcessing(json_data, reId)
     }
     json_data
   }
@@ -228,27 +203,27 @@ class PrimaryAssessmentBean
 
   def deletePreviousAssessmentById(assessmentId: Int, userData: AuthData) {
 
-    val now = new Date()
+    val now = new java.util.Date()
 
     var findAction = actionBean.getActionById(assessmentId)
-    if(findAction!=null) {
+    if (findAction != null) {
       findAction.setDeleted(true)
-      if(userData!=null) {
+      if (userData != null) {
         findAction.setModifyPerson(userData.getUser)
       }
       findAction.setModifyDatetime(now)
 
-      val apSet = new HashSet[ActionProperty]
+      val apSet = new java.util.HashSet[ActionProperty]
       var findMapActionProperty = actionPropertyBean.getActionPropertiesByActionId(findAction.getId.intValue())
       findMapActionProperty.foreach(
         (element) => {
           val (ap, listApVal) = element
           ap.setDeleted(true)
-          if(userData!=null) {
+          if (userData != null) {
             ap.setModifyPerson(userData.getUser)
           }
           ap.setModifyDatetime(now)
-          apSet+=ap
+          apSet += ap
         })
       dbManager.mergeAll(apSet)
     }

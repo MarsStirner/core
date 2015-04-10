@@ -97,7 +97,13 @@
                         "code": "trfuReqBloodCompTime"
                     },
                     {
-                        "code": "trfuReqBloodCompPasport"
+                        "code": "trfuReqBloodCompPasport",
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "260"
+                            }
+                        ]
                     }
                 ]
             }

@@ -141,16 +141,10 @@ with I18nable {
     propertiesMap.foreach(
       p => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-        if (
-          commonDataProcessor.checkActionPropertyTypeForPatientAgeAndSex(direction.getEvent.getPatient, ap.getType)
-        ||
-            apvs.size > 0   // Отдаем совойство со значением, даже если оно не подходит по типу
-        ) {
-          apvs.size match {
-            case 0 => group add apw.get(null, List(APWI.Unit, APWI.Norm, APWI.IsAssignable, APWI.IsAssigned))
-            case _ => apvs.foreach((apv) => { group add apw.get(apv, attributes) })
-          }
+        if (apvs.size > 0 /* Отдаем совойство со значением, даже если оно не подходит по типу*/
+          || commonDataProcessor.checkActionPropertyTypeForPatientAgeAndSex(direction.getEvent.getPatient, ap.getType)) {
+          val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
+          group.add(apw.get(apvs.toList, attributes))
         }
       }
     )
@@ -205,7 +199,7 @@ with I18nable {
       if (tissueType == null)
         throw new CoreException(
           ConfigManager.ErrorCodes.TakenTissueNotFound, i18n("error.TissueTypeNotFound").format(
-          actions.filter(_.getActionType.getActionTypeTissueType == null).map(_.getActionType.getName).toSet.mkString(", ")
+            actions.filter(_.getActionType.getActionTypeTissueType == null).map(_.getActionType.getName).toSet.mkString(", ")
           ))
 
       if (jobAndTicket == null) {
@@ -236,7 +230,7 @@ with I18nable {
             if (takenTissue != null) a.setTakenTissue(takenTissue)
             list.add(j, jt, takenTissue, a)
             jtForAp = jt
-            if(jobTicket.getStatus == JobTicket.STATUS_IS_FINISHED) actionsSendToLIS += Tuple2(a, jt.getId)
+            if (jobTicket.getStatus == JobTicket.STATUS_IS_FINISHED) actionsSendToLIS += Tuple2(a, jt.getId)
           } else {
             val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
             j.setQuantity(j.getQuantity + 1)
@@ -323,7 +317,10 @@ with I18nable {
         catch {
           case e: Exception => {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
-            val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+            val oldNote = jt.getNote match {
+              case null => ""
+              case _ => jt.getNote
+            }
             jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + p._1.getId + "'." + e.getMessage + "\n")
             jt.setLabel("##Ошибка отправки в ЛИС##")
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
@@ -339,7 +336,10 @@ with I18nable {
         catch {
           case e: Exception => {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
-            val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+            val oldNote = jt.getNote match {
+              case null => ""
+              case _ => jt.getNote
+            }
             jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + p._1.getId + "'." + e.getMessage + "\n")
             jt.setLabel("##Ошибка отправки в ЛИС## ")
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
@@ -377,7 +377,10 @@ with I18nable {
         case e: Throwable => {
           actions.foreach(a => {
             val act = em.find(classOf[Action], a.getId)
-            if(act != null) { act.setDeleted(true); em.flush() }
+            if (act != null) {
+              act.setDeleted(true);
+              em.flush()
+            }
           })
           throw e
         }
@@ -642,7 +645,10 @@ with I18nable {
             catch {
               case e: Throwable =>
                 val jt = dbJobTicketBean.getJobTicketById(f.getId)
-                val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+                val oldNote = jt.getNote match {
+                  case null => ""
+                  case _ => jt.getNote
+                }
                 jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + a.getId + "'." + e.getMessage + "\n")
                 jt.setLabel("##Ошибка отправки в ЛИС##")
                 isAllActionSent = false
@@ -658,7 +664,10 @@ with I18nable {
             catch {
               case e: Exception => {
                 val jt = dbJobTicketBean.getJobTicketById(f.getId)
-                val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+                val oldNote = jt.getNote match {
+                  case null => ""
+                  case _ => jt.getNote
+                }
                 jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + a.getId + "'." + e.getMessage + "\n")
                 jt.setLabel("##Ошибка отправки в ЛИС##")
                 isAllActionSent = false
@@ -718,11 +727,11 @@ with I18nable {
     val action = actionBean.getActionById(actionId)
 
 
-    if(action == null)
+    if (action == null)
       throw new Exception("Action ")
 
     val takingTime = action.getActionProperties.find(p => p.getType.getCode != null && p.getType.getCode.equals("TAKINGTIME"))
-    if(takingTime.isEmpty)
+    if (takingTime.isEmpty)
       throw new CoreException("Невозможно сформировать запрос в лабораторию, т.к. не удалось найти свойство " +
         "\"Время забора\" с кодом [TAKINGTIME] для исследования " + action.getActionType.getName + " [id=" +
         action.getActionType.getId + "]")
