@@ -150,7 +150,9 @@ class DbDiagnosisBean  extends DbDiagnosisBeanLocal
     diagnosis.setCharacter(dbRbDiseaseCharacterBeanLocal.getDiseaseCharacterById(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_CHARACTER).getRbValue.getId))
     diagnosis.setMkb( dbMKBBean.getMkbByCode(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_MKB).getValue.asInstanceOf[String]))
     diagnosis.setPerson(setPerson)
-    diagnosis.setEndDate(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_END_DATE).getValue.asInstanceOf[Date])
+    val date: Date = tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_SET_DATE).getDate
+    diagnosis.setSetDate(date)
+    diagnosis.setEndDate(date)
     em.persist(diagnosis)
     return diagnosis
   }

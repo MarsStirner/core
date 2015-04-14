@@ -54,6 +54,8 @@ public class DbUtil {
             new TableMaxIndex("`ActionProperty_rbReasonOfAbsence`", 1456),
             new TableMaxIndex("`ActionProperty_String`", 1456),
             new TableMaxIndex("`ActionProperty_Time`", 1456),
+            new TableMaxIndex("`Diagnostic`", 57),
+            new TableMaxIndex("`Diagnosis`", 202),
             new TableMaxIndex("`ActionProperty_Diagnosis`", 0),
             new TableMaxIndex("`rbBloodComponentType`", 0),
             new TableMaxIndex("`bbtOrganism_SensValues`", 0),

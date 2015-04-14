@@ -510,14 +510,14 @@
                         "calculatedValue": null,
                         "tableValues": [
                             {
-                                "id": 123,
+                                "id": 56,
                                 "values": [
                                     {
-                                        "value": 1423581309000,
+                                        "date": 1423581309000,
                                         "valueType": "Date"
                                     },
                                     {
-                                        "value": 1423512000000,
+                                        "date": 1427054400000,
                                         "valueType": "Date"
                                     },
                                     {
@@ -526,35 +526,94 @@
                                     },
                                     {
                                         "rbValue": {
-                                            "id": 1
+                                            "id": 3,
+                                            "name": "осложнение основного",
+                                            "code": "3"
                                         },
                                         "valueType": "rbDiagnosisType"
                                     },
                                     {
                                         "rbValue": {
-                                            "id": 2
+                                            "id": 3,
+                                            "name": "хроническое известное",
+                                            "code": "3"
                                         },
                                         "valueType": "rbDiseaseCharacter"
                                     },
                                     {
-                                        "value": null,
                                         "valueType": "rbResult"
                                     },
                                     {
-                                        "rbValue": null,
                                         "valueType": "rbAcheResult"
                                     },
                                     {
-                                        "value": {
-                                            "person" : {
-                                                "id" : "7"
+                                        "person": {
+                                            "id": 41,
+                                            "name": {
+                                                "first": "test",
+                                                "last": "test",
+                                                "middle": "test",
+                                                "raw": "test test test"
                                             }
                                         },
-                                        "valueType": "Person"
+                                        "valueType": "person"
                                     },
                                     {
-                                        "value": "",
-                                        "valueType": null
+                                        "value": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 58,
+                                "values": [
+                                    {
+                                        "date": 1423781309000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "date": 1423781309000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "value": "C41",
+                                        "valueType": "MKB"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 3,
+                                            "name": "осложнение основного",
+                                            "code": "3"
+                                        },
+                                        "valueType": "rbDiagnosisType"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 4,
+                                            "name": "обострение хронического",
+                                            "code": "4"
+                                        },
+                                        "valueType": "rbDiseaseCharacter"
+                                    },
+                                    {
+                                        "valueType": "rbResult"
+                                    },
+                                    {
+                                        "valueType": "rbAcheResult"
+                                    },
+                                    {
+                                        "person": {
+                                            "id": 7,
+                                            "name": {
+                                                "first": "Анна",
+                                                "last": "Спиридонова",
+                                                "middle": "Сергеевна",
+                                                "raw": "Спиридонова Анна Сергеевна"
+                                            }
+                                        },
+                                        "valueType": "person"
+                                    },
+                                    {
+                                        "value": "Примечание"
                                     }
                                 ]
                             }
@@ -562,7 +621,7 @@
                         "properties": [
                             {
                                 "name": "value",
-                                "value": "123"
+                                "value": "58"
                             },
                             {
                                 "name": "valueId",
@@ -640,36 +699,28 @@
                                 "id": null,
                                 "values": [
                                     {
-                                        "value": "56839",
-                                        "valueType": null
+                                        "value": "56839"
                                     },
                                     {
-                                        "value": "17974",
-                                        "valueType": null
+                                        "value": "17974"
                                     },
                                     {
-                                        "value": "Лейкотромбомасса с фильтром",
-                                        "valueType": null
+                                        "value": "Лейкотромбомасса с фильтром"
                                     },
                                     {
-                                        "value": "AB(IV)Rh+",
-                                        "valueType": null
+                                        "value": "AB(IV)Rh+"
                                     },
                                     {
-                                        "value": "280",
-                                        "valueType": null
+                                        "value": "280"
                                     },
                                     {
-                                        "value": "1.0",
-                                        "valueType": null
+                                        "value": "1.0"
                                     },
                                     {
-                                        "value": "8672",
-                                        "valueType": null
+                                        "value": "8672"
                                     },
                                     {
-                                        "value": "file://UNDEFINED/56839.png",
-                                        "valueType": null
+                                        "value": "file://UNDEFINED/56839.png"
                                     }
                                 ]
                             }

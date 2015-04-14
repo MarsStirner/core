@@ -457,28 +457,32 @@ class CommonDataProcessorBean
 
                 entities = entities + ap
               }
-
               case (None | Some(null) | Some(""), Some(value)) => {
                 val ap = dbActionProperty.updateActionProperty(
                   id.intValue,
                   attribute.version.intValue,
                   userData)
-                var apv: APValue = null
+                if(attribute.getTableValues == null) {
 
-                if (ap.getType.getTypeName.compareTo("MKB") == 0 && (value == null || value.isEmpty)) {
-                  val apvs = dbActionProperty.getActionPropertyValue(ap)
-                  if (apvs != null && apvs.size() > 0) {
-                    dbManager.removeAll(apvs.map(_.unwrap()))
+                  var apv: APValue = null
+
+                  if (ap.getType.getTypeName.compareTo("MKB") == 0 && (value == null || value.isEmpty)) {
+                    val apvs = dbActionProperty.getActionPropertyValue(ap)
+                    if (apvs != null && apvs.size() > 0) {
+                      dbManager.removeAll(apvs.map(_.unwrap()))
+                    }
+                  } else {
+                    apv = dbActionProperty.setActionPropertyValue(ap, value, 0)
+                  }
+
+                  new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
+                  if (apv != null) {
+                    entities = entities + ap + apv.unwrap
+                  } else {
+                    entities = entities + ap
                   }
                 } else {
-                  apv = dbActionProperty.setActionPropertyValue(ap, value, 0)
-                }
-
-                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
-                if (apv != null) {
-                  entities = entities + ap + apv.unwrap
-                } else {
-                  entities = entities + ap
+                  toActionPropertyValueDiagnosis(ap, attribute, userData.getUser, List.empty[APValue])
                 }
               }
 

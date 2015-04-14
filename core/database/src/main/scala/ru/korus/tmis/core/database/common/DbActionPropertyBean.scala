@@ -184,7 +184,7 @@ class DbActionPropertyBean
         else null
       }
       case _ => {
-        if (ap.getType.getIsVector && apvs.size < index) {
+        if (ap.getType.getIsVector || apvs.size <= index) {
           createActionPropertyValue(ap, value, index)
         } else {
           val apv = apvs.get(index)

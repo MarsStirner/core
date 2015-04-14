@@ -5,6 +5,7 @@ import java.util.Date
 import javax.xml.bind.annotation._
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import org.codehaus.jackson.map.annotate.JsonSerialize
 import ru.korus.tmis.core.entity.model.{Mkb, ActionProperty}
 
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
@@ -193,6 +194,7 @@ class TableCol(id: Integer = null,
 
 @XmlType
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonSerialize(include=JsonSerialize.Inclusion.NON_NULL)
 class TableValue {
 
   @BeanProperty

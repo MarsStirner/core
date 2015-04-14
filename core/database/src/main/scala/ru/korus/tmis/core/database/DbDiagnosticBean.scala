@@ -215,8 +215,8 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
   override def insertOrUpdateDiagnostic(ap: ActionProperty, tableCol: TableCol, staff: Staff): Diagnostic = {
     val now = new Date()
     while(tableCol.getValues.size() < 7) tableCol.getValues.add(new TableValue(null, ""));
-    val (diagnosic: Diagnostic, save) = if(tableCol.getId == null) {
-      (initDiagnostic(staff, now, new Diagnostic(dbDiagnosisBean.createDiagnosis(ap, tableCol, staff))), em.persist(_))
+    val (diagnostic: Diagnostic, save) = if(tableCol.getId == null) {
+      (initDiagnostic(staff, now, new Diagnostic(dbDiagnosisBean.createDiagnosis(ap, tableCol, staff))), saveNewDiagnostic(_))
     } else {
       (getDiagnosticById(tableCol.getId), em.merge[Diagnostic](_))
     }
@@ -228,7 +228,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
 
     val setPerson: Staff = if(staffId > 0) dbStaff.getStaffById(staffId) else null
     val diagType: RbDiagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeById(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_TYPE).getRbValue.getId)
-    modifyDiagnostic(diagnosic,
+    modifyDiagnostic(diagnostic,
       null,
       ap.getAction.getEvent,
       setPerson,
@@ -239,8 +239,14 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_NOTE).getValue,
       now)
 
-    save(diagnosic)
-    return diagnosic
+    save(diagnostic)
+    return diagnostic
+  }
+
+
+  def saveNewDiagnostic(d: Diagnostic) : Unit = {
+     em.persist(d)
+     em.flush()
   }
 
   override def toTableCol(d : Diagnostic): TableCol = {

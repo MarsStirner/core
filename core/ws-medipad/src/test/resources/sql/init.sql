@@ -45,3 +45,4 @@ INSERT IGNORE INTO `DrugChart` (`id`, `action_id`, `master_id`, `begDateTime`, `
 
 INSERT IGNORE INTO `rbAcheResult` (`eventPurpose_id`, `code`, `name`) VALUES (8, '105', 'Выздоровление');
 UPDATE `ActionPropertyType` SET `typeName`='Diagnosis' WHERE `id`=1602601;
+UPDATE `Diagnostic` SET `diagnosis_id`=123 WHERE  `id`=56;
