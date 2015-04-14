@@ -525,23 +525,31 @@
                                         "valueType": "MKB"
                                     },
                                     {
-                                        "value": "осложнение основного",
+                                        "rbValue": {
+                                            "id": 1
+                                        },
                                         "valueType": "rbDiagnosisType"
                                     },
                                     {
-                                        "value": "хроническое известное",
+                                        "rbValue": {
+                                            "id": 2
+                                        },
                                         "valueType": "rbDiseaseCharacter"
                                     },
                                     {
-                                        "value": "",
+                                        "value": null,
                                         "valueType": "rbResult"
                                     },
                                     {
-                                        "value": "",
+                                        "rbValue": null,
                                         "valueType": "rbAcheResult"
                                     },
                                     {
-                                        "value": "test test test",
+                                        "value": {
+                                            "person" : {
+                                                "id" : "7"
+                                            }
+                                        },
                                         "valueType": "Person"
                                     },
                                     {

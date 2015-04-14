@@ -5,8 +5,11 @@ import java.util.Date
 import javax.xml.bind.annotation._
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
+import ru.korus.tmis.core.entity.model.{Mkb, ActionProperty}
+
 import ru.korus.tmis.core.entity.model.layout.LayoutAttributeValue
 import ru.korus.tmis.scala.util.ConfigManager
+
 
 import scala.beans.BeanProperty
 import scala.collection.JavaConverters._
@@ -190,20 +193,52 @@ class TableCol(id: Integer = null,
 
 @XmlType
 @JsonIgnoreProperties(ignoreUnknown = true)
-class TableValue(val value: Object,
-                 valueType: String = null) {
+class TableValue {
 
-  def getValue: Object = value
+  @BeanProperty
+  var value: String = _
 
-  def getValueType: String = valueType
+  @BeanProperty
+  var date: Date = _
 
-  def this() = {
-    this(null)
+
+  @BeanProperty
+  var person: DoctorContainer = _
+
+  @BeanProperty
+  var rbValue: IdNameContainer = _
+
+  @BeanProperty
+  var valueType: String = _
+
+  def this(value: String) = {
+    this()
+    setValue(value)
   }
-  def asString = {
-    value match {
-      case s: String => s
-      case _ => ""
-    }
+
+  def this(v: Date) = {
+    this()
+    setDate(v)
+    setValueType(ActionProperty.DATE)
   }
+
+  def this(mkb: Mkb) = {
+    this()
+    setValue(mkb.getDiagID)
+    setValueType(ActionProperty.MKB)
+  }
+
+
+  def this(person: DoctorContainer) = {
+    this()
+    setValueType("person")
+    setPerson(person)
+  }
+
+  def this(rbValue: IdNameContainer, valueType: String) = {
+    this()
+    setValueType(valueType)
+    setRbValue(rbValue)
+  }
+
 }

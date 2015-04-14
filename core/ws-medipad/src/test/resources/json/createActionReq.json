@@ -23,7 +23,7 @@
                             }
                         ]
                     }
-                    ]
+                ]
             },
             {
                 "name": "Details",
@@ -77,10 +77,103 @@
                     },
                     {
                         "code": "trfuReqBloodCompDiagnosis",
-                        "properties": [
+                        "tableValues": [
                             {
-                                "name": "value",
-                                "value": "123"
+                                "id": 123,
+                                "values": [
+                                    {
+                                        "date": 1423581309000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "date": 1423512000000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "value": "C43",
+                                        "valueType": "MKB"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 1
+                                        },
+                                        "valueType": "rbDiagnosisType"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 2
+                                        },
+                                        "valueType": "rbDiseaseCharacter"
+                                    },
+                                    {
+                                        "value": null,
+                                        "valueType": "rbResult"
+                                    },
+                                    {
+                                        "rbValue": null,
+                                        "valueType": "rbAcheResult"
+                                    },
+                                    {
+                                        "person": {
+                                            "id": "7"
+                                        },
+                                        "valueType": "Person"
+                                    },
+                                    {
+                                        "value": "",
+                                        "valueType": null
+                                    }
+                                ]
+                            },
+                            {
+                                "values": [
+                                    {
+                                        "date": 1423781309000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "date": 1423812000000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "value": "C41",
+                                        "valueType": "MKB"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 3
+                                        },
+                                        "valueType": "rbDiagnosisType"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 4
+                                        },
+                                        "valueType": "rbDiseaseCharacter"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 5
+                                        },
+                                        "valueType": "rbResult"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 6
+                                        },
+                                        "valueType": "rbAcheResult"
+                                    },
+                                    {
+                                        "person": {
+                                            "id": "7"
+                                        },
+                                        "valueType": "Person"
+                                    },
+                                    {
+                                        "value": "Примечание",
+                                        "valueType": null
+                                    }
+                                ]
                             }
                         ]
                     },

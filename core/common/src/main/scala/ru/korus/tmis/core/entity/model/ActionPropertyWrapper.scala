@@ -31,7 +31,7 @@ class ActionPropertyWrapper(ap: ActionProperty,
                 if (apt.getTypeName.compareTo("Html") == 0 || apt.getTypeName.compareTo("Text") == 0 || apt.getTypeName.compareTo("Constructor") == 0) {
                   map + (xmlName -> apv.getValue.toString)
                 } else if ("Reference".equals(apt.getTypeName)) {
-                  map + (xmlName -> apValueConverter(apt, apvs).get(0).values.get(0).asString)
+                  map + (xmlName -> apValueConverter(apt, apvs).get(0).values.get(0).getValue.asInstanceOf[String])
                 } else {
                   map + (xmlName -> apv.getValueAsString)
                 }

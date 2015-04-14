@@ -5,7 +5,8 @@ import common.{DbEventPersonBeanLocal, DbEventBeanLocal}
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Speciality, Diagnosis, Diagnostic}
+import ru.korus.tmis.core.data._
+import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import java.util.Date
@@ -46,33 +47,21 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
   @EJB
   var dbRbDiseaseStageBean: DbRbDiseaseStageBeanLocal = _
 
-  def getDiagnosticById (id: Int) = {
-    val result =  em.createQuery(DiagnosticByIdQuery, classOf[Diagnostic])
-                    .setParameter("id", id)
-                    .getResultList
+  @EJB
+  var dbStaff: DbStaffBeanLocal = _
 
-    result.size match {
-      case 0 => {
-        throw new CoreException(ConfigManager.ErrorCodes.DiagnosticNotFound,
-          i18n("error.diagnosticNotFound").format(id))
-      }
-      case size => {
-
-        result(0)
-      }
-    }
+  def getDiagnosticById (id: Int): Diagnostic = {
+    return em.find(classOf[Diagnostic], id)
   }
 
   def getDiagnosticsByEventId (eventId: Int) = {
     val result =  em.createQuery(DiagnosticsByEventIdQuery, classOf[Diagnostic])
                     .setParameter("eventId", eventId)
                     .getResultList
-
-
     result
   }
 
-
+  @deprecated
   def insertOrUpdateDiagnostic(id: Int,
                                eventId: Int,
                                diagnosis: Diagnosis,
@@ -82,54 +71,67 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
                                note: String,
                                userData: AuthData) = {
     val now = new Date()
-    var diagnostic: Diagnostic = null
-    var oldDiagnostic: Diagnostic = null
-    var lockId: Int = 0
 
     val event = dbEventBean.getEventById(eventId)
     val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
+    val character: RbDiseaseCharacter = if (diseaseCharacterId > 0) {
+      dbRbDiseaseCharacterBean.getDiseaseCharacterById(diseaseCharacterId)
+    } else null
+    val stage: RbDiseaseStage = if(diseaseStageId > 0) {
+      dbRbDiseaseStageBean.getDiseaseStageById(diseaseStageId)
+    } else null
 
-    if (id>0) {
-      diagnostic = getDiagnosticById(id)
-      oldDiagnostic = Diagnostic.clone(diagnostic)
-      lockId = appLock.acquireLock("Diagnostic", id, oldDiagnostic.getId.intValue(), userData)
+    val staff: Staff = userData.getUser
+    val diagnostic: Diagnostic = if (id>0) {
+      getDiagnosticById(id)
     }
     else {
-      diagnostic = new Diagnostic()
-
-      diagnostic.setCreateDatetime(now)
-      diagnostic.setCreatePerson(userData.getUser)
-      diagnostic.setSanatorium(0)
-      diagnostic.setHospital(0)
+      initDiagnostic(staff, now, new Diagnostic())
     }
 
     try {
-      diagnostic.setModifyDatetime(now)
-      diagnostic.setModifyPerson(userData.getUser)
-      diagnostic.setEvent(event)
-      diagnostic.setDiagnosisType(diagnosisType)
-      if (diseaseCharacterId > 0) {
-        diagnostic.setCharacter(dbRbDiseaseCharacterBean.getDiseaseCharacterById(diseaseCharacterId))
-      }
-      if (diseaseStageId > 0) {
-        diagnostic.setStage(dbRbDiseaseStageBean.getDiseaseStageById(diseaseStageId))
-      }
-      val speciality: Speciality = if (userData.getUser.getSpeciality == null) {
-        em.find(classOf[Speciality], 1);
-      } else {
-        userData.getUser.getSpeciality
-      }
-
-      diagnostic.setSpeciality(speciality)
-      diagnostic.setPerson(userData.getUser)
-      diagnostic.setSetDate(now)
-      diagnostic.setNotes(note)
-      diagnostic.setDiagnosis(diagnosis)
+      modifyDiagnostic(diagnostic, diagnosis, event, staff, now, diagnosisType, character, stage, note, now)
     }
     finally {
-      if(lockId>0)
-        appLock.releaseLock(lockId)
     }
+    diagnostic
+  }
+
+  def modifyDiagnostic(diagnostic: Diagnostic,
+                      diagnosis: Diagnosis, 
+                      event: Event, 
+                      staff: Staff,
+                      setDate: Date,
+                      diagnosisType: RbDiagnosisType, 
+                      character: RbDiseaseCharacter, 
+                      stage: RbDiseaseStage, 
+                      note: String,
+                      now: Date) {
+    diagnostic.setModifyDatetime(now)
+    diagnostic.setModifyPerson(staff)
+    diagnostic.setEvent(event)
+    diagnostic.setDiagnosisType(diagnosisType)
+    diagnostic.setCharacter(character)
+    diagnostic.setStage(stage)
+    val speciality: Speciality = if (staff.getSpeciality == null) {
+      em.find(classOf[Speciality], 1);
+    } else {
+      staff.getSpeciality
+    }
+    diagnostic.setSpeciality(speciality)
+    diagnostic.setPerson(staff)
+    diagnostic.setSetDate(setDate)
+    diagnostic.setNotes(note)
+    if(diagnosis != null) {
+      diagnostic.setDiagnosis(diagnosis)
+    }
+  }
+
+  def initDiagnostic(createPerson: Staff, now: Date, diagnostic: Diagnostic) : Diagnostic =  {
+    diagnostic.setCreateDatetime(now)
+    diagnostic.setCreatePerson(createPerson)
+    diagnostic.setSanatorium(0)
+    diagnostic.setHospital(0)
     diagnostic
   }
 
@@ -155,13 +157,6 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     } else null
 
   }
-
-  val DiagnosticByIdQuery = """
-    SELECT diac
-    FROM Diagnostic diac
-    WHERE
-      diac.id = :id
-                           """
 
   val DiagnosticsByEventIdQuery =
     """
@@ -203,4 +198,73 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       diac.deleted = '0'
     ORDER BY diac.createDatetime DESC
     """
+
+  override def deleteDiagnostic(id: Integer): Diagnostic = {
+    val res: Diagnostic = getDiagnosticById(id)
+    if( res != null) {
+      res.setDeleted(true)
+      if(res.getDiagnosis != null) {
+        res.getDiagnosis.setDeleted(true)
+        em.merge(res.getDiagnosis)
+      }
+      em.merge(res)
+    }
+    res
+  }
+
+  override def insertOrUpdateDiagnostic(ap: ActionProperty, tableCol: TableCol, staff: Staff): Diagnostic = {
+    val now = new Date()
+    while(tableCol.getValues.size() < 7) tableCol.getValues.add(new TableValue(null, ""));
+    val (diagnosic: Diagnostic, save) = if(tableCol.getId == null) {
+      (initDiagnostic(staff, now, new Diagnostic(dbDiagnosisBean.createDiagnosis(ap, tableCol, staff))), em.persist(_))
+    } else {
+      (getDiagnosticById(tableCol.getId), em.merge[Diagnostic](_))
+    }
+
+    val staffId =  if(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_PERSON) != null ) {
+      tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_PERSON).getPerson.getId
+    }
+    else -1
+
+    val setPerson: Staff = if(staffId > 0) dbStaff.getStaffById(staffId) else null
+    val diagType: RbDiagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeById(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_TYPE).getRbValue.getId)
+    modifyDiagnostic(diagnosic,
+      null,
+      ap.getAction.getEvent,
+      setPerson,
+      tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_SET_DATE).getDate,
+      diagType,
+      dbRbDiseaseCharacterBean.getDiseaseCharacterById(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_CHARACTER).getRbValue.getId),
+      null,
+      tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_NOTE).getValue,
+      now)
+
+    save(diagnosic)
+    return diagnosic
+  }
+
+  override def toTableCol(d : Diagnostic): TableCol = {
+    val diagnosis: Diagnosis = if (d == null) null else d.getDiagnosis
+    if (d != null && diagnosis != null) {
+
+      val col: TableCol = new TableCol(d.getId)
+      col.values.add(new TableValue(d.getSetDate))
+      col.values.add(new TableValue(diagnosis.getEndDate))
+      col.values.add(new TableValue(if (diagnosis.getMkb == null) null else diagnosis.getMkb))
+      col.values.add(new TableValue(if (diagnosis.getDiagnosisType == null) null else
+        new IdNameContainer(diagnosis.getDiagnosisType.getId, diagnosis.getDiagnosisType.getCode, diagnosis.getDiagnosisType.getName),
+        "rbDiagnosisType"))
+      col.values.add(new TableValue(if (diagnosis.getCharacter == null) null else
+        new IdNameContainer(diagnosis.getCharacter.getId, diagnosis.getCharacter.getCode, diagnosis.getCharacter.getName),
+        "rbDiseaseCharacter"))
+      col.values.add(new TableValue(if (d.getResult == null) null else new IdNameContainer(d.getResult.getId, d.getResult.getCode, d.getResult.getName),
+        "rbResult"))
+      col.values.add(new TableValue(if (d.getAcheResult == null) null else new IdNameContainer(d.getAcheResult.getId, d.getAcheResult.getCode, d.getAcheResult.getName),
+        "rbAcheResult"))
+      col.values.add(new TableValue(if (diagnosis.getPerson == null) null else new DoctorContainer(diagnosis.getPerson)))
+      col.values.add(new TableValue((d.getNotes)))
+      return col
+    }
+    null
+  }
 }

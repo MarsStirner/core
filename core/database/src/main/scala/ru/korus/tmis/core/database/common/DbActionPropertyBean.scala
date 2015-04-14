@@ -184,10 +184,10 @@ class DbActionPropertyBean
         else null
       }
       case _ => {
-        if (ap.getType.getIsVector) {
+        if (ap.getType.getIsVector && apvs.size < index) {
           createActionPropertyValue(ap, value, index)
         } else {
-          val apv = apvs.get(0)
+          val apv = apvs.get(index)
           if (value != null) {
             val apt = ap.getType()
             if ("Reference".equals(apt.getTypeName)) {
@@ -320,26 +320,11 @@ class DbActionPropertyBean
     values.toList.foldLeft(new java.util.LinkedList[TableCol]())((list, value) => {
       val id: Int = Integer.parseInt(value.getValueAsString)
       val d: Diagnostic = dbbDiagnosticBeanLocal.getDiagnosticById(id)
-      val diagnosis: Diagnosis = d.getDiagnosis
-      if (d != null && diagnosis != null) {
-        val col: TableCol = new TableCol(id)
-        col.values.add(new TableValue(d.getSetDate, ActionProperty.DATE))
-        col.values.add(new TableValue(diagnosis.getEndDate, ActionProperty.DATE))
-        col.values.add(new TableValue(if (diagnosis.getMkb == null) "" else diagnosis.getMkb.getDiagID,
-          ActionProperty.MKB))
-        col.values.add(new TableValue(if (diagnosis.getDiagnosisType == null) "" else diagnosis.getDiagnosisType.getName,
-          "rbDiagnosisType"))
-        col.values.add(new TableValue(if (diagnosis.getCharacter == null) "" else diagnosis.getCharacter.getName,
-          "rbDiseaseCharacter"))
-        col.values.add(new TableValue(if (d.getResult == null) "" else d.getResult.getName,
-          "rbResult"))
-        col.values.add(new TableValue(if (d.getAcheResult == null) "" else d.getAcheResult.getName,
-          "rbAcheResult"))
-        col.values.add(new TableValue(if (diagnosis.getPerson == null) "" else diagnosis.getPerson.getFullName,
-          "Person"))
-        col.values.add(new TableValue((d.getNotes)))
+      val col: TableCol = dbbDiagnosticBeanLocal.toTableCol(d)
+      if (col != null) {
         list.add(col)
       }
+
       list
     })
     } catch {
@@ -823,4 +808,9 @@ class DbActionPropertyBean
   def getActionProperty_ActionByValue(action: Action): APValueAction = {
     em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
   }
+
+  override def removeAllActionPropertyValue(ap: ActionProperty): Unit = {
+    getActionPropertyValue(ap).foreach(em.remove(_));
+  }
+
 }

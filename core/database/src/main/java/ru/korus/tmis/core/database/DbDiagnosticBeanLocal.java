@@ -1,8 +1,11 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.data.TableCol;
+import ru.korus.tmis.core.entity.model.ActionProperty;
 import ru.korus.tmis.core.entity.model.Diagnosis;
 import ru.korus.tmis.core.entity.model.Diagnostic;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -17,13 +20,24 @@ import java.util.Set;
 @Local
 public interface DbDiagnosticBeanLocal {
 
+
+    public static int INDX_SET_DATE = 0;
+    public static int INDX_END_DATE = 1;
+    public static int INDX_DIAG_MKB = 2;
+    public static int INDX_DIAG_TYPE = 3;
+    public static int INDX_DIAG_CHARACTER = 4;
+    public static int INDX_DIAG_RESULT = 5;
+    public static int INDX_DIAG_ACHE_RESULT = 6;
+    public static int INDX_DIAG_PERSON = 7;
+    public static int INDX_DIAG_NOTE = 8;
+
     /**
      * Получение списка диагностик по идентификатору обращения
      * @param id Идентификатор диагноза
      * @return Список диагностик как Diagnostic
      * @throws CoreException
      */
-    Diagnostic getDiagnosticById(int id) throws CoreException;
+    Diagnostic getDiagnosticById(int id);
 
     /**
      * Получение списка диагностик по идентификатору обращения
@@ -45,6 +59,7 @@ public interface DbDiagnosticBeanLocal {
      * @return Новая запись в таблице Diagnostic
      * @throws CoreException
      */
+    @Deprecated
     Diagnostic insertOrUpdateDiagnostic(int id,
                                 int eventId,
                                 Diagnosis diagnosis,
@@ -65,4 +80,11 @@ public interface DbDiagnosticBeanLocal {
                                                      Set<String> diagnosisTypeFlatCodes) throws CoreException;
 
     Diagnostic getLastDiagnosticByEventIdAndType(int eventId, String diagnosisTypeFlatCode) throws CoreException;
+
+    Diagnostic deleteDiagnostic(Integer id);
+
+    TableCol toTableCol(Diagnostic diagnostic);
+
+    Diagnostic insertOrUpdateDiagnostic(ActionProperty actionProperty, TableCol tableCol, Staff staff);
+
 }

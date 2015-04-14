@@ -142,6 +142,10 @@ public class Diagnostic implements Serializable {
         this.id = id;
     }
 
+    public Diagnostic(Diagnosis diagnosis) {
+        this.diagnosis = diagnosis;
+    }
+
     public Integer getId() {
         return id;
     }

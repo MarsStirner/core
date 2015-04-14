@@ -109,6 +109,8 @@ public class ActionProperty
 
     public static final String MKB = "MKB";
 
+    public static final String DIAGNOSIS = "Diagnosis";
+
     static {
         valueTypeMap.put("Action", APValueAction.class);
         valueTypeMap.put("OperationType", APValueInteger.class);
@@ -137,7 +139,7 @@ public class ActionProperty
         valueTypeMap.put("Legal_representative_id", APValueInteger.class);//че за тип такой?
         valueTypeMap.put("rbReasonOfAbsence", APValueRbReasonOfAbsence.class); //Причина отсутствия
         valueTypeMap.put("Table", APValueInteger.class);
-        valueTypeMap.put("Diagnosis", APValueDiagnosis.class);
+        valueTypeMap.put(DIAGNOSIS, APValueDiagnosis.class);
     }
 
     @SuppressWarnings("rawtypes")

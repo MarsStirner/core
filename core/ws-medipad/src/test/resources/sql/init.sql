@@ -6,6 +6,12 @@ INSERT IGNORE INTO `Person`
 SET @last = LAST_INSERT_ID();
 INSERT IGNORE INTO Person_Profiles (userProfile_id, person_id) VALUES (29, 41);
 
+SET FOREIGN_KEY_CHECKS = 0;
+DELETE FROM `rbAcheResult`;
+ALTER TABLE `rbAcheResult`AUTO_INCREMENT=1;
+INSERT INTO `rbAcheResult` (`eventPurpose_id`, `code`, `name`) VALUES (1, 'c', 'test');
+SET FOREIGN_KEY_CHECKS = 1;
+
 ALTER TABLE `rbTrfuBloodComponentType`AUTO_INCREMENT=1;
 INSERT IGNORE INTO `rbBloodComponentType` (`code`, `name`) VALUES ('02.02.003', 'Плазма свежезамороженная, полученная автоматическим аферезом');
 INSERT IGNORE INTO `rbBloodComponentType` (`code`, `name`) VALUES ('02.01.020', 'Тромбоцитный концентрат, полученный автоматическим аферезом');

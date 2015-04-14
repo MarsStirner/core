@@ -149,4 +149,6 @@ public interface DbActionPropertyBeanLocal {
     String convertScope(ActionPropertyType apt);
 
     java.util.List<TableCol> convertValue(ActionPropertyType apt,  java.util.List<APValue> value);
+
+    void removeAllActionPropertyValue(ActionProperty ap);
 }
