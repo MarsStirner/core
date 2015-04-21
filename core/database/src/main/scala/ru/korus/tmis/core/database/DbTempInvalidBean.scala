@@ -138,7 +138,7 @@ class DbTempInvalidBean
     tempInvalidPeriod.setBegDate(start)
     tempInvalidPeriod.setEndDate(end)
 
-    if(tempInvalid.getId() == null) {
+    if(tempInvalid.getId() == 0) {
       em.persist(tempInvalid)
     }
     else {
