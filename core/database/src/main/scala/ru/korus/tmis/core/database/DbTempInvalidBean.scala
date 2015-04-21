@@ -138,7 +138,12 @@ class DbTempInvalidBean
     tempInvalidPeriod.setBegDate(start)
     tempInvalidPeriod.setEndDate(end)
 
-    em.persist(tempInvalid)
+    if(tempInvalid.getId() == null) {
+      em.persist(tempInvalid)
+    }
+    else {
+      em.merge(tempInvalid)
+    }
     em.flush()
     tempInvalid
   }
