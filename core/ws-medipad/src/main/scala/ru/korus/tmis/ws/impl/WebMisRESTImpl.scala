@@ -549,7 +549,7 @@ with CAPids {
       // Последний дневниковый осмотр из всех историй болезни
       val IC = InfectionControl
       val lastAction = if(event == null) null else actionBean.getLastActionByActionTypesAndClientId(IC.documents.toList, event.getPatient.getId)
-      jData.data.get(0).group.get(1).attribute.par.foreach(ap => {
+      jData.data.get(0).group.get(1).attribute.foreach(ap => {
         if (ap.typeId == null || ap.typeId.intValue() <= 0) {
           if (reWriteId.booleanValue) //в id -> apt.id
             ap.typeId = ap.id
