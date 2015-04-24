@@ -47,8 +47,7 @@ public class QuotaController implements Serializable {
                            @RequestParam(required = false) String page,
                            @RequestParam(required = false) String recordsCount,
                            @RequestParam(required = false) String reqDateTime) {
-        IdCodeNames quotaType = quotaService.getQuotaType(mkbId);
-        return MyJsonUtils.toJsonWithPadding(callback, quotaType);
+        IdCodeNames quotaType = quotaService.getQuotaType(mkbId); return MyJsonUtils.toJsonWithPadding(callback, quotaType);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "pacient_model")
@@ -97,14 +96,16 @@ public class QuotaController implements Serializable {
         return MyJsonUtils.toJsonWithPadding(callback, quotaType);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, consumes ="application/json", value = "/{eventId}/client_quoting")
+    @RequestMapping(method = RequestMethod.PUT, consumes ="application/json", value = "/{eventId}/client_quoting/{quotaId}")
     @ResponseBody
     public byte[] updateQuota(@PathVariable Integer eventId,
+                              @PathVariable Integer quotaId,
                             @RequestParam(required = false) String callback,
                             @RequestBody QuotaDataContainer quotaData,
                             HttpServletRequest request) {
 
         final AuthData authData = authService.getAuthData(request);
+        quotaData.getData().setId(quotaId);
         QuotaDataContainer quotaType = quotaService.updateQuota(eventId, quotaData, authData);
         return MyJsonUtils.toJsonWithPadding(callback, quotaType);
     }

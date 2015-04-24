@@ -29,6 +29,7 @@
         <module>ws-risar</module>
         <module>admin-panel</module>
         <module>laboratory-bak</module>
+        <module>vmp</module>
     </modules>
 
 
