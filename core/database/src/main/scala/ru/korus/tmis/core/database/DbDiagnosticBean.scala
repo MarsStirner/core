@@ -89,18 +89,23 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     val event = dbEventBean.getEventById(eventId)
     val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
 
+    val save: Diagnostic => Diagnostic =
     if (id>0) {
       diagnostic = getDiagnosticById(id)
       oldDiagnostic = Diagnostic.clone(diagnostic)
       lockId = appLock.acquireLock("Diagnostic", id, oldDiagnostic.getId.intValue(), userData)
-    }
-    else {
+      val merge = { d: Diagnostic => em.merge(d) }
+      merge
+    } else {
       diagnostic = new Diagnostic()
-
       diagnostic.setCreateDatetime(now)
       diagnostic.setCreatePerson(userData.getUser)
       diagnostic.setSanatorium(0)
       diagnostic.setHospital(0)
+      val persist: Diagnostic => Diagnostic = { d: Diagnostic => {
+        em.persist(d)
+        d} }
+      persist
     }
 
     try {
@@ -130,7 +135,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       if(lockId>0)
         appLock.releaseLock(lockId)
     }
-    diagnostic
+    save(diagnostic)
   }
 
   def getDiagnosticsByEventIdAndTypes(eventId: Int, diagnosisTypeFlatCodes: java.util.Set[String]) = {
