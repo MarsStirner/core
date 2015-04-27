@@ -798,7 +798,7 @@ with CAPids {
     at.getCode match {
 
       // Заключительный эпикриз
-      case "4504" => if (event == null) null else getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"), event) else null
+      case "4504" => if (event == null) null else getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"), event)
 
       // Дневниковый осмотр
       case x if IC.documents.contains(x) =>
