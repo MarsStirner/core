@@ -798,12 +798,12 @@ with CAPids {
     at.getCode match {
 
       // Заключительный эпикриз
-      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"), event)
+      case "4504" => if (event == null) null else getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"), event) else null
 
       // Дневниковый осмотр
       case x if IC.documents.contains(x) =>
         if (therapySet.contains(x)) // Подтягивания значений для полей терапии
-          getPropertyCustom1(IC.documents, therapySet, event)
+          if (event == null) null else getPropertyCustom1(IC.documents, therapySet, event)
         else if (IC.allInfectPrefixes.exists(p => apt.getCode != null && (apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)))) {
           // или для полей инфекционного контроля
             return getPropertyCustom2(IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, lastAction)
@@ -1254,7 +1254,7 @@ with CAPids {
         }
         var json = new JSONCommonData()
         if (actionType != null) {
-          json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary, null, null, patientBean.getPatientById(patientId))
+          json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary, null,  postProcessing(null), patientBean.getPatientById(patientId))
         }
         json.setRequestData(request)
         json
