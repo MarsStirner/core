@@ -1220,6 +1220,9 @@ with CAPids {
         val listForConverter = new java.util.ArrayList[String]
         listForConverter.add(ActionPropertyWrapperInfo.IsAssignable.toString)
         listForConverter.add(ActionPropertyWrapperInfo.IsAssigned.toString)
+        listForConverter.add(ActionPropertyWrapperInfo.Value.toString)
+        listForConverter.add(ActionPropertyWrapperInfo.Norm.toString)
+        listForConverter.add(ActionPropertyWrapperInfo.Unit.toString)
 
         val listForSummary = new java.util.ArrayList[StringId]
         listForSummary.add(ActionWrapperInfo.assessmentId)
