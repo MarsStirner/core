@@ -452,8 +452,8 @@ class MovesListHospitalBedContainer {
   // исправлен подсчет количества дней https://korusconsulting.atlassian.net/browse/WEBMIS-972
   // https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=3
   def calculate(eventRequestCode: String) = {
-    if (this.leave!=null && this.admission!=null) {
-      this.days = (this.leave.getTime - this.admission.getTime)/(1000*60*60*24)
+    if (this.admission!=null) {
+      this.days = ( (if (this.leave == null) new Date() else this.leave).getTime - this.admission.getTime)/(1000*60*60*24)
       this.bedDays = this.days
       if (unit.compareTo("Приемное отделение")!=0 && this.days!=0) {
         if (eventRequestCode.compareTo("hospital")==0) {     //hospital
