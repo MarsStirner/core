@@ -1677,8 +1677,7 @@ with CAPids {
     outList.foreach(i => {
       if (i.size() > 2 && (resList.isEmpty ||
         resList.last.get(0) != i.get(0) ||
-        resList.last.get(1) != i.get(1) ||
-        resList.last.get(2) != i.get(2))) {
+        resList.last.get(1) != i.get(1) )) {
         resList.add(i)
       }
     })
