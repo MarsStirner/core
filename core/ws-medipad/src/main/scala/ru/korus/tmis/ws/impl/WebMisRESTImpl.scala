@@ -1675,10 +1675,10 @@ with CAPids {
     val resList = new java.util.ArrayList[java.util.List[AnyRef]]()
     //TODO убрать этот костыль, outList не должен содержать дублей
     outList.foreach(i => {
-      if (resList.isEmpty ||
+      if (i.size() > 2 && (resList.isEmpty ||
         resList.last.get(0) != i.get(0) ||
         resList.last.get(1) != i.get(1) ||
-        resList.last.get(2) != i.get(2)) {
+        resList.last.get(2) != i.get(2))) {
         resList.add(i)
       }
     })
