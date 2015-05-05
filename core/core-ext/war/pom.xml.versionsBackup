@@ -5,7 +5,7 @@
     <version>2.6.0</version>
     <properties>
         <spring.version>4.1.1.RELEASE</spring.version>
-        <hibernate.version>4.1.7.Final</hibernate.version>
+        <hibernate.version>4.2.2.Final</hibernate.version>
     </properties>
     <name>war</name>
     <parent>
@@ -174,41 +174,26 @@
             <version>4.0.5.Final</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.codehaus.jackson</groupId>
-            <artifactId>jackson-mapper-asl</artifactId>
-            <version>1.9.13</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>com.google.code.gson</groupId>
-            <artifactId>gson</artifactId>
-            <version>2.2.4</version>
-        </dependency>
-
-        <!-- JAXB -->
-<!--
-        <dependency>
-            <groupId>com.sun.xml.bind</groupId>
-            <artifactId>jaxb-impl</artifactId>
-            <version>2.2.7</version>
-        </dependency>
--->
-
+        <!-- MySql -->
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
             <version>5.1.33</version>
         </dependency>
 
+        <!-- javax -->
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
             <version>2.5</version>
         </dependency>
 
-
+        <!-- Jackson JSON Mapper -->
+        <dependency>
+            <groupId>org.codehaus.jackson</groupId>
+            <artifactId>jackson-mapper-asl</artifactId>
+            <version>1.9.13</version>
+        </dependency>
 
     </dependencies>
 </project>

@@ -1,11 +1,11 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
-	<groupId>ru.korus.tmis.vmp</groupId>
+	<groupId>ru.korus.tmis.ext</groupId>
 	<version>2.6.0</version>
-	<artifactId>tmis-core-vmp</artifactId>
+	<artifactId>tmis-core-ext</artifactId>
 	<packaging>pom</packaging>
-	<name>Hitech healthcare TMIS core module</name>
-	<description>Root project for hitech healthcare</description>
+	<name>TMIS core extension module</name>
+	<description>Root project for TMIS core extension module</description>
 	<modules>
 		<module>war</module>
 		<module>ear</module>

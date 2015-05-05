@@ -125,11 +125,11 @@ public class VmpSpringConfiguration extends WebMvcConfigurerAdapter {
 
 
     static public String getPassword(String poolName) {
-        return System.getProperty(poolName + ".user", PROPERTY_NAME_DATABASE_DEFAULT_PASSWORD);
+        return System.getProperty(poolName + ".password", PROPERTY_NAME_DATABASE_DEFAULT_USERNAME);
     }
 
     static public String getUsername(String poolName) {
-        return System.getProperty(poolName + ".password", PROPERTY_NAME_DATABASE_DEFAULT_USERNAME);
+        return System.getProperty(poolName + ".user", PROPERTY_NAME_DATABASE_DEFAULT_PASSWORD);
     }
 
     @Bean
