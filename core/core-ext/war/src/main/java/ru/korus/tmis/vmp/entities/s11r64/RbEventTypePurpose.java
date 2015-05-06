@@ -9,7 +9,8 @@ import java.util.List;
  * The persistent class for the rbEventTypePurpose database table.
  * 
  */
-@Entity(name = "rbEventTypePurpose")
+@Entity
+@Table(name = "rbEventTypePurpose")
 public class RbEventTypePurpose implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -9,7 +9,8 @@ import java.util.List;
  * The persistent class for the MKB database table.
  * 
  */
-@Entity(name = "MKB")
+@Entity
+@Table(name = "MKB")
 public class Mkb implements Serializable {
 	private static final long serialVersionUID = 1L;
 

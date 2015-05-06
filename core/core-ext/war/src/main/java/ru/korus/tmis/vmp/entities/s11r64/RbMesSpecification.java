@@ -9,7 +9,8 @@ import java.util.List;
  * The persistent class for the rbMesSpecification database table.
  * 
  */
-@Entity(name = "rbMesSpecification")
+@Entity
+@Table(name = "rbMesSpecification")
 public class RbMesSpecification implements Serializable {
 	private static final long serialVersionUID = 1L;
 

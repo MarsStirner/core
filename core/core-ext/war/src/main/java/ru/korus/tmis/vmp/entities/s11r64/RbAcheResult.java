@@ -9,7 +9,8 @@ import java.util.List;
  * The persistent class for the rbAcheResult database table.
  * 
  */
-@Entity(name = "rbAcheResult")
+@Entity
+@Table(name = "rbAcheResult")
 public class RbAcheResult implements Serializable {
 	private static final long serialVersionUID = 1L;
 

@@ -9,7 +9,8 @@ import java.util.List;
  * The persistent class for the rbTreatmentType database table.
  * 
  */
-@Entity(name = "rbTreatmentType")
+@Entity
+@Table(name = "rbTreatmentType")
 public class RbTreatmentType implements Serializable {
 	private static final long serialVersionUID = 1L;
 

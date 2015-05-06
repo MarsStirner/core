@@ -9,7 +9,8 @@ import java.util.List;
  * The persistent class for the rbPacientModel database table.
  * 
  */
-@Entity(name = "rbPacientModel")
+@Entity
+@Table(name = "rbPacientModel")
 public class RbPacientModel implements Serializable, ReferenceBook {
 	private static final long serialVersionUID = 1L;
 
@@ -22,13 +23,6 @@ public class RbPacientModel implements Serializable, ReferenceBook {
 	@Lob
 	private String name;
 
-	//bi-directional many-to-one association to VMPQuotaDetail
-	@OneToMany(mappedBy="rbPacientModel")
-	private List<VMPQuotaDetail> vmpquotaDetails;
-
-	//bi-directional many-to-one association to RbTreatment
-	@OneToMany(mappedBy="rbPacientModel")
-	private List<RbTreatment> rbTreatments;
 
 	public RbPacientModel() {
 	}
@@ -57,20 +51,5 @@ public class RbPacientModel implements Serializable, ReferenceBook {
 		this.name = name;
 	}
 
-	public List<VMPQuotaDetail> getVmpquotaDetails() {
-		return this.vmpquotaDetails;
-	}
-
-	public void setVmpquotaDetails(List<VMPQuotaDetail> vmpquotaDetails) {
-		this.vmpquotaDetails = vmpquotaDetails;
-	}
-
-	public List<RbTreatment> getRbTreatments() {
-		return this.rbTreatments;
-	}
-
-	public void setRbTreatments(List<RbTreatment> rbTreatments) {
-		this.rbTreatments = rbTreatments;
-	}
 
 }

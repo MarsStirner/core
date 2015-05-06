@@ -95,6 +95,7 @@ public class QuotaServiceImpl implements QuotaService {
                              Client_Quoting clientQuoting,
                              Date now) {
         clientQuoting.setModifyPerson_id(authData.getUserId());
+        clientQuoting.setModifyDatetime(now);
 
         clientQuoting.setClient(event.getClient());
 

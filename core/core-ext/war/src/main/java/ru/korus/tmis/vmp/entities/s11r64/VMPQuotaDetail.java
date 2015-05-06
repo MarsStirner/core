@@ -30,9 +30,9 @@ public class VMPQuotaDetail implements Serializable {
 	private List<MKB_VMPQuotaFilter> mkbVmpquotaFilters;
 
 	//bi-directional many-to-one association to RbPacientModel
-	@ManyToOne
-	@JoinColumn(name="pacientModel_id")
-	private RbPacientModel rbPacientModel;
+    @ManyToOne
+    @JoinColumn(name="pacientModel_id")
+    private RbPacientModel rbPacientModel;
 
 	//bi-directional many-to-one association to RbTreatment
 	@ManyToOne
