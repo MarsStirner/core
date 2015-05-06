@@ -9,7 +9,7 @@ import java.util.List;
  * The persistent class for the rbPacientModel database table.
  * 
  */
-@Entity
+@Entity(name = "rbPacientModel")
 public class RbPacientModel implements Serializable, ReferenceBook {
 	private static final long serialVersionUID = 1L;
 

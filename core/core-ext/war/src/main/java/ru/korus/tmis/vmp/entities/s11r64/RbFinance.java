@@ -8,7 +8,7 @@ import javax.persistence.*;
  * The persistent class for the rbFinance database table.
  * 
  */
-@Entity
+@Entity(name = "rbFinance")
 public class RbFinance implements Serializable, ReferenceBook {
 	private static final long serialVersionUID = 1L;
 

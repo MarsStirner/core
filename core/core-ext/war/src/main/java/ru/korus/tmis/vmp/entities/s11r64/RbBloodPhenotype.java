@@ -9,7 +9,7 @@ import java.util.List;
  * The persistent class for the rbBloodPhenotype database table.
  * 
  */
-@Entity
+@Entity(name = "rbBloodPhenotype")
 public class RbBloodPhenotype implements Serializable {
 	private static final long serialVersionUID = 1L;
 
