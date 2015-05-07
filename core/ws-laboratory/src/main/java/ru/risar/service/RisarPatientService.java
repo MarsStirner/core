@@ -2,8 +2,8 @@ package ru.risar.service;
 
 import ru.korus.tmis.core.entity.model.ClientIdentification;
 import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.service.interfaces.DelegatedTMISEntityService;
-import ru.korus.tmis.core.service.interfaces.PatientService;
+import ru.korus.tmis.core.ext.service.interfaces.DelegatedTMISEntityService;
+import ru.korus.tmis.core.ext.service.interfaces.PatientService;
 
 import javax.ejb.Local;
 import java.util.Date;

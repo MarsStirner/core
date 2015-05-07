@@ -59,7 +59,7 @@
                         <goals>
                             <goal>compile</goal>
                         </goals>
-                    </execution>
+                     </execution>
                 </executions>
                 <configuration>
                     <source>1.7</source>

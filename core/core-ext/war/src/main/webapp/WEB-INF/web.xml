@@ -27,7 +27,7 @@
 		</init-param>
 		<init-param>
 			<param-name>contextConfigLocation</param-name>
-			<param-value>ru.korus.tmis.vmp</param-value>
+			<param-value>ru.korus.tmis.core.ext</param-value>
 		</init-param>
 		<load-on-startup>1</load-on-startup>
 	</servlet>
