@@ -393,7 +393,7 @@ with CAPids {
     val currentDepartment = hospitalBedBean.getCurrentDepartmentForAppeal(id)
 
     val event: Event = positionE._1
-    val eventLocalContract: EventLocalContract =  event.getEventLocalContract
+    val eventLocalContract: EventLocalContract = event.getEventLocalContract
     val template: TempInvalid = dbTempInvalidBean.getTempInvalidByEventId(event.getId.intValue())
     val contract: Contract = if (positionA._1.getContractId != null) {
       dbContractBean.getContractById(positionA._1.getContractId.intValue())
@@ -564,8 +564,8 @@ with CAPids {
       val aptList = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(at.getId);
       // Последний дневниковый осмотр из всех историй болезни
       val IC = InfectionControl
-      val lastAction = if(event == null) null else actionBean.getLastActionByActionTypesAndClientId(IC.documents.toList, event.getPatient.getId)
-      jData.data.get(0).group.get(1).attribute.par.foreach(ap => {
+      val lastAction = if (event == null) null else actionBean.getLastActionByActionTypesAndClientId(IC.documents.toList, event.getPatient.getId)
+      jData.data.get(0).group.get(1).attribute.foreach(ap => {
         if (ap.typeId == null || ap.typeId.intValue() <= 0) {
           if (reWriteId.booleanValue) //в id -> apt.id
             ap.typeId = ap.id
@@ -622,8 +622,8 @@ with CAPids {
                                            cache: mutable.HashMap[Int, java.util.List[Action]],
                                            apValueCache: mutable.HashMap[ActionProperty, java.util.List[APValue]],
                                            pastActionsCache: mutable.HashMap[(Set[String], Int, String),
-                                           java.util.List[Action]],
-                                           lastAction : Action): APValue = {
+                                             java.util.List[Action]],
+                                           lastAction: Action): APValue = {
 
     val IC = InfectionControl
 
@@ -650,7 +650,7 @@ with CAPids {
     }
 
     def getLastActionByTypeCodes(typeCode: List[String], event: Event): Action = {
-      actionBean.getLastActionByEventAndActionTypes(event.getId, typeCode )
+      actionBean.getLastActionByEventAndActionTypes(event.getId, typeCode)
     }
 
     // Получение значений свойства у предыдущих дневниковых осмотров для нового дневникового осмотра
@@ -685,9 +685,9 @@ with CAPids {
     }
 
     // Получение значений свойств по свойствам инфекционного контроля
-    def getPropertyCustom2( actionTypeCodesPrefix: String, lastAction: Action): APValue = {
+    def getPropertyCustom2(actionTypeCodesPrefix: String, lastAction: Action): APValue = {
 
-      if (!apt.getCode.startsWith(actionTypeCodesPrefix) )
+      if (!apt.getCode.startsWith(actionTypeCodesPrefix))
         return null
 
       // Ничего не возвращем, если в прошлом не было дневникового осмотра
@@ -814,27 +814,27 @@ with CAPids {
     at.getCode match {
 
       // Заключительный эпикриз
-      case "4504" => getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"), event)
+      case "4504" => if (event == null) null else getProperty(Set("4501", "4502", "4503", "4504", "4505", "4506", "4507", "4508", "4509", "4510", "4511"), Set("mainDiag", "mainDiagMkb"), event)
 
       // Дневниковый осмотр
       case x if IC.documents.contains(x) =>
         if (therapySet.contains(x)) // Подтягивания значений для полей терапии
-          getPropertyCustom1(IC.documents, therapySet, event)
+          if (event == null) null else getPropertyCustom1(IC.documents, therapySet, event)
         else if (IC.allInfectPrefixes.exists(p => apt.getCode != null && (apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)))) {
           // или для полей инфекционного контроля
-            return getPropertyCustom2(IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, lastAction)
+          return getPropertyCustom2(IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, lastAction)
         }
         else if (apt.getCode != null && apt.getCode.equals(IC.localInfectionChecker)) {
-            return getPropertyCustom4(lastAction)
+          return getPropertyCustom4(lastAction)
         }
         else if (IC.EmpiricTherapyProperties.contains(apt.getCode)) {
-            return getPropertyCustom3("Empiric", lastAction)
+          return getPropertyCustom3("Empiric", lastAction)
         }
         else if (IC.TelicTherapyProperties.contains(apt.getCode)) {
-            return getPropertyCustom3( "Telic", lastAction)
+          return getPropertyCustom3("Telic", lastAction)
         }
         else if (IC.ProphylaxisTherapyProperties.contains(apt.getCode)) {
-            return getPropertyCustom3( "Prophylaxis", lastAction)
+          return getPropertyCustom3("Prophylaxis", lastAction)
         }
         else
           null
@@ -1236,6 +1236,9 @@ with CAPids {
         val listForConverter = new java.util.ArrayList[String]
         listForConverter.add(ActionPropertyWrapperInfo.IsAssignable.toString)
         listForConverter.add(ActionPropertyWrapperInfo.IsAssigned.toString)
+        listForConverter.add(ActionPropertyWrapperInfo.Value.toString)
+        listForConverter.add(ActionPropertyWrapperInfo.Norm.toString)
+        listForConverter.add(ActionPropertyWrapperInfo.Unit.toString)
 
         val listForSummary = new java.util.ArrayList[StringId]
         listForSummary.add(ActionWrapperInfo.assessmentId)
@@ -1270,7 +1273,7 @@ with CAPids {
         }
         var json = new JSONCommonData()
         if (actionType != null) {
-          json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary, null, null, patientBean.getPatientById(patientId))
+          json = primaryAssessmentBean.getEmptyStructure(actionType.getId.intValue(), "Action", listForConverter, listForSummary, null, postProcessing(null), patientBean.getPatientById(patientId))
         }
         json.setRequestData(request)
         json
@@ -1680,11 +1683,21 @@ with CAPids {
     appealBean.getMonitoringInfo(eventId, condition, authData)
   }
 
+
   def getInfectionMonitoring(eventId: Int, authData: AuthData) = {
     val outList = new java.util.ArrayList[java.util.List[AnyRef]]()
     appealBean.getInfectionMonitoring(dbEventBean.getEventById(eventId).getPatient)
       .foreach(p => outList.add(List[AnyRef](p._1, ISODate(p._2), ISODate(p._3), p._4)))
-    outList
+    val resList = new java.util.ArrayList[java.util.List[AnyRef]]()
+    //TODO убрать этот костыль, outList не должен содержать дублей
+    outList.foreach(i => {
+      if (i.size() > 2 && (resList.isEmpty ||
+        resList.last.get(0) != i.get(0) ||
+        resList.last.get(1) != i.get(1) )) {
+        resList.add(i)
+      }
+    })
+    resList
   }
 
   def getInfectionDrugMonitoring(eventId: Int, authData: AuthData) = {

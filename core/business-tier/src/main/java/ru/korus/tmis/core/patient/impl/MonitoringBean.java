@@ -83,9 +83,19 @@ public class MonitoringBean implements MonitoringBeanLocal {
     }
 
     private boolean isNewDrugMonitoring(InfectionDrugMonitoring oldMonitoring, InfectionDrugMonitoring newMonitoring) {
-        if (oldMonitoring.getDrugName() != newMonitoring.getDrugName() &&
-                oldMonitoring.getTherapyName() != newMonitoring.getTherapyName() &&
-                oldMonitoring.getBegDate() != newMonitoring.getBegDate()) {
+        if (oldMonitoring.getBegDate() == null ||
+            oldMonitoring.getDrugName() == null ||
+            oldMonitoring.getTherapyName() == null) {
+            return false;
+        }
+        if (newMonitoring.getBegDate() == null ||
+            newMonitoring.getDrugName() == null ||
+            newMonitoring.getTherapyName() == null) {
+            return false;
+        }
+        if (!oldMonitoring.getDrugName().equals(newMonitoring.getDrugName()) &&
+            !oldMonitoring.getTherapyName().equals(newMonitoring.getTherapyName()) &&
+            !oldMonitoring.getBegDate().equals(newMonitoring.getBegDate())) {
             return true;
         }
         return false;

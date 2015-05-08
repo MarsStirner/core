@@ -523,7 +523,7 @@ class DbCustomQueryBean
           }
         }
         else if (!flgDepartmentSwitched) {
-          if ("policlinic".equals(e.getEventType.getRequestType.getCode)) {
+          if ("policlinic".equals(e.getEventType.getRequestType.getCode) || "diagnostic".equals(e.getEventType.getRequestType.getCode)) {
             ret_value_sorted.put(e, (pos, if (e.getOrgStructure == null) default_org_poly else e.getOrgStructure))
           } else {
             ret_value_sorted.put(e, (pos, default_org))

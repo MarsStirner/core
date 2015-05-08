@@ -71,22 +71,26 @@ class DbDiagnosisBean  extends DbDiagnosisBeanLocal
     var diagnosis: Diagnosis = null
     var oldDiagnosis: Diagnosis = null
     var lockId: Int = 0
-
-    if (id>0) {
+    val save: Diagnosis => Diagnosis = if (id>0) {
       diagnosis = getDiagnosisById(id)
       oldDiagnosis = Diagnosis.clone(diagnosis)
       lockId = appLock.acquireLock("Diagnosis", diagnosis.getId.intValue(), oldDiagnosis.getId.intValue(), userData)
+      val fun = {d:Diagnosis => em.merge(d) }
+      fun
     }
     else {
       diagnosis = new Diagnosis()
-
       diagnosis.setCreateDatetime(now)
       diagnosis.setCreatePerson(userData.getUser)
       diagnosis.setMkbExCode("")
+      val fun = {
+        d:Diagnosis => em.persist(d)
+        d
+      }
+      fun
     }
 
     try {
-
 
       val client = dbPatientBean.getPatientById(clientId)
       val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
@@ -115,7 +119,7 @@ class DbDiagnosisBean  extends DbDiagnosisBeanLocal
       if(lockId>0)
         appLock.releaseLock(lockId)
     }
-    diagnosis
+    save(diagnosis)
   }
 
   val DiagnosisByIdQuery = """

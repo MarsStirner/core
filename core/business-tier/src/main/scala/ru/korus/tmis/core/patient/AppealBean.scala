@@ -1063,7 +1063,7 @@ with CAPids {
       l
     });
     val qInfectActionIds =
-      """SELECT ap.action.id FROM ActionProperty ap WHERE ap.action.event.patient = :patient
+      """SELECT DISTINCT ap.action.id FROM ActionProperty ap WHERE ap.action.event.patient = :patient
         AND ap.action.event.deleted = false
         AND ap.action.deleted = false
         AND ap.deleted = false
