@@ -1,5 +1,8 @@
 package ru.korus.tmis.core.ext.entities.s11r64;
 
+import org.hibernate.annotations.NotFound;
+import org.hibernate.annotations.NotFoundAction;
+
 import java.io.Serializable;
 import javax.persistence.*;
 import java.util.*;
@@ -18,8 +21,9 @@ public class ActionTemplate implements Serializable {
 	private int id;
 
     @ManyToOne
-	@JoinColumn(name="action_id")
-	private Action action;
+	@JoinColumn(name="action_id", nullable=true)
+    @NotFound(action= NotFoundAction.IGNORE)
+    private Action action;
 
 	private String age = "";
 

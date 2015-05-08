@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.ext.model.templates;
 
 import javax.swing.*;
+import java.util.LinkedList;
 import java.util.List;
 
 /**
@@ -51,6 +52,9 @@ public class ActionTemplateData {
     }
 
     public List<ActionTemplateData> getTemplates() {
+        if(templates == null) {
+            templates = new LinkedList<>();
+        }
         return templates;
     }
 

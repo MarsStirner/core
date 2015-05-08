@@ -11,8 +11,7 @@ import ru.korus.tmis.core.ext.repositories.s11r64.ActionRepository;
 import ru.korus.tmis.core.ext.repositories.s11r64.ActionTemplateRepository;
 import ru.korus.tmis.core.ext.service.ActionTemplateService;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -37,8 +36,30 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
                 ownerId,
                 groupId,
                 specialityId);
+        if(ownerId == null && groupId == null && specialityId == null) {
+            actionTemplateList = addNode(actionTemplateList);
+        }
 
         return toActionTemplateDataContainer(actionTemplateList);
+    }
+
+    private List<ActionTemplate> addNode(List<ActionTemplate> actionTemplateList) {
+        List<ActionTemplate> res = new LinkedList<>();
+        Set<Integer> groupIdSet = new HashSet<>();
+        for(ActionTemplate actionTemplate : actionTemplateList) {
+             groupIdSet.add(getParent(actionTemplate).getId());
+        }
+        for(Integer i : groupIdSet) {
+            ActionTemplate actionTemplate = actionTemplateRepository.findOne(i);
+            if(actionTemplate != null) {
+                res.add(actionTemplate);
+            }
+        }
+        return res;
+    }
+
+    private ActionTemplate getParent(ActionTemplate actionTemplate) {
+        return actionTemplate.getGroup() == null ? actionTemplate : getParent(actionTemplate.getGroup());
     }
 
     private ActionTemplateDataContainer toActionTemplateDataContainer(List<ActionTemplate> actionTemplateList) {
