@@ -4,6 +4,7 @@ import java.net.URI
 import java.util.Date
 import java.{util => ju, lang}
 import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext}
 import javax.servlet.http.Cookie
 
 import com.google.common.collect.Lists
@@ -467,7 +468,22 @@ with CAPids {
     mapper.writeValueAsString(data)
   }
 
-  //запрос на структуру первичного мед. осмотра
+  @PersistenceContext(unitName = "s11r64")
+  var em: EntityManager = _
+
+  def getStructOfPrimaryMedExam(actionTypeId: Int, actionId: Int, eventId: Int, authData: AuthData) = {
+    if(actionId == null || actionId < 1) {
+      getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData)
+    } else {
+      val action: Action = em.find(classOf[Action], actionId)
+      if(action == null || action.getActionType == null || action.getActionType.getId != actionTypeId) {
+        getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData)
+      } else {
+        getPrimaryAssessmentById(actionId, authData)
+      }
+    }
+  }
+    //запрос на структуру первичного мед. осмотра
   def getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData) = {
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //primaryAssessmentBean.getPrimaryAssessmentEmptyStruct("1_1_01", "PrimaryAssesment", null)
