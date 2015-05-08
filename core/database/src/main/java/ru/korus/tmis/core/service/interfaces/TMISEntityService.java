@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.ext.service.interfaces;
+package ru.korus.tmis.core.service.interfaces;
 
 /**
  * Интерйес DAO для работы с сущностями проекта

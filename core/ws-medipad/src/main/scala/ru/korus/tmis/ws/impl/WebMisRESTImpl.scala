@@ -471,7 +471,7 @@ with CAPids {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getStructOfPrimaryMedExam(actionTypeId: Int, actionId: Int, eventId: Int, authData: AuthData) = {
+  def getStructOfPrimaryMedExam(actionTypeId: Int, actionId: Integer, eventId: Int, authData: AuthData): JSONCommonData = {
     if(actionId == null || actionId < 1) {
       getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData)
     } else {
@@ -484,7 +484,7 @@ with CAPids {
     }
   }
     //запрос на структуру первичного мед. осмотра
-  def getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData) = {
+  def getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData): JSONCommonData = {
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //primaryAssessmentBean.getPrimaryAssessmentEmptyStruct("1_1_01", "PrimaryAssesment", null)
     val listForConverter = new java.util.ArrayList[String]
