@@ -25,7 +25,8 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "Diagnostic")
 @NamedQueries(
         {
-                @NamedQuery(name = "Diagnostic.findAll", query = "SELECT d FROM Diagnostic d")
+                @NamedQuery(name = "Diagnostic.findAll", query = "SELECT d FROM Diagnostic d"),
+                @NamedQuery(name = "Diagnostic.findByActionId", query = "SELECT d FROM Diagnostic d WHERE d.action.id = :actionId")
         })
 @XmlType(name = "diagnostic")
 @XmlRootElement(name = "diagnostic")
@@ -134,6 +135,11 @@ public class Diagnostic implements Serializable {
     @ManyToOne
     @JoinColumn(name = "rbAcheResult_id", nullable = true)
     private RbAcheResult acheResult;
+
+
+    @ManyToOne
+    @JoinColumn(name = "action_id")
+    private Action action;
 
     public Diagnostic() {
     }
@@ -381,4 +387,16 @@ public class Diagnostic implements Serializable {
         return newDiagnostic;
     }
 
+
+    public void setPhaseId(Integer phaseId) {
+        this.phaseId = phaseId;
+    }
+
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
 }

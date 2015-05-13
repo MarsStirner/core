@@ -46,6 +46,18 @@ object ConfigManager extends Configuration {
 
   }
 
+  var Cas = new CasClass
+
+  class CasClass  extends Configuration {
+
+    var ServiceUrl = "http://10.1.2.11:5201"
+
+    var Active = "off"
+
+    def isActive = "on".equals(Active)
+
+  }
+
   var RbManagerSetting = new RbManagerClass
 
   class RbManagerClass extends Configuration {

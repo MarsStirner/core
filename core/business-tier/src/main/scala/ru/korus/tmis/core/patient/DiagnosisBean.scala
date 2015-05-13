@@ -5,7 +5,7 @@ import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.database.{DbDiagnosisBeanLocal, DbDiagnosticBeanLocal}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Diagnostic, Diagnosis, Mkb}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.auth.AuthData
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.DiagnosesListData
@@ -40,6 +40,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
 
   def insertDiagnosis(diagnosticId: Int,
                       eventId: Int,
+                      action: Action,
                       diaTypeFlatCode: String,
                       diseaseCharacterId: Int,
                       description: String,
@@ -86,6 +87,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                             userData)
         diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( 0,
                                                                 eventId,
+                                                                action,
                                                                 diagnosis,
                                                                 diaTypeFlatCode,
                                                                 diseaseCharacterId,
@@ -96,6 +98,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
       case ID_MODIFY => {
         diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( diagnosticId,
                                                                 eventId,
+                                                                action,
                                                                 oldDiagnostic.getDiagnosis,
                                                                 diaTypeFlatCode,
                                                                 diseaseCharacterId,
@@ -112,6 +115,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                             userData)
         diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( diagnosticId,
                                                                 eventId,
+                                                                action,
                                                                 diagnosis,
                                                                 diaTypeFlatCode,
                                                                 diseaseCharacterId,
@@ -124,7 +128,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
     (diagnostic, diagnosis)
   }
 
-  def insertDiagnoses(eventId: Int, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: AuthData) = {
+  def insertDiagnoses(eventId: Int, action: Action, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: AuthData) = {
 
     var entities = List.empty[AnyRef]
     mkbs.foreach(f => {
@@ -136,6 +140,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
         set.foreach(mkb=>{
           val value = insertDiagnosis(mkb._1.intValue(),                                    //diagnosticId
             eventId,
+            action,
             f._1,
             if (mkb._4.intValue() > 0) mkb._4.intValue() else 3,  // characterId     //3,
             mkb._2,                                               // description

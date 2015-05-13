@@ -1,11 +1,13 @@
 package ru.korus.tmis.core.database
 
+import java.lang.Boolean
+
 import common.{DbEventPersonBeanLocal, DbEventBeanLocal}
 
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Speciality, Diagnosis, Diagnostic}
+import ru.korus.tmis.core.entity.model.{Action, Speciality, Diagnosis, Diagnostic}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import java.util.Date
@@ -75,6 +77,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
 
   def insertOrUpdateDiagnostic(id: Int,
                                eventId: Int,
+                               action: Action,
                                diagnosis: Diagnosis,
                                diagnosisTypeFlatCode: String,
                                diseaseCharacterId: Int,
@@ -112,6 +115,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       diagnostic.setModifyDatetime(now)
       diagnostic.setModifyPerson(userData.getUser)
       diagnostic.setEvent(event)
+      diagnostic.setAction(action)
       diagnostic.setDiagnosisType(diagnosisType)
       if (diseaseCharacterId > 0) {
         diagnostic.setCharacter(dbRbDiseaseCharacterBean.getDiseaseCharacterById(diseaseCharacterId))
@@ -208,4 +212,16 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       diac.deleted = '0'
     ORDER BY diac.createDatetime DESC
     """
+
+  override def deleteDiagnostic(actionId: Integer): Unit = {
+    val result =  em.createNamedQuery("Diagnostic.findByActionId", classOf[Diagnostic])
+      .setParameter("actionId", actionId)
+      .getResultList
+    result.foreach(d => {
+      d.setDeleted(true)
+      if(d.getDiagnosis != null) d.getDiagnosis.setDeleted(true)
+      em.merge(d)}
+    )
+
+  }
 }

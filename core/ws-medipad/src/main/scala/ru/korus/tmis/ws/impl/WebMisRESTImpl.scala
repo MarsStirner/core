@@ -1778,6 +1778,7 @@ with CAPids {
 
   def removeAction(actionId: Int) {
     actionBean.removeAction(actionId)
+    dbDiagnosticBean.deleteDiagnostic(actionId)
   }
 
   def saveAutoSaveField(id: String, text: String, auth: AuthData) = {

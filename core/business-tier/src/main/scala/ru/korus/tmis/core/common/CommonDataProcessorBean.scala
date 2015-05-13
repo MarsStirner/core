@@ -256,7 +256,7 @@ class CommonDataProcessorBean
           //Сохранение диагнозов в таблицу Диагностик
           //var apsForDiag = new util.LinkedList[ActionProperty]()
           //apList.foreach(f => apsForDiag.add(f._1))
-          dbManager.persistAll(this.saveDiagnoses(eventId,
+          dbManager.persistAll(this.saveDiagnoses(eventId, action,
             apList.map(_._1).toList,
             apvList,
             userData))
@@ -360,7 +360,8 @@ class CommonDataProcessorBean
     var result = List[Action]()
     var entities = Set[AnyRef]()
 
-    val oldAction = Action.clone(dbAction.getActionById(actionId))
+    val action: Action = dbAction.getActionById(actionId)
+    val oldAction = Action.clone(action)
     val lockId = appLock.acquireLock("Action",
       actionId,
       oldAction.getIdx,
@@ -527,7 +528,7 @@ class CommonDataProcessorBean
       //Сохранение диагнозов в таблицу Диагностик
       //var apsForDiag = new util.LinkedList[ActionProperty]()
       //entities.foreach(f => if (f.isInstanceOf[ActionProperty]) apsForDiag.add(f.asInstanceOf[ActionProperty]))
-      dbManager.persistAll(this.saveDiagnoses(eventId,
+      dbManager.persistAll(this.saveDiagnoses(eventId, action,
         entities.filter(_.isInstanceOf[ActionProperty]).map(_.asInstanceOf[ActionProperty]).toList,
         entities.filter(_.isInstanceOf[APValue]).map(_.asInstanceOf[APValue]).toList,
         userData))
@@ -552,7 +553,7 @@ class CommonDataProcessorBean
     setPerson(em.find(classOf[Staff], id))
   }
 
-  private def saveDiagnoses(eventId: Int, apList: java.util.List[ActionProperty], apValue: java.util.List[APValue], userData: AuthData): java.util.List[AnyRef] = {
+  private def saveDiagnoses(eventId: Int, action: Action, apList: java.util.List[ActionProperty], apValue: java.util.List[APValue], userData: AuthData): java.util.List[AnyRef] = {
 
     var map = Map.empty[String, java.util.Set[AnyRef]]
     val characterAP = apList.find(p => p.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseCharacter")) == 0).getOrElse(null)
@@ -620,7 +621,7 @@ class CommonDataProcessorBean
         }
       }
     })
-    val diag = diagnosisBean.insertDiagnoses(eventId, mapAsJavaMap(map), userData)
+    val diag = diagnosisBean.insertDiagnoses(eventId, action, mapAsJavaMap(map), userData)
     diag
   }
 

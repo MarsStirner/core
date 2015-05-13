@@ -2,6 +2,7 @@ package ru.korus.tmis.core.patient;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.DiagnosesListData;
+import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Mkb;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -30,7 +31,7 @@ public interface DiagnosisBeanLocal {
      * @return Диагноз как (Diagnostic, Diagnosis)
      * @throws CoreException
      */
-    Object insertDiagnosis(int id, int eventId, String diaTypeFlatCode, int diseaseCharacterId, String description, int mkb, int diseaseStageId, AuthData userData) throws CoreException;
+    Object insertDiagnosis(int id, int eventId, Action action, String diaTypeFlatCode, int diseaseCharacterId, String description, int mkb, int diseaseStageId, AuthData userData) throws CoreException;
 
     /**
      * Запись или редактирование списка диагнозов.
@@ -40,7 +41,7 @@ public interface DiagnosisBeanLocal {
      * @return Список диагнозов в виде entities (Diagnostic и/или Diagnosis)
      * @throws CoreException
      */
-    List<Object> insertDiagnoses(int eventId, Map<String, Set<Object>> mkbs, AuthData userData) throws CoreException;
+    List<Object> insertDiagnoses(int eventId, Action action,  Map<String, Set<Object>> mkbs, AuthData userData) throws CoreException;
 
 
     DiagnosesListData getDiagnosesByAppeal (int eventId) throws CoreException;

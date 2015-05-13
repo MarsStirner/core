@@ -346,7 +346,7 @@ with CAPids {
         if (admissionMkb != null) {
           var map = Map.empty[String, java.util.Set[AnyRef]]
           map += ("finalMkb" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue), 0, 0)))
-          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, mapAsJavaMap(map), authData)
+          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, null, mapAsJavaMap(map), authData)
           diag.filter(p => p.isInstanceOf[Diagnostic]).toList.foreach(f => f.asInstanceOf[Diagnostic].setResult(this.getRbResultById(15)))
           dbManager.persistAll(diag)
         }
@@ -428,7 +428,7 @@ with CAPids {
         .toSet[AnyRef]
       map += (flatCode -> values)
     })
-    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), mapAsJavaMap(map), authData)
+    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), null, mapAsJavaMap(map), authData)
 
     if (appealData.data.getPayer != null
       && appealData.data.getPaymentContract != null) {

@@ -59,7 +59,7 @@ public class AuthController implements Serializable {
         response.addCookie(authCooke);
         request.getSession().setAttribute(AuthInterceptor.AUTH_SESSION, false);
         try {
-            AuthData authData = authStorageBeanLocal.createToken(user.getUsername(), TextUtils.getMD5(user.getPassword()), 1);
+            AuthData authData = authStorageBeanLocal.createToken(user.getUsername(), user.getPassword(), 1);
             request.getSession().setAttribute(RootController.VIEW_STATE, ViewState.MAIN);
             response.addCookie(new Cookie("authToken", authData.authToken().id()));
             request.getSession().setAttribute(AuthInterceptor.AUTH_SESSION, true);

@@ -9,6 +9,8 @@ import java.util.Date
 import javax.ejb._
 import javax.interceptor.Interceptors
 
+import ru.korus.tmis.util.TextUtils
+
 import scala.collection.JavaConversions._
 import javax.servlet.http.Cookie
 import ru.korus.tmis.core.exception.{CoreException, AuthenticationException, NoSuchUserException}
@@ -37,6 +39,9 @@ class AuthStorageBean
   @EJB
   var dbSetting: DbSettingsBeanLocal = _
 
+  @EJB
+  var casBeanLocal: CasBeanLocal = _
+
   // Отображение токена в кортеж из данных аутентификации и даты окончания
   // срока действия токена
   val authMap: util.Map[AuthToken, (AuthData, Date)] = new util.LinkedHashMap()
@@ -45,9 +50,6 @@ class AuthStorageBean
 
   @Lock(LockType.WRITE)
   def createToken(login: String, password: String, roleId: Int): AuthData = {
-
-    // Пытаемся получить сотрудника по л огину
-    val staff = dbStaff.getStaffByLogin(login)
 
     // Получаем роли сотрудника
     val roles = getRoles(login, password)
@@ -65,6 +67,9 @@ class AuthStorageBean
       case Some(r) => r
     }
 
+    // Пытаемся получить сотрудника по л огину
+    val staff = dbStaff.getStaffByLogin(login)
+
     val userId: Int = staff.getId.intValue
     val userFirstName = staff.getFirstName
     val userLastName = staff.getLastName
@@ -77,7 +82,9 @@ class AuthStorageBean
     val tokenStr = createToken(userId,
       initRole.getId.intValue,
       staff.getFullName,
-      userSpeciality)
+      userSpeciality,
+      login,
+      password)
 
     val authData = new AuthData(
       new AuthToken(tokenStr),
@@ -101,11 +108,17 @@ class AuthStorageBean
   @Lock(LockType.READ)
   def getRoles(login: String, password: String) = {
     // Пытаемся получить сотрудника по логину
+    if(ConfigManager.Cas.isActive && casBeanLocal.createToken(login, password, "").isEmpty) {
+      throw new NoSuchUserException(
+        ConfigManager.TmisAuth.ErrorCodes.LoginIncorrect,
+        login,
+        i18n("error.staffNotFound"))
+    }
     val staff = dbStaff.getStaffByLogin(login)
 
     // Проверяем пароль
     // Пароли в базе хранятся в MD5 и по сети передаются тоже в MD5
-    if (staff.getPassword != password) {
+    if (staff.getPassword != password && staff.getPassword != TextUtils.getMD5(password)) {
       warn("Incorrect password for: " + staff)
       throw new NoSuchUserException(
         ConfigManager.TmisAuth.ErrorCodes.LoginIncorrect,
@@ -137,10 +150,11 @@ class AuthStorageBean
   def createToken(userId: Int,
                   role: Int,
                   userFullName: String,
-                  speciality: String) = {
-    val tokenStr = userId + role + userFullName + speciality +
-      new Date().getTime.toString
-    tokenStr.hashCode.toHexString
+                  speciality: String,
+                  login: String,
+                  password: String) = {
+    val tokenStr = userId + role + userFullName + speciality + new Date().getTime.toString
+    casBeanLocal.createToken(login, password, tokenStr.hashCode.toHexString)
   }
 
   @Lock(LockType.WRITE)
@@ -176,9 +190,9 @@ class AuthStorageBean
     }
     var authData: AuthData = null
     if (token != null) {
+      val isCasTokenValid: Boolean = casBeanLocal.checkToken(token)
       val authToken: AuthToken = new AuthToken(token)
       //данные об авторизации
-
       authData = this.getAuthData(authToken)
       if (authData != null) {
         info("Authentication data found: " + authData)
@@ -193,7 +207,8 @@ class AuthStorageBean
       var tokenEndDate: Date = null
       tokenEndDate = this.getAuthDateTime(authToken)
       if (tokenEndDate != null) {
-        if (tokenEndDate.before(new Date())) {
+        authMap.remove(authToken)
+        if (tokenEndDate.before(new Date()) || !isCasTokenValid) {
           warn("Token period exceeded")
           throw new AuthenticationException(
             ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
@@ -201,7 +216,6 @@ class AuthStorageBean
         } else {
           info("Token is valid")
           val tokenEndTimeNew = new Date(new Date().getTime + getAuthTokenLifeTime)
-          authMap.remove(authToken)
           authMap.put(authToken, (authData, tokenEndTimeNew))
         }
       } else {
@@ -210,7 +224,6 @@ class AuthStorageBean
           ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
           i18n("error.invalidToken"))
       }
-
     }
     else {
       throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.invalidToken"))

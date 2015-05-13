@@ -548,7 +548,7 @@ public class Action
     }
 
     public Short getPacientInQueueType() {
-        return pacientInQueueType;
+        return pacientInQueueType == null ? 0 : pacientInQueueType;
     }
 
     public void setPacientInQueueType(Short pacientInQueueType) {

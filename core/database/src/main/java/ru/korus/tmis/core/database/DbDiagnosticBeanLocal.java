@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Diagnosis;
 import ru.korus.tmis.core.entity.model.Diagnostic;
 import ru.korus.tmis.core.exception.CoreException;
@@ -47,6 +48,7 @@ public interface DbDiagnosticBeanLocal {
      */
     Diagnostic insertOrUpdateDiagnostic(int id,
                                 int eventId,
+                                Action action,
                                 Diagnosis diagnosis,
                                 String diagnosisTypeFlatCode,
                                 int diseaseCharacterId,
@@ -65,4 +67,6 @@ public interface DbDiagnosticBeanLocal {
                                                      Set<String> diagnosisTypeFlatCodes) throws CoreException;
 
     Diagnostic getLastDiagnosticByEventIdAndType(int eventId, String diagnosisTypeFlatCode) throws CoreException;
+
+    void deleteDiagnostic(Integer actionId);
 }
