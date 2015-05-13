@@ -34,4 +34,6 @@ public interface DbThesaurusBeanLocal {
      */
     List<Mkb> getMkb()
             throws CoreException;
+
+    boolean isContainer(int thesaurusId, String code);
 }

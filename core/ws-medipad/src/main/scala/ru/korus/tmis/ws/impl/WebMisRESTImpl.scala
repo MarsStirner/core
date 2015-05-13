@@ -218,6 +218,9 @@ with CAPids {
   @EJB
   var dbEventLocalContractLocal: DbEventLocalContractLocal = _
 
+  @EJB
+  var dbThesaurusBeanLocal: DbThesaurusBeanLocal = _
+
 
   def getAllPatients(requestData: PatientRequestData, auth: AuthData): PatientData = {
     if (auth != null) {
@@ -1402,6 +1405,7 @@ with CAPids {
       request.limit,
       request.sortingFieldInternal,
       request.filter.unwrap())
+    thesaurus.foreach(t => {t.setIsContainer(dbThesaurusBeanLocal.isContainer(t.getId, t.getCode))})
     new ThesaurusListData(thesaurus, request)
   }
 
