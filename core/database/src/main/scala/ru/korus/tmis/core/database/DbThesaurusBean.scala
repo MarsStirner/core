@@ -78,10 +78,9 @@ class DbThesaurusBean
     children ::: grandChildren
   }
 
-  override def isContainer(thesaurusId: Int,  code:  String ): Boolean = {
-    !em.createNamedQuery("Thesaurus.findByGroupIdAndCode")
+  override def isContainer(thesaurusId: Int): Boolean = {
+    !em.createNamedQuery("Thesaurus.findByGroupId")
       .setParameter("groupId", thesaurusId)
-      .setParameter("code", code)
       .setMaxResults(1)
       .getResultList
       .isEmpty

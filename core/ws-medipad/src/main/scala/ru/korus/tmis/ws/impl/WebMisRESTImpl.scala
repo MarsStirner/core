@@ -1405,7 +1405,7 @@ with CAPids {
       request.limit,
       request.sortingFieldInternal,
       request.filter.unwrap())
-    thesaurus.foreach(t => {t.setIsContainer(dbThesaurusBeanLocal.isContainer(t.getId, t.getCode))})
+    thesaurus.foreach(t => {t.setIsContainer(dbThesaurusBeanLocal.isContainer(t.getId))})
     new ThesaurusListData(thesaurus, request)
   }
 

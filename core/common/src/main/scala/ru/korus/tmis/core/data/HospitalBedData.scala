@@ -453,7 +453,8 @@ class MovesListHospitalBedContainer {
   // https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=3
   def calculate(eventRequestCode: String) = {
     if (this.admission!=null) {
-      this.days = ( (if (this.leave == null) new Date() else this.leave).getTime - this.admission.getTime)/(1000*60*60*24)
+      val secInDay: Int = 1000 * 60 * 60 * 24
+      this.days = (if (this.leave == null) new Date() else this.leave).getTime/ secInDay - this.admission.getTime/ secInDay
       this.bedDays = this.days
       if (unit.compareTo("Приемное отделение")!=0 && this.days!=0) {
         if (eventRequestCode.compareTo("clinic")==0) {     //clinic
