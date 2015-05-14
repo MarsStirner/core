@@ -45,7 +45,7 @@ public class QuotaServiceImpl implements QuotaService {
 
     @Override
     public IdCodeNames getQuotaType(Integer mkbId, Integer eventId) {
-        final Event event = eventRepository.findOne(eventId);
+        final Event event = eventId == null ? null : eventRepository.findOne(eventId);
         final Integer financeId = event == null ? null :
                 (event.getEventType() == null ? null :
                         (event.getEventType().getRbFinance() == null ? null :

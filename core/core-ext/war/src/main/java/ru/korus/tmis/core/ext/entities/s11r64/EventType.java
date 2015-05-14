@@ -50,7 +50,7 @@ public class EventType implements Serializable {
 
 	private Integer eventProfile_id;
 
-    @OneToMany
+    @ManyToOne
 	@JoinColumn(name="finance_id")
 	private RbFinance rbFinance;
 
