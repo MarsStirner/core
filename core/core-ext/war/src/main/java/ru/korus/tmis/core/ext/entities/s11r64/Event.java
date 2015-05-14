@@ -37,7 +37,9 @@ public class Event implements Serializable {
 
 	private byte deleted;
 
-	private Integer eventType_id;
+    @ManyToOne
+    @JoinColumn(name="eventType_id")
+	private EventType eventType;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	private Date execDate;
@@ -178,15 +180,19 @@ public class Event implements Serializable {
 		this.deleted = deleted;
 	}
 
-	public Integer getEventType_id() {
-		return this.eventType_id;
-	}
+    public void setClient(Client client) {
+        this.client = client;
+    }
 
-	public void setEventType_id(Integer eventType_id) {
-		this.eventType_id = eventType_id;
-	}
+    public EventType getEventType() {
+        return eventType;
+    }
 
-	public Date getExecDate() {
+    public void setEventType(EventType eventType) {
+        this.eventType = eventType;
+    }
+
+    public Date getExecDate() {
 		return this.execDate;
 	}
 

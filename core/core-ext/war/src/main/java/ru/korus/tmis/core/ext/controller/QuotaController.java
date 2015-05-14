@@ -39,6 +39,7 @@ public class QuotaController implements Serializable {
     @ResponseBody
     //TODO убрать "ручную" сенрриализацию в json и преобразование в utf-8
     public byte[] getQuotaType(@RequestParam Integer mkbId,
+                           @RequestParam(required = false) Integer eventId,
                            @RequestParam(required = false) String callback,
                            @RequestParam(required = false) String sortingField,
                            @RequestParam(required = false) String sortingMethod,
@@ -46,7 +47,7 @@ public class QuotaController implements Serializable {
                            @RequestParam(required = false) String page,
                            @RequestParam(required = false) String recordsCount,
                            @RequestParam(required = false) String reqDateTime) {
-        IdCodeNames quotaType = quotaService.getQuotaType(mkbId);
+        IdCodeNames quotaType = quotaService.getQuotaType(mkbId, eventId);
         return MyJsonUtils.toJsonWithPadding(callback, quotaType);
     }
 

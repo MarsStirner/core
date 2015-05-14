@@ -12,7 +12,7 @@ import ru.korus.tmis.core.ext.model.quote.QuotaDataContainer;
  */
 public interface QuotaService {
 
-    IdCodeNames getQuotaType(Integer mkbId);
+    IdCodeNames getQuotaType(Integer mkbId, Integer eventId);
 
     IdCodeNames getPatientModel(Integer mkbId, Integer quotaTypeId);
 

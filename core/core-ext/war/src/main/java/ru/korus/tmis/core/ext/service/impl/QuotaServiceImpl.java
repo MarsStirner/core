@@ -38,14 +38,19 @@ public class QuotaServiceImpl implements QuotaService {
     ClientQuotaRepository clientQuotaRepository;
 
     @Autowired
-    EventRepository eventRepository;
-
-    @Autowired
     MkbRepository mkbRepository;
 
+    @Autowired
+    EventRepository eventRepository;
+
     @Override
-    public IdCodeNames getQuotaType(Integer mkbId) {
-        List<QuotaType> quotaTypeList = vmpQuotaDetailRepository.findByMkb(mkbId);
+    public IdCodeNames getQuotaType(Integer mkbId, Integer eventId) {
+        final Event event = eventRepository.findOne(eventId);
+        final Integer financeId = event == null ? null :
+                (event.getEventType() == null ? null :
+                        (event.getEventType().getRbFinance() == null ? null :
+                                event.getEventType().getRbFinance().getId()));
+        List<QuotaType> quotaTypeList = vmpQuotaDetailRepository.findByMkb(mkbId, financeId);
         return toIdCodeNames(quotaTypeList);
     }
 

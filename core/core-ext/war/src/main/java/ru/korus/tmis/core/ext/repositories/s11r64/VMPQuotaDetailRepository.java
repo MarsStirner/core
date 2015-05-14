@@ -18,8 +18,9 @@ import java.util.List;
  */
 public interface VMPQuotaDetailRepository extends JpaRepository<VMPQuotaDetail, Integer> {
     @Query("SELECT DISTINCT qt.quotaType FROM VMPQuotaDetail qt LEFT JOIN qt.mkbVmpquotaFilters f " +
-           "WHERE f.mkb.id = :mkbId")
-    List<QuotaType> findByMkb(@Param(value = "mkbId") Integer mkbId);
+           "WHERE f.mkb.id = :mkbId " +
+            "AND ((:financeId is null) OR (qt.quotaType.quotaCatalog.rbFinance.id = :financeId))")
+    List<QuotaType> findByMkb(@Param(value = "mkbId") Integer mkbId, @Param(value = "financeId") Integer financeId);
 
     @Query("SELECT DISTINCT qt.rbPacientModel FROM VMPQuotaDetail qt LEFT JOIN qt.mkbVmpquotaFilters f " +
             "WHERE f.mkb.id = :mkbId AND qt.quotaType.id = :quotaTypeId")
