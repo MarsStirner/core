@@ -2,6 +2,8 @@ package ru.korus.tmis.core.ext.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Scope;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 import ru.korus.tmis.core.ext.entities.s11r64.ActionTemplate;
@@ -53,5 +55,10 @@ public class ActionTemplateController implements Serializable {
                                  HttpServletRequest request) {
         final AuthData authData = authService.getAuthData(request);
         return MyJsonUtils.toJsonWithPadding(callback, actionTemplateService.createActionTemplate(actionTemplateData, authData));
+    }
+
+    @RequestMapping(method = RequestMethod.OPTIONS)
+    public ResponseEntity handle() {
+        return new ResponseEntity(HttpStatus.NO_CONTENT);
     }
 }

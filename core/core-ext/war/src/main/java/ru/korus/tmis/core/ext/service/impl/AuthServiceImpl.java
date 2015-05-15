@@ -19,12 +19,14 @@ public class AuthServiceImpl implements AuthService {
     @Override
     public AuthData getAuthData(HttpServletRequest request) {
         AuthData res = new AuthData();
-        for(Cookie c : request.getCookies()) {
-            if("userId".equals(c.getName()) && c.getValue() != null) {
-                try {
-                    res.setUserId(Integer.parseInt(c.getValue()));
-                } catch (NumberFormatException ex) {
-                    ex.printStackTrace();
+        if(request.getCookies() != null) {
+            for (Cookie c : request.getCookies()) {
+                if ("userId".equals(c.getName()) && c.getValue() != null) {
+                    try {
+                        res.setUserId(Integer.parseInt(c.getValue()));
+                    } catch (NumberFormatException ex) {
+                        ex.printStackTrace();
+                    }
                 }
             }
         }

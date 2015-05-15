@@ -81,7 +81,7 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
         actionTemplate.setAction(action);
         actionTemplate.setCreateDatetime(now);
         actionTemplate.setModifyDatetime(now);
-        actionTemplate.setModifyPerson_id(authData.getUserId());
+        actionTemplate.setModifyPerson_id(authData == null ? null : authData.getUserId());
         actionTemplate.setName(actionTemplateData.getName());
         if (actionTemplateData.getGroupId() != null) {
             ActionTemplate actionTemplateGroup = actionTemplateRepository.findOne(actionTemplateData.getGroupId());
