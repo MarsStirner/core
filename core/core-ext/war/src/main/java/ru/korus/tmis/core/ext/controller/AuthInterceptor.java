@@ -41,6 +41,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS, DELETE, PUT");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers","x-requested-with, Content-Type, Accept");
+        response.setHeader("Access-Control-Allow-Credentials","true");
         //response.setHeader("Access-Control-Allow-Headers", "x-requested-with");
       //  response.setContentType("application/javascript");
         return super.preHandle(request, response, handler);

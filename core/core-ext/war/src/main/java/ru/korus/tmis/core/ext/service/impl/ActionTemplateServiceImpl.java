@@ -72,10 +72,7 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
 
     @Override
     public ActionTemplateData createActionTemplate(ActionTemplateData actionTemplateData, AuthData authData) {
-        Action action = actionRepository.findOne(actionTemplateData.getActionId());
-        if (action == null) {
-            throw new RuntimeException("Action not found. id =" + actionTemplateData.getActionId());
-        }
+        Action action = actionTemplateData.getActionId() == null ? null : actionRepository.findOne(actionTemplateData.getActionId());
         final Date now = new Date();
         ActionTemplate actionTemplate = new ActionTemplate();
         actionTemplate.setAction(action);
