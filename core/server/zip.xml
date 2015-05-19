@@ -25,5 +25,12 @@
                 <include>**/*.war</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>../core-ext/ear/target/</directory>
+            <outputDirectory>/${project.build.finalName}/</outputDirectory>
+            <includes>
+                <include>**/*.ear</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </assembly>
