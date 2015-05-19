@@ -44,9 +44,6 @@ class CommonDataProcessorBean
   var em: EntityManager = _
 
   @EJB
-  var appLock: AuthStorageBeanLocal = _
-
-  @EJB
   var dbAction: DbActionBeanLocal = _
 
   @EJB
@@ -361,11 +358,6 @@ class CommonDataProcessorBean
     var entities = Set[AnyRef]()
 
     val action: Action = dbAction.getActionById(actionId)
-    val oldAction = Action.clone(action)
-    val lockId = appLock.acquireLock("Action",
-      actionId,
-      oldAction.getIdx,
-      userData)
     var eventId = 0
     try {
       data.entity.filter(_.id == actionId).foreach(entity => {
@@ -545,8 +537,7 @@ class CommonDataProcessorBean
       result
 
     } finally {
-      appLock.releaseLock(lockId)
-    }
+     }
   }
 
   def setStaff(id: Int, setPerson: (Staff) => Unit) {

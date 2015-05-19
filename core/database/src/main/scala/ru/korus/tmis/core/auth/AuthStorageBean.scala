@@ -107,6 +107,7 @@ class AuthStorageBean
 
   @Lock(LockType.READ)
   def getRoles(login: String, password: String) = {
+    timeoutHandler();
     // Пытаемся получить сотрудника по логину
     if(ConfigManager.Cas.isActive && casBeanLocal.createToken(login, password, "").isEmpty) {
       throw new NoSuchUserException(
