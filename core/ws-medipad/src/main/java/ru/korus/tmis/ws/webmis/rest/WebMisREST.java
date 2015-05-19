@@ -54,7 +54,7 @@ public interface WebMisREST extends Serializable {
 
     TrueFalseContainer checkExistanceNumber(String name, int typeId, String number, String serial) throws CoreException;
 
-    JSONCommonData getStructOfPrimaryMedExam(int actionTypeId, int eventId, AuthData authData) throws CoreException;
+    JSONCommonData getStructOfPrimaryMedExam(int actionTypeId, Integer actionId, int eventId, AuthData authData) throws CoreException;
 
     JSONCommonData getStructOfPrimaryMedExamWithCopy(int actionTypeId, AuthData authData, int eventId) throws CoreException;
 

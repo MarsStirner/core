@@ -508,9 +508,10 @@ public class DirectoryInfoRESTImpl {
     @Produces({"application/javascript", "application/x-javascript"})
     public Object getStructOfPrimaryMedExam(@Context HttpServletRequest servRequest,
                                             @PathParam("id") int actionTypeId,
+                                            @QueryParam("actionId") Integer actionId,
                                             @QueryParam("eventId") int eventId,
                                             @QueryParam("callback") String callback) throws CoreException {
-        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, eventId, mkAuth(servRequest)), callback);
+        return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, actionId, eventId, mkAuth(servRequest)), callback);
     }
 
     /**

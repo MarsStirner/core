@@ -1,0 +1,20 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="30 seconds" debug="true">
+
+    <!--Логгер для ЗХПД-->
+    <appender name="PDM" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>%5p [%d][%thread][%logger{0}] %msg%n</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/pdm/pdm.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+
+    <logger name="ru.korus.tmis.pdm" level="INFO" additivity="false">
+        <appender-ref ref="PDM"/>
+    </logger>
+
+</configuration>
