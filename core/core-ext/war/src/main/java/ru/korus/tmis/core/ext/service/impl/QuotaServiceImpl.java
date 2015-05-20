@@ -58,7 +58,7 @@ public class QuotaServiceImpl implements QuotaService {
         IdCodeNames res = new IdCodeNames();
         res.setData(new LinkedList<IdCodeName>());
         for(ReferenceBook quotaType : quotaTypeList) {
-            res.getData().add(new IdCodeName(quotaType));
+            res.getData().add(new IdCodeName(quotaType, true));
         }
         return res;
     }

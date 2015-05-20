@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.ext.model;
 
 import ru.korus.tmis.core.ext.entities.s11r64.ReferenceBook;
+import ru.korus.tmis.core.ext.entities.s11r64.vmp.QuotaType;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -21,11 +22,13 @@ public class IdCodeName {
 
     }
 
-    public IdCodeName(ReferenceBook referenceBook) {
+    public IdCodeName(ReferenceBook referenceBook, Boolean isAddCode) {
         id = referenceBook.getId();
         code = referenceBook.getCode();
-        name = referenceBook.getName();
+        name =  (isAddCode ? (code + " ") : "") + referenceBook.getName();
     }
+
+
 
     public Integer getId() {
         return id;
