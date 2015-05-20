@@ -968,6 +968,7 @@ class DoctorContainer {
     if(staff!=null)  {
       this.id = staff.getId.intValue()
       this.name = new PersonNameContainer(staff)
+
     }
   }
 

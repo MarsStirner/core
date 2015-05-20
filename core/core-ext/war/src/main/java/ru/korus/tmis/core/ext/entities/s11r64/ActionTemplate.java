@@ -50,9 +50,11 @@ public class ActionTemplate implements Serializable {
 
 	@ManyToOne
     @JoinColumn(name="group_id")
+    @NotFound(action= NotFoundAction.IGNORE)
 	private ActionTemplate group;
 
     @OneToMany(mappedBy = "group")
+    @NotFound(action= NotFoundAction.IGNORE)
     private List<ActionTemplate> actionTemplateList = new ArrayList<>();
 
 	@Temporal(TemporalType.TIMESTAMP)

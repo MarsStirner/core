@@ -136,8 +136,9 @@ public class DirectoryInfoRESTImpl {
                                 @QueryParam("limit") int limit,
                                 @QueryParam("page") int page,
                                 @QueryParam("filter[departmentId]") int departmentId,
+                                @QueryParam("filter[roleCode]") List<String> roleCodeList,
                                 @QueryParam("callback") String callback) throws CoreException {
-        PersonsListDataFilter filter = new PersonsListDataFilter(departmentId);
+        PersonsListDataFilter filter = new PersonsListDataFilter(departmentId, roleCodeList);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getAllPersons(request), callback);
     }

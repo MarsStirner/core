@@ -11,6 +11,7 @@ import ru.korus.tmis.core.ext.repositories.s11r64.ActionRepository;
 import ru.korus.tmis.core.ext.repositories.s11r64.ActionTemplateRepository;
 import ru.korus.tmis.core.ext.service.ActionTemplateService;
 
+import javax.persistence.EntityNotFoundException;
 import java.util.*;
 
 /**
@@ -36,7 +37,7 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
                 ownerId,
                 groupId,
                 specialityId);
-        if(ownerId == null && groupId == null && specialityId == null) {
+        if (ownerId == null && groupId == null && specialityId == null) {
             actionTemplateList = addNode(actionTemplateList);
         }
 
@@ -46,12 +47,12 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
     private List<ActionTemplate> addNode(List<ActionTemplate> actionTemplateList) {
         List<ActionTemplate> res = new LinkedList<>();
         Set<Integer> groupIdSet = new HashSet<>();
-        for(ActionTemplate actionTemplate : actionTemplateList) {
-             groupIdSet.add(getParent(actionTemplate).getId());
+        for (ActionTemplate actionTemplate : actionTemplateList) {
+            groupIdSet.add(getParent(actionTemplate).getId());
         }
-        for(Integer i : groupIdSet) {
+        for (Integer i : groupIdSet) {
             ActionTemplate actionTemplate = actionTemplateRepository.findOne(i);
-            if(actionTemplate != null) {
+            if (actionTemplate != null) {
                 res.add(actionTemplate);
             }
         }
@@ -64,7 +65,7 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
 
     private ActionTemplateDataContainer toActionTemplateDataContainer(List<ActionTemplate> actionTemplateList) {
         ActionTemplateDataContainer res = new ActionTemplateDataContainer();
-        for(ActionTemplate actionTemplate : actionTemplateList ) {
+        for (ActionTemplate actionTemplate : actionTemplateList) {
             res.getActionTemplateList().add(toActionTemplateData(actionTemplate));
         }
         return res;

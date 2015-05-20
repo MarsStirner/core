@@ -47,7 +47,6 @@ public class ActionTemplateController implements Serializable {
                 specialityId);
         return MyJsonUtils.toJsonWithPadding(callback, actionTemplateDataContainer);
     }
-
     @RequestMapping(method = RequestMethod.POST)
     @ResponseBody
     public byte[] createTemplate(@RequestBody ActionTemplateData actionTemplateData,
