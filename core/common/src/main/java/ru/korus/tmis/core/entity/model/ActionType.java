@@ -224,11 +224,15 @@ public class ActionType implements Serializable {
     private List<ActionPropertyType> actionPropertyTypes =
             new LinkedList<ActionPropertyType>();
 
-    @Transient
-    private List<ActionPropertyType> nonDeletedActionPropertyTypes =
-            new LinkedList<ActionPropertyType>();
 
     public List<ActionPropertyType> getActionPropertyTypes() {
+        List<ActionPropertyType> nonDeletedActionPropertyTypes =
+                new LinkedList<ActionPropertyType>();
+        for (ActionPropertyType apt : actionPropertyTypes) {
+            if (!apt.getDeleted()) {
+                nonDeletedActionPropertyTypes.add(apt);
+            }
+        }
         return nonDeletedActionPropertyTypes;
     }
 
@@ -240,11 +244,7 @@ public class ActionType implements Serializable {
 
     @PostLoad
     private void onPostLoad() {
-        for (ActionPropertyType apt : actionPropertyTypes) {
-            if (!apt.getDeleted()) {
-                nonDeletedActionPropertyTypes.add(apt);
-            }
-        }
+
     }
 
     ////////////////////////////////////////////////////////////////////////////

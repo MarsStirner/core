@@ -255,9 +255,13 @@ class PersonsListDataFilter extends AbstractListDataFilter {
   @BeanProperty
   var department: Int = _
 
-  def this(departmentId: Int) {
+  @BeanProperty
+  var roleCodeList: java.util.List[String] = _
+
+  def this(departmentId: Int, roleCodeList: java.util.List[String]) {
     this()
     this.department = departmentId
+    this.roleCodeList = roleCodeList
   }
 
   @Override
