@@ -11,6 +11,7 @@
 
 
     <modules>
+        <module>core-ext</module>
         <module>business-tier</module>
         <module>common</module>
         <module>database</module>
@@ -29,7 +30,6 @@
         <module>ws-risar</module>
         <module>admin-panel</module>
         <module>laboratory-bak</module>
-        <module>core-ext</module>
     </modules>
 
 
