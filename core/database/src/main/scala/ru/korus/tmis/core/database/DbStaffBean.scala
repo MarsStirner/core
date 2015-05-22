@@ -10,7 +10,7 @@ import scala.collection.JavaConversions._
 import java.util.Date
 import javax.persistence.{Query, TemporalType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.{APValueTime, ActionProperty, Action, Staff}
-import ru.korus.tmis.core.data.{FreePersonsListDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.data.{PersonsListDataFilter, FreePersonsListDataFilter, QueryDataStructure}
 import ru.korus.tmis.core.filter.ListDataFilter
 import org.slf4j.{LoggerFactory, Logger}
 import java.util
@@ -105,7 +105,12 @@ class DbStaffBean
     val result = typed.setMaxResults(limit)
       .setFirstResult(limit * page)
       .getResultList
-    result
+    val personsFilter: PersonsListDataFilter = filter.asInstanceOf[PersonsListDataFilter]
+    if(!personsFilter.getRoleCodeList.isEmpty) {
+     result.filter(res => !res.getRoles.filter(role => personsFilter.getRoleCodeList.contains( role.getCode)).isEmpty)
+    } else {
+      result
+    }
   }
 
   def getEmptyPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, citoActionsCount: Int) = {
