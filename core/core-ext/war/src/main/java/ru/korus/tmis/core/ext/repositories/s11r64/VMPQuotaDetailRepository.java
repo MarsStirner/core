@@ -21,7 +21,7 @@ public interface VMPQuotaDetailRepository extends JpaRepository<VMPQuotaDetail, 
     @Query("SELECT DISTINCT qt.quotaType FROM VMPQuotaDetail qt LEFT JOIN qt.mkbVmpquotaFilters f " +
             "WHERE f.mkb.id = :mkbId " +
             "AND ((:financeId is null) OR (qt.quotaType.quotaCatalog.rbFinance.id = :financeId)) " +
-            "AND ((:date is null) OR (qt.quotaType.quotaCatalog.begDate <= :date AND :date <= qt.quotaType.quotaCatalog.ebdDate))")
+            "AND ((:date is null) OR (qt.quotaType.quotaCatalog.begDate <= :date AND :date <= qt.quotaType.quotaCatalog.endDate))")
     List<QuotaType> findByMkb(@Param(value = "mkbId") Integer mkbId,
                               @Param(value = "financeId") Integer financeId,
                               @Param(value = "date") Date date);
