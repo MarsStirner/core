@@ -25,4 +25,6 @@ public interface QuotaService {
     QuotaDataContainer getQuotaPrev(Integer eventId);
 
     QuotaDataContainer updateQuota(Integer eventId, QuotaDataContainer quotaData, AuthData authData);
+
+    void removeQuota(Integer quotaId);
 }

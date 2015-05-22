@@ -50,7 +50,8 @@ public class QuotaServiceImpl implements QuotaService {
                 (event.getEventType() == null ? null :
                         (event.getEventType().getRbFinance() == null ? null :
                                 event.getEventType().getRbFinance().getId()));
-        List<QuotaType> quotaTypeList = vmpQuotaDetailRepository.findByMkb(mkbId, financeId);
+        final Date date = event == null ? null : event.getSetDate();
+        List<QuotaType> quotaTypeList = vmpQuotaDetailRepository.findByMkb(mkbId, financeId, date);
         return toIdCodeNames(quotaTypeList);
     }
 
@@ -159,6 +160,15 @@ public class QuotaServiceImpl implements QuotaService {
             res = toQuotaData(clientQuoting);
         }
         return res;
+    }
+
+    @Override
+    public void removeQuota(Integer quotaId) {
+        Client_Quoting quota = clientQuotaRepository.findOne(quotaId);
+        if(quota != null) {
+            quota.setDeleted(true);
+            clientQuotaRepository.save(quota);
+        }
     }
 
     private QuotaDataContainer toQuotaData(Client_Quoting clientQuoting) {
