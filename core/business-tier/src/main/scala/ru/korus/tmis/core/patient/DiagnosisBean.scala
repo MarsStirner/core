@@ -38,6 +38,8 @@ class DiagnosisBean  extends DiagnosisBeanLocal
   private val ID_NONE = 2
   private val ID_MODIFY_WITH_CREATE_DIAGNOSIS = 3
 
+
+
   def insertDiagnosis(diagnosticId: Int,
                       eventId: Int,
                       action: Action,
@@ -53,6 +55,8 @@ class DiagnosisBean  extends DiagnosisBeanLocal
     var diagnostic: Diagnostic = null
     var diagnosis: Diagnosis = null
     var oldDiagnostic: Diagnostic = null
+    val listOldDiag = getOldDiagByActionAndType(action, diaTypeFlatCode)
+
 
     val option =
       if(diagnosticId>0) {
@@ -74,7 +78,12 @@ class DiagnosisBean  extends DiagnosisBeanLocal
             }
           }
         } else ID_CREATE
-      } else ID_CREATE
+      } else if(listOldDiag.isEmpty) {
+        ID_CREATE
+      } else {
+        oldDiagnostic = listOldDiag.get(0)
+        ID_MODIFY
+      }
 
     option match {
       case ID_CREATE => {
@@ -96,7 +105,13 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                                 userData)
       }
       case ID_MODIFY => {
-        diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( diagnosticId,
+        diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(oldDiagnostic.getDiagnosis.getId,
+          patient.getId.intValue(),
+          diaTypeFlatCode,
+          diseaseCharacterId,
+          mkbId,
+          userData)
+        diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( oldDiagnostic.getId,
                                                                 eventId,
                                                                 action,
                                                                 oldDiagnostic.getDiagnosis,
@@ -180,6 +195,13 @@ class DiagnosisBean  extends DiagnosisBeanLocal
       new DiagnosesListData(diagnostics)
     }
     else new DiagnosesListData()
+  }
+
+  def getOldDiagByActionAndType(action: Action, diaTypeFlatCode: String): java.util.List[Diagnostic]  = {
+    em.createNamedQuery("Diagnostic.findByActionIdAndType", classOf[Diagnostic])
+      .setParameter("actionId", action.getId)
+      .setParameter("flatCode", diaTypeFlatCode)
+    .getResultList
   }
 
   def deleteDiagnosis(eventId: Int,

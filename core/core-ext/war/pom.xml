@@ -2,7 +2,7 @@
     <modelVersion>4.0.0</modelVersion>
     <artifactId>core-ext-war</artifactId>
     <packaging>war</packaging>
-    <version>2.5.64-SNAPSHOT</version>
+    <version>2.5.65-SNAPSHOT</version>
     <properties>
         <spring.version>4.1.1.RELEASE</spring.version>
         <hibernate.version>4.1.7.Final</hibernate.version>

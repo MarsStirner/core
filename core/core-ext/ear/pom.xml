@@ -3,18 +3,18 @@
 	<groupId>ru.korus.tmis.ext</groupId>
 	<artifactId>core-ext-ear</artifactId>
 	<packaging>ear</packaging>
-	<version>2.5.64-SNAPSHOT</version>
+	<version>2.5.65-SNAPSHOT</version>
 	<name>ear</name>
 	<parent>
 		<groupId>ru.korus.tmis.ext</groupId>
 		<artifactId>tmis-core-ext</artifactId>
-		<version>2.5.64-SNAPSHOT</version>
+		<version>2.5.65-SNAPSHOT</version>
 	</parent>
 	<dependencies>
 		<dependency>
 			<groupId>ru.korus.tmis.ext</groupId>
 			<artifactId>core-ext-war</artifactId>
-			<version>2.5.64-SNAPSHOT</version>
+			<version>2.5.65-SNAPSHOT</version>
 			<type>war</type>
 		</dependency>
 	</dependencies>

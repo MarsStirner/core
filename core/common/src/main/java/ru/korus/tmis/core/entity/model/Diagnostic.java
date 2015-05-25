@@ -26,7 +26,9 @@ import javax.xml.bind.annotation.XmlType;
 @NamedQueries(
         {
                 @NamedQuery(name = "Diagnostic.findAll", query = "SELECT d FROM Diagnostic d"),
-                @NamedQuery(name = "Diagnostic.findByActionId", query = "SELECT d FROM Diagnostic d WHERE d.action.id = :actionId")
+                @NamedQuery(name = "Diagnostic.findByActionId", query = "SELECT d FROM Diagnostic d WHERE d.action.id = :actionId AND d.deleted = 0"),
+                @NamedQuery(name = "Diagnostic.findByActionIdAndType", query = "SELECT d FROM Diagnostic d " +
+                        "WHERE d.action.id = :actionId AND d.diagnosisType.flatCode = :flatCode AND d.deleted = 0")
         })
 @XmlType(name = "diagnostic")
 @XmlRootElement(name = "diagnostic")
