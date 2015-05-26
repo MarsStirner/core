@@ -17,7 +17,8 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "ActionProperty_Integer")
 @NamedQueries(
         {
-                @NamedQuery(name = "APValueInteger.findAll", query = "SELECT a FROM APValueInteger a")
+                @NamedQuery(name = "APValueInteger.findAll", query = "SELECT a FROM APValueInteger a"),
+                @NamedQuery(name = "APValueInteger.getValueById", query = "SELECT a.value FROM APValueInteger a WHERE a.id >= :fromId"),
         })
 @XmlType(name = "actionPropertyValueInteger")
 @XmlRootElement(name = "actionPropertyValueInteger")

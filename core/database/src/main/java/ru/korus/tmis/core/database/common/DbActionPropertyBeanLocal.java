@@ -148,4 +148,6 @@ public interface DbActionPropertyBeanLocal {
     String convertScope(ActionPropertyType apt);
 
     LinkedList<LinkedList<String>> convertValue(ActionPropertyType apt, String value);
+
+    String calcAuto(ActionProperty ap);
 }

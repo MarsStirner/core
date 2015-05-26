@@ -1,13 +1,13 @@
 package ru.korus.tmis.core.database.common
 
 import java.text.SimpleDateFormat
+import java.util.Date
 
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.database.DbDiagnosticBeanLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 
-import java.util.{List, Date}
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
 
@@ -15,7 +15,6 @@ import grizzled.slf4j.Logging
 import scala.collection.JavaConversions._
 import scala.collection.mutable.LinkedHashMap
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import java.util
 import scala.language.reflectiveCalls
 
 //
@@ -237,11 +236,11 @@ class DbActionPropertyBean
     val query: String = "SELECT %s FROM %s WHERE %s.%s=%s".format(prmList, tblList, rbAPTable.getTableName, rbAPTable.getMasterField, value)
     val data = em.createNativeQuery(query).getResultList
     if (data.isEmpty) {
-      res.add(new util.LinkedList[String])
+      res.add(new java.util.LinkedList[String])
     }
 
     data.foreach(d => {
-      res.add(new util.LinkedList[String])
+      res.add(new java.util.LinkedList[String])
       d.asInstanceOf[Array[Object]].foreach(v => {res.getLast.add("" + v)})
     })
     res
@@ -254,7 +253,7 @@ class DbActionPropertyBean
       return convertDiagValue(value)
     }
     val res = new java.util.LinkedList[java.util.LinkedList[String]]
-    res.add(new util.LinkedList[String])
+    res.add(new java.util.LinkedList[String])
     if ("Reference".equals(apt.getTypeName)) {
       res.get(0).add(fromRefValue(apt, value));
     } else {
@@ -306,7 +305,7 @@ class DbActionPropertyBean
       val d: Diagnostic = dbbDiagnosticBeanLocal.getDiagnosticById(Integer.parseInt(value))
       val diagnosis: Diagnosis = d.getDiagnosis
       if(d != null && diagnosis != null) {
-        res.add(new util.LinkedList[String])
+        res.add(new java.util.LinkedList[String])
         res.get(0).add(if (diagnosis.getSetDate == null) "" else formatter.format(diagnosis.getSetDate))
         res.get(0).add(if (diagnosis.getEndDate == null) "" else formatter.format(diagnosis.getSetDate))
         res.get(0).add(if (diagnosis.getMkb == null) "" else diagnosis.getMkb.getDiagID)
@@ -332,6 +331,7 @@ class DbActionPropertyBean
     v
   }
 
+
   def createActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
     val cls = ap.getValueClass
     if (cls == null)
@@ -347,6 +347,7 @@ class DbActionPropertyBean
         value
       }
       // Записываем значение
+      v = checkAuto(ap, v)
       if (apv.setValueFromString(v)) apv else null
     } else
       null
@@ -371,7 +372,7 @@ class DbActionPropertyBean
    * @param code поле code в таблице rls.vNomen
    */
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getRLSNomenclature(code: Int): List[Nomenclature] = {
+  def getRLSNomenclature(code: Int): java.util.List[Nomenclature] = {
     em.createQuery("SELECT n FROM Nomenclature n WHERE n.code = :code",
       classOf[Nomenclature])
       .setParameter("code", code)
@@ -794,4 +795,57 @@ class DbActionPropertyBean
   def getActionProperty_ActionByValue(action: Action): APValueAction = {
     em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
   }
+
+  override def calcAuto(ap: ActionProperty): String = {
+    var res: Integer = 1;
+    val apvList = prevValueList(ap)
+    if (apvList.isEmpty) {
+      res = apvList.get(0) + 1;
+      for (i <- 1 to apvList.size()) {
+        if(res == apvList.get(i)) {
+          res = apvList.get(i) + 1
+        } else {
+          return String.valueOf(res)
+        }
+      }
+    }
+    String.valueOf(res)
+  }
+
+  def prevValueList(ap: ActionProperty): java.util.List[Integer] = {
+    val cal = java.util.Calendar.getInstance();
+    cal.setTimeInMillis(ap.getCreateDatetime.getTime)
+    cal.set(cal.get(java.util.Calendar.YEAR), 0, 1, 0, 0)
+    val apIdList = em.createNamedQuery("ActionProperty.ByTypeIdAndDate", classOf[Integer])
+      .setParameter("aptId", ap.getType.getId)
+      .setParameter("begDate", cal.getTime)
+      .setMaxResults(1).getResultList
+    val apvList = if (!apIdList.isEmpty) {
+      em.createNamedQuery("APValueInteger.getValueById", classOf[Integer])
+        .setParameter("fromId", apIdList.get(0))
+        .getResultList
+    } else {
+      new java.util.ArrayList[Integer]()
+    }
+    apvList
+  }
+
+  def checkAutoValue(ap: ActionProperty, value: Int) = {
+    val apvList = prevValueList(ap)
+    apvList.foreach( v => if (v == value) {
+      throw new CoreException(0x0106, "Не могу установить '" + ap.getType.getName + "' в значение <" + value + ">")
+    })
+  }
+
+  def checkAuto(ap: ActionProperty, s: String): String = {
+    if (ap.getType.getTypeName == "Integer" ) {
+      if(s == "авто") {
+        return calcAuto(ap)
+      } else if (ap.getType.getValueDomain == "авто") {
+        checkAutoValue(ap, Integer.parseInt(s))
+      }
+    }
+    s
+  }
+
 }
