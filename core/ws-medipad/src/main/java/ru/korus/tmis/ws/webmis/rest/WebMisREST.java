@@ -209,11 +209,12 @@ public interface WebMisREST extends Serializable {
      * Универсальный сервис на получение справочников простой структуры
      * @param request  Данные из запроса как ListDataRequest.
      * @param dictName Наименование запрашиваемого справочника.
+     * @param eventId
      * @return JSON - строка как String
      * @throws CoreException
      * @see ListDataRequest
      */
-    String getDictionary(ListDataRequest request, String dictName) throws CoreException;
+    String getDictionary(ListDataRequest request, String dictName, Integer eventId) throws CoreException;
 
     /**
      * Создание нового назначения

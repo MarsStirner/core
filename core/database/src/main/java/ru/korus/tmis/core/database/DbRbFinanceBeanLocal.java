@@ -23,6 +23,6 @@ public interface DbRbFinanceBeanLocal {
      * @return
      * @throws CoreException
      */
-    java.util.LinkedList<Object> getAllRbFinanceWithFilter(int page, int limit, String sorting, ListDataFilter filter, Function1<Long, Boolean> setRecCount)
+    java.util.LinkedList<Object> getAllRbFinanceWithFilter(int page, int limit, String sorting, ListDataFilter filter, Function1<Long, Boolean> setRecCount, Integer eventId)
             throws CoreException;
 }

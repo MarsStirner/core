@@ -1425,7 +1425,7 @@ with CAPids {
     new ThesaurusListData(thesaurus, request)
   }
 
-  def getDictionary(request: ListDataRequest, dictName: String /*, auth: AuthData*/) = {
+  def getDictionary(request: ListDataRequest, dictName: String , eventId: Integer) = {
 
     val mapper: ObjectMapper = new ObjectMapper()
 
@@ -1558,7 +1558,8 @@ with CAPids {
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
-          request.rewriteRecordsCount)
+          request.rewriteRecordsCount,
+          eventId)
       case "quotaStatus" =>
         //   Статусы квот
         mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))

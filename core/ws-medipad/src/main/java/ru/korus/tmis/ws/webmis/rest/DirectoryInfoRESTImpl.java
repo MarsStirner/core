@@ -100,11 +100,12 @@ public class DirectoryInfoRESTImpl {
                                            @QueryParam("filter[parent]") String parent,    //KLADR
                                            @QueryParam("filter[typeIs]") String type,        //valueDomain
                                            @QueryParam("filter[capId]") int capId,  //valueDomain
-                                           @QueryParam("callback") String callback
+                                           @QueryParam("callback") String callback,
+                                           @QueryParam("eventId") Integer eventId
     ) throws CoreException {
         DictionaryListRequestDataFilter filter = new DictionaryListRequestDataFilter(dictName, headId, groupId, name, level, parent, type, capId);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getDictionary(request, dictName), callback);
+        return new JSONWithPadding(wsImpl.getDictionary(request, dictName, eventId), callback);
     }
 
 
