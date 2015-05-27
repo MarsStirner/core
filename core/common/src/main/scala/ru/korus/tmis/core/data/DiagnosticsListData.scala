@@ -31,6 +31,7 @@ class DiagnosticsListData {
         if (list != null && list.size > 0) {
           list.foreach(ajt => this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(new LaboratoryDiagnosticsListEntry(ajt._1, ajt._2, authData)))
         }
+        this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].sortWith((l, r) => l.takingTime.before(r.takingTime))
       }
       case "instrumental" => {
         this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
@@ -376,6 +377,9 @@ class LaboratoryDiagnosticsListEntry {
   @BeanProperty
   var laboratoryTitle: String = _ //Имя лаборатории
 
+  @BeanProperty
+  var takingTime: Date = _ //Время забора
+
   def this(action: Action, jt: JobTicket, authData: AuthData) {
     this()
     this.id = action.getId.intValue()
@@ -390,6 +394,7 @@ class LaboratoryDiagnosticsListEntry {
                         authData.getUser.getId.intValue() == action.getAssigner.getId.intValue() )
     this.isEditable = (action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
     laboratoryTitle = getLabNameByAction(action)
+    this.takingTime = if( jt == null ) null else jt.getDatetime
   }
 
   /**
