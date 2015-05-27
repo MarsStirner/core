@@ -4,7 +4,7 @@ import javax.persistence.{PersistenceContext, EntityManager}
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import ru.korus.tmis.core.data.{EventTypesListRequestDataFilter, QueryDataStructure}
-import ru.korus.tmis.core.entity.model.EventType
+import ru.korus.tmis.core.entity.model.{OrgStructure, EventType}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.ListDataFilter
@@ -71,6 +71,16 @@ class DbEventTypeBean
     }
     else
       result
+  }
+
+  def filterByPersonDepartment(eventTypeList: java.util.List[EventType], orgStructure: OrgStructure): java.util.List[EventType] = {
+    if(orgStructure == null) {
+      return eventTypeList
+    }
+    val eventTypeIdByOrgList = em.createNamedQuery("OrgStructureEventType.findEventTypeIdByOrgId", classOf[Integer])
+      .setParameter("orgId", orgStructure.getId)
+      .getResultList
+    eventTypeList.filter(et => eventTypeIdByOrgList.contains(et.getId))
   }
 
   val EventTypeByIdQuery =

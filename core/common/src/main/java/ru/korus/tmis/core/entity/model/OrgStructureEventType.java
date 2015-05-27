@@ -9,7 +9,8 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "OrgStructure_EventType")
 @NamedQueries(
         {
-                @NamedQuery(name = "OrgStructureEventType.findAll", query = "SELECT o FROM OrgStructureEventType o")
+                @NamedQuery(name = "OrgStructureEventType.findAll", query = "SELECT o FROM OrgStructureEventType o"),
+                @NamedQuery(name = "OrgStructureEventType.findEventTypeIdByOrgId", query = "SELECT DISTINCT o.eventType.id FROM OrgStructureEventType o WHERE o.masterDepartment.id = :orgId")
         })
 @XmlType(name = "orgStructureEventType")
 @XmlRootElement(name = "orgStructureEventType")

@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.entity.model.EventType;
+import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
 import scala.Function1;
@@ -37,4 +38,6 @@ public interface DbEventTypeBeanLocal {
      */
     java.util.List<EventType> getEventTypesByRequestTypeIdAndFinanceId(int page, int limit, String sorting, ListDataFilter filter, Function1<Long, Boolean> setRecCount)
             throws CoreException;
+
+    java.util.List<EventType> filterByPersonDepartment(java.util.List<EventType> eventTypeList, OrgStructure orgStructure);
 }

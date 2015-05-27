@@ -1611,11 +1611,12 @@ with CAPids {
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
 
-    val list = dbEventTypeBean.getEventTypesByRequestTypeIdAndFinanceId(request.page - 1,
+    val list = dbEventTypeBean.filterByPersonDepartment(dbEventTypeBean.getEventTypesByRequestTypeIdAndFinanceId(request.page - 1,
       request.limit,
       request.sortingFieldInternal,
       request.filter.unwrap(),
-      request.rewriteRecordsCount)
+      request.rewriteRecordsCount), authData.getUser.getOrgStructure)
+
 
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
