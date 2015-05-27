@@ -799,7 +799,7 @@ class DbActionPropertyBean
   override def calcAuto(ap: ActionProperty): String = {
     var res: Integer = 1;
     val apvList = prevValueList(ap)
-    if (apvList.isEmpty) {
+    if (!apvList.isEmpty) {
       res = apvList.get(0) + 1;
       for (i <- 1 to apvList.size()) {
         if(res == apvList.get(i)) {
@@ -841,7 +841,7 @@ class DbActionPropertyBean
     if (ap.getType.getTypeName == "Integer" ) {
       if(s == "авто") {
         return calcAuto(ap)
-      } else if (ap.getType.getValueDomain == "авто") {
+      } else if (ap.getType.getValueDomain == "'авто'") {
         checkAutoValue(ap, Integer.parseInt(s))
       }
     }
