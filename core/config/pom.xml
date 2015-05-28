@@ -34,7 +34,7 @@
         <dependency>
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-classic</artifactId>
-            <version>${version.logging.logback}</version>
+            <version>0.9.20</version>
         </dependency>
         <dependency>
             <groupId>com.google.code.gson</groupId>
@@ -42,8 +42,6 @@
             <version>2.2.2</version>
         </dependency>
     </dependencies>
-
-
 
 
 </project>

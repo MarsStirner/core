@@ -37,15 +37,6 @@
         <!-- Версия ядра-->
         <version.tmis.core>2.5.65-SNAPSHOT</version.tmis.core>
 
-        <version.joda.time>2.3</version.joda.time>
-        <version.apache.thrift>0.9.0</version.apache.thrift>
-        <version.testng>6.8</version.testng>
-        <version.mokito>1.9.5</version.mokito>
-        <version.junit>4.8.2</version.junit>
-        <version.logging.logback>0.9.20</version.logging.logback>
-        <version.logging.logback.janino>2.6.1</version.logging.logback.janino>
-        <version.logging.jcl>1.5.6</version.logging.jcl>
-        <version.logging.slf4j>1.5.6</version.logging.slf4j>
         <version.logging.grizzled-slf4j>1.0.2</version.logging.grizzled-slf4j>
 
         <version.scala>2.11.2</version.scala>
@@ -84,7 +75,7 @@
         <spring.version>4.1.1.RELEASE</spring.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.jdk>1.6</project.build.jdk>
+        <project.build.jdk>1.7</project.build.jdk>
 
         <!-- Вкл/Выкл отладочную информацию-->
         <project.build.debug>true</project.build.debug>
@@ -198,22 +189,6 @@
             </activation>
         </profile>
 
-        <!-- Профиль для установки на стандартный Linux-сервер  glassfish 3.x (тестовый стенд)-->
-        <profile>
-            <id>production-standart-test</id>
-            <properties>
-                <!-- Выключить дебаг -->
-                <project.build.debug>true</project.build.debug>
-                <!-- Название домена -->
-                <glassfish.domain>fccho-moscow</glassfish.domain>
-                <!-- Адрес ЛИС БАК -->
-                <bak.intergation.url>http\://10.128.131.114\:8090/CGM_SOAP</bak.intergation.url>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-
         <!-- Профиль для установки на стандартный Linux-сервер glassfish 4.x -->
         <profile>
             <id>production-standart-glassfish4</id>
@@ -250,22 +225,7 @@
             </properties>
         </profile>
 
-        <profile>
-            <!-- Пользовательский профиль -->
-            <id>ueg</id>
-            <properties>
-                <separate>\</separate>
-                <glassfish.home>C:\Winprog\glassfish3</glassfish.home>
-                <!-- Название домена -->
-                <glassfish.domain>domain</glassfish.domain>
-                <!-- Логин администратора -->
-                <glassfish.admin.login>admin1234</glassfish.admin.login>
-                <!-- Пароль администратора-->
-                <glassfish.admin.password>admin1234</glassfish.admin.password>
-                <!-- Опиция для автосоздания таблиц/ключей на основе содержимого JPA-сущностей -->
-                <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
-            </properties>
-        </profile>
+
     </profiles>
 
     <dependencies>
@@ -354,13 +314,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${version.logging.slf4j}</version>
+            <version>1.5.6</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>${version.logging.jcl}</version>
+            <version>1.5.6</version>
         </dependency>
 
         <!--Java EE-->
@@ -397,15 +357,15 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${version.junit}</version>
+            <version>4.8.2</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>${version.testng}</version>
+            <version>6.8</version>
             <scope>test</scope>
-            <!--<classifier>jdk15</classifier>-->
         </dependency>
 
         <dependency>
@@ -432,14 +392,14 @@
         <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
-            <version>${version.apache.thrift}</version>
+            <version>0.9.0</version>
         </dependency>
 
         <!--Joda Time-->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>${version.joda.time}</version>
+            <version>2.3</version>
         </dependency>
 
         <dependency>
@@ -530,8 +490,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>${project.build.jdk}</source>
-                    <target>${project.build.jdk}</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <debug>${project.build.debug}</debug>
                     <showDeprecation>true</showDeprecation>
