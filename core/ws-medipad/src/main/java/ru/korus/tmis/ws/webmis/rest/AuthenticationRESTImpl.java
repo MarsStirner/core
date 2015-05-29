@@ -11,6 +11,7 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.*;
 
 import ru.korus.tmis.core.data.RoleData;
+import ru.korus.tmis.core.entity.model.Role;
 import ru.korus.tmis.core.exception.AuthenticationException;
 import ru.korus.tmis.ws.medipad.AuthenticationWebService;
 import ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage;
@@ -126,8 +127,13 @@ public class AuthenticationRESTImpl   {
                                 @QueryParam("roleId") int roleId,
                                 @QueryParam("callback") String callback) throws AuthenticationException {
         AuthData auth = webmisImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
-        return new JSONWithPadding(wsImpl
-                .authenticate(auth.getUser().getLogin(), auth.getUser().getPassword(), roleId), callback);
+        for(Role r : auth.getUser().getRoles()) {
+            if(r.getId().equals(roleId)) {
+                auth.setUserRole(r);
+                return new JSONWithPadding(auth, callback);
+            }
+        }
+        throw new AuthenticationException("Недопустимая роль (id = " + roleId + ") для сотрудника " + auth.getUser().getFullName());
     }
 
 }
