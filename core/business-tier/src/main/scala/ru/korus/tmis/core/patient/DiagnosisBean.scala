@@ -199,7 +199,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
 
   def getOldDiagByActionAndType(action: Action, diaTypeFlatCode: String): java.util.List[Diagnostic]  = {
     em.createNamedQuery("Diagnostic.findByActionIdAndType", classOf[Diagnostic])
-      .setParameter("actionId", action.getId)
+      .setParameter("actionId", if(action == null) 0 else action.getId)
       .setParameter("flatCode", diaTypeFlatCode)
     .getResultList
   }
