@@ -1273,7 +1273,10 @@ with CAPids {
     if (epst.isFindLast) {
       eventPerson = dbEventPerson.getLastEventPersonForEventId(event.getId.intValue())
       if (personId > 0) execPerson = dbStaff.getStaffById(personId)
-      isCreate = (eventPerson == null || eventPerson.getPerson != execPerson)
+      isCreate = (eventPerson == null
+        || eventPerson.getPerson != execPerson
+        || event.getExecutor == null
+        || event.getExecutor.getId != personId)
     }
 
     if (isCreate) {
