@@ -40,4 +40,5 @@ public interface DbEventTypeBeanLocal {
             throws CoreException;
 
     java.util.List<EventType> filterByPersonDepartment(java.util.List<EventType> eventTypeList, OrgStructure orgStructure);
+
 }

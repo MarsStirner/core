@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database;
 
+import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.filter.ListDataFilter;
 import scala.Function1;
@@ -23,6 +24,11 @@ public interface DbRbRequestTypeBeanLocal {
      * @return
      * @throws CoreException
      */
-    java.util.LinkedList<Object> getAllRbRequestTypesWithFilter(int page, int limit, String sorting, ListDataFilter filter, Function1<Long, Boolean> setRecCount)
+    java.util.LinkedList<Object> getAllRbRequestTypesWithFilter(int page,
+                                                                int limit,
+                                                                String sorting,
+                                                                ListDataFilter filter,
+                                                                Function1<Long, Boolean> setRecCount,
+                                                                OrgStructure orgStructure)
             throws CoreException;
 }

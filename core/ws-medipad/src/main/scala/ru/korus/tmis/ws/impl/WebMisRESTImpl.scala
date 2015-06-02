@@ -1425,7 +1425,7 @@ with CAPids {
     new ThesaurusListData(thesaurus, request)
   }
 
-  def getDictionary(request: ListDataRequest, dictName: String , eventId: Integer) = {
+  def getDictionary(request: ListDataRequest, dictName: String , eventId: Integer, auth: AuthData) = {
 
     val mapper: ObjectMapper = new ObjectMapper()
 
@@ -1550,7 +1550,8 @@ with CAPids {
           request.limit,
           request.sortingFieldInternal,
           request.filter.unwrap(),
-          request.rewriteRecordsCount)
+          request.rewriteRecordsCount,
+          auth.getUser.getOrgStructure)
       case "finance" =>
         //  Типы оплаты
         mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
@@ -1559,7 +1560,8 @@ with CAPids {
           request.sortingFieldInternal,
           request.filter.unwrap(),
           request.rewriteRecordsCount,
-          eventId)
+          eventId,
+          auth.getUser.getOrgStructure)
       case "quotaStatus" =>
         //   Статусы квот
         mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))

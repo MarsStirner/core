@@ -10,7 +10,7 @@ import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStruct
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.I18nable
-import ru.korus.tmis.core.entity.model.Event
+import ru.korus.tmis.core.entity.model.{OrgStructure, Event}
 
 
 /**
@@ -27,7 +27,14 @@ class DbRbFinanceBean   extends DbRbFinanceBeanLocal
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getAllRbFinanceWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean, eventId: Integer) = {
+  def filterByOrgStructure(arrays: util.List[Array[AnyRef]], orgStructure: OrgStructure) : util.List[Array[AnyRef]] = {
+    val requestTypeIdByOrgList = em.createNamedQuery("OrgStructureEventType.findFinanceTypeIdByOrgId", classOf[Integer])
+      .setParameter("orgId", orgStructure.getId)
+      .getResultList
+    return arrays.filter(a => { a.length > 0 && requestTypeIdByOrgList.contains(a(0))})
+  }
+
+  def getAllRbFinanceWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean, eventId: Integer, orgStructure: OrgStructure) = {
 
     val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {
@@ -65,7 +72,7 @@ class DbRbFinanceBean   extends DbRbFinanceBeanLocal
                   .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
-    val result = typed.getResultList
+    val result = filterByOrgStructure(typed.getResultList, orgStructure)
     val list = new java.util.LinkedList[Object]
     result.foreach(f => {
       list.add((f(0).asInstanceOf[java.lang.Integer], f(1).asInstanceOf[java.lang.String]))

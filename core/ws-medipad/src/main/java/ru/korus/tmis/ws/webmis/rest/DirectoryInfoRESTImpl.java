@@ -101,11 +101,12 @@ public class DirectoryInfoRESTImpl {
                                            @QueryParam("filter[typeIs]") String type,        //valueDomain
                                            @QueryParam("filter[capId]") int capId,  //valueDomain
                                            @QueryParam("callback") String callback,
-                                           @QueryParam("eventId") Integer eventId
+                                           @QueryParam("eventId") Integer eventId,
+                                           @Context HttpServletRequest servRequest
     ) throws CoreException {
         DictionaryListRequestDataFilter filter = new DictionaryListRequestDataFilter(dictName, headId, groupId, name, level, parent, type, capId);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getDictionary(request, dictName, eventId), callback);
+        return new JSONWithPadding(wsImpl.getDictionary(request, dictName, eventId, mkAuth(servRequest )), callback);
     }
 
 

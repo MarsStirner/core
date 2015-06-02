@@ -214,7 +214,7 @@ public interface WebMisREST extends Serializable {
      * @throws CoreException
      * @see ListDataRequest
      */
-    String getDictionary(ListDataRequest request, String dictName, Integer eventId) throws CoreException;
+    String getDictionary(ListDataRequest request, String dictName, Integer eventId, AuthData auth) throws CoreException;
 
     /**
      * Создание нового назначения
