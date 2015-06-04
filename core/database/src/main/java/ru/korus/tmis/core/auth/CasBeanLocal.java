@@ -12,6 +12,6 @@ import javax.ejb.Local;
 public interface CasBeanLocal {
     String createToken(String login, String password, String defaultToken);
 
-    Boolean checkToken(String defaultToken);
+    CasResp checkToken(String defaultToken);
 
 }

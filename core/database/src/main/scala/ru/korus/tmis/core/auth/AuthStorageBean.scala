@@ -18,7 +18,7 @@ import ru.korus.tmis.core.exception.{CoreException, AuthenticationException, NoS
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import java.util
 import java.lang
-import ru.korus.tmis.core.entity.model.{Action, AppLockDetailPK, AppLockDetail, AppLock}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.lock.{EntityLockInfo, ActionWithLockInfo}
 import scala.language.reflectiveCalls
 
@@ -70,38 +70,43 @@ class AuthStorageBean
     // Пытаемся получить сотрудника по л огину
     val staff = dbStaff.getStaffByLogin(login)
 
-    val userId: Int = staff.getId.intValue
-    val userFirstName = staff.getFirstName
-    val userLastName = staff.getLastName
-    val userPatrName = staff.getPatrName
     val userSpeciality = staff.getSpeciality match {
       case null => ""
       case specs => specs.getName
     }
 
-    val tokenStr = createToken(userId,
+    val tokenStr = createToken(staff.getId.intValue,
       initRole.getId.intValue,
       staff.getFullName,
       userSpeciality,
       login,
       password)
 
+
+    val authData: AuthData = putToken(tokenStr, staff, initRole)
+
+    authData
+  }
+
+  def putToken(tokenStr: String, staff: Staff, initRole: Role): AuthData = {
     val authData = new AuthData(
       new AuthToken(tokenStr),
       staff,
-      userId,
+      staff.getId.intValue,
       initRole,
-      userFirstName,
-      userLastName,
-      userPatrName,
-      userSpeciality
+      staff.getFirstName,
+      staff.getLastName,
+      staff.getPatrName,
+      staff.getSpeciality match {
+        case null => ""
+        case specs => specs.getName
+      }
     )
 
     val tokenEndTime =
       new Date(new Date().getTime + getAuthTokenLifeTime)
 
     authMap.put(authData.authToken, (authData, tokenEndTime))
-
     authData
   }
 
@@ -183,21 +188,29 @@ class AuthStorageBean
     val cookiesArray = cookies.toArray
 
     var token: String = null
+    var curRole: String = null
     for (i <- 0 to cookiesArray.length - 1) {
       val cookieName = cookiesArray(i).getName
       if (cookieName.compareTo("authToken") == 0) {
         token = cookiesArray(i).getValue
       }
+      if (cookieName.compareTo("currentRole") == 0) {
+        curRole = cookiesArray(i).getValue
+      }
     }
     var authData: AuthData = null
     if (token != null) {
-      val isCasTokenValid: Boolean = casBeanLocal.checkToken(token)
+      val casResp: CasResp = casBeanLocal.checkToken(token)
+      val isCasTokenValid: Boolean = casResp.getSuccess
       val authToken: AuthToken = new AuthToken(token)
       //данные об авторизации
       authData = this.getAuthData(authToken)
       if (authData != null) {
         info("Authentication data found: " + authData)
         authData.setUser(dbStaff.getStaffById(authData.getUserId))
+      } else if (isCasTokenValid) {
+        val staff: Staff = dbStaff.getStaffById(casResp.getUser_id)
+        authData = putToken(token, staff, staff.getRoles.find(_.getCode == curRole).getOrElse(null))
       } else {
         warn("No authentication data found")
         throw new AuthenticationException(

@@ -57,26 +57,30 @@ class CasBean extends CasBeanLocal {
     restTemplate.postForObject(fullUrl, entity, classOf[CasResp])
   }
 
-  override def checkToken(token: String): lang.Boolean = {
+  override def checkToken(token: String): CasResp = {
+    var res: CasResp = new CasResp
     if (ConfigManager.Cas.isActive) {
       val url: String = "prolong/"
       try {
         val casReq = new CasReq();
         casReq.setToken(token)
-        val res: CasResp = postForCasResp(url, casReq)
+        res = postForCasResp(url, casReq)
         if(!res.getSuccess) {
           logger.info("CAS exception: " + res.getException + " message: " + res.getMessage)
         }
-        res.getSuccess && res.token == token
+        res.setSuccess(res.getSuccess && res.token == token)
+        res
       }
       catch {
         case ex: RestClientException => {
           ex.printStackTrace
-          false
+          res.setSuccess(false)
+          res
         }
       }
     } else {
-      true
+      res.setSuccess(true)
+      res
     }
   }
 }
