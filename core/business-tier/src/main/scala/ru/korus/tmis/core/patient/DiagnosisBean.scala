@@ -58,10 +58,12 @@ class DiagnosisBean  extends DiagnosisBeanLocal
     val listOldDiag = getOldDiagByActionAndType(action, diaTypeFlatCode)
 
 
+    var isNewDiag = false;
     val option =
       if(diagnosticId>0) {
         oldDiagnostic = dbDiagnosticBean.getDiagnosticById(diagnosticId)
         if(oldDiagnostic!=null){
+          isNewDiag = oldDiagnostic.getDiagnosis == null || oldDiagnostic.getDiagnosis.getMkb.getId.intValue() != mkbId
           if (oldDiagnostic.getDiagnosis!=null){
               if(oldDiagnostic.getDiagnosis.getMkb.getId.intValue()!=mkbId)   //МКБ разные (история назначений)
                 ID_CREATE
@@ -82,6 +84,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
         ID_CREATE
       } else {
         oldDiagnostic = listOldDiag.get(0)
+        isNewDiag = oldDiagnostic.getDiagnosis == null || oldDiagnostic.getDiagnosis.getMkb.getId.intValue()!=mkbId
         ID_MODIFY
       }
 
@@ -102,7 +105,8 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                                 diseaseCharacterId,
                                                                 diseaseStageId,
                                                                 description,
-                                                                userData)
+                                                                userData,
+                                                                true)
       }
       case ID_MODIFY => {
         diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(oldDiagnostic.getDiagnosis.getId,
@@ -119,7 +123,8 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                                 diseaseCharacterId,
                                                                 diseaseStageId,
                                                                 description,
-                                                                userData)
+                                                                userData,
+                                                                isNewDiag)
       }
       case ID_MODIFY_WITH_CREATE_DIAGNOSIS => {
         diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(0,
@@ -136,7 +141,8 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                                 diseaseCharacterId,
                                                                 diseaseStageId,
                                                                 description,
-                                                                userData)
+                                                                userData,
+                                                                isNewDiag)
       }
       case _=> {}
     }

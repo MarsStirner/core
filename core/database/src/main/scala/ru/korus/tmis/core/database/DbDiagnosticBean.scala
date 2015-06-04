@@ -83,7 +83,8 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
                                diseaseCharacterId: Int,
                                diseaseStageId: Int,
                                note: String,
-                               userData: AuthData) = {
+                               userData: AuthData,
+                               isNewDiag: Boolean) = {
     val now = new Date()
     var diagnostic: Diagnostic = null
     var oldDiagnostic: Diagnostic = null
@@ -131,7 +132,9 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
 
       diagnostic.setSpeciality(speciality)
       diagnostic.setPerson(userData.getUser)
-      diagnostic.setSetDate(now)
+      if(diagnostic.getSetDate == null || isNewDiag) {
+        diagnostic.setSetDate(now)
+      }
       diagnostic.setNotes(note)
       diagnostic.setDiagnosis(diagnosis)
     }

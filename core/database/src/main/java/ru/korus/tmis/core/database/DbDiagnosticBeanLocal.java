@@ -54,7 +54,8 @@ public interface DbDiagnosticBeanLocal {
                                 int diseaseCharacterId,
                                 int diseaseStageId,
                                 String note,
-                                AuthData userData) throws CoreException;
+                                AuthData userData,
+                                Boolean isNewDiag) throws CoreException;
 
     /**
      * Получение именнованного списка диагнозов для выбранной госпитализации
