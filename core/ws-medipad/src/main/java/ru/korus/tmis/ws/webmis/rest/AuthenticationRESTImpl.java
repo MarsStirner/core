@@ -101,9 +101,10 @@ public class AuthenticationRESTImpl   {
     @Path("/user-info")
     @Consumes({"application/json", "application/xml"})
     @Produces({"application/javascript", "application/x-javascript","application/xml"})
-    public Object getAuthData(@Context HttpServletRequest servletRequest) throws AuthenticationException {
+    public Object getAuthData(@Context HttpServletRequest servletRequest,
+                              @QueryParam("callback") String callback) throws AuthenticationException {
         try {
-            return  authStorage.checkTokenCookies(Arrays.asList(servletRequest.getCookies()));
+            return new JSONWithPadding(authStorage.checkTokenCookies(Arrays.asList(servletRequest.getCookies())), callback);
         } catch (CoreException e) {
             throw new AuthenticationException("Недопустимый токен");
         }
