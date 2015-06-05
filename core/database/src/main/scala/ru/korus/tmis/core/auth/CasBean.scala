@@ -60,9 +60,10 @@ class CasBean extends CasBeanLocal {
   override def checkToken(token: String): CasResp = {
     var res: CasResp = new CasResp
     if (ConfigManager.Cas.isActive) {
-      val url: String = "prolong/"
+      val url: String = "check/"
       try {
         val casReq = new CasReq();
+        casReq.setProlong(true)
         casReq.setToken(token)
         res = postForCasResp(url, casReq)
         if(!res.getSuccess) {
