@@ -34,6 +34,10 @@ class AuthData() {
   @BeanProperty
   var userSpecs: String = _                         //Оставлено для медипад
 
+
+  @BeanProperty
+  var roles: java.util.Set[Role] = _
+
   var userRole: Role = _
 
   /**
@@ -101,6 +105,7 @@ class AuthData() {
     this.userSpecs = userSpecs
     this.userRole = userRole
     this.doctor = new DoctorSpecsContainer(user)
+    this.roles = user.getRoles;
   }
 
   override def toString = {

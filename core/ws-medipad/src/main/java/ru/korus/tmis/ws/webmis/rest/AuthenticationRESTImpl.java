@@ -13,6 +13,7 @@ import ru.korus.tmis.core.auth.*;
 import ru.korus.tmis.core.data.RoleData;
 import ru.korus.tmis.core.entity.model.Role;
 import ru.korus.tmis.core.exception.AuthenticationException;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.medipad.AuthenticationWebService;
 import ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage;
 
@@ -69,6 +70,7 @@ public class AuthenticationRESTImpl   {
     	return wsImpl.authenticate(userName, password, roleId);
     }
 
+
     /**
      * Сервис по получению доступных ролей для пользователя (первичная авторизация)
      * @param request Авторизационные данные пользователя в виде контейнера: AuthEntry.
@@ -88,6 +90,22 @@ public class AuthenticationRESTImpl   {
             return new JSONWithPadding(wsImpl.getRoles(request.login(), request.password()), callback);
         } catch (AuthenticationException e) {
             return new ExceptionJSONMessage(e);
+        }
+    }
+
+
+    @EJB
+    AuthStorageBeanLocal authStorage;
+
+    @GET
+    @Path("/user-info")
+    @Consumes({"application/json", "application/xml"})
+    @Produces({"application/javascript", "application/x-javascript","application/xml"})
+    public Object getAuthData(@Context HttpServletRequest servletRequest) throws AuthenticationException {
+        try {
+            return  authStorage.checkTokenCookies(Arrays.asList(servletRequest.getCookies()));
+        } catch (CoreException e) {
+            throw new AuthenticationException("Недопустимый токен");
         }
     }
 
