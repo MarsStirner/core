@@ -173,6 +173,7 @@ class DbActionBean
       //a.setExecutor(userData.user)
     }
 
+    a.setModifyPerson(userData.user)
     a.setModifyDatetime(now)
 
     a.setBegDate(now)
