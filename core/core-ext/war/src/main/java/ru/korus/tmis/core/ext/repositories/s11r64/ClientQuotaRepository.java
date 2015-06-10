@@ -14,7 +14,7 @@ import java.util.List;
  * Description:  <br>
  */
 public interface ClientQuotaRepository extends JpaRepository<Client_Quoting, Integer> {
-    @Query("SELECT cq FROM Client_Quoting cq WHERE cq.event.id = :eventId")
+    @Query("SELECT cq FROM Client_Quoting cq WHERE cq.event.id = :eventId AND cq.deleted = 0")
     List<Client_Quoting> findByEventId(@Param(value = "eventId") Integer eventId);
 
     @Query("SELECT cq FROM Client_Quoting cq WHERE cq.event.client.id = :clientId ORDER BY cq.event.createDatetime ASC")

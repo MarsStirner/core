@@ -129,7 +129,8 @@ public class QuotaController implements Serializable {
         return MyJsonUtils.toJsonWithPadding(callback, quotaType);
     }
 
-    @RequestMapping(method = RequestMethod.DELETE, value = "/client_quoting/{quotaId}")
+    @RequestMapping(method = RequestMethod.DELETE, value = "/del/client_quoting/{quotaId}")
+    @ResponseBody
     public void removeQuota(@PathVariable Integer quotaId,
                            @RequestParam(required = false) String callback) {
         quotaService.removeQuota(quotaId);

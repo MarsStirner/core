@@ -92,6 +92,19 @@ public class Client_Quoting implements Serializable {
 	public Client_Quoting() {
 	}
 
+    @PostLoad
+    public void updateEndDate() {
+        Date dateNull = new Date(0);
+        if(dateEnd == null) {
+            dateEnd = dateNull;
+        }
+        if(dateRegistration == null) {
+            dateRegistration = dateNull;
+        }
+        if(directionDate == null) {
+            directionDate = dateNull;
+        }
+    }
 	public Integer getId() {
 		return this.id;
 	}

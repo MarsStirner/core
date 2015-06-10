@@ -158,6 +158,7 @@ public class MainSpringConfiguration extends WebMvcConfigurerAdapter {
         properties.put("hibernate.connection.url", url );
         properties.put("hibernate.connection.username", getUsername(POOL_NAME_S11R64));
         properties.put("hibernate.connection.password", getPassword(POOL_NAME_S11R64));
+        properties.put("hibernate.connection.zeroDateTimeBehavior", "convertToNull");
 
         properties.put("hibernate.temp.use_jdbc_metadata_defaults", "false");
         properties.put("hibernate.auto_close_session", "true");
