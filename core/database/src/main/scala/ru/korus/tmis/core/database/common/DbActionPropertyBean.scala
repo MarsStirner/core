@@ -833,7 +833,8 @@ class DbActionPropertyBean
   def checkAutoValue(ap: ActionProperty, value: Int) = {
     val apvList = prevValueList(ap)
     apvList.foreach( v => if (v == value) {
-      throw new CoreException(0x0106, "Не могу установить '" + ap.getType.getName + "' в значение <" + value + ">")
+      //Номер операции 533 уже используется
+      throw new CoreException(0x0106, ap.getType.getName + " " + value + "  уже используется")
     })
   }
 
