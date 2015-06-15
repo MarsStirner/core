@@ -38,6 +38,8 @@ public class PayerInfo {
 
     private Integer company;
 
+    private String companyName;
+
     public PayerInfo() {
     }
 
@@ -62,6 +64,8 @@ public class PayerInfo {
         address = eventLocalContract.getRegAddress();
 
         company = eventLocalContract.getOrganisation() == null ? null :  eventLocalContract.getOrganisation().getId();
+
+        companyName = eventLocalContract.getOrganisation() == null ? null :  eventLocalContract.getOrganisation().getShortName();
 
     }
 
