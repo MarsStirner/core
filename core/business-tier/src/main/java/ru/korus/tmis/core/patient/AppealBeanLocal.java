@@ -117,17 +117,6 @@ public interface AppealBeanLocal {
      */
     String getPatientsHospitalizedStatus(int eventId) throws CoreException;
 
-    /**
-     * Метод создает или редактирует талон ВМП (квота)
-     * @param dataEntry Данные о квоте как ClientQuoting
-     * @param eventId Идентификатор обращения на госпитализацию.
-     * @param auth Авторизационные данные.
-     * @return талом ВМП (квота)
-     * @throws CoreException
-     * @since 1.0.0.48
-     */
-    ClientQuoting insertOrUpdateClientQuoting(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
-
     MonitoringInfoListData getMonitoringInfo(int eventId, int condition, AuthData authData) throws CoreException;
 
     SortedSet<Tuple5<String, Date, Date, List<Integer>, Integer>> getInfectionMonitoring(Patient patient) throws CoreException;

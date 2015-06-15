@@ -142,9 +142,6 @@ with CAPids {
   private var dbQuotaTypeBean: DbQuotaTypeBeanLocal = _
 
   @EJB
-  private var dbClientQuoting: DbClientQuotingBeanLocal = _
-
-  @EJB
   var dbEventPerson: DbEventPersonBeanLocal = _
 
   @EJB
@@ -1084,43 +1081,6 @@ with CAPids {
     mapper.writeValueAsString(new ActionDataContainer(action))
   }
 
-  def insertOrUpdateQuota(quotaData: QuotaData, eventId: Int, auth: AuthData) = {
-    var quota = appealBean.insertOrUpdateClientQuoting(quotaData.getData, eventId, auth)
-    val mapper: ObjectMapper = new ObjectMapper()
-    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[QuotaViews.DynamicFieldsQuotaCreate]))
-    if (quotaData.getData.getId > 0) {
-      quota = dbClientQuoting.getClientQuotingById(quotaData.getData.getId)
-    }
-    mapper.writeValueAsString(new QuotaData(new QuotaEntry(quota, classOf[QuotaViews.DynamicFieldsQuotaCreate]), quotaData.getRequestData))
-  }
-
-  def getQuotaHistory(appealId: Int, request: QuotaRequestData) = {
-    val appeal = dbEventBean.getEventById(appealId)
-    //val result = appealBean.getAppealById(appealId)
-    //val appeal = result.iterator.next()._1
-    val quotaList = dbClientQuoting.getAllClientQuotingForPatient(appeal.getPatient.getId.intValue(),
-      request.page - 1,
-      request.limit,
-      request.sortingFieldInternal,
-      request.sortingMethod,
-      request.filter,
-      request.rewriteRecordsCount)
-
-    val mapper: ObjectMapper = new ObjectMapper()
-    mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[QuotaViews.DynamicFieldsQuotaHistory]))
-    mapper.writeValueAsString(new QuotaListData(quotaList, request))
-  }
-
-  /*
-  def insertTalonSPOForPatient(data: Object) = {
-
-    /*newEvent = eventBean.createEvent(/*appealData.data.patient.id.toInt*/patientId,
-      /*appealData.data.appealType.id.toInt*/53, //дневной стационар
-      authData) */
-
-    null
-  }*/
-
   def getAllPersons(requestData: ListDataRequest) = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
@@ -1130,17 +1090,6 @@ with CAPids {
       requestData.filter.unwrap(),
       requestData.rewriteRecordsCount),
       requestData)
-
-
-    /*requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
-    val list = new AllPersonsListData(dbStaff.getAllPersonsByRequest(requestData.limit,
-      requestData.page-1,
-      requestData.sortingField,
-      requestData.sortingMethod,
-      requestData.filter
-    ),
-      requestData)
-    list */
   }
 
   def getAllDepartments(requestData: ListDataRequest) = {

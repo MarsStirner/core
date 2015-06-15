@@ -52,7 +52,6 @@ class AppealBeanTest {
   @Mock var dbFDRecordBean: DbFDRecordBeanLocal = _
   @Mock var dbPatientBean: DbPatientBeanLocal = _
   @Mock var dbClientRelation: DbClientRelationBeanLocal = _
-  @Mock var dbClientQuoting: DbClientQuotingBeanLocal = _
   @Mock var dbEventPerson: DbEventPersonBeanLocal = _
   @Mock var dbEventTypeBean: DbEventTypeBeanLocal = _
   @Mock var diagnosisBean: DiagnosisBeanLocal = _

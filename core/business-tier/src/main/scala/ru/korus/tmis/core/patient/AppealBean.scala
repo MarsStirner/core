@@ -74,10 +74,6 @@ with CAPids {
   @EJB
   var dbEventClientRelation: DbEventClientRelationBeanLocal = _
 
-
-  @EJB
-  var dbClientQuoting: DbClientQuotingBeanLocal = _
-
   @EJB
   var dbEventPerson: DbEventPersonBeanLocal = _
 
@@ -997,49 +993,6 @@ with CAPids {
       .setParameter("supportedRequestTypes", asJavaCollection(i18n("webmis.supportedEventTypes").split(",")))
       .getResultList
     rbResult
-  }
-
-  def insertOrUpdateClientQuoting(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
-    var lockId: Int = -1
-    var oldQuota: ClientQuoting = null
-    var clientQuoting: ClientQuoting = null
-    var quotaVersion: Int = 0
-    if (dataEntry.getId() > 0) {
-      quotaVersion = dataEntry.getVersion
-      oldQuota = ClientQuoting.clone(dbClientQuoting.getClientQuotingById(dataEntry.getId))
-      lockId = appLock.acquireLock("Client_Quoting", oldQuota.getId.intValue(), oldQuota.getId.intValue(), auth)
-    }
-    try {
-      val event: Event = dbEventBean.getEventById(eventId)
-      val patient = event.getPatient
-      var mkb: Mkb = null
-      try {
-        mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
-      } catch {
-        case e: Exception => mkb = null
-      }
-      var isPersist = true
-      if (dataEntry.getId > 0) {
-        isPersist = false
-      }
-      clientQuoting = dbClientQuoting.insertOrUpdateClientQuoting(dataEntry.getId,
-        dataEntry.getVersion,
-        dataEntry.getQuotaType.getId,
-        dataEntry.getStatus.getId,
-        dataEntry.getDepartment.getId,
-        event.getExternalId,
-        dataEntry.getTalonNumber,
-        dataEntry.getStage.getId,
-        dataEntry.getRequest.getId,
-        mkb,
-        patient,
-        event,
-        auth.getUser)
-      if (isPersist) dbManager.persist(clientQuoting) else dbManager.merge(clientQuoting)
-    } finally {
-      if (lockId > 0) appLock.releaseLock(lockId)
-    }
-    clientQuoting
   }
 
   def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData) = {

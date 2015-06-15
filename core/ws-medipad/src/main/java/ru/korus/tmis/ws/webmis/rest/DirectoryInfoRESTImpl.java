@@ -357,37 +357,6 @@ public class DirectoryInfoRESTImpl {
     }
 
     /**
-     * Получение типов квот.
-     * <pre>
-     * &#15; Возможные значения для сортировки:
-     * &#15; "id" - по идентификатору записи (значение по умолчанию);
-     * &#15; "groupId" - по идентификатору группы;
-     * &#15; "code" - по коду;</pre>
-     *
-     * @param typeId  Идентификатор типа квоты  (В url: filter[id]=...)
-     * @param groupId Фильтр по идентификатору группы типов квот. (В url: filter[groupId]=...)
-     * @param code    Фильтр по коду типа квоты. (В url: filter[code]=...)
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws CoreException
-     * @see CoreException
-     */
-    @GET
-    @Path("/quotaTypes")
-    @Produces({"application/javascript", "application/x-javascript"})
-    public Object getQuotaTypes(@QueryParam("sortingField") String sortingField,
-                                @QueryParam("sortingMethod") String sortingMethod,
-                                @QueryParam("limit") int limit,
-                                @QueryParam("page") int page,
-                                @QueryParam("filter[id]") int typeId,
-                                @QueryParam("filter[code]") String code,
-                                @QueryParam("filter[groupId]") String groupId,
-                                @QueryParam("callback") String callback) throws CoreException {
-        QuotaTypesListRequestDataFilter filter = new QuotaTypesListRequestDataFilter(typeId, code, groupId);
-        ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getQuotaTypes(request), callback);
-    }
-
-    /**
      * Сервис по получению списка обращений <br>
      * Путь: ../tms-registry/eventTypes
      * <pre>

@@ -37,9 +37,6 @@ public class AppealsInfoRESTImpl {
     private ExaminationsRegistryRESTImpl examinationsRegistryREST;
 
     @EJB
-    private QuotesRegistryRESTImpl quotesRegistryREST;
-
-    @EJB
     private HospitalBedRegistryRESTImpl hospitalBedRegistryRESTImpl;
 
     @EJB
@@ -74,12 +71,6 @@ public class AppealsInfoRESTImpl {
         return diagnosticsRegistryExRESTImpl;
     }
 
-    @Path("/{eventId}/quotes/")
-    public QuotesRegistryRESTImpl getQuotesRegistryRESTImpl(@Context HttpServletRequest servRequest,
-                                                            @PathParam("eventId") int eventId,
-                                                            @QueryParam("callback") String callback) {
-        return quotesRegistryREST;
-    }
 
     /**
      * Запрос на список поступивших.

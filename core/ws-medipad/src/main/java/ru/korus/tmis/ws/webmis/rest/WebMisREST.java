@@ -262,36 +262,6 @@ public interface WebMisREST extends Serializable {
     CommonData getPatientsFromOpenAppealsWhatHasBedsByDepartmentId (int departmentId) throws CoreException;
 
     /**
-     * Сервис на создание/редактирование квоты
-     * @param quotaData Данные о сохраняемой/редактируемой квоте как QuotaData
-     * @param eventId Идентификатор обращения
-     * @param auth Авторизационные данные как AuthData
-     * @return JSON - строка как String
-     * @throws CoreException
-     * @see QuotaData
-     * @see AuthData
-     */
-    String insertOrUpdateQuota(QuotaData quotaData, int eventId, AuthData auth) throws CoreException;
-
-    /**
-     * Сервис на получение истории квот
-     * @param appealId Идентификатор обращения
-     * @return JSON - строка как String
-     * @throws CoreException
-     */
-    String getQuotaHistory(int appealId, QuotaRequestData request) throws CoreException;
-
-    /**
-     * Сервис на получение списка справочника типов квот
-     * @param request Данные из запроса как ListDataRequest
-     * @return Список типов квот как GroupTypesListData
-     * @throws CoreException
-     * @see ListDataRequest
-     * @see GroupTypesListData
-     */
-    GroupTypesListData getQuotaTypes(ListDataRequest request) throws CoreException;
-
-    /**
      * Сервис на получение данных о заборе биоматериала
      * @param request Данные из запроса как TakingOfBiomaterialRequesData
      * @param authData Авторизационные данные как AuthData
