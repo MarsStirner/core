@@ -471,19 +471,98 @@ with CAPids {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
+  def removeCommonValue(data: JSONCommonData, emptyDoc: JSONCommonData): JSONCommonData = {
+    setPropValue(data, "Summary", ActionWrapperInfo.assessmentBeginDate, "")
+    setPropValue(data, "Summary", ActionWrapperInfo.doctorFirstName, "")
+    setPropValue(data, "Summary", ActionWrapperInfo.doctorLastName, "")
+    setPropValue(data, "Summary", ActionWrapperInfo.doctorMiddleName, "")
+    setPropValue(data, "Summary", ActionWrapperInfo.doctorSpecs, "")
+    removeProp(data, "Summary", ActionWrapperInfo.executorPost)
+    setPropValue(data, "Summary", ActionWrapperInfo.plannedEndDate,
+      getPropValue(emptyDoc, "Summary", ActionWrapperInfo.plannedEndDate))
+    data.getData.foreach( d => {
+      d.setStatus(null)
+      d.setVersion(null)
+    })
+    data.getData.foreach(commonEntity => {
+      commonEntity.group.find(_.getName == "Details") match {
+        case Some(commonGroup) => {
+          commonGroup.getAttribute.foreach(_.setId(0))
+        }
+        case _ =>
+      }
+    })
+
+    return data
+  }
+
+  def setPropValue(data: JSONCommonData, groupName: String, paramName: StringId, value: String) {
+    data.getData.foreach(commonEntity => {
+      commonEntity.group.find(_.getName == groupName) match {
+        case Some(commonGroup) => {
+          commonGroup.getAttribute.find(_.getName == paramName.toString) match {
+            case Some(commonAttribute) => {
+              val findRes: Option[PropertyPair] = commonAttribute.properties.find(_.getName == ActionPropertyWrapperInfo.Value.toString)
+              findRes match {
+                case Some(propertyPair) => {
+                  propertyPair.setValue(value)
+                  return
+                }
+                case _ =>
+              }
+            }
+            case _ =>
+          }
+        }
+        case _ =>
+      }
+    })
+  }
+
+  def getPropValue(data: JSONCommonData, groupName: String, paramName: StringId): String = {
+    data.getData.foreach(commonEntity => {
+      commonEntity.group.find(_.getName == groupName) match {
+        case Some(commonGroup) => {
+          commonGroup.getAttribute.find(_.getName == paramName.toString) match {
+            case Some(commonAttribute) => commonAttribute.properties.find(_.getName == ActionPropertyWrapperInfo.Value.toString) match {
+              case Some(propertyPair) => return propertyPair.getValue()
+              case _ =>
+            }
+            case _ =>
+          }
+        }
+        case _ =>
+      }
+    })
+    ""
+  }
+
+  def removeProp(data: JSONCommonData, groupName: String, paramName: StringId) {
+    data.getData.foreach(commonEntity => {
+      commonEntity.group.find(_.getName == groupName) match {
+        case Some(commonGroup) => {
+          commonGroup.getAttribute.filter(_.getName != paramName.toString)
+        }
+      }
+    })
+  }
+
   def getStructOfPrimaryMedExam(actionTypeId: Int, actionId: Integer, eventId: Int, authData: AuthData): JSONCommonData = {
-    if(actionId == null || actionId < 1) {
+    if (actionId == null || actionId < 1) {
       getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData)
     } else {
       val action: Action = em.find(classOf[Action], actionId)
-      if(action == null || action.getActionType == null || action.getActionType.getId != actionTypeId) {
+      if (action == null || action.getActionType == null || action.getActionType.getId != actionTypeId) {
         getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData)
       } else {
-        getPrimaryAssessmentById(actionId, authData)
+        val jsonCommonDataForEmptyDoc = getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData)
+        val res = getPrimaryAssessmentById(actionId, authData)
+        removeCommonValue(res, jsonCommonDataForEmptyDoc)
       }
     }
   }
-    //запрос на структуру первичного мед. осмотра
+
+  //запрос на структуру первичного мед. осмотра
   def getStructOfPrimaryMedExam(actionTypeId: Int, eventId: Int, authData: AuthData): JSONCommonData = {
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //primaryAssessmentBean.getPrimaryAssessmentEmptyStruct("1_1_01", "PrimaryAssesment", null)
@@ -1370,11 +1449,13 @@ with CAPids {
       request.limit,
       request.sortingFieldInternal,
       request.filter.unwrap())
-    thesaurus.foreach(t => {t.setIsContainer(dbThesaurusBeanLocal.isContainer(t.getId))})
+    thesaurus.foreach(t => {
+      t.setIsContainer(dbThesaurusBeanLocal.isContainer(t.getId))
+    })
     new ThesaurusListData(thesaurus, request)
   }
 
-  def getDictionary(request: ListDataRequest, dictName: String , eventId: Integer, auth: AuthData) = {
+  def getDictionary(request: ListDataRequest, dictName: String, eventId: Integer, auth: AuthData) = {
 
     val mapper: ObjectMapper = new ObjectMapper()
 
@@ -1650,7 +1731,7 @@ with CAPids {
     outList.foreach(i => {
       if (i.size() > 2 && (resList.isEmpty ||
         resList.last.get(0) != i.get(0) ||
-        resList.last.get(1) != i.get(1) )) {
+        resList.last.get(1) != i.get(1))) {
         resList.add(i)
       }
     })
