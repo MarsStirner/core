@@ -485,7 +485,7 @@ with CAPids {
       d.setVersion(null)
     })
     val commonGroup = getDetails(data);
-    val commonGroupEmpty = getDetails(data);
+    val commonGroupEmpty = getDetails(emptyDoc);
     commonGroup.getAttribute.foreach(ca => {
       ca.setId(commonGroupEmpty.getAttribute.find(_.getName == ca.getName).getOrElse(new CommonAttribute()).getTypeId)
     })
@@ -497,7 +497,7 @@ with CAPids {
     data.getData.foreach(commonEntity => {
       commonEntity.group.find(_.getName == "Details") match {
         case Some(commonGroup) => {
-          commonGroup
+          return commonGroup
         }
         case _ => null
       }
