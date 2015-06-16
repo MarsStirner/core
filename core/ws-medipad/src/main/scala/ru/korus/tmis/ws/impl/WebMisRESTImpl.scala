@@ -502,6 +502,7 @@ with CAPids {
         case _ => null
       }
     })
+    null
   }
 
   def setPropValue(data: JSONCommonData, groupName: String, paramName: StringId, value: String) {
