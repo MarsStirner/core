@@ -478,6 +478,7 @@ with CAPids {
     setPropValue(data, "Summary", ActionWrapperInfo.doctorMiddleName, "")
     setPropValue(data, "Summary", ActionWrapperInfo.doctorSpecs, "")
     removeProp(data, "Summary", ActionWrapperInfo.executorPost)
+    removeProp(data, "Summary", ActionWrapperInfo.actionStatus)
     setPropValue(data, "Summary", ActionWrapperInfo.plannedEndDate,
       getPropValue(emptyDoc, "Summary", ActionWrapperInfo.plannedEndDate))
     data.getData.foreach( d => {
