@@ -551,7 +551,10 @@ with CAPids {
     data.getData.foreach(commonEntity => {
       commonEntity.group.find(_.getName == groupName) match {
         case Some(commonGroup) => {
-          commonGroup.setAttribute(commonGroup.getAttribute.filter(_.getName != paramName.toString).toList)
+          val list = commonGroup.getAttribute.filter(_.getName != paramName.toString)
+          commonGroup.getAttribute.clear()
+          list.foreach(commonGroup.getAttribute.add(_))
+          return
         }
       }
     })
