@@ -484,16 +484,24 @@ with CAPids {
       d.setStatus(null)
       d.setVersion(null)
     })
-    data.getData.foreach(commonEntity => {
-      commonEntity.group.find(_.getName == "Details") match {
-        case Some(commonGroup) => {
-          commonGroup.getAttribute.foreach(_.setId(0))
-        }
-        case _ =>
-      }
+    val commonGroup = getDetails(data);
+    val commonGroupEmpty = getDetails(data);
+    commonGroup.getAttribute.foreach(ca => {
+      ca.setId(commonGroupEmpty.getAttribute.find(_.getName == ca.getName).getOrElse(new CommonAttribute()).getTypeId)
     })
 
     return data
+  }
+
+  def getDetails(data: JSONCommonData): CommonGroup = {
+    data.getData.foreach(commonEntity => {
+      commonEntity.group.find(_.getName == "Details") match {
+        case Some(commonGroup) => {
+          commonGroup
+        }
+        case _ => null
+      }
+    })
   }
 
   def setPropValue(data: JSONCommonData, groupName: String, paramName: StringId, value: String) {
