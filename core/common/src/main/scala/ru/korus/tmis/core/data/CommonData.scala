@@ -147,7 +147,7 @@ class CommonGroup {
 
   @BeanProperty var name: String = _
 
-  @BeanProperty var attribute = new util.LinkedList[CommonAttribute]
+  @BeanProperty var attribute: util.List[CommonAttribute] = new util.LinkedList[CommonAttribute]
 
   def this(id: Integer, name: String) = {
     this()
