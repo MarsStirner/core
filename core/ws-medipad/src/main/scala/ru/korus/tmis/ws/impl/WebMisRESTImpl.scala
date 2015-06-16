@@ -487,7 +487,7 @@ with CAPids {
     val commonGroup = getDetails(data);
     val commonGroupEmpty = getDetails(emptyDoc);
     commonGroup.getAttribute.foreach(ca => {
-      ca.setId(commonGroupEmpty.getAttribute.find(_.getName == ca.getName).getOrElse(new CommonAttribute()).getTypeId)
+      ca.setTypeId(commonGroupEmpty.getAttribute.find(_.getName == ca.getName).getOrElse(new CommonAttribute()).getTypeId)
     })
 
     return data
