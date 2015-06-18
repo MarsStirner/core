@@ -38,13 +38,13 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
                 groupId,
                 specialityId);
         if (ownerId == null && groupId == null && specialityId == null) {
-            actionTemplateList = addNode(actionTemplateList);
+            actionTemplateList = addNode(actionTemplateList, actionTypeId);
         }
 
-        return toActionTemplateDataContainer(actionTemplateList);
+        return toActionTemplateDataContainer(actionTemplateList, actionTypeId);
     }
 
-    private List<ActionTemplate> addNode(List<ActionTemplate> actionTemplateList) {
+    private List<ActionTemplate> addNode(List<ActionTemplate> actionTemplateList, Integer actionTypeId) {
         List<ActionTemplate> res = new LinkedList<>();
         Set<Integer> groupIdSet = new HashSet<>();
         for (ActionTemplate actionTemplate : actionTemplateList) {
@@ -63,10 +63,10 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
         return actionTemplate.getGroup() == null ? actionTemplate : getParent(actionTemplate.getGroup());
     }
 
-    private ActionTemplateDataContainer toActionTemplateDataContainer(List<ActionTemplate> actionTemplateList) {
+    private ActionTemplateDataContainer toActionTemplateDataContainer(List<ActionTemplate> actionTemplateList, Integer actionTypeId) {
         ActionTemplateDataContainer res = new ActionTemplateDataContainer();
         for (ActionTemplate actionTemplate : actionTemplateList) {
-            res.getActionTemplateList().add(toActionTemplateData(actionTemplate));
+            res.getActionTemplateList().add(toActionTemplateData(actionTemplate, actionTypeId));
         }
         return res;
     }
@@ -88,10 +88,10 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
         actionTemplate.setSpecialityId(actionTemplateData.getSpecialityId());
         actionTemplate.setOwnerId(actionTemplateData.getOwnerId());
         actionTemplate = actionTemplateRepository.saveAndFlush(actionTemplate);
-        return toActionTemplateData(actionTemplate);
+        return toActionTemplateData(actionTemplate, action == null ? null : action.getActionType_id());
     }
 
-    private ActionTemplateData toActionTemplateData(ActionTemplate actionTemplate) {
+    private ActionTemplateData toActionTemplateData(ActionTemplate actionTemplate, Integer actionTypeId) {
 
         ActionTemplateData res = new ActionTemplateData();
         if (actionTemplate != null) {
@@ -100,7 +100,9 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
             res.setActionId(actionTemplate.getAction() == null ? null : actionTemplate.getAction().getId());
             res.setName(actionTemplate.getName());
             for (ActionTemplate at : actionTemplate.getActionTemplateList()) {
-                res.getTemplates().add(toActionTemplateData(at));
+                if(at.getAction() == null || at.getAction().getActionType_id() == actionTypeId) {
+                    res.getTemplates().add(toActionTemplateData(at, actionTypeId));
+                }
             }
         }
         return res;
