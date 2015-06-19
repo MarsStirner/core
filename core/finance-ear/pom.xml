@@ -3,11 +3,11 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
     <modelVersion>4.0.0</modelVersion>
-    <groupId>ru.korus.tmis.referencebook</groupId>
-    <artifactId>referencebook</artifactId>
+    <groupId>ru.korus.tmis</groupId>
+    <artifactId>tmis-finance-server</artifactId>
     <version>2.6.0-SNAPSHOT</version>
-    <packaging>war</packaging>
-    <name>TMIS Reference Book</name>
+    <packaging>ear</packaging>
+    <name>TMIS Finance EAR</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
@@ -16,19 +16,22 @@
         <relativePath>../</relativePath>
     </parent>
 
-    <dependencies>
-        <dependency>
-            <groupId>ru.korus.tmis.core</groupId>
-            <artifactId>tmis-core-common</artifactId>
-            <version>2.6.0-SNAPSHOT</version>
-            <type>jar</type>
-        </dependency>
 
+    <dependencies>
+
+        <!-- Korus dependency -->
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-business</artifactId>
             <version>2.6.0-SNAPSHOT</version>
             <type>ejb</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-common</artifactId>
+            <version>2.6.0-SNAPSHOT</version>
+            <type>jar</type>
         </dependency>
 
         <dependency>
@@ -39,32 +42,38 @@
         </dependency>
 
         <dependency>
+            <groupId>ru.korus.tmis.ws.finance</groupId>
+            <artifactId>tmis-ws-finance</artifactId>
+            <version>2.6.0-SNAPSHOT</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
             <groupId>ru.korus.tmis.config</groupId>
             <artifactId>config</artifactId>
             <version>2.6.0-SNAPSHOT</version>
+            <type>jar</type>
         </dependency>
 
     </dependencies>
+
 
     <build>
         <plugins>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>2.8</version>
                 <configuration>
-                    <packagingExcludes>WEB-INF/lib/*.jar</packagingExcludes>
-                    <archive>
-                        <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>lib/</classpathPrefix>
-                        </manifest>
-                    </archive>
-                    <failOnMissingWebXml>false</failOnMissingWebXml>
-                    <attachClasses>true</attachClasses>
+                    <generateApplicationXml>true</generateApplicationXml>
+                    <!--<version>7</version>-->
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>
+                    <!--<earSourceDirectory>${basedir}/src/main/webapps/</earSourceDirectory>-->
+                    <earSourceIncludes>logback.xml</earSourceIncludes>
+
                 </configuration>
             </plugin>
-
         </plugins>
     </build>
 

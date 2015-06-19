@@ -32,5 +32,12 @@
                 <include>**/*.ear</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>../finance-ear/target/</directory>
+            <outputDirectory>/${project.build.finalName}/</outputDirectory>
+            <includes>
+                <include>**/*.ear</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </assembly>

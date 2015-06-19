@@ -995,8 +995,7 @@ with CAPids {
     rbResult
   }
 
-  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData) = {
-    val codes = setAsJavaSet(condition match {
+  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData) = { val codes = setAsJavaSet(condition match {
       case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
       case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB", "WBC", "GRAN", "NEUT", "HGB", "PLT")
       case _ => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
