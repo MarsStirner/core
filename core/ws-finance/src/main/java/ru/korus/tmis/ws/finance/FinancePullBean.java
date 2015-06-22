@@ -83,7 +83,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     }
 
     private void sendNewAction(Object entity, ActionToODVD actionsToODVD) throws CoreException {
-        logger.info("processing ActionToODVD.event_id = ", actionsToODVD.getActionId());
+        logger.info("processing ActionToODVD.event_id = " + actionsToODVD.getActionId());
         List<Action> actionList = new LinkedList<Action>();
         final Action action = actionsToODVD.getAction();
         if (action == null) {
@@ -117,7 +117,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
 
 
     private void sendNewEvent(Object entity, EventsToODVD eventsToODVD) throws CoreException {
-        logger.info("processing EventsToODVD.event_id = {}", eventsToODVD.getEventId());
+        logger.info("processing EventsToODVD.event_id = " + eventsToODVD.getEventId());
         Event event = eventsToODVD.getEvent();
         if (event == null) {
             final String msg = "event not found: entry: " + entity;
