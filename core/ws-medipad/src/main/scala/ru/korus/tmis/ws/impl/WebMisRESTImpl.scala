@@ -473,6 +473,7 @@ with CAPids {
 
   def removeCommonValue(data: JSONCommonData, emptyDoc: JSONCommonData): JSONCommonData = {
     setPropValue(data, "Summary", ActionWrapperInfo.assessmentBeginDate, "")
+    setPropValue(data, "Summary", ActionWrapperInfo.assessmentEndDate, "")
     setPropValue(data, "Summary", ActionWrapperInfo.doctorFirstName, "")
     setPropValue(data, "Summary", ActionWrapperInfo.doctorLastName, "")
     setPropValue(data, "Summary", ActionWrapperInfo.doctorMiddleName, "")
