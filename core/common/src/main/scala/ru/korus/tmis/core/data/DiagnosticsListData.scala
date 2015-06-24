@@ -38,12 +38,14 @@ class DiagnosticsListData {
         if (list != null && list.size > 0) {
           list.foreach(ajt => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, authData)))
         }
+        this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].sortWith((l, r) => l.assessmentBeginDate.after(r.assessmentBeginDate))
       }
       case "consultations" => {
         this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
         if (list != null && list.size > 0) {
           list.foreach(ajt => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, authData)))
         }
+        this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].sortWith((l, r) => l.assessmentBeginDate.after(r.assessmentBeginDate))
       }
       case _ => {
         this.data = new LinkedList[DiagnosticsListEntry]
