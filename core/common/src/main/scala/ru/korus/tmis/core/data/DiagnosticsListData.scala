@@ -27,25 +27,30 @@ class DiagnosticsListData {
 
     this.requestData.filter.asInstanceOf[DiagnosticsListRequestDataFilter].diagnosticType match {
       case "laboratory" => {
-        this.data = new LinkedList[LaboratoryDiagnosticsListEntry]
+        val d = new LinkedList[LaboratoryDiagnosticsListEntry]
         if (list != null && list.size > 0) {
-          list.foreach(ajt => this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(new LaboratoryDiagnosticsListEntry(ajt._1, ajt._2, authData)))
+          list.foreach(ajt => d.add(new LaboratoryDiagnosticsListEntry(ajt._1, ajt._2, authData)))
         }
-        this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].sortWith((l, r) => l.takingTime.after(r.takingTime))
+        this.data = new LinkedList[LaboratoryDiagnosticsListEntry]
+        d.sortWith((l, r) => l.takingTime.after(r.takingTime)).foreach(this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(_))
       }
       case "instrumental" => {
-        this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
+        val d = new LinkedList[InstrumentalDiagnosticsListEntry]
         if (list != null && list.size > 0) {
-          list.foreach(ajt => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, authData)))
+          list.foreach(ajt => d.add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, authData)))
         }
-        this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].sortWith((l, r) => l.assessmentBeginDate.after(r.assessmentBeginDate))
+        this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
+        d.sortWith((l, r) => l.assessmentBeginDate.after(r.assessmentBeginDate))
+          .foreach(this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(_))
       }
       case "consultations" => {
-        this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
+        val d = new LinkedList[InstrumentalDiagnosticsListEntry]
         if (list != null && list.size > 0) {
-          list.foreach(ajt => this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, authData)))
+          list.foreach(ajt => d.add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, authData)))
         }
-        this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].sortWith((l, r) => l.assessmentBeginDate.after(r.assessmentBeginDate))
+        this.data  = new LinkedList[InstrumentalDiagnosticsListEntry]
+        d.sortWith((l, r) => l.assessmentBeginDate.after(r.assessmentBeginDate))
+          .foreach(this.data.asInstanceOf[LinkedList[InstrumentalDiagnosticsListEntry]].add(_))
       }
       case _ => {
         this.data = new LinkedList[DiagnosticsListEntry]
