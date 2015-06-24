@@ -31,7 +31,7 @@ class DiagnosticsListData {
         if (list != null && list.size > 0) {
           list.foreach(ajt => this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(new LaboratoryDiagnosticsListEntry(ajt._1, ajt._2, authData)))
         }
-        this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].sortWith((l, r) => l.takingTime.before(r.takingTime))
+        this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].sortWith((l, r) => l.takingTime.after(r.takingTime))
       }
       case "instrumental" => {
         this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
@@ -380,6 +380,9 @@ class LaboratoryDiagnosticsListEntry {
   @BeanProperty
   var takingTime: Date = _ //Время забора
 
+  @BeanProperty
+  var mnem: String = _
+
   def this(action: Action, jt: JobTicket, authData: AuthData) {
     this()
     this.id = action.getId.intValue()
@@ -395,6 +398,7 @@ class LaboratoryDiagnosticsListEntry {
     this.isEditable = (action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
     laboratoryTitle = getLabNameByAction(action)
     this.takingTime = if( jt == null ) null else jt.getDatetime
+    this.mnem = if (action.getActionType == null ) null else action.getActionType.getMnemonic
   }
 
   /**
@@ -463,6 +467,13 @@ class InstrumentalDiagnosticsListEntry {
   @BeanProperty
   var isEditable: Boolean = _ //Признак возможности редактирования
 
+  @BeanProperty
+  var mnem: String = _
+
+  @BeanProperty
+  var assessmentBeginDate: Date = _
+
+
   //@BeanProperty
   //var toOrder: Boolean = _ //Дозаказ  (не используется)
 
@@ -483,6 +494,8 @@ class InstrumentalDiagnosticsListEntry {
                         (action.getAssigner != null &&
                          authData.getUser.getId.intValue() == action.getAssigner.getId.intValue()))
     this.isEditable = (action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
+    this.mnem = if (action.getActionType == null ) null else action.getActionType.getMnemonic
+    this.assessmentBeginDate = action.getBegDate
     //this.toOrder = action.getToOrder
   }
 }
