@@ -374,7 +374,7 @@ class AppealEntry extends I18nable {
     this.number = event.getExternalId
     this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
     this.execPerson = new DoctorContainer(event.getExecutor)
-    this.urgent = action.getIsUrgent
+    this.urgent = if(action == null) false else action.getIsUrgent
     this.context = if (event.getEventType != null) event.getEventType.getContext else null
     this.payer = if (eventLocalContract == null) null else new PayerInfo(eventLocalContract)
     this.paymentContract = if (eventLocalContract == null) null else new PaymentContractInfo(eventLocalContract)
@@ -417,7 +417,11 @@ class AppealEntry extends I18nable {
     typeOfResponse match {
       case "standart"  => {
         this.patient = new IdValueContainer(event.getPatient.getId.toString)
-        this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+        if(action != null) {
+          this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+        } else {
+          this.rangeAppealDateTime = new DatePeriodContainer(event.getCreateDatetime, event.getCreateDatetime)
+        }
       }
       case "print_form" => {
         this.patient = new PatientEntry(event.getPatient, map, street)
@@ -425,7 +429,11 @@ class AppealEntry extends I18nable {
       }
       case _ => {
         this.patient = new IdValueContainer(event.getPatient.getId.toString)
-        this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+        if(action != null) {
+          this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+        } else {
+          this.rangeAppealDateTime = new DatePeriodContainer(event.getCreateDatetime, event.getCreateDatetime)
+        }
       }
     }
 
@@ -525,66 +533,7 @@ class AppealEntry extends I18nable {
         val diaByLastDate = allByType.find(p=> p.getCreateDatetime.getTime==allByType.map(_.getCreateDatetime.getTime).foldLeft(Long.MinValue)((i,m)=>m.max(i))).getOrElse(null) //Диагностика последняя по дате создания
         if (diaByLastDate!=null){
           this.diagnoses += new DiagnosisContainer(diaByLastDate)
-        }   /*
-        else { //Достаем из ActionProperty осмотра  (Для старых госпитализации (когда не прописывалась история диагнозов Diagnostic + Diagnosis))
-          diaType match {
-            case i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb") | i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb") | i18n("appeal.diagnosis.diagnosisKind.attendantMkb") => {  //Старая часть кода по диагнозам из экшн пропертей
-              val exDiagnosis = this.extractValuesInNumberedMap(LinkedHashSet(
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer,
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt :java.lang.Integer,
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt :java.lang.Integer,
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt :java.lang.Integer,
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt :java.lang.Integer,
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt :java.lang.Integer
-              ), values)
-
-              val key = "code_%s".format(diaType)
-              val key_desc = "description_%s".format(diaType)
-
-              val diagnoses = if(exDiagnosis.get(key)!=null) exDiagnosis.get(key).toList else List.empty[Object]
-              val descriptions = if(exDiagnosis.get(key_desc)!=null) exDiagnosis.get(key_desc).toList else List.empty[Object]
-
-              for(i <- 0 until math.max(diagnoses.size, descriptions.size)){
-                val diagnosis =  if(diagnoses.size>i && diagnoses.get(i).isInstanceOf[Mkb])
-                  diagnoses.get(i).asInstanceOf[Mkb]
-                else null
-                val description = if(descriptions.size>i && descriptions.get(i).isInstanceOf[String])
-                  descriptions.get(i).asInstanceOf[String]
-                else ""
-
-                val container = new DiagnosisContainer()
-                container.setDiagnosisKind(diaType)
-                container.setDescription(description)
-                container.setMkb(new MKBContainer(diagnosis))
-                this.diagnoses += container
-              }
-            }
-            case i18n("appeal.diagnosis.diagnosisKind.admissionMkb") => { //Старая часть кода по диагнозу при поступлении из экшн пропертей
-              if (admissions!=null) {
-                var description: String = ""
-                var diagnosis: Mkb = null
-
-                admissions.foreach(prop => {
-                  if (prop._1.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.admission"))==0) {
-                    if (prop._2 != null && prop._2.size() > 0) {
-                      diagnosis = prop._2.get(0).getValue.asInstanceOf[Mkb]
-                    }
-                  } else if (prop._1.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.description"))==0) {
-                    if (prop._2 != null && prop._2.size() > 0) {
-                      description = prop._2.get(0).getValueAsString
-                    }
-                  }
-                })
-                val container = new DiagnosisContainer()
-                container.setDiagnosisKind(i18n("appeal.diagnosis.diagnosisKind.admissionMkb"))
-                container.setDescription(description)
-                container.setMkb(new MKBContainer(diagnosis))
-                this.diagnoses += container
-              }
-            }
-            case _ => {}
-          }
-        }   */
+        }
       })
     }
     //*******************Доп сведения***************
@@ -629,8 +578,10 @@ class AppealEntry extends I18nable {
       }
     }
     // Текущее отделение пребывания пациента
-    if (currentDepartment != null) {
+    if (currentDepartment != null && action != null) {
       this.currentDepartment = new IdNameContainer(currentDepartment.getId.intValue(), currentDepartment.getName)
+    } else {
+      this.currentDepartment = new IdNameContainer(0, "")
     }
     //Имеет первичный осмотр
     this.havePrimary = havePrimary

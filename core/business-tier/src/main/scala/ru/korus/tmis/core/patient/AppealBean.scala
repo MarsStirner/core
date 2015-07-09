@@ -435,11 +435,15 @@ with CAPids {
     }
     //запрос данных из Action
     val action = actionBean.getAppealActionByEventId(event.getId.intValue(), i18n("db.actionType.hospitalization.primary").toInt)
-    if (action == null) {
+    /*if (action == null) {
       throw new CoreException(ConfigManager.ErrorCodes.ActionNotFound, "Невозможно открыть обращение[id=%d], т.к. в нем отсутствует действие Поступление".format(id))
-    }
+    }*/
     //Запрос данных из ActionProperty
-    val findMapActionProperty = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue())
+    val findMapActionProperty = if(action == null) {
+      new java.util.HashMap[ActionProperty, java.util.List[APValue]]
+    }else {
+      actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue())
+    }
 
     val values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]] = findMapActionProperty.foldLeft(new java.util.HashMap[(java.lang.Integer, ActionProperty), java.util.List[Object]])(
       (str_key, el) => {
