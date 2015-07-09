@@ -28,9 +28,9 @@ public interface AppealBeanLocal {
      * @see AppealData
      * @see AuthData
      */
-    int insertAppealForPatient(AppealData appealData, int patientId, AuthData authData) throws CoreException;
+    int insertAppealForPatient(AppealData appealData, int patientId, AuthData authData, Staff staff) throws CoreException;
 
-    int updateAppeal(AppealData appealData, int eventId, AuthData authData) throws CoreException;
+    int updateAppeal(AppealData appealData, int eventId, AuthData authData, Staff staff) throws CoreException;
 
     /**
      * Получение данных об обращении на госпитализацию по идентификатору.
@@ -75,7 +75,7 @@ public interface AppealBeanLocal {
      * @see Event
      * @see AuthData
      */
-    Event revokeAppealById(Event event, int resultId, AuthData authData) throws CoreException;
+    Event revokeAppealById(Event event, int resultId, Staff staff) throws CoreException;
 
     /**
      * Возвращает список кодов типов обращений (s11r64.EventType.code) по идентификатору плоского справочника (s11r64.FlatDirectory.id).
@@ -125,5 +125,5 @@ public interface AppealBeanLocal {
 
     SurgicalOperationsListData getSurgicalOperations(int eventId, AuthData authData) throws CoreException;
 
-    Boolean setExecPersonForAppeal(int id, int personId, AuthData authData, ExecPersonSetType epst) throws CoreException;
+    Boolean setExecPersonForAppeal(int id, int personId, Staff staff, ExecPersonSetType epst) throws CoreException;
 }

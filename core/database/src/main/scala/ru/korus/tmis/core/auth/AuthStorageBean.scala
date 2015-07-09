@@ -44,7 +44,7 @@ class AuthStorageBean
 
   // Отображение токена в кортеж из данных аутентификации и даты окончания
   // срока действия токена
-  val authMap: util.Map[AuthToken, (AuthData, Date)] = new util.LinkedHashMap()
+  val authMap: util.Map[AuthToken, (AuthData, Date)] = new util.concurrent.ConcurrentHashMap()
 
   val lockMap: util.Map[AppLockDetail, AuthToken] = new util.concurrent.ConcurrentHashMap()
 
@@ -207,7 +207,6 @@ class AuthStorageBean
       authData = this.getAuthData(authToken)
       if (authData != null) {
         info("Authentication data found: " + authData)
-        authData.setUser(dbStaff.getStaffById(authData.getUserId))
       } else if (isCasTokenValid) {
         val staff: Staff = dbStaff.getStaffById(casResp.getUser_id)
         authData = putToken(token, staff, staff.getRoles.find(_.getCode == curRole).getOrElse(null))
@@ -274,7 +273,7 @@ class AuthStorageBean
         appLock.setId(appLockStatus.getId)
         appLock.setLockTime(now)
         appLock.setRetTime(now)
-        appLock.setPerson(authData.getUser)
+        appLock.setPerson(dbStaff.getStaffById(authData.getUserId))
         lockNew.getId.setMasterId(appLockStatus.getId)
         lockNew.getId.setTableName(tableName)
         lockNew.getId.setRecordId(id)

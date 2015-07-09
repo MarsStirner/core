@@ -4,7 +4,9 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.RbPolicyType;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import ru.korus.tmis.ws.impl.ReferenceBookBean;
@@ -37,6 +39,9 @@ public class DirectoryInfoRESTImpl {
 
     @EJB
     private ReferenceBookBean referenceBookBean;
+
+    @EJB
+    private DbStaffBeanLocal dbStaffBeanLocal;
 
     //__________________________________________________________________________________________________________________
     //***********************************   СПРАВОЧНИКИ   ***********************************
@@ -382,7 +387,10 @@ public class DirectoryInfoRESTImpl {
                                 @QueryParam("callback") String callback) throws CoreException {
         EventTypesListRequestDataFilter filter = new EventTypesListRequestDataFilter(finance, requestType);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getEventTypes(request, mkAuth(servRequest)), callback);
+
+        AuthData authData = mkAuth(servRequest);
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        return new JSONWithPadding(wsImpl.getEventTypes(request, staff), callback);
     }
 
     /**
@@ -456,7 +464,9 @@ public class DirectoryInfoRESTImpl {
 
         AuthData auth = mkAuth(servRequest);
 
-        Integer orgStructId = auth.getUser() == null || auth.getUser().getOrgStructure() == null || orgStructFilterEnable == 0 ? null : auth.getUser().getOrgStructure().getId();
+        Staff user = auth == null ? null : dbStaffBeanLocal.getStaffById(auth.getUserId());
+
+        Integer orgStructId = user == null || user.getOrgStructure() == null || orgStructFilterEnable == 0 ? null : user.getOrgStructure().getId();
 
         ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, mnemonics, view, showHidden == 1, orgStructId);
 

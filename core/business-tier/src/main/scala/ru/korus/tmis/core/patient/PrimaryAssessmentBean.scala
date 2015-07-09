@@ -145,7 +145,6 @@ class PrimaryAssessmentBean
                         title: String,
                         listForConverter: java.util.List[String],
                         listForSummary: java.util.List[StringId],
-                        userData: AuthData,
                         postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
                         patient: Patient) = {
 
@@ -172,6 +171,7 @@ class PrimaryAssessmentBean
                                         assessment: JSONCommonData,
                                         assessmentId: java.lang.Integer,
                                         userData: AuthData,
+                                        staff: Staff,
                                         baseUri: java.net.URI,
                                         notify: (java.util.List[Action], java.net.URI) =>  java.lang.Boolean,
                                         postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
@@ -182,9 +182,9 @@ class PrimaryAssessmentBean
     com_data.entity = json_data.data
 
     val actions: java.util.List[Action] = if (assessmentId == null ) {
-      commonDataProcessor.createActionForEventFromCommonData(eventId, com_data, userData)
+      commonDataProcessor.createActionForEventFromCommonData(eventId, com_data, userData, staff)
     } else {
-      commonDataProcessor.modifyActionFromCommonData(assessmentId, com_data, userData)
+      commonDataProcessor.modifyActionFromCommonData(assessmentId, com_data, userData, staff)
     }
 
     notify(actions, baseUri)
@@ -203,7 +203,6 @@ class PrimaryAssessmentBean
 
   def getPrimaryAssessmentById(assessmentId: Int,
                                title: String,
-                               userData: AuthData,
                                postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
                                reId: java.lang.Boolean) = {
     val action = actionBean.getActionById(assessmentId)
@@ -227,7 +226,7 @@ class PrimaryAssessmentBean
     commonDataProcessor.changeActionStatus(eventId, actionId, status)
   }
 
-  def deletePreviousAssessmentById(assessmentId: Int, userData: AuthData) {
+  def deletePreviousAssessmentById(assessmentId: Int, userData: Staff) {
 
     val now = new Date()
 
@@ -235,7 +234,7 @@ class PrimaryAssessmentBean
     if(findAction!=null) {
       findAction.setDeleted(true)
       if(userData!=null) {
-        findAction.setModifyPerson(userData.getUser)
+        findAction.setModifyPerson(userData)
       }
       findAction.setModifyDatetime(now)
 
@@ -246,7 +245,7 @@ class PrimaryAssessmentBean
           val (ap, listApVal) = element
           ap.setDeleted(true)
           if(userData!=null) {
-            ap.setModifyPerson(userData.getUser)
+            ap.setModifyPerson(userData)
           }
           ap.setModifyDatetime(now)
           apSet+=ap

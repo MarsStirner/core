@@ -109,7 +109,7 @@ class DbActionPropertyBean
     }
   }
 
-  def createActionProperty(a: Action, aptId: Int, userData: AuthData) = {
+  def createActionProperty(a: Action, aptId: Int, staff: Staff) = {
     val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
     val now = new Date()
     val ap = new ActionProperty
@@ -117,10 +117,10 @@ class DbActionPropertyBean
     ap.setCreateDatetime(now)
     ap.setModifyDatetime(now)
     //TODO: временно подсовываю пустой Staff когда нет AuthData
-    if (userData != null) {
-      ap.setCreatePerson(userData.user)
+    if (staff != null) {
+      ap.setCreatePerson(staff)
       ap.setCreateDatetime(now)
-      ap.setModifyPerson(userData.user)
+      ap.setModifyPerson(staff)
       ap.setModifyDatetime(now)
     }
 
@@ -130,7 +130,7 @@ class DbActionPropertyBean
     ap
   }
 
-  def createActionPropertyWithDate(a: Action, aptId: Int, userData: AuthData, now: Date): ActionProperty = {
+  def createActionPropertyWithDate(a: Action, aptId: Int, staff: Staff, now: Date): ActionProperty = {
     val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
     if(apt == null) {
       return null;
@@ -140,10 +140,10 @@ class DbActionPropertyBean
     ap.setCreateDatetime(now)
     ap.setModifyDatetime(now)
     //TODO: временно подсовываю пустой Staff когда нет AuthData
-    if (userData != null) {
-      ap.setCreatePerson(userData.user)
+    if (staff != null) {
+      ap.setCreatePerson(staff)
       ap.setCreateDatetime(now)
-      ap.setModifyPerson(userData.user)
+      ap.setModifyPerson(staff)
       ap.setModifyDatetime(now)
     }
 
@@ -153,10 +153,10 @@ class DbActionPropertyBean
     ap
   }
 
-  def updateActionProperty(id: Int, version: Int, userData: AuthData) = {
+  def updateActionProperty(id: Int, version: Int, staff: Staff) = {
     val ap = getActionPropertyById(id)
 
-    ap.setModifyPerson(userData.user)
+    ap.setModifyPerson(staff)
     ap.setModifyDatetime(new Date)
     ap.setVersion(version)
 

@@ -81,7 +81,7 @@ with CAPids {
   private val movingInDepartment = 2 //Перевод в отделение
 
 
-  def registryPatientToHospitalBed(eventId: Int, hbData: HospitalBedData, authData: AuthData): Action = {
+  def registryPatientToHospitalBed(eventId: Int, hbData: HospitalBedData, authData: AuthData, staff: Staff): Action = {
 
     if (!this.verificationData(eventId, -1, hbData, 0)) return null
 
@@ -104,8 +104,8 @@ with CAPids {
 
     //Инициализируем новый action
     val action: Action = actionBean.createAction(eventId.intValue(),
-      i18n("db.actionType.moving").toInt,
-      authData)
+      i18n("db.actionType.moving").toInt, authData,
+      staff)
     action.setBegDate(date)
     action.setEndDate(null: java.util.Date)
     dbManager.persist(action)
@@ -192,7 +192,7 @@ with CAPids {
           }
         }
 
-        val apv = this.createActionPropertyWithValue(action, apt.getId.intValue(), value, authData)
+        val apv = this.createActionPropertyWithValue(action, apt.getId.intValue(), value, staff)
         if (apv != null) entities += apv
       })
       dbManager.persistAll(entities)
@@ -213,7 +213,7 @@ with CAPids {
     action
   }
 
-  def modifyPatientToHospitalBed(actionId: Int, hbData: HospitalBedData, authData: AuthData): Action = {
+  def modifyPatientToHospitalBed(actionId: Int, hbData: HospitalBedData, authData: AuthData, staff: Staff): Action = {
 
     if (!this.verificationData(-1, actionId, hbData, 1)) return null
 
@@ -227,7 +227,8 @@ with CAPids {
     try {
       val action = actionBean.updateAction(actionId,
         oldAction.getVersion.intValue,
-        authData)
+        authData,
+        staff)
       action.setBegDate(hbData.data.bedRegistration.moveDatetime)
       action.setEndDate(null: java.util.Date)
 
@@ -239,7 +240,7 @@ with CAPids {
 
           val ap = actionPropertyBean.updateActionProperty(f._1.getId.intValue,
             f._1.getVersion.intValue,
-            authData)
+            staff)
           entities = entities + ap
 
           val listNdx = new IndexOf(list)
@@ -303,7 +304,7 @@ with CAPids {
   }
 
   //Движение
-  def movingPatientToDepartment(eventId: Int, hbData: HospitalBedData, authData: AuthData): Action = {
+  def movingPatientToDepartment(eventId: Int, hbData: HospitalBedData, authData: AuthData, staff: Staff): Action = {
 
     if (!this.verificationData(eventId, -1, hbData, 0)) return null
 
@@ -345,7 +346,8 @@ with CAPids {
         //Action
         action = actionBean.updateAction(action.getId.intValue(),
           oldAction.getVersion.intValue,
-          authData)
+          authData,
+          staff)
 
         action.setBegDate(oldAction.getBegDate)
         if (flgOption == movingInDepartment) {
@@ -362,7 +364,7 @@ with CAPids {
           oldValues.foreach(f => {
             val ap = actionPropertyBean.updateActionProperty(f._1.getId.intValue,
               f._1.getVersion.intValue,
-              authData)
+              staff)
             entities = entities + ap
 
             val code = ap.getType.getCode
@@ -419,28 +421,28 @@ with CAPids {
     map
   }
 
-  def getRegistryOriginalForm(action: Action, authData: AuthData) = {
+  def getRegistryOriginalForm(action: Action) = {
     new HospitalBedData(action,
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
       null,
       null)
   }
 
-  def getRegistryFormWithChamberList(action: Action, authData: AuthData) = {
+  def getRegistryFormWithChamberList(action: Action) = {
     new HospitalBedData(action,
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
       this.getCaseHospitalBedsByDepartmentId _,
       null)
   }
 
-  def getMovingListByEventIdAndFilter(filter: HospitalBedDataListFilter, authData: AuthData): HospitalBedData = {
+  def getMovingListByEventIdAndFilter(filter: HospitalBedDataListFilter): HospitalBedData = {
     val actions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null)
     return new HospitalBedData(actions,
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
       null)
   }
 
-  def callOffHospitalBedForPatient(actionId: Int, authData: AuthData): Boolean = {
+  def callOffHospitalBedForPatient(actionId: Int, authData: AuthData, staff: Staff): Boolean = {
 
     val oldAction = Action.clone(actionBean.getActionById(actionId))
     //0. Проверяем тип действия
@@ -451,50 +453,43 @@ with CAPids {
 
     //1. Отменяем текущее действие
     //val oldValues = actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue)
-    val lockId = appLock.acquireLock("Action", actionId, oldAction.getIdx, authData)
+    val action = actionBean.getActionById(actionId)
+    //Помечаем действие как "Удалено"
+    action.setModifyPerson(staff)
+    action.setModifyDatetime(new Date())
 
-    try {
-      val action = actionBean.getActionById(actionId)
-      //Помечаем действие как "Удалено"
-      action.setModifyPerson(authData.user)
-      action.setModifyDatetime(new Date())
-
-      action.setDeleted(true)
-      dbManager.merge(action)
+    action.setDeleted(true)
+    dbManager.merge(action)
 
 
-      //создаем акшен del_moving
-      val del_movingAction = actionBean.createAction(action.getEvent.getId.intValue(), 3871, authData)
-      del_movingAction.setDeleted(true)
-      del_movingAction.setParentActionId(action.getId.intValue())
-      dbManager.persist(del_movingAction)
+    //создаем акшен del_moving
+    val del_movingAction = actionBean.createAction(action.getEvent.getId.intValue(), 3871, authData, staff)
+    del_movingAction.setDeleted(true)
+    del_movingAction.setParentActionId(action.getId.intValue())
+    dbManager.persist(del_movingAction)
 
-      /** ** По доработанной спеке https://docs.google.com/document/d/1wkIKuMt3UQ5PMHVlsE2NVweE-n1zkfKyBQbTrjYwuRo/edit#
-        * Пункт 3.3
-        */
-      var currentEvent = eventBean.getEventById(action.getEvent.getId.intValue())
-      dbEventPerson.insertOrUpdateEventPerson(0, //id предыдущего евентПерсона. Здесь 0, потому что предыдущий ивентаПеросн всегда закрыт
-        currentEvent,
-        authData.getUser,
-        false)
+    /** ** По доработанной спеке https://docs.google.com/document/d/1wkIKuMt3UQ5PMHVlsE2NVweE-n1zkfKyBQbTrjYwuRo/edit#
+      * Пункт 3.3
+      */
+    var currentEvent = eventBean.getEventById(action.getEvent.getId.intValue())
+    dbEventPerson.insertOrUpdateEventPerson(0, //id предыдущего евентПерсона. Здесь 0, потому что предыдущий ивентаПеросн всегда закрыт
+      currentEvent,
+      staff,
+      false)
 
-      //Изменим запись о назначевшем враче в ивенте
-      currentEvent.setExecutor(authData.getUser)
-      currentEvent.setModifyDatetime(new Date())
-      currentEvent.setModifyPerson(authData.getUser)
-      currentEvent.setVersion(currentEvent.getVersion)
-      dbManager.merge(currentEvent)
+    //Изменим запись о назначевшем враче в ивенте
+    currentEvent.setExecutor(staff)
+    currentEvent.setModifyDatetime(new Date())
+    currentEvent.setModifyPerson(staff)
+    currentEvent.setVersion(currentEvent.getVersion)
+    dbManager.merge(currentEvent)
 
-    }
-    finally {
-      appLock.releaseLock(lockId)
-    }
+
 
     //2. Ищем последнее движение, находим старую койку и регистрируем на нее
     val temp = this.getLastCloseMovingActionForEventId(oldAction.getEvent.getId.intValue())
     if (temp != null) {
       val oldLastAction = Action.clone(temp)
-      val lockLastId = appLock.acquireLock("Action", oldLastAction.getId.intValue(), oldLastAction.getIdx, authData)
 
       //var flgBusyBed = false
       var resultA = List[Action]()
@@ -509,86 +504,82 @@ with CAPids {
         i18n("db.apt.moving.codes.orgStructTransfer"),
         i18n("db.apt.moving.codes.timeLeaved")
       ))
-      try {
-
-        //Редактируем старое действие
-        val action = actionBean.getActionById(oldLastAction.getId.intValue())
-        action.setModifyPerson(authData.user)
-        action.setModifyDatetime(new Date())
 
 
-        //Редактируем значения свойств действия
-        val oldLastValues = actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(oldLastAction.getId.intValue,
-          listMovAP)
-        if (oldLastValues != null) {
-          val result = oldLastValues.find(p => p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospitalBed")) == 0).getOrElse(null)
-          if (result != null && result._2 != null && result._2.size() > 0) {
-            bed = result._2.get(0).getValue.asInstanceOf[OrgStructureHospitalBed]
-            val result2 = dbOrgStructureHospitalBed.getBusyHospitalBedByIds(asJavaCollection(asJavaCollection(Set(bed.getId))))
-            if (result2 != null && result2.size() > 0) {
-              //Койка уже занята, инициируем перевод в это же отделение (Редактируем значения Переведен в и Время выбытия)
-              flgEdit = 1
-            }
-            else {
-              //Койка свободна - кладем на койку (Затираем значения Переведен в и время выбытия)
-              flgEdit = 2
-            }
+      //Редактируем старое действие
+      val action = actionBean.getActionById(oldLastAction.getId.intValue())
+      action.setModifyPerson(staff)
+      action.setModifyDatetime(new Date())
+
+
+      //Редактируем значения свойств действия
+      val oldLastValues = actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(oldLastAction.getId.intValue,
+        listMovAP)
+      if (oldLastValues != null) {
+        val result = oldLastValues.find(p => p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospitalBed")) == 0).getOrElse(null)
+        if (result != null && result._2 != null && result._2.size() > 0) {
+          bed = result._2.get(0).getValue.asInstanceOf[OrgStructureHospitalBed]
+          val result2 = dbOrgStructureHospitalBed.getBusyHospitalBedByIds(asJavaCollection(asJavaCollection(Set(bed.getId))))
+          if (result2 != null && result2.size() > 0) {
+            //Койка уже занята, инициируем перевод в это же отделение (Редактируем значения Переведен в и Время выбытия)
+            flgEdit = 1
           }
-
-          if (flgEdit > 0) {
-            val ap_values = oldLastValues.filter(p => p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer")) == 0 ||
-              p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.timeLeaved")) == 0).toList
-
-            if (ap_values != null) {
-              ap_values.foreach(ap_val => {
-                //Обновим АР
-                val ap = actionPropertyBean.updateActionProperty(ap_val._1.getId.intValue,
-                  ap_val._1.getVersion.intValue,
-                  authData)
-                entities = entities + ap
-
-                //Обновим APVs
-                if (ap_val._2 != null && ap_val._2.size() > 0) {
-                  flgEdit match {
-                    case 1 => {
-                      //Редактируем значения "Переведен в" и "Время выбытия"
-                      if (ap_val._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer")) == 0) {
-                        val apv = actionPropertyBean.setActionPropertyValue(ap_val._1, bed.getMasterDepartment.getId.toString, 0)
-                        entities = entities + apv.unwrap
-                      }
-                      else if (ap_val._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.timeLeaved")) == 0) {
-                        val now = new Date()
-                        val formatter: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
-                        val apv = actionPropertyBean.setActionPropertyValue(ap_val._1, formatter.format(now), 0)
-                        entities = entities + apv.unwrap
-                        action.setEndDate(now)
-                      }
-                      //apvs_merged = ap_values._2.toList ::: apvs_merged
-                    }
-                    case 2 => {
-                      //Затираем значения "Переведен в" и "Время выбытия"
-                      action.setEndDate(null)
-                      apvs_removed = ap_val._2.toList ::: apvs_removed
-                    }
-                    case _ => {}
-                  }
-                }
-              })
-            }
+          else {
+            //Койка свободна - кладем на койку (Затираем значения Переведен в и время выбытия)
+            flgEdit = 2
           }
         }
 
-        entities = entities + action
-        resultA = action :: resultA
+        if (flgEdit > 0) {
+          val ap_values = oldLastValues.filter(p => p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer")) == 0 ||
+            p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.timeLeaved")) == 0).toList
 
-        dbManager.removeAll(apvs_removed)
-        resultA = dbManager.mergeAll(entities).filter(resultA.contains(_)).map(_.asInstanceOf[Action]).toList
+          if (ap_values != null) {
+            ap_values.foreach(ap_val => {
+              //Обновим АР
+              val ap = actionPropertyBean.updateActionProperty(ap_val._1.getId.intValue,
+                ap_val._1.getVersion.intValue,
+                staff)
+              entities = entities + ap
 
-
+              //Обновим APVs
+              if (ap_val._2 != null && ap_val._2.size() > 0) {
+                flgEdit match {
+                  case 1 => {
+                    //Редактируем значения "Переведен в" и "Время выбытия"
+                    if (ap_val._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer")) == 0) {
+                      val apv = actionPropertyBean.setActionPropertyValue(ap_val._1, bed.getMasterDepartment.getId.toString, 0)
+                      entities = entities + apv.unwrap
+                    }
+                    else if (ap_val._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.timeLeaved")) == 0) {
+                      val now = new Date()
+                      val formatter: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
+                      val apv = actionPropertyBean.setActionPropertyValue(ap_val._1, formatter.format(now), 0)
+                      entities = entities + apv.unwrap
+                      action.setEndDate(now)
+                    }
+                    //apvs_merged = ap_values._2.toList ::: apvs_merged
+                  }
+                  case 2 => {
+                    //Затираем значения "Переведен в" и "Время выбытия"
+                    action.setEndDate(null)
+                    apvs_removed = ap_val._2.toList ::: apvs_removed
+                  }
+                  case _ => {}
+                }
+              }
+            })
+          }
+        }
       }
-      finally {
-        appLock.releaseLock(lockLastId)
-      }
+
+      entities = entities + action
+      resultA = action :: resultA
+
+      dbManager.removeAll(apvs_removed)
+      resultA = dbManager.mergeAll(entities).filter(resultA.contains(_)).map(_.asInstanceOf[Action]).toList
+
+
     }
     return true
   }
@@ -618,11 +609,11 @@ with CAPids {
     return true
   }
 
-  private def createActionPropertyWithValue(action: Action, aptId: Int, value: AnyRef, authData: AuthData): APValue = {
+  private def createActionPropertyWithValue(action: Action, aptId: Int, value: AnyRef, staff: Staff): APValue = {
 
     var ap: ActionProperty = null
     try {
-      ap = actionPropertyBean.createActionProperty(action, aptId, authData)
+      ap = actionPropertyBean.createActionProperty(action, aptId, staff)
       dbManager.persist(ap)
     }
     catch {
@@ -630,7 +621,7 @@ with CAPids {
         error("createActionPropertyWithValue >> Ошибка при создании новой записи в ActionProperty: %s".format(e.getMessage))
         throw new CoreException("Ошибка при создании записи в ActionProperty", e)
       }
-      dbManager.removeAll(Set(ap))
+        dbManager.removeAll(Set(ap))
     }
 
     if (value == null || (value.isInstanceOf[java.lang.Integer] && value.asInstanceOf[java.lang.Integer].intValue() <= 0)) {

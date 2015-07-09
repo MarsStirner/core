@@ -144,24 +144,24 @@ with CAPids {
     iCapIds("db.rbCap.host.primary.id.reopening").toInt) //Переоткрытие ИБ
 
   //Insert or modify appeal
-  def insertAppealForPatient(appealData: AppealData, patientId: Int, authData: AuthData) = {
+  def insertAppealForPatient(appealData: AppealData, patientId: Int, userData: AuthData, staff: Staff) = {
 
     //1. Event и проверка данных на валидность
-    val newEvent = this.verificationData(patientId, authData, appealData, true)
+    val newEvent = this.verificationData(patientId, staff, appealData, true)
     dbManager.persist(newEvent)
-    val res = insertOrModifyAppeal(appealData, newEvent, true, authData)
-    updateTempInvalid(newEvent, appealData.data.tempInvalid, authData)
+    val res = insertOrModifyAppeal(appealData, newEvent, true, userData, staff)
+    updateTempInvalid(newEvent, appealData.data.tempInvalid, staff)
     res
   }
 
-  def updateAppeal(appealData: AppealData, eventId: Int, authData: AuthData) = {
-    val newEvent = this.verificationData(eventId, authData, appealData, false)
-    val res = insertOrModifyAppeal(appealData, newEvent, false, authData)
-    updateTempInvalid(newEvent, appealData.data.tempInvalid, authData)
+  def updateAppeal(appealData: AppealData, eventId: Int, userData: AuthData, staff: Staff) = {
+    val newEvent = this.verificationData(eventId, staff, appealData, false)
+    val res = insertOrModifyAppeal(appealData, newEvent, false, userData, staff)
+    updateTempInvalid(newEvent, appealData.data.tempInvalid, staff)
     res
   }
 
-  def insertOrModifyAppeal(appealData: AppealData, event: Event, flgCreate: Boolean, authData: AuthData) = {
+  def insertOrModifyAppeal(appealData: AppealData, event: Event, flgCreate: Boolean, userData: AuthData, staff: Staff) = {
 
     var entities = Set.empty[AnyRef]
     val now = new Date()
@@ -170,7 +170,6 @@ with CAPids {
 
     var oldAction: Action = null // Action.clone(temp)
     var oldValues = Map.empty[ActionProperty, java.util.List[APValue]] //actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue)
-    var lockId: Int = -1
 
     val temp = actionBean.getAppealActionByEventId(newEvent.getId.intValue(), i18n("db.actionType.hospitalization.primary").toInt)
     var action: Action = null
@@ -183,138 +182,131 @@ with CAPids {
     } else {
       oldAction = Action.clone(temp)
       oldValues = actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue).toMap
-      lockId = appLock.acquireLock("Action", temp.getId.intValue(), oldAction.getIdx, authData)
     }
 
-    try {
+    if (temp == null) {
+      action = actionBean.createAction(newEvent.getId.intValue(),
+        actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(), userData,
+        staff)
+      action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
+      dbManager.persist(action)
+      list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
+    }
+    else {
+      action = actionBean.updateAction(temp.getId.intValue(),
+        temp.getVersion.intValue, userData,
+        staff)
+      list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
 
-      if (temp == null) {
-        action = actionBean.createAction(newEvent.getId.intValue(),
-          actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(),
-          authData)
-        action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
-        dbManager.persist(action)
-        list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
-      }
-      else {
-        action = actionBean.updateAction(temp.getId.intValue(),
-          temp.getVersion.intValue,
-          authData)
-        list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
+      val list2 = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt)
+        .toList
+        .filter(p => {
+        val filtred = list.filter(pp => pp.asInstanceOf[ActionProperty].getType.getId == p.getId)
+        if (filtred == null || filtred.size == 0) true else false
+      })
+      list2.foreach(ff => {
+        //создание недостающих акшен пропертей
+        val res = actionPropertyBean.createActionProperty(action, ff.getId.intValue(), staff)
+        em.persist(res)
+      })
+      //пересобираем лист акшенПропертей
+      list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
+    }
 
-        val list2 = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt)
-          .toList
-          .filter(p => {
-          val filtred = list.filter(pp => pp.asInstanceOf[ActionProperty].getType.getId == p.getId)
-          if (filtred == null || filtred.size == 0) true else false
-        })
-        list2.foreach(ff => {
-          //создание недостающих акшен пропертей
-          val res = actionPropertyBean.createActionProperty(action, ff.getId.intValue(), authData)
+    action.setIsUrgent(appealData.data.getUrgent)
+    if (appealData.data.rangeAppealDateTime != null) {
+      if (appealData.data.rangeAppealDateTime.getStart != null)
+        action.setBegDate(appealData.data.rangeAppealDateTime.getStart)
+      action.setEndDate(appealData.data.rangeAppealDateTime.getEnd)
+    }
+
+    /* if (!flgCreate)
+       entities = entities + action*/
+
+    //3. Action Property
+
+    list.foreach(f => {
+      val ap: ActionProperty =
+        if (flgCreate && f.isInstanceOf[ActionPropertyType]) {
+          val res = actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), staff)
           em.persist(res)
-        })
-        //пересобираем лист акшенПропертей
-        list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
-      }
-
-      action.setIsUrgent(appealData.data.getUrgent)
-      if (appealData.data.rangeAppealDateTime != null) {
-        if (appealData.data.rangeAppealDateTime.getStart != null)
-          action.setBegDate(appealData.data.rangeAppealDateTime.getStart)
-        action.setEndDate(appealData.data.rangeAppealDateTime.getEnd)
-      }
-
+          res
+        }
+        else {
+          val apUpdate = actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
+            f.asInstanceOf[ActionProperty].getVersion.intValue,
+            staff)
+          em.merge(apUpdate)
+          apUpdate
+        }
       /* if (!flgCreate)
-         entities = entities + action*/
+         entities = entities + ap*/
 
-      //3. Action Property
-
-      list.foreach(f => {
-        val ap: ActionProperty =
-          if (flgCreate && f.isInstanceOf[ActionPropertyType]) {
-            val res = actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), authData)
-            em.persist(res)
-            res
-          }
-          else {
-            val apUpdate = actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
-              f.asInstanceOf[ActionProperty].getVersion.intValue,
-              authData)
-            em.merge(apUpdate)
-            apUpdate
-          }
-        /* if (!flgCreate)
-           entities = entities + ap*/
-
-        var values = this.getValueByCase(ap.getType.getId.intValue(), appealData, authData)
-        if (values != null) {
-          values.size match {
-            case 0 => {
-              if (flgCreate) {
-                //В случае, если не приходит значение для ActionProperty, то записываем значение по умолчанию.
-                val defValue = ap.getType.getDefaultValue
-                if (defValue != null && !defValue.trim.isEmpty) {
-                  val apv = actionPropertyBean.setActionPropertyValue(ap, defValue, 0)
-                  if (apv != null)
-                    entities = entities + apv.unwrap
-                }
-              } else {
-                //Если пришел пустой список, а старые значения есть, то зачистим их
-                val apvs = actionPropertyBean.getActionPropertyValue(ap)
-                if (apvs != null && apvs.size() > 0) {
-                  for (i <- 0 until apvs.size) {
-                    var apv = apvs(i).unwrap()
-                    apv = em.merge(apv)
-                    em.remove(apv)
-                  }
+      var values = this.getValueByCase(ap.getType.getId.intValue(), appealData)
+      if (values != null) {
+        values.size match {
+          case 0 => {
+            if (flgCreate) {
+              //В случае, если не приходит значение для ActionProperty, то записываем значение по умолчанию.
+              val defValue = ap.getType.getDefaultValue
+              if (defValue != null && !defValue.trim.isEmpty) {
+                val apv = actionPropertyBean.setActionPropertyValue(ap, defValue, 0)
+                if (apv != null)
+                  entities = entities + apv.unwrap
+              }
+            } else {
+              //Если пришел пустой список, а старые значения есть, то зачистим их
+              val apvs = actionPropertyBean.getActionPropertyValue(ap)
+              if (apvs != null && apvs.size() > 0) {
+                for (i <- 0 until apvs.size) {
+                  var apv = apvs(i).unwrap()
+                  apv = em.merge(apv)
+                  em.remove(apv)
                 }
               }
             }
-            case _ => {
-              if (ap.getType.getIsVector) {
-                //Если вектор, то сперва зачищаем старый список
-                val apvs = actionPropertyBean.getActionPropertyValue(ap)
-                if (apvs != null && apvs.size() > values.size) {
-                  for (i <- values.size to apvs.size - 1) {
-                    //если новых значений меньше тем старых, то хвост зачистим
-                    var apv = apvs(i).unwrap()
-                    apv = em.merge(apv)
-                    em.remove(apv)
-                  }
+          }
+          case _ => {
+            if (ap.getType.getIsVector) {
+              //Если вектор, то сперва зачищаем старый список
+              val apvs = actionPropertyBean.getActionPropertyValue(ap)
+              if (apvs != null && apvs.size() > values.size) {
+                for (i <- values.size to apvs.size - 1) {
+                  //если новых значений меньше тем старых, то хвост зачистим
+                  var apv = apvs(i).unwrap()
+                  apv = em.merge(apv)
+                  em.remove(apv)
                 }
               }
-              var it = 0
-              // Если не пришло отделение поступления - проставляем приемное отделение
-              val pTypeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(ap.getType.getId.intValue()).getId.toInt
-              val storedpTypeId = iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt
-              if (pTypeId.equals(storedpTypeId) && values.head.equals("0"))
-                values = Set(i18n("db.dayHospital.id"))
-
-              values.foreach(value => {
-                val apv = em.merge(actionPropertyBean.setActionPropertyValue(ap, value, it))
-                /* if (apv != null)
-                   entities = entities + apv.unwrap*/
-                it = it + 1
-              })
             }
+            var it = 0
+            // Если не пришло отделение поступления - проставляем приемное отделение
+            val pTypeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(ap.getType.getId.intValue()).getId.toInt
+            val storedpTypeId = iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt
+            if (pTypeId.equals(storedpTypeId) && values.head.equals("0"))
+              values = Set(i18n("db.dayHospital.id"))
+
+            values.foreach(value => {
+              val apv = em.merge(actionPropertyBean.setActionPropertyValue(ap, value, it))
+              /* if (apv != null)
+                 entities = entities + apv.unwrap*/
+              it = it + 1
+            })
           }
         }
-      })
+      }
+    })
 
-      if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
-      /*
-     if (!flgCreate) {
-       val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
-       actionEvent.fire(new ModifyActionNotification(oldAction,
-         oldValues,
-         action,
-         newValues))
-     }
-     */
-    }
-    finally {
-      if (lockId > 0) appLock.releaseLock(lockId)
-    }
+    if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
+    /*
+   if (!flgCreate) {
+     val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
+     actionEvent.fire(new ModifyActionNotification(oldAction,
+       oldValues,
+       action,
+       newValues))
+   }
+   */
 
     if (!flgCreate) {
       //Редактирование обращения (В случае если изменен НИБ)
@@ -329,20 +321,20 @@ with CAPids {
 
         newEvent.setExternalId(appealData.data.number)
         newEvent.setModifyDatetime(now)
-        newEvent.setModifyPerson(authData.user)
+        newEvent.setModifyPerson(staff)
         //newEvent.setExecDate(now)
 
         flgEventRewrite = true
       }
       if (appealData.data.refuseAppealReason != null && !appealData.data.refuseAppealReason.isEmpty) {
-        newEvent = this.revokeAppealById(newEvent, 15, authData)
+        newEvent = this.revokeAppealById(newEvent, 15, staff)
         //this.insertCompleteDiagnoses(appealData.data.id, authData)   //Старый вариант (заменено кодом ниже)
         //final диагноз
         val admissionMkb = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(appealData.data.id)
         if (admissionMkb != null) {
           var map = Map.empty[String, java.util.Set[AnyRef]]
           map += ("finalMkb" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue), 0, 0)))
-          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, null, mapAsJavaMap(map), authData)
+          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, null, mapAsJavaMap(map), staff)
           diag.filter(p => p.isInstanceOf[Diagnostic]).toList.foreach(f => f.asInstanceOf[Diagnostic].setResult(this.getRbResultById(15)))
           dbManager.persistAll(diag)
         }
@@ -373,7 +365,7 @@ with CAPids {
           f.getRelativeType.getId,
           parent,
           patient,
-          authData.user)
+          staff)
 
         val res = dbEventClientRelation.insertOrUpdate(newEvent, tempServerRelation, f.getNote)
         em.flush()
@@ -398,8 +390,7 @@ with CAPids {
     //*****
     //Создание/редактирование записи для Event_Persons
     if (flgCreate)
-      setExecPersonForAppeal(newEvent.getId.intValue(), 0, authData, ExecPersonSetType.EP_CREATE_APPEAL)
-    //dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
+      setExecPersonForAppeal(newEvent.getId.intValue(), 0, staff, ExecPersonSetType.EP_CREATE_APPEAL)
 
     //Создание/редактирование диагнозов (отд. записи)
     var map = Map.empty[String, java.util.Set[AnyRef]]
@@ -424,7 +415,7 @@ with CAPids {
         .toSet[AnyRef]
       map += (flatCode -> values)
     })
-    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), null, mapAsJavaMap(map), authData)
+    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), null, mapAsJavaMap(map), staff)
 
     if (appealData.data.getPayer != null
       && appealData.data.getPaymentContract != null) {
@@ -500,7 +491,7 @@ with CAPids {
   }
 
 
-  def revokeAppealById(event: Event, resultId: Int, authData: AuthData) = {
+  def revokeAppealById(event: Event, resultId: Int, staff: Staff) = {
 
     //Закрываем госпитализацию с причиной отказа
     val now = new Date()
@@ -510,7 +501,7 @@ with CAPids {
     //TODO: Возможно надо прикрутить блокировку
     try {
       event.setModifyDatetime(now)
-      event.setModifyPerson(authData.user)
+      event.setModifyPerson(staff)
       event.setExecDate(now)
       event.setResult(dbRbResultBean.getRbResultById(resultId)) //какой-то айдишник =)
     }
@@ -589,7 +580,7 @@ with CAPids {
     }
   }
 
-  def updateTempInvalid(event: Event, tempInvalidCont: TempInvalidAppealContainer, authDate: AuthData) {
+  def updateTempInvalid(event: Event, tempInvalidCont: TempInvalidAppealContainer, staff: Staff) {
     if (tempInvalidCont != null &&
       tempInvalidCont.serial != null &&
       tempInvalidCont.number != null) {
@@ -612,16 +603,16 @@ with CAPids {
         0, //int duration,
         0, //short closed,
         event.getPatient, // Patient patient,
-        authDate.getUser //Staff sessionUser)
+        staff //Staff sessionUser)
       )
     }
   }
 
   @throws(classOf[CoreException])
-  def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {
+  def verificationData(id: Int, staff: Staff, appealData: AppealData, flgCreate: Boolean): Event = {
     //для создания ид пациента, для редактирование ид обращения
 
-    if (authData == null)
+    if (staff == null)
       throw new CoreException(i18n("error.appeal.create.NoAuthData"))
 
 
@@ -695,7 +686,7 @@ with CAPids {
         result,
         acheResult,
         execPerson,
-        authData)
+        staff)
     }
     else {
       //Редактирование
@@ -706,7 +697,7 @@ with CAPids {
       }
 
       event.setModifyDatetime(now)
-      event.setModifyPerson(authData.user)
+      event.setModifyPerson(staff)
       dbManager.merge(event)
       event.setSetDate(appealData.data.rangeAppealDateTime.getStart())
       event.setEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId))
@@ -767,7 +758,7 @@ with CAPids {
     }
   }
 
-  private def getValueByCase(aptId: Int, appealData: AppealData, authData: AuthData) = {
+  private def getValueByCase(aptId: Int, appealData: AppealData) = {
 
     val listNdx = new IndexOf(list)
     val cap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(aptId)
@@ -900,59 +891,6 @@ with CAPids {
     map
   }
 
-  /*private def insertCompleteDiagnoses (eventId: Int, authData: AuthData) = {
-
-    val now = new Date()
-
-    val diag = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(eventId)
-    if (diag != null) {
-      val event = dbEventBean.getEventById(eventId)
-      val diagnosis = new Diagnosis()
-      diagnosis.setCreateDatetime(now)
-      diagnosis.setModifyDatetime(now)
-      diagnosis.setSetDate(now)
-      diagnosis.setEndDate(now)
-      diagnosis.setMkb(diag)
-      diagnosis.setMkbExCode("")  //TODO: Уточнить! diag.getDiagName
-      diagnosis.setPatient(event.getPatient)
-
-      val diagnostic = new Diagnostic()
-      diagnostic.setCreateDatetime(now)
-      diagnostic.setModifyDatetime(now)
-      diagnostic.setNotes("")
-      diagnostic.setSetDate(now)
-      diagnostic.setHospital(0)
-
-      if (authData!=null) {
-        diagnosis.setCreatePerson(authData.getUser)
-        diagnosis.setModifyPerson(authData.getUser)
-        diagnosis.setPerson(authData.getUser)
-
-        diagnostic.setCreatePerson(authData.getUser)
-        diagnostic.setModifyPerson(authData.getUser)
-        diagnostic.setSpeciality(authData.getUser.getSpeciality)
-      }
-
-      diagnostic.setEvent(event)
-
-      val diagType = this.getRbDiagnosisTypeById(1)
-      if (diagType!=null) {
-        diagnosis.setDiagnosisType(diagType)
-        diagnostic.setDiagnosisType(diagType)
-      }
-
-      val rbResult = this.getRbResultById(15)
-      if(rbResult!=null)
-          diagnostic.setResult(rbResult)
-
-
-      dbManager.persist(diagnosis)
-      diagnostic.setDiagnosis(diagnosis)
-      dbManager.persist(diagnostic)
-    }
-    true
-  }*/
-
   private def getRbDiagnosisTypeById(id: Int): RbDiagnosisType = {
     val diagType = em.createQuery(DiagnosisTypeByIdQuery, classOf[RbDiagnosisType])
       .setParameter("id", id)
@@ -995,7 +933,8 @@ with CAPids {
     rbResult
   }
 
-  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData) = { val codes = setAsJavaSet(condition match {
+  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData) = {
+    val codes = setAsJavaSet(condition match {
       case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
       case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB", "WBC", "GRAN", "NEUT", "HGB", "PLT")
       case _ => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
@@ -1211,10 +1150,10 @@ with CAPids {
       new SurgicalOperationsListData()
   }
 
-  def setExecPersonForAppeal(id: Int, personId: Int, authData: AuthData, epst: ExecPersonSetType) = {
+  def setExecPersonForAppeal(id: Int, personId: Int, staff: Staff, epst: ExecPersonSetType) = {
 
     var eventPerson: EventPerson = null
-    var execPerson: Staff = authData.getUser
+    var execPerson: Staff = staff
     var isCreate: Boolean = true
 
     val event = epst.getVarId match {
@@ -1240,7 +1179,7 @@ with CAPids {
       //Изменим запись о назначевшем враче в ивенте
       event.setExecutor(execPerson)
       event.setModifyDatetime(new Date())
-      event.setModifyPerson(authData.getUser)
+      event.setModifyPerson(staff)
       dbManager.merge(event)
 
       true

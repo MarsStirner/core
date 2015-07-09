@@ -93,18 +93,18 @@ public interface DbActionPropertyBeanLocal {
 
     ActionProperty createActionProperty(Action action,
                                         int aptId,
-                                        AuthData userData)
+                                        Staff staff)
             throws CoreException;
 
     ActionProperty createActionPropertyWithDate(Action a,
                                                 int aptId,
-                                                AuthData userData,
+                                                Staff staff,
                                                 Date now)
             throws CoreException;
 
     ActionProperty updateActionProperty(int id,
                                         int version,
-                                        AuthData userData)
+                                        Staff staff)
             throws CoreException;
 
     List<ActionProperty> getActionPropertiesByActionIdAndTypeId(int actionId, int typeId)

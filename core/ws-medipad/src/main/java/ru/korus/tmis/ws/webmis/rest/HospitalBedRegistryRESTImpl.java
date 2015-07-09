@@ -4,6 +4,8 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.HospitalBedData;
 import ru.korus.tmis.core.data.HospitalBedDataListFilter;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.EJB;
@@ -27,6 +29,9 @@ public class HospitalBedRegistryRESTImpl {
     @EJB
     private WebMisREST wsImpl;
 
+    @EJB
+    private DbStaffBeanLocal dbStaffBeanLocal;
+
     /**
      * Регистрация на койке
      *
@@ -43,7 +48,10 @@ public class HospitalBedRegistryRESTImpl {
                                                @PathParam("eventId") int eventId,
                                                @QueryParam("callback") String callback,
                                                HospitalBedData data) throws CoreException {
-        return new JSONWithPadding(wsImpl.registryPatientToHospitalBed(eventId, data, mkAuth(servRequest)), callback);
+
+        AuthData authData = mkAuth(servRequest);
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        return new JSONWithPadding(wsImpl.registryPatientToHospitalBed(eventId, data, authData, staff), callback);
     }
 
     /**
@@ -64,7 +72,9 @@ public class HospitalBedRegistryRESTImpl {
                                              @QueryParam("callback") String callback,
                                              HospitalBedData data,
                                              @PathParam("actionId") int actionId) throws CoreException {
-        return new JSONWithPadding(wsImpl.modifyPatientToHospitalBed(actionId, data, mkAuth(servRequest)), callback);
+        AuthData authData = mkAuth(servRequest);
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        return new JSONWithPadding(wsImpl.modifyPatientToHospitalBed(actionId, data, authData, staff), callback);
     }
 
     /**

@@ -7,7 +7,7 @@ import common.{DbEventPersonBeanLocal, DbEventBeanLocal}
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Action, Speciality, Diagnosis, Diagnostic}
+import ru.korus.tmis.core.entity.model._
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import java.util.Date
@@ -83,12 +83,11 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
                                diseaseCharacterId: Int,
                                diseaseStageId: Int,
                                note: String,
-                               userData: AuthData,
+                               staff: Staff,
                                isNewDiag: Boolean) = {
     val now = new Date()
     var diagnostic: Diagnostic = null
     var oldDiagnostic: Diagnostic = null
-    var lockId: Int = 0
 
     val event = dbEventBean.getEventById(eventId)
     val diagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(diagnosisTypeFlatCode)
@@ -97,13 +96,12 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     if (id>0) {
       diagnostic = getDiagnosticById(id)
       oldDiagnostic = Diagnostic.clone(diagnostic)
-      lockId = appLock.acquireLock("Diagnostic", id, oldDiagnostic.getId.intValue(), userData)
       val merge = { d: Diagnostic => em.merge(d) }
       merge
     } else {
       diagnostic = new Diagnostic()
       diagnostic.setCreateDatetime(now)
-      diagnostic.setCreatePerson(userData.getUser)
+      diagnostic.setCreatePerson(staff)
       diagnostic.setSanatorium(0)
       diagnostic.setHospital(0)
       val persist: Diagnostic => Diagnostic = { d: Diagnostic => {
@@ -112,9 +110,8 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       persist
     }
 
-    try {
       diagnostic.setModifyDatetime(now)
-      diagnostic.setModifyPerson(userData.getUser)
+      diagnostic.setModifyPerson(staff)
       diagnostic.setEvent(event)
       diagnostic.setAction(action)
       diagnostic.setDiagnosisType(diagnosisType)
@@ -124,24 +121,20 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       if (diseaseStageId > 0) {
         diagnostic.setStage(dbRbDiseaseStageBean.getDiseaseStageById(diseaseStageId))
       }
-      val speciality: Speciality = if (userData.getUser.getSpeciality == null) {
+      val speciality: Speciality = if (staff.getSpeciality == null) {
         em.find(classOf[Speciality], 1);
       } else {
-        userData.getUser.getSpeciality
+        staff.getSpeciality
       }
 
       diagnostic.setSpeciality(speciality)
-      diagnostic.setPerson(userData.getUser)
+      diagnostic.setPerson(staff)
       if(diagnostic.getSetDate == null || isNewDiag) {
         diagnostic.setSetDate(now)
       }
       diagnostic.setNotes(note)
       diagnostic.setDiagnosis(diagnosis)
-    }
-    finally {
-      if(lockId>0)
-        appLock.releaseLock(lockId)
-    }
+
     save(diagnostic)
   }
 

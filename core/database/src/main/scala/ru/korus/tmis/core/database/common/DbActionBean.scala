@@ -116,33 +116,34 @@ class DbActionBean
     }
   }
 
-  def createAction(eventId: Int, actionTypeId: Int, userData: AuthData) = {
+  def createAction(eventId: Int, actionTypeId: Int, userData: AuthData, staff: Staff) = {
     val e = dbEvent.getEventById(eventId)
     val at = dbActionType.getActionTypeById(actionTypeId)
 
     val now = new Date
     val a = new Action
 
-    if (userData != null) {
-      a.setCreatePerson(userData.user)
+    if (staff != null) {
+      a.setCreatePerson(staff)
       a.setCreateDatetime(now)
-      a.setModifyPerson(userData.user)
+      a.setModifyPerson(staff)
       a.setModifyDatetime(now)
 
       var eventPerson: EventPerson = null
-      if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
+      if (userData != null &&
+        (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0)) {
         eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
         if (eventPerson != null) {
           a.setAssigner(eventPerson.getPerson)
         } else {
-          a.setAssigner(userData.user)
+          a.setAssigner(staff)
         }
       }
       else
-        a.setAssigner(userData.user)
+        a.setAssigner(staff)
 
       // Исправление дефолтного значения от 03.07.2013 по задаче WEBMIS-873
-      a.setExecutor(userData.user) //a.setExecutor(at.getDefaultExecutor)
+      a.setExecutor(staff) //a.setExecutor(at.getDefaultExecutor)
 
     }
 
@@ -160,20 +161,20 @@ class DbActionBean
     a
   }
 
-  def updateAction(id: Int, version: Int, userData: AuthData) = {
+  def updateAction(id: Int, version: Int, authData: AuthData, staff: Staff) = {
     val a = getActionById(id)
     val now = new Date
 
-    if (userData != null) {
+    if (staff != null) {
       var eventPerson: EventPerson = null
-      if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
+      if (authData != null && (authData.getUserRole.getCode.compareTo("admNurse") == 0 || authData.getUserRole.getCode.compareTo("strNurse") == 0)) {
         eventPerson = dbEventPerson.getLastEventPersonForEventId(a.getEvent.getId.intValue())
-        if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(userData.user)
+        if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(staff)
       }
+      a.setModifyPerson(staff)
       //a.setExecutor(userData.user)
     }
 
-    a.setModifyPerson(userData.user)
     a.setModifyDatetime(now)
 
     a.setBegDate(now)
@@ -753,7 +754,7 @@ class DbActionBean
     return if (actions.isEmpty) null else actions.get(0);
   }
 
-  override def getLastActionByEventAndActionTypes(eventId: Integer, flatCodeList: util.List[String]): Action =  {
+  override def getLastActionByEventAndActionTypes(eventId: Integer, flatCodeList: util.List[String]): Action = {
     val actions = em.createNamedQuery("Action.findLastByFlatCodesAndEventId", classOf[Action])
       .setParameter("eventId", eventId)
       .setParameter("flatCodes", flatCodeList)
@@ -762,7 +763,7 @@ class DbActionBean
     return if (actions.isEmpty) null else actions.get(0);
   }
 
-  override def getLastActionByActionTypesAndClientId(codeList: util.List[String], clientId: Integer): Action =  {
+  override def getLastActionByActionTypesAndClientId(codeList: util.List[String], clientId: Integer): Action = {
     val actions = em.createNamedQuery("Action.findLastByActionTypesAndClientId", classOf[Action])
       .setParameter("codes", codeList)
       .setParameter("clientId", clientId)

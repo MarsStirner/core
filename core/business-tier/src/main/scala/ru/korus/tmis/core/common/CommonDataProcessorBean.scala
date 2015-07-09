@@ -75,7 +75,8 @@ class CommonDataProcessorBean
 
   def createActionForEventFromCommonData(eventId: Int,
                                          data: CommonData,
-                                         userData: AuthData): java.util.List[Action] = {
+                                         userData: AuthData,
+                                         staff: Staff): java.util.List[Action] = {
 
     if (data == null) {
       throw new CoreException(ConfigManager.ErrorCodes.InvalidCommonData,
@@ -160,7 +161,8 @@ class CommonDataProcessorBean
 
           val action = dbAction.createAction(eventId,
             entity.getTypeId.intValue,
-            userData)
+            userData,
+            staff)
 
           /* ActionType.id = 139 - Осмотр врача приемного отделения (первичная госпитализация)
              ActionType.id = 112 - Поступление
@@ -211,7 +213,7 @@ class CommonDataProcessorBean
               else dbActionProperty.createActionPropertyWithDate(
                 action,
                 attribute.typeId.intValue, //TODO attribute.typeId ??????????
-                userData,
+                staff,
                 now)
               if (ap != null) {
                 new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
@@ -232,7 +234,7 @@ class CommonDataProcessorBean
               if (!apt.getIsAssignable) {
                 emptyApList.add(dbActionProperty.createActionPropertyWithDate(action,
                   apt.getId.intValue,
-                  userData,
+                  staff,
                   now))
               }
             })
@@ -256,7 +258,7 @@ class CommonDataProcessorBean
           dbManager.persistAll(this.saveDiagnoses(eventId, action,
             apList.map(_._1).toList,
             apvList,
-            userData))
+            staff))
 
           // Save empty AP values (set to default values)
           //Для FlatDictionary (FlatDirectory) нету значения по умолчанию, внутри релэйшн по значению валуе, дефолт значение решил не писать
@@ -347,7 +349,8 @@ class CommonDataProcessorBean
 
   def modifyActionFromCommonData(actionId: Int,
                                  data: CommonData,
-                                 userData: AuthData): java.util.List[Action] = {
+                                 userData: AuthData,
+                                 staff: Staff): java.util.List[Action] = {
 
     if (data == null) {
       throw new CoreException(ConfigManager.ErrorCodes.InvalidCommonData,
@@ -363,7 +366,8 @@ class CommonDataProcessorBean
       data.entity.filter(_.id == actionId).foreach(entity => {
         val a = dbAction.updateAction(entity.id.intValue,
           entity.version.intValue,
-          userData)
+          userData,
+          staff)
         val aw = new ActionWrapper(a)
 
         // очистить часы
@@ -466,7 +470,7 @@ class CommonDataProcessorBean
                 val ap = dbActionProperty.updateActionProperty(
                   id.intValue,
                   attribute.version.intValue,
-                  userData)
+                  staff)
                 var apv: APValue = null
 
                 if (ap.getType.getTypeName.compareTo("MKB") == 0 && (value == null || value.isEmpty)) {
@@ -490,7 +494,7 @@ class CommonDataProcessorBean
                 val ap = dbActionProperty.updateActionProperty(
                   id.intValue,
                   attribute.version.intValue,
-                  userData)
+                  staff)
                 val apv = dbActionProperty.setActionPropertyValue(
                   ap,
                   valueId,
@@ -523,7 +527,7 @@ class CommonDataProcessorBean
       dbManager.persistAll(this.saveDiagnoses(eventId, action,
         entities.filter(_.isInstanceOf[ActionProperty]).map(_.asInstanceOf[ActionProperty]).toList,
         entities.filter(_.isInstanceOf[APValue]).map(_.asInstanceOf[APValue]).toList,
-        userData))
+        staff))
 
       /*
       r.foreach(newAction => {
@@ -544,7 +548,7 @@ class CommonDataProcessorBean
     setPerson(em.find(classOf[Staff], id))
   }
 
-  private def saveDiagnoses(eventId: Int, action: Action, apList: java.util.List[ActionProperty], apValue: java.util.List[APValue], userData: AuthData): java.util.List[AnyRef] = {
+  private def saveDiagnoses(eventId: Int, action: Action, apList: java.util.List[ActionProperty], apValue: java.util.List[APValue], userData: Staff): java.util.List[AnyRef] = {
 
     var map = Map.empty[String, java.util.Set[AnyRef]]
     val characterAP = apList.find(p => p.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseCharacter")) == 0).getOrElse(null)

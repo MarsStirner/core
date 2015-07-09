@@ -161,7 +161,7 @@ with I18nable {
   def getDirectionById(directionId: Int,
                        title: String,
                        postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
-                       authData: AuthData) = {
+                       staff: Staff) = {
 
     val action = actionBean.getActionById(directionId)
     val actions: java.util.List[Action] = new util.LinkedList[Action]
@@ -172,8 +172,8 @@ with I18nable {
       title,
       List(summary _, detailsWithAge _))
 
-    val isTrueDoctor = authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue() ||
-      (action.getAssigner != null && authData.getUser.getId.intValue() == action.getAssigner.getId.intValue())
+    val isTrueDoctor = staff.getId.intValue() == action.getCreatePerson.getId.intValue() ||
+      (action.getAssigner != null && staff.getId.intValue() == action.getAssigner.getId.intValue())
     val jt = dbJobTicketBean.getJobTicketForAction(action.getId.intValue())
     com_data.getEntity.get(0).setIsEditable(action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
 
@@ -185,7 +185,7 @@ with I18nable {
     json_data
   }
 
-  private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int, auth: AuthData) = {
+  private def createJobTicketsForActions(actions: java.util.List[Action], eventId: Int) = {
 
     val department = hospitalBedBean.getCurrentDepartmentForAppeal(eventId)
     val list = new java.util.LinkedList[(Job, JobTicket, TakenTissue, Action)]
@@ -335,7 +335,7 @@ with I18nable {
         // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
         try {
           sendJMSLabRequest(p._1.getId.intValue(), labCode)
-          dbJobTicketBean.modifyJobTicketStatus(p._2, JobTicket.STATUS_SENDING, auth)
+          dbJobTicketBean.modifyJobTicketStatus(p._2, JobTicket.STATUS_SENDING)
         }
         catch {
           case e: Exception => {
@@ -359,6 +359,7 @@ with I18nable {
                                                request: Object,
                                                mnem: String,
                                                userData: AuthData,
+                                               staff: Staff,
                                                postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
     if (actionBean.getMovings(eventId).isEmpty) {
       throw new CoreException(ConfigManager.ErrorCodes.NoMoving,
@@ -366,12 +367,12 @@ with I18nable {
 
     }
 
-    var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData)
+    var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData, staff)
 
     //Для лабораторных исследований отработаем с JobTicket
     if (mnem.toUpperCase.equals("LAB") || mnem.toUpperCase.equals("BAK_LAB")) {
       try {
-        actions = createJobTicketsForActions(actions, eventId, userData)
+        actions = createJobTicketsForActions(actions, eventId)
       } catch {
         // Если произошла ошибка в процессе проставления JobTickets -
         // то помечаем действие лабораторного исследования как удаленное
@@ -400,9 +401,10 @@ with I18nable {
                                                request: Object,
                                                mnem: String,
                                                userData: AuthData,
+                                               staff: Staff,
                                                postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
     var actions: java.util.List[Action] = null
-    val userId = userData.getUser.getId
+    val userId = staff.getId
     val flgLab = mnem.toUpperCase.equals("LAB") || mnem.toUpperCase.equals("BAK_LAB")
 
     directions.getEntity.foreach((action) => {
@@ -419,12 +421,10 @@ with I18nable {
 
       if ((a.getCreatePerson != null && a.getCreatePerson.getId.compareTo(userId) == 0) ||
         (a.getModifyPerson != null && a.getModifyPerson.getId.compareTo(userId) == 0) ||
-        (a.getAssigner != null && a.getAssigner.getId.compareTo(userId) == 0) /*||
-         (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
-         userRole.compareTo("strHead")==0*/ ) {
-        actions = commonDataProcessor.modifyActionFromCommonData(action.getId.intValue(), directions, userData)
+        (a.getAssigner != null && a.getAssigner.getId.compareTo(userId) == 0)) {
+        actions = commonDataProcessor.modifyActionFromCommonData(action.getId.intValue(), directions, userData, staff)
         if (flgLab) {
-          actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue(), userData)
+          actions = createJobTicketsForActions(actions, a.getEvent.getId.intValue())
           //редактирование или удаление старого жобТикета
           val jobTicket = if (oldJT > 0) dbJobTicketBean.getJobTicketById(oldJT) else null
           if (jobTicket != null) {
@@ -454,8 +454,8 @@ with I18nable {
     json_data
   }
 
-  def createServiceForConsultation(request: ConsultationRequestData, plannedDate: Date, userData: AuthData): Action = {
-    var action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData)
+  def createServiceForConsultation(request: ConsultationRequestData, plannedDate: Date, userData: AuthData, staff: Staff): Action = {
+    var action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData, staff)
     action.setIsUrgent(request.urgent) //если постановка в очередь срочная, то и услуга срочная
     if (request.createPerson > 0 && dbStaffBean.getStaffById(request.createPerson) != null) {
       action.setCreatePerson(dbStaffBean.getStaffById(request.createPerson))
@@ -484,7 +484,7 @@ with I18nable {
     actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(request.actionTypeId.intValue())
       .toList
       .foreach((apt) => {
-      val ap = actionPropertyBean.createActionProperty(action, apt.getId.intValue(), userData)
+      val ap = actionPropertyBean.createActionProperty(action, apt.getId.intValue(), staff)
       em.persist(ap)
 
       if (ap.getType.getTypeName.compareTo("MKB") == 0 && request.diagnosis != null && request.diagnosis.getCode != null) {
@@ -513,7 +513,7 @@ with I18nable {
     action
   }
 
-  def createConsultation(request: ConsultationRequestData, userData: AuthData) = {
+  def createConsultation(request: ConsultationRequestData, userData: AuthData, staff: Staff) = {
 
     val plannedDate = if (request.plannedTime != null && request.plannedTime.getTime != null) {
       new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime)
@@ -521,7 +521,7 @@ with I18nable {
       new Date(request.plannedEndDate.getTime)
     }
     // Создание услуги
-    val action: Action = createServiceForConsultation(request, plannedDate, userData)
+    val action: Action = createServiceForConsultation(request, plannedDate, userData, staff)
 
     // Записываем пациента в очередь на время
     val personAction = dbStaffBean.getPersonActionsByDateAndType(request.getExecutorId, request.getPlannedEndDate, "amb")
@@ -543,8 +543,8 @@ with I18nable {
     action.getId.intValue()
   }
 
-  def removeDirections(directions: AssignmentsToRemoveDataList, directionType: String, userData: AuthData) = {
-    val userId = userData.getUser.getId
+  def removeDirections(directions: AssignmentsToRemoveDataList, directionType: String, userData: Staff) = {
+    val userId = userData.getId
 
     directions.getData.foreach((f) => {
       val a = actionBean.getActionById(f.getId)
@@ -634,7 +634,7 @@ with I18nable {
     true
   }
 
-  def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
+  def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: Staff) = {
     var isSuccess: Boolean = true
     data.getData.foreach(f => {
       var isAllActionSent: Boolean = true
@@ -663,7 +663,7 @@ with I18nable {
             try {
               sendJMSLabRequest(a.getId.intValue(), labCode)
               isAllActionSent = false // Статус проставляется автоматически по возвращению сообщения JMS
-              dbJobTicketBean.modifyJobTicketStatus(f.getId, JobTicket.STATUS_SENDING, authData)
+              dbJobTicketBean.modifyJobTicketStatus(f.getId, JobTicket.STATUS_SENDING)
             }
             catch {
               case e: Exception => {
@@ -682,14 +682,14 @@ with I18nable {
         dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {
           val tt = a.getTakenTissue
           if (tt != null) {
-            tt.setPerson(authData.getUser)
+            tt.setPerson(authData)
             em.merge(tt)
           }
         })
       }
       var res: Boolean = true
       if (isAllActionSent) {
-        res = dbJobTicketBean.modifyJobTicketStatus(f.getId, f.getStatus, authData)
+        res = dbJobTicketBean.modifyJobTicketStatus(f.getId, f.getStatus)
       }
       if (!res)
         isSuccess = res

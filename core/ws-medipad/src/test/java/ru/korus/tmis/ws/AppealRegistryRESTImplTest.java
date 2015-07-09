@@ -108,7 +108,7 @@ public class AppealRegistryRESTImplTest extends Arquillian {
             AppealData appealData = initAppealData(); // инициализация параметров госпитализации
             int countEvent = eventBeanLocal.getEventsForPatient(TEST_PATIENT_ID).size();  // количетово обращений пациента ДО
             AuthData authData = WebMisBase.auth(authStorageBeanLocal);
-            appealBean.insertAppealForPatient(appealData, TEST_PATIENT_ID, authData); // создание обращения на госпитализацию.
+            appealBean.insertAppealForPatient(appealData, TEST_PATIENT_ID, authData, null); // создание обращения на госпитализацию.
             int countEventNew = eventBeanLocal.getEventsForPatient(TEST_PATIENT_ID).size(); // количетово обращений пациента ПОСЛЕ
             Assert.assertEquals(countEventNew, countEvent + 1); // количетово обращений пациента ПОСЛЕ должно быть на один больше
             //TODO  add more assertion!

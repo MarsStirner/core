@@ -3,6 +3,7 @@ package ru.korus.tmis.core.patient;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.entity.model.Patient;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.kladr.Kladr;
 import ru.korus.tmis.core.entity.model.kladr.Street;
 import ru.korus.tmis.core.exception.CoreException;
@@ -19,7 +20,7 @@ public interface PatientBeanLocal {
     CommonData getCurrentPatientsForDoctor(AuthData userData)
             throws CoreException;
 
-    CommonData getCurrentPatientsForDepartment(AuthData userData)
+    CommonData getCurrentPatientsForDepartment(Staff userData)
             throws CoreException;
 
     /**
@@ -38,7 +39,7 @@ public interface PatientBeanLocal {
     Iterable<Patient> getAllPatients(PatientRequestData requestData)
             throws CoreException;
 
-    PatientEntry savePatient(int id, PatientEntry patientEntry, AuthData userData)
+    PatientEntry savePatient(int id, PatientEntry patientEntry, Staff userData)
             throws CoreException;
 
     String getAllPatientsForDepartmentIdAndDoctorIdByPeriod(PatientsListRequestData requestData, AuthData authData)
@@ -68,6 +69,6 @@ public interface PatientBeanLocal {
      */
     BloodHistoryListData getBloodHistory(int id) throws CoreException;
 
-    BloodHistoryData insertBloodTypeForPatient(int id, BloodHistoryData data, AuthData authData) throws CoreException;
+    BloodHistoryData insertBloodTypeForPatient(int id, BloodHistoryData data, Staff staff) throws CoreException;
 
 }

@@ -172,7 +172,7 @@ public class PrescriptionTest extends Arquillian {
         Assert.assertTrue(!eventList.isEmpty());
         Event event = eventList.iterator().next();
         final int actionTypeIdForPrescription = 123; //TODO: must be cretae by flatCode 'prescription'
-        Action actionPrescription = dbActionBean.createAction(event.getId(), actionTypeIdForPrescription, null);
+        Action actionPrescription = dbActionBean.createAction(event.getId(), actionTypeIdForPrescription, null, null);
         actionPrescription.setUuid(dbUUIDBeanLocal.createUUID());
         final int executorId = 1;
         actionPrescription.setExecutor(em.find(Staff.class, executorId));

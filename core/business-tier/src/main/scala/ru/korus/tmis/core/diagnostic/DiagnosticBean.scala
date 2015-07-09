@@ -54,13 +54,13 @@ class DiagnosticBean
   var typeFilter: TypeFilterBeanLocal = _
 
   def getDiagnosticTypes(eventId: Int,
-                         userData: AuthData) = {
+                         userData: Staff) = {
     var types = dbActionType.getDiagnosticTypes
 
     if (ConfigManager.Filter.isOn) {
       types = typeFilter.filterActionTypes(
         types,
-        userData.user.getOrgStructure.getId.intValue,
+        userData.getOrgStructure.getId.intValue,
         eventId)
     }
 
@@ -163,12 +163,14 @@ class DiagnosticBean
 
   def createDiagnosticForEventId(eventId: Int,
                                  diagnostic: CommonData,
-                                 userData: AuthData) = {
+                                 userData: AuthData,
+                                 staff: Staff) = {
     val createdActions =
       commonDataProcessor.createActionForEventFromCommonData(
         eventId,
         diagnostic,
-        userData)
+        userData,
+        staff)
 
     commonDataProcessor.fromActions(
       createdActions,
@@ -178,11 +180,13 @@ class DiagnosticBean
 
   def modifyDiagnosticById(diagnosticId: Int,
                            diagnostic: CommonData,
-                           userData: AuthData) = {
+                           userData: AuthData,
+                           staff: Staff) = {
     val modifiedActions = commonDataProcessor.modifyActionFromCommonData(
       diagnosticId,
       diagnostic,
-      userData)
+      userData,
+      staff)
 
     commonDataProcessor.fromActions(
       modifiedActions,

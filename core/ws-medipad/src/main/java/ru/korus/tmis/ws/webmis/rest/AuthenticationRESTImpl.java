@@ -11,7 +11,9 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.*;
 
 import ru.korus.tmis.core.data.RoleData;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.Role;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.AuthenticationException;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.medipad.AuthenticationWebService;
@@ -33,6 +35,9 @@ public class AuthenticationRESTImpl   {
 
     @EJB
     WebMisREST webmisImpl;
+
+    @EJB
+    private DbStaffBeanLocal dbStaffBeanLocal;
 
     /**
      * Сервис по получению доступных ролей для пользователя (первичная авторизация)
@@ -145,14 +150,20 @@ public class AuthenticationRESTImpl   {
     public Object authenticate3(@Context HttpServletRequest servRequest,
                                 @QueryParam("roleId") int roleId,
                                 @QueryParam("callback") String callback) throws AuthenticationException {
-        AuthData auth = webmisImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
-        for(Role r : auth.getUser().getRoles()) {
+        AuthData authData = webmisImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+        Staff staff = null;
+        try {
+            staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        } catch (CoreException e) {
+            throw new AuthenticationException();
+        }
+        for(Role r : staff.getRoles()) {
             if(r.getId().equals(roleId)) {
-                auth.setUserRole(r);
-                return new JSONWithPadding(auth, callback);
+                authData.setUserRole(r);
+                return new JSONWithPadding(authData, callback);
             }
         }
-        throw new AuthenticationException("Недопустимая роль (id = " + roleId + ") для сотрудника " + auth.getUser().getFullName());
+        throw new AuthenticationException("Недопустимая роль (id = " + roleId + ") для сотрудника " + staff.getFullName());
     }
 
 }

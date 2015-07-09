@@ -1,6 +1,7 @@
 package ru.korus.tmis.prescription;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -21,9 +22,9 @@ public interface PrescriptionBeanLocal {
 
     TemplateData getTemplate(Integer actionTypeId) throws CoreException;
 
-    PrescriptionsData create(CreatePrescriptionReqData createPrescriptionReqData, AuthData authData) throws CoreException;
+    PrescriptionsData create(CreatePrescriptionReqData createPrescriptionReqData, AuthData authData, Staff staff) throws CoreException;
 
-    PrescriptionsData update(Integer actionId, CreatePrescriptionReqData createPrescriptionReqData, AuthData auth) throws CoreException;
+    PrescriptionsData update(Integer actionId, CreatePrescriptionReqData createPrescriptionReqData, Staff auth) throws CoreException;
 
     ExecuteIntervalsData executeIntervals(ExecuteIntervalsData executeIntervalsData);
 

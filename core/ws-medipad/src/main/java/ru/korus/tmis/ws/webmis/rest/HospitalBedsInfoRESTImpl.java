@@ -2,6 +2,8 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.database.DbStaffBean;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 
@@ -26,6 +28,9 @@ public class HospitalBedsInfoRESTImpl {
     @EJB
     private WebMisREST wsImpl;
 
+    @EJB
+    private DbStaffBean staffBean;
+
     /**
      * Сервис на получение списка коек с меткой свободно/занято.
      * Url: .../hospitalbed/vacant/{departmentId}
@@ -41,7 +46,8 @@ public class HospitalBedsInfoRESTImpl {
                                         @QueryParam("filter[departmentId]") int departmentId) throws CoreException {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
         AuthData authData = mkAuth(servRequest);
-        int depId = (departmentId>0) ? departmentId : authData.getUser().getOrgStructure().getId();
+        Staff staff = staffBean.getStaffById(authData.getUserId());
+        int depId = (departmentId>0) ? departmentId : staff.getOrgStructure().getId();
         return new JSONWithPadding(wsImpl.getVacantHospitalBeds(depId, authData), callback);
     }
 

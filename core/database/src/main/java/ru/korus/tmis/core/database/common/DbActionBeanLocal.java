@@ -46,7 +46,6 @@ public interface DbActionBeanLocal {
      *
      * @param eventId      Идентификатор обращения.
      * @param actionTypeId Идентификатор типа действия s11r64.ActionType.id
-     * @param userData     Авторизационные данные как AuthData.
      * @return Созданное действие.
      * @throws CoreException
      * @see ActionType
@@ -55,7 +54,8 @@ public interface DbActionBeanLocal {
      */
     Action createAction(int eventId,
                         int actionTypeId,
-                        AuthData userData)
+                        AuthData authData,
+                        Staff staff)
             throws CoreException;
 
     /**
@@ -63,14 +63,14 @@ public interface DbActionBeanLocal {
      *
      * @param id       Идентификатор действия (Action).
      * @param version  Версия текущего действия (Action).
-     * @param userData Авторизационные данные как AuthData.
      * @return Отредактированное действие  (Action).
      * @throws CoreException
      * @see Action
      */
     Action updateAction(int id,
                         int version,
-                        AuthData userData)
+                        AuthData authData,
+                        Staff staff)
             throws CoreException;
 
     /**

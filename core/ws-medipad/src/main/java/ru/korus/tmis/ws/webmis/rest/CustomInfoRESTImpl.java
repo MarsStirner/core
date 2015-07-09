@@ -9,9 +9,11 @@ import ru.korus.tmis.core.data.JobTicketStatusDataList;
 import ru.korus.tmis.core.data.PatientsListRequestData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesData;
 import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
 import ru.korus.tmis.core.entity.model.RbLaboratory;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 
@@ -41,6 +43,8 @@ public class CustomInfoRESTImpl {
     @EJB private OrganizationImpl organizationImpl;
 
     @EJB private PrintTemplateImpl printTemplateImpl;
+
+    @EJB private DbStaffBeanLocal dbStaffBeanLocal;
 
 
     //__________________________________________________________________________________________________________________
@@ -77,14 +81,16 @@ public class CustomInfoRESTImpl {
                              @QueryParam("filter[endDate]")long endDate,
                              @QueryParam("filter[profileBed]")List<Integer> profileBeds ) throws CoreException {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
-        final int depId = getCurDepartamentOrDefault(departmentId, mkAuth(servRequest));
+        AuthData authData = mkAuth(servRequest);
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        final int depId = getCurDepartamentOrDefault(departmentId, staff);
         if(profileBeds.isEmpty()) { // если профили коек не заданы, то строим для всех
             Iterable<RbHospitalBedProfile> list = wsImpl.getAllAvailableBedProfiles();
             for(RbHospitalBedProfile curProfileBed : list) {
                 profileBeds.add(curProfileBed.getId());
             }
         }
-        return new JSONWithPadding(wsImpl.getForm007(depId, beginDate, endDate, profileBeds, mkAuth(servRequest)),callback);
+        return new JSONWithPadding(wsImpl.getForm007(depId, beginDate, endDate, profileBeds, authData),callback);
     }
 
     /**
@@ -160,6 +166,9 @@ public class CustomInfoRESTImpl {
         Date endDate;
         DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
 
+        AuthData authData = mkAuth(servRequest);
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+
         try { beginDate = parser.parseDateTime(bd).toDate();
         } catch (RuntimeException e) { beginDate = bd == null ? null : new Date(Long.parseLong(bd)); }
 
@@ -167,7 +176,7 @@ public class CustomInfoRESTImpl {
         catch (RuntimeException e) { endDate = ed == null ? null : new Date(Long.parseLong(ed)); }
 
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
-        final int depId = getCurDepartamentOrDefault(departmentId, auth);
+        final int depId = getCurDepartamentOrDefault(departmentId, staff);
         final short statusS = (status!=null && !status.isEmpty()) ? Short.parseShort(status): -1;
 
         TakingOfBiomaterialRequesDataFilter filter = new TakingOfBiomaterialRequesDataFilter(jobTicketId,
@@ -180,8 +189,8 @@ public class CustomInfoRESTImpl {
         return new JSONWithPadding(wsImpl.getTakingOfBiomaterial(request, auth),callback);
     }
 
-    private int getCurDepartamentOrDefault(int departmentId, AuthData auth) {
-        final OrgStructure orgStructure = auth.getUser().getOrgStructure();
+    private int getCurDepartamentOrDefault(int departmentId, Staff auth) {
+        final OrgStructure orgStructure = auth.getOrgStructure();
         return (departmentId>0) ? departmentId : orgStructure != null? orgStructure.getId() : 1;
     }
 
@@ -238,17 +247,18 @@ public class CustomInfoRESTImpl {
                                                             @QueryParam("filter[date]")long endDate,
                                                             @QueryParam("filter[departmentId]") int departmentId,
                                                             @QueryParam("filter[doctorId]") int doctorId) throws CoreException {
-        AuthData auth = mkAuth(servRequest);
-        final int depId = getCurDepartamentOrDefault(departmentId, auth);
+        AuthData authData = mkAuth(servRequest);
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        final int depId = getCurDepartamentOrDefault(departmentId, staff);
         PatientsListRequestData requestData = new PatientsListRequestData ( depId,
                                                                             doctorId,//auth.getUser().getId().intValue(),           //WEBMIS-809: Если параметр doctorId не указан, то ищем всех пациентов отделения.
-                                                                            doctorId>0 ? 0 : auth.getUserRole().getId(),            //Если указан доктор, то ищем пациентов доктора.
+                                                                            doctorId>0 ? 0 : authData.getUserRole().getId(),            //Если указан доктор, то ищем пациентов доктора.
                                                                             endDate,
                                                                             sortingField,
                                                                             sortingMethod,
                                                                             limit,
                                                                             page);
-        return new JSONWithPadding(wsImpl.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, auth),callback);
+        return new JSONWithPadding(wsImpl.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, authData),callback);
     }
 
 

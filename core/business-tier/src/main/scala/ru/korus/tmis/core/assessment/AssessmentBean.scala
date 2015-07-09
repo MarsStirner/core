@@ -52,13 +52,13 @@ class AssessmentBean
   var typeFilter: TypeFilterBeanLocal = _
 
   def getAssessmentTypes(eventId: Int,
-                         userData: AuthData) = {
+                         userData: Staff) = {
     var types = dbActionType.getAssessmentTypes
 
     if (ConfigManager.Filter.isOn) {
       types = typeFilter.filterActionTypes(
         types,
-        userData.user.getOrgStructure.getId.intValue,
+        userData.getOrgStructure.getId.intValue,
         eventId)
     }
 
@@ -261,12 +261,14 @@ class AssessmentBean
 
   def createAssessmentForEventId(eventId: Int,
                                  assessment: CommonData,
-                                 userData: AuthData) = {
+                                 userData: AuthData,
+                                 staff: Staff) = {
     val createdActions =
       commonDataProcessor.createActionForEventFromCommonData(
         eventId,
         assessment,
-        userData)
+        userData,
+        staff)
 
     commonDataProcessor.fromActions(
       createdActions,
@@ -276,11 +278,13 @@ class AssessmentBean
 
   def modifyAssessmentById(assessmentId: Int,
                            assessment: CommonData,
-                           userData: AuthData) = {
+                           userData: AuthData,
+                           staff: Staff) = {
     val modifiedActions = commonDataProcessor.modifyActionFromCommonData(
       assessmentId,
       assessment,
-      userData)
+      userData,
+      staff)
 
     commonDataProcessor.fromActions(
       modifiedActions,

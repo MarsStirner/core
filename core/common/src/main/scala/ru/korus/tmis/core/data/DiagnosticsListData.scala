@@ -21,7 +21,7 @@ class DiagnosticsListData {
   @BeanProperty
   var data: AnyRef = _ //new LinkedList[DiagnosticsListEntry]
 
-  def this(list: java.util.List[(Action, JobTicket)], requestData: DiagnosticsListRequestData, authData: AuthData) {
+  def this(list: java.util.List[(Action, JobTicket)], requestData: DiagnosticsListRequestData, staff: Staff) {
     this()
     this.requestData = requestData
 
@@ -29,7 +29,7 @@ class DiagnosticsListData {
       case "laboratory" => {
         val d = new LinkedList[LaboratoryDiagnosticsListEntry]
         if (list != null && list.size > 0) {
-          list.foreach(ajt => d.add(new LaboratoryDiagnosticsListEntry(ajt._1, ajt._2, authData)))
+          list.foreach(ajt => d.add(new LaboratoryDiagnosticsListEntry(ajt._1, ajt._2, staff)))
         }
         this.data = new LinkedList[LaboratoryDiagnosticsListEntry]
         d.sortWith((l, r) => l.takingTime.after(r.takingTime)).foreach(this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(_))
@@ -37,7 +37,7 @@ class DiagnosticsListData {
       case "instrumental" => {
         val d = new LinkedList[InstrumentalDiagnosticsListEntry]
         if (list != null && list.size > 0) {
-          list.foreach(ajt => d.add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, authData)))
+          list.foreach(ajt => d.add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, staff)))
         }
         this.data = new LinkedList[InstrumentalDiagnosticsListEntry]
         d.sortWith((l, r) => l.assessmentBeginDate.after(r.assessmentBeginDate))
@@ -46,7 +46,7 @@ class DiagnosticsListData {
       case "consultations" => {
         val d = new LinkedList[InstrumentalDiagnosticsListEntry]
         if (list != null && list.size > 0) {
-          list.foreach(ajt => d.add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, authData)))
+          list.foreach(ajt => d.add(new InstrumentalDiagnosticsListEntry(ajt._1, ajt._2, staff)))
         }
         this.data  = new LinkedList[InstrumentalDiagnosticsListEntry]
         d.sortWith((l, r) => l.assessmentBeginDate.after(r.assessmentBeginDate))
@@ -390,7 +390,7 @@ class LaboratoryDiagnosticsListEntry {
   @BeanProperty
   var mnem: String = _
 
-  def this(action: Action, jt: JobTicket, authData: AuthData) {
+  def this(action: Action, jt: JobTicket, staff: Staff) {
     this()
     this.id = action.getId.intValue()
     this.plannedEndDate = action.getPlannedEndDate
@@ -400,8 +400,8 @@ class LaboratoryDiagnosticsListEntry {
     this.execPerson = new DoctorContainer(action.getExecutor)
     this.cito = action.getIsUrgent
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
-    val isTrueDoctor = (authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue() ||
-                        authData.getUser.getId.intValue() == action.getAssigner.getId.intValue() )
+    val isTrueDoctor = (staff.getId.intValue() == action.getCreatePerson.getId.intValue() ||
+                        staff.getId.intValue() == action.getAssigner.getId.intValue() )
     this.isEditable = (action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
     laboratoryTitle = getLabNameByAction(action)
     this.takingTime = if( jt == null ) null else jt.getDatetime
@@ -484,7 +484,7 @@ class InstrumentalDiagnosticsListEntry {
   //@BeanProperty
   //var toOrder: Boolean = _ //Дозаказ  (не используется)
 
-  def this(action: Action, jt: JobTicket, authData: AuthData) {
+  def this(action: Action, jt: JobTicket, staff: Staff) {
     this()
     this.id = action.getId.intValue()
     //this.diagnosticDate = action.getEndDate
@@ -497,9 +497,9 @@ class InstrumentalDiagnosticsListEntry {
     this.cito = action.getIsUrgent
     this.status = new IdNameContainer(action.getStatus, ActionStatus.fromShort(action.getStatus).getName)
     val isTrueDoctor = ((action.getCreatePerson != null &&
-                         authData.getUser.getId.intValue() == action.getCreatePerson.getId.intValue()) ||
+                         staff.getId.intValue() == action.getCreatePerson.getId.intValue()) ||
                         (action.getAssigner != null &&
-                         authData.getUser.getId.intValue() == action.getAssigner.getId.intValue()))
+                         staff.getId.intValue() == action.getAssigner.getId.intValue()))
     this.isEditable = (action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
     this.mnem = if (action.getActionType == null ) null else action.getActionType.getMnemonic
     this.assessmentBeginDate = action.getBegDate

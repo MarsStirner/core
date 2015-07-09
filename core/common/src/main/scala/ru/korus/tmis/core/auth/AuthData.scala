@@ -57,25 +57,6 @@ class AuthData() {
     this.userRole = userRole
   }
 
-  var user: Staff = _
-
-  /**
-   * Получение пользователя
-   * @return Данные о пользователе как Staff entity
-   */
-  @XmlTransient
-  def getUser = {
-    user
-  }
-
-  /**
-   * Задать пользователя
-   * @param user Пользователь как Staff entity
-   */
-  def setUser(user: Staff) {
-    this.user = user
-  }
-
   /**
    * Конструктор AuthData
    * @param token Токен как AuthToken
@@ -97,7 +78,6 @@ class AuthData() {
            userSpecs: String) = {
     this ()
     this.authToken = token
-    this.user = user
     this.userId = userId
     this.userFirstName = userFirstName
     this.userLastName = userLastName

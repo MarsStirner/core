@@ -2,6 +2,8 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import ru.korus.tmis.prescription.AssigmentIntervalDataArray;
@@ -34,6 +36,9 @@ public class PrescriptionsRESTImpl {
     @EJB
     private PrescriptionBeanLocal prescriptionBeanLocal;
 
+    @EJB
+    private DbStaffBeanLocal dbStaffBeanLocal;
+
     @GET
     @Produces({"application/javascript", "application/x-javascript"})
     public Object listAction(@Context HttpServletRequest servRequest,
@@ -62,14 +67,18 @@ public class PrescriptionsRESTImpl {
     @POST
     @Produces({"application/javascript", "application/x-javascript"})
     public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
-        return new JSONWithPadding(prescriptionBeanLocal.create(createPrescriptionReqData, wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()))), callback);
+        AuthData authData = wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        return new JSONWithPadding(prescriptionBeanLocal.create(createPrescriptionReqData, authData, staff), callback);
     }
 
     @PUT
     @Path("/{prescriptionId}")
     @Produces({"application/javascript", "application/x-javascript"})
     public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, @PathParam("prescriptionId")Integer actionId, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
-        return new JSONWithPadding(prescriptionBeanLocal.update(actionId, createPrescriptionReqData, wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()))), callback);
+        AuthData authData = wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        return new JSONWithPadding(prescriptionBeanLocal.update(actionId, createPrescriptionReqData, staff), callback);
     }
 
     @PUT

@@ -5,7 +5,7 @@ import javax.interceptor.Interceptors
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.BloodHistory
+import ru.korus.tmis.core.entity.model.{Staff, BloodHistory}
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.exception.CoreException
@@ -34,11 +34,11 @@ class DbBloodHistoryBean extends DbBloodHistoryBeanLocal
     result
   }
 
-  def createBloodHistoryRecord(patientId: Int, bloodTypeId: Int, bloodDate: Date, userData: AuthData) = {
+  def createBloodHistoryRecord(patientId: Int, bloodTypeId: Int, bloodDate: Date, staff: Staff) = {
      try {
        if(patientId>0){
          if (bloodTypeId>0){
-           if(userData!=null){
+           if(staff!=null){
              val patient = dbPatientBean.getPatientById(patientId)
              val bloodType = dbRbBloodTypeBean.getRbBloodTypeById(bloodTypeId)
 
@@ -49,7 +49,7 @@ class DbBloodHistoryBean extends DbBloodHistoryBeanLocal
                record.setBloodDate(new Date())
              record.setPatient(patient)
              record.setBloodType(bloodType)
-             record.setPerson(userData.getUser)
+             record.setPerson(staff)
 
              record
            }

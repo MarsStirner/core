@@ -2,6 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.entity.model.BloodHistory;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -30,9 +31,9 @@ public interface DbBloodHistoryBeanLocal {
      * Создание записи о группе крови для пациента
      * @param patientId Идентификатор пациента
      * @param bloodTypeId Идентификатор группы крови
-     * @param userData Авторизационные данные врача
+     * @param staff Авторизационные данные врача
      * @return BloodHistory
      * @throws CoreException
      */
-    BloodHistory createBloodHistoryRecord(int patientId, int bloodTypeId, Date bloodDate, AuthData userData) throws CoreException;
+    BloodHistory createBloodHistoryRecord(int patientId, int bloodTypeId, Date bloodDate, Staff staff) throws CoreException;
 }

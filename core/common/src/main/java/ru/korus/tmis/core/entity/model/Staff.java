@@ -232,7 +232,7 @@ public class Staff implements Serializable {
     private Integer quoteUnit;
     //
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "uuid_id")
     private UUID uuid;
     // //////////////////////////////////////////////////////////////////////////

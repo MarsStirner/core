@@ -18,12 +18,14 @@ public interface CommonDataProcessorBeanLocal {
 
     List<Action> createActionForEventFromCommonData(int eventId,
                                                     CommonData data,
-                                                    AuthData userData)
+                                                    AuthData userData,
+                                                    Staff sraff)
             throws CoreException;
 
     List<Action> modifyActionFromCommonData(int actionId,
                                             CommonData data,
-                                            AuthData userData)
+                                            AuthData userData,
+                                            Staff staff)
             throws CoreException;
 
     boolean changeActionStatus(int eventId, int actionId, short status);

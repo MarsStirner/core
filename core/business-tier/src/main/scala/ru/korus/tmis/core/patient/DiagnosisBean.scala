@@ -48,7 +48,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                       description: String,
                       mkbId: Int,
                       diseaseStageId: Int,
-                      userData: AuthData) = {
+                      userData: Staff) = {
 
     val event = dbEventBean.getEventById(eventId)
     val patient = event.getPatient
@@ -149,7 +149,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
     (diagnostic, diagnosis)
   }
 
-  def insertDiagnoses(eventId: Int, action: Action, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: AuthData) = {
+  def insertDiagnoses(eventId: Int, action: Action, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: Staff) = {
 
     var entities = List.empty[AnyRef]
     mkbs.foreach(f => {

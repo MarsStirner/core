@@ -4,6 +4,7 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Diagnosis;
 import ru.korus.tmis.core.entity.model.Diagnostic;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -42,7 +43,6 @@ public interface DbDiagnosticBeanLocal {
      * @param diagnosisTypeFlatCode Код-идентификатор типа диагноза (rbDiagnosisType.flatCode).
      * @param diseaseCharacterId  Идентификатор характера заболевания (rbDiseaseCharacter.id)
      * @param diseaseStageId Идентификатор стадии заболевания (rbDiseaseStage.id)
-     * @param userData Авторизационные данные
      * @return Новая запись в таблице Diagnostic
      * @throws CoreException
      */
@@ -54,7 +54,7 @@ public interface DbDiagnosticBeanLocal {
                                 int diseaseCharacterId,
                                 int diseaseStageId,
                                 String note,
-                                AuthData userData,
+                                Staff staff,
                                 Boolean isNewDiag) throws CoreException;
 
     /**

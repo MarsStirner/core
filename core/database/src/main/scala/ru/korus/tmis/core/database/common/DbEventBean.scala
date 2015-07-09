@@ -111,7 +111,7 @@ class DbEventBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def createEvent(patientId: Int, appealTypeId: Int, begDate: Date, endDate: Date, contractId:Int, result: RbResult, acheResult: RbAcheResult, execPerson: Staff, authData: AuthData): Event = {
+  def createEvent(patientId: Int, appealTypeId: Int, begDate: Date, endDate: Date, contractId:Int, result: RbResult, acheResult: RbAcheResult, execPerson: Staff, createPerson: Staff): Event = {
 
     val patient = patientBean.getPatientById(patientId)
     val eventType = this.getEventTypeById(appealTypeId)
@@ -140,10 +140,10 @@ class DbEventBean
       newEvent.setEventType(eventType)
       newEvent.setCreateDatetime(now)
       newEvent.setModifyDatetime(now)
-      newEvent.setCreatePerson(authData.user)
-      newEvent.setModifyPerson(authData.user)
-      newEvent.setExecutor(authData.user)
-      newEvent.setAssigner(authData.user)
+      newEvent.setCreatePerson(createPerson)
+      newEvent.setModifyPerson(createPerson)
+      newEvent.setExecutor(createPerson)
+      newEvent.setAssigner(createPerson)
       newEvent.setNote(" ")
       newEvent.setSetDate(begDate)
       newEvent.setIsPrimary(1)

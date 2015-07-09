@@ -72,11 +72,11 @@ public interface WebMisREST extends Serializable {
 
     String getPatientToHospitalBedById (int actionId, AuthData authData) throws CoreException;
 
-    String registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
+    String registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData, Staff staff) throws CoreException;
 
     String getMovingListForEvent(HospitalBedDataListFilter filter, AuthData authData) throws CoreException;
 
-    String modifyPatientToHospitalBed (int actionId, HospitalBedData data, AuthData authData) throws CoreException;
+    String modifyPatientToHospitalBed (int actionId, HospitalBedData data,  AuthData authData, Staff staff) throws CoreException;
 
     boolean callOffHospitalBedForPatient(int actionId, AuthData authData) throws CoreException;
 
@@ -247,7 +247,7 @@ public interface WebMisREST extends Serializable {
      * @see ListDataRequest
      * @see AuthData
      */
-    String getEventTypes(ListDataRequest request, AuthData authData) throws CoreException;
+    String getEventTypes(ListDataRequest request, Staff staff) throws CoreException;
 
     List<ContractContainer> getContracts(int eventTypeId, String eventTypeCode, boolean showDeleted, boolean showExpired);
 
