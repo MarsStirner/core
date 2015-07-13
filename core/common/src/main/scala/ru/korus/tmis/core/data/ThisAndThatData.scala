@@ -740,6 +740,7 @@ class MKBListRequestDataFilter extends AbstractListDataFilter {
       qs.add("id", this.mkbId: java.lang.Integer)
     }
     else {
+      qs.query += ("AND mkb.deleted = 0\n")
       if (this.code != null && !this.code.isEmpty) {
         qs.query += ("AND upper(mkb.diagID) LIKE upper(:code)\n")
         qs.add("code", this.code + "%")

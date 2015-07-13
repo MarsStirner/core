@@ -89,6 +89,10 @@ public class Mkb implements Serializable {
     private Integer serviceId;
     @Column(name = "MKBSubclass_id")
     private Integer mKBSubclassid;
+    @Basic(optional = false)
+    @Column(name = "deleted")
+    private boolean deleted;
+
 
     /* @OneToMany(mappedBy = "mkb", cascade = CascadeType.ALL)
 private List<Diagnosis> diagnosis =
@@ -300,4 +304,11 @@ private List<Diagnosis> diagnosis =
         return "ru.korus.tmis.core.entity.model.Mkb[ id=" + id + " ]";
     }
 
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
+    }
 }
