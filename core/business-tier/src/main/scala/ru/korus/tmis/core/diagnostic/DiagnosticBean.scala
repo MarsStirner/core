@@ -137,25 +137,12 @@ class DiagnosticBean
       (p) => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-
-        apvs.size match {
-          case 0 => {
-            group add apw.get(null, List(APWI.Norm,
-              APWI.Unit,
-              APWI.IsAssignable,
-              APWI.IsAssigned))
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              group add apw.get(apv, List(APWI.Value,
-                APWI.ValueId,
-                APWI.Norm,
-                APWI.Unit,
-                APWI.IsAssignable,
-                APWI.IsAssigned))
-            })
-          }
-        }
+        group add apw.get(apvs.toList, List(APWI.Value,
+          APWI.ValueId,
+          APWI.Norm,
+          APWI.Unit,
+          APWI.IsAssignable,
+          APWI.IsAssigned))
       })
 
     group

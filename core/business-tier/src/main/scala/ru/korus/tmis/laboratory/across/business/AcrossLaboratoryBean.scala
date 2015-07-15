@@ -514,7 +514,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
               }
               apv.foreach {
                 entities += _
-              }
+            }
             })
 
           }

@@ -6,6 +6,13 @@ INSERT IGNORE INTO `Person`
 SET @last = LAST_INSERT_ID();
 INSERT IGNORE INTO Person_Profiles (userProfile_id, person_id) VALUES (29, 41);
 
+SET FOREIGN_KEY_CHECKS = 0;
+DELETE FROM `rbAcheResult`;
+ALTER TABLE `rbAcheResult`AUTO_INCREMENT=1;
+INSERT INTO `rbAcheResult` (`eventPurpose_id`, `code`, `name`) VALUES (1, 'c', 'test');
+SET FOREIGN_KEY_CHECKS = 1;
+
+ALTER TABLE `rbTrfuBloodComponentType`AUTO_INCREMENT=1;
 INSERT IGNORE INTO `rbBloodComponentType` (`code`, `name`) VALUES ('02.02.003', 'Плазма свежезамороженная, полученная автоматическим аферезом');
 INSERT IGNORE INTO `rbBloodComponentType` (`code`, `name`) VALUES ('02.01.020', 'Тромбоцитный концентрат, полученный автоматическим аферезом');
 INSERT IGNORE INTO `rbBloodComponentType` (`code`, `name`) VALUES ('01.01.010', 'Эритроцитная взвесь с ресуспендирующим раствором, фильтрованная');
@@ -20,6 +27,10 @@ INSERT IGNORE INTO `rbBloodComponentType` (`code`, `name`) VALUES ('01.01.009', 
 INSERT IGNORE INTO `rbBloodComponentType` (`code`, `name`) VALUES ('02.03.001', 'Аутоплазма свежезамороженная из дозы крови');
 INSERT IGNORE INTO `rbBloodComponentType` (`code`, `name`) VALUES ('01.01.014', 'Эритроцитарная взвесь, лейкофильтрованная, полученная автоматическим аферезом');
 INSERT IGNORE INTO `rbBloodComponentType` (`code`, `name`) VALUES ('03.01.006', 'Лейкоцитный концентрат');
+SET FOREIGN_KEY_CHECKS = 0;
+DELETE FROM `trfuOrderIssueResult`;
+INSERT INTO `trfuOrderIssueResult` (`id`, `action_id`, `trfu_blood_comp`, `comp_number`, `comp_type_id`, `blood_type_id`, `volume`, `dose_count`, `trfu_donor_id`, `stickerUrl`) VALUES (1, 260, 56839, '17974', 5, 8, 280, 1, 8672, '/UNDEFINED/56839.png');
+SET FOREIGN_KEY_CHECKS = 1;
 
 INSERT IGNORE INTO `Event`
 (`id`, `createDatetime`, `createPerson_id`, `modifyDatetime`, `modifyPerson_id`, `deleted`, `externalId`, `eventType_id`, `org_id`, `client_id`, `contract_id`, `prevEventDate`, `setDate`, `setPerson_id`, `execDate`, `execPerson_id`, `isPrimary`, `order`, `result_id`, `nextEventDate`, `payStatus`, `typeAsset_id`, `note`, `curator_id`, `assistant_id`, `pregnancyWeek`, `MES_id`, `mesSpecification_id`, `rbAcheResult_id`, `version`, `privilege`, `urgent`, `orgStructure_id`, `uuid_id`, `lpu_transfer`)
@@ -33,3 +44,5 @@ INSERT IGNORE INTO `DrugChart` (`id`, `action_id`, `master_id`, `begDateTime`, `
 INSERT IGNORE INTO `DrugChart` (`id`, `action_id`, `master_id`, `begDateTime`, `endDateTime`, `status`, `statusDateTime`, `note`, `uuid`, `version`) VALUES (15, 259, 14, '2014-05-22 15:02:00', '2014-05-30 15:03:00', 0, '2014-05-21 14:05:41', '', '6c296380-6026-4b48-b414-450999b29379', NULL);
 
 INSERT IGNORE INTO `rbAcheResult` (`eventPurpose_id`, `code`, `name`) VALUES (8, '105', 'Выздоровление');
+UPDATE `ActionPropertyType` SET `typeName`='Diagnosis' WHERE `id`=1602601;
+UPDATE `Diagnostic` SET `diagnosis_id`=123 WHERE  `id`=56;

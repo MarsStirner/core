@@ -10,24 +10,23 @@ object ActionWrapperInfo extends Configuration {
 
   //////////////////////////////////////////////////////////////////////////////
   // Internal Ids
-  var Id = StringId("actionId")
-  var Name = StringId("actionName")
-  var BeginDate = StringId("actionBeginDate")
-  var EndDate = StringId("actionEndDate")
-  var Dates = StringId("actionAssignmentHours")
-  var ExecutorLastName = StringId("actionExecutorLastName")
-  var ExecutorFirstName = StringId("actionExecutorFirstName")
-  var ExecutorMiddleName = StringId("actionExecutorMiddleName")
-  var ExecutorSpecs = StringId("actionExecutorSpecs")
-  var ExecutorPost = StringId("actionExecutorPost")
-  var AssignerLastName = StringId("actionAssignerLastName")
-  var AssignerFirstName = StringId("actionAssignerFirstName")
-  var AssignerMiddleName = StringId("actionAssignerMiddleName")
-  var AssignerSpecs = StringId("actionAssignerSpecs")
-  var AssignerPost = StringId("actionAssignerPost")
+  private var Id = StringId("actionId")
+  private var Name = StringId("actionName")
+  private var BeginDate = StringId("actionBeginDate")
+  private var EndDate = StringId("actionEndDate")
+  private var Dates = StringId("actionAssignmentHours")
+  private var ExecutorLastName = StringId("actionExecutorLastName")
+  private var ExecutorFirstName = StringId("actionExecutorFirstName")
+  private var ExecutorMiddleName = StringId("actionExecutorMiddleName")
+  private var ExecutorSpecs = StringId("actionExecutorSpecs")
+  private var ExecutorPost = StringId("actionExecutorPost")
+  private var AssignerLastName = StringId("actionAssignerLastName")
+  private var AssignerFirstName = StringId("actionAssignerFirstName")
+  private var AssignerMiddleName = StringId("actionAssignerMiddleName")
+  private var AssignerSpecs = StringId("actionAssignerSpecs")
+  private var AssignerPost = StringId("actionAssignerPost")
   var Status = StringId("actionStatus")
-  var Urgent = StringId("urgent")
-  var Multiplicity = StringId("multiplicity")
+  private var Urgent = StringId("urgent")
   var Finance = StringId("finance")
   var PlannedEndDate = StringId("plannedEndDate")
   var AssignerId = StringId("assignerId")
@@ -53,7 +52,6 @@ object ActionWrapperInfo extends Configuration {
   def TypedAssignerPost = (AssignerPost, Types.String)
   def TypedStatus = (Status, Types.Integer)
   def TypedUrgent = (Urgent, Types.Boolean)
-  def TypedMultiplicity = (Multiplicity, Types.Integer)
   def TypedFinance = (Finance, Types.String)
   def TypedPlannedEndDate = (PlannedEndDate, Types.Datetime)
   def TypedPacientInQueueType = (PacientInQueueType, Types.Integer)
@@ -66,14 +64,14 @@ object ActionWrapperInfo extends Configuration {
   var diagnosticId = StringId("diagnosticId")
   var assessmentName = StringId("assessmentName")
   var diagnosticName = StringId("diagnosticName")
-  var treatmentName = StringId("treatmentName")
+  private var treatmentName = StringId("treatmentName")
   var assessmentDate = StringId("assessmentDate")
   var assessmentBeginDate = StringId("assessmentBeginDate")
   var assessmentEndDate = StringId("assessmentEndDate")
   var diagnosticDate = StringId("diagnosticDate")
-  var treatmentBeginDate = StringId("treatmentBeginDate")
-  var treatmentEndDate = StringId("treatmentEndDate")
-  var treatmentDates = StringId("treatmentDates")
+  private var treatmentBeginDate = StringId("treatmentBeginDate")
+  private var treatmentEndDate = StringId("treatmentEndDate")
+  private var treatmentDates = StringId("treatmentDates")
   var doctorLastName = StringId("doctorLastName")
   var executorLastName = StringId("executorLastName")
   var doctorFirstName = StringId("doctorFirstName")
@@ -87,15 +85,13 @@ object ActionWrapperInfo extends Configuration {
   var assignerMiddleName = StringId("assignerMiddleName")
   var assignerSpecs = StringId("assignerSpecs")
   var assignerPost = StringId("assignerPost")
-  var actionStatus = StringId("actionStatus")
+  private var actionStatus = StringId("actionStatus")
   var urgent = StringId("urgent")
-  var multiplicity = StringId("multiplicity")
   var finance = StringId("finance")
   var plannedEndDate = StringId("plannedEndDate")
   var assignerId = StringId("assignerId")
   var executorId = StringId("executorId")
-  var pacientInQueueType = StringId("pacientInQueueType")
-  //var toOrder = StringId("toOrder")
+  private var pacientInQueueType = StringId("pacientInQueueType")
   //////////////////////////////////////////////////////////////////////////////
 
   def map = Map(
@@ -141,7 +137,6 @@ object ActionWrapperInfo extends Configuration {
     actionStatus -> TypedStatus,
     pacientInQueueType -> TypedPacientInQueueType,
     urgent -> TypedUrgent,
-    multiplicity -> TypedMultiplicity,
     finance -> TypedFinance,
     plannedEndDate -> TypedPlannedEndDate,
     assignerId -> TypedAssignerId,
@@ -175,13 +170,12 @@ object ActionWrapperInfo extends Configuration {
     val AssignerPost = awi.AssignerPost
     val Status = awi.Status
     val Urgent = awi.Urgent
-    val Multiplicity = awi.Multiplicity
     val Finance = awi.Finance
     val PlannedEndDate = awi.PlannedEndDate
     val AssignerId = awi.AssignerId
     val ExecutorId = awi.ExecutorId
     val PacientInQueueType = awi.PacientInQueueType
-    //val ToOrder = awi.ToOrder
+
 
     def apply(key: StringId) = awi(key)
   }

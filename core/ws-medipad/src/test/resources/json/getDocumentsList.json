@@ -41,6 +41,17 @@
             "specs": null,
             "department": null
         },
+        "executor": {
+            "id": 1,
+            "name": {
+                "first": "",
+                "last": "Админ",
+                "middle": "",
+                "raw": "Админ  "
+            },
+            "specs": null,
+            "department": null
+        },
         "beginDate": 1373006699000,
         "typeId": 139,
         "lockInfo": null,

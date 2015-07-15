@@ -81,9 +81,8 @@ class DbManagerBean
 
   def persistAll[T](entities: Collection[T]) = {
     try {
-      entities.foreach(e => em.persist(e))
+      entities.foreach(e => if(e != null) em.persist(e))
       em.flush()
-      entities.foreach(e => trace("Persisted " + e))
     } catch {
       case e: OptimisticLockException => {
         throw new CoreException(

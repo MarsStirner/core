@@ -1,368 +1,375 @@
-{"data": [
+{"requestData": {}, "data": [
     {
-        "context": "protokol_gemotransfusia",
+        "id": 260,
+        "version": 1,
         "name": "Гемотрансфузионная терапия",
-        "id": 683,
         "type": "Document",
-        "version": 2,
-        "status": 0,
         "typeId": 3911,
+        "status": 0,
+        "code": "3_02",
+        "isEditable": true,
+        "flatCode": "TransfusionTherapy",
+        "mnem": "OTH",
+        "context": "protokol_gemotransfusia",
         "group": [
             {
-                "name": "Summary",
                 "id": 0,
                 "version": null,
+                "name": "Summary",
                 "attribute": [
                     {
-                        "properties": [
-                            {
-                                "name": "value",
-                                "value": "683"
-                            }
-                        ],
+                        "id": 260,
+                        "version": 1,
                         "name": "assessmentId",
-                        "id": 683,
+                        "code": null,
                         "type": "Integer",
                         "scope": null,
-                        "version": 2,
                         "typeId": null,
                         "mandatory": null,
                         "readOnly": null,
-                        "code": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "260"
+                            }
+                        ],
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
+                        "id": 260,
+                        "version": 1,
+                        "name": "assessmentName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "value",
                                 "value": "Гемотрансфузионная терапия"
                             }
                         ],
-                        "name": "assessmentName",
-                        "id": 683,
-                        "type": "String",
-                        "scope": null,
-                        "version": 2,
-                        "typeId": null,
-                        "mandatory": null,
-                        "readOnly": null,
-                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
-                        "properties": [
-                            {
-                                "name": "value",
-                                "value": "2014-03-11 14:33:12"
-                            }
-                        ],
+                        "id": 260,
+                        "version": 1,
                         "name": "assessmentBeginDate",
-                        "id": 683,
+                        "code": null,
                         "type": "Datetime",
                         "scope": null,
-                        "version": 2,
                         "typeId": null,
                         "mandatory": null,
                         "readOnly": null,
-                        "code": null,
-                        "propertiesMap": {
-                            "empty": false,
-                            "traversableAgain": true
-                        },
-                        "calculatedValue": null
-                    },
-                    {
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "value",
-                                "value": ""
+                                "value": "2015-04-01 19:54:06"
                             }
                         ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 260,
+                        "version": 1,
                         "name": "assessmentEndDate",
-                        "id": 683,
+                        "code": null,
                         "type": "Datetime",
                         "scope": null,
-                        "version": 2,
                         "typeId": null,
                         "mandatory": null,
                         "readOnly": null,
-                        "code": null,
-                        "propertiesMap": {
-                            "empty": false,
-                            "traversableAgain": true
-                        },
-                        "calculatedValue": null
-                    },
-                    {
-                        "properties": [
-                            {
-                                "name": "value",
-                                "value": "test"
-                            }
-                        ],
-                        "name": "doctorLastName",
-                        "id": 683,
-                        "type": "String",
-                        "scope": null,
-                        "version": 2,
-                        "typeId": null,
-                        "mandatory": null,
-                        "readOnly": null,
-                        "code": null,
-                        "propertiesMap": {
-                            "empty": false,
-                            "traversableAgain": true
-                        },
-                        "calculatedValue": null
-                    },
-                    {
-                        "properties": [
-                            {
-                                "name": "value",
-                                "value": "test"
-                            }
-                        ],
-                        "name": "doctorFirstName",
-                        "id": 683,
-                        "type": "String",
-                        "scope": null,
-                        "version": 2,
-                        "typeId": null,
-                        "mandatory": null,
-                        "readOnly": null,
-                        "code": null,
-                        "propertiesMap": {
-                            "empty": false,
-                            "traversableAgain": true
-                        },
-                        "calculatedValue": null
-                    },
-                    {
-                        "properties": [
-                            {
-                                "name": "value",
-                                "value": "test"
-                            }
-                        ],
-                        "name": "doctorMiddleName",
-                        "id": 683,
-                        "type": "String",
-                        "scope": null,
-                        "version": 2,
-                        "typeId": null,
-                        "mandatory": null,
-                        "readOnly": null,
-                        "code": null,
-                        "propertiesMap": {
-                            "empty": false,
-                            "traversableAgain": true
-                        },
-                        "calculatedValue": null
-                    },
-                    {
-                        "properties": [
-                            {
-                                "name": "value",
-                                "value": "специальность"
-                            }
-                        ],
-                        "name": "doctorSpecs",
-                        "id": 683,
-                        "type": "String",
-                        "scope": null,
-                        "version": 2,
-                        "typeId": null,
-                        "mandatory": null,
-                        "readOnly": null,
-                        "code": null,
-                        "propertiesMap": {
-                            "empty": false,
-                            "traversableAgain": true
-                        },
-                        "calculatedValue": null
-                    },
-                    {
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "value",
                                 "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 260,
+                        "version": 1,
+                        "name": "doctorLastName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "Михайлова"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 260,
+                        "version": 1,
+                        "name": "doctorFirstName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "Ольга"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 260,
+                        "version": 1,
+                        "name": "doctorMiddleName",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "Олеговна"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 260,
+                        "version": 1,
+                        "name": "doctorSpecs",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "хирург"
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 260,
+                        "version": 1,
+                        "name": "executorPost",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "Врач-хирург"
                             },
                             {
                                 "name": "valueId",
-                                "value": ""
+                                "value": "30"
                             },
                             {
                                 "name": "code",
-                                "value": ""
+                                "value": "3086"
                             }
                         ],
-                        "name": "executorPost",
-                        "id": 683,
-                        "type": "String",
-                        "scope": null,
-                        "version": 2,
-                        "typeId": null,
-                        "mandatory": null,
-                        "readOnly": null,
-                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
+                        "id": 260,
+                        "version": 1,
+                        "name": "urgent",
+                        "code": null,
+                        "type": "Boolean",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "value",
                                 "value": "false"
                             }
                         ],
-                        "name": "urgent",
-                        "id": 683,
-                        "type": "Boolean",
-                        "scope": null,
-                        "version": 2,
-                        "typeId": null,
-                        "mandatory": null,
-                        "readOnly": null,
-                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
-                        "properties": [
-                            {
-                                "name": "value",
-                                "value": "1"
-                            }
-                        ],
-                        "name": "multiplicity",
-                        "id": 683,
+                        "id": 260,
+                        "version": 1,
+                        "name": "actionStatus",
+                        "code": null,
                         "type": "Integer",
                         "scope": null,
-                        "version": 2,
                         "typeId": null,
                         "mandatory": null,
                         "readOnly": null,
-                        "code": null,
-                        "propertiesMap": {
-                            "empty": false,
-                            "traversableAgain": true
-                        },
-                        "calculatedValue": null
-                    },
-                    {
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "value",
                                 "value": "0"
                             }
                         ],
-                        "name": "actionStatus",
-                        "id": 683,
-                        "type": "Integer",
-                        "scope": null,
-                        "version": 2,
-                        "typeId": null,
-                        "mandatory": null,
-                        "readOnly": null,
-                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
+                        "id": 260,
+                        "version": 1,
+                        "name": "finance",
+                        "code": null,
+                        "type": "String",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "value",
                                 "value": ""
                             }
                         ],
-                        "name": "finance",
-                        "id": 683,
-                        "type": "String",
-                        "scope": null,
-                        "version": 2,
-                        "typeId": null,
-                        "mandatory": null,
-                        "readOnly": null,
-                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
+                        "id": 260,
+                        "version": 1,
+                        "name": "plannedEndDate",
+                        "code": null,
+                        "type": "Datetime",
+                        "scope": null,
+                        "typeId": null,
+                        "mandatory": null,
+                        "readOnly": null,
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "value",
-                                "value": "2014-03-12 07:00:00"
+                                "value": "2015-04-11 19:54:06"
                             }
                         ],
-                        "name": "plannedEndDate",
-                        "id": 683,
-                        "type": "Datetime",
-                        "scope": null,
-                        "version": 2,
-                        "typeId": null,
-                        "mandatory": null,
-                        "readOnly": null,
-                        "code": null,
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     }
                 ]
             },
             {
-                "name": "Details",
                 "id": 1,
                 "version": null,
+                "name": "Details",
                 "attribute": [
                     {
+                        "id": 1457,
+                        "version": 1,
+                        "name": "Результат передачи требования в систему ТРФУ",
+                        "code": "trfuReqBloodCompResult",
+                        "type": "String",
+                        "scope": "",
+                        "typeId": 1602607,
+                        "mandatory": "false",
+                        "readOnly": "true",
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "norm",
                                 "value": ""
                             }
                         ],
-                        "name": "Результат передачи требования в систему ТРФУ",
-                        "id": 9608,
-                        "type": "String",
-                        "scope": "",
-                        "version": 2,
-                        "typeId": 1602607,
-                        "mandatory": "false",
-                        "readOnly": "true",
-                        "code": "trfuReqBloodCompResult",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
+                        "id": 1458,
+                        "version": 1,
+                        "name": "Требуемый компонент крови",
+                        "code": "trfuReqBloodCompId",
+                        "type": "String",
+                        "scope": "02.02.003 - Плазма свежезамороженная (полученная автоматическим аферезом),02.01.020 - Тромбоцитный концентрат (полученный автоматическим аферезом),01.01.010 - Эритроцитная взвесь с ресуспендирующим раствором (фильтрованная),01.03.001 - Кровь консервированная,09.01.001 - Лейкотромбомасса с фильтром,02.02.001 - Плазма свежезамороженная из дозы крови,02.02.008 - Плазма свежезамороженная из дозы крови    Карантинизовано 6 месяцев,01.01.005 - Эритроцитная масса с удаленным лейкотромбослоем,01.01.002 - Эритроцитная масса (фильтрованная),01.02.002 - Аутоэритроцитная масса (фильтрованная),01.01.009 - Эритроцитная взвесь с ресуспендирующим раствором,02.03.001 - Аутоплазма свежезамороженная из дозы крови,01.01.014 - Эритроцитарная взвесь (лейкофильтрованная (полученная автоматическим аферезом),03.01.006 - Лейкоцитный концентрат,",
+                        "typeId": 1602602,
+                        "mandatory": "true",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "value",
-                                "value": "2"
+                                "value": "02.01.020 - Тромбоцитный концентрат (полученный автоматическим аферезом)"
                             },
                             {
                                 "name": "valueId",
@@ -373,22 +380,23 @@
                                 "value": ""
                             }
                         ],
-                        "name": "Требуемый компонент крови",
-                        "id": 9607,
-                        "type": "Reference",
-                        "scope": "rbBloodComponentType",
-                        "version": 2,
-                        "typeId": 1602602,
-                        "mandatory": "true",
-                        "readOnly": "false",
-                        "code": "trfuReqBloodCompId",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
+                        "id": 1459,
+                        "version": 1,
+                        "name": "Вид трансфузии",
+                        "code": "trfuReqBloodCompType",
+                        "type": "String",
+                        "scope": "'Плановая','Экстренная'",
+                        "typeId": 1602603,
+                        "mandatory": "true",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "value",
@@ -403,22 +411,23 @@
                                 "value": ""
                             }
                         ],
-                        "name": "Вид трансфузии",
-                        "id": 9603,
-                        "type": "String",
-                        "scope": "'Плановая','Экстренная'",
-                        "version": 2,
-                        "typeId": 1602603,
-                        "mandatory": "true",
-                        "readOnly": "false",
-                        "code": "trfuReqBloodCompType",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
+                        "id": 1460,
+                        "version": 1,
+                        "name": "Объем требуемого компонента крови (все, кроме тромбоцитов)",
+                        "code": "trfuReqBloodCompValue",
+                        "type": "Integer",
+                        "scope": "",
+                        "typeId": 1602604,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "unit",
@@ -429,44 +438,46 @@
                                 "value": ""
                             }
                         ],
-                        "name": "Объем требуемого компонента крови (все, кроме тромбоцитов)",
-                        "id": 9610,
-                        "type": "Integer",
-                        "scope": "",
-                        "version": 2,
-                        "typeId": 1602604,
-                        "mandatory": "false",
-                        "readOnly": "false",
-                        "code": "trfuReqBloodCompValue",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
+                        "id": 1461,
+                        "version": 1,
+                        "name": "Количество требуемых донорских доз (тромбоциты)",
+                        "code": "trfuReqBloodCompDose",
+                        "type": "Double",
+                        "scope": "",
+                        "typeId": 1602605,
+                        "mandatory": "false",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "norm",
                                 "value": ""
                             }
                         ],
-                        "name": "Количество требуемых донорских доз (тромбоциты)",
-                        "id": 9612,
-                        "type": "Double",
-                        "scope": "",
-                        "version": 2,
-                        "typeId": 1602605,
-                        "mandatory": "false",
-                        "readOnly": "false",
-                        "code": "trfuReqBloodCompDose",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
+                        "id": 1462,
+                        "version": 1,
+                        "name": "Показания к проведению трансфузии",
+                        "code": "trfuReqBloodCompRootCause",
+                        "type": "Constructor",
+                        "scope": "3_1_05",
+                        "typeId": 1602606,
+                        "mandatory": "true",
+                        "readOnly": "false",
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "value",
@@ -481,56 +492,136 @@
                                 "value": ""
                             }
                         ],
-                        "name": "Показания к проведению трансфузии",
-                        "id": 9609,
-                        "type": "Constructor",
-                        "scope": "3_1_05",
-                        "version": 2,
-                        "typeId": 1602606,
-                        "mandatory": "true",
-                        "readOnly": "false",
-                        "code": "trfuReqBloodCompRootCause",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
                     },
                     {
-                        "properties": [
-                            {
-                                "name": "value",
-                                "value": "123"
-                            },
-                            {
-                                "name": "valueId",
-                                "value": ""
-                            },
-                            {
-                                "name": "norm",
-                                "value": ""
-                            }
-                        ],
+                        "id": 1463,
+                        "version": 1,
                         "name": "Основной клинический диагноз",
-                        "id": 9604,
-                        "type": "String",
-                        "scope": "",
-                        "version": 2,
+                        "code": "trfuReqBloodCompDiagnosis",
+                        "type": "Table",
+                        "scope": "Дата начала,Дата окончания,МКБ,Тип,Характер,Результат,Исход,Врач,Примечание,",
                         "typeId": 1602601,
                         "mandatory": "true",
                         "readOnly": "false",
-                        "code": "trfuReqBloodCompDiagnosis",
-                        "propertiesMap": {
-                            "empty": false,
-                            "traversableAgain": true
-                        },
-                        "calculatedValue": null
-                    },
-                    {
+                        "calculatedValue": null,
+                        "tableValues": [
+                            {
+                                "id": 56,
+                                "values": [
+                                    {
+                                        "date": 1423581309000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "date": 1427054400000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "value": "C43",
+                                        "valueType": "MKB"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 3,
+                                            "name": "осложнение основного",
+                                            "code": "3"
+                                        },
+                                        "valueType": "rbDiagnosisType"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 3,
+                                            "name": "хроническое известное",
+                                            "code": "3"
+                                        },
+                                        "valueType": "rbDiseaseCharacter"
+                                    },
+                                    {
+                                        "valueType": "rbResult"
+                                    },
+                                    {
+                                        "valueType": "rbAcheResult"
+                                    },
+                                    {
+                                        "person": {
+                                            "id": 41,
+                                            "name": {
+                                                "first": "test",
+                                                "last": "test",
+                                                "middle": "test",
+                                                "raw": "test test test"
+                                            }
+                                        },
+                                        "valueType": "person"
+                                    },
+                                    {
+                                        "value": ""
+                                    }
+                                ]
+                            },
+                            {
+                                "id": 58,
+                                "values": [
+                                    {
+                                        "date": 1423781309000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "date": 1423781309000,
+                                        "valueType": "Date"
+                                    },
+                                    {
+                                        "value": "C41",
+                                        "valueType": "MKB"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 3,
+                                            "name": "осложнение основного",
+                                            "code": "3"
+                                        },
+                                        "valueType": "rbDiagnosisType"
+                                    },
+                                    {
+                                        "rbValue": {
+                                            "id": 4,
+                                            "name": "обострение хронического",
+                                            "code": "4"
+                                        },
+                                        "valueType": "rbDiseaseCharacter"
+                                    },
+                                    {
+                                        "valueType": "rbResult"
+                                    },
+                                    {
+                                        "valueType": "rbAcheResult"
+                                    },
+                                    {
+                                        "person": {
+                                            "id": 7,
+                                            "name": {
+                                                "first": "Анна",
+                                                "last": "Спиридонова",
+                                                "middle": "Сергеевна",
+                                                "raw": "Спиридонова Анна Сергеевна"
+                                            }
+                                        },
+                                        "valueType": "person"
+                                    },
+                                    {
+                                        "value": "Примечание"
+                                    }
+                                ]
+                            }
+                        ],
                         "properties": [
                             {
                                 "name": "value",
-                                "value": "0002-11-30 00:00:00"
+                                "value": "58"
                             },
                             {
                                 "name": "valueId",
@@ -541,72 +632,122 @@
                                 "value": ""
                             }
                         ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 1464,
+                        "version": 1,
                         "name": "Дата выдачи КК",
-                        "id": 9611,
+                        "code": "trfuReqBloodCompDate",
                         "type": "Date",
                         "scope": "",
-                        "version": 2,
                         "typeId": 1602608,
                         "mandatory": "false",
                         "readOnly": "true",
-                        "code": "trfuReqBloodCompDate",
-                        "propertiesMap": {
-                            "empty": false,
-                            "traversableAgain": true
-                        },
-                        "calculatedValue": null
-                    },
-                    {
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "norm",
                                 "value": ""
                             }
                         ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
+                    },
+                    {
+                        "id": 1465,
+                        "version": 1,
                         "name": "Время выдачи КК",
-                        "id": 9606,
+                        "code": "trfuReqBloodCompTime",
                         "type": "Time",
                         "scope": "",
-                        "version": 2,
                         "typeId": 1602609,
                         "mandatory": "false",
                         "readOnly": "true",
-                        "code": "trfuReqBloodCompTime",
-                        "propertiesMap": {
-                            "empty": false,
-                            "traversableAgain": true
-                        },
-                        "calculatedValue": null
-                    },
-                    {
+                        "calculatedValue": null,
+                        "tableValues": null,
                         "properties": [
                             {
                                 "name": "norm",
                                 "value": ""
                             }
                         ],
-                        "name": "Паспортные данные выданных компонентов крови",
-                        "id": 9605,
-                        "type": "Table",
-                        "scope": "TRFU_OIR",
-                        "version": 2,
-                        "typeId": 1602615,
-                        "mandatory": "false",
-                        "readOnly": "true",
-                        "code": "trfuReqBloodCompPasport",
                         "propertiesMap": {
                             "empty": false,
                             "traversableAgain": true
-                        },
-                        "calculatedValue": null
+                        }
+                    },
+                    {
+                        "id": 1466,
+                        "version": 1,
+                        "name": "Паспортные данные выданных компонентов крови",
+                        "code": "trfuReqBloodCompPasport",
+                        "type": "Table",
+                        "scope": "Ид. компонента,Номер компонента,Тип компонента,Группа крови,Объём,Кол-во доз,Ид. донора,Этикетка,",
+                        "typeId": 1602615,
+                        "mandatory": "false",
+                        "readOnly": "true",
+                        "calculatedValue": null,
+                        "tableValues": [
+                            {
+                                "id": null,
+                                "values": [
+                                    {
+                                        "value": "56839"
+                                    },
+                                    {
+                                        "value": "17974"
+                                    },
+                                    {
+                                        "value": "Лейкотромбомасса с фильтром"
+                                    },
+                                    {
+                                        "value": "AB(IV)Rh+"
+                                    },
+                                    {
+                                        "value": "280"
+                                    },
+                                    {
+                                        "value": "1.0"
+                                    },
+                                    {
+                                        "value": "8672"
+                                    },
+                                    {
+                                        "value": "file://UNDEFINED/56839.png"
+                                    }
+                                ]
+                            }
+                        ],
+                        "properties": [
+                            {
+                                "name": "value",
+                                "value": "260"
+                            },
+                            {
+                                "name": "valueId",
+                                "value": ""
+                            },
+                            {
+                                "name": "norm",
+                                "value": ""
+                            }
+                        ],
+                        "propertiesMap": {
+                            "empty": false,
+                            "traversableAgain": true
+                        }
                     }
                 ]
             }
         ],
-        "code": "3_02",
-        "flatCode": "TransfusionTherapy",
-        "isEditable": true,
-        "mnem": "",
+        "lockInfo": null,
         "editable": true
     }
-], "requestData": {}}
+]}

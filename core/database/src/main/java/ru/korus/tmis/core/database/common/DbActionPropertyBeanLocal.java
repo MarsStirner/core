@@ -147,7 +147,7 @@ public interface DbActionPropertyBeanLocal {
 
     String convertScope(ActionPropertyType apt);
 
-    LinkedList<LinkedList<String>> convertValue(ActionPropertyType apt, String value);
+    java.util.List<TableCol> convertValue(ActionPropertyType apt,  java.util.List<APValue> value);
 
     String calcAuto(ActionProperty ap);
 }

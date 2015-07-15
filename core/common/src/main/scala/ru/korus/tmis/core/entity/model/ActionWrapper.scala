@@ -229,12 +229,6 @@ class ActionWrapper(a: Action)
           Map(APWI.Value.toString -> this.a.getPacientInQueueType.toString)
         )
       }
-      case AWI.Multiplicity => {
-        //кратность только для get
-        List(
-          Map(APWI.Value.toString -> "1")
-        )
-      }
       case AWI.Finance => {
         if (this.a.getFinanceId != null) {
           List(
