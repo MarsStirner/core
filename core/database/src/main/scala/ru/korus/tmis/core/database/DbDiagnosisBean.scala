@@ -4,6 +4,7 @@ import common.{DbEventPersonBeanLocal, DbPatientBeanLocal}
 import javax.ejb.{EJB, TransactionAttributeType, TransactionAttribute, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
+import ru.korus.tmis.core.data.TableCol
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
@@ -41,6 +42,9 @@ with I18nable {
 
   @EJB
   var dbRbDiseaseCharacterBeanLocal: DbRbDiseaseCharacterBeanLocal = _
+
+  @EJB
+  var dbStaff: DbStaffBeanLocal = _
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getDiagnosisById(id: Int) = {
@@ -112,6 +116,34 @@ with I18nable {
     }
 
     save(diagnosis)
+  }
+
+  override def createDiagnosis(ap: ActionProperty, tableCol: TableCol, staff: Staff): Diagnosis = {
+    val diagnosis = new Diagnosis()
+    diagnosis.setCreateDatetime(new Date)
+    diagnosis.setCreatePerson(staff)
+    diagnosis.setMkbExCode("")
+    diagnosis.setModifyDatetime(new Date)
+    diagnosis.setModifyPerson(staff)
+    diagnosis.setPatient(ap.getAction.getEvent.getPatient)
+
+    val staffId =  if(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_PERSON) != null ) {
+      tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_PERSON).getPerson.getId
+    }
+    else -1
+
+    val setPerson: Staff = if(staffId > 0) dbStaff.getStaffById(staffId) else null
+
+    diagnosis.setDiagnosisType(
+      dbRbDiagnosisTypeBean.getRbDiagnosisTypeById(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_TYPE).getRbValue.getId))
+    diagnosis.setCharacter(dbRbDiseaseCharacterBeanLocal.getDiseaseCharacterById(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_CHARACTER).getRbValue.getId))
+    diagnosis.setMkb( dbMKBBean.getMkbByCode(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_MKB).getValue.asInstanceOf[String]))
+    diagnosis.setPerson(setPerson)
+    val date: Date = tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_SET_DATE).getDate
+    diagnosis.setSetDate(date)
+    diagnosis.setEndDate(date)
+    em.persist(diagnosis)
+    return diagnosis
   }
 
   val DiagnosisByIdQuery = """

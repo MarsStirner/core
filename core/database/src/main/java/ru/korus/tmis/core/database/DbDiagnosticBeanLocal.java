@@ -2,10 +2,7 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.TableCol;
-import ru.korus.tmis.core.entity.model.ActionProperty;
-import ru.korus.tmis.core.entity.model.Diagnosis;
-import ru.korus.tmis.core.entity.model.Diagnostic;
-import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -55,7 +52,6 @@ public interface DbDiagnosticBeanLocal {
      * @param diagnosisTypeFlatCode Код-идентификатор типа диагноза (rbDiagnosisType.flatCode).
      * @param diseaseCharacterId  Идентификатор характера заболевания (rbDiseaseCharacter.id)
      * @param diseaseStageId Идентификатор стадии заболевания (rbDiseaseStage.id)
-     * @param userData Авторизационные данные
      * @return Новая запись в таблице Diagnostic
      * @throws CoreException
      */
@@ -83,7 +79,7 @@ public interface DbDiagnosticBeanLocal {
 
     Diagnostic getLastDiagnosticByEventIdAndType(int eventId, String diagnosisTypeFlatCode) throws CoreException;
 
-    Diagnostic deleteDiagnostic(Integer id);
+    void deleteDiagnostic(Integer id);
 
     TableCol toTableCol(Diagnostic diagnostic);
 

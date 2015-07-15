@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database.common;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.data.TableCol;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 

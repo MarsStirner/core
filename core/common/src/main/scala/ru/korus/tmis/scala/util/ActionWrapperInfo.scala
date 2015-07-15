@@ -85,7 +85,7 @@ object ActionWrapperInfo extends Configuration {
   var assignerMiddleName = StringId("assignerMiddleName")
   var assignerSpecs = StringId("assignerSpecs")
   var assignerPost = StringId("assignerPost")
-  private var actionStatus = StringId("actionStatus")
+  var actionStatus = StringId("actionStatus")
   var urgent = StringId("urgent")
   var finance = StringId("finance")
   var plannedEndDate = StringId("plannedEndDate")

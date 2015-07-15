@@ -1,7 +1,9 @@
 package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.data.TableCol;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionProperty;
 import ru.korus.tmis.core.entity.model.Diagnosis;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
@@ -39,4 +41,6 @@ public interface DbDiagnosisBeanLocal {
                                       int diseaseCharacterId,
                                       int mkbId,
                                       Staff staff) throws CoreException;
+
+    Diagnosis createDiagnosis(ActionProperty actionProperty, TableCol tableCol, Staff staff);
 }

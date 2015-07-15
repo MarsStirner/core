@@ -64,7 +64,6 @@ class PrimaryAssessmentBean
       AWI.doctorSpecs,
       AWI.executorPost,
       AWI.urgent,
-      AWI.multiplicity,
       AWI.Status,
       AWI.Finance,
       AWI.PlannedEndDate//,
@@ -87,21 +86,10 @@ class PrimaryAssessmentBean
       (p) => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-
-        apvs.size match {
-          case 0 => {
-            group add apw.get(null, List(APWI.Unit,
-              APWI.Norm))
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              group add apw.get(apv, List(APWI.Value,
-                APWI.ValueId,
-                APWI.Unit,
-                APWI.Norm))
-            })
-          }
-        }
+        group add apw.get(apvs.toList, List(APWI.Value,
+          APWI.ValueId,
+          APWI.Unit,
+          APWI.Norm))
       })
 
     group
@@ -117,25 +105,11 @@ class PrimaryAssessmentBean
       (p) => {
         val (ap, apvs) = p
         val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-
-        apvs.size match {
-          case 0 => {
-            val ca = apw.get(null, List(APWI.Unit, APWI.Norm))
-            group add new CommonAttributeWithLayout(
-              ca,
-              dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
-              ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava)
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              val ca = apw.get(apv, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
-              group add new CommonAttributeWithLayout(
-                ca,
-                dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
-                ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava)
-            })
-          }
-        }
+        val ca = apw.get(apvs.toList, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
+        group.add(new CommonAttributeWithLayout(
+          ca,
+          dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
+          ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava))
       })
 
     group
