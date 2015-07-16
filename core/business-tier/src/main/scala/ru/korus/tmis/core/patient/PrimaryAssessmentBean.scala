@@ -85,7 +85,7 @@ class PrimaryAssessmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType)
         group add apw.get(apvs.toList, List(APWI.Value,
           APWI.ValueId,
           APWI.Unit,
@@ -104,7 +104,7 @@ class PrimaryAssessmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType)
         val ca = apw.get(apvs.toList, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
         group.add(new CommonAttributeWithLayout(
           ca,

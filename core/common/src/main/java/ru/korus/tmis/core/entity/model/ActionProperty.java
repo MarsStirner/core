@@ -113,6 +113,7 @@ public class ActionProperty
 
     public static final String DIAGNOSIS = "Diagnosis";
 
+
     static {
         valueTypeMap.put("Action", APValueAction.class);
         valueTypeMap.put("OperationType", APValueInteger.class);

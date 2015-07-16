@@ -23,9 +23,11 @@ class CommonAttributeWithLayout(id: Integer,
                                 mandatory: String,
                                 readOnly: String,
                                 scope: String,
+                                tableValues: java.util.List[TableCol],
+                                tableColType: java.util.List[String],
                                 props: Map[String, String],
                                 relations: util.List[ActionPropertyRelationWrapper])
-  extends CommonAttribute (id, version, name, code, aType, mandatory, readOnly, scope, null, props){
+  extends CommonAttribute (id, version, name, code, aType, mandatory, readOnly, scope, tableValues, tableColType, props){
 
   @BeanProperty
   var layoutAttributeValues = new util.LinkedList[LayoutAttributeSimplifyDataContainer]
@@ -44,8 +46,10 @@ class CommonAttributeWithLayout(id: Integer,
            layout: List[LayoutAttributeValue],
            mandatory: String,
            readOnly: String,
-           typeId: Integer) = {
-    this(id, version, name, code, aType, mandatory, readOnly, scope, props, relations)
+           typeId: Integer,
+           tableValues: java.util.List[TableCol],
+           tableColType: java.util.List[String]) = {
+    this(id, version, name, code, aType, mandatory, readOnly, scope, tableValues, tableColType, props,  relations)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
     this.typeId = typeId
   }
@@ -53,8 +57,8 @@ class CommonAttributeWithLayout(id: Integer,
   def this (ca: CommonAttribute,
             layout: List[LayoutAttributeValue],
             relations: util.List[ActionPropertyRelationWrapper] ) = {
-    this(ca.id, ca.version, ca.name, ca.code, ca.`type`, ca.mandatory, ca.readOnly, ca.scope,  ca.getPropertiesMap, relations)
-    this.tableValues = ca.tableValues
+    this(ca.id, ca.version, ca.name, ca.code, ca.`type`, ca.mandatory, ca.readOnly, ca.scope,
+      ca.tableValues, ca.tableColTypes, ca.getPropertiesMap, relations)
     layout.foreach(f=> this.layoutAttributeValues.add(new LayoutAttributeSimplifyDataContainer(f)))
   }
 }

@@ -129,7 +129,8 @@ class AssessmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue,
+          dbActionProperty.convertScope, dbActionProperty.convertColType)
         group.add(apw.get(apvs.toList,List(APWI.Value, APWI.ValueId, APWI.Unit,APWI.Norm)))
       })
 

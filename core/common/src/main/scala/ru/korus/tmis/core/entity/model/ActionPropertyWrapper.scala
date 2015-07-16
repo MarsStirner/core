@@ -11,7 +11,8 @@ import scala.collection.JavaConversions._
 
 class ActionPropertyWrapper(ap: ActionProperty,
                             apValueConverter: (ActionPropertyType, java.util.List[APValue]) => java.util.List[TableCol],
-                            apScopeConverter: ActionPropertyType => String)
+                            apScopeConverter: ActionPropertyType => String,
+                            apColTypeConverter: ActionPropertyType => java.util.List[String])
   extends Logging {
 
 
@@ -78,6 +79,7 @@ class ActionPropertyWrapper(ap: ActionProperty,
 
     val typeName = if ("Reference".equals(apt.getTypeName)) "String" else apt.getTypeName
     val scope = apScopeConverter(apt)
+    val tableColTypes = apColTypeConverter(apt)
     val tableValue: java.util.List[TableCol] =
       if (("Table".equals(typeName) || "Diagnosis".equals(typeName))) {
         apValueConverter(apt, apvs)
@@ -93,6 +95,7 @@ class ActionPropertyWrapper(ap: ActionProperty,
       apt.isReadOnly.toString,
       scope,
       tableValue,
+      tableColTypes,
       map)
     res.setTypeId(apt.getId)
     res

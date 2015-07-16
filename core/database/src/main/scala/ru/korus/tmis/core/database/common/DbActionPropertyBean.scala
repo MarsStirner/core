@@ -229,7 +229,7 @@ class DbActionPropertyBean
   def convertTableValue(apt: ActionPropertyType, value: String): java.util.LinkedList[TableCol] = {
 
     val res = new java.util.LinkedList[TableCol]
-    val rbAPTableFieldList = em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", apt.getValueDomain).getResultList
+    val rbAPTableFieldList = getTableFields(apt)
     val rbAPTable = rbAPTableFieldList.get(0).getRbAptable
     val prmList = rbAPTableFieldList.foldLeft("")((b, a) => {
       val s = if (b.isEmpty) "" else ","
@@ -288,6 +288,29 @@ class DbActionPropertyBean
     }
   }
 
+  def convertColType(propertyType: ActionPropertyType) = {
+    propertyType.getTypeName match {
+      case "Table" =>{
+        val rbAPTableFieldList = getTableFields(propertyType)
+        rbAPTableFieldList.foldLeft(new java.util.LinkedList[String])((a, b) => {a.add("String");a})
+      }
+       case "Diagnosis" => {
+        val diagType = Array ( ActionProperty.DATE, //Дата начала
+           ActionProperty.DATE, //Дата окончания
+           ActionProperty.MKB, //МКБ
+           "rbDiagnosisType", //Тип
+           "rbDiseaseCharacter",//Характер
+           "rbResult",//Результат
+           "rbAcheResult", //Исход
+           "Person", //Врач
+           "String" //Примечание
+         )
+         diagType.foldLeft(new java.util.LinkedList[String])((a, b) => {a.add(b);a})
+       }
+      case _ => null
+    }
+  }
+
   def getScopeForReference(propertyType: ActionPropertyType) = {
     val rbData = em.createNativeQuery("SELECT `code`, `name` FROM %s".format(propertyType.getValueDomain)).getResultList
     val resList: java.util.List[Array[Object]] = rbData.asInstanceOf[java.util.List[Array[Object]]]
@@ -299,11 +322,15 @@ class DbActionPropertyBean
   }
 
   def getScopeForTable(propertyType: ActionPropertyType) = {
-    val rbAPTableFieldList = em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", propertyType.getValueDomain).getResultList
+    val rbAPTableFieldList = getTableFields(propertyType)
     //преобразуем результат SQL запроса в CSV формат вида "<code> - <name>, <code> - <name>, ..." и при наличии в названии ',' заменяем на "(....)"
     rbAPTableFieldList.foldLeft("")((b, a) => {
       b + a.getName + ","
     })
+  }
+
+  def getTableFields(propertyType: ActionPropertyType): List[RbAPTableField] = {
+    em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", propertyType.getValueDomain).getResultList
   }
 
   def getScopeForDiagnosis(propertyType: ActionPropertyType) = {

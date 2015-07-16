@@ -210,7 +210,7 @@ class CommonDataProcessorBean
                 staff,
                 now)
               if (ap != null) {
-                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType).set(attribute)
                 (ap, attribute) :: list
               } else {
                 list
@@ -452,7 +452,7 @@ class CommonDataProcessorBean
               case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
-                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType).set(attribute)
 
                 //Удаление значений свойств, если они присутствуют
                 dbManager.removeAll(dbActionProperty.getActionPropertyValue(ap))
@@ -476,7 +476,7 @@ class CommonDataProcessorBean
                   apv = dbActionProperty.setActionPropertyValue(ap, value, 0)
                 }
 
-                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType).set(attribute)
                 if (apv != null) {
                   entities = entities + ap + apv.unwrap
                 } else {
@@ -493,7 +493,7 @@ class CommonDataProcessorBean
                   ap,
                   valueId,
                   0)
-                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope).set(attribute)
+                new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType).set(attribute)
                 entities = entities + ap + apv.unwrap
               }
 
@@ -705,7 +705,9 @@ class CommonDataProcessorBean
       dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(apt.getId.intValue()).toList,
       apt.isMandatory.toString,
       apt.isReadOnly.toString,
-      apt.getId)
+      apt.getId,
+      null,
+      dbActionProperty.convertColType(apt))
   }
 
   def fromActionTypesForWebClient(actionType: ActionType,

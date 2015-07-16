@@ -143,7 +143,7 @@ with I18nable {
         val (ap, apvs) = p
         if (apvs.size > 0 /* Отдаем совойство со значением, даже если оно не подходит по типу*/
           || commonDataProcessor.checkActionPropertyTypeForPatientAgeAndSex(direction.getEvent.getPatient, ap.getType)) {
-          val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
+          val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType)
           group.add(apw.get(apvs.toList, attributes))
         }
       }

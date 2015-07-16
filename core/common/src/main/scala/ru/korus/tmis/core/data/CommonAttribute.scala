@@ -49,6 +49,8 @@ class CommonAttribute {
 
   @BeanProperty var calculatedValue: APValueContainer = _
 
+  @BeanProperty var tableColTypes: java.util.List[String] = _
+
   @BeanProperty var tableValues: java.util.List[TableCol] = _
 
   @BeanProperty var properties: java.util.List[PropertyPair] = new java.util.LinkedList[PropertyPair]
@@ -144,12 +146,14 @@ class CommonAttribute {
            readOnly: String,
            scope: String,
            tableValues: java.util.List[TableCol],
+           tableColTypes: java.util.List[String],
            props: Map[String, String]) = {
     this(id, version, name, aType, scope, props)
     this.mandatory = mandatory
     this.readOnly = readOnly
     this.code = code
     this.tableValues = tableValues
+    this.tableColTypes = tableColTypes
   }
 
   private def initProps(map: Map[String, String]) = {
