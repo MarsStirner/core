@@ -385,11 +385,6 @@ class DbActionPropertyBean
         value
       }
       // Записываем значение
-      if (apv.setValueFromString(v)) {
-        em.persist(apv)
-        apv
-      }
-      else null
       v = checkAuto(ap, v)
       if (apv.setValueFromString(v)) apv else null
     } else
