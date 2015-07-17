@@ -76,21 +76,22 @@ public class TrfuActionProp {
             throw new CoreException("The property has been not found for action with flatCode'" + actionTypeFlatCode + "' : " + msgError);
         }
     }
-
     public <T> T getProp(final Integer actionId, final PropType propType) throws CoreException {
+        return getProp(actionId, propType, true);
+    }
+
+    public <T> T getProp(final Integer actionId, final PropType propType, Boolean isSaveError) throws CoreException {
         try {
             return database.getSingleProp(propType.getValueClass(), actionId, propIds.get(propType));
         } catch (final CoreException ex) {
-            final String value = String.format("Не задано: '%s'", propType.getName());
-            database.addSinglePropBasic(value, PropType.ORDER_REQUEST_ID.getValueClass(), actionId, propIds.get(PropType.ORDER_REQUEST_ID), true);
+            if (isSaveError) {
+                final String value = String.format("Не задано: '%s'", propType.getName());
+                database.addSinglePropBasic(value, PropType.ORDER_REQUEST_ID.getValueClass(), actionId, propIds.get(PropType.ORDER_REQUEST_ID), true);
+            }
             throw ex;
         }
     }
 
-    /**
-     * @param orderRequestId
-     * @return
-     */
     public Integer getPropertyId(final PropType propType) {
         return propIds.get(propType);
     }
