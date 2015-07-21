@@ -38,14 +38,14 @@ class DbRbOperationTypeBean extends DbRbOperationTypeBeanLocal
 
     if (records!=null) records(em.createQuery(AllRbOperationTypeWithFilterQuery.format("count(r)", queryStr.query, ""), classOf[Long]).getSingleResult)//Перепишем количество записей для структуры
 
-    val typed = em.createQuery(AllRbOperationTypeWithFilterQuery.format("r.id, r.name", queryStr.query, sorting), classOf[Array[AnyRef]])
+    val typed = em.createQuery(AllRbOperationTypeWithFilterQuery.format("r.id, r.name, r.code", queryStr.query, sorting), classOf[Array[AnyRef]])
                   .setMaxResults(limit)
                   .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList
     val list = new java.util.LinkedList[Object]
-    result.foreach(f => list.add((f(0).asInstanceOf[java.lang.Integer], f(1).asInstanceOf[java.lang.String])))
+    result.foreach(f => list.add((f(0).asInstanceOf[java.lang.Integer], f(1).asInstanceOf[java.lang.String], f(2).asInstanceOf[java.lang.String])))
     list
   }
 

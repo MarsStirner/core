@@ -1182,6 +1182,12 @@ class DictionaryListData {
             this.data.add(new DictionaryContainer(elem._1.intValue(),
               elem._2, elem._3.intValue(), elem._4.intValue() ))
           }
+          case "operationTypes" => {
+            var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.String)]
+            val container: DictionaryContainer = new DictionaryContainer(elem._1.intValue, elem._2.asInstanceOf[String])
+            container.setCodeOperation(elem._3.asInstanceOf[String])
+            this.data.add(container)
+          }
           case _ => {
             if (dict.isInstanceOf[(java.lang.Integer, java.lang.String)]) {
               var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String)]
@@ -1254,6 +1260,9 @@ class DictionaryContainer {
 
   @BeanProperty
   var rightSex: Int = _
+
+  @BeanProperty
+  var codeOperation: String = _
 
 
   def this(id: Int,
