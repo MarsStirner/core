@@ -3,6 +3,7 @@ package ru.korus.tmis.ws.webmis.rest;
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.database.DbStaffBean;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -29,7 +30,7 @@ public class HospitalBedsInfoRESTImpl {
     private WebMisREST wsImpl;
 
     @EJB
-    private DbStaffBean staffBean;
+    private DbStaffBeanLocal staffBean;
 
     /**
      * Сервис на получение списка коек с меткой свободно/занято.
