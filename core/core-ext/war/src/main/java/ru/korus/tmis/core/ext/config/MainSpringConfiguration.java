@@ -18,7 +18,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import ru.korus.tmis.core.ext.controller.AuthInterceptor;
 
-import javax.naming.*;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -129,7 +128,7 @@ public class MainSpringConfiguration extends WebMvcConfigurerAdapter {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
         dataSource.setDriverClassName(dataBaseType.driver);
-        dataSource.setUrl(dataBaseType.url);
+        dataSource.setUrl(dataBaseType.getUrl());
 
         dataSource.setUsername(getUsername(POOL_NAME_S11R64));
         dataSource.setPassword(getPassword(POOL_NAME_S11R64));
