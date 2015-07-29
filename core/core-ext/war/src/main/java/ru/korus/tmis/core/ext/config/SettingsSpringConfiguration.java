@@ -5,10 +5,14 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 
 
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.sql.DataSource;
 
 @Configuration
@@ -20,6 +24,19 @@ public class SettingsSpringConfiguration {
 
     @Bean(name = "coreSettingsDataSource")
     public DataSource dataSource() {
+        DataSource dataSource = getDataSourceFromProp();
+/*
+        try {
+            Context initCtx = new InitialContext();
+            dataSource = (DataSource) initCtx.lookup("tmis_core");
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+*/
+        return dataSource;
+    }
+
+    private DataSource getDataSourceFromProp() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
         dataSource.setDriverClassName(MainSpringConfiguration.dataBaseType.getDriver());

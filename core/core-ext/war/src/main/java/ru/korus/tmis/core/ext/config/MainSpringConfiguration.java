@@ -7,6 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.data.jpa.repository.config.EnableJpaRepositories;
 import org.springframework.jdbc.datasource.DriverManagerDataSource;
+import org.springframework.jndi.JndiTemplate;
 import org.springframework.orm.jpa.JpaTransactionManager;
 import org.springframework.orm.jpa.LocalContainerEntityManagerFactoryBean;
 import org.springframework.web.servlet.ViewResolver;
@@ -17,6 +18,7 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
 import ru.korus.tmis.core.ext.controller.AuthInterceptor;
 
+import javax.naming.*;
 import javax.sql.DataSource;
 import java.util.Properties;
 
@@ -112,6 +114,18 @@ public class MainSpringConfiguration extends WebMvcConfigurerAdapter {
 
     @Bean
     public DataSource dataSource() {
+
+        DataSource dataSource = getDataSourceFromProp();
+       /* try {
+            Context initCtx = new InitialContext();
+            dataSource = (DataSource) initCtx.lookup("s11r64");
+        } catch (NamingException e) {
+          e.printStackTrace();
+        }*/
+        return dataSource;
+    }
+
+    private DataSource getDataSourceFromProp() {
         DriverManagerDataSource dataSource = new DriverManagerDataSource();
 
         dataSource.setDriverClassName(dataBaseType.driver);
