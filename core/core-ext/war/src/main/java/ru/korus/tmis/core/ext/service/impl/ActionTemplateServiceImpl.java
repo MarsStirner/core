@@ -100,7 +100,7 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
             res.setActionId(actionTemplate.getAction() == null ? null : actionTemplate.getAction().getId());
             res.setName(actionTemplate.getName());
             for (ActionTemplate at : actionTemplate.getActionTemplateList()) {
-                if(at.getAction() == null || at.getAction().getActionType_id() == actionTypeId) {
+                if(at.getAction() == null || at.getAction().getActionType_id().equals(actionTypeId)) {
                     res.getTemplates().add(toActionTemplateData(at, actionTypeId));
                 }
             }
