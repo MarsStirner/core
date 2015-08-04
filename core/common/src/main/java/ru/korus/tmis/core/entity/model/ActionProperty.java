@@ -192,7 +192,8 @@ public class ActionProperty
 
         final boolean isRef = "Reference".equals(propertyType);
         if (isRef) {
-            propertyType = actionPropertyType.getValueDomain();
+            String valueDomain = actionPropertyType.getValueDomain();
+            propertyType = valueDomain == null ? null : valueDomain.split(";")[0];
         }
 
         if (valueTypeMap.containsKey(propertyType)) {

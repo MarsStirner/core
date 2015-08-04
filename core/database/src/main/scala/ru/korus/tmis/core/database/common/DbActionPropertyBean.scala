@@ -208,7 +208,7 @@ class DbActionPropertyBean
 
   def toRefValue(ap: ActionProperty, value: String): String = {
     val code = value.split("-")(0).trim
-    val res = em.createNativeQuery("SELECT `id` FROM %s WHERE `code` = '%s'".format(ap.getType.getValueDomain, code)).getResultList
+    val res = em.createNativeQuery("SELECT `id` FROM %s WHERE `code` = '%s'".format(ap.getType.getValueDomain.split(";")(0), code)).getResultList
     if (res.isEmpty) {
       return ""
     }
@@ -217,7 +217,7 @@ class DbActionPropertyBean
 
   def fromRefValue(apt: ActionPropertyType, value: String): String = {
     val code = value.split("-")(0).trim
-    val data = em.createNativeQuery("SELECT `code`, `name` FROM %s WHERE `id` = %s".format(apt.getValueDomain, value)).getResultList
+    val data = em.createNativeQuery("SELECT `code`, `name` FROM %s WHERE `id` = %s".format(apt.getValueDomain.split(";")(0), value)).getResultList
     var res = if (data.isEmpty) {
       value
     } else {
@@ -312,7 +312,7 @@ class DbActionPropertyBean
   }
 
   def getScopeForReference(propertyType: ActionPropertyType) = {
-    val rbData = em.createNativeQuery("SELECT `code`, `name` FROM %s".format(propertyType.getValueDomain)).getResultList
+    val rbData = em.createNativeQuery("SELECT `code`, `name` FROM %s".format(propertyType.getValueDomain.split(";")(0))).getResultList
     val resList: java.util.List[Array[Object]] = rbData.asInstanceOf[java.util.List[Array[Object]]]
     //преобразуем результат SQL запроса в CSV формат вида "<code> - <name>, <code> - <name>, ..." и при наличии в названии ',' заменяем на "(....)"
     resList.foldLeft("")((b, a) => {

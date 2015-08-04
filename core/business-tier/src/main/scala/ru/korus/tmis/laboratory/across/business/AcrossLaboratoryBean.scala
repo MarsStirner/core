@@ -399,8 +399,8 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         var res = pair.getValueAsString.replaceAll("<(.)+?>", "")
         res = res.replaceAll("<(\n)+?>", "")
         res = res.replaceAll("\\&.*?\\;", "")
-        if (res.length > 400) {
-          res = res.take(397) + "..."
+        if (res.length > 1000) {
+          res = res.take(997) + "..."
         }
         ("", res)
       }
