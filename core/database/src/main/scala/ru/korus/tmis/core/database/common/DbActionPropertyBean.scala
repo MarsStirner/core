@@ -282,6 +282,7 @@ class DbActionPropertyBean
   def convertScope(propertyType: ActionPropertyType) = {
     propertyType.getTypeName match {
       case "Reference" => getScopeForReference(propertyType)
+      case "ReferenceRb" => getScopeForReference(propertyType)
       case "Table" => getScopeForTable(propertyType)
       case "Diagnosis" => getScopeForDiagnosis(propertyType)
       case _ => propertyType.getValueDomain
@@ -379,7 +380,7 @@ class DbActionPropertyBean
       val apv = cls.newInstance.asInstanceOf[APValue]
       // Устанваливаем id, index
       apv.linkToActionProperty(ap, index)
-      var v = if ("Reference".equals(ap.getType.getTypeName)) {
+      var v = if ("Reference".equals(ap.getType.getTypeName) || "ReferenceRb".equals(ap.getType.getTypeName)) {
         toRefValue(ap, value)
       } else {
         value

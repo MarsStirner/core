@@ -199,7 +199,7 @@ public class ActionProperty
         if (valueTypeMap.containsKey(propertyType)) {
             valueClass = valueTypeMap.get(propertyType);
         } else if (isRef || "ReferenceRb".equals(propertyType)) {
-            if(propertyType.equals("rbBloodComponentType")) {
+            if(propertyType.equals("rbTrfuBloodComponentType")) {
                 valueClass = APValueRbBloodComponentType.class;
             } else if (propertyType.equals("Action")) {
                 valueClass = APValueAction.class;

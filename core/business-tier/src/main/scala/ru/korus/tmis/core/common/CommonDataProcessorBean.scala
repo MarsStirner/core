@@ -691,6 +691,7 @@ class CommonDataProcessorBean
 
     val typeName = apt.getTypeName match {
       case "Reference" => "String"
+      case "ReferenceRb" => "String"
       case _ => apt.getTypeName
     }
 
