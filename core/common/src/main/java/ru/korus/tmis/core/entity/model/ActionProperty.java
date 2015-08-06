@@ -190,7 +190,7 @@ public class ActionProperty
 
         String propertyType = actionPropertyType.getTypeName();
 
-        final boolean isRef = "Reference".equals(propertyType);
+        final boolean isRef = "Reference".equals(propertyType) ||  "ReferenceRb".equals(propertyType);
         if (isRef) {
             String valueDomain = actionPropertyType.getValueDomain();
             propertyType = valueDomain == null ? null : valueDomain.split(";")[0];

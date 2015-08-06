@@ -268,7 +268,7 @@ class DbActionPropertyBean
       return convertDiagValue(values)
     }
     val tableValue: TableValue = new TableValue(
-      if ("Reference".equals(apt.getTypeName))
+      if ("Reference".equals(apt.getTypeName) || "ReferenceRb".equals(apt.getTypeName))
         fromRefValue(apt, values.get(0).getValueAsString)
       else
         values.get(0).getValueAsString

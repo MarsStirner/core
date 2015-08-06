@@ -31,7 +31,7 @@ class ActionPropertyWrapper(ap: ActionProperty,
               case _ => {
                 if (apt.getTypeName.compareTo("Html") == 0 || apt.getTypeName.compareTo("Text") == 0 || apt.getTypeName.compareTo("Constructor") == 0) {
                   map + (xmlName -> apv.getValue.toString)
-                } else if ("Reference".equals(apt.getTypeName)) {
+                } else if ("Reference".equals(apt.getTypeName) || "ReferenceRb".equals(apt.getTypeName)) {
                   map + (xmlName -> apValueConverter(apt, apvs).get(0).values.get(0).getValue.asInstanceOf[String])
                 } else {
                   map + (xmlName -> apv.getValueAsString)
@@ -77,7 +77,7 @@ class ActionPropertyWrapper(ap: ActionProperty,
       }
     ))
 
-    val typeName = if ("Reference".equals(apt.getTypeName)) "String" else apt.getTypeName
+    val typeName = if ("Reference".equals(apt.getTypeName) || "ReferenceRb".equals(apt.getTypeName)) "String" else apt.getTypeName
     val scope = apScopeConverter(apt)
     val tableColTypes = apColTypeConverter(apt)
     val tableValue: java.util.List[TableCol] =
