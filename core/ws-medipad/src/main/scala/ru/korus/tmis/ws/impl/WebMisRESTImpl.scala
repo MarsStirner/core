@@ -423,8 +423,7 @@ with CAPids {
   }
 
   def getAllAppealsByPatient(requestData: AppealSimplifiedRequestData, auth: AuthData): AppealSimplifiedDataList = {
-    val set = appealBean.getSupportedAppealTypeCodes //справочник госпитализаций
-    requestData.filter.code = set.asInstanceOf[ju.Collection[String]]
+    val set = appealBean.getSupportedAppealTypeCodes //справочник госпитализаций requestData.filter.code = set.asInstanceOf[ju.Collection[String]]
     appealBean.getAllAppealsByPatient(requestData, auth)
   }
 

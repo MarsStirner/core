@@ -190,7 +190,7 @@ class DbActionPropertyBean
           val apv = apvs.get(index)
           if (value != null) {
             val apt = ap.getType()
-            if ("Reference".equals(apt.getTypeName)) {
+            if ("Reference".equals(apt.getTypeName) || "ReferenceRb".equals(apt.getTypeName)) {
               if (apv.unwrap().setValue(toRefValue(ap, value))) apv else null
             } else {
               if (apv.unwrap.setValueFromString(value)) apv else null

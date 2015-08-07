@@ -30,6 +30,7 @@ public class AppealRegistryRESTImpl {
     @EJB
     private WebMisREST wsImpl;
 
+    private static Object locker = new Object();
 
     /**
      * Создание обращения на госпитализацию.
@@ -46,7 +47,9 @@ public class AppealRegistryRESTImpl {
                                       @QueryParam("callback") String callback,
                                       @PathParam("patientId") int patientId,
                                       AppealData data) throws CoreException {
-        return new JSONWithPadding(wsImpl.insertAppealForPatient(data, patientId, mkAuth(servRequest)), callback);
+        synchronized(locker) {
+            return new JSONWithPadding(wsImpl.insertAppealForPatient(data, patientId, mkAuth(servRequest)), callback);
+        }
     }
 
     /**

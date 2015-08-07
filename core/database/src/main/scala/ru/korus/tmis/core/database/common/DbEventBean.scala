@@ -111,14 +111,14 @@ class DbEventBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def createEvent(patientId: Int, appealTypeId: Int, begDate: Date, endDate: Date, contractId:Int, result: RbResult, acheResult: RbAcheResult, execPerson: Staff, createPerson: Staff): Event = {
+  def createEvent(patientId: Int, appealTypeId: Int, begDate: Date, endDate: Date, contractId: Int, result: RbResult, acheResult: RbAcheResult, execPerson: Staff, createPerson: Staff): Event = {
 
+    val newEvent = new Event
     val patient = patientBean.getPatientById(patientId)
     val eventType = this.getEventTypeById(appealTypeId)
 
     val now = new Date
     val contract: Contract = contractBean.getContractById(contractId)
-    val newEvent = new Event
     //1. Инсертим /Инициализируем структуру Event по пациенту
     try {
       //Анализ и инкремент счетчика
@@ -163,6 +163,7 @@ class DbEventBean
       }
       //em.refresh(newEvent)
     }
+
     return newEvent
   }
 
@@ -251,15 +252,16 @@ class DbEventBean
 
     val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
 
-    if (records!=null) { //Перепишем количество записей для структуры
+    if (records != null) {
+      //Перепишем количество записей для структуры
       val recC = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("count(et)", queryStr.query, ""), classOf[Long])
       if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => recC.setParameter(qdp.name, qdp.value))
       records(recC.getSingleResult)
     }
 
     var typed = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList
@@ -268,41 +270,44 @@ class DbEventBean
 
   def getCountOfAppealsForReceivedPatientByPeriod(filter: Object) = {
 
-    val queryStr: QueryDataStructure = if(filter.isInstanceOf[ReceivedRequestDataFilter]) {
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[ReceivedRequestDataFilter]) {
       filter.asInstanceOf[ReceivedRequestDataFilter].toQueryStructure()
     }
-    else {new QueryDataStructure()}
+    else {
+      new QueryDataStructure()
+    }
 
-    val typed= em.createQuery(AllAppealsWithFilterQuery.format("count(e)", i18n("db.flatDirectory.eventType.hospitalization"), queryStr.query, ""), classOf[Long])
+    val typed = em.createQuery(AllAppealsWithFilterQuery.format("count(e)", i18n("db.flatDirectory.eventType.hospitalization"), queryStr.query, ""), classOf[Long])
 
-    if(queryStr.data.size()>0) {
-      queryStr.data.foreach(qdp=>typed.setParameter(qdp.name, qdp.value))
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
     typed.getSingleResult
   }
 
-  def getAllAppealsForReceivedPatientByPeriod (page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+  def getAllAppealsForReceivedPatientByPeriod(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
 
-    val queryStr: QueryDataStructure = if(filter.isInstanceOf[ReceivedRequestDataFilter]) {
+    val queryStr: QueryDataStructure = if (filter.isInstanceOf[ReceivedRequestDataFilter]) {
       filter.asInstanceOf[ReceivedRequestDataFilter].toQueryStructure()
     }
-    else {new QueryDataStructure()}
+    else {
+      new QueryDataStructure()
+    }
 
     val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
 
-    val q = AllAppealsWithFilterQuery.format("e", i18n("db.flatDirectory.eventType.hospitalization") ,queryStr.query, sorting)
+    val q = AllAppealsWithFilterQuery.format("e", i18n("db.flatDirectory.eventType.hospitalization"), queryStr.query, sorting)
     val typed = em.createQuery(q, classOf[Event])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit*page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
 
-    if(queryStr.data.size()>0) {
-      queryStr.data.foreach(qdp=>typed.setParameter(qdp.name, qdp.value))
+    if (queryStr.data.size() > 0) {
+      queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
 
     val result = typed.getResultList
     result
   }
-
 
 
   def getEventTypeByCode(code: String): EventType = {
@@ -313,9 +318,9 @@ class DbEventBean
     et
   }
 
- /* def getActionsByTypeCode(event: Event, codes: java.util.Set[String]) {     */
- def getActionsByTypeCode(event: Event, codes: util.Set[String]): Multimap[String, Action] =  {
-    val res : Multimap[String, Action] = HashMultimap.create()
+  /* def getActionsByTypeCode(event: Event, codes: java.util.Set[String]) {     */
+  def getActionsByTypeCode(event: Event, codes: util.Set[String]): Multimap[String, Action] = {
+    val res: Multimap[String, Action] = HashMultimap.create()
     val result = em.createNamedQuery("Action.ActionsByFlatCode", classOf[Action])
       .setParameter("id", event.getId)
       .setParameter("codes", codes)
@@ -618,7 +623,7 @@ class DbEventBean
       )
     %s
     %s
-  """
+                                  """
 
 
 }

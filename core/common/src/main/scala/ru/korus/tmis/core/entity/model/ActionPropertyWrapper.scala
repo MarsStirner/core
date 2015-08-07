@@ -77,7 +77,7 @@ class ActionPropertyWrapper(ap: ActionProperty,
       }
     ))
 
-    val typeName = if ("Reference".equals(apt.getTypeName) || "ReferenceRb".equals(apt.getTypeName)) "String" else apt.getTypeName
+    val typeName = if ("Reference".equals(apt.getTypeName) ||"ReferenceRb".equals(apt.getTypeName) ) "String" else apt.getTypeName
     val scope = apScopeConverter(apt)
     val tableColTypes = apColTypeConverter(apt)
     val tableValue: java.util.List[TableCol] =
