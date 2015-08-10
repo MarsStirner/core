@@ -63,6 +63,10 @@ public class PaymentBean implements PaymentBeanLocal {
             !idTreatment.equals(eventLocalContract.getEvent().getId())) { //если не сопадает ID обращение и номер договора не совпадают с данными в БД МИС, то возвращаем ошибку
             throw new CoreException("Incompatible event ID and code of contract: idTreatment = " + idTreatment + " codeContract = " + codeContract
                     + " The code of contract for this event should be equals to: " + eventLocalContract.getEvent().getId());
+        } else if (event.getEventLocalContract() != null) {
+            event.getEventLocalContract().setDateContract(dateContract);
+            event.getEventLocalContract().setNumberContract(codeContract);
+            em.merge(event);
         } else if (eventLocalContract == null) { //если в МИС нет договора, то создаем его
             eventLocalContract = dbEventLocalContractLocal.create(codeContract, dateContract, event, paidFIO, birthDate);
         }
