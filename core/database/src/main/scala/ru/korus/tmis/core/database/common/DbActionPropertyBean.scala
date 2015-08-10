@@ -191,6 +191,9 @@ class DbActionPropertyBean
           if (value != null) {
             val apt = ap.getType()
             if ("Reference".equals(apt.getTypeName) || "ReferenceRb".equals(apt.getTypeName)) {
+              if ("rbTrfuBloodComponentType".equals(ap.getType.getValueDomain.split(";")(0))) {
+                apv.unwrap().setValue(toTrfuRefValue(ap, value));
+              } else
               if (apv.unwrap().setValue(toRefValue(ap, value))) apv else null
             } else {
               if (apv.unwrap.setValueFromString(value)) apv else null
@@ -205,6 +208,17 @@ class DbActionPropertyBean
       }
     }
   }
+
+  def toTrfuRefValue(ap: ActionProperty, value: String): RbTrfuBloodComponentType = {
+    val code = value.split("-")(0).trim
+    val res = em.createQuery("SELECT r FROM RbTrfuBloodComponentType r WHERE r.code = :code", classOf[RbTrfuBloodComponentType]).
+      setParameter("code", code).getResultList
+    if (res.isEmpty) {
+      return null
+    }
+    res(0)
+  }
+
 
   def toRefValue(ap: ActionProperty, value: String): String = {
     val code = value.split("-")(0).trim
@@ -519,10 +533,11 @@ class DbActionPropertyBean
     if (needStatus) {
       status = "AND a.status = 2"
     }
-    val result = em.createNativeQuery(ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx.format(sqlEventIds, sqlCodes, status))
+    val q: String = ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx.format(sqlEventIds, sqlCodes, status, if (cntRead == null) 5 else cntRead )
+    val result = em.createNativeQuery(q)
       //.setParameter(1, new java.util.LinkedList(eventIds map(f => f.toString)))
       //.setParameter(2, sqlCodes)
-      .setParameter(3, cntRead)
+      //.setParameter(3, cntRead)
       .getResultList
     val resulted = result.foldLeft(new java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]])(
       (map, ap) => {
@@ -679,7 +694,7 @@ class DbActionPropertyBean
                     GROUP BY idd, apt.code, ap.createDatetime DESC
         ) grouped
       ) counted
-      WHERE rown <= ?3
+      WHERE rown <= %s
     """
   //ORDER BY ap.id DESC
   val ActionPropertyFindQuery = """
