@@ -34,6 +34,8 @@ class DiagnosticsListData {
         this.data = new LinkedList[LaboratoryDiagnosticsListEntry]
         if ( "takingTime".equals(requestData.sortingField) ){
           d.sortWith((l, r) => l.takingTime.before(r.takingTime)).foreach(this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(_))
+        } else {
+          d.foreach(this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(_))
         }
       }
       case "instrumental" => {
