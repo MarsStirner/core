@@ -32,7 +32,9 @@ class DiagnosticsListData {
           list.foreach(ajt => d.add(new LaboratoryDiagnosticsListEntry(ajt._1, ajt._2, staff)))
         }
         this.data = new LinkedList[LaboratoryDiagnosticsListEntry]
-        d.sortWith((l, r) => l.takingTime.before(r.takingTime)).foreach(this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(_))
+        if ( "takingTime".equals(requestData.sortingField) ){
+          d.sortWith((l, r) => l.takingTime.before(r.takingTime)).foreach(this.data.asInstanceOf[LinkedList[LaboratoryDiagnosticsListEntry]].add(_))
+        }
       }
       case "instrumental" => {
         val d = new LinkedList[InstrumentalDiagnosticsListEntry]

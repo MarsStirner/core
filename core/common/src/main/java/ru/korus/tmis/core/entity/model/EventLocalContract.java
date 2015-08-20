@@ -13,8 +13,8 @@ import java.util.Date;
 @Table(name="Event_LocalContract")
 @NamedQueries(
         {
-                @NamedQuery(name = "EventLocalContract.findByEventId", query = "SELECT elc FROM EventLocalContract elc WHERE elc.event.id = :eventId"),
-                @NamedQuery(name = "EventLocalContract.findByContractCode", query = "SELECT elc FROM EventLocalContract elc WHERE elc.numberContract = :code"),
+                @NamedQuery(name = "EventLocalContract.findByEventId", query = "SELECT elc FROM EventLocalContract elc WHERE elc.event.id = :eventId AND elc.deleted = 0"),
+                @NamedQuery(name = "EventLocalContract.findByContractCode", query = "SELECT elc FROM EventLocalContract elc WHERE elc.numberContract = :code AND elc.deleted = 0"),
         })
 public class EventLocalContract implements Serializable {
 	private static final long serialVersionUID = 1L;

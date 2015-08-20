@@ -67,6 +67,7 @@ public class PaymentBean implements PaymentBeanLocal {
             event.getEventLocalContract().setDateContract(dateContract);
             event.getEventLocalContract().setNumberContract(codeContract);
             em.merge(event);
+            eventLocalContract = event.getEventLocalContract();
         } else if (eventLocalContract == null) { //если в МИС нет договора, то создаем его
             eventLocalContract = dbEventLocalContractLocal.create(codeContract, dateContract, event, paidFIO, birthDate);
         }
