@@ -128,8 +128,8 @@ public class DbSchemeKladrBean implements DbSchemeKladrBeanLocal {
 
     @Override
     public Street getStreetByCode(String code) throws CoreException {
-        List<Street> streetsByCode = getStreetByCode(code, false);
-        return streetsByCode.isEmpty() ? null : streetsByCode.get(0);
+        List<Street> streetsByCode = code == null ? null : getStreetByCode(code, false);
+        return (streetsByCode == null || streetsByCode.isEmpty()) ? null : streetsByCode.get(0);
     }
 
     @Override
