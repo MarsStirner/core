@@ -851,12 +851,12 @@ class DbActionPropertyBean
   }
 
   override def calcAuto(ap: ActionProperty): String = {
-    var res: Integer = 1;
+    var res: Int = 1;
     val apvList = prevValueList(ap)
     if (!apvList.isEmpty) {
       res = apvList.get(0) + 1;
       for (i <- 1 to apvList.size()) {
-        if(res.equals(apvList.get(i))) {
+        if(res == apvList.get(i)) {
           res = apvList.get(i) + 1
         } else {
           return String.valueOf(res)
