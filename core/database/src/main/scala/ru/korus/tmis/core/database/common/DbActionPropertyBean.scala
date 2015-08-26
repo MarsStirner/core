@@ -870,18 +870,24 @@ class DbActionPropertyBean
     val cal = java.util.Calendar.getInstance();
     cal.setTimeInMillis(ap.getCreateDatetime.getTime)
     cal.set(cal.get(java.util.Calendar.YEAR), 0, 1, 0, 0)
+    val date: Date = cal.getTime;
     val apIdList = em.createNamedQuery("ActionProperty.ByTypeIdAndDate", classOf[Integer])
       .setParameter("aptId", ap.getType.getId)
-      .setParameter("begDate", cal.getTime)
-      .setMaxResults(1).getResultList
+      .setParameter("begDate", date)
+      .getResultList
     val apvList = if (!apIdList.isEmpty) {
+      val id: Integer = apIdList.get(0).intValue()
       em.createNamedQuery("APValueInteger.getValueById", classOf[Integer])
-        .setParameter("fromId", apIdList.get(0))
+        .setParameter("fromId", apIdList)
         .getResultList
     } else {
       new java.util.ArrayList[Integer]()
     }
     apvList
+   /* val foo: java.util.Set[Integer] = new java.util.HashSet[Integer](apvList)
+    val res = new java.util.ArrayList[Integer]()
+    res.addAll(foo)
+    res*/
   }
 
   def checkAutoValue(ap: ActionProperty, value: Int) = {

@@ -18,7 +18,7 @@ import javax.xml.bind.annotation.XmlType;
 @NamedQueries(
         {
                 @NamedQuery(name = "APValueInteger.findAll", query = "SELECT a FROM APValueInteger a"),
-                @NamedQuery(name = "APValueInteger.getValueById", query = "SELECT DISTINCT a.value FROM APValueInteger a WHERE a.id.id >= :fromId ORDER BY a.value ASC"),
+                @NamedQuery(name = "APValueInteger.getValueById", query = "SELECT DISTINCT a.value FROM APValueInteger a WHERE a.id.id IN :fromId ORDER BY a.value ASC"),
         })
 @XmlType(name = "actionPropertyValueInteger")
 @XmlRootElement(name = "actionPropertyValueInteger")
