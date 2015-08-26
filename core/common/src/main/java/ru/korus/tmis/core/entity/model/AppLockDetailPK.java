@@ -1,7 +1,8 @@
 package ru.korus.tmis.core.entity.model;
 
+import javax.persistence.Column;
+import javax.persistence.Embeddable;
 import java.io.Serializable;
-import javax.persistence.*;
 
 /**
  * The primary key class for the AppLockDetail database table.

@@ -1,0 +1,66 @@
+<project>
+	<modelVersion>4.0.0</modelVersion>
+	<groupId>ru.korus.tmis.ext</groupId>
+	<version>2.6.1</version>
+	<artifactId>tmis-core-ext</artifactId>
+	<packaging>pom</packaging>
+	<name>TMIS core extension module</name>
+	<description>Root project for TMIS core extension module</description>
+	<modules>
+		<module>war</module>
+		<module>ear</module>
+	</modules>
+    <properties>
+        <!-- Версия ядра-->
+        <version.tmis.core.ext>2.6.1</version.tmis.core.ext>
+    </properties>
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <id>1</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>set</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>2</id>
+                        <phase>install</phase>
+                        <goals>
+                            <goal>set</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <newVersion>${version.tmis.core.ext}</newVersion>
+                    <oldVersion></oldVersion>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+	<dependencies>
+        <dependency>
+            <groupId>org.testng</groupId>
+            <artifactId>testng</artifactId>
+            <version>6.8</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>ch.qos.logback</groupId>
+            <artifactId>logback-classic</artifactId>
+            <version>1.1.3</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.12</version>
+        </dependency>
+    </dependencies>
+
+</project>

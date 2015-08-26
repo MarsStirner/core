@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.notification;
 
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.NotificationAction;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -24,6 +25,6 @@ public interface NotificationBeanLocal {
 
     Set<String> getListener(Integer actionTypeId);
 
-    void sendNotification(Action action) throws CoreException;
+    void sendNotification(NotificationAction notificationAction) throws CoreException;
 
 }

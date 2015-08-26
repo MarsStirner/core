@@ -26,7 +26,7 @@ public interface HospitalBedBeanLocal {
      * @see HospitalBedData
      * @see AuthData
      */
-    Action registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
+    Action registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData, Staff staff) throws CoreException;
 
     /**
      * Редактирование регистрации пациента на койке.
@@ -38,7 +38,7 @@ public interface HospitalBedBeanLocal {
      * @see HospitalBedData
      * @see AuthData
      */
-    Action modifyPatientToHospitalBed(int actionId, HospitalBedData data, AuthData authData) throws CoreException;
+    Action modifyPatientToHospitalBed(int actionId, HospitalBedData data, AuthData authData, Staff staff) throws CoreException;
 
     /**
      * Направление/перевод пациента в отделение
@@ -50,29 +50,27 @@ public interface HospitalBedBeanLocal {
      * @see HospitalBedData
      * @see AuthData
      */
-    Action movingPatientToDepartment(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
+    Action movingPatientToDepartment(int eventId, HospitalBedData data, AuthData authData, Staff staff) throws CoreException;
 
     /**
      * Получение данных о действии типа 'Движение'. Основной вид.
      * @param action Действие
-     * @param authData Авторизационные данные как AuthData.
      * @return Данные о действии типа 'Движение' как HospitalBedData
      * @throws CoreException
      * @see HospitalBedData
      * @see AuthData
      */
-    HospitalBedData getRegistryOriginalForm(Action action, AuthData authData) throws CoreException;
+    HospitalBedData getRegistryOriginalForm(Action action) throws CoreException;
 
     /**
      * Получение данных о действии типа 'Движение' со списком занятых/свободных коек отделения
      * @param action Действие
-     * @param authData Авторизационные данные как AuthData.
      * @return Данные о действии типа 'Движение' как HospitalBedData
      * @throws CoreException
      * @see HospitalBedData
      * @see AuthData
      */
-    Object getRegistryFormWithChamberList(Action action, AuthData authData) throws CoreException;
+    Object getRegistryFormWithChamberList(Action action) throws CoreException;
 
     /**
      * Запрос на занятые койки в отделении.
@@ -91,7 +89,7 @@ public interface HospitalBedBeanLocal {
      * @see HospitalBedData
      * @see AuthData
      */
-    HospitalBedData getMovingListByEventIdAndFilter(HospitalBedDataListFilter filter, AuthData authData) throws CoreException;
+    HospitalBedData getMovingListByEventIdAndFilter(HospitalBedDataListFilter filter) throws CoreException;
 
     /**
      * Отказ от регистрации на койке
@@ -101,7 +99,7 @@ public interface HospitalBedBeanLocal {
      * @return
      * @throws CoreException
      */
-    boolean callOffHospitalBedForPatient(int actionId, AuthData authData) throws CoreException;
+    boolean callOffHospitalBedForPatient(int actionId, AuthData authData, Staff staff) throws CoreException;
 
     /**
      * Запрос на последнее по ивенту действие типа Движение

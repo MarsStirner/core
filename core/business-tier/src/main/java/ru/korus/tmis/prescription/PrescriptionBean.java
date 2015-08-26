@@ -111,12 +111,13 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     }
 
     @Override
-    public PrescriptionsData create(CreatePrescriptionReqData createPrescriptionReqData, AuthData authData) throws CoreException {
+    public PrescriptionsData create(CreatePrescriptionReqData createPrescriptionReqData, AuthData authData, Staff staff) throws CoreException {
         final CreatePrescriptionData data = createPrescriptionReqData.getData();
         final Event event = getEventById(data.getEventId());
-        final Action action = createPrescriptionAction(createPrescriptionReqData, authData);
+        final Action action = createPrescriptionAction(createPrescriptionReqData, authData, staff);
+        action.setNote(data.getNote());
         Map<DrugData, DrugComponent> drugComponentByDrugData = saveDrugs(action, getDrugs(data));
-        saveIntervals(action, data.getNote(), data.getAssigmentIntervals(), drugComponentByDrugData);
+        saveIntervals(action, data.getAssigmentIntervals(), drugComponentByDrugData);
         return new PrescriptionsData(event, dbDrugChartBeanLocal, dbDrugIntervalCompParamLocal, dbPharmacyBeanLocal, dbRbUnitBeanLocal, dbActionPropertyBeanLocal);
     }
 
@@ -131,7 +132,7 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
     }
 
     @Override
-    public PrescriptionsData update(Integer actionId, CreatePrescriptionReqData createPrescriptionReqData, AuthData auth) throws CoreException {
+    public PrescriptionsData update(Integer actionId, CreatePrescriptionReqData createPrescriptionReqData, Staff auth) throws CoreException {
         final CreatePrescriptionData data = createPrescriptionReqData.getData();
         final Event event = getEventById(data.getEventId());
         final Action action = em.find(Action.class, actionId);
@@ -244,10 +245,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
 
     }
 
-    private void updatePrescriptionAction(Action action, CreatePrescriptionData data, AuthData auth) throws CoreException {
+    private void updatePrescriptionAction(Action action, CreatePrescriptionData data, Staff auth) throws CoreException {
         action.setNote(data.getNote());
         action.setIsUrgent(data.getIsUrgent());
-        action.setModifyPerson(em.merge(auth.getUser()));
+        action.setModifyPerson(em.merge(auth));
         for (ActionPropertyTypeData prop : data.getProperties()) {
             ActionProperty ap = null;
             try {
@@ -265,10 +266,10 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         }
     }
 
-    private void saveIntervals(Action action, String note, List<AssigmentIntervalData> assigmentIntervals, Map<DrugData, DrugComponent> drugComponentByDrugData) {
+    private void saveIntervals(Action action, List<AssigmentIntervalData> assigmentIntervals, Map<DrugData, DrugComponent> drugComponentByDrugData) {
         for (AssigmentIntervalData interval : assigmentIntervals) {
             final Date endDateTime = interval.getEndDateTime() == null ? null : new Date(interval.getEndDateTime());
-            DrugChart drugChart = dbDrugChartBeanLocal.create(action, interval.getMasterId(), new Date(interval.getBeginDateTime()), endDateTime, interval.getStatus(), note);
+            DrugChart drugChart = dbDrugChartBeanLocal.create(action, interval.getMasterId(), new Date(interval.getBeginDateTime()), endDateTime, interval.getStatus(), interval.getNote());
             for(DrugData drugData : interval.getDrugs()) {
                 dbDrugIntervalCompParamLocal.create(drugChart, drugComponentByDrugData.get(drugData), drugData.getDose(), drugData.getVoa(), drugData.getMoa());
             }
@@ -317,12 +318,12 @@ public class PrescriptionBean implements PrescriptionBeanLocal {
         return res;
     }
 
-    private Action createPrescriptionAction(CreatePrescriptionReqData createPrescriptionReqData, AuthData authData) throws CoreException {
+    private Action createPrescriptionAction(CreatePrescriptionReqData createPrescriptionReqData, AuthData authData, Staff staff) throws CoreException {
         final CreatePrescriptionData data = createPrescriptionReqData.getData();
-        Action action = dbActionBeanLocal.createAction(data.getEventId(), data.getActionTypeId(), authData);
+        Action action = dbActionBeanLocal.createAction(data.getEventId(), data.getActionTypeId(), authData, staff);
         em.persist(action);
         for (ActionPropertyTypeData prop : data.getProperties()) {
-            ActionProperty ap = dbActionPropertyBeanLocal.createActionProperty(action, prop.getActionPropertyTypeId(), authData);
+            ActionProperty ap = dbActionPropertyBeanLocal.createActionProperty(action, prop.getActionPropertyTypeId(), staff);
             em.persist(ap);
             final String value = prop.getValue() == null ? (prop.getValueId() == null ? null : String.valueOf(prop.getValueId())) : prop.getValue();
             if (value != null && !value.isEmpty()) {

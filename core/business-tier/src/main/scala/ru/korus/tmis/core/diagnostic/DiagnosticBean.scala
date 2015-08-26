@@ -6,7 +6,6 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common._
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import ConfigManager.APWI
 
@@ -17,7 +16,6 @@ import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DiagnosticBean
   extends DiagnosticBeanLocal
@@ -56,13 +54,13 @@ class DiagnosticBean
   var typeFilter: TypeFilterBeanLocal = _
 
   def getDiagnosticTypes(eventId: Int,
-                         userData: AuthData) = {
+                         userData: Staff) = {
     var types = dbActionType.getDiagnosticTypes
 
     if (ConfigManager.Filter.isOn) {
       types = typeFilter.filterActionTypes(
         types,
-        userData.user.getOrgStructure.getId.intValue,
+        userData.getOrgStructure.getId.intValue,
         eventId)
     }
 
@@ -138,26 +136,13 @@ class DiagnosticBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-
-        apvs.size match {
-          case 0 => {
-            group add apw.get(null, List(APWI.Norm,
-              APWI.Unit,
-              APWI.IsAssignable,
-              APWI.IsAssigned))
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              group add apw.get(apv, List(APWI.Value,
-                APWI.ValueId,
-                APWI.Norm,
-                APWI.Unit,
-                APWI.IsAssignable,
-                APWI.IsAssigned))
-            })
-          }
-        }
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType)
+        group add apw.get(apvs.toList, List(APWI.Value,
+          APWI.ValueId,
+          APWI.Norm,
+          APWI.Unit,
+          APWI.IsAssignable,
+          APWI.IsAssigned))
       })
 
     group
@@ -165,12 +150,14 @@ class DiagnosticBean
 
   def createDiagnosticForEventId(eventId: Int,
                                  diagnostic: CommonData,
-                                 userData: AuthData) = {
+                                 userData: AuthData,
+                                 staff: Staff) = {
     val createdActions =
       commonDataProcessor.createActionForEventFromCommonData(
         eventId,
         diagnostic,
-        userData)
+        userData,
+        staff)
 
     commonDataProcessor.fromActions(
       createdActions,
@@ -180,11 +167,13 @@ class DiagnosticBean
 
   def modifyDiagnosticById(diagnosticId: Int,
                            diagnostic: CommonData,
-                           userData: AuthData) = {
+                           userData: AuthData,
+                           staff: Staff) = {
     val modifiedActions = commonDataProcessor.modifyActionFromCommonData(
       diagnosticId,
       diagnostic,
-      userData)
+      userData,
+      staff)
 
     commonDataProcessor.fromActions(
       modifiedActions,

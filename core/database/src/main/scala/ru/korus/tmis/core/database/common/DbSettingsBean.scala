@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database.common
 
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import grizzled.slf4j.Logging
 import javax.persistence._
 import javax.annotation.PostConstruct
@@ -12,11 +12,11 @@ import collection.mutable.Buffer
 import java.util.{List => JList}
 import java.util
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import ru.korus.tmis.scala.util.ConfigManager._
 
 @Startup
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Singleton
-@TransactionManagement(TransactionManagementType.BEAN)
 class DbSettingsBean extends DbSettingsBeanLocal
 with Logging
 with I18nable {
@@ -51,8 +51,6 @@ with I18nable {
 
   def getSettingByPath(path: String): Setting  = getSetting(tmis_core, path)
 
-  def getSettingByPathInMainSettings(path: String): Setting = getSetting(s11r64, path)
-
   private def getSetting(em: EntityManager, path: String ): Setting = {
     val result = em.createQuery("SELECT s FROM Setting s WHERE s.path = :path", classOf[Setting]).setParameter("path", path)
     var s: Setting = new Setting
@@ -72,5 +70,21 @@ with I18nable {
       new util.ArrayList(0)
     }
     resultList
+  }
+
+  def updateSetting(path: String, value: String): Boolean = {
+    if (setSetting(path, value)) {
+      info("Successfully changed setting: " + path + " : " + value)
+      var setting: Setting = getSetting(tmis_core, path)
+      if (setting == null) {
+        setting = new Setting
+        setting.setPath(path)
+        tmis_core.persist(setting)
+      }
+      setting.setValue(value)
+      tmis_core.flush()
+      true
+    }
+    false
   }
 }

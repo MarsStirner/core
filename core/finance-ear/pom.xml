@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>ru.korus.tmis</groupId>
+    <artifactId>tmis-finance-server</artifactId>
+    <version>2.6.1</version>
+    <packaging>ear</packaging>
+    <name>TMIS Finance EAR</name>
+
+    <parent>
+        <groupId>ru.korus.tmis</groupId>
+        <artifactId>tmis-core</artifactId>
+        <version>2.6.1</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+
+    <dependencies>
+
+        <!-- Korus dependency -->
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-business</artifactId>
+            <version>2.6.1</version>
+            <type>ejb</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-common</artifactId>
+            <version>2.6.1</version>
+            <type>jar</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-database</artifactId>
+            <version>2.6.1</version>
+            <type>ejb</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.ws.finance</groupId>
+            <artifactId>tmis-ws-finance</artifactId>
+            <version>2.6.1</version>
+            <type>war</type>
+        </dependency>
+
+        <dependency>
+            <groupId>ru.korus.tmis.config</groupId>
+            <artifactId>config</artifactId>
+            <version>2.6.1</version>
+            <type>jar</type>
+        </dependency>
+
+    </dependencies>
+
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-ear-plugin</artifactId>
+                <version>2.8</version>
+                <configuration>
+                    <generateApplicationXml>true</generateApplicationXml>
+                    <!--<version>7</version>-->
+                    <defaultLibBundleDir>lib</defaultLibBundleDir>
+                    <earSourceDirectory>${basedir}/src/main/resources/</earSourceDirectory>
+                    <!--<earSourceDirectory>${basedir}/src/main/webapps/</earSourceDirectory>-->
+                    <earSourceIncludes>logback.xml</earSourceIncludes>
+
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>

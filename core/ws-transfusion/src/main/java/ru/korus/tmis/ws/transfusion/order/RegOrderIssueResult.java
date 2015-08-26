@@ -137,7 +137,7 @@ public class RegOrderIssueResult {
 
     public static boolean alreadySet(Integer actionId, TrfuActionProp trfuActionProp) {
         try {
-            return  trfuActionProp.getProp(actionId,  PropType.ORDER_ISSUE_RES_DATE) != null;
+            return  trfuActionProp.getProp(actionId,  PropType.ORDER_ISSUE_RES_DATE, false) != null;
         } catch (CoreException e) {
             return  false;
         }

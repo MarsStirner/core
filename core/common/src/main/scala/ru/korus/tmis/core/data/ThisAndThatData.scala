@@ -10,6 +10,7 @@ import org.codehaus.jackson.annotate.{JsonIgnoreProperties, JsonSubTypes, JsonTy
 import org.codehaus.jackson.map.ObjectMapper
 import org.codehaus.jackson.map.annotate.JsonView
 import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.entity.model.kladr.{Street, Kladr}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.{AbstractListDataFilter, ListDataFilter}
 import ru.korus.tmis.scala.util.ConfigManager
@@ -254,9 +255,13 @@ class PersonsListDataFilter extends AbstractListDataFilter {
   @BeanProperty
   var department: Int = _
 
-  def this(departmentId: Int) {
+  @BeanProperty
+  var roleCodeList: java.util.List[String] = _
+
+  def this(departmentId: Int, roleCodeList: java.util.List[String]) {
     this()
     this.department = departmentId
+    this.roleCodeList = roleCodeList
   }
 
   @Override
@@ -735,6 +740,7 @@ class MKBListRequestDataFilter extends AbstractListDataFilter {
       qs.add("id", this.mkbId: java.lang.Integer)
     }
     else {
+      qs.query += ("AND mkb.deleted = 0\n")
       if (this.code != null && !this.code.isEmpty) {
         qs.query += ("AND upper(mkb.diagID) LIKE upper(:code)\n")
         qs.add("code", this.code + "%")
@@ -1161,13 +1167,26 @@ class DictionaryListData {
 
         this.requestData.filter.asInstanceOf[DictionaryListRequestDataFilter].dictName match {
           case "KLADR" => {
-            if (dict.isInstanceOf[(java.lang.String, java.lang.String, java.lang.String, java.lang.String)]) {
-              //KLADR
-              var elem = dict.asInstanceOf[(java.lang.String, java.lang.String, java.lang.String, java.lang.String)]
-              this.data.add(new DictionaryContainer(elem._1, elem._2, elem._3, elem._4))
+            if (dict.isInstanceOf[Kladr]) {
+              var elem = dict.asInstanceOf[Kladr]
+              this.data.add(new DictionaryContainer(elem.getCode, elem.getName, elem.getSocr, elem.getIndex))
+            } else if (dict.isInstanceOf[Street]){
+              var elem = dict.asInstanceOf[Street]
+              this.data.add(new DictionaryContainer(elem.getCode, elem.getName, elem.getSocr, elem.getIndex))
             } else {
               this.data.add(new DictionaryContainer(0, ""))
             }
+          }
+          case "relationships" =>   {
+            var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.Integer, java.lang.Integer)]
+            this.data.add(new DictionaryContainer(elem._1.intValue(),
+              elem._2, elem._3.intValue(), elem._4.intValue() ))
+          }
+          case "operationTypes" => {
+            var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.String)]
+            val container: DictionaryContainer = new DictionaryContainer(elem._1.intValue, elem._2.asInstanceOf[String])
+            container.setCodeOperation(elem._3.asInstanceOf[String])
+            this.data.add(container)
           }
           case _ => {
             if (dict.isInstanceOf[(java.lang.Integer, java.lang.String)]) {
@@ -1236,11 +1255,30 @@ class DictionaryContainer {
   @BeanProperty
   var value: String = _
 
+  @BeanProperty
+  var leftSex: Int = _
+
+  @BeanProperty
+  var rightSex: Int = _
+
+  @BeanProperty
+  var codeOperation: String = _
+
+
   def this(id: Int,
            value: String) {
     this()
     this.id = id
     this.value = value
+  }
+
+  def this(id: Int,
+           value: String,
+            leftSex: Int,
+            rightSex: Int) {
+    this(id, value)
+    this.leftSex = leftSex
+    this.rightSex = rightSex
   }
 
   def this(id: Int,

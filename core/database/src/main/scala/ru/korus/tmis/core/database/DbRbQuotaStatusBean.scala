@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -20,7 +20,7 @@ import scala.language.reflectiveCalls
  * @see DbRbQuotaStatusBeanLocal
  */
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbQuotaStatusBean
   extends DbRbQuotaStatusBeanLocal
@@ -44,9 +44,7 @@ class DbRbQuotaStatusBean
           i18n("error.rbQuotaStatusNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

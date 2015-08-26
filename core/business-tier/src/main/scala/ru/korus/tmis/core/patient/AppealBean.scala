@@ -3,6 +3,7 @@ package ru.korus.tmis.core.patient
 import java.util
 
 import grizzled.slf4j.Logging
+import ru.korus.tmis.core.database.finance.DbEventLocalContractLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.data._
 import javax.ejb.{EJB, Stateless}
@@ -71,7 +72,7 @@ with CAPids {
   var dbClientRelation: DbClientRelationBeanLocal = _
 
   @EJB
-  var dbClientQuoting: DbClientQuotingBeanLocal = _
+  var dbEventClientRelation: DbEventClientRelationBeanLocal = _
 
   @EJB
   var dbEventPerson: DbEventPersonBeanLocal = _
@@ -94,11 +95,11 @@ with CAPids {
   @EJB
   var dbTempInvalidBean: DbTempInvalidBeanLocal = _
 
-/*
-  @Inject
-  @Any
-  var actionEvent: javax.enterprise.event.Event[Notification] = _
-*/
+  @EJB
+  private var dbRbResultBeanLocal: DbRbResultBeanLocal = _
+
+  @EJB
+  private var dbEventLocalContract: DbEventLocalContractLocal = _
 
   private class IndexOf[T](seq: Seq[T]) {
     def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
@@ -143,25 +144,24 @@ with CAPids {
     iCapIds("db.rbCap.host.primary.id.reopening").toInt) //Переоткрытие ИБ
 
   //Insert or modify appeal
-  def insertAppealForPatient(appealData: AppealData, patientId: Int, authData: AuthData) = {
+  def insertAppealForPatient(appealData: AppealData, patientId: Int, userData: AuthData, staff: Staff) = {
 
     //1. Event и проверка данных на валидность
-    val newEvent = this.verificationData(patientId, authData, appealData, true)
+    val newEvent = this.verificationData(patientId, staff, appealData, true)
     dbManager.persist(newEvent)
-    dbManager.detach(newEvent)
-    val res = insertOrModifyAppeal(appealData, newEvent, true, authData)
-    updateTempInvalid(newEvent, appealData.data.tempInvalid, authData)
+    val res = insertOrModifyAppeal(appealData, newEvent, true, userData, staff)
+    updateTempInvalid(newEvent, appealData.data.tempInvalid, staff)
     res
   }
 
-  def updateAppeal(appealData: AppealData, eventId: Int, authData: AuthData) = {
-    val newEvent = this.verificationData(eventId, authData, appealData, false)
-    val res = insertOrModifyAppeal(appealData, newEvent, false, authData)
-    updateTempInvalid(newEvent, appealData.data.tempInvalid, authData)
+  def updateAppeal(appealData: AppealData, eventId: Int, userData: AuthData, staff: Staff) = {
+    val newEvent = this.verificationData(eventId, staff, appealData, false)
+    val res = insertOrModifyAppeal(appealData, newEvent, false, userData, staff)
+    updateTempInvalid(newEvent, appealData.data.tempInvalid, staff)
     res
   }
 
-  def insertOrModifyAppeal(appealData: AppealData, event: Event, flgCreate: Boolean, authData: AuthData) = {
+  def insertOrModifyAppeal(appealData: AppealData, event: Event, flgCreate: Boolean, userData: AuthData, staff: Staff) = {
 
     var entities = Set.empty[AnyRef]
     val now = new Date()
@@ -170,7 +170,6 @@ with CAPids {
 
     var oldAction: Action = null // Action.clone(temp)
     var oldValues = Map.empty[ActionProperty, java.util.List[APValue]] //actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue)
-    var lockId: Int = -1
 
     val temp = actionBean.getAppealActionByEventId(newEvent.getId.intValue(), i18n("db.actionType.hospitalization.primary").toInt)
     var action: Action = null
@@ -183,137 +182,131 @@ with CAPids {
     } else {
       oldAction = Action.clone(temp)
       oldValues = actionPropertyBean.getActionPropertiesByActionId(oldAction.getId.intValue).toMap
-      lockId = appLock.acquireLock("Action", temp.getId.intValue(), oldAction.getIdx, authData)
     }
 
-    try {
+    if (temp == null) {
+      action = actionBean.createAction(newEvent.getId.intValue(),
+        actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(), userData,
+        staff)
+      action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
+      dbManager.persist(action)
+      list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
+    }
+    else {
+      action = actionBean.updateAction(temp.getId.intValue(),
+        temp.getVersion.intValue, userData,
+        staff)
+      list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
 
-      if (temp == null) {
-        action = actionBean.createAction(newEvent.getId.intValue(),
-          actionTypeBean.getActionTypeById(i18n("db.actionType.hospitalization.primary").toInt).getId.intValue(),
-          authData)
-        action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
-        dbManager.persist(action)
-        list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
-      }
-      else {
-        action = actionBean.updateAction(temp.getId.intValue(),
-          temp.getVersion.intValue,
-          authData)
-        list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
+      val list2 = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt)
+        .toList
+        .filter(p => {
+        val filtred = list.filter(pp => pp.asInstanceOf[ActionProperty].getType.getId == p.getId)
+        if (filtred == null || filtred.size == 0) true else false
+      })
+      list2.foreach(ff => {
+        //создание недостающих акшен пропертей
+        val res = actionPropertyBean.createActionProperty(action, ff.getId.intValue(), staff)
+        em.persist(res)
+      })
+      //пересобираем лист акшенПропертей
+      list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
+    }
 
-        val list2 = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt)
-          .toList
-          .filter(p => {
-          val filtred = list.filter(pp => pp.asInstanceOf[ActionProperty].getType.getId == p.getId)
-          if (filtred == null || filtred.size == 0) true else false
-        })
-        list2.foreach(ff => {
-          //создание недостающих акшен пропертей
-          val res = actionPropertyBean.createActionProperty(action, ff.getId.intValue(), authData)
+    action.setIsUrgent(appealData.data.getUrgent)
+    if (appealData.data.rangeAppealDateTime != null) {
+      if (appealData.data.rangeAppealDateTime.getStart != null)
+        action.setBegDate(appealData.data.rangeAppealDateTime.getStart)
+      action.setEndDate(appealData.data.rangeAppealDateTime.getEnd)
+    }
+
+    /* if (!flgCreate)
+       entities = entities + action*/
+
+    //3. Action Property
+
+    list.foreach(f => {
+      val ap: ActionProperty =
+        if (flgCreate && f.isInstanceOf[ActionPropertyType]) {
+          val res = actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), staff)
           em.persist(res)
-        })
-        //пересобираем лист акшенПропертей
-        list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
-      }
+          res
+        }
+        else {
+          val apUpdate = actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
+            f.asInstanceOf[ActionProperty].getVersion.intValue,
+            staff)
+          em.merge(apUpdate)
+          apUpdate
+        }
+      /* if (!flgCreate)
+         entities = entities + ap*/
 
-      action.setIsUrgent(appealData.data.getUrgent)
-      if (appealData.data.rangeAppealDateTime != null) {
-        if (appealData.data.rangeAppealDateTime.getStart != null)
-          action.setBegDate(appealData.data.rangeAppealDateTime.getStart)
-        action.setEndDate(appealData.data.rangeAppealDateTime.getEnd)
-      }
-
-      if (!flgCreate)
-        entities = entities + action
-
-      //3. Action Property
-
-      list.foreach(f => {
-        val ap: ActionProperty =
-          if (flgCreate && f.isInstanceOf[ActionPropertyType]) {
-            val res = actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), authData)
-            em.persist(res)
-            res
-          }
-          else {
-            actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
-              f.asInstanceOf[ActionProperty].getVersion.intValue,
-              authData)
-          }
-        if (!flgCreate)
-          entities = entities + ap
-
-        var values = this.getValueByCase(ap.getType.getId.intValue(), appealData, authData)
-        if (values != null) {
-          values.size match {
-            case 0 => {
-              if (flgCreate) {
-                //В случае, если не приходит значение для ActionProperty, то записываем значение по умолчанию.
-                val defValue = ap.getType.getDefaultValue
-                if (defValue != null && !defValue.trim.isEmpty) {
-                  val apv = actionPropertyBean.setActionPropertyValue(ap, defValue, 0)
-                  if (apv != null)
-                    entities = entities + apv.unwrap
-                }
-              } else {
-                //Если пришел пустой список, а старые значения есть, то зачистим их
-                val apvs = actionPropertyBean.getActionPropertyValue(ap)
-                if (apvs != null && apvs.size() > 0) {
-                  for (i <- 0 until apvs.size) {
-                    var apv = apvs(i).unwrap()
-                    apv = em.merge(apv)
-                    em.remove(apv)
-                  }
-                }
-              }
-            }
-            case _ => {
-              if (ap.getType.getIsVector) {
-                //Если вектор, то сперва зачищаем старый список
-                val apvs = actionPropertyBean.getActionPropertyValue(ap)
-                if (apvs != null && apvs.size() > values.size) {
-                  for (i <- values.size to apvs.size - 1) {
-                    //если новых значений меньше тем старых, то хвост зачистим
-                    var apv = apvs(i).unwrap()
-                    apv = em.merge(apv)
-                    em.remove(apv)
-                  }
-                }
-              }
-              var it = 0
-              // Если не пришло отделение поступления - проставляем приемное отделение
-              val pTypeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(ap.getType.getId.intValue()).getId.toInt
-              val storedpTypeId = iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt
-              if (pTypeId.equals(storedpTypeId) && values.head.equals("0"))
-                values = Set(i18n("db.dayHospital.id"))
-
-              values.foreach(value => {
-                val apv = actionPropertyBean.setActionPropertyValue(ap, value, it)
+      var values = this.getValueByCase(ap.getType.getId.intValue(), appealData)
+      if (values != null) {
+        values.size match {
+          case 0 => {
+            if (flgCreate) {
+              //В случае, если не приходит значение для ActionProperty, то записываем значение по умолчанию.
+              val defValue = ap.getType.getDefaultValue
+              if (defValue != null && !defValue.trim.isEmpty) {
+                val apv = actionPropertyBean.setActionPropertyValue(ap, defValue, 0)
                 if (apv != null)
                   entities = entities + apv.unwrap
-                it = it + 1
-              })
+              }
+            } else {
+              //Если пришел пустой список, а старые значения есть, то зачистим их
+              val apvs = actionPropertyBean.getActionPropertyValue(ap)
+              if (apvs != null && apvs.size() > 0) {
+                for (i <- 0 until apvs.size) {
+                  var apv = apvs(i).unwrap()
+                  apv = em.merge(apv)
+                  em.remove(apv)
+                }
+              }
             }
           }
-        }
-      })
+          case _ => {
+            if (ap.getType.getIsVector) {
+              //Если вектор, то сперва зачищаем старый список
+              val apvs = actionPropertyBean.getActionPropertyValue(ap)
+              if (apvs != null && apvs.size() > values.size) {
+                for (i <- values.size to apvs.size - 1) {
+                  //если новых значений меньше тем старых, то хвост зачистим
+                  var apv = apvs(i).unwrap()
+                  apv = em.merge(apv)
+                  em.remove(apv)
+                }
+              }
+            }
+            var it = 0
+            // Если не пришло отделение поступления - проставляем приемное отделение
+            val pTypeId = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(ap.getType.getId.intValue()).getId.toInt
+            val storedpTypeId = iCapIds("db.rbCap.host.primary.id.orgStructStay").toInt
+            if (pTypeId.equals(storedpTypeId) && values.head.equals("0"))
+              values = Set(i18n("db.dayHospital.id"))
 
-      if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
-      dbManager.detach(action)
-      /*
-     if (!flgCreate) {
-       val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
-       actionEvent.fire(new ModifyActionNotification(oldAction,
-         oldValues,
-         action,
-         newValues))
-     }
-     */
-    }
-    finally {
-      if (lockId > 0) appLock.releaseLock(lockId)
-    }
+            values.foreach(value => {
+              val apv = em.merge(actionPropertyBean.setActionPropertyValue(ap, value, it))
+              /* if (apv != null)
+                 entities = entities + apv.unwrap*/
+              it = it + 1
+            })
+          }
+        }
+      }
+    })
+
+    if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
+    /*
+   if (!flgCreate) {
+     val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
+     actionEvent.fire(new ModifyActionNotification(oldAction,
+       oldValues,
+       action,
+       newValues))
+   }
+   */
 
     if (!flgCreate) {
       //Редактирование обращения (В случае если изменен НИБ)
@@ -328,20 +321,20 @@ with CAPids {
 
         newEvent.setExternalId(appealData.data.number)
         newEvent.setModifyDatetime(now)
-        newEvent.setModifyPerson(authData.user)
+        newEvent.setModifyPerson(staff)
         //newEvent.setExecDate(now)
 
         flgEventRewrite = true
       }
       if (appealData.data.refuseAppealReason != null && !appealData.data.refuseAppealReason.isEmpty) {
-        newEvent = this.revokeAppealById(newEvent, 15, authData)
+        newEvent = this.revokeAppealById(newEvent, 15, staff)
         //this.insertCompleteDiagnoses(appealData.data.id, authData)   //Старый вариант (заменено кодом ниже)
         //final диагноз
         val admissionMkb = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(appealData.data.id)
         if (admissionMkb != null) {
           var map = Map.empty[String, java.util.Set[AnyRef]]
           map += ("finalMkb" -> Set[AnyRef]((-1, "", Integer.valueOf(admissionMkb.getId.intValue), 0, 0)))
-          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, mapAsJavaMap(map), authData)
+          val diag = diagnosisBean.insertDiagnoses(appealData.data.id, null, mapAsJavaMap(map), staff)
           diag.filter(p => p.isInstanceOf[Diagnostic]).toList.foreach(f => f.asInstanceOf[Diagnostic].setResult(this.getRbResultById(15)))
           dbManager.persistAll(diag)
         }
@@ -349,48 +342,62 @@ with CAPids {
         flgEventRewrite = true
       }
       if (flgEventRewrite == true) {
-        newEvent.setVersion(newEvent.getVersion)
         dbManager.merge(newEvent)
       }
     }
     //******
     //Создание/Редактирование записей для законных представителей
-    val clientRelations = appealData.data.getHospitalizationWith
-    var setRel = Set.empty[ClientRelation]
-    if (clientRelations != null && clientRelations.size() > 0) {
-      //Если законные представители заполнены
-      val patient = newEvent.getPatient
-      val serverRelations = patient.getActiveClientRelatives()
-
-      clientRelations.foreach(f => {
-        val serverRelation = serverRelations.find(element => ((element.getRelative.getId.intValue() == f.getRelative.getId) &&
-          (element.getRelativeType.getId.intValue() == f.getRelativeType.getId)))
-          .getOrElse(null)
-        if (serverRelation == null) {
-          val updateRelation = serverRelations.find(element => element.getRelative.getId.intValue() == f.getRelative.getId).getOrElse(null)
-          val relationId = if (updateRelation == null) -1 else updateRelation.getId.intValue()
-          val parent = dbPatientBean.getPatientById(f.getRelative.getId)
-          val tempServerRelation = dbClientRelation.insertOrUpdateClientRelationByRelativePerson(relationId,
-            f.getRelativeType.getId,
-            parent,
-            patient,
-            authData.user)
-          setRel += tempServerRelation
-        }
-      })
+    val clientRelations = if (appealData.data.getHospitalizationWith == null) {
+      new java.util.LinkedList[LegalRepresentativeContainer]()
+    } else {
+      appealData.data.getHospitalizationWith
     }
+    var setRel = Set.empty[ClientRelation]
+    //Если законные представители заполнены
+    val patient = newEvent.getPatient
+    val eventClientRelationList = dbEventClientRelation.getByEvent(newEvent)
+
+    clientRelations.foreach(f => {
+      val curEventClientRel: EventClientRelation = eventClientRelationList.find(ecl => ecl.getClientRelation.getRelativeType.getId.intValue() == f.getRelativeType.getId)
+        .getOrElse({
+        val parent = dbPatientBean.getPatientById(f.getRelative.getId)
+        val tempServerRelation = dbClientRelation.createClientRelationByRelativePerson(
+          f.getRelativeType.getId,
+          parent,
+          patient,
+          staff)
+
+        val res = dbEventClientRelation.insertOrUpdate(newEvent, tempServerRelation, f.getNote)
+        em.flush()
+        setRel += tempServerRelation
+        res
+      })
+      if (!curEventClientRel.getClientRelation.getRelative.getId.equals(f.getRelative.getId) ||
+        !curEventClientRel.getNote.equals(f.getNote)) {
+        curEventClientRel.getClientRelation.setRelative(dbPatientBean.getPatientById(f.getRelative.getId))
+        curEventClientRel.setNote(f.getNote)
+        em.merge(curEventClientRel)
+      }
+    })
+    eventClientRelationList.foreach(f => {
+      val cr = clientRelations.find(cl => f.getClientRelation.getRelativeType.getId.intValue() == cl.getRelativeType.getId)
+        .getOrElse({
+        f.setDeleted(true)
+        em.merge(f)
+      })
+    })
     if (setRel != null && setRel.size > 0) dbManager.mergeAll(setRel)
     //*****
     //Создание/редактирование записи для Event_Persons
     if (flgCreate)
-      setExecPersonForAppeal(newEvent.getId.intValue(), 0, authData, ExecPersonSetType.EP_CREATE_APPEAL)
-    //dbEventPerson.insertOrUpdateEventPerson(0, newEvent, authData.getUser, true) //в ивенте только создание
+      setExecPersonForAppeal(newEvent.getId.intValue(), 0, staff, ExecPersonSetType.EP_CREATE_APPEAL)
 
     //Создание/редактирование диагнозов (отд. записи)
     var map = Map.empty[String, java.util.Set[AnyRef]]
-    Set(i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb"),
-      i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
-      i18n("appeal.diagnosis.diagnosisKind.attendantMkb")).foreach(flatCode => {
+
+    var diagFlatCodes: Set[String] = Set()
+    appealData.data.diagnoses.foreach(f => if (f.getDiagnosisKind != null && !f.getDiagnosisKind.isEmpty) diagFlatCodes += f.getDiagnosisKind)
+    diagFlatCodes.foreach(flatCode => {
       val values = appealData.data.diagnoses.filter(p => p.getDiagnosisKind.compareTo(flatCode) == 0)
         .map(f => {
         var mkb: Mkb = null
@@ -408,23 +415,14 @@ with CAPids {
         .toSet[AnyRef]
       map += (flatCode -> values)
     })
-    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), mapAsJavaMap(map), authData)
-    val mergedItems = diagnoses.filter(p => (p.isInstanceOf[Diagnosis] &&
-      p.asInstanceOf[Diagnosis].getId != null &&
-      p.asInstanceOf[Diagnosis].getId.intValue() > 0) ||
-      (p.isInstanceOf[Diagnostic] &&
-        p.asInstanceOf[Diagnostic].getId != null &&
-        p.asInstanceOf[Diagnostic].getId.intValue() > 0)
-    ).toList
-    val persistedItems = diagnoses.filter(p => (p.isInstanceOf[Diagnosis] &&
-      (p.asInstanceOf[Diagnosis].getId == null ||
-        p.asInstanceOf[Diagnosis].getId.intValue() <= 0)) ||
-      (p.isInstanceOf[Diagnostic] &&
-        (p.asInstanceOf[Diagnostic].getId == null ||
-          p.asInstanceOf[Diagnostic].getId.intValue() <= 0))
-    ).toList
-    dbManager.mergeAll(mergedItems)
-    dbManager.persistAll(persistedItems)
+    val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), null, mapAsJavaMap(map), staff)
+
+    if (appealData.data.getPayer != null
+      && appealData.data.getPaymentContract != null) {
+
+      event.setEventLocalContract(
+        dbEventLocalContract.insertOrUpdate(newEvent, appealData.data.getPayer, appealData.data.getPaymentContract))
+    }
 
     newEvent.getId.intValue()
   }
@@ -437,11 +435,15 @@ with CAPids {
     }
     //запрос данных из Action
     val action = actionBean.getAppealActionByEventId(event.getId.intValue(), i18n("db.actionType.hospitalization.primary").toInt)
-    if (action == null) {
+    /*if (action == null) {
       throw new CoreException(ConfigManager.ErrorCodes.ActionNotFound, "Невозможно открыть обращение[id=%d], т.к. в нем отсутствует действие Поступление".format(id))
-    }
+    }*/
     //Запрос данных из ActionProperty
-    val findMapActionProperty = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue())
+    val findMapActionProperty = if(action == null) {
+      new java.util.HashMap[ActionProperty, java.util.List[APValue]]
+    }else {
+      actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue())
+    }
 
     val values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]] = findMapActionProperty.foldLeft(new java.util.HashMap[(java.lang.Integer, ActionProperty), java.util.List[Object]])(
       (str_key, el) => {
@@ -493,7 +495,7 @@ with CAPids {
   }
 
 
-  def revokeAppealById(event: Event, resultId: Int, authData: AuthData) = {
+  def revokeAppealById(event: Event, resultId: Int, staff: Staff) = {
 
     //Закрываем госпитализацию с причиной отказа
     val now = new Date()
@@ -503,7 +505,7 @@ with CAPids {
     //TODO: Возможно надо прикрутить блокировку
     try {
       event.setModifyDatetime(now)
-      event.setModifyPerson(authData.user)
+      event.setModifyPerson(staff)
       event.setExecDate(now)
       event.setResult(dbRbResultBean.getRbResultById(resultId)) //какой-то айдишник =)
     }
@@ -582,39 +584,39 @@ with CAPids {
     }
   }
 
-  def updateTempInvalid(event: Event, tempInvalidCont: TempInvalidAppealContainer, authDate: AuthData) {
+  def updateTempInvalid(event: Event, tempInvalidCont: TempInvalidAppealContainer, staff: Staff) {
     if (tempInvalidCont != null &&
-        tempInvalidCont.serial != null &&
-        tempInvalidCont.number != null) {
+      tempInvalidCont.serial != null &&
+      tempInvalidCont.number != null) {
 
-      var tempInvalid = if(event.getId == null) new TempInvalid() else dbTempInvalidBean.getTempInvalidByEventId(event.getId)
+      var tempInvalid = if (event.getId == null) new TempInvalid() else dbTempInvalidBean.getTempInvalidByEventId(event.getId)
       if (tempInvalid == null) {
         tempInvalid = new TempInvalid()
       }
       tempInvalid.setEvent(event)
       dbTempInvalidBean.insertOrUpdateTempInvalid(tempInvalid,
-        tempInvalidCont.begDate,//Date beginDate,
+        tempInvalidCont.begDate, //Date beginDate,
         tempInvalidCont.endDate, //Date endDate,
-        0,//short docType,
-        if (tempInvalidCont.isByService) "09" else "01",//int reasonId,
-        tempInvalidCont.begDate,//Date caseBegDate,
+        0, //short docType,
+        if (tempInvalidCont.isByService) "09" else "01", //int reasonId,
+        tempInvalidCont.begDate, //Date caseBegDate,
         tempInvalidCont.serial, //String serial,
         tempInvalidCont.number, //String number,
-        0,//short sex,
-        0,//byte age,
-        0,//int duration,
-        0,//short closed,
-        event.getPatient,// Patient patient,
-        authDate.getUser//Staff sessionUser)
+        0, //short sex,
+        0, //byte age,
+        0, //int duration,
+        0, //short closed,
+        event.getPatient, // Patient patient,
+        staff //Staff sessionUser)
       )
     }
   }
 
   @throws(classOf[CoreException])
-  def verificationData(id: Int, authData: AuthData, appealData: AppealData, flgCreate: Boolean): Event = {
+  def verificationData(id: Int, staff: Staff, appealData: AppealData, flgCreate: Boolean): Event = {
     //для создания ид пациента, для редактирование ид обращения
 
-    if (authData == null)
+    if (staff == null)
       throw new CoreException(i18n("error.appeal.create.NoAuthData"))
 
 
@@ -626,10 +628,20 @@ with CAPids {
         throw new CoreException(i18n("error.appeal.create.InvalidPatientData").format(id))
       }
 
+      if (appealData.data.appealType.eventType != null && appealData.data.appealType.eventType.id < 1) {
+        val et = dbEventTypeBean.getEventTypeByCode(appealData.data.appealType.eventType.getCode)
+        appealData.data.appealType.eventType.id = et.getId
+      }
+
       if (appealData.data.appealType == null ||
         appealData.data.appealType.eventType == null ||
         appealData.data.appealType.eventType.getId <= 0) {
         throw new CoreException(i18n("error.appeal.create.NoAppealType"))
+      }
+
+      if (appealData.data.contract != null && appealData.data.contract.getId < 1) {
+        val contract: Contract = dbContractBean.getContractByNumber(appealData.data.contract.getNumber);
+        appealData.data.contract.id = contract.getId
       }
 
       if (appealData.data.contract == null || appealData.data.contract.getId < 1)
@@ -644,7 +656,7 @@ with CAPids {
 
       val patient = dbPatientBean.getPatientById(id)
       val et = dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId)
-      if(!et.isAgeValid(patient.getBirthDate))
+      if (!et.isAgeValid(patient.getBirthDate))
         throw new CoreException(i18n("error.appeal.create.InvalidPatientAge").format(et.getName, et.getAge))
 
       val patientSex = patient.getSex match {
@@ -653,8 +665,20 @@ with CAPids {
         case 2 => Sex.WOMEN
       }
 
-      if(!et.isSexValid(patientSex))
+      if (!et.isSexValid(patientSex))
         throw new CoreException(i18n("error.appeal.create.InvalidPatientSex").format(et.getName, et.getSex))
+
+      val result: RbResult = if (appealData.data.result == null) null
+      else
+        dbRbResultBeanLocal.getRbResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.result.code)
+
+      val acheResult: RbAcheResult = if (appealData.data.result == null) null
+      else
+        dbRbResultBeanLocal.getRbAcheResultByCodeAndEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId), appealData.data.acheResult.code)
+
+      val execPerson = if (appealData.data.execPerson == null || appealData.data.execPerson.getId == null) null
+      else
+        dbStaff.getStaffById(appealData.data.execPerson.getId)
 
       event = dbEventBean.createEvent(id,
         //dbEventBean.getEventTypeIdByFDRecordId(appealData.data.appealType.getId()),
@@ -663,7 +687,10 @@ with CAPids {
         appealData.data.rangeAppealDateTime.getStart(),
         /*appealData.data.rangeAppealDateTime.getEnd()*/ null,
         appealData.getData.getContract.getId,
-        authData)
+        result,
+        acheResult,
+        execPerson,
+        staff)
     }
     else {
       //Редактирование
@@ -674,16 +701,17 @@ with CAPids {
       }
 
       event.setModifyDatetime(now)
-      event.setModifyPerson(authData.user)
+      event.setModifyPerson(staff)
+      dbManager.merge(event)
       event.setSetDate(appealData.data.rangeAppealDateTime.getStart())
       event.setEventType(dbEventTypeBean.getEventTypeById(appealData.data.appealType.eventType.getId))
-      event.setVersion(appealData.getData().getVersion())
     }
 
     val hosptype = if (appealData.data.hospitalizationType != null) appealData.data.hospitalizationType.getId else 0
     if (hosptype > 0) {
       //val value = dbFDRecordBean.getFDRecordById(hosptype)
       //if (value!=null) {            //TODO: ! Материть Сашу
+      // 'Порядок наступления (1-плановый, 2-экстренный, 3-самотёком, 4-принудительный)',
       val order = if ( /*value.getId.intValue()*/ hosptype == 220) 1
       else if ( /*value.getId.intValue()*/ hosptype == 221) 2
       else if ( /*value.getId.intValue()*/ hosptype == 222) 3
@@ -695,7 +723,12 @@ with CAPids {
 
     if (appealData.data.appealWithDeseaseThisYear != null && !appealData.data.appealWithDeseaseThisYear.isEmpty) {
       val value = appealData.data.appealWithDeseaseThisYear
-      val isPrim = if (value.contains("первично")) 1 else if (value.contains("повторно")) 2 else 0 //TODO: ! Материть Сашу
+      val isPrim = if (value.contains("первично")) 1
+      else if (value.contains("повторно")) 2
+      else if (value.contains("активное посещение")) 3
+      else if (value.contains("перевозка")) 4
+      else if (value.contains("амбулаторно")) 5
+      else 0 //TODO: ! Материть Сашу
       event.setIsPrimary(isPrim)
     } else event.setIsPrimary(0)
 
@@ -708,7 +741,7 @@ with CAPids {
     that match {
       case null => null //В случае если не обрабатываем проперти вернем нулл (чтобы не переписывать значения)
       case x: Date => Set(ConfigManager.DateFormatter.format(that))
-      case x: IdNameContainer => if(x.getId > 0) Set(x.getId.toString) else Set.empty[String]
+      case x: IdNameContainer => if (x.getId > 0) Set(x.getId.toString) else Set.empty[String]
       case x: util.LinkedList[LegalRepresentativeContainer] =>
         var hospWith = Set.empty[String]
         x.foreach(e => {
@@ -721,58 +754,64 @@ with CAPids {
           }
         })
         hospWith
-      case _ => try { Set(that.toString) } catch {
+      case _ => try {
+        Set(that.toString)
+      } catch {
         case e: Exception => throw new CoreException("Не могу преобразовать данные типа: %s в строковый массив".format(that.getClass.getName))
       }
     }
   }
 
-  private def getValueByCase(aptId: Int, appealData: AppealData, authData: AuthData) = {
+  private def getValueByCase(aptId: Int, appealData: AppealData) = {
 
     val listNdx = new IndexOf(list)
     val cap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(aptId)
     if (cap == null) {
       this.AnyToSetOfString(null, "")
     } else {
-      cap.getId.intValue() match {
-        case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed, "") //Кем направлен
-        case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number, "") //Номер направления
-        case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType, "") //Кем доставлен
-        case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", false) //Диагноз направившего учреждения
-        case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType, "") //Доставлен в стационар от начала заболевания
-        case listNdx(5) => this.AnyToSetOfString(null, "") //Направлен в отделение
-        case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason, "") //Причина отказа в госпитализации
-        case listNdx(7) => this.AnyToSetOfString(appealData.data.appealWithDeseaseThisYear, "") //Госпитализирован по поводу данного заболевания в текущем году
-        case listNdx(8) => this.AnyToSetOfString(appealData.data.movingType, "") //Вид транспортировки
-        case listNdx(9) => this.AnyToSetOfString(null, "") //Профиль койки
-        case listNdx(10) => this.AnyToSetOfString(appealData.data.stateType, "") //Доставлен в состоянии опьянения
-        case listNdx(11) => this.AnyToSetOfString(appealData.data.injury, "") //Травма
-        case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate, "") //Дата направления
-        case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType, "") //Канал госпитализации
-        case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor, "") //Направивший врач
-        case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", true) //Клиническое описание
-        case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", false) //Диагноз направившего учреждения (осложнения)
-        case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", true) //Клиническое описание (осложнения)
-        case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber, "") //Номер наряда СП
-        case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast), "") //Артериальное давление (левая рука Диаст)
-        case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst), "") //Артериальное давление (левая рука Сист)
-        case listNdx(21) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.temperature), "") //t температура тела
-        case listNdx(22) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.weight), "") //Вес при поступлении
-        case listNdx(23) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.height), "") //Рост
-        case listNdx(24) => this.AnyToSetOfString(appealData.data.agreedType, "") //Тип согласования
-        case listNdx(25) => this.AnyToSetOfString(appealData.data.agreedDoctor, "") //Комментарий к согласованию
-        case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "relative") //Законный представитель
-        case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType, "") //Тип госпитализации
-        case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType, "") //Цель госпитализации
-        case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", false) //Диагноз направившего учреждения (сопутствующий)
-        case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", true) //Клиническое описание (сопутствующий)
-        case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast), "") //Артериальное давление (правая рука)
-        case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst), "")
-        case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note") //Примечание
-        case listNdx(34) => this.AnyToSetOfString(appealData.data.orgStructStay.toString, "orgStructStay") //Отделение поступления
-        case listNdx(35) => this.AnyToSetOfString(appealData.data.orgStructDirectedFrom.toString, "orgStructDirectedFrom") //Напрвлен из
-        case listNdx(36) => this.AnyToSetOfString(appealData.data.reopening, "reopening") //Переоткрытие ИБ
-        case _ => this.AnyToSetOfString(null, "")
+      try {
+        cap.getId.intValue() match {
+          case listNdx(0) => this.AnyToSetOfString(appealData.data.assignment.directed, "") //Кем направлен
+          case listNdx(1) => this.AnyToSetOfString(appealData.data.assignment.number, "") //Номер направления
+          case listNdx(2) => this.AnyToSetOfString(appealData.data.deliveredType, "") //Кем доставлен
+          case listNdx(3) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", false) //Диагноз направившего учреждения
+          case listNdx(4) => this.AnyToSetOfString(appealData.data.deliveredAfterType, "") //Доставлен в стационар от начала заболевания
+          case listNdx(5) => this.AnyToSetOfString(null, "") //Направлен в отделение
+          case listNdx(6) => this.AnyToSetOfString(appealData.data.refuseAppealReason, "") //Причина отказа в госпитализации
+          case listNdx(7) => this.AnyToSetOfString(appealData.data.appealWithDeseaseThisYear, "") //Госпитализирован по поводу данного заболевания в текущем году
+          case listNdx(8) => this.AnyToSetOfString(appealData.data.movingType, "") //Вид транспортировки
+          case listNdx(9) => this.AnyToSetOfString(null, "") //Профиль койки
+          case listNdx(10) => this.AnyToSetOfString(appealData.data.stateType, "") //Доставлен в состоянии опьянения
+          case listNdx(11) => this.AnyToSetOfString(appealData.data.injury, "") //Травма
+          case listNdx(12) => this.AnyToSetOfString(appealData.data.assignment.assignmentDate, "") //Дата направления
+          case listNdx(13) => this.AnyToSetOfString(appealData.data.hospitalizationChannelType, "") //Канал госпитализации
+          case listNdx(14) => this.AnyToSetOfString(appealData.data.assignment.doctor, "") //Направивший врач
+          case listNdx(15) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "diagReceivedMkb", true) //Клиническое описание
+          case listNdx(16) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", false) //Диагноз направившего учреждения (осложнения)
+          case listNdx(17) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "aftereffectMkb", true) //Клиническое описание (осложнения)
+          case listNdx(18) => this.AnyToSetOfString(appealData.data.ambulanceNumber, "") //Номер наряда СП
+          case listNdx(19) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.diast), "") //Артериальное давление (левая рука Диаст)
+          case listNdx(20) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.left.syst), "") //Артериальное давление (левая рука Сист)
+          case listNdx(21) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.temperature), "") //t температура тела
+          case listNdx(22) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.weight), "") //Вес при поступлении
+          case listNdx(23) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.height), "") //Рост
+          case listNdx(24) => this.AnyToSetOfString(appealData.data.agreedType, "") //Тип согласования
+          case listNdx(25) => this.AnyToSetOfString(appealData.data.agreedDoctor, "") //Комментарий к согласованию
+          case listNdx(26) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "relative") //Законный представитель
+          case listNdx(27) => this.AnyToSetOfString(appealData.data.hospitalizationType, "") //Тип госпитализации
+          case listNdx(28) => this.AnyToSetOfString(appealData.data.hospitalizationPointType, "") //Цель госпитализации
+          case listNdx(29) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", false) //Диагноз направившего учреждения (сопутствующий)
+          case listNdx(30) => this.writeMKBDiagnosesFromAppealData(appealData.data.diagnoses, "attendantMkb", true) //Клиническое описание (сопутствующий)
+          case listNdx(31) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.diast), "") //Артериальное давление (правая рука)
+          case listNdx(32) => this.AnyToSetOfString(java.lang.Double.valueOf(appealData.data.physicalParameters.bloodPressure.right.syst), "")
+          case listNdx(33) => this.AnyToSetOfString(appealData.data.hospitalizationWith, "note") //Примечание
+          case listNdx(34) => this.AnyToSetOfString(appealData.data.orgStructStay.toString, "orgStructStay") //Отделение поступления
+          case listNdx(35) => this.AnyToSetOfString(appealData.data.orgStructDirectedFrom.toString, "orgStructDirectedFrom") //Напрвлен из
+          case listNdx(36) => this.AnyToSetOfString(appealData.data.reopening, "reopening") //Переоткрытие ИБ
+          case _ => this.AnyToSetOfString(null, "")
+        }
+      } catch {
+        case e: NullPointerException => this.AnyToSetOfString(null, "")
       }
     }
   }
@@ -856,59 +895,6 @@ with CAPids {
     map
   }
 
-  /*private def insertCompleteDiagnoses (eventId: Int, authData: AuthData) = {
-
-    val now = new Date()
-
-    val diag = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(eventId)
-    if (diag != null) {
-      val event = dbEventBean.getEventById(eventId)
-      val diagnosis = new Diagnosis()
-      diagnosis.setCreateDatetime(now)
-      diagnosis.setModifyDatetime(now)
-      diagnosis.setSetDate(now)
-      diagnosis.setEndDate(now)
-      diagnosis.setMkb(diag)
-      diagnosis.setMkbExCode("")  //TODO: Уточнить! diag.getDiagName
-      diagnosis.setPatient(event.getPatient)
-
-      val diagnostic = new Diagnostic()
-      diagnostic.setCreateDatetime(now)
-      diagnostic.setModifyDatetime(now)
-      diagnostic.setNotes("")
-      diagnostic.setSetDate(now)
-      diagnostic.setHospital(0)
-
-      if (authData!=null) {
-        diagnosis.setCreatePerson(authData.getUser)
-        diagnosis.setModifyPerson(authData.getUser)
-        diagnosis.setPerson(authData.getUser)
-
-        diagnostic.setCreatePerson(authData.getUser)
-        diagnostic.setModifyPerson(authData.getUser)
-        diagnostic.setSpeciality(authData.getUser.getSpeciality)
-      }
-
-      diagnostic.setEvent(event)
-
-      val diagType = this.getRbDiagnosisTypeById(1)
-      if (diagType!=null) {
-        diagnosis.setDiagnosisType(diagType)
-        diagnostic.setDiagnosisType(diagType)
-      }
-
-      val rbResult = this.getRbResultById(15)
-      if(rbResult!=null)
-          diagnostic.setResult(rbResult)
-
-
-      dbManager.persist(diagnosis)
-      diagnostic.setDiagnosis(diagnosis)
-      dbManager.persist(diagnostic)
-    }
-    true
-  }*/
-
   private def getRbDiagnosisTypeById(id: Int): RbDiagnosisType = {
     val diagType = em.createQuery(DiagnosisTypeByIdQuery, classOf[RbDiagnosisType])
       .setParameter("id", id)
@@ -918,7 +904,6 @@ with CAPids {
         null
       }
       case size => {
-        diagType.foreach(dt => em.detach(dt))
         diagType(0)
       }
     }
@@ -933,7 +918,6 @@ with CAPids {
         null
       }
       case size => {
-        rbResult.foreach(res => em.detach(res))
         rbResult(0)
       }
     }
@@ -953,49 +937,6 @@ with CAPids {
     rbResult
   }
 
-  def insertOrUpdateClientQuoting(dataEntry: QuotaEntry, eventId: Int, auth: AuthData) = {
-    var lockId: Int = -1
-    var oldQuota: ClientQuoting = null
-    var clientQuoting: ClientQuoting = null
-    var quotaVersion: Int = 0
-    if (dataEntry.getId() > 0) {
-      quotaVersion = dataEntry.getVersion
-      oldQuota = ClientQuoting.clone(dbClientQuoting.getClientQuotingById(dataEntry.getId))
-      lockId = appLock.acquireLock("Client_Quoting", oldQuota.getId.intValue(), oldQuota.getId.intValue(), auth)
-    }
-    try {
-      val event: Event = dbEventBean.getEventById(eventId)
-      val patient = event.getPatient
-      var mkb: Mkb = null
-      try {
-        mkb = dbMkbBean.getMkbByCode(dataEntry.getMkb.getCode)
-      } catch {
-        case e: Exception => mkb = null
-      }
-      var isPersist = true
-      if (dataEntry.getId > 0) {
-        isPersist = false
-      }
-      clientQuoting = dbClientQuoting.insertOrUpdateClientQuoting(dataEntry.getId,
-        dataEntry.getVersion,
-        dataEntry.getQuotaType.getId,
-        dataEntry.getStatus.getId,
-        dataEntry.getDepartment.getId,
-        event.getExternalId,
-        dataEntry.getTalonNumber,
-        dataEntry.getStage.getId,
-        dataEntry.getRequest.getId,
-        mkb,
-        patient,
-        event,
-        auth.getUser)
-      if (isPersist) dbManager.persist(clientQuoting) else dbManager.merge(clientQuoting)
-    } finally {
-      if (lockId > 0) appLock.releaseLock(lockId)
-    }
-    clientQuoting
-  }
-
   def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData) = {
     val codes = setAsJavaSet(condition match {
       case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
@@ -1011,26 +952,42 @@ with CAPids {
 
   def getInfectionMonitoring(patient: Patient) = {
     val IC = InfectionControl
-
-    val q =
-      """SELECT ap FROM Event e, Action a, ActionProperty ap WHERE
-        |e.patient = :patient
-        |AND a.event = e AND a.deleted = false
-        |AND ap.action = a AND ap.deleted = false
-        |AND a.actionType.code IN :documents""".stripMargin
-    val r = em.createQuery(q, classOf[ActionProperty])
+    val infectIntervalCode = IC.allInfectPrefixes.foldLeft(new java.util.LinkedList[String]())((l, c) => {
+      l add (c + IC.separator + IC.beginDatePostfix)
+      l add (c + IC.separator + IC.endDatePostfix)
+      l
+    });
+    val qInfectActionIds =
+      """SELECT DISTINCT ap.action.id FROM ActionProperty ap WHERE ap.action.event.patient = :patient
+        AND ap.action.event.deleted = false
+        AND ap.action.deleted = false
+        AND ap.deleted = false
+        AND ap.actionPropertyType.code IN :infectIntervalCode
+        AND ap.action.actionType.code IN :documents
+        AND exists ( SELECT apvd.id FROM APValueDate apvd WHERE apvd.id.id = ap.id )
+      """
+    val actionIds = em.createQuery(qInfectActionIds, classOf[java.util.List[Integer]])
       .setParameter("patient", patient)
+      .setParameter("infectIntervalCode", infectIntervalCode)
       .setParameter("documents", IC.documents.asJava)
       .getResultList
-    .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
-    .groupBy( e => (e.getAction.getId,  e.getType.getCode.split(IC.separator).head))
-    .flatMap(e => {
+    val q =
+      """SELECT ap FROM  ActionProperty ap WHERE ap.action.id IN :actionIds
+        |AND ap.deleted = false""".stripMargin
+    val properties: util.List[ActionProperty] = if (actionIds.isEmpty) new java.util.LinkedList[ActionProperty]
+    else em.createQuery(q, classOf[ActionProperty])
+      .setParameter("actionIds", actionIds)
+      .getResultList
+    val r = properties
+      .filter(e => e.getType.getCode != null && IC.allInfectPrefixes.exists(p => e.getType.getCode.startsWith(p)))
+      .groupBy(e => (e.getAction.getId, e.getType.getCode.split(IC.separator).head))
+      .flatMap(e => {
       val actionId = e._1._1
       val list = e._2
       val name = {
-        list.find( p => p.getType.getCode.equals(e._1._2)) match {
+        list.find(p => p.getType.getCode.equals(e._1._2)) match {
           case Some(x) =>
-            if(x.getType.getCode.endsWith(IC.customInfectionPostfix)) // Поля "Другое", название инфекции получаем из значения свойства
+            if (x.getType.getCode.endsWith(IC.customInfectionPostfix)) // Поля "Другое", название инфекции получаем из значения свойства
               actionPropertyBean.getActionPropertyValue(x).headOption match {
                 case Some(y) => Some(y.getValue.toString)
                 case _ => None
@@ -1039,8 +996,8 @@ with CAPids {
           case None => None
         }
       }
-      val beginDate = list.find( p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.beginDatePostfix))
-      val endDate = list.find( p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.endDatePostfix))
+      val beginDate = list.find(p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.beginDatePostfix))
+      val endDate = list.find(p => p.getType.getCode.equals(e._1._2 + IC.separator + IC.endDatePostfix))
 
       (name, beginDate, endDate) match {
         case (Some(x), Some(y), Some(z)) =>
@@ -1064,18 +1021,18 @@ with CAPids {
         case _ => None
       }
     })
-    .groupBy(p => (p._1, p._2, p._5)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava, e._1._3))
+      .groupBy(p => (p._1, p._2, p._5)).map(e => (e._1._1, e._1._2, Try(e._2.toList.filter(_._3 != null).sortBy(_._3).last._3).getOrElse(null), e._2.map(_._4).toList.asJava, e._1._3))
 
     // Безумная сортировка - сначала по дате начала, потом по порядку расположения на форме редактирования (idx свойства "Дата начала")
     val result = new util.TreeSet[(String, Date, Date, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, util.List[Integer], Integer)] {
       override def compare(o1: (String, Date, Date, util.List[Integer], Integer), o2: (String, Date, Date, util.List[Integer], Integer)): Int = {
-        val dateOrder =  o2._2.compareTo(o1._2)
+        val dateOrder = o2._2.compareTo(o1._2)
         val idxOrder = o2._5.compareTo(o1._5)
-        if(dateOrder != 0)
+        if (dateOrder != 0)
           dateOrder
-        else if(idxOrder != 0)
+        else if (idxOrder != 0)
           idxOrder
-        else if(o1.equals(o2))
+        else if (o1.equals(o2))
           0
         else
           1
@@ -1101,29 +1058,29 @@ with CAPids {
       .setParameter("patient", patient)
       .setParameter("documents", IC.documents.asJava)
       .getResultList
-      .groupBy(e => (e.getAction.getId,  e.getType.getCode.split('_').last))
+      .groupBy(e => (e.getAction.getId, e.getType.getCode.split('_').last))
       .flatMap(e => {
       val drugId = e._1._2
       val list = e._2
       val actionId = e._1._1
 
-      val (therapyType, prefix) = if ( list.find( p => p.getType.getCode.startsWith("infectProphylaxisName")) != null) {
+      val (therapyType, prefix) = if (list.find(p => p.getType.getCode.startsWith("infectProphylaxisName")) != null) {
         ("Профилактика", "infectProphylaxisName")
       }
-      else if (list.find( p => p.getType.getCode.startsWith("infectEmpiricName")) != null) {
+      else if (list.find(p => p.getType.getCode.startsWith("infectEmpiricName")) != null) {
         ("Эмпирическая", "infectEmpiricName")
       }
-      else if (list.find( p => p.getType.getCode.startsWith("infectTelicName")) != null) {
+      else if (list.find(p => p.getType.getCode.startsWith("infectTelicName")) != null) {
         ("Целенаправленная", "infectTelicName")
       }
       else null
 
-      var name = list.find( p => p.getType.getCode.equals(prefix + "DrugName_" + drugId))
-      val beginDate = list.find( p => p.getType.getCode.equals(prefix + "BeginDate_" + drugId))
-      val endDate = list.find( p => p.getType.getCode.equals(prefix + "EndDate_" + drugId))
+      var name = list.find(p => p.getType.getCode.equals(prefix + "DrugName_" + drugId))
+      val beginDate = list.find(p => p.getType.getCode.equals(prefix + "BeginDate_" + drugId))
+      val endDate = list.find(p => p.getType.getCode.equals(prefix + "EndDate_" + drugId))
 
-      (name, beginDate ) match {
-        case (Some(a), Some(b) ) =>
+      (name, beginDate) match {
+        case (Some(a), Some(b)) =>
           val n = actionPropertyBean.getActionPropertyValue(a)
           val bd = actionPropertyBean.getActionPropertyValue(b)
           val ed = if (endDate.isEmpty) null else actionPropertyBean.getActionPropertyValue(endDate.get)
@@ -1155,17 +1112,17 @@ with CAPids {
     val result = new util.TreeSet[(String, Date, Date, String, util.List[Integer], Integer)](new util.Comparator[(String, Date, Date, String, util.List[Integer], Integer)] {
       override def compare(o1: (String, Date, Date, String, util.List[Integer], Integer), o2: (String, Date, Date, String, util.List[Integer], Integer)): Int = {
 
-        val tt1 = if(o1._4 != null) o1._4.trim else " " // Убираем пробелы - интерфейс иногда вставляет их вперед
-        val tt2 = if(o2._4 != null) o2._4.trim else " "
+        val tt1 = if (o1._4 != null) o1._4.trim else " " // Убираем пробелы - интерфейс иногда вставляет их вперед
+        val tt2 = if (o2._4 != null) o2._4.trim else " "
 
         // Тип терапии бывает Профилактика, Целенаправленная, Эмпирическая и может отсутствовать
         // выводитб требуется в данном порядке, на случай путацицы написания, сравниваю только первую букву в верхнем регистре
-        if(!tt1.head.equals(tt2.head)) {
-          if(tt1.toUpperCase().startsWith("П"))
+        if (!tt1.head.equals(tt2.head)) {
+          if (tt1.toUpperCase().startsWith("П"))
             return -1
-          else if(tt1.toUpperCase().startsWith("Э") && !tt2.toUpperCase().startsWith("П"))
+          else if (tt1.toUpperCase().startsWith("Э") && !tt2.toUpperCase().startsWith("П"))
             return 1
-          else if(tt1.toUpperCase().startsWith("Ц") && !tt2.toUpperCase().startsWith("П") && !tt2.toUpperCase().startsWith("Э"))
+          else if (tt1.toUpperCase().startsWith("Ц") && !tt2.toUpperCase().startsWith("П") && !tt2.toUpperCase().startsWith("Э"))
             return 1
           else
             return -1
@@ -1173,16 +1130,16 @@ with CAPids {
 
         val dateOrder = o2._2.compareTo(o1._2)
         val idxOrder = o2._6.compareTo(o1._6)
-        if(dateOrder != 0)
+        if (dateOrder != 0)
           dateOrder
-        else if(idxOrder != 0)
+        else if (idxOrder != 0)
           idxOrder
-        else if(o1.equals(o2))
+        else if (o1.equals(o2))
           0
         else
           1
       }
-    } )
+    })
     r.foreach(result.add)
     result
   }
@@ -1197,10 +1154,10 @@ with CAPids {
       new SurgicalOperationsListData()
   }
 
-  def setExecPersonForAppeal(id: Int, personId: Int, authData: AuthData, epst: ExecPersonSetType) = {
+  def setExecPersonForAppeal(id: Int, personId: Int, staff: Staff, epst: ExecPersonSetType) = {
 
     var eventPerson: EventPerson = null
-    var execPerson: Staff = authData.getUser
+    var execPerson: Staff = staff
     var isCreate: Boolean = true
 
     val event = epst.getVarId match {
@@ -1211,7 +1168,10 @@ with CAPids {
     if (epst.isFindLast) {
       eventPerson = dbEventPerson.getLastEventPersonForEventId(event.getId.intValue())
       if (personId > 0) execPerson = dbStaff.getStaffById(personId)
-      isCreate = (eventPerson == null || eventPerson.getPerson != execPerson)
+      isCreate = (eventPerson == null
+        || eventPerson.getPerson != execPerson
+        || event.getExecutor == null
+        || event.getExecutor.getId != personId)
     }
 
     if (isCreate) {
@@ -1223,8 +1183,7 @@ with CAPids {
       //Изменим запись о назначевшем враче в ивенте
       event.setExecutor(execPerson)
       event.setModifyDatetime(new Date())
-      event.setModifyPerson(authData.getUser)
-      event.setVersion(event.getVersion)
+      event.setModifyPerson(staff)
       dbManager.merge(event)
 
       true

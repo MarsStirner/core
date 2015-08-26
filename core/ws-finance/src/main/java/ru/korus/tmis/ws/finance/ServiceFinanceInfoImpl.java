@@ -9,6 +9,8 @@ package ru.korus.tmis.ws.finance;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.database.finance.PersonName;
+import ru.korus.tmis.core.database.finance.ServicePaidInfo;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.EJB;
@@ -18,7 +20,7 @@ import java.util.Date;
 import java.util.List;
 
 /**
- * @see ru.korus.tmis.core.database.finance.ServicePaidFinanceInfo
+ * @see ServiceFinanceInfo
  */
 @WebService(endpointInterface = "ru.korus.tmis.ws.finance.ServiceFinanceInfo", targetNamespace = "http://korus.ru/tmis/ws/finance",
         serviceName = "tmis-finance", portName = "portFinance", name = "nameFinance")
@@ -30,7 +32,7 @@ public class ServiceFinanceInfoImpl implements ServiceFinanceInfo {
     PaymentBeanLocal paymentBeanLocal;
 
     /**
-     * @see ru.korus.tmis.core.database.finance.ServicePaidFinanceInfo#getFinanceInfo(String)
+     * @see ServiceFinanceInfo#getFinanceInfo(String)
      */
     @Override
     public FinanceBean[] getFinanceInfo(final String nameOfStructure) {
@@ -40,44 +42,27 @@ public class ServiceFinanceInfoImpl implements ServiceFinanceInfo {
         return financeInfo.getFinanceInfo(nameOfStructure);
     }
 
-    @Override
-    public ServiceListResult getServiceList(@WebParam(name = "idTreatment", targetNamespace = "http://korus.ru/tmis/ws/finance") final Integer idTreatment) throws CoreException {
-        logger.info("call ServiceFinanceInfoImpl.getServiceList. idTreatment = " + idTreatment);
-        return paymentBeanLocal.getServiceList(idTreatment);
+   @Override
+    public ServiceListResult getServiceList(Integer idTreatment) throws CoreException {
+       logger.info("call ServiceFinanceInfoImpl.getServiceList. idTreatment = " + idTreatment);
+       return paymentBeanLocal.getServiceList(idTreatment);
     }
 
-
-
     @Override
-    public Integer setPaymentInfo(@WebParam(name = "inParam", targetNamespace = "http://korus.ru/tmis/ws/finance") PaymentPrm paymentPrm) throws CoreException {
-        logger.info("call ServiceFinanceInfoImpl...");
-        return setPaymentInfo(paymentPrm.getDatePaid(),
-                paymentPrm.getCodeContract(),
-                paymentPrm.getDateContract(),
-                paymentPrm.getIdTreatment(),
-                paymentPrm.getPaidName(),
-                paymentPrm.getBirthDate(),
-                paymentPrm.getListService());
-    }
-
-
-    public Integer setPaymentInfo(final Date datePaid,
-                                  final String codeContract,
-                                  final Date dateContract,
-                                  final Integer idTreatment,
-                                  final PersonName paidName,
-                                  final Date birthDate,
-                                  final List<ServicePaidInfo> listService) throws CoreException {
+    public Integer setPaymentInfo(@WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date datePaid,
+                                  @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final String codeContract,
+                                  @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date dateContract,
+                                  @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Integer idTreatment,
+                                  @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final PersonName paidName,
+                                  @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final Date birthDate,
+                                  @WebParam(targetNamespace = "http://korus.ru/tmis/ws/finance") final List<ServicePaidInfo> listService) throws CoreException {
         logger.info("call ServiceFinanceInfoImpl.setPaymentInfo. idTreatment = " + idTreatment +
                 " datePaid = " + datePaid +
                 " codeContract = " + codeContract +
                 " dateContract = " + dateContract +
                 " paidName = " + paidName +
-                " birthDate =" + birthDate +
+                " birthDate =" +  birthDate +
                 " size of listService = " + listService.size());
-        if(paidName == null || paidName.getFamily() == null || paidName.getGiven() == null) {
-            throw new CoreException("Фамилия и имя плательщика должны быть заданы");
-        }
         return paymentBeanLocal.setPaymentInfo(datePaid, codeContract, dateContract, idTreatment, paidName, birthDate, listService);
     }
 

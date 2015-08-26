@@ -2,6 +2,7 @@ package ru.korus.tmis.core.assessment;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.CommonData;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import java.util.Date;
@@ -10,7 +11,7 @@ import javax.ejb.Local;
 @Local
 public interface AssessmentBeanLocal {
 
-    CommonData getAssessmentTypes(int eventId, AuthData userData)
+    CommonData getAssessmentTypes(int eventId, Staff userData)
             throws CoreException;
 
     CommonData getAllAssessmentTypes()
@@ -27,11 +28,13 @@ public interface AssessmentBeanLocal {
 
     CommonData createAssessmentForEventId(int eventId,
                                           CommonData assessment,
-                                          AuthData userData)
+                                          AuthData userData,
+                                          Staff staff)
             throws CoreException;
 
     CommonData modifyAssessmentById(int assessmentId,
                                     CommonData assessment,
-                                    AuthData userData)
+                                    AuthData userData,
+                                    Staff staff)
             throws CoreException;
 }

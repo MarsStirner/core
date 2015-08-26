@@ -40,6 +40,15 @@
         <url-pattern>/rest/*</url-pattern>
     </servlet-mapping>
 
+    <servlet>
+        <servlet-name>apql-endpoint</servlet-name>
+        <jsp-file>apql-endpoint.jsp</jsp-file>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>apql-endpoint</servlet-name>
+        <url-pattern>/apql-endpoint</url-pattern>
+    </servlet-mapping>
+
     <error-page>
         <exception-type>java.lang.Throwable</exception-type>
         <location>/error</location>

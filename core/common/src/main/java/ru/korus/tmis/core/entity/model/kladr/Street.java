@@ -1,18 +1,14 @@
 package ru.korus.tmis.core.entity.model.kladr;
 
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
-@Entity
-@Table(name = "STREET", catalog = "", schema = "kladr")
-@NamedQueries(
-        {
-                @NamedQuery(name = "Street.findAll", query = "SELECT st FROM Street st")
-        })
-@XmlType(name = "street")
-@XmlRootElement(name = "street")
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class Street
         implements Serializable, Cloneable {
 
@@ -20,38 +16,23 @@ public class Street
 
     //Поля таблицы
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "CODE")
     private String code;
 
-    @Basic(optional = false)
-    @Column(name = "NAME")
     private String name;
 
-    @Basic(optional = false)
-    @Column(name = "SOCR")
-    private String socr;
+    @JsonProperty("socr")
+    private String shorttype;
 
-    @Basic(optional = false)
-    @Column(name = "INDEX")
-    private String index;
+    @JsonProperty("index")
+    private String postindex;
 
-    @Basic(optional = false)
-    @Column(name = "GNINMB")
     private String gninmb;
 
-    @Basic(optional = false)
-    @Column(name = "UNO")
     private String uno;
 
-    @Basic(optional = false)
-    @Column(name = "OCATD")
-    private String ocatd;
+    @JsonProperty("ocatd")
+    private String okato;
 
-    @Basic(optional = false)
-    @Column(name = "infis")
     private String infis;
 
     //Конструкторы
@@ -82,19 +63,11 @@ public class Street
     }
 
     public String getSocr() {
-        return socr;
-    }
-
-    public void setSocr(String socr) {
-        this.socr = socr;
+        return shorttype;
     }
 
     public String getIndex() {
-        return index;
-    }
-
-    public void setIndex(String index) {
-        this.index = index;
+        return postindex;
     }
 
     public String getGninmb() {
@@ -114,11 +87,7 @@ public class Street
     }
 
     public String getOcatd() {
-        return ocatd;
-    }
-
-    public void setOcatd(String ocatd) {
-        this.ocatd = ocatd;
+        return okato;
     }
 
     public String getInfis() {
@@ -127,6 +96,30 @@ public class Street
 
     public void setInfis(String infis) {
         this.infis = infis;
+    }
+
+    public String getShorttype() {
+        return shorttype;
+    }
+
+    public void setShorttype(String shorttype) {
+        this.shorttype = shorttype;
+    }
+
+    public String getPostindex() {
+        return postindex;
+    }
+
+    public void setPostindex(String postindex) {
+        this.postindex = postindex;
+    }
+
+    public String getOkato() {
+        return okato;
+    }
+
+    public void setOkato(String okato) {
+        this.okato = okato;
     }
 
     //Переопределенные методы
@@ -162,11 +155,11 @@ public class Street
         final StringBuilder sb = new StringBuilder("Street{");
         sb.append("code='").append(code).append('\'');
         sb.append(", name='").append(name).append('\'');
-        sb.append(", socr='").append(socr).append('\'');
-        sb.append(", index='").append(index).append('\'');
+        sb.append(", socr='").append(shorttype).append('\'');
+        sb.append(", index='").append(postindex).append('\'');
         sb.append(", gninmb='").append(gninmb).append('\'');
         sb.append(", uno='").append(uno).append('\'');
-        sb.append(", ocatd='").append(ocatd).append('\'');
+        sb.append(", ocatd='").append(okato).append('\'');
         sb.append(", infis='").append(infis).append('\'');
         sb.append('}');
         return sb.toString();

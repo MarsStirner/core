@@ -12,6 +12,8 @@ import javax.xml.bind.annotation.XmlType;
                 @NamedQuery(name = "Thesaurus.findAll", query = "SELECT t FROM Thesaurus t"),
                 @NamedQuery(name = "Thesaurus.findByGroupId",
                         query = "SELECT t FROM Thesaurus t WHERE t.groupId = :groupId"),
+                @NamedQuery(name = "Thesaurus.findByGroupIdAndCode",
+                        query = "SELECT t FROM Thesaurus t WHERE t.groupId = :groupId AND t.code = :code"),
                 @NamedQuery(name = "Thesaurus.findById",
                         query = "SELECT t FROM Thesaurus t WHERE t.id = :id"),
                 @NamedQuery(name = "Thesaurus.findByCode",
@@ -43,6 +45,10 @@ public class Thesaurus implements Serializable {
     @Basic(optional = false)
     @Column(name = "template")
     private String template;
+
+
+    @Transient
+    private boolean isContainer = false;
 
     public Thesaurus() {
     }
@@ -122,5 +128,13 @@ public class Thesaurus implements Serializable {
     @Override
     public String toString() {
         return "ru.korus.tmis.core.entity.model.Thesaurus[id=" + id + "]";
+    }
+
+    public boolean isContainer() {
+        return isContainer;
+    }
+
+    public void setIsContainer(boolean isContainer) {
+        this.isContainer = isContainer;
     }
 }

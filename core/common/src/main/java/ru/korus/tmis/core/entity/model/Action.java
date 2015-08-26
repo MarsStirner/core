@@ -5,6 +5,7 @@ import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.*;
+
 import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 
 @Entity
@@ -18,9 +19,22 @@ import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
                 @NamedQuery(name = "Action.ServiceList", query = "SELECT a FROM Action a WHERE a.actionType.service IS NOT NULL AND a.event.id = :eventId AND a.deleted = 0"),
                 @NamedQuery(name = "Action.findByEventId", query = "SELECT a FROM Action a WHERE a.event.id = :eventId AND a.deleted = 0"),
                 @NamedQuery(name = "Action.findByFlatCodesAndEventId", query = "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCodes AND a.event.id = :eventId AND a.deleted = 0"),
+                @NamedQuery(name = "Action.findLastByFlatCodesAndEventId", query = "SELECT a FROM Action a WHERE a.actionType.flatCode IN :flatCodes AND a.event.id = :eventId AND a.deleted = 0  ORDER BY a.createDatetime DESC"),
+                @NamedQuery(name = "Action.findLastByActionTypesAndClientId", query = "SELECT a FROM Action a WHERE a.actionType.code IN :codes AND a.deleted = 0 AND a.event.patient.id = :clientId ORDER BY a.createDatetime DESC"),
                 @NamedQuery(name = "Action.findLatestMove", query = "SELECT a FROM Action a WHERE (a.actionType.flatCode = 'moving' OR a.actionType.flatCode = 'received')" +
-                        " AND a.event.id = :eventId AND a.deleted = 0 ORDER BY a.createDatetime DESC")
-})
+                        " AND a.event.id = :eventId AND a.deleted = 0 ORDER BY a.createDatetime DESC"),
+                @NamedQuery(name = "Action.AllActionsOfPatientThatHasActionProperty",
+                        query = "SELECT a FROM Action a, ActionProperty ap, ActionPropertyType apt WHERE a.deleted = 0 AND " +
+                                "a.event.patient.id = :patientId " +
+                                "AND ap.action.id = a.id AND apt.id = ap.actionPropertyType.id AND apt.code = :code"),
+                @NamedQuery(name = "Action.actionByTypeCodeAndPatientOrderByDate", query = "SELECT a FROM Action a WHERE" +
+                        " a.actionType.code IN :codes " +
+                        "AND a.event.deleted = 0 " +
+                        "AND a.event.patient.id = :patientId " +
+                        "AND a.deleted = 0 " +
+                        "ORDER BY a.begDate ASC")
+
+        })
 @XmlType(name = "action")
 @XmlRootElement(name = "action")
 public class Action
@@ -135,7 +149,7 @@ public class Action
     @Column(name = "prescription_id")
     private Integer prescriptionId;
 
-    @ManyToOne
+    @ManyToOne(cascade = CascadeType.ALL)
     @JoinColumn(name = "takenTissueJournal_id")
     private TakenTissue takenTissue;
 
@@ -534,7 +548,7 @@ public class Action
     }
 
     public Short getPacientInQueueType() {
-        return pacientInQueueType;
+        return pacientInQueueType == null ? 0 : pacientInQueueType;
     }
 
     public void setPacientInQueueType(Short pacientInQueueType) {

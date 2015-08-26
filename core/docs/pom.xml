@@ -5,7 +5,7 @@
 
   <groupId>ru.korus.tmis.docs</groupId>
   <artifactId>docs</artifactId>
-  <version>${version.tmis.core}</version>
+  <version>2.5.57-SNAPSHOT</version>
 
   <build>
     <pluginManagement>

@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database.common;
 
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.data.TableCol;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
@@ -93,18 +94,18 @@ public interface DbActionPropertyBeanLocal {
 
     ActionProperty createActionProperty(Action action,
                                         int aptId,
-                                        AuthData userData)
+                                        Staff staff)
             throws CoreException;
 
     ActionProperty createActionPropertyWithDate(Action a,
                                                 int aptId,
-                                                AuthData userData,
+                                                Staff staff,
                                                 Date now)
             throws CoreException;
 
     ActionProperty updateActionProperty(int id,
                                         int version,
-                                        AuthData userData)
+                                        Staff staff)
             throws CoreException;
 
     List<ActionProperty> getActionPropertiesByActionIdAndTypeId(int actionId, int typeId)
@@ -147,5 +148,9 @@ public interface DbActionPropertyBeanLocal {
 
     String convertScope(ActionPropertyType apt);
 
-    LinkedList<LinkedList<String>> convertValue(ActionPropertyType apt, String value);
+    java.util.List<String> convertColType(ActionPropertyType apt);
+
+    java.util.List<TableCol> convertValue(ActionPropertyType apt,  java.util.List<APValue> value);
+
+    String calcAuto(ActionProperty ap);
 }

@@ -4,7 +4,7 @@ import ru.korus.tmis.core.entity.model.RbTempInvalidDocument
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
 import java.lang.Iterable
@@ -12,7 +12,7 @@ import ru.korus.tmis.core.exception.NoSuchRbTempInvalidDocumentException
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbTempInvalidDocumentBean
   extends DbRbTempInvalidDocumentBeanLocal
@@ -50,7 +50,7 @@ class DbRbTempInvalidDocumentBean
       }
       case size => {
         val rbTempInvalidReason = result.iterator.next()
-        em.detach(rbTempInvalidReason)
+
         rbTempInvalidReason
       }
     }

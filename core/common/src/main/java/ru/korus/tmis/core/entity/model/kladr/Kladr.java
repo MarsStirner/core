@@ -1,70 +1,40 @@
 package ru.korus.tmis.core.entity.model.kladr;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
-import java.io.Serializable;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 
-@Entity
-@Table(name = "KLADR", catalog = "", schema = "kladr")
-@NamedQueries(
-        {
-                @NamedQuery(name = "Kladr.findAll", query = "SELECT kl FROM Kladr kl")
-        })
-@XmlType(name = "kladr")
-@XmlRootElement(name = "kladr")
-public class    Kladr
-        implements Serializable, Cloneable {
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.springframework.web.client.RestTemplate;
+
+@JsonIgnoreProperties(ignoreUnknown = true)
+public class  Kladr {
 
     private static final long serialVersionUID = 1L;
 
     //Поля таблицы
 
-    @Id
-    //@GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "CODE")
     private String code;
 
-    @Basic(optional = false)
-    @Column(name = "NAME")
     private String name;
 
-    @Basic(optional = false)
-    @Column(name = "SOCR")
-    private String socr;
+    @JsonProperty("shorttype")
+    private String shorttype;
 
-    @Basic(optional = false)
-    @Column(name = "INDEX")
-    private String index;
 
-    @Basic(optional = false)
-    @Column(name = "GNINMB")
+    @JsonProperty("index")
+    private String postindex;
+
     private String gninmb;
 
-    @Basic(optional = false)
-    @Column(name = "UNO")
     private String uno;
 
-    @Basic(optional = false)
-    @Column(name = "OCATD")
-    private String ocatd;
+    @JsonProperty("ocatd")
+    private String okato;
 
-    @Basic(optional = false)
-    @Column(name = "STATUS")
-    private String status;
+    @JsonProperty("status")
+    private String codestate;
 
-    @Basic(optional = false)
-    @Column(name = "parent")
-    private String parent;
-
-    @Basic(optional = false)
-    @Column(name = "infis")
-    private String infis;
-
-    @Basic(optional = false)
-    @Column(name = "prefix")
-    private String prefix;
+    @JsonProperty("parent")
+    private String identparent;
 
     //Конструкторы
 
@@ -94,19 +64,16 @@ public class    Kladr
     }
 
     public String getSocr() {
-        return socr;
+        return shorttype;
     }
 
-    public void setSocr(String socr) {
-        this.socr = socr;
+
+    public String getShorttype() {
+        return shorttype;
     }
 
-    public String getIndex() {
-        return index;
-    }
-
-    public void setIndex(String index) {
-        this.index = index;
+    public void setShorttype(String shorttype) {
+        this.shorttype = shorttype;
     }
 
     public String getGninmb() {
@@ -126,43 +93,51 @@ public class    Kladr
     }
 
     public String getOcatd() {
-        return ocatd;
-    }
-
-    public void setOcatd(String ocatd) {
-        this.ocatd = ocatd;
+        return okato;
     }
 
     public String getStatus() {
-        return status;
-    }
-
-    public void setStatus(String status) {
-        this.status = status;
+        return codestate;
     }
 
     public String getParent() {
-        return parent;
+        return identparent == null ? "" : identparent;
     }
 
-    public void setParent(String parent) {
-        this.parent = parent;
+    public String getIndex() {
+        return postindex;
     }
 
-    public String getInfis() {
-        return infis;
+    public String getPostindex() {
+        return postindex;
     }
 
-    public void setInfis(String infis) {
-        this.infis = infis;
+    public void setPostindex(String postindex) {
+        this.postindex = postindex;
     }
 
-    public String getPrefix() {
-        return prefix;
+    public String getOkato() {
+        return okato;
     }
 
-    public void setPrefix(String prefix) {
-        this.prefix = prefix;
+    public void setOkato(String okato) {
+        this.okato = okato;
+    }
+
+    public String getCodestate() {
+        return codestate;
+    }
+
+    public void setCodestate(String codestate) {
+        this.codestate = codestate;
+    }
+
+    public String getIdentparent() {
+        return identparent;
+    }
+
+    public void setIdentparent(String identparent) {
+        this.identparent = identparent;
     }
 
     //Переопределенные методы
@@ -198,15 +173,12 @@ public class    Kladr
         final StringBuilder sb = new StringBuilder("Kladr{");
         sb.append("code='").append(code).append('\'');
         sb.append(", name='").append(name).append('\'');
-        sb.append(", socr='").append(socr).append('\'');
-        sb.append(", index='").append(index).append('\'');
+        sb.append(", socr='").append(shorttype).append('\'');
         sb.append(", gninmb='").append(gninmb).append('\'');
         sb.append(", uno='").append(uno).append('\'');
-        sb.append(", ocatd='").append(ocatd).append('\'');
-        sb.append(", status='").append(status).append('\'');
-        sb.append(", parent='").append(parent).append('\'');
-        sb.append(", infis='").append(infis).append('\'');
-        sb.append(", prefix='").append(prefix).append('\'');
+        sb.append(", ocatd='").append(okato).append('\'');
+        sb.append(", status='").append(codestate).append('\'');
+        sb.append(", parent='").append(identparent).append('\'');
         sb.append('}');
         return sb.toString();
     }

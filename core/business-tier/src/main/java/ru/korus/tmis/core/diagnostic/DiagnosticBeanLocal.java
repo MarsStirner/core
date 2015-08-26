@@ -2,6 +2,7 @@ package ru.korus.tmis.core.diagnostic;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.CommonData;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
@@ -9,7 +10,7 @@ import javax.ejb.Local;
 @Local
 public interface DiagnosticBeanLocal {
 
-    CommonData getDiagnosticTypes(int eventId, AuthData userData)
+    CommonData getDiagnosticTypes(int eventId,Staff staff)
             throws CoreException;
 
     CommonData getAllDiagnosticTypes()
@@ -23,12 +24,14 @@ public interface DiagnosticBeanLocal {
 
     CommonData createDiagnosticForEventId(int eventId,
                                           CommonData diagnostic,
-                                          AuthData userData)
+                                          AuthData userData,
+                                          Staff staff)
             throws CoreException;
 
     CommonData modifyDiagnosticById(int diagnosticId,
                                     CommonData diagnostic,
-                                    AuthData userData)
+                                    AuthData userData,
+                                    Staff staff)
             throws CoreException;
 
     boolean updateDiagnosticStatusById(int eventId,

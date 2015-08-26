@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.entity.model.{Mkb, Thesaurus}
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -14,7 +14,7 @@ import scala.collection.mutable.Map
 import scala.collection.mutable.Set
 import ru.korus.tmis.core.entity.model.{Thesaurus, Mkb}
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbThesaurusBean
   extends DbThesaurusBeanLocal
@@ -76,5 +76,13 @@ class DbThesaurusBean
     val grandChildren = children.foldLeft(List.empty[Thesaurus])(
       (l, t) => recThesaurus(t.getId.intValue, tsm) ::: l)
     children ::: grandChildren
+  }
+
+  override def isContainer(thesaurusId: Int): Boolean = {
+    !em.createNamedQuery("Thesaurus.findByGroupId")
+      .setParameter("groupId", thesaurusId)
+      .setMaxResults(1)
+      .getResultList
+      .isEmpty
   }
 }

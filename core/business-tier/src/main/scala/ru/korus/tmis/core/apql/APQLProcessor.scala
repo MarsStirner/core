@@ -3,7 +3,7 @@ package ru.korus.tmis.core.apql
 import java.util.Date
 import javax.ejb.{EJB, Stateless}
 
-import ru.korus.tmis.core.database.common.{DbActionPropertyBeanLocal, DbActionBeanLocal}
+import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConverters._
@@ -17,6 +17,8 @@ import scala.util.Try
 @Stateless
 class APQLProcessor {
 
+  @EJB private var patientBean: DbPatientBeanLocal = _
+  @EJB private var eventBean: DbEventBeanLocal = _
   @EJB private var actionBean: DbActionBeanLocal = _
   @EJB private var actionPropertyBean: DbActionPropertyBeanLocal = _
 
@@ -53,6 +55,7 @@ class APQLProcessor {
         case Some(x) => processExpression(x).apply(method.name, args)
         case None => GlobalObject(method.name, args)
       }
+    case l: ValuesList => new ExpressionList(l.values.map(processExpression))
     case l: NumericLiteral => new IntegerValue(Integer.valueOf(l.value))
     case l: StringLiteral => new StringValue(l.value)
     case l: BooleanLiteral => new BooleanValue(l.value)
@@ -76,12 +79,67 @@ class APQLProcessor {
       }
     )
 
+    val getActionsByEventIdAndFilterByCodes = Method( "getActionsByEvent", List(classOf[IntegerValue], classOf[ExpressionList]),
+      (args: List[ExpressionValue]) => {
+        val eventId = args.head.asInstanceOf[IntegerValue].value
+        val actionTypeCodes = {
+          val vals = args.last.asInstanceOf[ExpressionList].values
+          if (vals.exists(!_.isInstanceOf[StringValue]))
+            throw new Exception()
+          else
+            vals.map(_.asInstanceOf[StringValue].value)
+        }
+        getActionsByEvent(eventId, actionTypeCodes).getOrElse(throw new CoreException("Cannot find actions of event with id ["
+          + eventId + "] and ActionType codes [" + actionTypeCodes + "]"))
+      }
+    )
+
+    val getActionsByPatientId = Method("getActionsByPatient", List(classOf[IntegerValue]),
+      (args: List[ExpressionValue]) => {
+        args match {
+          case x :: Nil => x match {
+            case x: IntegerValue =>
+              val id = x.value
+              getActionsByPatient(id).getOrElse(throw new CoreException("Cannot find actions by Patient with id [" + id + "]"))
+          }
+        }
+      }
+    )
+
+    val getActionsByPatientIdByCode = Method("getActionsByPatient", List(classOf[IntegerValue], classOf[StringValue]),
+      (args: List[ExpressionValue]) => {
+        val patientId = args.head.asInstanceOf[IntegerValue].value
+        val actionTypeCode = args.last.asInstanceOf[StringValue].value
+        getActionsByPatient(patientId, actionTypeCode).getOrElse(throw new CoreException("Cannot find actions of patient with id ["
+          + patientId + "] and ActionType code [" + actionTypeCode + "]"))
+      }
+    )
+
+    val getActionsByPatientIdByCodes = Method("getActionsByPatient", List(classOf[IntegerValue], classOf[ExpressionList]),
+      (args: List[ExpressionValue]) => {
+        val patientId = args.head.asInstanceOf[IntegerValue].value
+        val actionTypeCodes = {
+          val vals = args.last.asInstanceOf[ExpressionList].values
+          if (vals.exists(!_.isInstanceOf[StringValue]))
+            throw new Exception()
+          else
+            vals.map(_.asInstanceOf[StringValue].value)
+        }
+        getActionsByPatient(patientId, actionTypeCodes).getOrElse(throw new CoreException("Cannot find actions of patient with id ["
+          + patientId + "] and ActionType codes [" + actionTypeCodes + "]"))
+      }
+    )
+
     val getNowDateTime = Method("getNowDateTime", Nil, (args: List[ExpressionValue]) => { new DateValue(new Date()) })
 
     override def methods: List[APQLProcessor.this.GlobalObject.Method] =
       List(
         getActionsByEventId,
         getActionsByEventIdAndFilterByCode,
+        getActionsByEventIdAndFilterByCodes,
+        getActionsByPatientId,
+        getActionsByPatientIdByCode,
+        getActionsByPatientIdByCodes,
         getNowDateTime)
 
     private def getActionsByEvent(id: Int): Try[ActionList] = {
@@ -90,6 +148,24 @@ class APQLProcessor {
 
     private def getActionsByEvent(id: Int, actionTypeCode: String): Try[ActionList] = {
       Try(new ActionList(actionBean.getActionsByEvent(id).asScala.toList.filter(p => p.getActionType.getCode.equals(actionTypeCode))))
+    }
+
+    private def getActionsByEvent(id: Int, actionTypeCodes: List[String]): Try[ActionList] = {
+      Try(new ActionList(actionBean.getActionsByEvent(id).asScala.toList.filter(p => actionTypeCodes.contains(p.getActionType.getCode))))
+    }
+
+    private def getActionsByPatient(id: Int): Try[ActionList] = {
+      Try(new ActionList(eventBean.getEventsForPatient(id).asScala.flatMap(e => actionBean.getActionsByEvent(e.getId).asScala).toList))
+    }
+
+    private def getActionsByPatient(id: Int, actionTypeCode: String): Try[ActionList] = {
+      Try(new ActionList(eventBean.getEventsForPatient(id).asScala.flatMap(e => actionBean.getActionsByEvent(e.getId).asScala).toList
+      .filter(p => actionTypeCode.equals(p.getActionType.getCode))))
+    }
+
+    private def getActionsByPatient(id: Int, actionTypeCodes: List[String]): Try[ActionList] = {
+      Try(new ActionList(eventBean.getEventsForPatient(id).asScala.flatMap(e => actionBean.getActionsByEvent(e.getId).asScala).toList
+      .filter(p => actionTypeCodes.contains(p.getActionType.getCode))))
     }
 
   }
@@ -162,6 +238,11 @@ class APQLProcessor {
 
   }
 
+  private class ExpressionList(val values: List[ExpressionValue]) extends ExpressionValue {
+
+    override def methods: List[Method] = List()
+
+  }
 
   private class ActionList(val value: List[Action]) extends ExpressionValue {
 
@@ -170,7 +251,27 @@ class APQLProcessor {
       case Nil => throw new CoreException("Cannot get first element of empty List")
     })
 
-    override def methods: List[Method] = List(first)
+    val sort = Method("sort", List(classOf[StringValue], classOf[StringValue]),
+      (args: List[ExpressionValue]) => {
+        args match {
+          case x :: y :: Nil => (x, y) match {
+            case (x:StringValue, y: StringValue) =>
+              val l = x.value match {
+                case "createDatetime" => value.sortBy(_.getCreateDatetime)
+                case _ => throw new Exception("Unknown sorting field [" + x.value + "], use createDatetime");
+              }
+              y.value match {
+                case "ASC" => new ActionList(l)
+                case "DESC" => new ActionList(l.reverse)
+                case _ =>  throw new Exception("Unknown sorting direction [" + y.value + "], use ASC or DESC");
+              }
+            case _ => throw new Exception("Invalid args of sort method [" + args + "], use sort([String], [String])")
+          }
+        }
+
+      })
+
+    override def methods: List[Method] = List(first, sort)
 
   }
 

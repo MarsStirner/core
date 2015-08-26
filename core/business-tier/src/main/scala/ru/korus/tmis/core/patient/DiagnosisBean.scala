@@ -1,12 +1,11 @@
 package ru.korus.tmis.core.patient
 
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.database.{DbDiagnosisBeanLocal, DbDiagnosticBeanLocal}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Diagnostic, Diagnosis, Mkb}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.auth.AuthData
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.DiagnosesListData
@@ -17,7 +16,6 @@ import ru.korus.tmis.core.database.common.DbEventBeanLocal
  * Методы для работы с диагнозами
  * @author idmitriev Systema-Soft
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DiagnosisBean  extends DiagnosisBeanLocal
                         with Logging
@@ -40,25 +38,32 @@ class DiagnosisBean  extends DiagnosisBeanLocal
   private val ID_NONE = 2
   private val ID_MODIFY_WITH_CREATE_DIAGNOSIS = 3
 
+
+
   def insertDiagnosis(diagnosticId: Int,
                       eventId: Int,
+                      action: Action,
                       diaTypeFlatCode: String,
                       diseaseCharacterId: Int,
                       description: String,
                       mkbId: Int,
                       diseaseStageId: Int,
-                      userData: AuthData) = {
+                      userData: Staff) = {
 
     val event = dbEventBean.getEventById(eventId)
     val patient = event.getPatient
     var diagnostic: Diagnostic = null
     var diagnosis: Diagnosis = null
     var oldDiagnostic: Diagnostic = null
+    val listOldDiag = getOldDiagByActionAndType(action, diaTypeFlatCode)
 
+
+    var isNewDiag = false;
     val option =
       if(diagnosticId>0) {
         oldDiagnostic = dbDiagnosticBean.getDiagnosticById(diagnosticId)
         if(oldDiagnostic!=null){
+          isNewDiag = oldDiagnostic.getDiagnosis == null || oldDiagnostic.getDiagnosis.getMkb.getId.intValue() != mkbId
           if (oldDiagnostic.getDiagnosis!=null){
               if(oldDiagnostic.getDiagnosis.getMkb.getId.intValue()!=mkbId)   //МКБ разные (история назначений)
                 ID_CREATE
@@ -75,7 +80,13 @@ class DiagnosisBean  extends DiagnosisBeanLocal
             }
           }
         } else ID_CREATE
-      } else ID_CREATE
+      } else if(listOldDiag.isEmpty) {
+        ID_CREATE
+      } else {
+        oldDiagnostic = listOldDiag.get(0)
+        isNewDiag = oldDiagnostic.getDiagnosis == null || oldDiagnostic.getDiagnosis.getMkb.getId.intValue()!=mkbId
+        ID_MODIFY
+      }
 
     option match {
       case ID_CREATE => {
@@ -88,22 +99,32 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                             userData)
         diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( 0,
                                                                 eventId,
+                                                                action,
                                                                 diagnosis,
                                                                 diaTypeFlatCode,
                                                                 diseaseCharacterId,
                                                                 diseaseStageId,
                                                                 description,
-                                                                userData)
+                                                                userData,
+                                                                true)
       }
       case ID_MODIFY => {
-        diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( diagnosticId,
+        diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(oldDiagnostic.getDiagnosis.getId,
+          patient.getId.intValue(),
+          diaTypeFlatCode,
+          diseaseCharacterId,
+          mkbId,
+          userData)
+        diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( oldDiagnostic.getId,
                                                                 eventId,
+                                                                action,
                                                                 oldDiagnostic.getDiagnosis,
                                                                 diaTypeFlatCode,
                                                                 diseaseCharacterId,
                                                                 diseaseStageId,
                                                                 description,
-                                                                userData)
+                                                                userData,
+                                                                isNewDiag)
       }
       case ID_MODIFY_WITH_CREATE_DIAGNOSIS => {
         diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(0,
@@ -114,19 +135,21 @@ class DiagnosisBean  extends DiagnosisBeanLocal
                                                             userData)
         diagnostic = dbDiagnosticBean.insertOrUpdateDiagnostic( diagnosticId,
                                                                 eventId,
+                                                                action,
                                                                 diagnosis,
                                                                 diaTypeFlatCode,
                                                                 diseaseCharacterId,
                                                                 diseaseStageId,
                                                                 description,
-                                                                userData)
+                                                                userData,
+                                                                isNewDiag)
       }
       case _=> {}
     }
     (diagnostic, diagnosis)
   }
 
-  def insertDiagnoses(eventId: Int, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: AuthData) = {
+  def insertDiagnoses(eventId: Int, action: Action, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: Staff) = {
 
     var entities = List.empty[AnyRef]
     mkbs.foreach(f => {
@@ -138,6 +161,7 @@ class DiagnosisBean  extends DiagnosisBeanLocal
         set.foreach(mkb=>{
           val value = insertDiagnosis(mkb._1.intValue(),                                    //diagnosticId
             eventId,
+            action,
             f._1,
             if (mkb._4.intValue() > 0) mkb._4.intValue() else 3,  // characterId     //3,
             mkb._2,                                               // description
@@ -177,6 +201,13 @@ class DiagnosisBean  extends DiagnosisBeanLocal
       new DiagnosesListData(diagnostics)
     }
     else new DiagnosesListData()
+  }
+
+  def getOldDiagByActionAndType(action: Action, diaTypeFlatCode: String): java.util.List[Diagnostic]  = {
+    em.createNamedQuery("Diagnostic.findByActionIdAndType", classOf[Diagnostic])
+      .setParameter("actionId", if(action == null) 0 else action.getId)
+      .setParameter("flatCode", diaTypeFlatCode)
+    .getResultList
   }
 
   def deleteDiagnosis(eventId: Int,

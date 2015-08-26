@@ -3,7 +3,6 @@ package ru.korus.tmis.tfoms.xml;
 import ru.korus.tmis.core.entity.model.tfoms.Informationable;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.Map;
 
 import static ru.korus.tmis.core.entity.model.tfoms.ObjectParser.*;

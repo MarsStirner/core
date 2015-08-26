@@ -3,7 +3,6 @@ package ru.korus.tmis.core.pharmacy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.RbMethodOfAdministration;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
 
 import javax.ejb.Stateless;
 import javax.interceptor.Interceptors;

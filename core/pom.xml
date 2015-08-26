@@ -6,14 +6,17 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-core</artifactId>
     <packaging>pom</packaging>
-    <version>${version.tmis.core}</version>
+    <version>2.6.1</version>
     <name>TMIS Root Project</name>
 
 
     <modules>
+        <module>core-ext</module>
         <module>business-tier</module>
         <module>common</module>
         <module>database</module>
+        <module>config</module>
+        <module>finance-ear</module>
         <module>drugstore-tier</module>
         <module>server</module>
         <module>ws-medipad</module>
@@ -24,25 +27,17 @@
         <module>ws-transfusion</module>
         <module>communication</module>
         <module>ws-users-mgr</module>
-        <module>config</module>
         <module>ws-tfoms</module>
+        <module>ws-risar</module>
+        <module>admin-panel</module>
         <module>laboratory-bak</module>
     </modules>
 
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.5.53</version.tmis.core>
+        <version.tmis.core>2.6.1</version.tmis.core>
 
-        <version.joda.time>2.3</version.joda.time>
-        <version.apache.thrift>0.9.0</version.apache.thrift>
-        <version.testng>6.8</version.testng>
-        <version.mokito>1.9.5</version.mokito>
-        <version.junit>4.8.2</version.junit>
-        <version.logging.logback>0.9.20</version.logging.logback>
-        <version.logging.logback.janino>2.6.1</version.logging.logback.janino>
-        <version.logging.jcl>1.5.6</version.logging.jcl>
-        <version.logging.slf4j>1.5.6</version.logging.slf4j>
         <version.logging.grizzled-slf4j>1.0.2</version.logging.grizzled-slf4j>
 
         <version.scala>2.11.2</version.scala>
@@ -78,10 +73,10 @@
 
         <version.jersey.servlet>com.sun.jersey.spi.container.servlet.ServletContainer</version.jersey.servlet>
 
-        <spring.version>3.2.4.RELEASE</spring.version>
+        <spring.version>4.1.1.RELEASE</spring.version>
 
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <project.build.jdk>1.6</project.build.jdk>
+        <project.build.jdk>1.7</project.build.jdk>
 
         <!-- Вкл/Выкл отладочную информацию-->
         <project.build.debug>true</project.build.debug>
@@ -195,22 +190,6 @@
             </activation>
         </profile>
 
-        <!-- Профиль для установки на стандартный Linux-сервер  glassfish 3.x (тестовый стенд)-->
-        <profile>
-            <id>production-standart-test</id>
-            <properties>
-                <!-- Выключить дебаг -->
-                <project.build.debug>true</project.build.debug>
-                <!-- Название домена -->
-                <glassfish.domain>fccho-moscow</glassfish.domain>
-                <!-- Адрес ЛИС БАК -->
-                <bak.intergation.url>http\://10.128.131.114\:8090/CGM_SOAP</bak.intergation.url>
-            </properties>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-        </profile>
-
         <!-- Профиль для установки на стандартный Linux-сервер glassfish 4.x -->
         <profile>
             <id>production-standart-glassfish4</id>
@@ -247,29 +226,13 @@
             </properties>
         </profile>
 
-        <profile>
-            <!-- Пользовательский профиль -->
-            <id>ueg</id>
-            <properties>
-                <separate>\</separate>
-                <glassfish.home>C:\Winprog\glassfish3</glassfish.home>
-                <!-- Название домена -->
-                <glassfish.domain>domain</glassfish.domain>
-                <!-- Логин администратора -->
-                <glassfish.admin.login>admin1234</glassfish.admin.login>
-                <!-- Пароль администратора-->
-                <glassfish.admin.password>admin1234</glassfish.admin.password>
-                <!-- Опиция для автосоздания таблиц/ключей на основе содержимого JPA-сущностей -->
-                <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
-            </properties>
-        </profile>
+
     </profiles>
 
     <dependencies>
 
 
         <!--Arquillian testing framework-->
-
 
 
         <!--<dependency>
@@ -352,13 +315,13 @@
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>${version.logging.slf4j}</version>
+            <version>1.5.6</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
-            <version>${version.logging.jcl}</version>
+            <version>1.5.6</version>
         </dependency>
 
         <!--Java EE-->
@@ -395,15 +358,15 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>${version.junit}</version>
+            <version>4.8.2</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
-            <version>${version.testng}</version>
+            <version>6.8</version>
             <scope>test</scope>
-            <!--<classifier>jdk15</classifier>-->
         </dependency>
 
         <dependency>
@@ -430,14 +393,14 @@
         <dependency>
             <groupId>org.apache.thrift</groupId>
             <artifactId>libthrift</artifactId>
-            <version>${version.apache.thrift}</version>
+            <version>0.9.0</version>
         </dependency>
 
         <!--Joda Time-->
         <dependency>
             <groupId>joda-time</groupId>
             <artifactId>joda-time</artifactId>
-            <version>${version.joda.time}</version>
+            <version>2.3</version>
         </dependency>
 
         <dependency>
@@ -458,6 +421,19 @@
             <groupId>com.google.code.findbugs</groupId>
             <artifactId>annotations</artifactId>
             <version>${version.findbug.annotation}</version>
+        </dependency>
+
+        <!-- Spring core & mvc -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-webmvc</artifactId>
+            <version>${spring.version}</version>
         </dependency>
 
     </dependencies>
@@ -515,8 +491,8 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <source>${project.build.jdk}</source>
-                    <target>${project.build.jdk}</target>
+                    <source>1.7</source>
+                    <target>1.7</target>
                     <encoding>${project.build.sourceEncoding}</encoding>
                     <debug>${project.build.debug}</debug>
                     <showDeprecation>true</showDeprecation>
@@ -728,6 +704,126 @@
 
                     </properties>
                     <quiet>true</quiet>
+                </configuration>
+            </plugin>
+
+
+            <!--<plugin>-->
+            <!--<groupId>org.glassfish</groupId>-->
+            <!--<artifactId>maven-embedded-glassfish-plugin</artifactId>-->
+            <!--<version>${version.maven.plugin.embedded.glassfish}</version>-->
+            <!--<configuration>-->
+            <!--<app>${project.build.directory}/${project.build.finalName}.ear</app>-->
+            <!--<port>8080</port>-->
+            <!--<contextRoot>${project.build.finalName}</contextRoot>-->
+            <!--<name>${project.build.finalName}</name>-->
+            <!--</configuration>-->
+            <!--</plugin>-->
+
+
+            <!--  <plugin>
+                <groupId>org.glassfish.maven.plugin</groupId>
+                <artifactId>maven-glassfish-plugin</artifactId>
+                <version>2.1</version>
+                <configuration>
+                    <glassfishDirectory>${glassfish.home}</glassfishDirectory>
+
+                    <user>${<profiles>
+                        <profile>
+                            <id>misCore</id>
+                            <properties>
+                                <my.build.directory>
+                                    /Users/rednekis/Documents/work/projects/misCore/build/${project.groupId}-${project.artifactId}
+                                </my.build.directory>
+                                <glassfish.home>/usr/local/glassfish3</glassfish.home>
+                                <glassfish.domain.name>testdomain</glassfish.domain.name>
+                                <glassfish.domain.adminPort>4848</glassfish.domain.adminPort>
+                                <glassfish.domain.httpPort>8080</glassfish.domain.httpPort>
+                                <glassfish.domain.httpsPort>8443</glassfish.domain.httpsPort>
+                                <glassfish.domain.iiopPort>3700</glassfish.domain.iiopPort>
+                                <glassfish.domain.jmsPort>7676</glassfish.domain.jmsPort>
+                                <glassfish.domain.host>localhost</glassfish.domain.host>
+                                <glassfish.domain.user>admin</glassfish.domain.user>
+                                <glassfish.domain.password>adminpassword</glassfish.domain.password>
+                                <glassfish.domain.passwordFile>${domain.dir}/${domain.name}/master-password
+                                </glassfish.domain.passwordFile>
+                            </properties>
+                        </profile>
+                    </profiles>
+                        <activeProfiles>
+                            <activeProfile>misCore</activeProfile>
+                        </activeProfiles>${glassfish.domain.user}</user>
+                    <passwordFile>${domain.passwordFile}</passwordFile>
+
+                    <debug>true</debug>
+                    <echo>true</echo>
+                    <terse>true</terse>
+
+                    <domainDirectory>${domain.dir}</domainDirectory>
+                    <autoCreate>false</autoCreate>
+                    <skip>false</skip>
+                    <domain>
+                        <host>${glassfish.domain.host}</host>
+                        <name>${glassfish.domain.name}</name>
+                        <adminPort>${glassfish.domain.adminPort}</adminPort>
+                        <httpPort>${glassfish.domain.httpPort}</httpPort>
+                        <httpsPort>${glassfish.domain.httpsPort}</httpsPort>
+                        <iiopPort>${glassfish.domain.iiopPort}</iiopPort>
+                        <jmsPort>${glassfish.domain.jmsPort}</jmsPort>
+                        <reuse>true</reuse>
+                    </domain>
+
+                    <components>
+                        <component>
+                            <name>${project.build.finalName}</name>
+                            <artifact>
+                                ${project.build.directory}/${project.build.finalName}.${project.packaging}
+                            </artifact>
+                        </component>
+                    </components>
+                </configuration>
+            </plugin>
+                 -->
+
+
+            <!--
+                Release management
+            -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-release-plugin</artifactId>
+                <version>${version.maven.plugin.release}</version>
+                <configuration>
+                    <useReleaseProfile>false</useReleaseProfile>
+                    <pushChanges>false</pushChanges>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>default</id>
+                        <goals>
+                            <goal>perform</goal>
+                        </goals>
+                        <configuration>
+                            <pomFileName>core/pom.xml</pomFileName>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>versions-maven-plugin</artifactId>
+                <version>2.1</version>
+                <executions>
+                    <execution>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>set</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <newVersion>${version.tmis.core}</newVersion>
+                    <oldVersion></oldVersion>
                 </configuration>
             </plugin>
 

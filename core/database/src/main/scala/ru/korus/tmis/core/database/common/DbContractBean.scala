@@ -7,7 +7,6 @@ import ru.korus.tmis.core.entity.model.{ContractSpecification, EventType, Contra
 import ru.korus.tmis.core.exception.NoSuchEntityException
 import scala.collection.JavaConversions._
 import java.util.Date
-import ru.korus.tmis.util.reflect.TmisLogging
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import java.util
 import scala.language.reflectiveCalls
@@ -21,13 +20,12 @@ import scala.language.reflectiveCalls
  * To change this template use File | Settings | File Templates.
  */
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbContractBean
   extends DbContractBeanLocal
   with Logging
-  with I18nable
-  with TmisLogging {
+  with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -38,6 +36,14 @@ class DbContractBean
       Contract c
     WHERE
       c.id = :id
+                      """
+
+  val FindByNumberQuery = """
+    SELECT c
+    FROM
+      Contract c
+    WHERE
+      c.number = :number
                       """
 
   val FindContractForEventQuery = """
@@ -79,13 +85,31 @@ class DbContractBean
           i18n("error.ContractNotFound"))
       }
       case size => {
-        result.foreach((r) => {
-          em.detach(r)
-        })
         result(0)
       }
     }
   }
+
+  def getContractByNumber(number: String) = {
+    val result = em.createQuery(FindByNumberQuery,
+      classOf[Contract])
+      .setParameter("number", number)
+      .getResultList
+
+    result.size match {
+      case 0 => {
+        throw new NoSuchEntityException(
+          ConfigManager.ErrorCodes.ContractNotFound,
+          0,
+          i18n("error.ContractNotFound"))
+      }
+      case size => {
+
+        result(0)
+      }
+    }
+  }
+
 
 
   /**
@@ -105,13 +129,10 @@ class DbContractBean
 
     result.size match {
       case 0 => {
-        logTmis.warning(i18n("error.ContractNotFound").format(eventType.getId.intValue()))
         null
       }
       case size => {
-        result.foreach((r) => {
-          em.detach(r)
-        })
+
         result(0)
       }
     }
@@ -159,13 +180,10 @@ class DbContractBean
 
     result.size match {
       case 0 => {
-        logTmis.warning(i18n("error.ContractNotFound").format(eventTypeId.intValue()))
         null
       }
       case size => {
-        result.foreach((r) => {
-          em.detach(r)
-        })
+
         result
       }
     }

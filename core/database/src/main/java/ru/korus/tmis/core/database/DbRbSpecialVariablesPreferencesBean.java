@@ -86,9 +86,7 @@ public class DbRbSpecialVariablesPreferencesBean implements DbRbSpecialVariables
     public <T> List<T> executeNamedQuery(String query, Class<T> entityClass) {
         //adding detach
         List<T> result = em.createNativeQuery(query, entityClass).getResultList();
-        for (T current : result) {
-            em.detach(current);
-        }
+
         return result;
 
     }

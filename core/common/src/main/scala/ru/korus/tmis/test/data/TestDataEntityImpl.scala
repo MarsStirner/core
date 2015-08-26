@@ -382,11 +382,6 @@ class TestDataEntityImpl extends TestDataEntity {
     bt
   }
 
-  def getTestDefaultAuthData(user: Staff) = {
-    val authData = new AuthData()
-    authData.setUser(user)
-    authData
-  }
   def  getTestDefaultDiagnostic() = {
     val dia = new Diagnostic(testId)
     dia.setDiagnosisType(getTestDefaultDiagnosisType)

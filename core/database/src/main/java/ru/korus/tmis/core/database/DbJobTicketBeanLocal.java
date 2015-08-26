@@ -26,7 +26,7 @@ public interface DbJobTicketBeanLocal {
 
     List<Tuple3<Action, ActionTypeTissueType, JobTicket>> getDirectionsWithJobTicketsBetweenDate(TakingOfBiomaterialRequesData request, TakingOfBiomaterialRequesDataFilter filter) throws CoreException;
 
-    boolean modifyJobTicketStatus(int id, int status, AuthData auth) throws CoreException;
+    boolean modifyJobTicketStatus(int id, int status) throws CoreException;
 
     /**
      * Метод создания или редактирование тикета

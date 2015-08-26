@@ -27,7 +27,7 @@ import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugComponent;
 import ru.korus.tmis.core.entity.model.pharmacy.PrescriptionsTo1C;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.LoggingInterceptor;
+
 import ru.korus.tmis.core.pharmacy.*;
 import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.util.TestUtilBusiness;
@@ -172,11 +172,10 @@ public class PrescriptionTest extends Arquillian {
         Assert.assertTrue(!eventList.isEmpty());
         Event event = eventList.iterator().next();
         final int actionTypeIdForPrescription = 123; //TODO: must be cretae by flatCode 'prescription'
-        Action actionPrescription = dbActionBean.createAction(event.getId(), actionTypeIdForPrescription, null);
+        Action actionPrescription = dbActionBean.createAction(event.getId(), actionTypeIdForPrescription, null, null);
         actionPrescription.setUuid(dbUUIDBeanLocal.createUUID());
         final int executorId = 1;
         actionPrescription.setExecutor(em.find(Staff.class, executorId));
-        em.persist(actionPrescription);
         em.merge(actionPrescription);
         em.flush();
         createInterval(actionPrescription);

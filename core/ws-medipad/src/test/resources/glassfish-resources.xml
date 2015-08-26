@@ -33,6 +33,7 @@
     -->
     <jdbc-connection-pool connection-validation-method="auto-commit"
                           datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="s11r64-pool"
+                          allow-non-component-callers="true"
                           is-connection-validation-required="true" connection-creation-retry-attempts="3" ping="true"
                           validate-atmost-once-period-in-seconds="60">
         <property name="characterEncoding" value="UTF-8"></property>
@@ -63,6 +64,7 @@
      <jdbc-resource pool-name="rls-pool" jndi-name="rls"></jdbc-resource>-->
     <jdbc-connection-pool connection-validation-method="auto-commit"
                           datasource-classname="com.mysql.jdbc.jdbc2.optional.MysqlDataSource" name="tmis_core-pool"
+                          allow-non-component-callers="true"
                           is-connection-validation-required="true" connection-creation-retry-attempts="3" ping="true"
                           validate-atmost-once-period-in-seconds="60">
         <property name="characterEncoding" value="UTF-8"></property>

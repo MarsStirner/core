@@ -15,11 +15,11 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import java.text.SimpleDateFormat
 import ru.korus.tmis.schedule.QueueActionParam
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import ru.korus.tmis.core.database.DbActionTypeBeanLocal
+import ru.korus.tmis.core.database.{DbStaffBeanLocal, DbActionTypeBeanLocal}
 import org.joda.time.{DateTimeConstants, DateTime}
 import scala.language.reflectiveCalls
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbActionBean
   extends DbActionBeanLocal
@@ -63,7 +63,7 @@ class DbActionBean
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionById(id: Int) = {
     val res: Action = getActionIdWithoutDetach(id)
-    em.detach(res)
+
     res
   }
 
@@ -110,39 +110,40 @@ class DbActionBean
       }
       case size => {
         val action = result.iterator.next()
-        em.detach(action)
+
         action
       }
     }
   }
 
-  def createAction(eventId: Int, actionTypeId: Int, userData: AuthData) = {
+  def createAction(eventId: Int, actionTypeId: Int, userData: AuthData, staff: Staff) = {
     val e = dbEvent.getEventById(eventId)
     val at = dbActionType.getActionTypeById(actionTypeId)
 
     val now = new Date
     val a = new Action
 
-    if (userData != null) {
-      a.setCreatePerson(userData.user)
+    if (staff != null) {
+      a.setCreatePerson(staff)
       a.setCreateDatetime(now)
-      a.setModifyPerson(userData.user)
+      a.setModifyPerson(staff)
       a.setModifyDatetime(now)
 
       var eventPerson: EventPerson = null
-      if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
+      if (userData != null &&
+        (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0)) {
         eventPerson = dbEventPerson.getLastEventPersonForEventId(eventId)
         if (eventPerson != null) {
           a.setAssigner(eventPerson.getPerson)
         } else {
-          a.setAssigner(userData.user)
+          a.setAssigner(staff)
         }
       }
       else
-        a.setAssigner(userData.user)
+        a.setAssigner(staff)
 
       // Исправление дефолтного значения от 03.07.2013 по задаче WEBMIS-873
-      a.setExecutor(userData.user) //a.setExecutor(at.getDefaultExecutor)
+      a.setExecutor(staff) //a.setExecutor(at.getDefaultExecutor)
 
     }
 
@@ -156,29 +157,30 @@ class DbActionBean
 
     a.setStatus(ActionStatus.STARTED.getCode)
     a.setUuid(dbUUIDBeanLocal.createUUID())
-
+    em.persist(a)
     a
   }
 
-  def updateAction(id: Int, version: Int, userData: AuthData) = {
+  def updateAction(id: Int, version: Int, authData: AuthData, staff: Staff) = {
     val a = getActionById(id)
     val now = new Date
 
-    if (userData != null) {
-      a.setModifyPerson(userData.user)
+    if (staff != null) {
       var eventPerson: EventPerson = null
-      if (userData.getUserRole.getCode.compareTo("admNurse") == 0 || userData.getUserRole.getCode.compareTo("strNurse") == 0) {
+      if (authData != null && (authData.getUserRole.getCode.compareTo("admNurse") == 0 || authData.getUserRole.getCode.compareTo("strNurse") == 0)) {
         eventPerson = dbEventPerson.getLastEventPersonForEventId(a.getEvent.getId.intValue())
-        if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(userData.user)
+        if (eventPerson != null) a.setAssigner(eventPerson.getPerson) else a.setAssigner(staff)
       }
+      a.setModifyPerson(staff)
       //a.setExecutor(userData.user)
     }
 
     a.setModifyDatetime(now)
-    a.setVersion(version)
+
     a.setBegDate(now)
     //a.setEndDate(now)
 
+    em.merge(a)
     a
   }
 
@@ -209,7 +211,6 @@ class DbActionBean
         null
       }
       case size => {
-        result.foreach(a => em.detach(a))
         result.iterator().next
       }
     }
@@ -226,7 +227,7 @@ class DbActionBean
         null
       }
       case size => {
-        result.foreach(a => em.detach(a))
+
         val action = result.iterator().next
         action
       }
@@ -239,7 +240,7 @@ class DbActionBean
       .setParameter("actionType", actionType)
       .getResultList
 
-    result.foreach(a => em.detach(a))
+
     result.iterator().next()
   }
 
@@ -247,8 +248,7 @@ class DbActionBean
                            page: Int,
                            sorting: String,
                            filter: ListDataFilter,
-                           records: (java.lang.Long) => java.lang.Boolean,
-                           userData: AuthData) = {
+                           records: (java.lang.Long) => java.lang.Boolean) = {
 
     val queryStr: QueryDataStructure = filter.toQueryStructure
 
@@ -265,19 +265,10 @@ class DbActionBean
     queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList
-    result.foreach(a => em.detach(a))
+
     result
   }
 
-  def getActionsByTypeCode(code: String) = {
-    val result = em.createQuery(ActionsByCodeQuery,
-      classOf[Action])
-      .setParameter("code", code)
-      .getResultList
-
-    result.foreach(a => em.detach(a))
-    result
-  }
 
   def getActionsByTypeCodeAndEventId(codes: java.util.Set[String], eventId: Int, sort: String, userData: AuthData) = {
     val result = em.createQuery(ActionsByCodeAndEventQuery.format(sort),
@@ -289,11 +280,28 @@ class DbActionBean
     result.size match {
       case 0 => null
       case size => {
-        result.foreach(a => em.detach(a))
+
         result
       }
     }
   }
+
+  def getActionsByTypeCodeAndPatientOrderByDate(codes: java.util.Set[String], patient: Patient) = {
+    val result = em.createNamedQuery("Action.actionByTypeCodeAndPatientOrderByDate",
+      classOf[Action])
+      .setParameter("codes", asJavaCollection(codes))
+      .setParameter("patientId", patient.getId)
+      .getResultList
+
+    result.size match {
+      case 0 => null
+      case size => {
+
+        result
+      }
+    }
+  }
+
 
   def getActionIdWithCopyByEventId(eventId: Int, actionTypeId: Int) = {
     /*
@@ -325,7 +333,9 @@ class DbActionBean
     val result = em.createQuery(ActionsByATypeIdAndEventId, classOf[Int])
       .setParameter("id", eventId)
       .setParameter("atIds", asJavaCollection(actionTypeIds))
+      .setMaxResults(1)
       .getResultList
+
 
     result.size match {
       case 0 => 0
@@ -345,7 +355,7 @@ class DbActionBean
     result.size match {
       case 0 => null
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -571,7 +581,7 @@ class DbActionBean
     val result = em.createQuery(ActionTypeByCodeQuery, classOf[ActionType]).setParameter("code", code)
       .getResultList
     val et = result(0)
-    result.foreach(em.detach(_))
+
     et
   }
 
@@ -623,13 +633,12 @@ class DbActionBean
     getActionById(action.getId)
   }
 
-  def getActionsByTypeCode(code: String, userData: AuthData) = {
+  def getActionsByTypeCode(code: String) = {
     val result = em.createQuery(ActionsByCodeQuery,
       classOf[Action])
       .setParameter("code", code)
       .getResultList
 
-    result.foreach(a => em.detach(a))
     result
   }
 
@@ -684,7 +693,7 @@ class DbActionBean
     }
 
     val closeIntervalInDays: Int = try {
-      dbSetting.getSettingByPathInMainSettings(i18n("settings.path.eventBlockTime")).getValue.toInt
+      ConfigManager.Common.eventEditableDays
     } catch {
       case e: Throwable => {
         logger.warn("Cannot receive value of " + i18n("settings.path.eventBlockTime") + " setting. Set as 2 days.")
@@ -739,30 +748,39 @@ class DbActionBean
   }
 
   def getLatestMove(event: Event): Action = {
-    val actions =  em.createNamedQuery("Action.findLatestMove", classOf[Action]).setParameter("eventId", event.getId).getResultList
-    return if(actions.isEmpty) null else actions.get(0);
+    val actions = em.createNamedQuery("Action.findLatestMove", classOf[Action])
+      .setParameter("eventId", event.getId)
+      .setMaxResults(1).getResultList
+    return if (actions.isEmpty) null else actions.get(0);
   }
 
+  override def getLastActionByEventAndActionTypes(eventId: Integer, flatCodeList: util.List[String]): Action = {
+    val actions = em.createNamedQuery("Action.findLastByFlatCodesAndEventId", classOf[Action])
+      .setParameter("eventId", eventId)
+      .setParameter("flatCodes", flatCodeList)
+      .setMaxResults(1)
+      .getResultList
+    return if (actions.isEmpty) null else actions.get(0);
+  }
+
+  override def getLastActionByActionTypesAndClientId(codeList: util.List[String], clientId: Integer): Action = {
+    val actions = em.createNamedQuery("Action.findLastByActionTypesAndClientId", classOf[Action])
+      .setParameter("codes", codeList)
+      .setParameter("clientId", clientId)
+      .setMaxResults(1)
+      .getResultList
+    return if (actions.isEmpty) null else actions.get(0);
+  }
+
+
   def getAllActionsOfPatientThatHasActionProperty(patientId: Int, actionPropertyCode: String): util.List[Action] = {
-    val query =
-      """
-        |SELECT a
-        |FROM Action a,
-        |     Event e,
-        |     ActionProperty ap,
-        |     ActionPropertyType apt
-        |WHERE
-        |     e.patient.id = :patientId AND
-        |     a.event.id = e.id AND
-        |     ap.action.id = a.id AND
-        |     apt.id = ap.actionPropertyType.id AND
-        |     apt.code = :code
-        |""".stripMargin
-    val r = em.createQuery(query, classOf[Action])
+
+    val r = em.createNamedQuery("Action.AllActionsOfPatientThatHasActionProperty", classOf[Action])
       .setParameter("patientId", patientId)
       .setParameter("code", actionPropertyCode)
       .getResultList
-    r.foreach(em.detach(_))
+
     r
   }
+
 }

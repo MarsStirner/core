@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database.common
 
 import javax.ejb.Stateless
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.interceptor.Interceptors
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -11,7 +11,7 @@ import java.lang.Iterable
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbRbCounterBean
   extends DbRbCounterBeanLocal
@@ -49,7 +49,7 @@ class DbRbCounterBean
       }
       case size => {
         val rbCounter = result.iterator.next()
-        em.detach(rbCounter)
+
         rbCounter
       }
     }

@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import ru.korus.tmis.core.entity.model.RbSocStatusClass
 import ru.korus.tmis.core.exception.NoSuchEntityException
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import scala.collection.JavaConversions._
@@ -19,7 +19,7 @@ import scala.language.reflectiveCalls
  * To change this template use File | Settings | File Templates.
  */
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbSocStatusClassBean extends DbRbSocStatusClassBeanLocal
 with Logging
@@ -50,9 +50,7 @@ with I18nable {
           i18n("error.ClientSocStatusClassNotFound"))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

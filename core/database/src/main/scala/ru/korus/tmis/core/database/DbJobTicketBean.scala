@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import common.DbManagerBeanLocal
 import javax.interceptor.Interceptors
 import org.joda.time._
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.{EJB, Stateless}
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -12,7 +12,6 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{TakingOfBiomaterialRequesData, TakingOfBiomaterialRequesDataFilter}
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.util.reflect.LoggingManager
 import java.util.Date
 import java.text.SimpleDateFormat
 import java.util
@@ -24,18 +23,17 @@ import scala.language.reflectiveCalls
  * @author idmitriev Systema-Soft
  * @since 1.0.0.64
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbJobTicketBean extends DbJobTicketBeanLocal
-                         with Logging
-                         with I18nable
-                         with CAPids {
+with Logging
+with I18nable
+with CAPids {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
   @EJB
-  var appLock: AuthStorageBeanLocal = _
+  var appLock: AppLockBeanLocal = _
 
   @EJB
   private var dbManager: DbManagerBeanLocal = _
@@ -45,14 +43,14 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
 
   def getJobTicketById(id: Int): JobTicket = {
     val result = em.createQuery(JobTicketByIdQuery, classOf[JobTicket])
-                   .setParameter("id", id)
-                   .getResultList
+      .setParameter("id", id)
+      .getResultList
 
     result.size match {
       case 0 =>
-        throw new CoreException( ConfigManager.ErrorCodes.JobTicketNotFound, i18n("error.jobTicketNotFound").format(id))
+        throw new CoreException(ConfigManager.ErrorCodes.JobTicketNotFound, i18n("error.jobTicketNotFound").format(id))
       case size =>
-        result.foreach(em.detach(_))
+
         result(0)
     }
   }
@@ -81,8 +79,8 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     jt
   }
 
-  def getDirectionsWithJobTicketsBetweenDate (request: TakingOfBiomaterialRequesData,
-                                              filter: TakingOfBiomaterialRequesDataFilter): util.List[(Action, ActionTypeTissueType, JobTicket)] = {
+  def getDirectionsWithJobTicketsBetweenDate(request: TakingOfBiomaterialRequesData,
+                                             filter: TakingOfBiomaterialRequesDataFilter): util.List[(Action, ActionTypeTissueType, JobTicket)] = {
 
     val dateMoreThan = filter.getBeginDate
     val dateLessThan = filter.getEndDate
@@ -98,16 +96,16 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     }
 
     val orderField = request.getSortingField.toLowerCase match {
-      case "sex"                              => "research.event.patient.sex"
-      case "actiontype"                       => "research.actionType.name"
-      case "urgent"                           => "research.isUrgent"
-      case "tube"                             => "research.actionType.testTubeType.name"
-      case "status"                           => "jt.status"
-      case "fullname" | "fio" | "patient"     => "research.event.patient.lastName %s, research.event.patient.firstName %s, research.event.patient.patrName".format(order, order)
-      case "birthdate"                        => "research.event.patient.birthDate"
-      case "tissuetype"                       => "attt.tissueType.name"
-      case "date"                             => "jt.datetime"
-      case _                                  => "research.event.patient.lastName %s, research.event.patient.firstName %s, research.event.patient.patrName".format(order, order)
+      case "sex" => "research.event.patient.sex"
+      case "actiontype" => "research.actionType.name"
+      case "urgent" => "research.isUrgent"
+      case "tube" => "research.actionType.testTubeType.name"
+      case "status" => "jt.status"
+      case "fullname" | "fio" | "patient" => "research.event.patient.lastName %s, research.event.patient.firstName %s, research.event.patient.patrName".format(order, order)
+      case "birthdate" => "research.event.patient.birthDate"
+      case "tissuetype" => "attt.tissueType.name"
+      case "date" => "jt.datetime"
+      case _ => "research.event.patient.lastName %s, research.event.patient.firstName %s, research.event.patient.patrName".format(order, order)
     }
 
     val queryString = DirectionsWithJobTicketsBetweenDateQuery.format(orderField, order)
@@ -117,16 +115,17 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val queryResult = query
       .setParameter("department", department)
       .setParameter("day_more_than", new LocalDate(dateMoreThan).minusDays(1).toDate) // Расширяем границы на один день
-      .setParameter("day_less_than", new LocalDate(dateLessThan).plusDays(1).toDate)  // вперед и назад чтобы точно попасть
-      .setParameter("labs", labs)                                                     // во временные промежутки, т.к. в БД
-      .getResultList                                                                  // будет дата со временем 00:00
+      .setParameter("day_less_than", new LocalDate(dateLessThan).plusDays(1).toDate) // вперед и назад чтобы точно попасть
+      .setParameter("labs", labs) // во временные промежутки, т.к. в БД
+      .getResultList // будет дата со временем 00:00
 
     val outList = new util.ArrayList[(Action, ActionTypeTissueType, JobTicket)]
 
     // Проводим уточняющую фильтрацию по времени
     val result = queryResult.map(e => (e.apply(0).asInstanceOf[Action], e.apply(1).asInstanceOf[JobTicket], e.apply(2).asInstanceOf[ActionTypeTissueType]))
-    .filter(e => {
-      if(e._2.getDatetime == null) { // Такое маловероятно, но в БД встречается, поэтому фильтруем по временному промежутку на сущности Job
+      .filter(e => {
+      if (e._2.getDatetime == null) {
+        // Такое маловероятно, но в БД встречается, поэтому фильтруем по временному промежутку на сущности Job
         val day = new LocalDate(e._2.getJob.getDate)
         val begTime = new LocalTime(e._2.getJob.getBegTime)
         val endTime = new LocalTime(e._2.getJob.getEndTime)
@@ -145,47 +144,30 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     result.size match {
       case 0 => outList
       case size => result.foldLeft(outList)(
-          (list, aj) => {
-            if(
+        (list, aj) => {
+          if (
             (filter.getStatus < 0 || aj._2.getStatus == filter.getStatus)
               &&
-            (filter.getBiomaterial < 1 || aj._3.getTissueType.getId == filter.getBiomaterial)
+              (filter.getBiomaterial < 1 || aj._3.getTissueType.getId == filter.getBiomaterial)
               &&
-            (filter.getJobTicketId < 1 || aj._2.getId == filter.getJobTicketId)
-            ) {
-              em.detach(aj._1)
-              em.detach(aj._2)
-              em.detach(aj._3)
-              list.add((aj._1, aj._3, aj._2))
-            }
-            list
+              (filter.getJobTicketId < 1 || aj._2.getId == filter.getJobTicketId)
+          ) {
+
+            list.add((aj._1, aj._3, aj._2))
           }
-        )
+          list
+        }
+      )
     }
   }
 
-  def modifyJobTicketStatus(id: Int, status: Int, auth: AuthData) = {
-
-    var isComplete: Boolean = false
-
+  def modifyJobTicketStatus(id: Int, status: Int) = {
     if (id > 0) {
       val jobTicket = this.getJobTicketById(id)
-      //val oldJobTicket = JobTicket.clone(jobTicket)
-      //val lockId = appLock.acquireLock("Job_Ticket", id, oldJobTicket.getId.intValue(), auth)
-
-      try {
-        jobTicket.setStatus(status)
-        dbManager.merge(jobTicket)
-        isComplete = true
-      } finally {
-        //appLock.releaseLock(lockId)
-      }
-    } else {
-      LoggingManager.setLoggerType(LoggingManager.LoggingTypes.Debug)
-      LoggingManager.warning("code " + ConfigManager.ErrorCodes.JobTicketNotFound +
-        "Невозможно отредактировать" + ConfigManager.Messages("error.jobTicketNotFound").format(id))
+      jobTicket.setStatus(status)
+      dbManager.merge(jobTicket)
     }
-    isComplete
+    true
   }
 
   def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date, departmentId: Int, urgent: Boolean) = {
@@ -194,11 +176,11 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     val date = formatter.parse(strDate)
 
     val query = em.createQuery(JobTicketAndTakenTissueForActionQuery, classOf[Array[AnyRef]])
-                  .setParameter("plannedEndDate", strDate)
-                  .setParameter("eventId", eventId)
-                  .setParameter("actionTypeId", atId)
-                  .setParameter("departmentId", departmentId)
-                  .setParameter("urgent", urgent)
+      .setParameter("plannedEndDate", strDate)
+      .setParameter("eventId", eventId)
+      .setParameter("actionTypeId", atId)
+      .setParameter("departmentId", departmentId)
+      .setParameter("urgent", urgent)
 
     val result = query.getResultList
 
@@ -211,8 +193,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
       case size =>
         /*val jobAndJobTicket = result.foldLeft(new java.util.LinkedList[(JobTicket, TakenTissue)])(
           (list, aj) => {
-            em.detach(aj(0))
-            em.detach(aj(1))
+
             list.add((aj(0).asInstanceOf[JobTicket], aj(1).asInstanceOf[TakenTissue]))
             list
           }
@@ -220,8 +201,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
         jobAndJobTicket.get(0)*/
         val jt = result.get(0)(0).asInstanceOf[JobTicket]
         val tt = result.get(0)(1).asInstanceOf[TakenTissue]
-        em.detach(jt)
-        em.detach(tt)
+
         (jt, tt)
     }
   }
@@ -239,7 +219,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.jobNotFound").format(id))          */
       case size =>
-        result.foreach(em.detach(_))
+
         result(0)
     }
   }
@@ -266,7 +246,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
           ConfigManager.ErrorCodes.JobNotFound,
           i18n("error.jobNotFound").format(id))          */
       case size =>
-        result.foreach(jt => em.detach(jt))
+
         result.get(0)
     }
   }
@@ -280,15 +260,15 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
     result.size match {
       case 0 =>
         new util.LinkedList[Action]
-        /*
-        throw new CoreException(
-          ConfigManager.ErrorCodes.JobNotFound,
-          i18n("error.ActionsForJobTicketNotFound").format(jobTicketId))
-          */
+      /*
+      throw new CoreException(
+        ConfigManager.ErrorCodes.JobNotFound,
+        i18n("error.ActionsForJobTicketNotFound").format(jobTicketId))
+        */
       case size => {
-        result.foreach(a => {em.detach(a)})
+
       }
-      result
+        result
     }
   }
 
@@ -449,6 +429,7 @@ class DbJobTicketBean extends DbJobTicketBeanLocal
         a.deleted = 0
       AND
         j.deleted = 0
-    """/*      AND
-        a.isUrgent = 0*/
+    """
+  /*      AND
+          a.isUrgent = 0*/
 }

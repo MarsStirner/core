@@ -17,7 +17,6 @@ import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
 import ru.korus.tmis.laboratory.across.accept.AnalysisResultAcross
 import ru.korus.tmis.laboratory.across.accept2.{AnalysisResult => AResult2}
@@ -31,8 +30,6 @@ import scala.language.reflectiveCalls
 import scala.collection.JavaConversions._
 import scala.collection.mutable
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
-//@Remote(Array(classOf[LaboratoryBeanLocal]))
 @Stateless
 class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18nable {
   @EJB
@@ -402,8 +399,8 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         var res = pair.getValueAsString.replaceAll("<(.)+?>", "")
         res = res.replaceAll("<(\n)+?>", "")
         res = res.replaceAll("\\&.*?\\;", "")
-        if (res.length > 150) {
-          res = res.take(147) + "..."
+        if (res.length > 1000) {
+          res = res.take(997) + "..."
         }
         ("", res)
       }
@@ -517,7 +514,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
               }
               apv.foreach {
                 entities += _
-              }
+            }
             })
 
           }
@@ -710,7 +707,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   /**
    * Отправить запрос на анализы в ЛИС Акрос
    **/
-  @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW) // Чтобы при выбрасовании Exception откатывалась дочерняя, а не родительская транзакция
+  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW) // Чтобы при выбрасовании Exception откатывалась дочерняя, а не родительская транзакция
   def sendAnalysisRequestToAcross(actionId: Int) {
     // sendTestLis2AnalysisRequest()
     val (patientInfo, requestInfo, biomaterialInfo, orderInfo) = getAnalysisRequest(actionId)

@@ -61,7 +61,15 @@ public class APValueFlatDirectory extends AbstractAPValue implements Serializabl
     @Override
     public String getValueAsString() {
         if (fdRecord != null) {
-            return fdRecord.getId().toString();
+            String res = fdRecord.getId().toString();
+            for (FDFieldValue fdFieldValue : fdRecord.getFieldValues()) {
+                if (fdFieldValue.getPk() != null
+                        && fdFieldValue.getPk().getFDField() != null
+                        &&  "Наименование".equals(fdFieldValue.getPk().getFDField().getName().trim())) {
+                    return fdFieldValue.getValue();
+                }
+            }
+            return res;
         } else {
             return "";
         }

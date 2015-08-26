@@ -1,10 +1,10 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.{TempInvalidPeriod, TempInvalid, Staff, Patient}
+import ru.korus.tmis.core.entity.model._
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
 import ru.korus.tmis.core.exception.NoSuchRbTempInvalidDocumentException
@@ -13,7 +13,7 @@ import javax.ejb.EJB
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbTempInvalidBean
   extends DbTempInvalidBeanLocal
@@ -80,7 +80,7 @@ class DbTempInvalidBean
       }
       case size => {
         var ti = result.iterator.next()
-        em.detach(ti)
+
         ti
       }
     }
@@ -104,6 +104,8 @@ class DbTempInvalidBean
 
     var tempInvalid: TempInvalid = if (tempInvalidIn == null) new TempInvalid() else tempInvalidIn
     val now: Date = new Date
+    val code: RbTempInvalidDocument = rbTempInvalidDocLocal.getRbTempInvalidDocumentByCode(String.valueOf(docType))
+    val reason: RbTempInvalidReason = if (reasonCode == null) null else rbTempIvalidReason.getRbTempInvalidReasonByCode(reasonCode)
     tempInvalid.setCreateDatetime(now)
     tempInvalid.setCreatePerson(sessionUser)
     tempInvalid.setModifyDatetime(now)
@@ -120,8 +122,8 @@ class DbTempInvalidBean
     tempInvalid.setModifyPerson(sessionUser)
     tempInvalid.setDocTypeCode(docType)
     tempInvalid.setNotes("")
-    tempInvalid.setDocType(rbTempInvalidDocLocal.getRbTempInvalidDocumentByCode(String.valueOf(docType)))
-    tempInvalid.setTempInvalidReason(if (reasonCode == null) null else rbTempIvalidReason.getRbTempInvalidReasonByCode(reasonCode))
+    tempInvalid.setDocType(code)
+    tempInvalid.setTempInvalidReason(reason)
 
     tempInvalid.setPatient(patient)
 
@@ -138,7 +140,12 @@ class DbTempInvalidBean
     tempInvalidPeriod.setBegDate(start)
     tempInvalidPeriod.setEndDate(end)
 
-    em.persist(tempInvalid)
+    if(tempInvalid.getId() == 0) {
+      em.persist(tempInvalid)
+    }
+    else {
+      em.merge(tempInvalid)
+    }
     em.flush()
     tempInvalid
   }

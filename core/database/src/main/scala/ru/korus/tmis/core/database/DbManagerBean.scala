@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database.common
 
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import grizzled.slf4j.Logging
 import java.util.Collection
@@ -16,7 +16,7 @@ import javax.annotation.Resource
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbManagerBean
   extends DbManagerBeanLocal
@@ -26,9 +26,6 @@ class DbManagerBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
   var vendorJpaEm: JpaEntityManager = _
-
-  @Resource
-  protected var ctx: SessionContext = _
 
   def getEntityId[T](entity: T) = {
     //## TODO: работает строго через раз: каждый второй раз vendorJpaEm.getServerSession() == null
@@ -84,9 +81,8 @@ class DbManagerBean
 
   def persistAll[T](entities: Collection[T]) = {
     try {
-      entities.foreach(e => em.persist(e))
+      entities.foreach(e => if(e != null) em.persist(e))
       em.flush()
-      entities.foreach(e => trace("Persisted " + e))
     } catch {
       case e: OptimisticLockException => {
         throw new CoreException(
@@ -115,7 +111,7 @@ class DbManagerBean
       case e: OptimisticLockException => {
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
-          i18n("error.entryIsChanged"))
+          i18n("error.entryIsChanged"), e)
       }
     }
   }
@@ -127,10 +123,10 @@ class DbManagerBean
       trace("Merged " + entity)
       result
     } catch {
-      case entity: OptimisticLockException => {
+      case e: OptimisticLockException => {
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
-          i18n("error.entryIsChanged"))
+          i18n("error.entryIsChanged"), e)
       }
     }
   }
@@ -145,24 +141,9 @@ class DbManagerBean
       case e: OptimisticLockException => {
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
-          i18n("error.entryIsChanged"))
+          i18n("error.entryIsChanged"), e)
       }
     }
-  }
-
-  def detach[T](entity: T) = {
-    em.detach(entity)
-    trace("Detached " + entity)
-    entity
-  }
-
-  def detachAll[T](entities: Collection[T]) = {
-    val result = entities.map(e => {
-      em.detach(e)
-      e
-    })
-    result.foreach(e => trace("Detached " + e))
-    asJavaCollection(result)
   }
 
   def removeAll[T](entities: Collection[T]) = {
@@ -184,7 +165,4 @@ class DbManagerBean
     em.refresh(entity)
   }
 
-  def rollbackTransaction[T]() = {
-    ctx.setRollbackOnly();
-  }
 }

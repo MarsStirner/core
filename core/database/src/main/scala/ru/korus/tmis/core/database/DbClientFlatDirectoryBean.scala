@@ -3,7 +3,6 @@ package ru.korus.tmis.core.database
 import javax.persistence.{PersistenceContext, EntityManager}
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.entity.model.{Staff, Patient}
 import ru.korus.tmis.core.entity.model.fd.{FDRecord, ClientFDProperty, ClientFlatDirectory}
@@ -11,8 +10,6 @@ import java.util.Date
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.I18nable
 
-
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbClientFlatDirectoryBean
   extends DbClientFlatDirectoryBeanLocal
@@ -81,7 +78,7 @@ class DbClientFlatDirectoryBean
       }
       case size => {
         val fdClient = result.iterator.next()
-        em.detach(fdClient)
+
         fdClient
       }
     }
@@ -100,7 +97,7 @@ class DbClientFlatDirectoryBean
       }
       case size => {
         val сlientProperty = result.iterator.next()
-        em.detach(сlientProperty)
+
         сlientProperty
       }
     }
@@ -119,7 +116,7 @@ class DbClientFlatDirectoryBean
       }
       case size => {
         val record = result.iterator.next()
-        em.detach(record)
+
         record
       }
     }

@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.patient
 
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
@@ -16,7 +15,6 @@ import common.{DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.data._
 import scala.collection.JavaConverters._
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class PrimaryAssessmentBean
   extends PrimaryAssessmentBeanLocal
@@ -66,7 +64,6 @@ class PrimaryAssessmentBean
       AWI.doctorSpecs,
       AWI.executorPost,
       AWI.urgent,
-      AWI.multiplicity,
       AWI.Status,
       AWI.Finance,
       AWI.PlannedEndDate//,
@@ -88,22 +85,11 @@ class PrimaryAssessmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-
-        apvs.size match {
-          case 0 => {
-            group add apw.get(null, List(APWI.Unit,
-              APWI.Norm))
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              group add apw.get(apv, List(APWI.Value,
-                APWI.ValueId,
-                APWI.Unit,
-                APWI.Norm))
-            })
-          }
-        }
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType)
+        group add apw.get(apvs.toList, List(APWI.Value,
+          APWI.ValueId,
+          APWI.Unit,
+          APWI.Norm))
       })
 
     group
@@ -118,26 +104,12 @@ class PrimaryAssessmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-
-        apvs.size match {
-          case 0 => {
-            val ca = apw.get(null, List(APWI.Unit, APWI.Norm))
-            group add new CommonAttributeWithLayout(
-              ca,
-              dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
-              ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava)
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              val ca = apw.get(apv, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
-              group add new CommonAttributeWithLayout(
-                ca,
-                dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
-                ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava)
-            })
-          }
-        }
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType)
+        val ca = apw.get(apvs.toList, List(APWI.Value, APWI.ValueId, APWI.Unit, APWI.Norm))
+        group.add(new CommonAttributeWithLayout(
+          ca,
+          dbLayoutAttributeValueBean.getLayoutAttributeValuesByActionPropertyTypeId(ap.getType.getId.intValue()).toList,
+          ap.getType.getActionPropertyRelation.map(r => new ActionPropertyRelationWrapper(r)).toList.asJava))
       })
 
     group
@@ -147,7 +119,6 @@ class PrimaryAssessmentBean
                         title: String,
                         listForConverter: java.util.List[String],
                         listForSummary: java.util.List[StringId],
-                        userData: AuthData,
                         postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
                         patient: Patient) = {
 
@@ -174,6 +145,7 @@ class PrimaryAssessmentBean
                                         assessment: JSONCommonData,
                                         assessmentId: java.lang.Integer,
                                         userData: AuthData,
+                                        staff: Staff,
                                         baseUri: java.net.URI,
                                         notify: (java.util.List[Action], java.net.URI) =>  java.lang.Boolean,
                                         postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
@@ -184,9 +156,9 @@ class PrimaryAssessmentBean
     com_data.entity = json_data.data
 
     val actions: java.util.List[Action] = if (assessmentId == null ) {
-      commonDataProcessor.createActionForEventFromCommonData(eventId, com_data, userData)
+      commonDataProcessor.createActionForEventFromCommonData(eventId, com_data, userData, staff)
     } else {
-      commonDataProcessor.modifyActionFromCommonData(assessmentId, com_data, userData)
+      commonDataProcessor.modifyActionFromCommonData(assessmentId, com_data, userData, staff)
     }
 
     notify(actions, baseUri)
@@ -205,7 +177,6 @@ class PrimaryAssessmentBean
 
   def getPrimaryAssessmentById(assessmentId: Int,
                                title: String,
-                               userData: AuthData,
                                postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
                                reId: java.lang.Boolean) = {
     val action = actionBean.getActionById(assessmentId)
@@ -229,7 +200,7 @@ class PrimaryAssessmentBean
     commonDataProcessor.changeActionStatus(eventId, actionId, status)
   }
 
-  def deletePreviousAssessmentById(assessmentId: Int, userData: AuthData) {
+  def deletePreviousAssessmentById(assessmentId: Int, userData: Staff) {
 
     val now = new Date()
 
@@ -237,7 +208,7 @@ class PrimaryAssessmentBean
     if(findAction!=null) {
       findAction.setDeleted(true)
       if(userData!=null) {
-        findAction.setModifyPerson(userData.getUser)
+        findAction.setModifyPerson(userData)
       }
       findAction.setModifyDatetime(now)
 
@@ -248,7 +219,7 @@ class PrimaryAssessmentBean
           val (ap, listApVal) = element
           ap.setDeleted(true)
           if(userData!=null) {
-            ap.setModifyPerson(userData.getUser)
+            ap.setModifyPerson(userData)
           }
           ap.setModifyDatetime(now)
           apSet+=ap

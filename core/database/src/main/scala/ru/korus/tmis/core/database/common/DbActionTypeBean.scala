@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database.common
 
 import ru.korus.tmis.core.entity.model.{ActionPropertyType, ActionType}
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -17,7 +17,7 @@ import ru.korus.tmis.core.database.DbActionTypeBeanLocal
 import java.util
 import scala.language.reflectiveCalls
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbActionTypeBean
   extends DbActionTypeBeanLocal
@@ -36,7 +36,6 @@ class DbActionTypeBean
     val at = result.headOption.getOrElse {
       throw new CoreException(i18n("error.actionTypeNotFound"))
     }
-    em.detach(at)
     at
   }
 
@@ -44,7 +43,7 @@ class DbActionTypeBean
     val result = em.createQuery(AssessmentTypesQuery,
       classOf[ActionType])
       .getResultList
-    result.foreach((at) => em.detach(at))
+
     new java.util.HashSet(result)
   }
 
@@ -52,7 +51,7 @@ class DbActionTypeBean
     val result = em.createQuery(DiagnosticTypesQuery,
       classOf[ActionType])
       .getResultList
-    result.foreach((at) => em.detach(at))
+
     new java.util.HashSet(result)
   }
 
@@ -60,7 +59,7 @@ class DbActionTypeBean
     val result = em.createQuery(TreatmentTypesQuery,
       classOf[ActionType])
       .getResultList
-    result.foreach((at) => em.detach(at))
+
     new java.util.HashSet(result)
   }
 
@@ -68,7 +67,7 @@ class DbActionTypeBean
     val result = em.createQuery(DrugTreatmentTypesQuery,
       classOf[ActionType])
       .getResultList
-    result.foreach((at) => em.detach(at))
+
     new java.util.HashSet(result)
   }
 
@@ -77,7 +76,7 @@ class DbActionTypeBean
       classOf[ActionPropertyType])
       .setParameter("actionTypeId", actionTypeId)
       .getResultList
-    result.foreach((apt) => em.detach(apt))
+
     result
   }
 
@@ -89,7 +88,22 @@ class DbActionTypeBean
 
     if (result != null && result.size() > 0) {
       val at = result(0)
-      em.detach(at)
+
+      at
+    } else {
+      null
+    }
+  }
+
+  //Вернем ActionType по значению flatCode
+  def getActionTypeByFlatCode(code: String) = {
+    val result = em.createQuery(ActionTypeByFlatCodeQuery, classOf[ActionType])
+      .setParameter("flatCode", code)
+      .getResultList
+
+    if (result != null && result.size() > 0) {
+      val at = result(0)
+
       at
     } else {
       null
@@ -101,7 +115,7 @@ class DbActionTypeBean
       .setParameter("code", code)
       .getResultList
 
-    result.foreach((at) => em.detach(at))
+
     new java.util.HashSet(result)
   }
 
@@ -136,13 +150,23 @@ class DbActionTypeBean
 
     val result = typed.getResultList
 
-    result.foreach(at => em.detach(at))
+
     result
   }
 
   def getActionTypeByCode(flatCodeList: util.List[String]): util.List[ActionType] = {
     em.createNamedQuery("ActionType.findByFlatCodes", classOf[ActionType]).setParameter("flatCodes", flatCodeList).getResultList
   }
+
+  val ActionTypeByFlatCodeQuery = """
+    SELECT at
+    FROM
+      ActionType at
+    WHERE
+      at.flatCode = :flatCode
+    AND
+      at.deleted = 0
+                                  """
 
   val ActionTypeByIdQuery = """
     SELECT at

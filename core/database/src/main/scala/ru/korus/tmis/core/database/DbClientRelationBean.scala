@@ -2,7 +2,6 @@ package ru.korus.tmis.core.database
 
 import common.DbPatientBeanLocal
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.ejb.{EJB, Stateless}
@@ -16,7 +15,6 @@ import scala.util.control.Breaks._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbClientRelationBean
   extends DbClientRelationBeanLocal
@@ -49,7 +47,7 @@ class DbClientRelationBean
       ClientRelation d
     WHERE
       d.relative.id = :id
-                                """
+                                          """
 
 
   def getAllClientRelations(patientId: Int): Iterable[ClientRelation] = {
@@ -70,9 +68,7 @@ class DbClientRelationBean
           i18n("error.clientRelationNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }
@@ -92,9 +88,7 @@ class DbClientRelationBean
           i18n("error.clientRelationNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }
@@ -215,21 +209,15 @@ class DbClientRelationBean
     d
   }
 
-  def insertOrUpdateClientRelationByRelativePerson( id: Int,
-                                                    rbRelationTypeId: Int,
+  override def createClientRelationByRelativePerson(rbRelationTypeId: Int,
                                                     relative: Patient,
                                                     patient: Patient,
                                                     sessionUser: Staff): ClientRelation = {
     var d: ClientRelation = null
     val now = new Date
-    if (id > 0) {
-      d = getClientRelationById(id)
-    }
-    else {
-      d = new ClientRelation
-      d.setCreatePerson(sessionUser)
-      d.setCreateDatetime(now)
-    }
+    d = new ClientRelation
+    d.setCreatePerson(sessionUser)
+    d.setCreateDatetime(now)
 
 
     if (rbRelationTypeId > 0) {
@@ -248,7 +236,9 @@ class DbClientRelationBean
     d.setModifyPerson(sessionUser)
     d.setModifyDatetime(now)
 
+    em.persist(d)
     d
+
   }
 
   def deleteClientRelation(id: Int,

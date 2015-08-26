@@ -369,9 +369,9 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
     tmpMap.put(_Fields.USL, new org.apache.thrift.meta_data.FieldMetaData("USL", org.apache.thrift.TFieldRequirementType.REQUIRED, 
         new org.apache.thrift.meta_data.ListMetaData(org.apache.thrift.protocol.TType.LIST, 
             new org.apache.thrift.meta_data.StructMetaData(org.apache.thrift.protocol.TType.STRUCT, Usl.class))));
-    tmpMap.put(_Fields.VID__HMP, new org.apache.thrift.meta_data.FieldMetaData("VID_HMP", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.VID__HMP, new org.apache.thrift.meta_data.FieldMetaData("VID_HMP", org.apache.thrift.TFieldRequirementType.OPTIONAL,
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
-    tmpMap.put(_Fields.METOD__HMP, new org.apache.thrift.meta_data.FieldMetaData("METOD_HMP", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+    tmpMap.put(_Fields.METOD__HMP, new org.apache.thrift.meta_data.FieldMetaData("METOD_HMP", org.apache.thrift.TFieldRequirementType.OPTIONAL,
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(Sluch.class, metaDataMap);
@@ -2940,7 +2940,7 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.VID_HMP = iprot.readString();
               struct.setVID_HMPIsSet(true);
-            } else { 
+            } else {
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
@@ -2948,7 +2948,7 @@ public class Sluch implements org.apache.thrift.TBase<Sluch, Sluch._Fields>, jav
             if (schemeField.type == org.apache.thrift.protocol.TType.STRING) {
               struct.METOD_HMP = iprot.readString();
               struct.setMETOD_HMPIsSet(true);
-            } else { 
+            } else {
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;

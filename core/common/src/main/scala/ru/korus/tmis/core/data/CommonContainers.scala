@@ -6,7 +6,7 @@ import java.util.Date
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import org.codehaus.jackson.annotate.JsonIgnoreProperties._
-import ru.korus.tmis.core.entity.model.OrgStructure
+import ru.korus.tmis.core.entity.model.{Staff, OrgStructure}
 import ru.korus.tmis.scala.util.ConfigManager
 
 @XmlType(name = "idNameContainer")
@@ -15,13 +15,22 @@ import ru.korus.tmis.scala.util.ConfigManager
 class IdNameContainer {
   @BeanProperty
   var id : Int = _
+
   @BeanProperty
   var name : String = _
+
+  @BeanProperty
+  var code : String = _
 
   def this( id : Int, name : String) = {
     this()
     this.id = id;
     this.name = name
+  }
+
+  def this( id : Int, code: String, name : String) = {
+    this(id, name)
+    this.code = code;
   }
 
   def toMap = {
@@ -173,3 +182,21 @@ class OrgStructureContainer {
 @XmlRootElement(name = "booleanContainer")
 @JsonIgnoreProperties(ignoreUnknown = true)
 case class BooleanContainer(@BeanProperty var value: Boolean)
+
+@XmlType(name = "complexPersonContainer")
+@XmlRootElement(name = "complexPersonContainer")
+class ComplexPersonContainer {
+
+  @BeanProperty
+  var doctor: DoctorContainer = _                  //доктор и специальность
+
+  @BeanProperty
+  var department: IdNameContainer = _              //отделение
+
+  def this(person: Staff) {
+    this()
+    this.doctor = new DoctorContainer(person)
+    this.department = if(person.getOrgStructure!=null) new IdNameContainer(person.getOrgStructure.getId.intValue(), person.getOrgStructure.getName)
+    else new IdNameContainer()
+  }
+}

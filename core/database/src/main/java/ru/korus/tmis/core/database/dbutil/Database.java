@@ -84,8 +84,8 @@ public class Database {
 
         final String className = classType.getName();
         final List<Object> propRes =
-                em.createQuery("SELECT p FROM " + className.substring(className.lastIndexOf('.') + 1) + " p WHERE p.id = :id", classType)
-                        .setParameter("id", new IndexedId(prop.iterator().next().getId(), 0)).getResultList();
+                em.createQuery("SELECT p FROM " + className.substring(className.lastIndexOf('.') + 1) + " p WHERE p.id.id = :id", classType)
+                        .setParameter("id", prop.iterator().next().getId()).getResultList();
 
         checkCountProp(actionId, propTypeId, propRes.size());
 

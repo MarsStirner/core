@@ -55,7 +55,7 @@ public class ClientRelation implements Serializable, Cloneable {
     @Column(name = "deleted")
     private boolean deleted;
 
-    @ManyToOne(cascade = {CascadeType.PERSIST, CascadeType.MERGE, CascadeType.REFRESH, CascadeType.DETACH})
+    @ManyToOne
     @JoinColumn(name = "relative_id", nullable = true)
     private Patient relative;
 

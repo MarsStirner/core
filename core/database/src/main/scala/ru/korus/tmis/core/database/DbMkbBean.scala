@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.Mkb
-import ru.korus.tmis.core.logging.LoggingInterceptor
+import ru.korus.tmis.core.entity.model.{Mkb, Nomenclature}
+
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -13,7 +13,7 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbMkbBean
   extends DbMkbBeanLocal
@@ -34,7 +34,7 @@ class DbMkbBean
         throw new CoreException(ConfigManager.ErrorCodes.JobNotFound, i18n("error.mkbWithIdNotFound").format(id))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -50,7 +50,7 @@ class DbMkbBean
         throw new CoreException(ConfigManager.ErrorCodes.JobNotFound, i18n("error.mkbWithCodeNotFound").format(code))
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }

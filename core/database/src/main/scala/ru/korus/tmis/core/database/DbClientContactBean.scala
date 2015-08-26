@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.database
 
-import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.ejb.{EJB, Stateless}
@@ -13,7 +12,6 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbClientContactBean
   extends DbClientContactBeanLocal
@@ -54,7 +52,7 @@ class DbClientContactBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }

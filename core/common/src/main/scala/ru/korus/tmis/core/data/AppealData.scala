@@ -61,7 +61,7 @@ class AppealData extends I18nable {
    * @param street Информация об адресах Street
    * @param requestData Данные из запроса с клиента как AppealRequestData
    * @param postProcessing Делегируемый метод по поиску идентификатора первичного осмотра по идентификатору обращения.
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+
    * @param contract Контракт
    * @param mDiagnosticList Делегируемый метод по получению диагностик госпитализации
    */
@@ -69,20 +69,22 @@ class AppealData extends I18nable {
   def this(event: Event,
            appeal: Action,
            values: java.util.Map[(java.lang.Integer, ActionProperty), java.util.List[Object]],
-           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int, Boolean) => util.LinkedHashMap[java.lang.Integer, util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
+           mMovingProperties: (java.util.List[java.lang.Integer], java.util.Set[String], Int, Boolean) => java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]],
            typeOfResponse: String,
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            requestData: AppealRequestData,
            postProcessing: (Int, java.util.Set[java.lang.Integer]) => Int,
-           mRelationByRelativeId: (Int)=> ClientRelation,
+           eventClientRelations: java.util.List[EventClientRelation],
            mAdmissionDiagnosis: (Int , java.util.Set[String]) => java.util.Map[ActionProperty, java.util.List[APValue]],
            contract: Contract,
            currentDepartment: OrgStructure,
            mDiagnosticList: (Int, java.util.Set[String]) => java.util.List[Diagnostic],
-           tempInvalid: TempInvalid) {
+           tempInvalid: TempInvalid,
+           eventLocalContract: EventLocalContract) {
     this ()
-    this.requestData = requestData
+
+    setRequestData(requestData)
 
     val setMovingIds = JavaConversions.setAsJavaSet(Set(i18n("db.apt.received.codes.orgStructDirection"),
                                                      i18n("db.apt.moving.codes.orgStructTransfer")))
@@ -134,9 +136,9 @@ class AppealData extends I18nable {
       val extractId = postProcessing(event.getId.intValue(), setExtractATIds)
       val extractProperties = if (mAdmissionDiagnosis!=null && extractId>0) mAdmissionDiagnosis(extractId, setExtractIds) else null
 
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), mRelationByRelativeId, admissions, extractProperties, null, contract, currentDepartment, diagnostics, tempInvalid)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, (primaryId>0), eventClientRelations, admissions, extractProperties, null, contract, currentDepartment, diagnostics, tempInvalid, eventLocalContract)
     } else {
-      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, mRelationByRelativeId, null, null, null, contract, currentDepartment, diagnostics, tempInvalid)
+      new AppealEntry(event, appeal, values, mMovingProperties, typeOfResponse, map, street, false, eventClientRelations, null, null, null, contract, currentDepartment, diagnostics, tempInvalid, eventLocalContract)
      }
   }
 }
@@ -301,6 +303,8 @@ class AppealEntry extends I18nable {
   @BeanProperty
   var result: IdNameContainer = _
   @BeanProperty
+  var acheResult: IdNameContainer = _
+  @BeanProperty
   var tempInvalid: TempInvalidAppealContainer = _   //
   @BeanProperty
   var laboratory: LaboratoryPropertiesContainer = _ //
@@ -318,6 +322,10 @@ class AppealEntry extends I18nable {
   var reopening: String = _                         //Повторное обращение
   @BeanProperty
   var context: String = _                           //Контекст печати
+  @BeanProperty
+  var payer: PayerInfo = _                          //Плательщик
+  @BeanProperty
+  var paymentContract: PaymentContractInfo = _
 
   /**
    * Конструктор класса AppealEntry
@@ -332,7 +340,7 @@ class AppealEntry extends I18nable {
    * @param map Информация об адресах КЛАДР
    * @param street Информация об адресах Street
    * @param havePrimary Флаг, имеется ли в текущей госпитализации первичный осмотр
-   * @param mRelationByRelativeId Делегируемый метод по поиску связи пациента и представителя по идентификатору представителя.
+   * @param eventClientRelations представители
    * @param extractProperties Список свойств действия с данными из выписки
    * @param corrList Список RbCoreActionProperty для поиска соответствия идентификаторов
    * @param contract Контракт
@@ -346,14 +354,15 @@ class AppealEntry extends I18nable {
            map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]],
            street: java.util.LinkedHashMap[java.lang.Integer, Street],
            havePrimary: Boolean,
-           mRelationByRelativeId: (Int)=> ClientRelation,
+           eventClientRelations: java.util.List[EventClientRelation],
            admissions: java.util.Map[ActionProperty, java.util.List[APValue]],
            extractProperties: java.util.Map[ActionProperty, java.util.List[APValue]],
            corrList: java.util.List[RbCoreActionProperty],
            contract: Contract,
            currentDepartment: OrgStructure,
            diagnostics: java.util.List[Diagnostic],
-           tempInvalid: TempInvalid) {
+           tempInvalid: TempInvalid,
+           eventLocalContract: EventLocalContract) {
     this()
     var exValue: java.util.List[Object] = null
 
@@ -365,9 +374,10 @@ class AppealEntry extends I18nable {
     this.number = event.getExternalId
     this.setPerson = if (event.getAssigner != null) {new ComplexPersonContainer(event.getAssigner)} else {new ComplexPersonContainer}
     this.execPerson = new DoctorContainer(event.getExecutor)
-    this.urgent = action.getIsUrgent
+    this.urgent = if(action == null) false else action.getIsUrgent
     this.context = if (event.getEventType != null) event.getEventType.getContext else null
-
+    this.payer = if (eventLocalContract == null) null else new PayerInfo(eventLocalContract)
+    this.paymentContract = if (eventLocalContract == null) null else new PaymentContractInfo(eventLocalContract)
 
     val getOrgStructPropByCode: String => Integer = (code: String) => {
       val orgs = values.entrySet.filter(e => {
@@ -407,7 +417,11 @@ class AppealEntry extends I18nable {
     typeOfResponse match {
       case "standart"  => {
         this.patient = new IdValueContainer(event.getPatient.getId.toString)
-        this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+        if(action != null) {
+          this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+        } else {
+          this.rangeAppealDateTime = new DatePeriodContainer(event.getCreateDatetime, event.getCreateDatetime)
+        }
       }
       case "print_form" => {
         this.patient = new PatientEntry(event.getPatient, map, street)
@@ -415,7 +429,11 @@ class AppealEntry extends I18nable {
       }
       case _ => {
         this.patient = new IdValueContainer(event.getPatient.getId.toString)
-        this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+        if(action != null) {
+          this.rangeAppealDateTime = new DatePeriodContainer(action.getBegDate, action.getEndDate)
+        } else {
+          this.rangeAppealDateTime = new DatePeriodContainer(event.getCreateDatetime, event.getCreateDatetime)
+        }
       }
     }
 
@@ -461,23 +479,8 @@ class AppealEntry extends I18nable {
     else
       this.hospitalizationChannelType = new IdNameContainer(-1, exValue.get(0).asInstanceOf[String])
 
-    if (mRelationByRelativeId!=null){
-      val exRepresantative = this.extractValuesInNumberedMap(LinkedHashSet(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.hospitalizationWith").toInt :java.lang.Integer,
-                                                                           ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.note").toInt :java.lang.Integer), values)
-      val relativeIds = exRepresantative.get("0")
-      val notes = exRepresantative.get("1")
 
-      for(i <- 0 until relativeIds.size)  {
-        if(relativeIds.get(i).isInstanceOf[java.lang.Integer] && relativeIds.get(i).asInstanceOf[java.lang.Integer]!=null){
-          val representativeId = relativeIds.get(i).asInstanceOf[java.lang.Integer].intValue()
-          if (representativeId>0){
-            val clientRelation = mRelationByRelativeId(representativeId)
-            val note = if (i<notes.size()) notes.get(i).asInstanceOf[String] else ""
-            this.hospitalizationWith += new LegalRepresentativeContainer(clientRelation, note)
-          }
-        }
-      }
-    }
+    eventClientRelations.foreach(ecr =>  this.hospitalizationWith += new LegalRepresentativeContainer(ecr.getClientRelation, ecr.getNote))
 
     exValue = this.extractValuesInNumberedMap(Set(ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.deliveredType").toInt :java.lang.Integer), values).get("0")
     this.deliveredType = exValue.get(0).asInstanceOf[String]
@@ -530,66 +533,7 @@ class AppealEntry extends I18nable {
         val diaByLastDate = allByType.find(p=> p.getCreateDatetime.getTime==allByType.map(_.getCreateDatetime.getTime).foldLeft(Long.MinValue)((i,m)=>m.max(i))).getOrElse(null) //Диагностика последняя по дате создания
         if (diaByLastDate!=null){
           this.diagnoses += new DiagnosisContainer(diaByLastDate)
-        }   /*
-        else { //Достаем из ActionProperty осмотра  (Для старых госпитализации (когда не прописывалась история диагнозов Diagnostic + Diagnosis))
-          diaType match {
-            case i18n("appeal.diagnosis.diagnosisKind.diagReceivedMkb") | i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb") | i18n("appeal.diagnosis.diagnosisKind.attendantMkb") => {  //Старая часть кода по диагнозам из экшн пропертей
-              val exDiagnosis = this.extractValuesInNumberedMap(LinkedHashSet(
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assigment.code").toInt :java.lang.Integer,
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.code").toInt :java.lang.Integer,
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.code").toInt :java.lang.Integer,
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.assignment.description").toInt :java.lang.Integer,
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.aftereffect.description").toInt :java.lang.Integer,
-                ConfigManager.RbCAPIds("db.rbCAP.hosp.primary.id.diagnosis.attendant.description").toInt :java.lang.Integer
-              ), values)
-
-              val key = "code_%s".format(diaType)
-              val key_desc = "description_%s".format(diaType)
-
-              val diagnoses = if(exDiagnosis.get(key)!=null) exDiagnosis.get(key).toList else List.empty[Object]
-              val descriptions = if(exDiagnosis.get(key_desc)!=null) exDiagnosis.get(key_desc).toList else List.empty[Object]
-
-              for(i <- 0 until math.max(diagnoses.size, descriptions.size)){
-                val diagnosis =  if(diagnoses.size>i && diagnoses.get(i).isInstanceOf[Mkb])
-                  diagnoses.get(i).asInstanceOf[Mkb]
-                else null
-                val description = if(descriptions.size>i && descriptions.get(i).isInstanceOf[String])
-                  descriptions.get(i).asInstanceOf[String]
-                else ""
-
-                val container = new DiagnosisContainer()
-                container.setDiagnosisKind(diaType)
-                container.setDescription(description)
-                container.setMkb(new MKBContainer(diagnosis))
-                this.diagnoses += container
-              }
-            }
-            case i18n("appeal.diagnosis.diagnosisKind.admissionMkb") => { //Старая часть кода по диагнозу при поступлении из экшн пропертей
-              if (admissions!=null) {
-                var description: String = ""
-                var diagnosis: Mkb = null
-
-                admissions.foreach(prop => {
-                  if (prop._1.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.admission"))==0) {
-                    if (prop._2 != null && prop._2.size() > 0) {
-                      diagnosis = prop._2.get(0).getValue.asInstanceOf[Mkb]
-                    }
-                  } else if (prop._1.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.description"))==0) {
-                    if (prop._2 != null && prop._2.size() > 0) {
-                      description = prop._2.get(0).getValueAsString
-                    }
-                  }
-                })
-                val container = new DiagnosisContainer()
-                container.setDiagnosisKind(i18n("appeal.diagnosis.diagnosisKind.admissionMkb"))
-                container.setDescription(description)
-                container.setMkb(new MKBContainer(diagnosis))
-                this.diagnoses += container
-              }
-            }
-            case _ => {}
-          }
-        }   */
+        }
       })
     }
     //*******************Доп сведения***************
@@ -634,8 +578,10 @@ class AppealEntry extends I18nable {
       }
     }
     // Текущее отделение пребывания пациента
-    if (currentDepartment != null) {
+    if (currentDepartment != null && action != null) {
       this.currentDepartment = new IdNameContainer(currentDepartment.getId.intValue(), currentDepartment.getName)
+    } else {
+      this.currentDepartment = new IdNameContainer(0, "")
     }
     //Имеет первичный осмотр
     this.havePrimary = havePrimary
@@ -973,6 +919,7 @@ class DoctorContainer {
     if(staff!=null)  {
       this.id = staff.getId.intValue()
       this.name = new PersonNameContainer(staff)
+
     }
   }
 
@@ -1109,7 +1056,7 @@ class LegalRepresentativeContainer {
         if(rel!=null)
           new IdNameDateContainer(rel.getId.intValue(),
                                   "%s %s %s".format(rel.getLastName, rel.getFirstName, rel.getPatrName),
-                                  relation.getRelative.getBirthDate)
+                                  relation.getRelative.getBirthDate, relation.getRelative.getSex)
         else
           new IdNameDateContainer()
 
@@ -1140,11 +1087,19 @@ class IdNameDateContainer {
   @BeanProperty
   var birthDate: Date = _  // — Дата рождения
 
-  def this( id : Int, name : String, birthDate : Date) = {
+  @BeanProperty
+  var sex: String = _  // — Дата рождения
+
+  def this( id : Int, name : String, birthDate : Date, sex: Int) = {
     this()
-    this.id = id;
+    this.id = id
     this.name = name
     this.birthDate = birthDate
+    this.sex = sex match {
+      case 1 => "male"
+      case 2 => "female"
+      case _ => null
+    }
   }
 
 }

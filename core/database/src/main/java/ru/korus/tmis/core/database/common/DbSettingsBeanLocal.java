@@ -19,11 +19,7 @@ public interface DbSettingsBeanLocal {
      */
     Setting getSettingByPath(String path);
 
-    /**
-     * Аналогично {@link #getSettingByPath(String) getSettingByPath}, однако
-     * значение будет браться из общей таблицы в БД s11r64
-     */
-    Setting getSettingByPathInMainSettings(String path);
-
     List<Setting> getAllSettings();
+
+    boolean updateSetting(String path, String value);
 }

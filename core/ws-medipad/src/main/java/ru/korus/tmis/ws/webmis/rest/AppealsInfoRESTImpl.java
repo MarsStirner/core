@@ -7,7 +7,7 @@ import ru.korus.tmis.core.data.IdValueContainer;
 import ru.korus.tmis.core.data.ReceivedRequestData;
 import ru.korus.tmis.core.data.ReceivedRequestDataFilter;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -27,31 +27,36 @@ import java.util.List;
  * Since: 1.0.0.74
  */
 @Stateless
-@Interceptors(ServicesLoggingInterceptor.class)
+
 public class AppealsInfoRESTImpl {
 
     @EJB
     private WebMisREST wsImpl;
 
     @EJB
-    ExaminationsRegistryRESTImpl examinationsRegistryREST;
+    private ExaminationsRegistryRESTImpl examinationsRegistryREST;
 
     @EJB
-    QuotesRegistryRESTImpl quotesRegistryREST;
+    private HospitalBedRegistryRESTImpl hospitalBedRegistryRESTImpl;
 
+    @EJB
+    private AssignmentsRegistryRESTImpl assignmentsRegistryRESTImpl;
+
+    @EJB
+    private DiagnosticsRegistryExRESTImpl diagnosticsRegistryExRESTImpl;
 
     @Path("/{eventId}/hospitalbed/")
     public HospitalBedRegistryRESTImpl getHospitalBedRegistryRESTImpl(@Context HttpServletRequest servRequest,
                                                                       @PathParam("eventId") int eventId,
                                                                       @QueryParam("callback") String callback) {
-        return new HospitalBedRegistryRESTImpl(wsImpl, eventId, callback, mkAuth(servRequest)) ;
+        return hospitalBedRegistryRESTImpl;
     }
 
     @Path("/{eventId}/assignments/")
     public AssignmentsRegistryRESTImpl getAssignmentsRegistryRESTImpl(@Context HttpServletRequest servRequest,
                                                                       @PathParam("eventId") int eventId,
                                                                       @QueryParam("callback") String callback) {
-        return new AssignmentsRegistryRESTImpl(wsImpl, eventId, callback, mkAuth(servRequest)) ;
+        return assignmentsRegistryRESTImpl;
     }
 
     @Path("/{eventId}/documents/")
@@ -63,15 +68,9 @@ public class AppealsInfoRESTImpl {
     public DiagnosticsRegistryExRESTImpl getDiagnosticsRegistryRESTImpl(@Context HttpServletRequest servRequest,
                                                                         @PathParam("eventId") int eventId,
                                                                         @QueryParam("callback") String callback) {
-        return new DiagnosticsRegistryExRESTImpl(wsImpl, eventId, callback, mkAuth(servRequest)) ;
+        return diagnosticsRegistryExRESTImpl;
     }
 
-    @Path("/{eventId}/quotes/")
-    public QuotesRegistryRESTImpl getQuotesRegistryRESTImpl(@Context HttpServletRequest servRequest,
-                                                            @PathParam("eventId") int eventId,
-                                                            @QueryParam("callback") String callback) {
-        return quotesRegistryREST;
-    }
 
     /**
      * Запрос на список поступивших.

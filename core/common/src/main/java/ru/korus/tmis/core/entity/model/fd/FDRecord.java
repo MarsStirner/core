@@ -48,6 +48,10 @@ public class FDRecord implements Serializable, Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date endDate;
 
+    @Basic(optional = false)
+    @Column(name = "deleted")
+    private boolean deleted;
+
     @OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.fdRecord", cascade = CascadeType.ALL)
     private java.util.List<FDFieldValue> fieldValues = new java.util.LinkedList<FDFieldValue>();
 
@@ -145,5 +149,13 @@ public class FDRecord implements Serializable, Cloneable {
     @Override
     public String toString() {
         return "ru.korus.tmis.core.entity.model.fd.FDRecord[id=" + id + "]";
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public void setDeleted(boolean deleted) {
+        this.deleted = deleted;
     }
 }

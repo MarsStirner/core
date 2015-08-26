@@ -1,14 +1,14 @@
 package ru.korus.tmis.core.database
 
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbCoreActionProperty
 import scala.collection.JavaConversions._
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbCoreActionPropertyBean
   extends DbRbCoreActionPropertyBeanLocal
@@ -28,7 +28,7 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result.iterator().next()
       }
     }
@@ -45,7 +45,7 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result.iterator().next()
       }
     }
@@ -60,7 +60,7 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result
       }
     }
@@ -75,7 +75,7 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result
       }
     }
@@ -90,7 +90,6 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
         result.iterator().next()
       }
     }
@@ -105,7 +104,7 @@ class DbRbCoreActionPropertyBean
     result.size() match {
       case 0 => null
       case _ => {
-        result.foreach(em.detach(_))
+
         result.iterator().next()
       }
     }

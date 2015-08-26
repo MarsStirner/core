@@ -7,7 +7,7 @@ import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{QuotaTypesListRequestDataFilter, DictionaryListRequestDataFilter, QueryDataStructure}
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.Stateless
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
@@ -19,7 +19,7 @@ import scala.language.reflectiveCalls
  * @since 1.0.0.48
  * @see DbQuotaTypeBeanLocal
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbQuotaTypeBean
   extends DbQuotaTypeBeanLocal
@@ -44,7 +44,7 @@ class DbQuotaTypeBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }
@@ -66,7 +66,7 @@ class DbQuotaTypeBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }
@@ -94,7 +94,7 @@ class DbQuotaTypeBean
 
     val result = typed.getResultList
     result.foreach(f => {
-      em.detach(f)
+
     })
     result
   }

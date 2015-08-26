@@ -48,7 +48,6 @@ public class Helper {
         newPrescriptionAction.setUet(0.0);
         newPrescriptionAction.setExpose(1);
         newPrescriptionAction.setCoordDate(now);
-        newPrescriptionAction.setVersion(0);
         newPrescriptionAction.setUuid(new UUID(java.util.UUID.randomUUID().toString()));
         return newPrescriptionAction;
     }

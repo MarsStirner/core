@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database.common
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.interceptor.Interceptors
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -14,7 +14,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbBloodTypeBean
   extends DbRbBloodTypeBeanLocal
@@ -90,7 +90,7 @@ class DbRbBloodTypeBean
     val result = typed.getResultList
     val list = new java.util.LinkedList[Object]
     result.foreach(f => {
-      //em.detach(f)
+
       list.add((f(0).asInstanceOf[java.lang.Integer], f(1).asInstanceOf[java.lang.String]))
     })
     list
@@ -123,9 +123,7 @@ class DbRbBloodTypeBean
           i18n("error.rbBloodTypeNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

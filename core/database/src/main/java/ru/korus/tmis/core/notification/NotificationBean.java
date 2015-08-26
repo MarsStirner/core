@@ -3,6 +3,8 @@ package ru.korus.tmis.core.notification;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionType;
+import ru.korus.tmis.core.entity.model.NotificationAction;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.scala.util.ConfigManager;
 
@@ -56,25 +58,26 @@ public class NotificationBean implements NotificationBeanLocal {
     }
 
     @Override
-    public void sendNotification(Action action) throws CoreException {
-        if (action != null) {
-            if (action.getActionType() != null &&
-                    flatCodeListeners.get(action.getActionType().getFlatCode()) != null) {
-                final String flatCode = action.getActionType().getFlatCode();
-                final Set<String> strings = flatCodeListeners.get(flatCode);
-                sendToListeners(action, flatCode, strings, true);
+    public void sendNotification(NotificationAction notificationAction) throws CoreException {
+        if (notificationAction != null && notificationAction.getAction() != null) {
+            final ActionType actionType = notificationAction.getAction().getActionType();
+            if (actionType != null &&
+                    flatCodeListeners.get(actionType.getFlatCode()) != null) {
+                final String flatCode = actionType.getFlatCode();
+                final Set<String> urls = flatCodeListeners.get(flatCode);
+                sendToListeners(notificationAction, flatCode, urls, true);
             }
-            if (action.getActionType() != null &&
-                    actionTypeIdListeners.get(action.getActionType().getId()) != null) {
-                final Set<String> strings = actionTypeIdListeners.get(action.getActionType().getId());
-                sendToListeners(action, null, strings, false);
+            if (actionType!= null &&
+                    actionTypeIdListeners.get(actionType.getId()) != null) {
+                final Set<String> urls = actionTypeIdListeners.get(actionType.getId());
+                sendToListeners(notificationAction, null, urls, false);
             }
         }
     }
 
-    private void sendToListeners(Action action, String code, Set<String> strings, boolean asynch) throws CoreException {
-        for (String basePath : strings) {
-            send(basePath, code, action, asynch);
+    private void sendToListeners(final NotificationAction notificationAction, String code, Set<String> urls, boolean asynch) throws CoreException {
+        for (String basePath : urls) {
+            send(basePath, code, notificationAction, asynch);
         }
         try {
             Thread.sleep(1000);
@@ -82,35 +85,35 @@ public class NotificationBean implements NotificationBeanLocal {
         }
     }
 
-    private void send(final String basePath, final String flatCode, final Action action, boolean asynch) throws CoreException {
+    private void send(final String basePath, final String flatCode, final NotificationAction notificationAction, boolean asynch) throws CoreException {
         //TODO: use asynch REST client
         if (asynch) {
             new Thread() {
                 public void run() {
                     try {
-                        sendThread(flatCode, basePath, action);
+                        sendThread(flatCode, basePath, notificationAction);
                     } catch (Throwable ex) {
                         logger.error("cannot to send a notification", ex);
                     }
                 }
             }.start();
         } else {
-            sendThread(flatCode, basePath, action);
+            sendThread(flatCode, basePath, notificationAction);
         }
     }
 
-    private void sendThread(String flatCode, String basePath, Action action) throws CoreException {
+    private void sendThread(String flatCode, String basePath, final NotificationAction notificationAction) throws CoreException {
         try {
             final String flatCodePath = flatCode == null || "".equals(flatCode) ? "" : (flatCode + "/");
             final String urlPath = (basePath.startsWith("http") ? "" : ConfigManager.Common().ServerUrl())
-                    + basePath + (basePath.endsWith("/") ? "" : "/") + flatCodePath + action.getId();
+                    + basePath + (basePath.endsWith("/") ? "" : "/") + flatCodePath + notificationAction.getAction().getId();
             logger.info("Send notification to: " + urlPath);
             final URL url;
             url = new URL(urlPath);
             final HttpURLConnection conn = (HttpURLConnection) url.openConnection();
             conn.setDoOutput(true);
             conn.setRequestProperty("Content-Type", "application/json");
-            conn.setRequestMethod("PUT");
+            conn.setRequestMethod(notificationAction.getMethod());
             int code = conn.getResponseCode();
             logger.info("Response code: " + code);
             if (code != 200) {

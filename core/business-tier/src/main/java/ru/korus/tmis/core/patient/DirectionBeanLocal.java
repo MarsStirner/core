@@ -6,6 +6,7 @@ import ru.korus.tmis.core.data.CommonData;
 import ru.korus.tmis.core.data.ConsultationRequestData;
 import ru.korus.tmis.core.data.JSONCommonData;
 import ru.korus.tmis.core.data.JobTicketStatusDataList;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function2;
 
@@ -30,7 +31,7 @@ public interface DirectionBeanLocal {
     JSONCommonData getDirectionById(int directionId,
                                     String title,
                                     Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis,
-                                    AuthData authData)
+                                    Staff staff)
            throws CoreException;
 
     /**
@@ -51,6 +52,7 @@ public interface DirectionBeanLocal {
                                                              Object request,
                                                              String mnem,
                                                              AuthData userData,
+                                                             Staff staff,
                                                              Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis)
             throws CoreException;
 
@@ -61,7 +63,6 @@ public interface DirectionBeanLocal {
      * @param title  вспомогательный параметр название действия (Диагнозтика).
      * @param request Параметры запроса с клиента.
      * @param mnem Мнемоника исследования.
-     * @param userData Данные пользователя
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws CoreException
      * @see CoreException
@@ -71,14 +72,15 @@ public interface DirectionBeanLocal {
                                                              String title,
                                                              Object request,
                                                              String mnem,
-                                                             AuthData userData,
+                                                             AuthData authData,
+                                                             Staff staff,
                                                              Function2<JSONCommonData, java.lang.Boolean, JSONCommonData> postProcessingForDiagnosis)
             throws CoreException;
 
     /**
      * Запись пациента на прием к врачу (создание направления к врачу)
      */
-    int createConsultation(ConsultationRequestData request, AuthData userData)
+    int createConsultation(ConsultationRequestData request, AuthData userData, Staff staff)
             throws CoreException;
 
     /**
@@ -89,7 +91,7 @@ public interface DirectionBeanLocal {
      * @throws CoreException
      * @see CoreException
      */
-    boolean removeDirections(AssignmentsToRemoveDataList directions, String directionType, AuthData userData) throws CoreException;
+    boolean removeDirections(AssignmentsToRemoveDataList directions, String directionType, Staff userData) throws CoreException;
 
     /**
      * Сервис по обновлению статусов JobTicket
@@ -98,7 +100,7 @@ public interface DirectionBeanLocal {
      * @return true - редактирование прошло успешно или false - при редактировании возникли ошибки (см. лог)
      * @throws CoreException
      */
-    boolean updateJobTicketsStatuses(JobTicketStatusDataList data, AuthData authData) throws CoreException;
+    boolean updateJobTicketsStatuses(JobTicketStatusDataList data, Staff authData) throws CoreException;
 
     void sendActionToLis(int actionId) throws CoreException;
 

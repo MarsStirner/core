@@ -14,7 +14,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbPatientBean
   extends DbPatientBeanLocal
@@ -110,7 +110,7 @@ class DbPatientBean
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
 
     val result = typed.getResultList
-    result.foreach(em.detach(_))
+
     result
   }
 
@@ -129,7 +129,6 @@ class DbPatientBean
       }
       case size => {
         val patient = result.iterator.next()
-        em.detach(patient)
         patient
       }
     }

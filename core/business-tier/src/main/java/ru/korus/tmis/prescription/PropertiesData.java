@@ -29,7 +29,8 @@ public class PropertiesData {
         name = propType == null ? null : propType.getName();
         type =  propType == null ? null : propType.getTypeName();
         code = propType == null ? null : propType.getCode();
-        valueDomain = propType == null ? null : propType.getValueDomain();
+        valueDomain = (propType == null || propType.getValueDomain() == null) ? null :
+                propType.getValueDomain().split(";")[0];
         APValue apValue = apValueList.isEmpty() ? null : apValueList.get(0);
         final boolean isRefRb = actionProperty.getType().getTypeName().equals("ReferenceRb");
         value = apValue == null ? null : apValue.getValueAsString();

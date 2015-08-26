@@ -52,7 +52,6 @@ class AppealBeanTest {
   @Mock var dbFDRecordBean: DbFDRecordBeanLocal = _
   @Mock var dbPatientBean: DbPatientBeanLocal = _
   @Mock var dbClientRelation: DbClientRelationBeanLocal = _
-  @Mock var dbClientQuoting: DbClientQuotingBeanLocal = _
   @Mock var dbEventPerson: DbEventPersonBeanLocal = _
   @Mock var dbEventTypeBean: DbEventTypeBeanLocal = _
   @Mock var diagnosisBean: DiagnosisBeanLocal = _
@@ -380,37 +379,6 @@ class AppealBeanTest {
     }
   }
 
-  //______________________________________________________________________________________________________
-  //****************************************   revokeAppealById Tests   ********************************
-  //______________________________________________________________________________________________________
-
-  @Test
-  def testRevokeAppealByIdSuccess = {
-
-    val event =  testData.getTestDefaultEvent(TEvent_id)
-    val resultId = 1
-    val authData = testData.getTestDefaultAuthData(testData.getTestDefaultStaff)
-
-    logger.warn("Start of revokeAppealById test:")
-    when(dbRbResultBean.getRbResultById(resultId)).thenReturn(new RbResult(resultId))
-
-    try{
-      logger.info("Request data for method is: {}", "event_id=%d, result_id=%d, auth=%s".format(TEvent_id, resultId, mapper.writeValueAsString(authData)))
-      val result = appealBean.revokeAppealById(event, resultId, authData)
-      Assert.assertNotNull(result)
-      Assert.assertEquals(result.getModifyPerson, authData.user)
-      Assert.assertEquals(result.getResult.getId.intValue(), resultId)
-      validateMockitoUsage()
-      logger.info("The method has been successfully completed. Result is: {}", result.toString)
-      logger.warn("Successful end of revokeAppealById test")
-    }
-    catch {
-      case ex: CoreException => {
-        logger.error("revokeAppealById test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
-        Assert.fail()
-      }
-    }
-  }
 
   //______________________________________________________________________________________________________
   //****************************************   getPatientsHospitalizedStatus Tests   ********************************

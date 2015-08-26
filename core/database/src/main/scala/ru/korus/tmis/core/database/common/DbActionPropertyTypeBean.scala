@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database.common
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import ru.korus.tmis.core.entity.model.ActionPropertyType
 
 import grizzled.slf4j.Logging
@@ -17,7 +17,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.I18nable
 import scala.language.reflectiveCalls
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class DbActionPropertyTypeBean
   extends DbActionPropertyTypeBeanLocal
@@ -36,7 +36,7 @@ class DbActionPropertyTypeBean
     val apt = if(result.isEmpty){
       null
     } else {
-      em.detach(result(0))
+
       result(0)
     }
     apt
@@ -101,7 +101,7 @@ class DbActionPropertyTypeBean
 
   def getAptByQuery(query: TypedQuery[ActionPropertyType]) = {
     val result = query.getResultList
-    result.foreach((apt) => em.detach((apt)))
+
     result.size match {
       case 0 => Collections.emptySet[ActionPropertyType]
       case size => new HashSet[ActionPropertyType](result)
@@ -112,13 +112,13 @@ class DbActionPropertyTypeBean
     val rolesId = em.createQuery(ActionTypeByCode, classOf[ActionType])
       .setParameter("code", code)
       .getResultList
-    rolesId.foreach((at) => em.detach((at)))
+
 
     val result = em.createQuery(ActionPropertyTypeByActionTypeIdWithCodeQuery,
       classOf[ActionPropertyType])
       .setParameter("rolesId", rolesId(0).getId.intValue()) //TODO: временно первое значение из листа (хотя оно и ед. пока)
       .getResultList
-    result.foreach((apt) => em.detach((apt)))
+
     result
   }
 
@@ -127,7 +127,6 @@ class DbActionPropertyTypeBean
       classOf[ActionPropertyType])
       .setParameter("rolesId", actionTypeId)
       .getResultList
-    result.foreach((apt) => em.detach((apt)))
     result
   }
 
@@ -135,7 +134,6 @@ class DbActionPropertyTypeBean
     val result = em.createQuery(ActionPropertyTypesByFlatCodesQuery, classOf[ActionPropertyType])
       .setParameter("codes", asJavaCollection(codes))
       .getResultList
-    result.foreach((apt) => em.detach((apt)))
     result
   }
 

@@ -29,7 +29,7 @@ public class DbRbMedicalAidUnit implements DbRbMedicalAidUnitBeanLocal {
                 .setParameter("code", code).getResultList();
         if(!resultList.isEmpty()){
             final RbMedicalAidUnit medicalAidUnit = resultList.get(0);
-            em.detach(medicalAidUnit);
+
             return medicalAidUnit;
         }
         return null;

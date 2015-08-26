@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
 import java.util
@@ -14,7 +14,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbPolicyTypeBean
   extends DbRbPolicyTypeBeanLocal
@@ -51,9 +51,7 @@ class DbRbPolicyTypeBean
           i18n("error.rbDocumentTypeNotFound"))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

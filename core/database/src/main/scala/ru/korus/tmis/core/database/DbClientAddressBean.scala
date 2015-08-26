@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 
 import java.lang.Iterable
@@ -15,7 +14,6 @@ import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbClientAddressBean
   extends DbClientAddressBeanLocal
@@ -63,7 +61,7 @@ class DbClientAddressBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }
@@ -85,7 +83,7 @@ class DbClientAddressBean
       }
       case size => {
         result.foreach(rbType => {
-          em.detach(rbType)
+
         })
         result(0)
       }
@@ -96,34 +94,37 @@ class DbClientAddressBean
                                   addressEntry: AddressEntryContainer,
                                   patient: Patient,
                                   sessionUser: Staff): ClientAddress = {
+    if(!addressEntry.getKladr() && "".equals(addressEntry.getFullAddress().trim)) {
+      return null
+    }
     val now = new Date
 
-    var d: ClientAddress = new ClientAddress()
-    var d1: Address = new Address()
-    var d2: AddressHouse = new AddressHouse()
+    var clientAddress: ClientAddress = new ClientAddress()
+    var address: Address = new Address()
+    var addressHouse: AddressHouse = new AddressHouse()
 
-    if (d == null || d.getId == null) {
-      d = new ClientAddress
-      d.setAddressType(addressTypeId.shortValue())
-      d.setPatient(patient)
-      d.setCreatePerson(sessionUser)
-      d.setCreateDatetime(now)
+    if (clientAddress == null || clientAddress.getId == null) {
+      clientAddress = new ClientAddress
+      clientAddress.setAddressType(addressTypeId.shortValue())
+      clientAddress.setPatient(patient)
+      clientAddress.setCreatePerson(sessionUser)
+      clientAddress.setCreateDatetime(now)
 
-      d1 = new Address()
-      d1.setCreatePerson(sessionUser)
-      d1.setCreateDatetime(now)
+      address = new Address()
+      address.setCreatePerson(sessionUser)
+      address.setCreateDatetime(now)
 
-      d2 = new AddressHouse()
-      d2.setCreatePerson(sessionUser)
-      d2.setCreateDatetime(now)
+      addressHouse = new AddressHouse()
+      addressHouse.setCreatePerson(sessionUser)
+      addressHouse.setCreateDatetime(now)
 
     }
 
     //если поля КЛАДР заполнены:
     if (addressEntry.getKladr()) {
       if (addressEntry.getCity() != null && addressEntry.getStreet() != null) {
-        d.setAddress(d1)
-        d1.setHouse(d2)
+        clientAddress.setAddress(address)
+        address.setHouse(addressHouse)
 
         val kladr_code =
           if (addressEntry.getLocality() != null && addressEntry.getLocality().getCode() != null && addressEntry.getLocality().getCode() != "") {
@@ -137,41 +138,41 @@ class DbClientAddressBean
           } else {
             ""
           }
-        d2.setKLADRCode(kladr_code)
+        addressHouse.setKLADRCode(kladr_code)
 
         if (addressEntry.getStreet().getCode() != null)
-          d2.setKLADRStreetCode(addressEntry.getStreet().getCode())
+          addressHouse.setKLADRStreetCode(addressEntry.getStreet().getCode())
         else
-          d2.setKLADRStreetCode("")
+          addressHouse.setKLADRStreetCode("")
 
-        d1.setFlat(addressEntry.getFlat())
+        address.setFlat(addressEntry.getFlat())
 
-        d2.setNumber(addressEntry.getHouse())
-        d2.setCorpus(addressEntry.getBuilding())
+        addressHouse.setNumber(addressEntry.getHouse())
+        addressHouse.setCorpus(addressEntry.getBuilding())
       }
-      d.setFreeInput("")
+      clientAddress.setFreeInput("")
     }
     else {
       //свободный ввод
-      d.setAddress(null)
-      d.setFreeInput(addressEntry.getFullAddress())
+      clientAddress.setAddress(null)
+      clientAddress.setFreeInput(addressEntry.getFullAddress())
     }
-    d.setLocalityType(addressEntry.getLocalityType().intValue())
+    clientAddress.setLocalityType(addressEntry.getLocalityType().intValue())
 
     //служебные поля
-    d.setDeleted(false)
-    d.setModifyPerson(sessionUser)
-    d.setModifyDatetime(now)
+    clientAddress.setDeleted(false)
+    clientAddress.setModifyPerson(sessionUser)
+    clientAddress.setModifyDatetime(now)
 
-    d1.setDeleted(false)
-    d1.setModifyPerson(sessionUser)
-    d1.setModifyDatetime(now)
+    address.setDeleted(false)
+    address.setModifyPerson(sessionUser)
+    address.setModifyDatetime(now)
 
-    d2.setDeleted(false)
-    d2.setModifyPerson(sessionUser)
-    d2.setModifyDatetime(now)
+    addressHouse.setDeleted(false)
+    addressHouse.setModifyPerson(sessionUser)
+    addressHouse.setModifyDatetime(now)
 
-    d
+    clientAddress
   }
 
   def deleteClientAddress(id: Int,

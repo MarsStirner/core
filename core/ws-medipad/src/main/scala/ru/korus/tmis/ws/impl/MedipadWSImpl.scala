@@ -76,6 +76,9 @@ class MedipadWSImpl
 
   @EJB
   var dbOrgStructureBean: DbOrgStructureBeanLocal = _
+
+  @EJB
+  var dbStaff: DbStaffBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
   def currentAuthData() = {
@@ -107,7 +110,7 @@ class MedipadWSImpl
 
     if (currentUser.isPermitted("existsSeesStructure")
       || currentUser().isPermitted("inflowSeesStructure")) {
-      return patientBean.getCurrentPatientsForDepartment(currentAuthData)
+      return patientBean.getCurrentPatientsForDepartment(dbStaff.getStaffById(currentAuthData.getUserId))
     } else if (currentUser.isPermitted("existsSeesSelf")
       || currentUser().isPermitted("inflowSeesSelf")) {
       return patientBean.getCurrentPatientsForDoctor(currentAuthData)
@@ -133,7 +136,7 @@ class MedipadWSImpl
 
   def getAssessmentTypes(globalVersion: String,
                          eventId: Int): CommonData = checkingVersion(globalVersion) {
-      assessmentBean.getAssessmentTypes(eventId, currentAuthData)
+      assessmentBean.getAssessmentTypes(eventId, dbStaff.getStaffById(currentAuthData.getUserId))
   }
 
   def getAllAssessmentTypes(globalVersion: String) = checkingVersion(globalVersion) {
@@ -160,7 +163,8 @@ class MedipadWSImpl
     requiresPermissions(Array("clientAssessmentCreate"))
     assessmentBean.createAssessmentForEventId(eventId,
                                               assessment,
-                                              currentAuthData);
+                                              currentAuthData,
+                                              dbStaff.getStaffById(currentAuthData.getUserId));
   }
 
   def modifyAssessmentForPatient(eventId: Int,
@@ -169,14 +173,15 @@ class MedipadWSImpl
     requiresPermissions(Array("clientAssessmentUpdate"))
     assessmentBean.modifyAssessmentById(assessmentId,
                                         assessment,
-                                        currentAuthData);
+                                        currentAuthData,
+                                        dbStaff.getStaffById(currentAuthData.getUserId));
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   def getDiagnosticTypes(globalVersion: String,
                          eventId: Int) = checkingVersion(globalVersion) {
-    diagnosticBean.getDiagnosticTypes(eventId, currentAuthData)
+    diagnosticBean.getDiagnosticTypes(eventId, dbStaff.getStaffById(currentAuthData.getUserId))
   }
 
   def getAllDiagnosticTypes(globalVersion: String) = checkingVersion(globalVersion) {
@@ -199,7 +204,8 @@ class MedipadWSImpl
     val auth = currentAuthData
     diagnosticBean.createDiagnosticForEventId(eventId,
                                               diagnostic,
-                                              auth)
+                                              auth,
+                                              dbStaff.getStaffById(currentAuthData.getUserId))
   }
 
   def modifyDiagnosticForPatient(eventId: Int,
@@ -208,7 +214,8 @@ class MedipadWSImpl
     requiresPermissions(Array("clientDiagnosticUpdate"))
     diagnosticBean.modifyDiagnosticById(diagnosticId,
                                         diagnostic,
-                                        currentAuthData)
+                                        currentAuthData,
+                                        dbStaff.getStaffById(currentAuthData.getUserId))
   }
 
   def callOffDiagnosticForPatient(eventId: Int,

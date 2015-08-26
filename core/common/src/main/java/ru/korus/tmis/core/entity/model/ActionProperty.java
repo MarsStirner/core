@@ -14,7 +14,9 @@ import java.util.Map;
 @Table(name = "ActionProperty")
 @NamedQueries(
         {
-                @NamedQuery(name = "ActionProperty.findAll", query = "SELECT a FROM ActionProperty a")
+                @NamedQuery(name = "ActionProperty.findAll", query = "SELECT a FROM ActionProperty a"),
+                @NamedQuery(name = "ActionProperty.ByTypeIdAndDate", query = "SELECT a.id FROM ActionProperty a " +
+                        "WHERE a.actionPropertyType.id = :aptId AND a.createDatetime >= :begDate  ORDER BY a.id ASC")
         })
 @XmlType(name = "actionProperty")
 @XmlRootElement(name = "actionProperty")
@@ -105,12 +107,19 @@ public class ActionProperty
     private static Map<String, Class> valueTypeMap =
             new HashMap<String, Class>();
 
+    public static final String DATE = "Date";
+
+    public static final String MKB = "MKB";
+
+    public static final String DIAGNOSIS = "Diagnosis";
+
+
     static {
         valueTypeMap.put("Action", APValueAction.class);
         valueTypeMap.put("OperationType", APValueInteger.class);
         valueTypeMap.put("AnalysisStatus", APValueAnalysisStatus.class);
         valueTypeMap.put("Constructor", APValueString.class);
-        valueTypeMap.put("Date", APValueDate.class);
+        valueTypeMap.put(DATE, APValueDate.class);
         valueTypeMap.put("Double", APValueDouble.class);
         valueTypeMap.put("HospitalBed", APValueHospitalBed.class);
         valueTypeMap.put("HospitalBedProfile", APValueHospitalBedProfile.class);
@@ -124,7 +133,7 @@ public class ActionProperty
         valueTypeMap.put("Text", APValueString.class);
         valueTypeMap.put("Time", APValueTime.class);
         valueTypeMap.put("RLS", APValueRLS.class);
-        valueTypeMap.put("MKB", APValueMKB.class);
+        valueTypeMap.put(MKB, APValueMKB.class);
         valueTypeMap.put("Image", APValueImage.class);
         valueTypeMap.put("Жалобы", APValueString.class);
         valueTypeMap.put("DiagnosticEpicrisisPartitional", APValueString.class);
@@ -133,6 +142,7 @@ public class ActionProperty
         valueTypeMap.put("Legal_representative_id", APValueInteger.class);//че за тип такой?
         valueTypeMap.put("rbReasonOfAbsence", APValueRbReasonOfAbsence.class); //Причина отсутствия
         valueTypeMap.put("Table", APValueInteger.class);
+        valueTypeMap.put(DIAGNOSIS, APValueDiagnosis.class);
     }
 
     @SuppressWarnings("rawtypes")
@@ -180,15 +190,16 @@ public class ActionProperty
 
         String propertyType = actionPropertyType.getTypeName();
 
-        final boolean isRef = "Reference".equals(propertyType);
+        final boolean isRef = "Reference".equals(propertyType) ||  "ReferenceRb".equals(propertyType);
         if (isRef) {
-            propertyType = actionPropertyType.getValueDomain();
+            String valueDomain = actionPropertyType.getValueDomain();
+            propertyType = valueDomain == null ? null : valueDomain.split(";")[0];
         }
 
         if (valueTypeMap.containsKey(propertyType)) {
             valueClass = valueTypeMap.get(propertyType);
         } else if (isRef || "ReferenceRb".equals(propertyType)) {
-            if(propertyType.equals("rbBloodComponentType")) {
+            if(propertyType.equals("rbTrfuBloodComponentType")) {
                 valueClass = APValueRbBloodComponentType.class;
             } else if (propertyType.equals("Action")) {
                 valueClass = APValueAction.class;

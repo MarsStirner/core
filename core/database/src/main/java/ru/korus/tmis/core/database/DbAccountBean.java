@@ -74,7 +74,7 @@ public class DbAccountBean implements DbAccountBeanLocal {
         em.createNamedQuery("Account.deleteAccount")
                 .setParameter("id", toDelete.getId())
                 .executeUpdate();
-        em.detach(toDelete);
+
     }
 
     @Override
@@ -161,7 +161,7 @@ public class DbAccountBean implements DbAccountBeanLocal {
                 .setParameter("begDate", beginDate)
                 .setParameter("endDate", endDate)
                 .setParameter("contractId", contractId)
-                .getSingleResult()).intValue();
+                .getSingleResult()).intValue() + 1;
     }
 
     @Override

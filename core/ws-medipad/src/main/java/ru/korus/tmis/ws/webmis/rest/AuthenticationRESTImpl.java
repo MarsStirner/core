@@ -9,9 +9,13 @@ import javax.ws.rs.core.Context;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.*;
-import ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor;
+
 import ru.korus.tmis.core.data.RoleData;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
+import ru.korus.tmis.core.entity.model.Role;
+import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.AuthenticationException;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.medipad.AuthenticationWebService;
 import ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage;
 
@@ -20,7 +24,6 @@ import java.util.Arrays;
 /**
  * Description: Сервисы авторизации
  */
-@Interceptors(AuthLoggingInterceptor.class)
 @Singleton
 @Path("/tms-auth/")
 @Produces("application/json")
@@ -32,6 +35,9 @@ public class AuthenticationRESTImpl   {
 
     @EJB
     WebMisREST webmisImpl;
+
+    @EJB
+    private DbStaffBeanLocal dbStaffBeanLocal;
 
     /**
      * Сервис по получению доступных ролей для пользователя (первичная авторизация)
@@ -69,6 +75,7 @@ public class AuthenticationRESTImpl   {
     	return wsImpl.authenticate(userName, password, roleId);
     }
 
+
     /**
      * Сервис по получению доступных ролей для пользователя (первичная авторизация)
      * @param request Авторизационные данные пользователя в виде контейнера: AuthEntry.
@@ -88,6 +95,23 @@ public class AuthenticationRESTImpl   {
             return new JSONWithPadding(wsImpl.getRoles(request.login(), request.password()), callback);
         } catch (AuthenticationException e) {
             return new ExceptionJSONMessage(e);
+        }
+    }
+
+
+    @EJB
+    AuthStorageBeanLocal authStorage;
+
+    @GET
+    @Path("/user-info")
+    @Consumes({"application/json", "application/xml"})
+    @Produces({"application/javascript", "application/x-javascript","application/xml"})
+    public Object getAuthData(@Context HttpServletRequest servletRequest,
+                              @QueryParam("callback") String callback) throws AuthenticationException {
+        try {
+            return new JSONWithPadding(authStorage.checkTokenCookies(Arrays.asList(servletRequest.getCookies())), callback);
+        } catch (CoreException e) {
+            throw new AuthenticationException("Недопустимый токен");
         }
     }
 
@@ -126,9 +150,20 @@ public class AuthenticationRESTImpl   {
     public Object authenticate3(@Context HttpServletRequest servRequest,
                                 @QueryParam("roleId") int roleId,
                                 @QueryParam("callback") String callback) throws AuthenticationException {
-        AuthData auth = webmisImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
-        return new JSONWithPadding(wsImpl
-                .authenticate(auth.getUser().getLogin(), auth.getUser().getPassword(), roleId), callback);
+        AuthData authData = webmisImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+        Staff staff = null;
+        try {
+            staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        } catch (CoreException e) {
+            throw new AuthenticationException();
+        }
+        for(Role r : staff.getRoles()) {
+            if(r.getId().equals(roleId)) {
+                authData.setUserRole(r);
+                return new JSONWithPadding(authData, callback);
+            }
+        }
+        throw new AuthenticationException("Недопустимая роль (id = " + roleId + ") для сотрудника " + staff.getFullName());
     }
 
 }

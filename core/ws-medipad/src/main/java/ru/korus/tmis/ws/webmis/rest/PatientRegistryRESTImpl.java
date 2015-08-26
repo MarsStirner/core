@@ -18,14 +18,14 @@ import javax.ws.rs.core.Context;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 import com.sun.jersey.api.json.JSONWithPadding;
 
 /**
  * Сервисы для работы с ядром TMIS посредством Web-клиента
  */
 @Stateless
-@Interceptors(ServicesLoggingInterceptor.class)
+
 public class PatientRegistryRESTImpl {
 
     @EJB
@@ -119,43 +119,6 @@ public class PatientRegistryRESTImpl {
                                  @QueryParam("callback") String callback,
                                  @PathParam("patientId")int patientId) throws CoreException {
         return new JSONWithPadding(wsImpl.getPatientById(patientId, mkAuth(servRequest)), callback);
-    }
-
-
-
-    /**
-     * Получение списка талонов СПО для пациента.
-     * @param patientId Идентификатор пациента.
-     * @param limit Максимальное количество выводимых элементов в списке.
-     * @param page Номер выводимой страницы.
-     * @param sortingField Наименование поля для сортировки.<pre>
-     * &#15; Возможные значения:
-     * &#15; "id" - по идентификатору обращения;
-     * &#15; "start" | "begDate" - по дате начала госпитализации;
-     * &#15; "end" | "endDate" - по дате окончания госпитализации;
-     * &#15; "doctor" - по ФИО специалиста;
-     * &#15; "department" - по наименованию отделения;</pre>
-     * @param sortingMethod Метод сортировки.<pre>
-     * &#15; Возможные значения:
-     * &#15; "asc" - по возрастанию (значение по умолчанию);
-     * &#15; "desc" - по убыванию;</pre>
-     * @return com.sun.jersey.api.json.JSONWithPadding как Object
-     * @throws CoreException
-     * @see CoreException
-     */
-    @GET
-    @Path("/{patientId}/talons")
-    @Produces({"application/javascript", "application/x-javascript"})
-    public Object getAllTalonsForPatient(@Context HttpServletRequest servRequest,
-                                         @QueryParam("callback") String callback,
-                                         @PathParam("patientId") int patientId,
-                                         @QueryParam("limit")int limit,
-                                         @QueryParam("page")int  page,
-                                         @QueryParam("sortingField")String sortingField,   //сортировки вкл.
-                                         @QueryParam("sortingMethod")String sortingMethod) throws CoreException {
-        TalonSPODataListFilter filter = new TalonSPODataListFilter(patientId, "33");
-        TalonSPOListRequestData request = new TalonSPOListRequestData(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getAllTalonsForPatient(request), callback);
     }
 
 

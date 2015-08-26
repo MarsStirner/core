@@ -28,9 +28,9 @@ public interface AppealBeanLocal {
      * @see AppealData
      * @see AuthData
      */
-    int insertAppealForPatient(AppealData appealData, int patientId, AuthData authData) throws CoreException;
+    int insertAppealForPatient(AppealData appealData, int patientId, AuthData authData, Staff staff) throws CoreException;
 
-    int updateAppeal(AppealData appealData, int eventId, AuthData authData) throws CoreException;
+    int updateAppeal(AppealData appealData, int eventId, AuthData authData, Staff staff) throws CoreException;
 
     /**
      * Получение данных об обращении на госпитализацию по идентификатору.
@@ -75,7 +75,7 @@ public interface AppealBeanLocal {
      * @see Event
      * @see AuthData
      */
-    Event revokeAppealById(Event event, int resultId, AuthData authData) throws CoreException;
+    Event revokeAppealById(Event event, int resultId, Staff staff) throws CoreException;
 
     /**
      * Возвращает список кодов типов обращений (s11r64.EventType.code) по идентификатору плоского справочника (s11r64.FlatDirectory.id).
@@ -117,17 +117,6 @@ public interface AppealBeanLocal {
      */
     String getPatientsHospitalizedStatus(int eventId) throws CoreException;
 
-    /**
-     * Метод создает или редактирует талон ВМП (квота)
-     * @param dataEntry Данные о квоте как ClientQuoting
-     * @param eventId Идентификатор обращения на госпитализацию.
-     * @param auth Авторизационные данные.
-     * @return талом ВМП (квота)
-     * @throws CoreException
-     * @since 1.0.0.48
-     */
-    ClientQuoting insertOrUpdateClientQuoting(QuotaEntry dataEntry, int eventId, AuthData auth) throws CoreException;
-
     MonitoringInfoListData getMonitoringInfo(int eventId, int condition, AuthData authData) throws CoreException;
 
     SortedSet<Tuple5<String, Date, Date, List<Integer>, Integer>> getInfectionMonitoring(Patient patient) throws CoreException;
@@ -136,5 +125,5 @@ public interface AppealBeanLocal {
 
     SurgicalOperationsListData getSurgicalOperations(int eventId, AuthData authData) throws CoreException;
 
-    Boolean setExecPersonForAppeal(int id, int personId, AuthData authData, ExecPersonSetType epst) throws CoreException;
+    Boolean setExecPersonForAppeal(int id, int personId, Staff staff, ExecPersonSetType epst) throws CoreException;
 }

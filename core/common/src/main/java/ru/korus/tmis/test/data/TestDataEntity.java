@@ -102,7 +102,6 @@ public interface TestDataEntity extends Serializable {
 
     BloodHistory getTestDefaultBloodHistory(int id, RbBloodType bloodType, Staff person);
     RbBloodType getTestDefaultRbBloodType(int id);
-    AuthData getTestDefaultAuthData(Staff user);
 
     Kladr getTestDefaultKladr();
     Street getTestDefaultStreet();

@@ -1,6 +1,11 @@
 package ru.korus.tmis.core.database.common
 
+import java.text.SimpleDateFormat
+import javax.swing.text.TabableView
+
 import ru.korus.tmis.core.auth.AuthData
+import ru.korus.tmis.core.data.{TableCol, TableValue}
+import ru.korus.tmis.core.database.DbDiagnosticBeanLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 
@@ -14,8 +19,10 @@ import scala.collection.mutable.LinkedHashMap
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import java.util
 import scala.language.reflectiveCalls
+import ru.korus.tmis.core.data.adapters.DateTimeAdapter
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+
+//
 @Stateless
 class DbActionPropertyBean
   extends DbActionPropertyBeanLocal
@@ -31,6 +38,9 @@ class DbActionPropertyBean
 
   @EJB
   var dbActionPropertyType: DbActionPropertyTypeBeanLocal = _
+
+  @EJB
+  var dbbDiagnosticBeanLocal: DbDiagnosticBeanLocal = _
 
   private val FILTER_ID = 0
   private val FILTER_NAME = 1
@@ -52,7 +62,7 @@ class DbActionPropertyBean
       }
       case size => {
         val actionProperty = result.iterator.next()
-        em.detach(actionProperty) //временно закрыл
+
         actionProperty
       }
     }
@@ -67,7 +77,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap)
+
         map.put(ap, getActionPropertyValue(ap))
         map
       }
@@ -104,7 +114,7 @@ class DbActionPropertyBean
     }
   }
 
-  def createActionProperty(a: Action, aptId: Int, userData: AuthData) = {
+  def createActionProperty(a: Action, aptId: Int, staff: Staff) = {
     val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
     val now = new Date()
     val ap = new ActionProperty
@@ -112,20 +122,20 @@ class DbActionPropertyBean
     ap.setCreateDatetime(now)
     ap.setModifyDatetime(now)
     //TODO: временно подсовываю пустой Staff когда нет AuthData
-    if (userData != null) {
-      ap.setCreatePerson(userData.user)
+    if (staff != null) {
+      ap.setCreatePerson(staff)
       ap.setCreateDatetime(now)
-      ap.setModifyPerson(userData.user)
+      ap.setModifyPerson(staff)
       ap.setModifyDatetime(now)
     }
 
     ap.setAction(a)
     ap.setType(apt)
-
+    em.persist(ap)
     ap
   }
 
-  def createActionPropertyWithDate(a: Action, aptId: Int, userData: AuthData, now: Date): ActionProperty = {
+  def createActionPropertyWithDate(a: Action, aptId: Int, staff: Staff, now: Date): ActionProperty = {
     val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
     if(apt == null) {
       return null;
@@ -135,30 +145,33 @@ class DbActionPropertyBean
     ap.setCreateDatetime(now)
     ap.setModifyDatetime(now)
     //TODO: временно подсовываю пустой Staff когда нет AuthData
-    if (userData != null) {
-      ap.setCreatePerson(userData.user)
+    if (staff != null) {
+      ap.setCreatePerson(staff)
       ap.setCreateDatetime(now)
-      ap.setModifyPerson(userData.user)
+      ap.setModifyPerson(staff)
       ap.setModifyDatetime(now)
     }
 
     ap.setAction(a)
     ap.setType(apt)
-
+    em.persist(ap)
     ap
   }
 
-  def updateActionProperty(id: Int, version: Int, userData: AuthData) = {
+  def updateActionProperty(id: Int, version: Int, staff: Staff) = {
     val ap = getActionPropertyById(id)
 
-    ap.setModifyPerson(userData.user)
+    ap.setModifyPerson(staff)
     ap.setModifyDatetime(new Date)
     ap.setVersion(version)
-
+    em.merge(ap)
     ap
   }
 
   def setActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
+    if (ap.getId == null) {
+      em.flush()
+    }
     val apvs = getActionPropertyValue(ap)
 
     apvs.size match {
@@ -171,20 +184,24 @@ class DbActionPropertyBean
         else null
       }
       case _ => {
-        if (ap.getType.getIsVector) {
+        if (ap.getType.getIsVector || apvs.size <= index) {
           createActionPropertyValue(ap, value, index)
         } else {
-          val apv = apvs.get(0)
+          val apv = apvs.get(index)
           if (value != null) {
             val apt = ap.getType()
-            if ("Reference".equals(apt.getTypeName)) {
-              if (apv.unwrap().setValue(toRefValue(ap, value)) ) apv else null
+            if ("Reference".equals(apt.getTypeName) || "ReferenceRb".equals(apt.getTypeName)) {
+              if ("rbTrfuBloodComponentType".equals(ap.getType.getValueDomain.split(";")(0))) {
+                apv.unwrap().setValue(toTrfuRefValue(ap, value));
+              } else
+              if (apv.unwrap().setValue(toRefValue(ap, value))) apv else null
             } else {
               if (apv.unwrap.setValueFromString(value)) apv else null
             }
+            em.merge(apv)
           }
           else {
-            em remove apv
+            em.remove(apv)
             null
           }
         }
@@ -192,15 +209,29 @@ class DbActionPropertyBean
     }
   }
 
+  def toTrfuRefValue(ap: ActionProperty, value: String): RbTrfuBloodComponentType = {
+    val code = value.split("-")(0).trim
+    val res = em.createQuery("SELECT r FROM RbTrfuBloodComponentType r WHERE r.code = :code", classOf[RbTrfuBloodComponentType]).
+      setParameter("code", code).getResultList
+    if (res.isEmpty) {
+      return null
+    }
+    res(0)
+  }
+
+
   def toRefValue(ap: ActionProperty, value: String): String = {
     val code = value.split("-")(0).trim
-    val res = em.createNativeQuery("SELECT `id` FROM %s WHERE `code` = '%s'".format(ap.getType.getValueDomain, code)).getResultList
+    val res = em.createNativeQuery("SELECT `id` FROM %s WHERE `code` = '%s'".format(ap.getType.getValueDomain.split(";")(0), code)).getResultList
+    if (res.isEmpty) {
+      return ""
+    }
     String.valueOf(res(0))
   }
 
   def fromRefValue(apt: ActionPropertyType, value: String): String = {
     val code = value.split("-")(0).trim
-    val data = em.createNativeQuery("SELECT `code`, `name` FROM %s WHERE `id` = %s".format(apt.getValueDomain, value)).getResultList
+    val data = em.createNativeQuery("SELECT `code`, `name` FROM %s WHERE `id` = %s".format(apt.getValueDomain.split(";")(0), value)).getResultList
     var res = if (data.isEmpty) {
       value
     } else {
@@ -209,60 +240,94 @@ class DbActionPropertyBean
     res
   }
 
-  def convertTableValue(apt: ActionPropertyType, value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
-    val res = new java.util.LinkedList[java.util.LinkedList[String]]
-    val rbAPTableFieldList = em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", apt.getValueDomain).getResultList
+  def convertTableValue(apt: ActionPropertyType, value: String): java.util.LinkedList[TableCol] = {
+
+    val res = new java.util.LinkedList[TableCol]
+    val rbAPTableFieldList = getTableFields(apt)
     val rbAPTable = rbAPTableFieldList.get(0).getRbAptable
-    val prmList = rbAPTableFieldList.foldLeft("")( (b,a) => {
+    val prmList = rbAPTableFieldList.foldLeft("")((b, a) => {
       val s = if (b.isEmpty) "" else ","
-      val name = if (a.getReferenceTable == null) a.getRbAptable.getTableName +  "." + a.getFieldName else a.getReferenceTable + ".name"
-      b + s + (if(name.equals("trfuOrderIssueResult.stickerUrl")) "CONCAT('" + ConfigManager.TrfuProp.StickerBaseUrl + "'," + name + ")" else name)
+      val name = if (a.getReferenceTable == null) a.getRbAptable.getTableName + "." + a.getFieldName else a.getReferenceTable + ".name"
+      b + s + (if (name.equals("trfuOrderIssueResult.stickerUrl")) "CONCAT('" + ConfigManager.TrfuProp.StickerBaseUrl + "'," + name + ")" else name)
     })
-    val tblList =  rbAPTableFieldList.foldLeft(rbAPTable.getTableName)( (b,a) => {
+    val tblList = rbAPTableFieldList.foldLeft(rbAPTable.getTableName)((b, a) => {
       if (a.getReferenceTable == null) {
         b
       } else {
-           b + " INNER JOIN " + a.getReferenceTable + " ON " + a.getReferenceTable + ".id=" + rbAPTable.getTableName + "." + a.getFieldName
+        b + " INNER JOIN " + a.getReferenceTable + " ON " + a.getReferenceTable + ".id=" + rbAPTable.getTableName + "." + a.getFieldName
       }
     })
     val query: String = "SELECT %s FROM %s WHERE %s.%s=%s".format(prmList, tblList, rbAPTable.getTableName, rbAPTable.getMasterField, value)
     val data = em.createNativeQuery(query).getResultList
     if (data.isEmpty) {
-      res.add(new util.LinkedList[String])
+      res.add(new TableCol())
     }
 
     data.foreach(d => {
-      res.add(new util.LinkedList[String])
-      d.asInstanceOf[Array[Object]].foreach(v => {res.getLast.add("" + v)})
+      res.add(new TableCol())
+      d.asInstanceOf[Array[Object]].foreach(v => {
+        res.getLast.values.add(new TableValue("" + v))
+      })
     })
     res
   }
 
-
-  def convertValue(apt: ActionPropertyType, value: String): java.util.LinkedList[java.util.LinkedList[String]] = {
+  override def convertValue(apt: ActionPropertyType, values: java.util.List[APValue]): java.util.List[TableCol] = {
+    if (values.isEmpty) {
+      return  new java.util.LinkedList[TableCol]
+    }
     if ("Table".equals(apt.getTypeName)) {
-      return convertTableValue(apt, value)
+      return convertTableValue(apt, values.get(0).getValueAsString)
+    } else if ("Diagnosis".equals(apt.getTypeName)) {
+      return convertDiagValue(values)
     }
-    val res = new java.util.LinkedList[java.util.LinkedList[String]]
-    res.add(new util.LinkedList[String])
-    if ("Reference".equals(apt.getTypeName)) {
-      res.get(0).add(fromRefValue(apt, value));
-    } else {
-      res.get(0).add(value);
-    }
+    val tableValue: TableValue = new TableValue(
+      if ("Reference".equals(apt.getTypeName) || "ReferenceRb".equals(apt.getTypeName))
+        fromRefValue(apt, values.get(0).getValueAsString)
+      else
+        values.get(0).getValueAsString
+    )
+    val res = new java.util.LinkedList[TableCol]
+    res.add(new TableCol)
+    res.get(0).values.add(tableValue)
     res
   }
 
   def convertScope(propertyType: ActionPropertyType) = {
     propertyType.getTypeName match {
       case "Reference" => getScopeForReference(propertyType)
+      case "ReferenceRb" => getScopeForReference(propertyType)
       case "Table" => getScopeForTable(propertyType)
+      case "Diagnosis" => getScopeForDiagnosis(propertyType)
       case _ => propertyType.getValueDomain
     }
   }
 
+  def convertColType(propertyType: ActionPropertyType) = {
+    propertyType.getTypeName match {
+      case "Table" =>{
+        val rbAPTableFieldList = getTableFields(propertyType)
+        rbAPTableFieldList.foldLeft(new java.util.LinkedList[String])((a, b) => {a.add("String");a})
+      }
+       case "Diagnosis" => {
+        val diagType = Array ( ActionProperty.DATE, //Дата начала
+           ActionProperty.DATE, //Дата окончания
+           ActionProperty.MKB, //МКБ
+           "rbDiagnosisType", //Тип
+           "rbDiseaseCharacter",//Характер
+           "rbResult",//Результат
+           "rbAcheResult", //Исход
+           "Person", //Врач
+           "String" //Примечание
+         )
+         diagType.foldLeft(new java.util.LinkedList[String])((a, b) => {a.add(b);a})
+       }
+      case _ => null
+    }
+  }
+
   def getScopeForReference(propertyType: ActionPropertyType) = {
-    val rbData = em.createNativeQuery("SELECT `code`, `name` FROM %s".format(propertyType.getValueDomain)).getResultList
+    val rbData = em.createNativeQuery("SELECT `code`, `name` FROM %s".format(propertyType.getValueDomain.split(";")(0))).getResultList
     val resList: java.util.List[Array[Object]] = rbData.asInstanceOf[java.util.List[Array[Object]]]
     //преобразуем результат SQL запроса в CSV формат вида "<code> - <name>, <code> - <name>, ..." и при наличии в названии ',' заменяем на "(....)"
     resList.foldLeft("")((b, a) => {
@@ -272,11 +337,42 @@ class DbActionPropertyBean
   }
 
   def getScopeForTable(propertyType: ActionPropertyType) = {
-    val rbAPTableFieldList = em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", propertyType.getValueDomain).getResultList
+    val rbAPTableFieldList = getTableFields(propertyType)
     //преобразуем результат SQL запроса в CSV формат вида "<code> - <name>, <code> - <name>, ..." и при наличии в названии ',' заменяем на "(....)"
     rbAPTableFieldList.foldLeft("")((b, a) => {
       b + a.getName + ","
     })
+  }
+
+  def getTableFields(propertyType: ActionPropertyType): List[RbAPTableField] = {
+    em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", propertyType.getValueDomain).getResultList
+  }
+
+  def getScopeForDiagnosis(propertyType: ActionPropertyType) = {
+    val diagTableHeader = Array(
+      "Дата начала", "Дата окончания", "МКБ", "Тип", "Характер", "Результат", "Исход", "Врач", "Примечание"
+    )
+    diagTableHeader.foldLeft("")((b, a) => {
+      b + a + ","
+    })
+  }
+
+  def convertDiagValue(values: java.util.List[APValue]): java.util.List[TableCol] = {
+    try {
+    values.toList.foldLeft(new java.util.LinkedList[TableCol]())((list, value) => {
+      val id: Int = Integer.parseInt(value.getValueAsString)
+      val d: Diagnostic = dbbDiagnosticBeanLocal.getDiagnosticById(id)
+      val col: TableCol = dbbDiagnosticBeanLocal.toTableCol(d)
+      if (col != null) {
+        list.add(col)
+      }
+
+      list
+    })
+    } catch {
+      case e: NumberFormatException =>
+        throw new CoreException("Невозможно обработать значение свойства типа 'Diagnosis' " )
+    }
   }
 
 
@@ -288,6 +384,7 @@ class DbActionPropertyBean
     v
   }
 
+
   def createActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
     val cls = ap.getValueClass
     if (cls == null)
@@ -297,12 +394,13 @@ class DbActionPropertyBean
       val apv = cls.newInstance.asInstanceOf[APValue]
       // Устанваливаем id, index
       apv.linkToActionProperty(ap, index)
-      var v = if ("Reference".equals(ap.getType.getTypeName)) {
+      var v = if ("Reference".equals(ap.getType.getTypeName) || "ReferenceRb".equals(ap.getType.getTypeName)) {
         toRefValue(ap, value)
       } else {
         value
       }
       // Записываем значение
+      v = checkAuto(ap, v)
       if (apv.setValueFromString(v)) apv else null
     } else
       null
@@ -319,7 +417,7 @@ class DbActionPropertyBean
     val apvs = em.createQuery(query)
       .setParameter("id", id)
       .getResultList
-  //  apvs.foreach(v => em.detach(v))
+
     apvs
   }
 
@@ -327,7 +425,7 @@ class DbActionPropertyBean
    * @param code поле code в таблице rls.vNomen
    */
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getRLSNomenclature(code: Int): List[Nomenclature] = {
+  def getRLSNomenclature(code: Int): java.util.List[Nomenclature] = {
     em.createQuery("SELECT n FROM Nomenclature n WHERE n.code = :code",
       classOf[Nomenclature])
       .setParameter("code", code)
@@ -357,7 +455,7 @@ class DbActionPropertyBean
       .setParameter("typeId", typeId)
       .getResultList
 
-    result.foreach(v => em.detach(v))
+
     result
   }
 
@@ -370,7 +468,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap)
+
         map.put(ap, getActionPropertyValue(ap))
         map
       }
@@ -386,7 +484,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap)
+
         map.put(ap, getActionPropertyValue(ap))
         map
       }
@@ -402,7 +500,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap)
+
         map.put(ap, getActionPropertyValue(ap))
         map
       }
@@ -419,7 +517,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap(0).asInstanceOf[ActionProperty])
+
         map.put(ap(0).asInstanceOf[ActionProperty], getActionPropertyValue(ap(0).asInstanceOf[ActionProperty]))
         map
       }
@@ -435,10 +533,11 @@ class DbActionPropertyBean
     if (needStatus) {
       status = "AND a.status = 2"
     }
-    val result = em.createNativeQuery(ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx.format(sqlEventIds, sqlCodes, status))
+    val q: String = ActionPropertiesByEventIdAndActionPropertyTypeCodesQueryEx.format(sqlEventIds, sqlCodes, status, if (cntRead == null) 5 else cntRead )
+    val result = em.createNativeQuery(q)
       //.setParameter(1, new java.util.LinkedList(eventIds map(f => f.toString)))
       //.setParameter(2, sqlCodes)
-      .setParameter(3, cntRead)
+      //.setParameter(3, cntRead)
       .getResultList
     val resulted = result.foldLeft(new java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedHashMap[ActionProperty, java.util.List[APValue]]])(
       (map, ap) => {
@@ -481,7 +580,7 @@ class DbActionPropertyBean
 
     result.foldLeft(LinkedHashMap.empty[ActionProperty, java.util.List[APValue]])(
       (map, ap) => {
-        em.detach(ap)
+
         map.put(ap, getActionPropertyValue(ap))
         map
       }
@@ -503,7 +602,7 @@ class DbActionPropertyBean
         null
       }
       case size => {
-        result.foreach(em.detach(_))
+
         result(0)
       }
     }
@@ -595,7 +694,7 @@ class DbActionPropertyBean
                     GROUP BY idd, apt.code, ap.createDatetime DESC
         ) grouped
       ) counted
-      WHERE rown <= ?3
+      WHERE rown <= %s
     """
   //ORDER BY ap.id DESC
   val ActionPropertyFindQuery = """
@@ -750,4 +849,58 @@ class DbActionPropertyBean
   def getActionProperty_ActionByValue(action: Action): APValueAction = {
     em.createQuery(ActionProperty_ActionByValue, classOf[APValueAction]).setParameter("VALUE", action).getSingleResult
   }
+
+  override def calcAuto(ap: ActionProperty): String = {
+    var res: Integer = 1;
+    val apvList = prevValueList(ap)
+    if (!apvList.isEmpty) {
+      res = apvList.get(0) + 1;
+      for (i <- 1 to apvList.size()) {
+        if(res == apvList.get(i)) {
+          res = apvList.get(i) + 1
+        } else {
+          return String.valueOf(res)
+        }
+      }
+    }
+    String.valueOf(res)
+  }
+
+  def prevValueList(ap: ActionProperty): java.util.List[Integer] = {
+    val cal = java.util.Calendar.getInstance();
+    cal.setTimeInMillis(ap.getCreateDatetime.getTime)
+    cal.set(cal.get(java.util.Calendar.YEAR), 0, 1, 0, 0)
+    val apIdList = em.createNamedQuery("ActionProperty.ByTypeIdAndDate", classOf[Integer])
+      .setParameter("aptId", ap.getType.getId)
+      .setParameter("begDate", cal.getTime)
+      .setMaxResults(1).getResultList
+    val apvList = if (!apIdList.isEmpty) {
+      em.createNamedQuery("APValueInteger.getValueById", classOf[Integer])
+        .setParameter("fromId", apIdList.get(0))
+        .getResultList
+    } else {
+      new java.util.ArrayList[Integer]()
+    }
+    apvList
+  }
+
+  def checkAutoValue(ap: ActionProperty, value: Int) = {
+    val apvList = prevValueList(ap)
+    apvList.foreach( v => if (v == value) {
+      //Номер операции 533 уже используется
+      throw new CoreException(0x0106, ap.getType.getName + " " + value + "  уже используется")
+    })
+  }
+
+  def checkAuto(ap: ActionProperty, s: String): String = {
+    if (ap.getType.getTypeName == "Integer" ) {
+      if(s == "авто") {
+        return calcAuto(ap)
+      } else if (ap.getType.getValueDomain == "'авто'") {
+        checkAutoValue(ap, Integer.parseInt(s))
+      }
+    }
+    s
+  }
+
 }

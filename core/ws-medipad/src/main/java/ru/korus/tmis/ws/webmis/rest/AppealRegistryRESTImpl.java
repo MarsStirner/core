@@ -6,7 +6,7 @@ import ru.korus.tmis.core.data.AppealData;
 import ru.korus.tmis.core.data.AppealSimplifiedRequestData;
 import ru.korus.tmis.core.data.AppealSimplifiedRequestDataFilter;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -25,12 +25,12 @@ import java.util.Set;
  * Since: 1.0.0.74
  */
 @Stateless
-@Interceptors(ServicesLoggingInterceptor.class)
 public class AppealRegistryRESTImpl {
 
     @EJB
     private WebMisREST wsImpl;
 
+    private static Object locker = new Object();
 
     /**
      * Создание обращения на госпитализацию.
@@ -47,7 +47,9 @@ public class AppealRegistryRESTImpl {
                                       @QueryParam("callback") String callback,
                                       @PathParam("patientId") int patientId,
                                       AppealData data) throws CoreException {
-        return new JSONWithPadding(wsImpl.insertAppealForPatient(data, patientId, mkAuth(servRequest)), callback);
+        synchronized(locker) {
+            return new JSONWithPadding(wsImpl.insertAppealForPatient(data, patientId, mkAuth(servRequest)), callback);
+        }
     }
 
     /**
@@ -98,13 +100,6 @@ public class AppealRegistryRESTImpl {
         return new JSONWithPadding(wsImpl.getAllAppealsByPatient(request, mkAuth(servRequest)), callback);
     }
 
-    //Основные сведения истории болезни
-    /*@GET
-    @Path("/basicinfo")
-    @Produces("application/x-javascript")
-    public Object getBasicInfoOfDiseaseHistory(@QueryParam("externalId") String externalId){
-          return wsImpl.getBasicInfoOfDiseaseHistory(patientId, externalId).toString();
-    }*/
 
     private AuthData mkAuth(HttpServletRequest servRequest) {
         return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));

@@ -12,7 +12,8 @@ import com.sun.jersey.api.json.JSONWithPadding
 @Stateless
 class RlsDataImpl {
 
-  @EJB private var wsImpl: WebMisREST = _
+  @EJB
+  var wsImpl: WebMisREST = _
 
   @GET
   @Path("/{id}")

@@ -15,7 +15,7 @@ import ru.korus.tmis.core.database.common.DbOrgStructureBeanLocal
 /**
  * Класс для работы с формой 007
  */
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+//
 @Stateless
 class SeventhFormBean extends SeventhFormBeanLocal
 with Logging
@@ -38,11 +38,12 @@ with CAPids {
 
   import ru.korus.tmis.core.data.Form007QueryStatuses._
 
-  private var linearLongMap = Map.empty[String, scala.collection.mutable.Map[Form007QueryStatuses, Long]]
-  private var linearListString = Map.empty[Form007QueryStatuses, scala.collection.immutable.List[String]]
 
 
   def getForm007LinearView(departmentId: Int, beginDate: Long, endDate: Long, profileBeds: java.util.List[Integer]) = {
+
+    var linearLongMap = Map.empty[String, scala.collection.mutable.Map[Form007QueryStatuses, Long]]
+    var linearListString = Map.empty[Form007QueryStatuses, scala.collection.immutable.List[String]]
 
     var bDate: Date = null
     var eDate: Date = null
@@ -79,8 +80,8 @@ with CAPids {
     val res = em.createNativeQuery(query).getResultList
     val resList: List[Array[Object]] = res.asInstanceOf[List[Array[Object]]]
     resList.foreach(resSql => {
-      this.linearLongMap += resSql(0).asInstanceOf[String] -> scala.collection.mutable.Map.empty[Form007QueryStatuses, Long]
-      ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => this.addDataToLinearMapByCellNumber(resSql, status, resSql(0).asInstanceOf[String]))
+      linearLongMap += resSql(0).asInstanceOf[String] -> scala.collection.mutable.Map.empty[Form007QueryStatuses, Long]
+      ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => this.addDataToLinearMapByCellNumber(resSql, status, resSql(0).asInstanceOf[String], linearLongMap))
     })
     //Заполняем обратную сторону формы 007
     ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => {
@@ -92,7 +93,7 @@ with CAPids {
     })
 
     //Заполнение json
-    new FormOfAccountingMovementOfPatientsData(department, this.linearLongMap, this.linearListString, new SeventhFormRequestData(departmentId, bDate, eDate))
+    new FormOfAccountingMovementOfPatientsData(department, linearLongMap, linearListString, new SeventhFormRequestData(departmentId, bDate, eDate))
   }
 
   /**
@@ -127,7 +128,10 @@ with CAPids {
    */
   private def getDefaultBeginDate(endDate: Long) = new Date(endDate - msecInDay.longValue() + msecInMinute) //предыдущие мед сутки
 
-  private def addDataToLinearMapByCellNumber(resQuery: Array[Object], status: Form007QueryStatuses, profileName: String) {
+  private def addDataToLinearMapByCellNumber(resQuery: Array[Object],
+                                             status: Form007QueryStatuses,
+                                             profileName: String,
+                                             linearLongMap: scala.collection.immutable.Map[String, scala.collection.mutable.Map[Form007QueryStatuses, Long]]) {
 
     val pp = status match {
       case F007QS_PERMANENT_BEDS => resQuery(1)
@@ -151,7 +155,7 @@ with CAPids {
       case F007QS_FREE_BEDS_FEMALE => resQuery(19)
       case _ => null
     }
-    this.linearLongMap(profileName) += status -> pp.asInstanceOf[Long]
+    linearLongMap(profileName) += status -> pp.asInstanceOf[Long]
   }
 
 }

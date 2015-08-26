@@ -3,7 +3,6 @@ package ru.korus.tmis.core.database
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
 import java.lang.Iterable
@@ -17,7 +16,6 @@ import ru.korus.tmis.core.data.DocumentContainer
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbClientSocStatusBean
   extends DbClientSocStatusBeanLocal
@@ -62,9 +60,7 @@ class DbClientSocStatusBean
           i18n("error.ClientSocStatusNotFound"))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

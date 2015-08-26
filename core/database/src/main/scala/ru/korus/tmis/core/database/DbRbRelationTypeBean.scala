@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbRelationType
@@ -15,7 +15,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbRelationTypeBean
   extends DbRbRelationTypeBeanLocal
@@ -78,7 +78,7 @@ class DbRbRelationTypeBean
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
-    val typed = em.createQuery(AllRelationsWithFilterQuery.format("r.id, r.leftName, r.rightName", queryStr.query, sorting), classOf[Array[AnyRef]])
+    val typed = em.createQuery(AllRelationsWithFilterQuery.format("r.id, r.leftName, r.rightName, r.leftSex, r.rightSex", queryStr.query, sorting), classOf[Array[AnyRef]])
                   .setMaxResults(limit)
                   .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) {
@@ -87,8 +87,12 @@ class DbRbRelationTypeBean
     val result = typed.getResultList
     val list = new java.util.LinkedList[Object]
     result.foreach(f => {
-      //em.detach(f)
-      list.add((f(0).asInstanceOf[java.lang.Integer], f(1).asInstanceOf[java.lang.String] + " - " + f(2).asInstanceOf[java.lang.String]))
+
+      list.add((f(0).asInstanceOf[java.lang.Integer], //id
+        f(1).asInstanceOf[java.lang.String] + " - " + f(2).asInstanceOf[java.lang.String], //leftName + rightName
+        f(3).asInstanceOf[java.lang.Integer], //leftSex
+        f(4).asInstanceOf[java.lang.Integer]) //rightSex
+      )
     })
     list //result
   }
@@ -120,9 +124,7 @@ class DbRbRelationTypeBean
           i18n("error.rbRelationTypeNotFound").format(id))
       }
       case size => {
-        result.foreach(rbType => {
-          em.detach(rbType)
-        })
+
         result(0)
       }
     }

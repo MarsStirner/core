@@ -4,7 +4,7 @@ import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.Stateless
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.filter.ListDataFilter
@@ -15,7 +15,7 @@ import ru.korus.tmis.scala.util.I18nable
  * @author Ivan Dmitriev
  * @since 1.0.0.65
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbTissueTypeBean extends DbRbTissueTypeBeanLocal
 with Logging

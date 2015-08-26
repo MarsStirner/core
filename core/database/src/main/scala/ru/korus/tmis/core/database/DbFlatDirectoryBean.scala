@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import javax.ejb.Stateless
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.interceptor.Interceptors
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -12,7 +12,6 @@ import ru.korus.tmis.auxiliary.{AuxiliaryFunctions, FDSortingStruct}
 import ru.korus.tmis.core.data.{FlatDirectoryRequestData, FlatDirectoryRequestDataListFilter, QueryDataStructure}
 import ru.korus.tmis.scala.util.I18nable
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class DbFlatDirectoryBean extends DbFlatDirectoryBeanLocal
 with Logging
@@ -37,7 +36,7 @@ with I18nable {
     }
     val result = typed.getResultList
 
-    result.foreach(fd => em.detach(fd))
+
     result
   }
 
@@ -81,9 +80,7 @@ with I18nable {
             }
           }
         }
-        if (a(0).isInstanceOf[FlatDirectory]) em.detach(a(0).asInstanceOf[FlatDirectory])
-        if (a(1).isInstanceOf[FDRecord]) em.detach(a(1).asInstanceOf[FDRecord])
-        if (a(2).isInstanceOf[FDFieldValue]) em.detach(a(2).asInstanceOf[FDFieldValue])
+
         map
       })
 

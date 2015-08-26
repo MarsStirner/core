@@ -77,11 +77,11 @@ public class RbRelationType implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "leftSex")
-    private boolean leftSex;
+    private Integer leftSex;
 
     @Basic(optional = false)
     @Column(name = "rightSex")
-    private boolean rightSex;
+    private Integer rightSex;
 
     @Basic(optional = false)
     @Column(name = "regionalCode")
@@ -191,19 +191,35 @@ public class RbRelationType implements Serializable {
         isBackwardDonation = backwardDonation;
     }
 
-    public boolean isLeftSex() {
+    public Integer getIsDirectGenetic() {
+        return isDirectGenetic;
+    }
+
+    public void setIsDirectGenetic(Integer isDirectGenetic) {
+        this.isDirectGenetic = isDirectGenetic;
+    }
+
+    public Integer getIsBackwardGenetic() {
+        return isBackwardGenetic;
+    }
+
+    public void setIsBackwardGenetic(Integer isBackwardGenetic) {
+        this.isBackwardGenetic = isBackwardGenetic;
+    }
+
+    public Integer getLeftSex() {
         return leftSex;
     }
 
-    public void setLeftSex(boolean leftSex) {
+    public void setLeftSex(Integer leftSex) {
         this.leftSex = leftSex;
     }
 
-    public boolean isRightSex() {
+    public Integer getRightSex() {
         return rightSex;
     }
 
-    public void setRightSex(boolean rightSex) {
+    public void setRightSex(Integer rightSex) {
         this.rightSex = rightSex;
     }
 

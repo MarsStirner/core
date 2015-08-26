@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.exception.{CoreException, NoSuchUserException}
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
@@ -10,7 +10,7 @@ import scala.collection.JavaConversions._
 import java.util.Date
 import javax.persistence.{Query, TemporalType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.{APValueTime, ActionProperty, Action, Staff}
-import ru.korus.tmis.core.data.{FreePersonsListDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.data.{PersonsListDataFilter, FreePersonsListDataFilter, QueryDataStructure}
 import ru.korus.tmis.core.filter.ListDataFilter
 import org.slf4j.{LoggerFactory, Logger}
 import java.util
@@ -45,7 +45,7 @@ class DbStaffBean
         login,
         i18n("error.staffNotFound"))
     }
-    staffs.foreach(em.detach(_))
+
     staffs(0)
   }
 
@@ -55,7 +55,7 @@ class DbStaffBean
       .setParameter("id", id)
       .getResultList
 
-    result.foreach(em.detach(_))
+
     result.get(0)
   }
 
@@ -105,7 +105,12 @@ class DbStaffBean
     val result = typed.setMaxResults(limit)
       .setFirstResult(limit * page)
       .getResultList
-    result
+    val personsFilter: PersonsListDataFilter = filter.asInstanceOf[PersonsListDataFilter]
+    if(!personsFilter.getRoleCodeList.isEmpty) {
+     result.filter(res => !res.getRoles.filter(role => personsFilter.getRoleCodeList.contains( role.getCode)).isEmpty)
+    } else {
+      result
+    }
   }
 
   def getEmptyPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, citoActionsCount: Int) = {
@@ -135,7 +140,7 @@ class DbStaffBean
           if (f(1).isInstanceOf[APValueTime]) {
             val time = f(1).asInstanceOf[APValueTime]
             var timeList = new util.LinkedList[APValueTime]
-            em.detach(time)
+
             timeList.add(time)
             retMap.put(staff, timeList)
           }
@@ -143,15 +148,15 @@ class DbStaffBean
         else {
           if (f(1).isInstanceOf[APValueTime]) {
             val time = (f(1).asInstanceOf[APValueTime])
-            em.detach(time)
-            //retMap.remove(staff)
-            //retMap.put(staff, time)
+
+
+
             var curList = retMap.get(staff)
             curList.add(time)
           }
         }
 
-        em.detach(staff)
+
         staff
       }
     })
@@ -179,7 +184,7 @@ class DbStaffBean
      if (retList.contains(s)) {
        retList.remove(s)
      }
-     em.detach(s)
+
    })
    */
     retMap
@@ -197,7 +202,7 @@ class DbStaffBean
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
     val result = typed.getResultList
-    result.foreach(em.detach(_))
+
     if (result.size() > 0) {
       result.get(0)
     } else {

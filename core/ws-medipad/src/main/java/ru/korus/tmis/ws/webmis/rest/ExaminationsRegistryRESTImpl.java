@@ -4,7 +4,7 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.core.logging.slf4j.interceptor.ServicesLoggingInterceptor;
+
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -26,7 +26,7 @@ import java.util.Set;
  * Since: 1.0.0.74
  */
 @Stateless
-@Interceptors(ServicesLoggingInterceptor.class)
+
 public class ExaminationsRegistryRESTImpl {
 
     @EJB

@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database
 
 import javax.interceptor.Interceptors
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import javax.ejb.Stateless
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -18,7 +18,7 @@ import ru.korus.tmis.scala.util.I18nable
  * Time: 11:35
  * To change this template use File | Settings | File Templates.
  */
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbRbSpecialityBean extends DbRbSpecialityBeanLocal
 with Logging
@@ -83,33 +83,11 @@ with I18nable {
     val result = typed.getResultList
     val list = new java.util.LinkedList[Object]
     result.foreach(f => {
-      //em.detach(f)
+
       list.add((f(0).asInstanceOf[java.lang.Integer], f(1).asInstanceOf[java.lang.String]))
     })
     list
   }
 
-  /*
-  def getRbSpecialityById(id: Int): Speciality = {
-    val result = em.createQuery(RbSpecialityFindQuery,
-      classOf[Speciality])
-      .setParameter("id", id)
-      .getResultList
 
-    result.size match {
-      case 0 => {
-        throw new NoSuchRbBloodTypeException(
-          ConfigManager.ErrorCodes.RbBloodTypeNotFound,
-          id,
-          i18n("error.rbBloodTypeNotFound").format(id))
-      }
-      case size => {
-        result.foreach(rbSpec => {
-          em.detach(rbSpec)
-        })
-        result(0)
-      }
-    }
-  }
-  */
 }

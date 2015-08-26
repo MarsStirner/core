@@ -6,7 +6,7 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import common.{DbCustomQueryLocal, DbActionPropertyBeanLocal, DbActionBeanLocal}
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.logging.LoggingInterceptor
+
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import ConfigManager.APWI
 
@@ -18,7 +18,7 @@ import scala.collection.JavaConversions._
 import java.util.Date
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class AssessmentBean
   extends AssessmentBeanLocal
@@ -52,13 +52,13 @@ class AssessmentBean
   var typeFilter: TypeFilterBeanLocal = _
 
   def getAssessmentTypes(eventId: Int,
-                         userData: AuthData) = {
+                         userData: Staff) = {
     var types = dbActionType.getAssessmentTypes
 
     if (ConfigManager.Filter.isOn) {
       types = typeFilter.filterActionTypes(
         types,
-        userData.user.getOrgStructure.getId.intValue,
+        userData.getOrgStructure.getId.intValue,
         eventId)
     }
 
@@ -129,22 +129,9 @@ class AssessmentBean
     propertiesMap.foreach(
       (p) => {
         val (ap, apvs) = p
-        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope)
-
-        apvs.size match {
-          case 0 => {
-            group add apw.get(null, List(APWI.Unit,
-              APWI.Norm))
-          }
-          case _ => {
-            apvs.foreach((apv) => {
-              group add apw.get(apv, List(APWI.Value,
-                APWI.ValueId,
-                APWI.Unit,
-                APWI.Norm))
-            })
-          }
-        }
+        val apw = new ActionPropertyWrapper(ap, dbActionProperty.convertValue,
+          dbActionProperty.convertScope, dbActionProperty.convertColType)
+        group.add(apw.get(apvs.toList,List(APWI.Value, APWI.ValueId, APWI.Unit,APWI.Norm)))
       })
 
     group
@@ -169,15 +156,15 @@ class AssessmentBean
       endDate)
     val gT = temps.foldLeft(
       new CommonGroup(cdTemperatureId, "Temperature values"))(
-      (g, t) => {
-        g.add(new CA(t.getId,
-          0,
-          t.getName,
-          ConfigManager.Types.Double,
-          null,
-          Map("value" -> t.getValue.toString,
-            "datetime" -> CMDF.format(t.getDate))))
-      })
+        (g, t) => {
+          g.add(new CA(t.getId,
+            0,
+            t.getName,
+            ConfigManager.Types.Double,
+            null,
+            Map("value" -> t.getValue.toString,
+              "datetime" -> CMDF.format(t.getDate))))
+        })
     e.add(gT)
 
     // Добавляем значения АД верхн. - верхней границы артериального давления
@@ -188,15 +175,15 @@ class AssessmentBean
       endDate)
     val gph = pressHigh.foldLeft(
       new CommonGroup(cdPressureHighId, "Blood pressure high values"))(
-      (g, p) => {
-        g.add(new CA(p.getId,
-          0,
-          p.getName,
-          ConfigManager.Types.Double,
-          null,
-          Map("value" -> p.getValue.toString,
-            "datetime" -> CMDF.format(p.getDate))))
-      })
+        (g, p) => {
+          g.add(new CA(p.getId,
+            0,
+            p.getName,
+            ConfigManager.Types.Double,
+            null,
+            Map("value" -> p.getValue.toString,
+              "datetime" -> CMDF.format(p.getDate))))
+        })
     e.add(gph)
 
     // Добавляем значения АД верхн. - верхней границы артериального давления
@@ -207,15 +194,15 @@ class AssessmentBean
       endDate)
     val gpl = pressLow.foldLeft(
       new CommonGroup(cdPressureLowId, "Blood pressure low values"))(
-      (g, p) => {
-        g.add(new CA(p.getId,
-          0,
-          p.getName,
-          ConfigManager.Types.Double,
-          null,
-          Map("value" -> p.getValue.toString,
-            "datetime" -> CMDF.format(p.getDate))))
-      })
+        (g, p) => {
+          g.add(new CA(p.getId,
+            0,
+            p.getName,
+            ConfigManager.Types.Double,
+            null,
+            Map("value" -> p.getValue.toString,
+              "datetime" -> CMDF.format(p.getDate))))
+        })
     e.add(gpl)
 
     // Добавляем значения ЧДД - частоты дыхательных движений
@@ -226,15 +213,15 @@ class AssessmentBean
       endDate)
     val gB = breath.foldLeft(
       new CommonGroup(cdBreathingId, "Breathing frequency values"))(
-      (g, b) => {
-        g.add(new CA(b.getId,
-          0,
-          b.getName,
-          ConfigManager.Types.Double,
-          null,
-          Map("value" -> b.getValue.toString,
-            "datetime" -> CMDF.format(b.getDate))))
-      })
+        (g, b) => {
+          g.add(new CA(b.getId,
+            0,
+            b.getName,
+            ConfigManager.Types.Double,
+            null,
+            Map("value" -> b.getValue.toString,
+              "datetime" -> CMDF.format(b.getDate))))
+        })
     e.add(gB)
 
     // Добавляем значения ЧСС - частоты сердечных сокращений
@@ -245,15 +232,15 @@ class AssessmentBean
       endDate)
     val gH = heartBeat.foldLeft(
       new CommonGroup(cdHeartBeatId, "Heart beat values"))(
-      (g, h) => {
-        g.add(new CA(h.getId,
-          0,
-          h.getName,
-          ConfigManager.Types.Double,
-          null,
-          Map("value" -> h.getValue.toString,
-            "datetime" -> CMDF.format(h.getDate))))
-      })
+        (g, h) => {
+          g.add(new CA(h.getId,
+            0,
+            h.getName,
+            ConfigManager.Types.Double,
+            null,
+            Map("value" -> h.getValue.toString,
+              "datetime" -> CMDF.format(h.getDate))))
+        })
     e.add(gH)
 
     cd
@@ -261,12 +248,14 @@ class AssessmentBean
 
   def createAssessmentForEventId(eventId: Int,
                                  assessment: CommonData,
-                                 userData: AuthData) = {
+                                 userData: AuthData,
+                                 staff: Staff) = {
     val createdActions =
       commonDataProcessor.createActionForEventFromCommonData(
         eventId,
         assessment,
-        userData)
+        userData,
+        staff)
 
     commonDataProcessor.fromActions(
       createdActions,
@@ -276,11 +265,13 @@ class AssessmentBean
 
   def modifyAssessmentById(assessmentId: Int,
                            assessment: CommonData,
-                           userData: AuthData) = {
+                           userData: AuthData,
+                           staff: Staff) = {
     val modifiedActions = commonDataProcessor.modifyActionFromCommonData(
       assessmentId,
       assessment,
-      userData)
+      userData,
+      staff)
 
     commonDataProcessor.fromActions(
       modifiedActions,

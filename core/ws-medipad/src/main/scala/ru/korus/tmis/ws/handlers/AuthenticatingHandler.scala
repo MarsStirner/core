@@ -1,6 +1,7 @@
 package ru.korus.tmis.ws.handlers
 
 import ru.korus.tmis.core.auth.{TmisShiroRealm, TmisShiroToken, AuthToken, AuthStorageBeanLocal}
+import ru.korus.tmis.core.database.DbStaffBeanLocal
 import ru.korus.tmis.core.exception.{FaultBean, AuthenticationException}
 
 import grizzled.slf4j.Logging
@@ -29,6 +30,9 @@ class AuthenticatingHandler
 
   @EJB
   var authStorage: AuthStorageBeanLocal = _
+
+  @EJB
+  var dbStaff: DbStaffBeanLocal = _
 
   var currentUser = SecurityUtils.getSubject()
 
@@ -113,7 +117,7 @@ class AuthenticatingHandler
       ConfigManager.TmisAuth.AuthDataPropertyName,
       MessageContext.Scope.APPLICATION)
 
-    currentUser.login(new TmisShiroToken(authData))
+    currentUser.login(new TmisShiroToken(authData, dbStaff.getStaffById(authData.getUserId)))
   }
 
   def handleFault(context: SOAPMessageContext) = {

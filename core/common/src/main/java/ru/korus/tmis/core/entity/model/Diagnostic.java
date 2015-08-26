@@ -25,7 +25,10 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "Diagnostic")
 @NamedQueries(
         {
-                @NamedQuery(name = "Diagnostic.findAll", query = "SELECT d FROM Diagnostic d")
+                @NamedQuery(name = "Diagnostic.findAll", query = "SELECT d FROM Diagnostic d"),
+                @NamedQuery(name = "Diagnostic.findByActionId", query = "SELECT d FROM Diagnostic d WHERE d.action.id = :actionId AND d.deleted = 0"),
+                @NamedQuery(name = "Diagnostic.findByActionIdAndType", query = "SELECT d FROM Diagnostic d " +
+                        "WHERE d.action.id = :actionId AND d.diagnosisType.flatCode = :flatCode AND d.deleted = 0")
         })
 @XmlType(name = "diagnostic")
 @XmlRootElement(name = "diagnostic")
@@ -131,11 +134,24 @@ public class Diagnostic implements Serializable {
     @Column(name = "version")
     private int version;
 
+    @ManyToOne
+    @JoinColumn(name = "rbAcheResult_id", nullable = true)
+    private RbAcheResult acheResult;
+
+
+    @ManyToOne
+    @JoinColumn(name = "action_id")
+    private Action action;
+
     public Diagnostic() {
     }
 
     public Diagnostic(Integer id) {
         this.id = id;
+    }
+
+    public Diagnostic(Diagnosis diagnosis) {
+        this.diagnosis = diagnosis;
     }
 
     public Integer getId() {
@@ -319,7 +335,7 @@ public class Diagnostic implements Serializable {
     }
 
     public void setNotes(String notes) {
-        this.notes = notes;
+        this.notes = notes == null ? "" : notes;
     }
 
     public int getVersion() {
@@ -328,6 +344,18 @@ public class Diagnostic implements Serializable {
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public RbAcheResult getAcheResult() {
+        return acheResult;
+    }
+
+    public void setAcheResult(RbAcheResult acheResult) {
+        this.acheResult = acheResult;
     }
 
     @Override
@@ -365,4 +393,16 @@ public class Diagnostic implements Serializable {
         return newDiagnostic;
     }
 
+
+    public void setPhaseId(Integer phaseId) {
+        this.phaseId = phaseId;
+    }
+
+    public Action getAction() {
+        return action;
+    }
+
+    public void setAction(Action action) {
+        this.action = action;
+    }
 }

@@ -54,7 +54,7 @@ public interface WebMisREST extends Serializable {
 
     TrueFalseContainer checkExistanceNumber(String name, int typeId, String number, String serial) throws CoreException;
 
-    JSONCommonData getStructOfPrimaryMedExam(int actionTypeId, int eventId, AuthData authData) throws CoreException;
+    JSONCommonData getStructOfPrimaryMedExam(int actionTypeId, Integer actionId, int eventId, AuthData authData) throws CoreException;
 
     JSONCommonData getStructOfPrimaryMedExamWithCopy(int actionTypeId, AuthData authData, int eventId) throws CoreException;
 
@@ -72,11 +72,11 @@ public interface WebMisREST extends Serializable {
 
     String getPatientToHospitalBedById (int actionId, AuthData authData) throws CoreException;
 
-    String registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
+    String registryPatientToHospitalBed(int eventId, HospitalBedData data, AuthData authData, Staff staff) throws CoreException;
 
     String getMovingListForEvent(HospitalBedDataListFilter filter, AuthData authData) throws CoreException;
 
-    String modifyPatientToHospitalBed (int actionId, HospitalBedData data, AuthData authData) throws CoreException;
+    String modifyPatientToHospitalBed (int actionId, HospitalBedData data,  AuthData authData, Staff staff) throws CoreException;
 
     boolean callOffHospitalBedForPatient(int actionId, AuthData authData) throws CoreException;
 
@@ -99,8 +99,6 @@ public interface WebMisREST extends Serializable {
     String movingPatientToDepartment(int eventId, HospitalBedData data, AuthData authData) throws CoreException;
 
     String  closeLastMovingOfAppeal(int eventId, AuthData authData, Date date) throws CoreException;
-
-    TalonSPODataList getAllTalonsForPatient(TalonSPOListRequestData requestData) throws CoreException;
 
     AllDepartmentsListData getAllDepartments(ListDataRequest requestData) throws CoreException;
 
@@ -211,11 +209,12 @@ public interface WebMisREST extends Serializable {
      * Универсальный сервис на получение справочников простой структуры
      * @param request  Данные из запроса как ListDataRequest.
      * @param dictName Наименование запрашиваемого справочника.
+     * @param eventId
      * @return JSON - строка как String
      * @throws CoreException
      * @see ListDataRequest
      */
-    String getDictionary(ListDataRequest request, String dictName) throws CoreException;
+    String getDictionary(ListDataRequest request, String dictName, Integer eventId, AuthData auth) throws CoreException;
 
     /**
      * Создание нового назначения
@@ -248,9 +247,9 @@ public interface WebMisREST extends Serializable {
      * @see ListDataRequest
      * @see AuthData
      */
-    String getEventTypes(ListDataRequest request, AuthData authData) throws CoreException;
+    String getEventTypes(ListDataRequest request, Staff staff) throws CoreException;
 
-    List<ContractContainer> getContracts(int eventTypeId, boolean showDeleted, boolean showExpired);
+    List<ContractContainer> getContracts(int eventTypeId, String eventTypeCode, boolean showDeleted, boolean showExpired);
 
     /**
      * Сервис на получении списка пациентов из открытых госпитализаций, которые лежат на койке
@@ -261,36 +260,6 @@ public interface WebMisREST extends Serializable {
      * @see AuthData
      */
     CommonData getPatientsFromOpenAppealsWhatHasBedsByDepartmentId (int departmentId) throws CoreException;
-
-    /**
-     * Сервис на создание/редактирование квоты
-     * @param quotaData Данные о сохраняемой/редактируемой квоте как QuotaData
-     * @param eventId Идентификатор обращения
-     * @param auth Авторизационные данные как AuthData
-     * @return JSON - строка как String
-     * @throws CoreException
-     * @see QuotaData
-     * @see AuthData
-     */
-    String insertOrUpdateQuota(QuotaData quotaData, int eventId, AuthData auth) throws CoreException;
-
-    /**
-     * Сервис на получение истории квот
-     * @param appealId Идентификатор обращения
-     * @return JSON - строка как String
-     * @throws CoreException
-     */
-    String getQuotaHistory(int appealId, QuotaRequestData request) throws CoreException;
-
-    /**
-     * Сервис на получение списка справочника типов квот
-     * @param request Данные из запроса как ListDataRequest
-     * @return Список типов квот как GroupTypesListData
-     * @throws CoreException
-     * @see ListDataRequest
-     * @see GroupTypesListData
-     */
-    GroupTypesListData getQuotaTypes(ListDataRequest request) throws CoreException;
 
     /**
      * Сервис на получение данных о заборе биоматериала
@@ -473,9 +442,9 @@ public interface WebMisREST extends Serializable {
      */
     void deleteAutoSaveField(String id, AuthData auth) throws CoreException;
 
-    Nomenclature getRlsById(int id) throws CoreException;
+    DrugData getRlsById(int id) throws CoreException;
 
-    List<Nomenclature> getRlsByText(String text) throws CoreException;
+    List<DrugData> getRlsByText(String text) throws CoreException;
 
     List<RbLaboratory> getLabs();
 

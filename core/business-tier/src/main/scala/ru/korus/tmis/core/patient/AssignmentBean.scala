@@ -2,7 +2,6 @@ package ru.korus.tmis.core.patient
 
 import grizzled.slf4j.Logging
 import javax.ejb.{EJB, Stateless}
-import ru.korus.tmis.core.logging.LoggingInterceptor
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
@@ -19,7 +18,6 @@ import javax.enterprise.inject.Any
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
-@Interceptors(Array(classOf[LoggingInterceptor]))
 @Stateless
 class AssignmentBean extends AssignmentBeanLocal
 with Logging
@@ -73,7 +71,7 @@ with I18nable {
     ConfigManager.Messages("db.actionPropertyType.assignment.name.departmentHead").toInt,
     ConfigManager.Messages("db.actionPropertyType.assignment.name.note").toInt)
 
-  def insertAssignmentForPatient(assignmentData: AssignmentData, eventId: Int, authData: AuthData) = {
+  def insertAssignmentForPatient(assignmentData: AssignmentData, eventId: Int, authData: AuthData, staff: Staff) = {
 
     //var entities = Set.empty[AnyRef]
     //val now = new Date()
@@ -102,7 +100,8 @@ with I18nable {
       if (temp == null) {
         action = actionBean.createAction(eventId,
           assignmentData.data.assignmentType.getId.intValue(),
-          authData)
+          authData,
+         staff)
         em.persist(action)
         //dbManager.persist(action)
         list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(assignmentData.data.assignmentType.getId.intValue()).toList
@@ -110,7 +109,8 @@ with I18nable {
       else {
         action = actionBean.updateAction(temp.getId.intValue(),
           temp.getVersion.intValue,
-          authData)
+          authData,
+          staff)
         em.merge(action)
         list = actionPropertyBean.getActionPropertiesByActionId(temp.getId.intValue).keySet.toList
       }
@@ -126,7 +126,7 @@ with I18nable {
       list.foreach(f => {
         val ap: ActionProperty =
           if (flgCreate) {
-            val res = actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), authData)
+            val res = actionPropertyBean.createActionProperty(action, f.asInstanceOf[ActionPropertyType].getId.intValue(), staff)
             em.persist(res)
             //dbManager.persist(res)
             res
@@ -134,7 +134,7 @@ with I18nable {
           else {
             val res = actionPropertyBean.updateActionProperty(f.asInstanceOf[ActionProperty].getId.intValue,
               f.asInstanceOf[ActionProperty].getVersion.intValue,
-              authData)
+              staff)
             em.merge(res)
           }
 
@@ -176,7 +176,7 @@ with I18nable {
         }
       })
       em.flush()
-      em.detach(action)
+
     }
     finally {
       if (lockId > 0) appLock.releaseLock(lockId)

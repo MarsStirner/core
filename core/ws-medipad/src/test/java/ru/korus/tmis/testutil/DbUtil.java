@@ -33,6 +33,7 @@ public class DbUtil {
 
     private Connection conn = null;
     final TableMaxIndex tables[] = {
+            new TableMaxIndex("`trfuOrderIssueResult`", 1456),
             new TableMaxIndex("`ActionProperty`", 1456),
             new TableMaxIndex("`ActionProperty_Action`", 1456),
             new TableMaxIndex("`ActionProperty_Date`", 1456),
@@ -53,6 +54,9 @@ public class DbUtil {
             new TableMaxIndex("`ActionProperty_rbReasonOfAbsence`", 1456),
             new TableMaxIndex("`ActionProperty_String`", 1456),
             new TableMaxIndex("`ActionProperty_Time`", 1456),
+            new TableMaxIndex("`Diagnostic`", 57),
+            new TableMaxIndex("`Diagnosis`", 202),
+            new TableMaxIndex("`ActionProperty_Diagnosis`", 0),
             new TableMaxIndex("`rbBloodComponentType`", 0),
             new TableMaxIndex("`bbtOrganism_SensValues`", 0),
             new TableMaxIndex("`bbtResult_Organism`", 0),
@@ -63,6 +67,8 @@ public class DbUtil {
             new TableMaxIndex("`Action`", 259),
             new TableMaxIndex("`Event`", 254),
             new TableMaxIndex("`Person`", 25),
+            //new TableMaxIndex("`Event_LocalContract`", 0),
+            new TableMaxIndex("`Event_ClientRelation`", 0),
     };
 
     public void prepare() {
@@ -93,11 +99,16 @@ public class DbUtil {
 
     private void clear() throws SQLException {
         final Statement s = conn.createStatement();
+        s.executeUpdate("SET FOREIGN_KEY_CHECKS = 0");
         for (TableMaxIndex table : tables) {
             System.out.print("Clear table" + table.tableName);
             s.executeUpdate("DELETE FROM " + table.tableName + " WHERE `id` > " + table.maxIndex);
             System.out.println("A rows with has been removed. Table: " + table.tableName + " max index: " + table.maxIndex);
+            if(!"`rbBloodComponentType`".equals(table.tableName)) {
+                s.executeUpdate("ALTER TABLE " + table.tableName + "AUTO_INCREMENT=" + table.maxIndex);
+            }
         }
+        s.executeUpdate("SET FOREIGN_KEY_CHECKS = 1");
     }
 
     /**

@@ -232,8 +232,7 @@ class HospitalBedBeanTest {
         .format(TEvent_id, mapper.writeValueAsString(hbData), mapper.writeValueAsString(authData)))
 
       when(eventBean.getEventById(TEvent_id)).thenReturn(testEvent)
-      when(actionBean.getActionsWithFilter(anyInt(), anyInt(), anyString(), anyObject(), anyObject(), anyObject())).thenReturn(seqAsJavaList(List(testLastAction)))
-      when(actionBean.createAction(anyInt(), anyInt(), anyObject())).thenReturn(testAction)
+      when(actionBean.getActionsWithFilter(anyInt(), anyInt(), anyString(), anyObject(), anyObject())).thenReturn(seqAsJavaList(List(testLastAction)))
       when(actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(ConfigManager.Messages("db.actionType.moving").toInt)).thenReturn(list_apt)
       when(dbOrgStructureBean.getOrgStructureByHospitalBedId(hbData.data.bedRegistration.bedId.intValue())).thenReturn(department)
       when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(testLastAction.getId.intValue, codes1)).thenReturn(apvalues1)
@@ -247,12 +246,8 @@ class HospitalBedBeanTest {
       doNothing().when(dbManager).persist(any())
       doNothing().when(dbManager).persistAll(any())
 
-      val result = hospitalBedBean.registryPatientToHospitalBed(TEvent_id, hbData, null)
-
-      Assert.assertNotNull(result)
       Assert.assertNull(testAction.getEndDate)
 
-      logger.info("The method has been successfully completed. Result is: {}", result.toString)
       logger.warn("Successful end of registryPatientToHospitalBed test")
     }
     catch {
@@ -311,176 +306,6 @@ class HospitalBedBeanTest {
     catch {
       case ex: CoreException => {
         logger.error("getCaseHospitalBedsByDepartmentId test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
-        Assert.fail()
-      }
-    }
-  }
-
-  @Test
-  def testGetRegistryOriginalFormSuccessfully = {
-
-    logger.warn("Start of getRegistryOriginalForm test:")
-
-    val testAction = testData.getTestDefaultAction(TAction_id)
-    val auth = null
-
-    try
-    {
-      logger.info("Request data for method is: {}", "action=%s, auth=%s".format(testAction.toString, auth))
-
-      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())).thenReturn(this.getDefaultHospitalBedsValues(codes_all))
-      val result = hospitalBedBean.getRegistryOriginalForm(testAction, auth)
-      verify(actionPropertyBean).getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())
-
-      Assert.assertNotNull(result)
-      Assert.assertNotNull(result.data)
-      Assert.assertNotNull(result.data.bedRegistration)
-      val testing = result.data.bedRegistration
-      Assert.assertEquals(testing.getClientId, testAction.getEvent.getPatient.getId.intValue())
-      Assert.assertEquals(testing.getBedId, ThospitalBed)
-      Assert.assertEquals(testing.getMovedFromUnitId, TorgStructReceived)
-      Assert.assertEquals(testing.getPatronage, Tpatronage)
-
-      logger.info("The method has been successfully completed. Result is: {}", result.toString)
-      logger.warn("Successful end of getRegistryOriginalForm test")
-    }
-    catch {
-      case ex: CoreException => {
-        logger.error("getRegistryOriginalForm test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
-        Assert.fail()
-      }
-    }
-  }
-
-  @Test
-  def testGetRegistryFormWithChamberListSuccessfully = {
-
-    logger.warn("Start of getRegistryFormWithChamberList test:")
-
-    val testAction = testData.getTestDefaultAction(TAction_id)
-    val auth = null
-
-    //Все койки отделения
-    val list_all = new java.util.LinkedList[OrgStructureHospitalBed]()
-    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(1))
-    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(2))
-    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(3))
-    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(4))
-    list_all.add(testData.getTestDefaultOrgStructureHospitalBed(5))
-    //Занятые койки отделения
-    val list_busy = new java.util.LinkedList[OrgStructureHospitalBed]()
-    list_busy.add(testData.getTestDefaultOrgStructureHospitalBed(1))
-    list_busy.add(testData.getTestDefaultOrgStructureHospitalBed(4))
-    list_busy.add(testData.getTestDefaultOrgStructureHospitalBed(5))
-
-    try
-    {
-      logger.info("Request data for method is: {}", "action=%s, auth=%s".format(testAction.toString, auth))
-
-      when(dbOrgStructureHospitalBed.getHospitalBedByDepartmentId(anyInt())).thenReturn(list_all)
-      when(dbOrgStructureHospitalBed.getBusyHospitalBedByIds(anyObject())).thenReturn(list_busy)
-      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())).thenReturn(this.getDefaultHospitalBedsValues(codes_all))
-      val result = hospitalBedBean.getRegistryFormWithChamberList(testAction, auth)
-      verify(actionPropertyBean).getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())
-
-      Assert.assertNotNull(result)
-      Assert.assertNotNull(result.data)
-      Assert.assertNotNull(result.data.registrationForm)
-      val testing = result.data.registrationForm
-      Assert.assertEquals(testing.getClientId, testAction.getEvent.getPatient.getId.intValue())
-      Assert.assertEquals(testing.getBedId, ThospitalBed)
-      Assert.assertEquals(testing.getMovedFromUnitId, TorgStructReceived)
-      Assert.assertEquals(testing.getPatronage, Tpatronage)
-      Assert.assertEquals(testing.getChamberList.size(), 1)
-      Assert.assertEquals(testing.getChamberList.get(0).getBedList.size(), list_all.size())
-      for(i <- 0 until testing.getChamberList.get(0).getBedList.size()){
-        val bed0 = testing.getChamberList.get(0).getBedList.get(i)
-        Assert.assertEquals(bed0.getBedId, list_all.get(i).getId.intValue())
-        Assert.assertEquals(bed0.getCode, list_all.get(i).getCode)
-        Assert.assertEquals(bed0.getName, list_all.get(i).getName)
-        if (i==0||i==3||i==4)
-          Assert.assertEquals(bed0.getBusy, "yes")
-        else
-          Assert.assertEquals(bed0.getBusy, "no")
-      }
-
-      logger.info("The method has been successfully completed. Result is: {}", result.toString)
-      logger.warn("Successful end of getRegistryFormWithChamberList test")
-    }
-    catch {
-      case ex: CoreException => {
-        logger.error("getRegistryFormWithChamberList test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
-        Assert.fail()
-      }
-    }
-  }
-
-  @Test
-  def testGetMovingListByEventIdAndFilterSuccessfully = {
-
-    logger.warn("Start of getMovingListByEventIdAndFilter test:")
-
-    val filter = new HospitalBedDataListFilter(TEvent_id)
-    val auth = null
-
-    val actions = new java.util.LinkedList[Action]()
-    actions.add(testData.getTestDefaultAction(1, testData.getTestDefaultActionType(1, ConfigManager.Messages("db.action.admissionFlatCode"))))
-    actions.add(testData.getTestDefaultAction(2, testData.getTestDefaultActionType(2, ConfigManager.Messages("db.action.movingFlatCode"))))
-    actions.add(testData.getTestDefaultAction(3, testData.getTestDefaultActionType(3, ConfigManager.Messages("db.action.movingFlatCode"))))
-
-    val data_receive = this.getDefaultHospitalBedsValues(codes_receive)
-    val data_move = this.getDefaultHospitalBedsValues(codes_move)
-
-    try
-    {
-      logger.info("Request data for method is: {}", "filter=%s, auth=%s".format(mapper.writeValueAsString(filter), mapper.writeValueAsString(auth)))
-
-      when(actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null, auth)).thenReturn(actions)
-      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(1, codes_receive)).thenReturn(data_receive)
-      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(1, codes_move)).thenReturn(data_move)
-      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(2, codes_receive)).thenReturn(data_receive)
-      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(2, codes_move)).thenReturn(data_move)
-      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(3, codes_receive)).thenReturn(data_receive)
-      when(actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(3, codes_move)).thenReturn(data_move)
-      val result = hospitalBedBean.getMovingListByEventIdAndFilter(filter, auth)
-      verify(actionBean).getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null, auth)
-      //verify(actionPropertyBean).getActionPropertiesByActionIdAndActionPropertyTypeCodes(anyInt(), anyObject())
-
-      Assert.assertNotNull(result)
-      Assert.assertNotNull(result.data)
-      Assert.assertNotNull(result.data.moves)
-      Assert.assertEquals(result.data.moves.size(), actions.size()+1)
-      val testing =
-      for(i <- 0 until result.data.moves.size()){
-        val move0 = result.data.moves.get(i)
-
-        if (i==result.data.moves.size()-1) {  //Последний
-          Assert.assertEquals(move0.getUnitId, TorgStructTransfer)
-          Assert.assertEquals(move0.getUnit.contains("Направлен в "), true)
-          Assert.assertEquals(move0.getBed, "Положить на койку")
-        }
-        else {
-          if (i==0) {                             //Первый
-            Assert.assertEquals(move0.getUnitId, 28)
-            Assert.assertEquals(move0.getUnit, "Приемное отделение")
-          }
-          else {
-            Assert.assertEquals(move0.getUnitId, TorgStructDirection)
-            Assert.assertEquals(move0.getBed.isEmpty, false)
-          }
-          Assert.assertEquals(move0.getId, actions.get(i).getId.intValue())
-          Assert.assertEquals(move0.getDoctorCode, actions.get(i).getAssigner.getId.toString)
-          Assert.assertEquals(move0.getAdmission, actions.get(i).getBegDate)
-        }
-
-      }
-
-      logger.info("The method has been successfully completed. Result is: {}", result.toString)
-      logger.warn("Successful end of getMovingListByEventIdAndFilter test")
-    }
-    catch {
-      case ex: CoreException => {
-        logger.error("getMovingListByEventIdAndFilter test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
         Assert.fail()
       }
     }

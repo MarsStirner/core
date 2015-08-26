@@ -34,6 +34,10 @@ class AuthData() {
   @BeanProperty
   var userSpecs: String = _                         //Оставлено для медипад
 
+
+  @BeanProperty
+  var roles: java.util.Set[Role] = _
+
   var userRole: Role = _
 
   /**
@@ -51,25 +55,6 @@ class AuthData() {
    */
   def setUserRole(userRole: Role) = {
     this.userRole = userRole
-  }
-
-  var user: Staff = _
-
-  /**
-   * Получение пользователя
-   * @return Данные о пользователе как Staff entity
-   */
-  @XmlTransient
-  def getUser = {
-    user
-  }
-
-  /**
-   * Задать пользователя
-   * @param user Пользователь как Staff entity
-   */
-  def setUser(user: Staff) {
-    this.user = user
   }
 
   /**
@@ -93,7 +78,6 @@ class AuthData() {
            userSpecs: String) = {
     this ()
     this.authToken = token
-    this.user = user
     this.userId = userId
     this.userFirstName = userFirstName
     this.userLastName = userLastName
@@ -101,6 +85,7 @@ class AuthData() {
     this.userSpecs = userSpecs
     this.userRole = userRole
     this.doctor = new DoctorSpecsContainer(user)
+    this.roles = user.getRoles;
   }
 
   override def toString = {

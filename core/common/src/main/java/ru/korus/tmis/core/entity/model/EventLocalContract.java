@@ -13,7 +13,8 @@ import java.util.Date;
 @Table(name="Event_LocalContract")
 @NamedQueries(
         {
-                @NamedQuery(name = "EventLocalContract.findByContractCode", query = "SELECT elc FROM EventLocalContract elc WHERE elc.numberContract = :code"),
+                @NamedQuery(name = "EventLocalContract.findByEventId", query = "SELECT elc FROM EventLocalContract elc WHERE elc.event.id = :eventId AND elc.deleted = 0"),
+                @NamedQuery(name = "EventLocalContract.findByContractCode", query = "SELECT elc FROM EventLocalContract elc WHERE elc.numberContract = :code AND elc.deleted = 0"),
         })
 public class EventLocalContract implements Serializable {
 	private static final long serialVersionUID = 1L;
@@ -64,6 +65,10 @@ public class EventLocalContract implements Serializable {
 
 	@Column(nullable=false, length=30)
 	private String lastName;
+
+    @ManyToOne
+    @JoinColumn(name="master_id", nullable=false)
+	private Event event;
 
 	@Temporal(TemporalType.TIMESTAMP)
 	@Column(nullable=false)
@@ -185,7 +190,7 @@ public class EventLocalContract implements Serializable {
 		return this.rbDocumentType;
 	}
 
-	public void setRbDocumentType(RbDocumentType RbDocumentType) {
+	public void setRbDocumentType(RbDocumentType rbDocumentType) {
 		this.rbDocumentType = rbDocumentType;
 	}
 
@@ -203,6 +208,14 @@ public class EventLocalContract implements Serializable {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+
+	public Event getEvent() {
+		return this.event;
+	}
+
+	public void setEvent(Event event) {
+		this.event = event;
 	}
 
 	public Date getModifyDatetime() {
