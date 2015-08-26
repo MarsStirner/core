@@ -357,11 +357,13 @@ public class SendOrderBloodComponents {
         try {
             res.bloodGroupId = Integer.parseInt(code.substring(0, 1));
         } catch (final NumberFormatException ex) {
-            throw new CoreException(errorMsg);
+            res.bloodGroupId = -1;
+            res.rhesusFactorId = -1;
         }
 
         if (res.bloodGroupId < BLOOD_GROUP_MIN || res.bloodGroupId > BLOOD_GROUP_MAX) {
-            throw new CoreException(errorMsg);
+            res.bloodGroupId = -1;
+            res.rhesusFactorId = -1;
         }
 
         if (code.charAt(1) == RHESUS_FACTOR_POS) {
@@ -369,7 +371,7 @@ public class SendOrderBloodComponents {
         } else if (code.charAt(1) == RHESUS_FACTOR_NEGATIVE) {
             res.rhesusFactorId = 1;
         } else {
-            throw new CoreException(errorMsg);
+            res.rhesusFactorId = -1;
         }
 
         return res;

@@ -16,7 +16,7 @@ import java.util.Map;
         {
                 @NamedQuery(name = "ActionProperty.findAll", query = "SELECT a FROM ActionProperty a"),
                 @NamedQuery(name = "ActionProperty.ByTypeIdAndDate", query = "SELECT a.id FROM ActionProperty a " +
-                        "WHERE a.actionPropertyType.id = :aptId AND a.createDatetime >= :begDate  ORDER BY a.id ASC")
+                        "WHERE a.deleted = 0 AND  a.actionPropertyType.id = :aptId AND a.createDatetime >= :begDate  ORDER BY a.id ASC")
         })
 @XmlType(name = "actionProperty")
 @XmlRootElement(name = "actionProperty")

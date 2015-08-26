@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-core</artifactId>
     <packaging>pom</packaging>
-    <version>2.6.1</version>
+    <version>2.6.1.1</version>
     <name>TMIS Root Project</name>
 
 
@@ -36,7 +36,7 @@
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.6.1</version.tmis.core>
+        <version.tmis.core>2.6.1.1</version.tmis.core>
 
         <version.logging.grizzled-slf4j>1.0.2</version.logging.grizzled-slf4j>
 
