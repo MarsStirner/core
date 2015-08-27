@@ -135,7 +135,9 @@ public enum PropType {
 
     LAB_MEASURE("trfuLaboratoryMeasures", APValueInteger.class, "лабораторные измерения", null, "Table", "TRFU_LM"),
 
-    FINAL_VOLUME("trfuFinalVolumes", APValueInteger.class, "финальные объемы", null, "Table", "TRFU_FV");
+    FINAL_VOLUME("trfuFinalVolumes", APValueInteger.class, "финальные объемы", null, "Table", "TRFU_FV"),
+
+    REQ_BLOOD_TYPE("trfuReqBloodType", APValueString.class, "Группа крови для заказа");
 
     /**
      * Таблица для хранения значения свойства

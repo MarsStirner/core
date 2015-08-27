@@ -37,6 +37,7 @@ import java.lang.StringBuilder;
  *         &lt;element name="attendingPhysicianLastName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="attendingPhysicianFirstName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
  *         &lt;element name="attendingPhysicianMiddleName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/>
+ *         &lt;element name="bloodGroupId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/>
  *       &lt;/sequence>
  *     &lt;/restriction>
  *   &lt;/complexContent>
@@ -62,7 +63,8 @@ import java.lang.StringBuilder;
     "attendingPhysicianId",
     "attendingPhysicianLastName",
     "attendingPhysicianFirstName",
-    "attendingPhysicianMiddleName"
+    "attendingPhysicianMiddleName",
+    "bloodGroupId"
 })
 public class OrderInformation {
 
@@ -84,6 +86,8 @@ public class OrderInformation {
     protected String attendingPhysicianLastName;
     protected String attendingPhysicianFirstName;
     protected String attendingPhysicianMiddleName;
+    protected Integer bloodGroupId;
+    protected Integer rhesusFactorId;
 
     @Override
     public String toString() {
@@ -493,4 +497,35 @@ public class OrderInformation {
         this.attendingPhysicianMiddleName = value;
     }
 
+    /**
+     * Gets the value of the bloodGroupId property.
+     *
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *
+     */
+    public Integer getBloodGroupId() {
+        return bloodGroupId;
+    }
+
+    /**
+     * Sets the value of the bloodGroupId property.
+     *
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *
+     */
+    public void setBloodGroupId(Integer value) {
+        this.bloodGroupId = value;
+    }
+
+    public Integer getRhesusFactorId() {
+        return rhesusFactorId;
+    }
+
+    public void setRhesusFactorId(Integer rhesusFactorId) {
+        this.rhesusFactorId = rhesusFactorId;
+    }
 }

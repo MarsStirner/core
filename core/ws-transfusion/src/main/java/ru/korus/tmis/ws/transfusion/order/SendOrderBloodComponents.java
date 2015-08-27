@@ -253,7 +253,22 @@ public class SendOrderBloodComponents {
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
         res.setAttendingPhysicianLastName(createPerson.getLastName());
         res.setAttendingPhysicianMiddleName(createPerson.getPatrName());
+        String bloodTypeReq = trfuActionProp.getProp(action.getId(), PropType.REQ_BLOOD_TYPE);
+        if(bloodTypeReq != null && !bloodTypeReq.isEmpty()) {
+            initReqBloodType(res, bloodTypeReq);
+        }
         return res;
+    }
+
+    private void initReqBloodType(OrderInformation res, String bloodTypeReq) {
+        List<String> groups = Arrays.asList("0(I)Rh-","0(I)Rh+","A(II)Rh-","A(II)Rh+","B(III)Rh-","B(III)Rh+","AB(IV)Rh-","AB(IV)Rh+" );
+        if(groups.indexOf(bloodTypeReq) >= 0) {
+            res.setBloodGroupId(groups.indexOf(bloodTypeReq)/2);
+            res.setBloodGroupId(bloodTypeReq.endsWith("-")? 1 : 0);
+        } else {
+            res.setBloodGroupId(-1);
+            res.setRhesusFactorId(-1);
+        }
     }
 
     private Integer convertComponentType(final EntityManager em, final Integer actionId, final Integer compTypeId) throws CoreException {
