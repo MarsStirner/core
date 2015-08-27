@@ -50,10 +50,10 @@ public class OdvdBuilder {
         res.setIsService(service == null);
         if (service == null) { // если действие не услуга
             res.setNameOfService(action.getActionType().getName());
-            res.setCodeOfService(service.getActionType().getCode());
+            res.setCodeOfService(action.getActionType().getCode());
         } else { //если услуга
             res.setNameOfService(service.getName());
-            res.setCodeOfService(service.getCode());
+            res.setCodeOfService(action.getActionType().getCode());
         }
 
         try {
