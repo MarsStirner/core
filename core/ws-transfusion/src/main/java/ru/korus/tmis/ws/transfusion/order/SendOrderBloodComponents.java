@@ -90,6 +90,7 @@ public class SendOrderBloodComponents {
             PropType.ORDER_ISSUE_RES_DATE, // "Дата выдачи КК"
             PropType.ORDER_ISSUE_RES_TIME, // "Время выдачи КК"
             PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, // "Паспортные данные выданных компонентов крови"
+            PropType.REQ_BLOOD_TYPE
     };
 
     /**
@@ -213,7 +214,7 @@ public class SendOrderBloodComponents {
                         e.getMessage());
                 e.printStackTrace();
             } catch (final Exception ex) {
-                logger.error("General exception in trfu integration (in SendOrderBloodComponents): {}", ex.getMessage());
+                logger.error("General exception in trfu integration (in SendOrderBloodComponents): {}", ex);
             }
         }
     }

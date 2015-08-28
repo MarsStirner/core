@@ -64,7 +64,8 @@ import java.lang.StringBuilder;
     "attendingPhysicianLastName",
     "attendingPhysicianFirstName",
     "attendingPhysicianMiddleName",
-    "bloodGroupId"
+    "bloodGroupId",
+    "rhesusFactorId"
 })
 public class OrderInformation {
 
