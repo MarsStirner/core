@@ -254,9 +254,14 @@ public class SendOrderBloodComponents {
         res.setAttendingPhysicianFirstName(createPerson.getFirstName());
         res.setAttendingPhysicianLastName(createPerson.getLastName());
         res.setAttendingPhysicianMiddleName(createPerson.getPatrName());
-        String bloodTypeReq = trfuActionProp.getProp(action.getId(), PropType.REQ_BLOOD_TYPE);
-        if(bloodTypeReq != null && !bloodTypeReq.isEmpty()) {
-            initReqBloodType(res, bloodTypeReq);
+        try {
+            String bloodTypeReq = trfuActionProp.getProp(action.getId(), PropType.REQ_BLOOD_TYPE);
+            if (bloodTypeReq != null && !bloodTypeReq.isEmpty()) {
+                initReqBloodType(res, bloodTypeReq);
+            }
+        } catch (CoreException ex)
+        {
+
         }
         return res;
     }
