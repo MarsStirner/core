@@ -855,7 +855,7 @@ class DbActionPropertyBean
     val apvList = prevValueList(ap)
     if (!apvList.isEmpty) {
       res = apvList.get(0) + 1;
-      for (i <- 1 to apvList.size()) {
+      for (i <- 1 to (apvList.size() - 1)) {
         if(res == apvList.get(i)) {
           res = apvList.get(i) + 1
         } else {
