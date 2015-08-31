@@ -366,11 +366,17 @@ class ActionWrapper(a: Action)
       }
 
       case AWI.Status => {
-        try {
-          this.a.setStatus(Short.parseShort(value))
-        } catch {
-          case ex: NumberFormatException => {
-            error("Cannot parse <" + value + "> as short")
+        //Для геммотраснфузиологии - проставлять статус для пулинга БД и отправки в ТРФУ
+        // при каждом изменении экшена до тех пор пока не получим из ТРФУ результат (статус = 2)
+        if("TransfusionTherapy".equals(a.getActionType.getFlatCode) && a.getStatus < 2 ){
+          a.setStatus(ActionStatus.STARTED.getCode)
+        } else {
+          try {
+            this.a.setStatus(Short.parseShort(value))
+          } catch {
+            case ex: NumberFormatException => {
+              error("Cannot parse <" + value + "> as short")
+            }
           }
         }
       }

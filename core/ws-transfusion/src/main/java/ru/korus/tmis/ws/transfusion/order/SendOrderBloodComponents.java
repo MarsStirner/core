@@ -214,7 +214,7 @@ public class SendOrderBloodComponents {
                         e.getMessage());
                 e.printStackTrace();
             } catch (final Exception ex) {
-                logger.error("General exception in trfu integration (in SendOrderBloodComponents): {}", ex);
+                logger.error("General exception in trfu integration (in SendOrderBloodComponents):", ex);
             }
         }
     }

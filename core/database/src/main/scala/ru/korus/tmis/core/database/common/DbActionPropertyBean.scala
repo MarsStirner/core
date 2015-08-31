@@ -188,6 +188,8 @@ class DbActionPropertyBean
           createActionPropertyValue(ap, value, index)
         } else {
           val apv = apvs.get(index)
+          //TODO Не работает (при редактировании с того-же окна) + нет обработчика если поменяли на 'авто'
+          //checkAuto(ap, value)
           if (value != null) {
             val apt = ap.getType()
             if ("Reference".equals(apt.getTypeName) || "ReferenceRb".equals(apt.getTypeName)) {
@@ -199,8 +201,7 @@ class DbActionPropertyBean
               if (apv.unwrap.setValueFromString(value)) apv else null
             }
             em.merge(apv)
-          }
-          else {
+          } else {
             em.remove(apv)
             null
           }
