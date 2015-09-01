@@ -17,7 +17,8 @@ import java.io.Serializable;
 @Table(name = "rbLaboratory")
 @NamedQueries(
         {
-                @NamedQuery(name = "RbLaboratory.findAll", query = "SELECT j FROM RbLaboratory j")
+                @NamedQuery(name = "RbLaboratory.findAll", query = "SELECT j FROM RbLaboratory j"),
+                @NamedQuery(name = "RbLaboratory.findAllByIds", query = "SELECT j FROM RbLaboratory j WHERE j.id IN :ids")
         })
 @XmlType(name = "rbLaboratory")
 @XmlRootElement(name = "rbLaboratory")

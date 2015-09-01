@@ -85,9 +85,9 @@ with CAPids {
     val dateMoreThan = filter.getBeginDate
     val dateLessThan = filter.getEndDate
     val department = filter.getDepartmentId
-    val labs: util.List[String] = filter.getLabs.toList match {
-      case Nil | null => dbRbLaboratory.getAllLabs.map(_.getName)
-      case _ => filter.getLabs
+    val labs: util.List[Integer] = filter.getLabs.toList match {
+      case Nil | null => dbRbLaboratory.getAllLabs.map(_.getId)
+      case _ => dbRbLaboratory.getLabById(filter.getLabs).map(_.getId)
     }
 
     val order = request.getSortingMethod.toLowerCase match {
@@ -96,16 +96,16 @@ with CAPids {
     }
 
     val orderField = request.getSortingField.toLowerCase match {
-      case "sex" => "research.event.patient.sex"
-      case "actiontype" => "research.actionType.name"
+      case "sex" => "pat.sex"
+      case "actiontype" => "res_atype.name"
       case "urgent" => "research.isUrgent"
-      case "tube" => "research.actionType.testTubeType.name"
+      case "tube" => "res_atype.testTubeType.name"
       case "status" => "jt.status"
-      case "fullname" | "fio" | "patient" => "research.event.patient.lastName %s, research.event.patient.firstName %s, research.event.patient.patrName".format(order, order)
-      case "birthdate" => "research.event.patient.birthDate"
+      case "fullname" | "fio" | "patient" => "pat.lastName %s, pat.firstName %s, pat.patrName".format(order, order)
+      case "birthdate" => "pat.birthDate"
       case "tissuetype" => "attt.tissueType.name"
       case "date" => "jt.datetime"
-      case _ => "research.event.patient.lastName %s, research.event.patient.firstName %s, research.event.patient.patrName".format(order, order)
+      case _ => "pat.lastName %s, pat.firstName %s, pat.patrName".format(order, order)
     }
 
     val queryString = DirectionsWithJobTicketsBetweenDateQuery.format(orderField, order)
@@ -326,22 +326,29 @@ with CAPids {
 
   val DirectionsWithJobTicketsBetweenDateQuery =
     """
-      SELECT DISTINCT research, jt, attt FROM JobTicket jt
-      LEFT JOIN jt.propertiesValues jtValue
-      LEFT JOIN jtValue.actionProperty jtProperty
-      LEFT JOIN jtProperty.action research
-      LEFT JOIN research.actionType.actionTypeTissueType attt
-      LEFT JOIN research.actionType.actionPropertyTypes apt
-      LEFT JOIN apt.test.rbLaboratoryTest.rbLaboratory lab
+      SELECT DISTINCT research, jt, attt
+      FROM JobTicket jt
+      INNER JOIN jt.job jb
+      INNER JOIN jt.propertiesValues jtValue
+      INNER JOIN jtValue.actionProperty jtProperty
+      INNER JOIN jtProperty.action research
+      INNER JOIN research.actionType res_atype
+      INNER JOIN res_atype.actionTypeTissueType attt
+      INNER JOIN res_atype.actionPropertyTypes apt
+      INNER JOIN apt.test tst
+      INNER JOIN tst.rbLaboratoryTest tstRbLab
+      INNER JOIN tstRbLab.rbLaboratory lab
+      INNER JOIN research.event ev
+      INNER JOIN ev.patient pat
 
       WHERE
-        jt.job.orgStructure.id = :department           AND
-        jt.job.date >= :day_more_than                  AND
-        jt.job.date <= :day_less_than                  AND
-        lab.name IN :labs                              AND
+        jb.orgStructure.id = :department           AND
+        jb.date >= :day_more_than                  AND
+        jb.date <= :day_less_than                  AND
+        lab.id IN :labs                              AND
         research.deleted = false                       AND
-        research.event.deleted = false                 AND
-        research.event.patient.deleted = false
+        ev.deleted = false                 AND
+        pat.deleted = false
       ORDER BY %s %s
     """
 
