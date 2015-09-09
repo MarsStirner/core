@@ -732,6 +732,8 @@ class CommonDataProcessorBean
     val a = new Action()
     a.setId(0)
     a.setActionType(actionType)
+    //WEBMIS-375  При создании нового action в поле Action.amount необходимо записывать значение из поля ActionType.amount
+    a.setAmount(actionType.getAmount)
     initPlannedEndDate(actionType, a)
     addAttributes(
       group0,

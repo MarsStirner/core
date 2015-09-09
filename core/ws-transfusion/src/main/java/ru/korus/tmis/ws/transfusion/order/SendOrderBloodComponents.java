@@ -1,5 +1,6 @@
 package ru.korus.tmis.ws.transfusion.order;
 
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.dbutil.Database;
@@ -169,7 +170,9 @@ public class SendOrderBloodComponents {
         }
         logger.info("Periodic check new TRFU order...");
         updateBloodCompTable(trfuService);
-        final List<Action> orderActions = database.getNewActionByFlatCode(ACTION_TYPE_TRANSFUSION_ORDER);
+        //TODO старые заявки нельзя отправлять т.к. они кривые
+        final LocalDate after = new LocalDate(2015, 8, 26);
+        final List<Action> orderActions = database.getNewActionByFlatCodeAfterDate(ACTION_TYPE_TRANSFUSION_ORDER, after.toDate());
         logger.info("Periodic check new TRFU order... the count of new action: {}", orderActions.size());
 
         for (final Action action : orderActions) {
