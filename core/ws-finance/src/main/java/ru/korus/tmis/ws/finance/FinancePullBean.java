@@ -14,6 +14,8 @@ import ru.korus.tmis.ws.finance.odvd.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.math.BigInteger;
@@ -37,6 +39,10 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
 
     @EJB
     HospitalBedBeanLocal hospitalBedBeanLocal;
+
+    @PersistenceContext(unitName = "s11r64")
+    private EntityManager em;
+
 
     private WsPoliclinicPortType port = null;
 
@@ -112,7 +118,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
         paidRowName.setFamily(eventLocalContract == null ? "unknown" : eventLocalContract.getLastName());
         paidRowName.setGiven(eventLocalContract == null ? "unknown" : eventLocalContract.getFirstName());
         paidRowName.setPartName(eventLocalContract == null ? "unknown" : eventLocalContract.getPatrName());
-        getPort().putService(BigInteger.valueOf(event.getId()), paidName, OdvdBuilder.toOdvdTableActions(actionList, hospitalBedBeanLocal));
+        getPort().putService(BigInteger.valueOf(event.getId()), paidName, OdvdBuilder.toOdvdTableActions(actionList, hospitalBedBeanLocal, em));
     }
 
 

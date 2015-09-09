@@ -12,6 +12,7 @@ import ru.korus.tmis.ws.finance.odvd.ObjectFactory;
 import ru.korus.tmis.ws.finance.odvd.RowTable;
 import ru.korus.tmis.ws.finance.odvd.Table;
 
+import javax.persistence.EntityManager;
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.math.BigInteger;
 import java.util.List;
@@ -28,19 +29,19 @@ public class OdvdBuilder {
 
     private static ru.korus.tmis.ws.finance.odvd.ObjectFactory odvdObjectFactory = new ObjectFactory();
 
-    public static Table toOdvdTableActions(List<Action> actionList, HospitalBedBeanLocal hospitalBedBeanLocal) {
+    public static Table toOdvdTableActions(List<Action> actionList, HospitalBedBeanLocal hospitalBedBeanLocal, EntityManager em) {
         Table res = odvdObjectFactory.createTable();
         for (Action action : actionList) {
-            res.getListServiceComplete().add(toOdvdRowTable(action, hospitalBedBeanLocal));
+            res.getListServiceComplete().add(toOdvdRowTable(action, hospitalBedBeanLocal, em));
         }
         return res;
     }
 
-    private static RowTable toOdvdRowTable(Action action, HospitalBedBeanLocal hospitalBedBeanLocal) {
+    private static RowTable toOdvdRowTable(Action action, HospitalBedBeanLocal hospitalBedBeanLocal, EntityManager em) {
         RowTable res = odvdObjectFactory.createRowTable();
         assert action.getActionType() != null;
         assert action.getEvent() != null;
-        RbService service = action.getActionType().getService();
+        RbService service = getServiceByAction(action, em);
         res.setIdAction(BigInteger.valueOf(action.getId()));
         try {
             res.setEndDate(Database.toGregorianCalendar(action.getEndDate()));
@@ -53,7 +54,7 @@ public class OdvdBuilder {
             res.setCodeOfService(action.getActionType().getCode());
         } else { //если услуга
             res.setNameOfService(service.getName());
-            res.setCodeOfService(action.getActionType().getCode());
+            res.setCodeOfService(service.getCode());
         }
 
         try {
@@ -70,6 +71,37 @@ public class OdvdBuilder {
 
         res.setAmount(action.getAmount());
         return res;
+    }
+
+    private static RbService getServiceByAction(Action action, EntityManager em) {
+        final String query = "SELECT `rbService`.* " +
+                "FROM " +
+                "    `Action` INNER JOIN `Event` ON `Event`.id = `Action`.event_id " +
+                "    INNER JOIN `EventType` ON `EventType`.id = `Event`.`eventType_id` " +
+                "    INNER JOIN `Contract` ON `Contract`.id = `Event`.contract_id " +
+                "    INNER JOIN `Contract_Tariff` ON `Contract`.id = `Contract_Tariff`.master_id " +
+                "    INNER JOIN `ActionType` ON `ActionType`.id = `Action`.`actionType_id` " +
+                "    INNER JOIN `ActionType_Service` ON `ActionType`.id = `ActionType_Service`.master_id " +
+                "    INNER JOIN `rbService` ON `ActionType_Service`.service_id = `rbService`.id " +
+                "WHERE " +
+                "    `Action`.event_id = %s AND " +
+                "    `Contract_Tariff`.`eventType_id` = `EventType`.id AND " +
+                "    `Contract_Tariff`.service_id = `ActionType_Service`.service_id AND " +
+                "    `Action`.deleted = 0 AND " +
+                "    `Contract_Tariff`.deleted = 0 AND " +
+                "    date(`Event`.`setDate`) BETWEEN `ActionType_Service`.`begDate` AND " +
+                "    coalesce(`ActionType_Service`.`endDate`, curdate()) AND " +
+                "    date(`Event`.`setDate`) BETWEEN `Contract_Tariff`.`begDate` AND " +
+                "    `Contract_Tariff`.`endDate`";
+
+        List<RbService> resList = em.createNativeQuery(String.format(query, action.getEvent().getId(), RbService.class)).getResultList();
+        if (resList.isEmpty()) {
+            return null;
+        } else {
+            return resList.get(0);
+        }
+
+
     }
 
 
