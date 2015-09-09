@@ -84,7 +84,7 @@ public class OdvdBuilder {
                 "    INNER JOIN `ActionType_Service` ON `ActionType`.id = `ActionType_Service`.master_id " +
                 "    INNER JOIN `rbService` ON `ActionType_Service`.service_id = `rbService`.id " +
                 "WHERE " +
-                "    `Action`.event_id = %s AND " +
+                "    `Action`.id = %s AND " +
                 "    `Contract_Tariff`.`eventType_id` = `EventType`.id AND " +
                 "    `Contract_Tariff`.service_id = `ActionType_Service`.service_id AND " +
                 "    `Action`.deleted = 0 AND " +
@@ -94,7 +94,7 @@ public class OdvdBuilder {
                 "    date(`Event`.`setDate`) BETWEEN `Contract_Tariff`.`begDate` AND " +
                 "    `Contract_Tariff`.`endDate`";
 
-        List<RbService> resList = em.createNativeQuery(String.format(query, action.getEvent().getId(), RbService.class)).getResultList();
+        List<RbService> resList = em.createNativeQuery(String.format(query, action.getId(), RbService.class)).getResultList();
         if (resList.isEmpty()) {
             return null;
         } else {
