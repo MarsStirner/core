@@ -1,7 +1,7 @@
 <project>
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>ru.korus.tmis.ext</groupId>
-	<version>2.6.1.1</version>
+	<version>2.6.1.2</version>
 	<artifactId>tmis-core-ext</artifactId>
 	<packaging>pom</packaging>
 	<name>TMIS core extension module</name>
@@ -12,7 +12,7 @@
 	</modules>
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core.ext>2.6.1.1</version.tmis.core.ext>
+        <version.tmis.core.ext>2.6.1.2</version.tmis.core.ext>
     </properties>
     <build>
         <plugins>
