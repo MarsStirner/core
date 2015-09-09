@@ -8,6 +8,7 @@ import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
+import javax.persistence.TemporalType;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
@@ -215,10 +216,16 @@ public class Database {
      * @return - список действий с типом, соответсвующим flatCode и статусом 0 - Начато
      */
     public List<Action> getNewActionByFlatCode(final String flatCode) {
-        final List<Action> actions =
-                em.createNamedQuery("Action.findNewByFlatCode", Action.class)
-                        .setParameter("flatCode", flatCode).getResultList();
-        return actions;
+        return em.createNamedQuery("Action.findNewByFlatCode", Action.class)
+                .setParameter("flatCode", flatCode).getResultList();
+    }
+
+    public List<Action> getNewActionByFlatCodeAfterDate(final String flatCode, final Date afterDate) {
+        return em.createQuery(
+                "SELECT a FROM Action a WHERE a.status = 0 AND a.actionType.flatCode = :flatCode AND a.event IS NOT NULL AND a.event.patient IS NOT NULL AND a.deleted = 0 AND a.createDatetime >= :date", Action.class)
+                .setParameter("flatCode", flatCode)
+                .setParameter("date", afterDate, TemporalType.DATE)
+                .getResultList();
     }
 
     /**
@@ -299,4 +306,6 @@ public class Database {
     public Staff getCoreUser() {
         return dbStaffBeanLocal.getCoreUser();
     }
+
+
 }

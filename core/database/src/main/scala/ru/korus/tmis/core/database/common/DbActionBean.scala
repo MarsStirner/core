@@ -154,6 +154,8 @@ class DbActionBean
 
     a.setEvent(e)
     a.setActionType(at)
+    //WEBMIS-375  При создании нового action в поле Action.amount необходимо записывать значение из поля ActionType.amount
+    a.setAmount(at.getAmount)
 
     a.setStatus(ActionStatus.STARTED.getCode)
     a.setUuid(dbUUIDBeanLocal.createUUID())
@@ -600,6 +602,8 @@ class DbActionBean
       newAction.setCreatePerson(null)
       newAction.setModifyPerson(null)
       newAction.setActionType(actionType)
+      //WEBMIS-375  При создании нового action в поле Action.amount необходимо записывать значение из поля ActionType.amount
+      newAction.setAmount(actionType.getAmount)
       newAction.setModifyDatetime(now)
       newAction.setEvent(event)
       newAction.setNote(queueActionParam.getNote)
