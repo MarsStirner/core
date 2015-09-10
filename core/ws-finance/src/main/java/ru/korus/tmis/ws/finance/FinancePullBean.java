@@ -14,6 +14,8 @@ import ru.korus.tmis.ws.finance.odvd.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.xml.datatype.DatatypeConfigurationException;
@@ -57,6 +59,7 @@ public class FinancePullBean implements FinancePullBeanLocal, Sender {
     }
 
     @Override
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void pullDb() {
         try {
             logger.info("1C ODVD integration entry...");
