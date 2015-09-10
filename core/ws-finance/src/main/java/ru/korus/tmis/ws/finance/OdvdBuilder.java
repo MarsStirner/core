@@ -74,7 +74,7 @@ public class OdvdBuilder {
     }
 
     public static RbService getServiceByAction(Action action, EntityManager em) {
-        final String query = "SELECT `rbService`.* " +
+        final String query = "SELECT `rbService`.code " +
                 "FROM " +
                 "    `Action` INNER JOIN `Event` ON `Event`.id = `Action`.event_id " +
                 "    INNER JOIN `EventType` ON `EventType`.id = `Event`.`eventType_id` " +
@@ -94,11 +94,12 @@ public class OdvdBuilder {
                 "    date(`Event`.`setDate`) BETWEEN `Contract_Tariff`.`begDate` AND " +
                 "    `Contract_Tariff`.`endDate`";
 
-        List<RbService> resList = em.createNativeQuery(String.format(query, action.getId(), RbService.class)).getResultList();
+        List<String> resList = em.createNativeQuery(String.format(query, action.getId(), String.class)).getResultList();
         if (resList.isEmpty()) {
             return null;
         } else {
-            return resList.get(0);
+            List<RbService> ress = em.createNamedQuery("rbService.findByCode", RbService.class).setParameter( "code", resList.get(0)).getResultList();
+            return ress.get(0);
         }
 
 
