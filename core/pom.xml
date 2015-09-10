@@ -17,6 +17,7 @@
         <module>database</module>
         <module>config</module>
         <module>finance-ear</module>
+        <module>transfusion-ear</module>
         <module>drugstore-tier</module>
         <module>server</module>
         <module>ws-medipad</module>

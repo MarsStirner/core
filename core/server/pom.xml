@@ -71,13 +71,6 @@
         </dependency>
 
         <dependency>
-            <groupId>ru.korus.tmis.ws.transfusion</groupId>
-            <artifactId>tmis-ws-transfusion</artifactId>
-            <version>2.6.1.2</version>
-            <type>war</type>
-        </dependency>
-
-        <dependency>
             <groupId>ru.korus.tmis.ws.usersmngr</groupId>
             <artifactId>tmis-ws-users-mgr</artifactId>
             <version>2.6.1.2</version>
