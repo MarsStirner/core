@@ -14,6 +14,8 @@ import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.*;
@@ -103,6 +105,7 @@ public class SendProcedureRequest {
      * @see ru.korus.tmis.ws.transfusion.order.Pullable#pullDB(ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService)
      */
 
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void pullDB(final TransfusionMedicalService trfuService) {
         try {
             initCoreUser();

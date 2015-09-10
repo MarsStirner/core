@@ -14,6 +14,8 @@ import ru.korus.tmis.ws.transfusion.efive.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.xml.datatype.DatatypeConfigurationException;
 import java.util.Arrays;
@@ -161,6 +163,7 @@ public class SendOrderBloodComponents {
         return !movings.isEmpty();
     }
 
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void pullDB(final TransfusionMedicalService trfuService) {
         try {
             trfuActionProp = new TrfuActionProp(database, ACTION_TYPE_TRANSFUSION_ORDER, Arrays.asList(propConstants));
