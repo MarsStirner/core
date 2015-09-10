@@ -4,6 +4,7 @@ import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
 
+import javax.persistence.EntityManager;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -25,10 +26,10 @@ public class ServiceListResult {
      */
     private List<ServiceInfo> listService = new LinkedList<ServiceInfo>();
 
-    public ServiceListResult(Event event, DbActionBeanLocal dbActionBeanLocal) {
+    public ServiceListResult(Event event, DbActionBeanLocal dbActionBeanLocal, EntityManager em) {
         this.idTreatment = event.getId();
         for(Action action : dbActionBeanLocal.getServiceList(event.getId())) {
-           listService.add(new ServiceInfo(action));
+           listService.add(new ServiceInfo(action, em));
         }
     }
 

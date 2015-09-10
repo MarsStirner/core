@@ -42,7 +42,7 @@ public class PaymentBean implements PaymentBeanLocal {
     @Override
     public ServiceListResult getServiceList(Integer idTreatment) throws CoreException {
         Event event =  dbEventBeanLocal.getEventById(idTreatment);
-        return new ServiceListResult(event, dbActionBeanLocal);
+        return new ServiceListResult(event, dbActionBeanLocal, em);
     }
 
     @Override

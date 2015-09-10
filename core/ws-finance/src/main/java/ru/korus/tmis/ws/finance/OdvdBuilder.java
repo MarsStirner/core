@@ -73,7 +73,7 @@ public class OdvdBuilder {
         return res;
     }
 
-    private static RbService getServiceByAction(Action action, EntityManager em) {
+    public static RbService getServiceByAction(Action action, EntityManager em) {
         final String query = "SELECT `rbService`.* " +
                 "FROM " +
                 "    `Action` INNER JOIN `Event` ON `Event`.id = `Action`.event_id " +

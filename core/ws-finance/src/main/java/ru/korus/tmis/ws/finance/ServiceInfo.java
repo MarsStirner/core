@@ -1,6 +1,9 @@
 package ru.korus.tmis.ws.finance;
 
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.RbService;
+
+import javax.persistence.EntityManager;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -23,9 +26,10 @@ public class ServiceInfo {
      */
     private Double amount;
 
-    public ServiceInfo(Action action) {
+    public ServiceInfo(Action action, EntityManager em) {
         idService = action.getId();
-        codeService = action.getActionType().getService().getCode();
+        RbService rbService = OdvdBuilder.getServiceByAction(action, em);
+        codeService =  rbService == null ? "" : rbService.getCode();
         amount = action.getAmount();
     }
 
