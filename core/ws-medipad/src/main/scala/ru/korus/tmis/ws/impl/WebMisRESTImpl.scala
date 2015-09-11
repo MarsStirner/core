@@ -3,7 +3,7 @@ package ru.korus.tmis.ws.impl
 import java.net.URI
 import java.util.Date
 import java.{util => ju, lang}
-import javax.ejb.{EJB, Stateless}
+import javax.ejb.{TransactionAttribute, TransactionAttributeType, EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.servlet.http.Cookie
 
@@ -290,6 +290,7 @@ with CAPids {
   }
 
   //Insert or modify appeal
+  @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
   def insertAppealForPatient(appealData: AppealData, patientId: Int, auth: AuthData) = {
     val ide = appealBean.insertAppealForPatient(appealData, patientId, auth, dbStaff.getStaffById(auth.getUserId))
     constructAppealData(ide)
