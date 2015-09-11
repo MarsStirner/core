@@ -74,36 +74,27 @@ public class OdvdBuilder {
     }
 
     public static RbService getServiceByAction(Action action, EntityManager em) {
-        final String query = "SELECT `rbService`.code " +
-                "FROM " +
-                "    `Action` INNER JOIN `Event` ON `Event`.id = `Action`.event_id " +
-                "    INNER JOIN `EventType` ON `EventType`.id = `Event`.`eventType_id` " +
-                "    INNER JOIN `Contract` ON `Contract`.id = `Event`.contract_id " +
-                "    INNER JOIN `Contract_Tariff` ON `Contract`.id = `Contract_Tariff`.master_id " +
-                "    INNER JOIN `ActionType` ON `ActionType`.id = `Action`.`actionType_id` " +
-                "    INNER JOIN `ActionType_Service` ON `ActionType`.id = `ActionType_Service`.master_id " +
-                "    INNER JOIN `rbService` ON `ActionType_Service`.service_id = `rbService`.id " +
-                "WHERE " +
-                "    `Action`.id = %s AND " +
-                "    `Contract_Tariff`.`eventType_id` = `EventType`.id AND " +
-                "    `Contract_Tariff`.service_id = `ActionType_Service`.service_id AND " +
-                "    `Action`.deleted = 0 AND " +
-                "    `Contract_Tariff`.deleted = 0 AND " +
-                "    date(`Event`.`setDate`) BETWEEN `ActionType_Service`.`begDate` AND " +
-                "    coalesce(`ActionType_Service`.`endDate`, curdate()) AND " +
-                "    date(`Event`.`setDate`) BETWEEN `Contract_Tariff`.`begDate` AND " +
-                "    `Contract_Tariff`.`endDate`";
-
-        List<String> resList = em.createNativeQuery(String.format(query, action.getId(), String.class)).getResultList();
-        if (resList.isEmpty()) {
-            return null;
-        } else {
-            List<RbService> ress = em.createNamedQuery("rbService.findByCode", RbService.class).setParameter( "code", resList.get(0)).getResultList();
-            return ress.get(0);
-        }
-
-
+        final List<RbService> resList = em.createNativeQuery(String.format(serviceByActionQuery, action.getId()), RbService.class).getResultList();
+        return resList.isEmpty() ? null : resList.get(0);
     }
+
+    private static final String serviceByActionQuery =
+            "SELECT `rbService`.* " +
+            "FROM `Action` " +
+            "INNER JOIN `ActionType` ON `ActionType`.id = `Action`.`actionType_id` " +
+            "INNER JOIN `ActionType_Service` ON `ActionType`.id = `ActionType_Service`.master_id " +
+            "INNER JOIN `Event` ON `Event`.id = `Action`.event_id " +
+            "INNER JOIN `EventType` ON `EventType`.id = `Event`.`eventType_id` " +
+            "INNER JOIN `Contract` ON `Contract`.id = `Event`.contract_id " +
+            "INNER JOIN `Contract_Tariff` ON `Contract`.id = `Contract_Tariff`.master_id " +
+                    "AND `Contract_Tariff`.`eventType_id` = `EventType`.id " +
+                    "AND `Contract_Tariff`.service_id = `ActionType_Service`.service_id " +
+            "INNER JOIN `rbService` ON `ActionType_Service`.service_id = `rbService`.id " +
+            "WHERE `Action`.deleted = 0 " +
+            "AND `Contract_Tariff`.deleted = 0 " +
+            "AND DATE(`Event`.`setDate`) BETWEEN `ActionType_Service`.`begDate` AND COALESCE(`ActionType_Service`.`endDate`, CURDATE()) " +
+            "AND DATE(`Event`.`setDate`) BETWEEN `Contract_Tariff`.`begDate` AND `Contract_Tariff`.`endDate` " +
+            "AND `Action`.id = %s ";
 
 
 }
