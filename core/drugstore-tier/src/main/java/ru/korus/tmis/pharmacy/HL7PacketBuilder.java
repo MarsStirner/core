@@ -1196,7 +1196,7 @@ public final class HL7PacketBuilder {
         }
         person.getName().add(createPN(client));
         person.setAdministrativeGenderCode(createCE(client.getSex() == 1 ? "M" : "F", "2.16.840.1.113883.5.1"));
-        person.setBirthTime(createTS(client.getBirthDate(), "YYYYddMM"));
+        person.setBirthTime(createTS(client.getBirthDate(), DATE_FORMAT));
         patientPerson.setValue(person);
         return patientPerson;
     }
