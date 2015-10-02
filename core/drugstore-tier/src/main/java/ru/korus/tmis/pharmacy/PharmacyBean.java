@@ -22,6 +22,8 @@ import ru.korus.tmis.util.logs.ToLog;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import java.sql.Timestamp;
 import java.util.*;
 
@@ -93,41 +95,42 @@ public class PharmacyBean implements PharmacyBeanLocal {
      * Полинг базы данных для поиска событий по движениям пациентов и назначениям ЛС
      */
     @Override
-    //@Schedule(minute = "*/1", hour = "*", persistent = false)
+    @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void pooling() {
-        if (ConfigManager.Drugstore().isActive()) {
-            try {
-                logger.info("pooling... last modify date {}", getLastDate());
-                if (lastDateUpdate == null) {
-                    lastDateUpdate = firstPolling();
-                }
-                final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
-                if (!actionAfterDate.isEmpty()) {
-                    logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
-                    for (Action action : actionAfterDate) {
-                        final ToLog toLog = new ToLog(action.getActionType().getFlatCode());
-                        try {
-                            if (isActionForSend(action)) {
-                                send(action, toLog);
-                                lastDateUpdate = new DateTime(action.getCreateDatetime());
-                            }
-                        } finally {
-                            logger.info(toLog.releaseString());
+        if (!ConfigManager.Drugstore().isActive()) {
+            logger.info("pooling... {}", ConfigManager.Drugstore().Active());
+            return;
+        }
+        try {
+            logger.info("pooling... last modify date {}", getLastDate());
+            if (lastDateUpdate == null) {
+                lastDateUpdate = firstPolling();
+            }
+            final List<Action> actionAfterDate = dbPharmacy.getVirtualActionsAfterDate(lastDateUpdate);
+            logger.info("Found {} newest actions after date {}", actionAfterDate.size(), getLastDate());
+            if (!actionAfterDate.isEmpty()) {
+                for (Action action : actionAfterDate) {
+                    final ToLog toLog = new ToLog(action.getActionType().getFlatCode());
+                    try {
+                        if (isActionForSend(action)) {
+                            send(action, toLog);
+                            lastDateUpdate = new DateTime(action.getCreateDatetime());
                         }
+                    } finally {
+                        logger.info(toLog.releaseString());
                     }
                 }
-                // повторная отправка неотправленных сообщений
-                resendMessages();
-                //Отправка назначений ЛС
-                //logger.info("sending prescription start...");
-                sendPrescriptionTo1C();
-                //logger.info("sending prescription stop");
-            } catch (Throwable e) {
-                logger.error("Throwable e: " + e, e);
             }
-        } else {
-            logger.info("pooling... {}", ConfigManager.Drugstore().Active());
+            // повторная отправка неотправленных сообщений
+            resendMessages();
+            //Отправка назначений ЛС
+            //logger.info("sending prescription start...");
+            sendPrescriptionTo1C();
+            //logger.info("sending prescription stop");
+        } catch (Throwable e) {
+            logger.error("Throwable e: " + e, e);
         }
+
     }
 
     /**

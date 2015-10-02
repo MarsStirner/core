@@ -10,34 +10,20 @@ import javax.ejb.*;
 import java.util.Date;
 
 /**
- * Author:      Dmitriy E. Nosov <br>
+ * Author:      Dmitriy E. Nosov <br> EUpatov
  * Date:        28.11.13, 18:21 <br>
  * Company:     Korus Consulting IT<br>
- * Description:   Программируемый таймер для полинга 1С Аптеки<br>
+ * Description:   Пуллинг по расписанию для полинга 1С Аптеки<br>
  */
 @Startup
 @Singleton
 public class PharmacyTimer {
-    private static final Logger logger = LoggerFactory.getLogger(PharmacyTimer.class);
 
     @EJB
     private PharmacyBeanLocal pharmacyBean;
 
-    @Resource
-    private TimerService timerService;
-
-    @PostConstruct
-    public void createProgrammaticalTimer() {
-        logger.info("ProgrammaticalTimerEJB initialized");
-        ScheduleExpression everyTenSeconds = new ScheduleExpression()
-                .second("*/59").minute("*").hour("*");
-        timerService.createCalendarTimer(everyTenSeconds, new TimerConfig(
-                "passed message " + new Date(), false));
-    }
-
-    @Timeout
-    public void handleTimer(final Timer timer) {
-      //  logger.info("timer received - contained message is: " + timer.getInfo());
+    @Schedule(hour = "*", minute = "*", second = "25", persistent = false)
+    public void pullDB() {
         pharmacyBean.pooling();
     }
 }
