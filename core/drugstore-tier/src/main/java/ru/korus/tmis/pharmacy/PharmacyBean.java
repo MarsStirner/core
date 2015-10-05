@@ -1,5 +1,6 @@
 package ru.korus.tmis.pharmacy;
 
+import com.google.common.collect.ImmutableList;
 import misexchange.MISExchange;
 import misexchange.MISExchangePortType;
 import misexchange.Request;
@@ -507,7 +508,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
     /**
      * Отправка одного интервала назначения/исполнения в ЛС
      *
-     * @param prescription
+     * @param prescription - назначение для отправки
      * @return - true - интервал успешно передан в 1С
      * @throws CoreException
      */
@@ -520,24 +521,28 @@ public class PharmacyBean implements PharmacyBeanLocal {
             }
             final Action action = drugChart.getAction();
             final Event event = action.getEvent();
-            // Пациент
-            final Patient client = action.getEvent().getPatient();
+            logger.debug("Try to send Prescription: DrugChart[{}], Action[{}], Event[{}]", new Object[]{drugChart.getId(), action.getId(), event.getId()});
             // Организация, которой принадлежит документ
             final Organisation organisation;
             organisation = getCustodianOrgStructure(action);
             // Определяем код назначенного препарата
             final List<DrugComponent> drugComponents = dbPharmacy.getDrugComponent(action);
-            // Способ применения
-            final String code[] = {Constants.MOA};
-            String routeOfAdministration = null;
 
-            final Map<ActionProperty, List<APValue>> actionProp = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), Arrays.asList(code));
+            // Способ применения
+            String routeOfAdministration = null;
+            final Map<ActionProperty, List<APValue>> actionProp = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndTypeCodes(action.getId(), ImmutableList.of(Constants.MOA));
             if (!actionProp.isEmpty() && !actionProp.entrySet().iterator().next().getValue().isEmpty()) {
                 Object codeId = actionProp.entrySet().iterator().next().getValue().iterator().next().getValue();
                 if (codeId instanceof Integer) {
-                    routeOfAdministration = dbRbMethodOfAdministrationLocal.getById((Integer) codeId).getCode();
+                    final RbMethodOfAdministration methodOfAdministration = dbRbMethodOfAdministrationLocal.getById((Integer) codeId);
+                    if(methodOfAdministration != null){
+                        routeOfAdministration =  methodOfAdministration.getCode();
+                    } else {
+                        logger.warn("For Action[{}] not found RbMethodOfAdministration by id = {}", action.getId(), codeId);
+                    }
                 }
             }
+
             Request request = null;
             final String financeType = getFinaceType(action);
             final Iterable<DrugChart> intervalsByEvent = this.dbDrugChartBeanLocal.getIntervalsByEvent(event);

@@ -101,11 +101,11 @@ object ConfigManager extends Configuration {
     /**
      * Login basic http auth
      */
-    var User = "admin"
+    var User = "misex"
     /**
      * Password basic http auth
      */
-    var Password = "1234"
+    var Password = "3o|Fx@708OpXO:Q"
 
     /**
      * Включен ли сервис Обновление данных о лекарственных средствах
