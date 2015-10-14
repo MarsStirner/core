@@ -28,7 +28,7 @@ public class ServiceListResult {
 
     public ServiceListResult(Event event, DbActionBeanLocal dbActionBeanLocal, EntityManager em) {
         this.idTreatment = event.getId();
-        for(Action action : dbActionBeanLocal.getServiceList(event.getId())) {
+        for(Action action : dbActionBeanLocal.getActionsByEvent(event.getId())) {
            listService.add(new ServiceInfo(action, em));
         }
     }
