@@ -1,11 +1,7 @@
 package ru.korus.tmis.core.patient;
 
 import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.data.AssignmentsToRemoveDataList;
-import ru.korus.tmis.core.data.CommonData;
-import ru.korus.tmis.core.data.ConsultationRequestData;
-import ru.korus.tmis.core.data.JSONCommonData;
-import ru.korus.tmis.core.data.JobTicketStatusDataList;
+import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function2;
@@ -101,6 +97,15 @@ public interface DirectionBeanLocal {
      * @throws CoreException
      */
     boolean updateJobTicketsStatuses(JobTicketStatusDataList data, Staff authData) throws CoreException;
+
+    /**
+     * Сервис по обновлению статусов JobTicket
+     * @param data Список статусов JobTicket как JobTicketStatusDataList
+     * @param authData Авторизационные данные как AuthData
+     * @return true - редактирование прошло успешно или false - при редактировании возникли ошибки (см. лог)
+     * @throws CoreException
+     */
+    boolean sendActionsToLaboratory(SendActionsToLaboratoryDataList data, Staff authData) throws CoreException;
 
     void sendActionToLis(int actionId) throws CoreException;
 

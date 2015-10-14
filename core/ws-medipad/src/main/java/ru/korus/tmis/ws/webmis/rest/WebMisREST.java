@@ -288,6 +288,16 @@ public interface WebMisREST extends Serializable {
      */
     boolean updateJobTicketsStatuses(JobTicketStatusDataList data, AuthData authData) throws CoreException;
 
+
+    /**
+     * Сервис по отправке заданных Action в Лаборатории
+     * @param data Список идентифкаторов Action-ов
+     * @param authData Авторизационные данные как AuthData
+     * @return true - редактирование прошло успешно или false - при редактировании возникли ошибки (см. лог)
+     * @throws CoreException
+     */
+    boolean sendActionsToLaboratory(SendActionsToLaboratoryDataList data, AuthData authData) throws CoreException;
+
     /**
      * Удаление всей информации о пациенте  (для юнит-тестов)
      * @param id Идентификатор пациента
@@ -463,4 +473,6 @@ public interface WebMisREST extends Serializable {
     LockData prolongLock(int actionId, AuthData auth) throws CoreException;
 
     void releaseLock(int actionId, AuthData auth);
+
+
 }

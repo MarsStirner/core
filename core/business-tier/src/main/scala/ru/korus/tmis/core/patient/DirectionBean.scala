@@ -4,11 +4,12 @@ import java.util
 import java.util.{Collections, Date}
 import javax.annotation.Resource
 import javax.ejb.{EJB, Stateless}
-import javax.interceptor.Interceptors
+
 import javax.jms._
 import javax.persistence.{EntityManager, PersistenceContext}
 
 import grizzled.slf4j.Logging
+import org.apache.commons.collections.CollectionUtils
 import org.joda.time.DateTime
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
@@ -354,14 +355,7 @@ with I18nable {
                                                userData: AuthData,
                                                staff: Staff,
                                                postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
-    if (actionBean.getMovings(eventId).isEmpty) {
-      throw new CoreException(ConfigManager.ErrorCodes.NoMoving,
-        i18n("error.lab.NoMoving"))
-
-    }
-
     var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData, staff)
-
     //Для лабораторных исследований отработаем с JobTicket
     if (mnem.toUpperCase.equals("LAB") || mnem.toUpperCase.equals("BAK_LAB")) {
       try {
@@ -630,9 +624,31 @@ with I18nable {
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: Staff) = {
     var isSuccess: Boolean = true
     data.getData.foreach(f => {
-      var isAllActionSent: Boolean = true
-      if (f.getStatus == 2) {
+      if (f.getStatus == 1) {
         dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {
+          val tt = a.getTakenTissue
+          if (tt != null) {
+            tt.setPerson(authData)
+            em.merge(tt)
+          }
+        })
+      }
+      val res: Boolean = dbJobTicketBean.modifyJobTicketStatus(f.getId, f.getStatus)
+      if (!res)
+        isSuccess = res
+    })
+    em.flush()
+    isSuccess
+  }
+
+  def sendActionsToLaboratory(data: SendActionsToLaboratoryDataList, authData: Staff) = {
+    var isSuccess: Boolean = true
+    data.getData.foreach(f => {
+      var allActions: util.List[Action] = dbJobTicketBean.getActionsForJobTicket(f.getId)
+      //По умолчанию считается что посылаются все экшены из жобтикета,
+      // соответственно если коллекции (запрошенные экшены) и (все экшены жобтикета) не равны, то послыаются не все экшены
+      var isAllActionSent: Boolean = CollectionUtils.isEqualCollection(allActions.map(_.getId), f.getData.map(_.getId))
+       f.getData.foreach(a => {
           val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(a.getId.intValue())
           if (labCode != null && labCode.compareTo("0101") == 0) {
             // отправка назначения в Акросс
@@ -670,19 +686,9 @@ with I18nable {
             }
           }
         })
-        // Устанавливаем исполнителя для TakenTissueJournal
-      } else if (f.getStatus == 1) {
-        dbJobTicketBean.getActionsForJobTicket(f.getId).foreach(a => {
-          val tt = a.getTakenTissue
-          if (tt != null) {
-            tt.setPerson(authData)
-            em.merge(tt)
-          }
-        })
-      }
       var res: Boolean = true
       if (isAllActionSent) {
-        res = dbJobTicketBean.modifyJobTicketStatus(f.getId, f.getStatus)
+        res = dbJobTicketBean.modifyJobTicketStatus(f.getId, 2)
       }
       if (!res)
         isSuccess = res
@@ -690,6 +696,7 @@ with I18nable {
     em.flush()
     isSuccess
   }
+
 
   /**
    * Отправка назначения в Акросс
@@ -843,7 +850,6 @@ with I18nable {
     orderInfo.setOrderPriority(priority)
     var aa: ActionPropertyType = null
     val apts: util.List[ActionPropertyType] = dbActionTypeBean.getActionTypePropertiesById(actionType.getId)
-    import scala.collection.JavaConversions._
     for (apt <- apts) {
       if (apt.getTest != null) {
         aa = apt
@@ -853,12 +859,10 @@ with I18nable {
       throw new CoreException("не определены показатели из rbTest, не нужно отправлять анализ в ЛИС actionId: " + action.getId)
     }
     val aptsSet: util.Set[ActionPropertyType] = new util.HashSet[ActionPropertyType]
-    import scala.collection.JavaConversions._
     for (apt <- apts) {
       aptsSet.add(apt)
     }
     val apsMap: util.Map[ActionPropertyType, ActionProperty] = action.getActionPropertiesByTypes(aptsSet)
-    import scala.collection.JavaConversions._
     for (entry <- apsMap.entrySet) {
       val ap: ActionProperty = entry.getValue
       val apt: ActionPropertyType = entry.getKey
@@ -874,11 +878,9 @@ with I18nable {
     if (hospitalBeds == null) {
       return null
     }
-    import scala.collection.JavaConversions._
     for (event <- hospitalBeds.keySet) {
       val actionProperty: ActionProperty = hospitalBeds.get(event)
       val actionPropertyValue: util.List[APValue] = dbActionProperty.getActionPropertyValue(actionProperty)
-      import scala.collection.JavaConversions._
       for (apValue <- actionPropertyValue) {
         apValue.getValue match {
           case bed: OrgStructureHospitalBed =>

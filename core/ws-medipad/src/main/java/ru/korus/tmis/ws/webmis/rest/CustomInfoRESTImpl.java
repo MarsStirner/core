@@ -5,10 +5,7 @@ import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
 import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.data.JobTicketStatusDataList;
-import ru.korus.tmis.core.data.PatientsListRequestData;
-import ru.korus.tmis.core.data.TakingOfBiomaterialRequesData;
-import ru.korus.tmis.core.data.TakingOfBiomaterialRequesDataFilter;
+import ru.korus.tmis.core.data.*;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.OrgStructure;
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile;
@@ -210,6 +207,20 @@ public class CustomInfoRESTImpl {
                                            @QueryParam("sortingMethod") String sortingMethod,
                                            JobTicketStatusDataList data) throws CoreException {
         return new JSONWithPadding(wsImpl.updateJobTicketsStatuses(data, mkAuth(servRequest)),callback);
+    }
+
+    /**
+     * Метод проставляет статус для тиккетов
+     * @param data Список статусов для JobTicket
+     * @return true - завершено успешно, false - завершено с ошибками
+     */
+    @PUT
+    @Path("/sendActionsToLaboratory")
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object sendActionsToLaboratory(@Context HttpServletRequest servRequest,
+                                            @QueryParam("callback") String callback,
+                                            SendActionsToLaboratoryDataList data) throws CoreException{
+       return new JSONWithPadding(wsImpl.sendActionsToLaboratory(data, mkAuth(servRequest)), callback );
     }
 
     /**

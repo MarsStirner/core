@@ -1721,6 +1721,10 @@ with CAPids {
     directionBean.updateJobTicketsStatuses(data,  dbStaff.getStaffById(authData.getUserId))
   }
 
+  def sendActionsToLaboratory(data: SendActionsToLaboratoryDataList, authData: AuthData) = {
+    directionBean.sendActionsToLaboratory(data,  dbStaff.getStaffById(authData.getUserId))
+  }
+
   def deletePatientInfo(id: Int) = patientBean.deletePatientInfo(id)
 
   def getDiagnosesByAppeal(appealId: Int, authData: AuthData) = diagnosisBean.getDiagnosesByAppeal(appealId)

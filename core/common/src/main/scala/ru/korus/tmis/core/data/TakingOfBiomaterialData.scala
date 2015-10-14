@@ -415,3 +415,28 @@ class JobTicketStatusDataEntry {
     this.status = ticket.getStatus
   }
 }
+
+
+@XmlType(name = "SendActionsToLaboratoryDataList")
+@XmlRootElement(name = "SendActionsToLaboratoryDataList")
+class SendActionsToLaboratoryDataList {
+  @BeanProperty
+  var data: util.LinkedList[JobTicketWithActions] = new util.LinkedList[JobTicketWithActions]
+}
+
+@XmlType(name = "JobTicketWithAction")
+@XmlRootElement(name = "JobTicketWithAction")
+class JobTicketWithActions{
+  @BeanProperty
+  var id: Int = _
+  @BeanProperty
+  var data: util.LinkedList[ActionIdentifier] = new util.LinkedList[ActionIdentifier]
+}
+
+@XmlType(name = "ActionIdentifier")
+@XmlRootElement(name = "ActionIdentifier")
+class ActionIdentifier{
+  @BeanProperty
+  var id: Int = _
+}
+
