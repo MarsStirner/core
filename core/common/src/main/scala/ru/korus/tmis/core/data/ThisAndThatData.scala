@@ -1525,8 +1525,8 @@ class DepartmentsDataFilter extends AbstractListDataFilter {
 
     // Temporary implementation
     if(withoutChildren) {
-      qs.query += "AND (exists (SELECT  oshb.masterDepartment.id FROM OrgStructureHospitalBed oshb WHERE oshb.masterDepartment.id = os.id) OR " +
-        "os.code = 'Консультативно-поликлиническое отделение')"
+      qs.query += String.format("AND (exists (SELECT  oshb.masterDepartment.id FROM OrgStructureHospitalBed oshb WHERE oshb.masterDepartment.id = os.id) OR " +
+        "os.code = 'Консультативно-поликлиническое отделение' OR os.id = %s)", ConfigManager.Messages("db.dayHospital.id"))
     }
 
     if (hasPatients) {
