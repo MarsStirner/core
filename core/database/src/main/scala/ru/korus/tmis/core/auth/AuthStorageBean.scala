@@ -1,34 +1,31 @@
 package ru.korus.tmis.core.auth
 
-import ru.korus.tmis.core.database.common.DbSettingsBeanLocal
-import ru.korus.tmis.core.database.{AppLockStatusType, AppLockStatus, AppLockBeanLocal, DbStaffBeanLocal}
-
-
-import grizzled.slf4j.Logging
+import java.{lang, util}
 import java.util.Date
 import javax.ejb._
-import javax.interceptor.Interceptors
+import javax.servlet.http.Cookie
 
+import org.slf4j.LoggerFactory
+import ru.korus.tmis.core.database.common.DbSettingsBeanLocal
+import ru.korus.tmis.core.database.{AppLockBeanLocal, AppLockStatus, AppLockStatusType, DbStaffBeanLocal}
+import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.exception.{AuthenticationException, CoreException, NoSuchUserException}
+import ru.korus.tmis.core.lock.{ActionWithLockInfo, EntityLockInfo}
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 import ru.korus.tmis.util.TextUtils
 
 import scala.collection.JavaConversions._
-import javax.servlet.http.Cookie
-import ru.korus.tmis.core.exception.{CoreException, AuthenticationException, NoSuchUserException}
-
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import java.util
-import java.lang
-import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.lock.{EntityLockInfo, ActionWithLockInfo}
 import scala.language.reflectiveCalls
 
 
 @ConcurrencyManagement(ConcurrencyManagementType.CONTAINER)
 @Singleton
+@DependsOn(Array("DbSettingsBean"))
 class AuthStorageBean
   extends AuthStorageBeanLocal
-  with Logging
   with I18nable {
+
+  val logger: org.slf4j.Logger = LoggerFactory.getLogger(classOf[AuthStorageBean])
 
   @EJB
   var appLockBeanLocal: AppLockBeanLocal = _
@@ -60,37 +57,20 @@ class AuthStorageBean
     // Если роль не найдена в БД, отказываем
     val initRole = staffRole match {
       case None =>
-        throw new NoSuchUserException(
-          ConfigManager.TmisAuth.ErrorCodes.RoleNotAllowed,
-          login,
-          i18n("error.roleNotAllowed").format(login))
+        throw new NoSuchUserException(ConfigManager.TmisAuth.ErrorCodes.RoleNotAllowed, login, i18n("error.roleNotAllowed").format(login))
       case Some(r) => r
     }
 
-    // Пытаемся получить сотрудника по л огину
+    // Пытаемся получить сотрудника по логину
     val staff = dbStaff.getStaffByLogin(login)
-
-    val userSpeciality = staff.getSpeciality match {
-      case null => ""
-      case specs => specs.getName
-    }
-
-    val tokenStr = createToken(staff.getId.intValue,
-      initRole.getId.intValue,
-      staff.getFullName,
-      userSpeciality,
-      login,
-      password)
-
-
+    val tokenStr = casBeanLocal.createToken(login, password)
     val authData: AuthData = putToken(tokenStr, staff, initRole)
-
     authData
   }
 
-  def putToken(tokenStr: String, staff: Staff, initRole: Role): AuthData = {
+  def putToken(token: CasResp, staff: Staff, initRole: Role): AuthData = {
     val authData = new AuthData(
-      new AuthToken(tokenStr),
+      new AuthToken(token.getToken),
       staff,
       staff.getId.intValue,
       initRole,
@@ -100,21 +80,22 @@ class AuthStorageBean
       staff.getSpeciality match {
         case null => ""
         case specs => specs.getName
-      }
+      },
+      token.getDeadline.toLong,
+      token.getTtl.toLong
     )
 
-    val tokenEndTime =
-      new Date(new Date().getTime + getAuthTokenLifeTime)
-
+    val tokenEndTime = new Date(token.getDeadline.toLong*1000L)
+    logger.debug("put token deadline {} date is {}", token.getDeadline.toLong*1000L, tokenEndTime)
     authMap.put(authData.authToken, (authData, tokenEndTime))
     authData
   }
 
   @Lock(LockType.READ)
   def getRoles(login: String, password: String) = {
-    timeoutHandler();
+    timeoutHandler()
     // Пытаемся получить сотрудника по логину
-    if(ConfigManager.Cas.isActive && casBeanLocal.createToken(login, password, "").isEmpty) {
+    if (!casBeanLocal.createToken(login, password).success) {
       throw new NoSuchUserException(
         ConfigManager.TmisAuth.ErrorCodes.LoginIncorrect,
         login,
@@ -125,11 +106,8 @@ class AuthStorageBean
     // Проверяем пароль
     // Пароли в базе хранятся в MD5 и по сети передаются тоже в MD5
     if (staff.getPassword != password && staff.getPassword != TextUtils.getMD5(password)) {
-      warn("Incorrect password for: " + staff)
-      throw new NoSuchUserException(
-        ConfigManager.TmisAuth.ErrorCodes.LoginIncorrect,
-        login,
-        i18n("error.loginIncorrect").format(login))
+      logger.warn("Incorrect password for: {}", staff)
+      throw new NoSuchUserException(ConfigManager.TmisAuth.ErrorCodes.LoginIncorrect, login, i18n("error.loginIncorrect").format(login))
     }
 
     // Получаем роли сотрудника
@@ -152,95 +130,81 @@ class AuthStorageBean
     }
   }
 
-  @Lock(LockType.READ)
-  def createToken(userId: Int,
-                  role: Int,
-                  userFullName: String,
-                  speciality: String,
-                  login: String,
-                  password: String) = {
-    val tokenStr = userId + role + userFullName + speciality + new Date().getTime.toString
-    casBeanLocal.createToken(login, password, tokenStr.hashCode.toHexString)
-  }
 
   @Lock(LockType.WRITE)
   def timeoutHandler() = {
     val now = new Date()
-    info("Handler called at: " + now)
+    logger.info("Handler called at: " + now)
 
     // Находим и удаляем устаревшие токены
     authMap.filter((tuple) => tuple._2._2.before(now)).foreach(
       (tuple) => {
-        info("Outdated token " + tuple._1 + " removed at: " + now)
+        logger.info("Outdated token " + tuple._1 + " removed at: " + now)
         authMap.remove(tuple._1)
       }
     )
   }
 
-  def checkTokenCookies(cookies: lang.Iterable[Cookie]): AuthData = {
-    //проверим, пришли ли куки
-    if (cookies == null) {
-      warn("No authentication data found")
-      throw new AuthenticationException(
-        ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
-        i18n("error.invalidToken"))
+  @Lock(LockType.WRITE)
+  override def checkToken(token: String, prolong: Boolean): AuthData = {
+    var casResp: CasResp = null
+    if(prolong){
+      casResp = casBeanLocal.checkToken(token)
+    } else {
+      casResp = casBeanLocal.checkTokenWithoutProlong(token)
     }
-    val cookiesArray = cookies.toArray
+    if(casResp.getSuccess){
+      val authToken: AuthToken = new AuthToken(token)
+      val authData : AuthData = getAuthData(authToken)
+      if(authData != null){
+        authMap.put(authToken, (authData, new Date(casResp.getDeadline.toLong*1000L)))
+        authData
+      } else {
+        logger.error("CAS RESPONSE IS SUCCESS, BUT WE HASN'T IT IN MAP!!!!!")
+      }
+    }
+    throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.invalidToken"))
+  }
 
+  def checkTokenCookies(cookies: lang.Iterable[Cookie]): AuthData = {
     var token: String = null
     var curRole: String = null
-    for (i <- 0 to cookiesArray.length - 1) {
-      val cookieName = cookiesArray(i).getName
-      if (cookieName.compareTo("authToken") == 0) {
-        token = cookiesArray(i).getValue
-      }
-      if (cookieName.compareTo("currentRole") == 0) {
-        curRole = cookiesArray(i).getValue
+    for (cookie <- cookies) {
+      val cookieName = cookie.getName
+      if ("authToken".equalsIgnoreCase(cookieName)) {
+        token = cookie.getValue
+      } else if("currentRole".equalsIgnoreCase(cookieName)){
+        curRole = cookie.getValue
       }
     }
     var authData: AuthData = null
-    if (token != null) {
-      val casResp: CasResp = casBeanLocal.checkToken(token)
-      val isCasTokenValid: Boolean = casResp.getSuccess
-      val authToken: AuthToken = new AuthToken(token)
-      //данные об авторизации
-      authData = this.getAuthData(authToken)
-      if (authData != null) {
-        info("Authentication data found: " + authData)
-      } else if (isCasTokenValid) {
-        val staff: Staff = dbStaff.getStaffById(casResp.getUser_id)
-        authData = putToken(token, staff, staff.getRoles.find(_.getCode == curRole).getOrElse(null))
-      } else {
-        warn("No authentication data found")
-        throw new AuthenticationException(
-          ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
-          i18n("error.invalidToken"))
-      }
-      //валидность сертификата по времени
-      var tokenEndDate: Date = null
-      tokenEndDate = this.getAuthDateTime(authToken)
-      if (tokenEndDate != null) {
-        authMap.remove(authToken)
-        if (tokenEndDate.before(new Date()) || !isCasTokenValid) {
-          warn("Token period exceeded")
-          throw new AuthenticationException(
-            ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
-            i18n("error.tokenExceeded"))
-        } else {
-          info("Token is valid")
-          val tokenEndTimeNew = new Date(new Date().getTime + getAuthTokenLifeTime)
-          authMap.put(authToken, (authData, tokenEndTimeNew))
-        }
-      } else {
-        warn("Token end date not found")
-        throw new AuthenticationException(
-          ConfigManager.TmisAuth.ErrorCodes.InvalidToken,
-          i18n("error.invalidToken"))
-      }
-    }
-    else {
+    if (token == null) {
       throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.invalidToken"))
     }
+    val casResp: CasResp = casBeanLocal.checkToken(token)
+    val isCasTokenValid: Boolean = casResp.getSuccess
+    val authToken: AuthToken = new AuthToken(token)
+    //данные об авторизации
+    authData = this.getAuthData(authToken)
+    if (authData != null) {
+      authData.setDeadline(casResp.getDeadline.toLong)
+      authData.setTtl(casResp.getTtl.toLong)
+      logger.info("Authentication data found: " + authData)
+    } else if (isCasTokenValid) {
+      val staff: Staff = dbStaff.getStaffById(casResp.getUser_id)
+      authData = putToken(casResp, staff, staff.getRoles.find(_.getCode == curRole).orNull)
+    } else {
+      logger.warn("No authentication data found")
+      throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.invalidToken"))
+    }
+    //валидность сертификата по времени
+    authMap.remove(authToken)
+    if (!isCasTokenValid) {
+      logger.warn("Token period exceeded")
+      throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.tokenExceeded"))
+    }
+    logger.info("Token is valid")
+    authMap.put(authToken, (authData, new Date(casResp.getDeadline.toLong*1000L)))
     authData
   }
 
@@ -318,16 +282,12 @@ class AuthStorageBean
    */
   def checkAppLock(tableName: String, id: Integer): AppLockDetail = {
     val appLock: AppLockDetail = new AppLockDetail(tableName, id)
-    if (lockMap.get(appLock) == null) {
-      null
-    } else {
-      for (res <- lockMap.keySet()) {
-        if (res.equals(appLock)) {
-          return res
-        }
+    for (res <- lockMap.keySet()) {
+      if (res.equals(appLock)) {
+        return res
       }
-      null
     }
+    null
   }
 
   def getLockInfo(action: Action): ActionWithLockInfo = {
@@ -360,5 +320,6 @@ class AuthStorageBean
   def getAuthTokenLifeTime: Int = {
     ConfigManager.TmisAuth.AuthTokenPeriod
   }
+
 
 }

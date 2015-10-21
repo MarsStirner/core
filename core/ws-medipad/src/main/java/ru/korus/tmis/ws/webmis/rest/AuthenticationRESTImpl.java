@@ -1,15 +1,9 @@
 package ru.korus.tmis.ws.webmis.rest;
 
-import javax.ejb.EJB;
-import javax.inject.Singleton;
-import javax.interceptor.Interceptors;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-
 import com.sun.jersey.api.json.JSONWithPadding;
-import ru.korus.tmis.core.auth.*;
-
+import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.auth.AuthEntry;
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.data.RoleData;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.Role;
@@ -19,6 +13,11 @@ import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.medipad.AuthenticationWebService;
 import ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage;
 
+import javax.ejb.EJB;
+import javax.inject.Singleton;
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.*;
+import javax.ws.rs.core.Context;
 import java.util.Arrays;
 
 /**
@@ -27,58 +26,62 @@ import java.util.Arrays;
 @Singleton
 @Path("/tms-auth/")
 @Produces("application/json")
-public class AuthenticationRESTImpl   {
+public class AuthenticationRESTImpl {
 
-	
-	@EJB
+
+    @EJB
     AuthenticationWebService wsImpl;
 
     @EJB
     WebMisREST webmisImpl;
-
+    @EJB
+    AuthStorageBeanLocal authStorage;
     @EJB
     private DbStaffBeanLocal dbStaffBeanLocal;
 
     /**
      * Сервис по получению доступных ролей для пользователя (первичная авторизация)
-     * @param login Логин пользователя.
+     *
+     * @param login    Логин пользователя.
      * @param password Пароль пользователя.
      * @return ru.korus.tmis.core.data.RoleData как Object. Контейнер с данными о пользователе и списком доступных ролей.
      * @throws AuthenticationException
      * @see AuthenticationException
      * @see RoleData
      */
-	@GET
+    @GET
     @Path("/roles")
     @Produces("application/json")
-    public Object getRoles( @QueryParam("login")String login,
-    		                @QueryParam("passwd")String password) throws AuthenticationException {
-    	return wsImpl.getRoles(login, password);
+    public Object getRoles(
+            @QueryParam("login") String login, @QueryParam("passwd") String password
+    ) throws AuthenticationException {
+        return wsImpl.getRoles(login, password);
     }
 
     /**
      * Сервис авторизации пользователя в системе TMIS (авторизация с ролью)
+     *
      * @param userName Логин пользователя.
      * @param password Пароль пользователя.
-     * @param roleId  Идентификатор роли пользователя.
+     * @param roleId   Идентификатор роли пользователя.
      * @return ru.korus.tmis.core.auth.AuthData как Object. Контейнер с авторизационными данными о пользователе.
      * @throws AuthenticationException
      * @see AuthenticationException
      * @see AuthData
      */
-	@GET
+    @GET
     @Path("/auth")
     @Produces("application/json")
-    public Object authenticate( @QueryParam("login")String userName,
-    		@QueryParam("passwd")String password,
-    		@QueryParam("role")int roleId) throws AuthenticationException {
-    	return wsImpl.authenticate(userName, password, roleId);
+    public Object authenticate(
+            @QueryParam("login") String userName, @QueryParam("passwd") String password, @QueryParam("role") int roleId
+    ) throws AuthenticationException {
+        return wsImpl.authenticate(userName, password, roleId);
     }
-
 
     /**
      * Сервис по получению доступных ролей для пользователя (первичная авторизация)
-     * @param request Авторизационные данные пользователя в виде контейнера: AuthEntry.
+     *
+     * @param request  Авторизационные данные пользователя в виде контейнера: AuthEntry.
      * @param callback callback запроса.
      * @return ru.korus.tmis.core.data.RoleData как Object. Контейнер с данными о пользователе и списком доступных ролей.
      * @see AuthenticationException
@@ -88,9 +91,10 @@ public class AuthenticationRESTImpl   {
     @POST
     @Path("/roles")
     @Consumes({"application/json", "application/xml"})
-    @Produces({"application/javascript", "application/x-javascript","application/xml"})
-    public Object getRoles2(AuthEntry request,
-                            @QueryParam("callback") String callback) {
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
+    public Object getRoles2(
+            AuthEntry request, @QueryParam("callback") String callback
+    ) {
         try {
             return new JSONWithPadding(wsImpl.getRoles(request.login(), request.password()), callback);
         } catch (AuthenticationException e) {
@@ -98,16 +102,13 @@ public class AuthenticationRESTImpl   {
         }
     }
 
-
-    @EJB
-    AuthStorageBeanLocal authStorage;
-
     @GET
     @Path("/user-info")
     @Consumes({"application/json", "application/xml"})
-    @Produces({"application/javascript", "application/x-javascript","application/xml"})
-    public Object getAuthData(@Context HttpServletRequest servletRequest,
-                              @QueryParam("callback") String callback) throws AuthenticationException {
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
+    public Object getAuthData(
+            @Context HttpServletRequest servletRequest, @QueryParam("callback") String callback
+    ) throws AuthenticationException {
         try {
             return new JSONWithPadding(authStorage.checkTokenCookies(Arrays.asList(servletRequest.getCookies())), callback);
         } catch (CoreException e) {
@@ -117,7 +118,8 @@ public class AuthenticationRESTImpl   {
 
     /**
      * Сервис авторизации пользователя в системе TMIS (авторизация с ролью)
-     * @param request Авторизационные данные пользователя в виде контейнера: AuthEntry.
+     *
+     * @param request  Авторизационные данные пользователя в виде контейнера: AuthEntry.
      * @param callback callback запроса.
      * @return ru.korus.tmis.core.auth.AuthData как Object. Контейнер с авторизационными данными о пользователе.
      * @throws AuthenticationException
@@ -128,14 +130,16 @@ public class AuthenticationRESTImpl   {
     @POST
     @Path("/auth")
     @Consumes({"application/json", "application/xml"})
-    @Produces({"application/javascript", "application/x-javascript","application/xml"})
-    public Object authenticate2(AuthEntry request,
-                               @QueryParam("callback") String callback) throws AuthenticationException {
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
+    public Object authenticate2(
+            AuthEntry request, @QueryParam("callback") String callback
+    ) throws AuthenticationException {
         return new JSONWithPadding(wsImpl.authenticate(request.login(), request.password(), request.roleId()), callback);
     }
 
     /**
      * Сервис авторизации пользователя в системе TMIS (авторизация по токену с ролью)
+     *
      * @param callback callback запроса.
      * @return ru.korus.tmis.core.auth.AuthData как Object. Контейнер с авторизационными данными о пользователе.
      * @throws AuthenticationException
@@ -147,9 +151,9 @@ public class AuthenticationRESTImpl   {
     @Path("/changeRole")
     @Consumes("application/json")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object authenticate3(@Context HttpServletRequest servRequest,
-                                @QueryParam("roleId") int roleId,
-                                @QueryParam("callback") String callback) throws AuthenticationException {
+    public Object authenticate3(
+            @Context HttpServletRequest servRequest, @QueryParam("roleId") int roleId, @QueryParam("callback") String callback
+    ) throws AuthenticationException {
         AuthData authData = webmisImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
         Staff staff = null;
         try {
@@ -157,13 +161,35 @@ public class AuthenticationRESTImpl   {
         } catch (CoreException e) {
             throw new AuthenticationException();
         }
-        for(Role r : staff.getRoles()) {
-            if(r.getId().equals(roleId)) {
+        for (Role r : staff.getRoles()) {
+            if (r.getId().equals(roleId)) {
                 authData.setUserRole(r);
                 return new JSONWithPadding(authData, callback);
             }
         }
         throw new AuthenticationException("Недопустимая роль (id = " + roleId + ") для сотрудника " + staff.getFullName());
     }
+
+
+
+    @POST
+    @Path("/getTokenInfo")
+    @Consumes({"application/json", "application/xml"})
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
+    public Object getTokenInfo(
+            @Context HttpServletRequest servletRequest,
+            @QueryParam("token") String token,
+            @QueryParam("prolong") boolean prolong,
+            @QueryParam("callback") String callback
+    ) throws AuthenticationException {
+        try {
+            return new JSONWithPadding(authStorage.checkToken(token, prolong), callback);
+        } catch (CoreException e) {
+            throw new AuthenticationException("Недопустимый токен");
+        }
+    }
+
+
+
 
 }

@@ -10,8 +10,10 @@ import javax.ejb.Local;
  */
 @Local
 public interface CasBeanLocal {
-    String createToken(String login, String password, String defaultToken);
+    CasResp createToken(String login, String password);
 
-    CasResp checkToken(String defaultToken);
+    CasResp checkToken(String token);
+
+    CasResp checkTokenWithoutProlong(String token);
 
 }

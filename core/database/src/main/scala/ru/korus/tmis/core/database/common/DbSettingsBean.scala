@@ -16,7 +16,7 @@ import ru.korus.tmis.scala.util.ConfigManager._
 
 @Startup
 //
-@Singleton
+@Singleton(name = "DbSettingsBean")
 class DbSettingsBean extends DbSettingsBeanLocal
 with Logging
 with I18nable {

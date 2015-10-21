@@ -1,11 +1,10 @@
 package ru.korus.tmis.core.auth
 
-import java.lang
-import javax.ejb.{Singleton, Stateless}
+import javax.ejb.{DependsOn, Singleton}
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
-import org.slf4j.{LoggerFactory, Logger}
-import org.springframework.http.{MediaType, HttpHeaders, HttpEntity}
+import org.slf4j.{Logger, LoggerFactory}
+import org.springframework.http.{HttpEntity, HttpHeaders, MediaType}
 import org.springframework.web.client.{RestClientException, RestTemplate}
 import ru.korus.tmis.scala.util.ConfigManager
 
@@ -18,33 +17,22 @@ import scala.beans.BeanProperty
  * Description:  <br>
  */
 @Singleton
+@DependsOn(Array("DbSettingsBean"))
 class CasBean extends CasBeanLocal {
   val logger: Logger = LoggerFactory.getLogger(classOf[CasBean])
-  override def createToken(login: String, password: String, defaultToken: String): String = {
-    if (ConfigManager.Cas.isActive) {
-      val url: String = "acquire/"
-      try {
-        val casReq = new CasReq();
-        casReq.setLogin(login)
-        casReq.setPassword(password)
-        val res: CasResp = postForCasResp(url, casReq)
-        if (res.token == null || res.token.isEmpty) {
-          logger.info("CAS exception: " +  res.getException + " message: " + res.getMessage )
-          defaultToken
-        } else {
-          res.token
-        }
-      }
-      catch {
-        case ex: RestClientException => {
-          ex.printStackTrace
-          return defaultToken
-        }
-      }
-    } else {
-      defaultToken
-    }
 
+  override def createToken(login: String, password: String): CasResp = {
+    val url: String = "acquire/"
+    try {
+      val casReq = new CasReq()
+      casReq.setLogin(login)
+      casReq.setPassword(password)
+      postForCasResp(url, casReq)
+    } catch {
+      case ex: RestClientException =>
+        logger.error("REST exception:", ex)
+        null
+    }
   }
 
   def postForCasResp(url: String, casReq: CasReq): CasResp = {
@@ -59,29 +47,43 @@ class CasBean extends CasBeanLocal {
 
   override def checkToken(token: String): CasResp = {
     var res: CasResp = new CasResp
-    if (ConfigManager.Cas.isActive) {
-      val url: String = "check/"
-      try {
-        val casReq = new CasReq();
-        casReq.setProlong(true)
-        casReq.setToken(token)
-        res = postForCasResp(url, casReq)
-        if(!res.getSuccess) {
-          logger.info("CAS exception: " + res.getException + " message: " + res.getMessage)
-        }
-        res.setSuccess(res.getSuccess && res.token == token)
-        res
+    val url: String = "check/"
+    try {
+      val casReq = new CasReq()
+      casReq.setProlong(true)
+      casReq.setToken(token)
+      res = postForCasResp(url, casReq)
+      if (!res.getSuccess) {
+        logger.info("CAS exception: " + res.getException + " message: " + res.getMessage)
       }
-      catch {
-        case ex: RestClientException => {
-          ex.printStackTrace
-          res.setSuccess(false)
-          res
-        }
-      }
-    } else {
-      res.setSuccess(true)
+      res.setSuccess(res.getSuccess && res.token == token)
       res
+    } catch {
+      case ex: RestClientException =>
+        logger.error("REST exception:", ex)
+        res.setSuccess(false)
+        res
+    }
+  }
+
+  override def checkTokenWithoutProlong(token: String): CasResp = {
+    var res: CasResp = new CasResp
+    val url: String = "check/"
+    try {
+      val casReq = new CasReq()
+      casReq.setProlong(false)   //only this differs
+      casReq.setToken(token)
+      res = postForCasResp(url, casReq)
+      if (!res.getSuccess) {
+        logger.info("CAS exception: " + res.getException + " message: " + res.getMessage)
+      }
+      res.setSuccess(res.getSuccess && res.token == token)
+      res
+    } catch {
+      case ex: RestClientException =>
+        logger.error("REST exception:", ex)
+        res.setSuccess(false)
+        res
     }
   }
 }
@@ -98,7 +100,13 @@ class CasResp {
   var token: String = _
 
   @BeanProperty
+  var deadline: Double = _
+
+  @BeanProperty
   var success: Boolean = _
+
+  @BeanProperty
+  var ttl: Double = _
 
   @BeanProperty
   var exception: String = _
@@ -126,3 +134,4 @@ class CasReq {
   var prolong: Boolean = _
 
 }
+

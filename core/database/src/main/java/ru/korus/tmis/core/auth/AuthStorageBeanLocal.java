@@ -75,6 +75,8 @@ public interface AuthStorageBeanLocal {
 
     void timeoutHandler();
 
+    AuthData checkToken(String token, boolean prolong) throws CoreException;
+
     /**
      * Залочить запись для редактирования
      * @param token - пользователь

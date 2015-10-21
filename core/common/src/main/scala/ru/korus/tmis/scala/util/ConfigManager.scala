@@ -49,13 +49,7 @@ object ConfigManager extends Configuration {
   var Cas = new CasClass
 
   class CasClass  extends Configuration {
-
     var ServiceUrl = "http://10.1.2.11:5201"
-
-    var Active = "off"
-
-    def isActive = "on".equals(Active)
-
   }
 
   var RbManagerSetting = new RbManagerClass
@@ -457,7 +451,7 @@ object ConfigManager extends Configuration {
     }
 
     // Время действия токена в мс
-    var AuthTokenPeriod = 60 * 60 * 1000 // 30 * 60 * 1000 = 30 мин
+    var AuthTokenPeriod = 5 * 60 * 1000 // 30 * 60 * 1000 = 30 мин
 
     var AuthDataPropertyName = "ru.korus.tmis.authData"
 

@@ -286,7 +286,7 @@
 
     </appender>
 
-    <logger name="ru.korus.tmis.core.logging.slf4j.interceptor.AuthLoggingInterceptor" level="INFO" additivity="false">
+    <logger name="ru.korus.tmis.core.auth" level="INFO" additivity="false">
         <appender-ref ref="AUTH"/>
     </logger>
 

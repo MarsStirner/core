@@ -6,12 +6,15 @@ import scala.beans.BeanProperty
 import javax.xml.bind.annotation.{XmlType, XmlRootElement, XmlTransient}
 import ru.korus.tmis.core.data.DoctorSpecsContainer
 
+
 /**
  * Контейнер с данным о авторизации
  */
 @XmlType(name = "authData")
 @XmlRootElement(name = "authData")
 class AuthData() {
+
+
 
   @BeanProperty
   var authToken: AuthToken = _
@@ -39,6 +42,12 @@ class AuthData() {
   var roles: java.util.Set[Role] = _
 
   var userRole: Role = _
+
+  @BeanProperty
+  var deadline : Long = _
+
+  @BeanProperty
+  var ttl : Long = _
 
   /**
    * Получение Роли как Role entity
@@ -75,7 +84,9 @@ class AuthData() {
            userFirstName: String,
            userLastName: String,
            userPatronymicName: String,
-           userSpecs: String) = {
+           userSpecs: String,
+            deadline: Long,
+            ttl:Long) = {
     this ()
     this.authToken = token
     this.userId = userId
@@ -85,29 +96,10 @@ class AuthData() {
     this.userSpecs = userSpecs
     this.userRole = userRole
     this.doctor = new DoctorSpecsContainer(user)
-    this.roles = user.getRoles;
+    this.roles = user.getRoles
+    this.deadline = deadline
+    this.ttl = ttl
   }
 
-  override def toString = {
-    val sb = new StringBuilder
-
-    sb.append("AuthData {")
-    sb.append(" authToken: ")
-    sb.append(authToken)
-    sb.append(" userId: ")
-    sb.append(userId)
-    sb.append(" firstName: ")
-    sb.append(userFirstName)
-    sb.append(" lastName: ")
-    sb.append(userLastName)
-    sb.append(" patrName: ")
-    sb.append(userPatronymicName)
-    sb.append(" role: ")
-    sb.append(userRole)
-    sb.append(" spec: ")
-    sb.append(userSpecs)
-    sb.append(" }")
-
-    sb.toString
-  }
+  override def toString = s"AuthData(authToken=$authToken, doctor=$doctor, userId=$userId, userSpecs=$userSpecs, roles=$roles, userRole=$userRole, deadline=$deadline, ttl=$ttl)"
 }
