@@ -217,6 +217,9 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
       sex)
   }
 
+
+
+
   def getDiagnosticRequestInfo(a: Action): DiagnosticRequestInfo = {
     // Id (long) -- уникальный идентификатор направления в МИС (Action.id)
     val id = a.getId.intValue
@@ -266,7 +269,11 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     } else if(a.getEvent.getEventType.getRequestType == null)
       null
     else {
-      getOrgStructureByEvent(a.getEvent)
+      var res = getOrgStructureByEvent(a.getEvent)
+      if(res == null){
+        res = getOrgStructureFromRecievedActionInEvent(a.getEvent)
+      }
+      res
     }
     // DepartmentName (string) -- название подразделения - отделение
     // DepartmentCode (string) -- уникальный код подразделения (отделения)
@@ -339,6 +346,28 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     c.setTime(date)
     val gc = DatatypeFactory.newInstance().newXMLGregorianCalendar(c)
     gc
+  }
+
+  def getOrgStructureFromRecievedActionInEvent(e: Event): OrgStructure = {
+    val orgStructureAP = dbCustomQuery.getOrgStructureByReceivedActionByEvents(Collections.singletonList(e))
+    orgStructureAP.get(e) match {
+      case null => {
+        warn("OrgStructure from received Action not found for " + e)
+      }
+      case ap: ActionProperty => {
+        val apvs = dbActionProperty.getActionPropertyValue(ap)
+        apvs.foreach(
+          (apv) => {
+            apv.getValue match {
+              case os: OrgStructure =>
+                return os
+              case _ =>
+            }
+          })
+      }
+    }
+
+    null
   }
 
   def getOrgStructureByEvent(e: Event): OrgStructure = {

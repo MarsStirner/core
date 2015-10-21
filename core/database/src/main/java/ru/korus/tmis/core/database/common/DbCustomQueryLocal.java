@@ -33,6 +33,11 @@ public interface DbCustomQueryLocal {
     Map<Event, ActionProperty> getHospitalBedsByEvents(List<Event> events)
             throws CoreException;
 
+
+    Map<Event, ActionProperty> getOrgStructureByReceivedActionByEvents(List<Event> events)
+            throws CoreException;
+
+
     Map<Event, ActionProperty> getAnamnesesByEvents(List<Event> events)
             throws CoreException;
 

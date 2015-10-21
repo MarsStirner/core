@@ -161,6 +161,10 @@ class DbCustomQueryBean
     getEntitiesByEvents[ActionProperty](events, HospitalBedsByEventIdsQuery)
   }
 
+  def getOrgStructureByReceivedActionByEvents(events: java.util.List[Event]) = {
+    getEntitiesByEvents[ActionProperty](events, OrgStructureFromReceivedByEventIdsQuery)
+  }
+
   def getAnamnesesByEvents(events: java.util.List[Event]) = {
     getEntitiesByEvents[ActionProperty](events, AnamnesesByEventIdsQuery)
   }
@@ -1299,6 +1303,33 @@ AND ap.deleted = 0
                                     """.format(
       i18n("db.action.movingFlatCode"),
       i18n("db.apt.hospitalBedName"))
+
+  val OrgStructureFromReceivedByEventIdsQuery = """
+    SELECT e, ap
+    FROM
+      ActionProperty ap JOIN ap.action a JOIN a.event e
+    WHERE
+      e.id IN :eventIds
+    AND
+      a.actionType.id IN
+      (
+        SELECT actionType.id
+        FROM
+          ActionType actionType
+        WHERE
+          actionType.flatCode = '%s'
+      )
+    AND
+      ap.actionPropertyType.name = '%s'
+    AND
+      a.deleted = 0
+    AND
+      ap.deleted = 0
+    ORDER BY
+      ap.createDatetime ASC
+                                    """.format(
+    i18n("db.action.admissionFlatCode"),
+    "Отделение поступления")
 
   val AnamnesesByEventIdsQuery = """
     SELECT e, ap
