@@ -52,6 +52,6 @@ class APQLEndPoint {
     new JSONWithPadding(wsImpl.calculateActionPropertyValue(eventId, actionTypeId, actionPropertyTypeId), callback)
   }
 
-  private def mkAuth(servRequest: HttpServletRequest) = wsImpl.checkTokenCookies(util.Arrays.asList(servRequest.getCookies:_*))
+  private def mkAuth(servRequest: HttpServletRequest) = wsImpl.checkTokenCookies(servRequest.getCookies)
 
 }

@@ -415,7 +415,7 @@ public interface WebMisREST extends Serializable {
      * @param cookies Cookies, передаваемые в запросе
      * @return Данные аутентификации пользователя
      */
-    AuthData checkTokenCookies(Iterable<Cookie> cookies);
+    AuthData checkTokenCookies(Cookie[] cookies);
 
     AuthData getStorageAuthData(AuthToken token);
 

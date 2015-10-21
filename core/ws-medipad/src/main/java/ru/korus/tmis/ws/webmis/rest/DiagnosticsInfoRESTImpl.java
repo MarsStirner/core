@@ -37,6 +37,6 @@ public class DiagnosticsInfoRESTImpl {
                                         @QueryParam("callback") String callback,
                                         @PathParam("actionId") int actionId) throws CoreException {
         return new JSONWithPadding(wsImpl.getBakResult(actionId,
-                wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()))), callback);
+                wsImpl.checkTokenCookies(servRequest.getCookies())), callback);
     }
 }

@@ -42,6 +42,6 @@ class PrintTemplateImpl {
     new JSONWithPadding(wsImpl.getRbPrintTemplatesByContexts(contexts, mkAuth(servRequest), f, render), callback)
   }
 
-  private def mkAuth(servRequest: HttpServletRequest) = wsImpl.checkTokenCookies(ju.Arrays.asList(servRequest.getCookies:_*))
+  private def mkAuth(servRequest: HttpServletRequest) = wsImpl.checkTokenCookies(servRequest.getCookies)
 
 }

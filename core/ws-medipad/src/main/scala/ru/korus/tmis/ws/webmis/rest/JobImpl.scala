@@ -25,6 +25,6 @@ class JobImpl {
            @QueryParam("callback") callback: String,
            @PathParam("id") id: Int) = {
     new JSONWithPadding(new JobTicketContainer(
-      wsImpl.getJobTicketById(id, this.wsImpl.checkTokenCookies(java.util.Arrays.asList(servRequest.getCookies:_*)))), callback)
+      wsImpl.getJobTicketById(id, this.wsImpl.checkTokenCookies(servRequest.getCookies))), callback)
   }
 }

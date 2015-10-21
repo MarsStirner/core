@@ -1,6 +1,7 @@
 package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
+import org.apache.commons.lang.ArrayUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormatter;
 import org.joda.time.format.ISODateTimeFormat;
@@ -302,6 +303,6 @@ public class CustomInfoRESTImpl {
 
 
     private AuthData mkAuth(HttpServletRequest servRequest) {
-        return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+        return wsImpl.checkTokenCookies(servRequest.getCookies());
     }
 }

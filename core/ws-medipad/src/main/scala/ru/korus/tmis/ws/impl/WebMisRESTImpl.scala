@@ -1842,7 +1842,7 @@ with CAPids {
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________
 
-  def checkTokenCookies(cookies: lang.Iterable[Cookie]) = {
+  def checkTokenCookies(cookies: Array[Cookie]) = {
     authStorage.checkTokenCookies(cookies)
   }
 

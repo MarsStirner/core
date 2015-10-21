@@ -162,7 +162,7 @@ public class PatientRegistryRESTImpl {
     }
 
     private AuthData mkAuth(HttpServletRequest servRequest) {
-        return wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+        return wsImpl.checkTokenCookies(servRequest.getCookies());
     }
 
 }

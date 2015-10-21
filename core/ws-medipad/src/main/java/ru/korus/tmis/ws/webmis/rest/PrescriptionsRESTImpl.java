@@ -61,13 +61,13 @@ public class PrescriptionsRESTImpl {
                 patientName,
                 setPersonName,
                 departmentId,
-                wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()))), callback);
+                wsImpl.checkTokenCookies(servRequest.getCookies())), callback);
     }
 
     @POST
     @Produces({"application/javascript", "application/x-javascript"})
     public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
-        AuthData authData = wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+        AuthData authData = wsImpl.checkTokenCookies(servRequest.getCookies());
         Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
         return new JSONWithPadding(prescriptionBeanLocal.create(createPrescriptionReqData, authData, staff), callback);
     }
@@ -76,7 +76,7 @@ public class PrescriptionsRESTImpl {
     @Path("/{prescriptionId}")
     @Produces({"application/javascript", "application/x-javascript"})
     public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, @PathParam("prescriptionId")Integer actionId, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
-        AuthData authData = wsImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+        AuthData authData = wsImpl.checkTokenCookies(servRequest.getCookies());
         Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
         return new JSONWithPadding(prescriptionBeanLocal.update(actionId, createPrescriptionReqData, staff), callback);
     }

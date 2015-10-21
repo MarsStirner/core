@@ -1,9 +1,11 @@
 package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
+import org.codehaus.jackson.map.ObjectMapper;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthEntry;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
+import ru.korus.tmis.core.auth.TokenInfoRequest;
 import ru.korus.tmis.core.data.RoleData;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.Role;
@@ -18,7 +20,8 @@ import javax.inject.Singleton;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
-import java.util.Arrays;
+import javax.ws.rs.core.MediaType;
+import java.io.IOException;
 
 /**
  * Description: Сервисы авторизации
@@ -110,7 +113,7 @@ public class AuthenticationRESTImpl {
             @Context HttpServletRequest servletRequest, @QueryParam("callback") String callback
     ) throws AuthenticationException {
         try {
-            return new JSONWithPadding(authStorage.checkTokenCookies(Arrays.asList(servletRequest.getCookies())), callback);
+            return new JSONWithPadding(authStorage.checkTokenCookies(servletRequest.getCookies()), callback);
         } catch (CoreException e) {
             throw new AuthenticationException("Недопустимый токен");
         }
@@ -154,7 +157,7 @@ public class AuthenticationRESTImpl {
     public Object authenticate3(
             @Context HttpServletRequest servRequest, @QueryParam("roleId") int roleId, @QueryParam("callback") String callback
     ) throws AuthenticationException {
-        AuthData authData = webmisImpl.checkTokenCookies(Arrays.asList(servRequest.getCookies()));
+        AuthData authData = webmisImpl.checkTokenCookies(servRequest.getCookies());
         Staff staff = null;
         try {
             staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
@@ -175,21 +178,14 @@ public class AuthenticationRESTImpl {
     @POST
     @Path("/getTokenInfo")
     @Consumes({"application/json", "application/xml"})
-    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
-    public Object getTokenInfo(
-            @Context HttpServletRequest servletRequest,
-            @QueryParam("token") String token,
-            @QueryParam("prolong") boolean prolong,
-            @QueryParam("callback") String callback
-    ) throws AuthenticationException {
+    @Produces({"application/javascript", "application/x-javascript", "application/xml", MediaType.APPLICATION_JSON})
+    public Object getTokenInfo(TokenInfoRequest request) throws AuthenticationException, IOException {
         try {
-            return new JSONWithPadding(authStorage.checkToken(token, prolong), callback);
+            ObjectMapper mapper = new ObjectMapper();
+            return   mapper.writeValueAsString(authStorage.checkToken(request.getToken(), request.getProlong()));
         } catch (CoreException e) {
             throw new AuthenticationException("Недопустимый токен");
         }
     }
-
-
-
 
 }

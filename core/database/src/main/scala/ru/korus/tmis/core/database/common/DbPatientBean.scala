@@ -203,7 +203,7 @@ class DbPatientBean
       p.setRbBloodPhenotype(em.find(classOf[RbBloodPhenotype], rbBloodPhenotype))
     }
 
-    p.setBloodKell(bloodKell);
+    p.setBloodKell(bloodKell)
 
     p.setDeleted(false)
     p.setModifyPerson(sessionUser)

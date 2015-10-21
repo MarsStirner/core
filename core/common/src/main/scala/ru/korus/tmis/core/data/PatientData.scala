@@ -6,7 +6,7 @@ import ru.korus.tmis.core.entity.model._
 import fd.ClientSocStatus
 import kladr.{Street, Kladr}
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
-import java.util.{Date, LinkedList}
+import java.util.Date
 import beans.BeanProperty
 import scala.Predef._
 import java.util
@@ -30,7 +30,7 @@ class PatientData {
   @BeanProperty
   var requestData: PatientRequestData = _
   @BeanProperty
-  var data: LinkedList[PatientEntry] = new LinkedList[PatientEntry]
+  var data: util.LinkedList[PatientEntry] = new util.LinkedList[PatientEntry]
 
   def this(patients: java.util.List[Patient], requestData: PatientRequestData) = {
     this ()
@@ -107,12 +107,12 @@ class PatientRequestData {
                        ((withRelations.toLowerCase.compareTo("no")==0) || (withRelations.toLowerCase.compareTo("false")==0)))
     this.filter = new RequestDataFilter(patientCode, fullName, birthDate, document, flgRelations)
     this.sortingField = sortingField match {
-      case null => {"id"}
-      case _ => {sortingField}
+      case null => "id"
+      case _ => sortingField
     }
     this.sortingMethod = sortingMethod match {
-      case null => {"asc"}
-      case _ => {sortingMethod}
+      case null => "asc"
+      case _ => sortingMethod
     }
     this.limit = limit
     this.page = if(page>1)page else 1
@@ -161,16 +161,16 @@ class RequestDataFilter extends AbstractListDataFilter {
     this.withRelations = withRelations
   }
 
-  @Override
-  def toQueryStructure() = {
-    var qs = new QueryDataStructure()
+
+  override def toQueryStructure = {
+    val qs = new QueryDataStructure()
 
     if(this.patientCode>0){
-      qs.query += ("AND p.id = :patientCode\n")
+      qs.query += "AND p.id = :patientCode\n"
       qs.add("patientCode", this.patientCode:java.lang.Integer)
     }
     if(this.fullName!=null && !this.fullName.isEmpty){
-      qs.query += ("AND upper(CONCAT(p.lastName, ' ', p.firstName, ' ', p.patrName)) LIKE upper(:fullName)\n")
+      qs.query += "AND upper(CONCAT(p.lastName, ' ', p.firstName, ' ', p.patrName)) LIKE upper(:fullName)\n"
       if(this.fullName.indexOf('%') > 0) {
         qs.add("fullName", this.fullName)
       } else {
@@ -178,29 +178,29 @@ class RequestDataFilter extends AbstractListDataFilter {
       }
     }
     if(this.document!=null && !this.document.isEmpty){
-      qs.query += ("AND exists (SELECT d FROM ClientDocument d WHERE d.patient = p AND (upper(d.serial) LIKE upper(:documentPattern) OR upper(d.number) LIKE upper(:documentPattern)))\n")
+      qs.query += "AND exists (SELECT d FROM ClientDocument d WHERE d.patient = p AND (upper(d.serial) LIKE upper(:documentPattern) OR upper(d.number) LIKE upper(:documentPattern)))\n"
       qs.add("documentPattern", "%" + this.document + "%")
     }
     if(this.birthDate!=null){
-      qs.query += ("AND p.birthDate = :birthDate\n")
+      qs.query += "AND p.birthDate = :birthDate\n"
       qs.add("birthDate", this.birthDate)
     }
     if(!this.withRelations){
-      qs.query += ("AND NOT exists (SELECT r FROM ClientRelation r WHERE r.relative.id != '0' AND r.relative.id = p.id)\n")
+      qs.query += "AND NOT exists (SELECT r FROM ClientRelation r WHERE r.relative.id != '0' AND r.relative.id = p.id)\n"
     }
     qs
   }
 
   @Override
   def toSortingString (sortingField: String, sortingMethod: String) = {
-    var sorting = sortingField.toLowerCase() match {
-      case "fio" | "fullname"=> {"p.lastName %s, p.firstName %s, p.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)}
-      case "lastname" => {"p.lastName %s".format(sortingMethod)}
-      case "firstname" | "name" => {"p.firstName %s".format(sortingMethod)}
-      case "patrname" | "middlename" => {"p.patrName %s".format(sortingMethod)}
-      case "sex" => {"p.sex %s".format(sortingMethod)}
-      case "birthdate" => {"p.birthDate %s".format(sortingMethod)}
-      case _ => {"p.id %s".format(sortingMethod)}
+    var sorting = sortingField.toLowerCase match {
+      case "fio" | "fullname"=> "p.lastName %s, p.firstName %s, p.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)
+      case "lastname" => "p.lastName %s".format(sortingMethod)
+      case "firstname" | "name" => "p.firstName %s".format(sortingMethod)
+      case "patrname" | "middlename" => "p.patrName %s".format(sortingMethod)
+      case "sex" => "p.sex %s".format(sortingMethod)
+      case "birthdate" => "p.birthDate %s".format(sortingMethod)
+      case _ => "p.id %s".format(sortingMethod)
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)
     sorting
@@ -226,13 +226,13 @@ class PatientEntry {
   @BeanProperty
   var sex: String = _
   @BeanProperty
-  var phones = new LinkedList[ClientContactContainer]
+  var phones = new util.LinkedList[ClientContactContainer]
   @BeanProperty
-  var payments = new LinkedList[PolicyEntryContainer]
+  var payments = new util.LinkedList[PolicyEntryContainer]
   @BeanProperty
-  var relations = new LinkedList[RelationEntryContainer]
+  var relations = new util.LinkedList[RelationEntryContainer]
   @BeanProperty
-  var idCards = new LinkedList[DocumentEntryContainer]
+  var idCards = new util.LinkedList[DocumentEntryContainer]
   @BeanProperty
   var address: AddressContainer = _
   @BeanProperty
@@ -240,9 +240,9 @@ class PatientEntry {
   @BeanProperty
   var name: PersonNameContainer = _
   @BeanProperty
-  var disabilities = new LinkedList[TempInvalidContainer]
+  var disabilities = new util.LinkedList[TempInvalidContainer]
   @BeanProperty
-  var occupations = new LinkedList[OccupationContainer]
+  var occupations = new util.LinkedList[OccupationContainer]
   @BeanProperty
   var citizenship: CitizenshipContainer = _
   //@BeanProperty
@@ -255,36 +255,36 @@ def this(patient: Patient,
     this.id = patient.getId.intValue()
     this.patientCode = this.id //TODO: что есть код пациента?
     this.version = patient.getVersion
-    this.birthDate = patient.getBirthDate()
-    this.birthPlace = patient.getBirthPlace()
-    this.snils = patient.getSnils()
-    this.sex = patient.getSex() match {
+    this.birthDate = patient.getBirthDate
+    this.birthPlace = patient.getBirthPlace
+    this.snils = patient.getSnils
+    this.sex = patient.getSex match {
       case 1 => "male"                   //TODO: вынести в настройки
       case 2 => "female"
       case _ => "unknown"
     }
     this.name = new PersonNameContainer(patient)
 
-    patient.getActiveClientContacts().foreach(c => this.phones.add(new ClientContactContainer(c)))
-    patient.getActiveClientPolicies().foreach(p => this.payments.add(new PolicyEntryContainer (p)))
-    patient.getActiveClientRelatives().foreach(r => this.relations.add(new RelationEntryContainer(r))) // getClientRelatives
-    patient.getActiveClientDocuments().foreach(d =>
+    patient.getActiveClientContacts.foreach(c => this.phones.add(new ClientContactContainer(c)))
+    patient.getActiveClientPolicies.foreach(p => this.payments.add(new PolicyEntryContainer (p)))
+    patient.getActiveClientRelatives.foreach(r => this.relations.add(new RelationEntryContainer(r))) // getClientRelatives
+    patient.getActiveClientDocuments.foreach(d =>
       if (d.getDocumentType != null && d.getDocumentType.getDocumentTypeGroup.getId.intValue() == 1) {  //getDocumentTypeGroup == 1 - тип документа удостоверяющего личность    //d.getDocumentType.getId != 20 &&
         this.idCards.add(new DocumentEntryContainer(d))
       }
     )
-    val allSocStatuses = patient.getActiveClientSocStatuses()
+    val allSocStatuses = patient.getActiveClientSocStatuses
     allSocStatuses.foreach(t => {  //TODO: нужно вынести проверку типов в entity
-      if (t.getSocStatusClass() != null){ //getSocStatusType
+      if (t.getSocStatusClass != null){ //getSocStatusType
         //t.getSocStatusType().getCode() match {
-        t.getSocStatusClass().getCode() match {
-          case "2" => { //086
+        t.getSocStatusClass.getCode match {
+          case "2" =>  //086
             this.disabilities.add(new TempInvalidContainer(t))
-          }
-          case "1" | "3"  => {//087   //TODO: Сейчас берется два типа Соц. статус и занятость (запись ведется как соц.статус)
+
+          case "1" | "3"  => //087   //TODO: Сейчас берется два типа Соц. статус и занятость (запись ведется как соц.статус)
             this.occupations.add(new OccupationContainer(t, patient.getActiveClientWorks))       //32 - инвалидность
-          }
-          case _ => {}
+
+          case _ =>
         }
       }
     })
@@ -306,17 +306,16 @@ class CitizenshipContainer {
 
     def this(patient: Patient) {
       this()
-      patient.getActiveClientSocStatuses().foreach(t => {  //TODO: нужно вынести проверку типов в entity
-        if (t.getSocStatusClass() != null){
-          t.getSocStatusClass().getCode() match {
-            case "4" => {
+      patient.getActiveClientSocStatuses.foreach(t => {  //TODO: нужно вынести проверку типов в entity
+        if (t.getSocStatusClass != null){
+          t.getSocStatusClass.getCode match {
+            case "4" =>
               if (first == null) {
                 this.first = new NumberedCitizenshipContainer(t)
               } else {
                 this.second = new NumberedCitizenshipContainer(t)
               }
-            }
-            case _ => {}
+            case _ =>
           }
         }
       })
@@ -356,23 +355,19 @@ class MedicalInfoContainer {
   @BeanProperty
   var blood: BloodInfoContainer = _
   @BeanProperty
-  var allergies = new LinkedList[AllergyInfoContainer]
+  var allergies = new util.LinkedList[AllergyInfoContainer]
   @BeanProperty
-  var drugIntolerances = new LinkedList[AllergyInfoContainer]
+  var drugIntolerances = new util.LinkedList[AllergyInfoContainer]
 
   def this(patient: Patient) {
     this()
     this.blood = new BloodInfoContainer(patient)
-    patient.getClientAllergies().foreach(a => {
-      if (a.isDeleted == false) {
-        this.allergies.add(new AllergyInfoContainer(a.getId().intValue(), a.getNameSubstance(), a.getPower(), a.getCreateDate(), a.getNotes() ))
-      }
+    patient.getActiveClientAllergies.sortWith(_.getId < _.getId).foreach(a => {
+        this.allergies.add(new AllergyInfoContainer(a.getId, a.getNameSubstance, a.getPower, a.getCreateDate, a.getNotes))
     })
 
-    patient.getClientIntoleranceMedicaments().foreach(a => {
-      if (a.isDeleted == false) {
-        this.drugIntolerances.add(new AllergyInfoContainer(a.getId().intValue(), a.getNameMedicament() , a.getPower(), a.getCreateDate(), a.getNotes() ))
-      }
+    patient.getActiveClientIntoleranceMedicaments.sortWith(_.getId < _.getId).foreach(a => {
+        this.drugIntolerances.add(new AllergyInfoContainer(a.getId, a.getNameMedicament , a.getPower, a.getCreateDate, a.getNotes ))
     })
   }
 }
@@ -395,9 +390,9 @@ class BloodInfoContainer {
 
   def this(patient: Patient) {
     this()
-    this.id = patient.getBloodType().getId().intValue()
-    this.group = patient.getBloodType().getName()
-    this.checkingDate = patient.getBloodDate()
+    this.id = patient.getBloodType.getId
+    this.group = patient.getBloodType.getName
+    this.checkingDate = patient.getBloodDate
     if (patient.getRbBloodPhenotype != null) {
       this.bloodPhenotype = new BloodPhenoTypeContainer(patient.getRbBloodPhenotype)
     }
@@ -421,9 +416,9 @@ class BloodPhenoTypeContainer {
 
   def this(rbBloodPhenotype: RbBloodPhenotype) {
     this()
-    this.id = rbBloodPhenotype.getId()
-    this.phenotype = rbBloodPhenotype.getName()
-    this.code = rbBloodPhenotype.getCode()
+    this.id = rbBloodPhenotype.getId
+    this.phenotype = rbBloodPhenotype.getName
+    this.code = rbBloodPhenotype.getCode
   }
 }
 
@@ -511,13 +506,13 @@ class AddressEntryContainer {
 
   def this(clientAddress: ClientAddress, map: java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]], street: java.util.LinkedHashMap[java.lang.Integer, Street]) {
     this()
-    this.localityType = clientAddress.getLocalityType().intValue()
-    this.fullAddress = clientAddress.getFreeInput()
-    val address = clientAddress.getAddress()
+    this.localityType = clientAddress.getLocalityType.intValue()
+    this.fullAddress = clientAddress.getFreeInput
+    val address = clientAddress.getAddress
     if (address != null) {
-      val house = address.getHouse()
+      val house = address.getHouse
       if (house != null) {
-        if(house.getKLADRCode()!=null){
+        if(house.getKLADRCode!=null){
           this.kladr = true
           this.street = if (street!=null && street.containsKey(house.getId.intValue())) {
             new KladrNameContainer( street.get(house.getId.intValue()).getCode,
@@ -529,8 +524,8 @@ class AddressEntryContainer {
           if(map!=null && map.containsKey(house.getId.intValue())){
             val list = map.get(house.getId.intValue())
             list.size() match{
-              case 0 => {}
-              case 1 => { if (list.get(0).getCode.compareTo("7800000000000") == 0 || list.get(0).getCode.compareTo("7700000000000") == 0) {
+              case 0 =>
+              case 1 => if (list.get(0).getCode.compareTo("7800000000000") == 0 || list.get(0).getCode.compareTo("7700000000000") == 0) {
                             //костылик, чтобы Питер и Москва возвращались в поле репаблик
                             this.republic = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                           } else {
@@ -540,28 +535,27 @@ class AddressEntryContainer {
                               this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                             }
                           }
-                        }
-              case 2 => { if(this.localityType != 0){
+              case 2 => if(this.localityType != 0){
                             this.city = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                           } else {
                             this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                           }
-                         this.republic = new KladrNameContainer(list.get(1).getCode, list.get(1).getName, list.get(1).getSocr, list.get(1).getIndex)}
-              case 3 => { if(this.localityType != 0){
+                this.republic = new KladrNameContainer(list.get(1).getCode, list.get(1).getName, list.get(1).getSocr, list.get(1).getIndex)
+              case 3 => if(this.localityType != 0){
                             this.city = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                           } else {
                             this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
                           }
-                         this.district = new KladrNameContainer(list.get(1).getCode, list.get(1).getName, list.get(1).getSocr, list.get(1).getIndex)
-                         this.republic = new KladrNameContainer(list.get(2).getCode, list.get(2).getName, list.get(2).getSocr, list.get(2).getIndex)}
-              case 4 => {this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
-                         this.city = new KladrNameContainer(list.get(1).getCode, list.get(1).getName, list.get(1).getSocr, list.get(1).getIndex)
-                         this.district = new KladrNameContainer(list.get(2).getCode, list.get(2).getName, list.get(2).getSocr, list.get(2).getIndex)
-                         this.republic = new KladrNameContainer(list.get(3).getCode, list.get(3).getName, list.get(3).getSocr, list.get(3).getIndex)}
-              case _ => {this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
-                         this.city = new KladrNameContainer(list.get(1).getCode, list.get(1).getName, list.get(1).getSocr, list.get(1).getIndex)
-                         this.district = new KladrNameContainer(list.get(2).getCode, list.get(2).getName, list.get(2).getSocr, list.get(2).getIndex)
-                         this.republic = new KladrNameContainer(list.get(3).getCode, list.get(3).getName, list.get(3).getSocr, list.get(3).getIndex)}
+                this.district = new KladrNameContainer(list.get(1).getCode, list.get(1).getName, list.get(1).getSocr, list.get(1).getIndex)
+                this.republic = new KladrNameContainer(list.get(2).getCode, list.get(2).getName, list.get(2).getSocr, list.get(2).getIndex)
+              case 4 => this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
+                this.city = new KladrNameContainer(list.get(1).getCode, list.get(1).getName, list.get(1).getSocr, list.get(1).getIndex)
+                this.district = new KladrNameContainer(list.get(2).getCode, list.get(2).getName, list.get(2).getSocr, list.get(2).getIndex)
+                this.republic = new KladrNameContainer(list.get(3).getCode, list.get(3).getName, list.get(3).getSocr, list.get(3).getIndex)
+              case _ => this.locality = new KladrNameContainer(list.get(0).getCode, list.get(0).getName, list.get(0).getSocr, list.get(0).getIndex)
+                this.city = new KladrNameContainer(list.get(1).getCode, list.get(1).getName, list.get(1).getSocr, list.get(1).getIndex)
+                this.district = new KladrNameContainer(list.get(2).getCode, list.get(2).getName, list.get(2).getSocr, list.get(2).getIndex)
+                this.republic = new KladrNameContainer(list.get(3).getCode, list.get(3).getName, list.get(3).getSocr, list.get(3).getIndex)
             }
           } else {
             this.city = new KladrNameContainer(house.getKLADRCode, "", "","")
@@ -570,10 +564,10 @@ class AddressEntryContainer {
         } else {
           this.kladr = false
         }
-        this.house = house.getNumber()
-        this.building = house.getCorpus()
+        this.house = house.getNumber
+        this.building = house.getCorpus
       }
-      this.flat = address.getFlat()
+      this.flat = address.getFlat
     }
   }
 }
@@ -601,23 +595,21 @@ class PolicyEntryContainer {
 
   def this(policy: ClientPolicy) {
     this ()
-    this.id = policy.getId().intValue()
-    policy.getPolicyType() match {
-      case null => {}
-      case policyType: RbPolicyType => {
-        this.policyType = new IdNameContainer(policyType.getId().intValue(), policyType.getCode(), policyType.getName())
-      }
+    this.id = policy.getId.intValue()
+    policy.getPolicyType match {
+      case null =>
+      case policyType: RbPolicyType =>
+        this.policyType = new IdNameContainer(policyType.getId.intValue(), policyType.getCode, policyType.getName)
     }
-    this.series = policy.getSerial()
-    this.number = policy.getNumber()
-    this.comment = policy.getNote()
-    this.rangePolicyDate = new DatePeriodContainer(policy.getBegDate(),policy.getEndDate())
-    policy.getInsurer() match {
-      case null => {}
-      case organisation: Organisation => {
-        this.smo = new IdNameContainer(organisation.getId().intValue(), organisation.getFullName())
-        this.issued = organisation.getFullName()
-      }
+    this.series = policy.getSerial
+    this.number = policy.getNumber
+    this.comment = policy.getNote
+    this.rangePolicyDate = new DatePeriodContainer(policy.getBegDate,policy.getEndDate)
+    policy.getInsurer match {
+      case null =>
+      case organisation: Organisation =>
+        this.smo = new IdNameContainer(organisation.getId.intValue(), organisation.getFullName)
+        this.issued = organisation.getFullName
     }
   }
 }
@@ -629,7 +621,7 @@ class RelationEntryContainer {
   @BeanProperty
   var id: Int = _
   @BeanProperty
-  var phones = new LinkedList[ClientContactContainer]
+  var phones = new util.LinkedList[ClientContactContainer]
   @BeanProperty
   var name: PersonNameContainer = _
   @BeanProperty
@@ -637,14 +629,13 @@ class RelationEntryContainer {
 
   def this(relative: ClientRelation) {
     this()
-    this.id = relative.getId().intValue()
-    relative.getRelative().getClientContacts().foreach(c => this.phones.add(new ClientContactContainer(c)))
-    this.name = new PersonNameContainer(relative.getRelative())
-    relative.getRelativeType() match {
-      case null => {}
-      case relationType: RbRelationType => {
-        this.relationType = new IdNameContainer(relationType.getId().intValue(), relationType.getLeftName())
-      }
+    this.id = relative.getId.intValue()
+    relative.getRelative.getClientContacts.foreach(c => this.phones.add(new ClientContactContainer(c)))
+    this.name = new PersonNameContainer(relative.getRelative)
+    relative.getRelativeType match {
+      case null =>
+      case relationType: RbRelationType =>
+        this.relationType = new IdNameContainer(relationType.getId.intValue(), relationType.getLeftName)
     }
   }
 }
@@ -666,17 +657,16 @@ class ClientContactContainer {
 
   def this(contact: ClientContact) {
     this()
-    this.id = contact.getId().intValue()
-    val contactType: RbContactType = contact.getContactType()
+    this.id = contact.getId.intValue()
+    val contactType: RbContactType = contact.getContactType
     contactType match {
-      case null => {}
-      case _ => {
-        this.typeId = contactType.getId().intValue()
-        this.typeName = contactType.getName()
-      }
+      case null =>
+      case _ =>
+        this.typeId = contactType.getId.intValue()
+        this.typeName = contactType.getName
     }
-    this.number = contact.getContact()
-    this.comment = contact.getNotes()
+    this.number = contact.getContact
+    this.comment = contact.getNotes
   }
 }
 
@@ -699,16 +689,15 @@ class DocumentEntryContainer {
 
   def this(document: ClientDocument) {
     this ()
-    this.id = document.getId().intValue()
-    this.series = document.getSerial()
-    this.number = document.getNumber()
-    this.issued = document.getIssued()
-    this.rangeDocumentDate = new DatePeriodContainer(document.getDate(), document.getEndDate())
-    document.getDocumentType() match {
-      case null => {}
-      case docType: RbDocumentType => {
-        this.docType = new IdNameContainer(docType.getId().intValue(), docType.getName())
-      }
+    this.id = document.getId.intValue()
+    this.series = document.getSerial
+    this.number = document.getNumber
+    this.issued = document.getIssued
+    this.rangeDocumentDate = new DatePeriodContainer(document.getDate, document.getEndDate)
+    document.getDocumentType match {
+      case null =>
+      case docType: RbDocumentType =>
+        this.docType = new IdNameContainer(docType.getId.intValue(), docType.getName)
     }
   }
 }
@@ -728,17 +717,17 @@ class PersonNameContainer {
 
   def this(patient: Patient) = {
     this ()
-    this.first = patient.getFirstName()
-    this.last = patient.getLastName()
-    this.middle = patient.getPatrName()
+    this.first = patient.getFirstName
+    this.last = patient.getLastName
+    this.middle = patient.getPatrName
     this.raw = this.last + " " + this.first + " " + this.middle
   }
 
   def this(person: Staff) = {
     this ()
-    this.first = person.getFirstName()
-    this.last = person.getLastName()
-    this.middle = person.getPatrName()
+    this.first = person.getFirstName
+    this.last = person.getLastName
+    this.middle = person.getPatrName
     this.raw = this.last + " " + this.first + " " + this.middle
   }
 
@@ -751,7 +740,7 @@ class PersonNameContainer {
   }
 
   def toMap = {
-    var map = new java.util.HashMap[String, Object]
+    val map = new java.util.HashMap[String, Object]
     map.put("first", this.first)
     map.put("last", this.last)
     map.put("middle", this.middle)
@@ -775,9 +764,9 @@ class ExtendedPersonNameContainer extends PersonNameContainer {
     if (person!=null) {
       this.code = person.getCode
       this.department = new OrgStructureContainer(person.getOrgStructure)
-      this.first = person.getFirstName()
-      this.last = person.getLastName()
-      this.middle = person.getPatrName()
+      this.first = person.getFirstName
+      this.last = person.getLastName
+      this.middle = person.getPatrName
       this.raw = this.last + " " + this.first + " " + this.middle
     }
   }
@@ -802,25 +791,19 @@ class TempInvalidContainer{
 
   def this(socStatus : ClientSocStatus) = {
     this()
-    this.id = socStatus.getId().intValue()
-    this.comment = socStatus.getNote()
-    socStatus.getSocStatusType() match {
-      case null => {}
-      case a => {
-        this.disabilityType = new IdNameContainer(
-          a.getId().intValue(),
-          a.getName())
-
-      }
+    this.id = socStatus.getId.intValue()
+    this.comment = socStatus.getNote
+    socStatus.getSocStatusType match {
+      case null =>
+      case a => this.disabilityType = new IdNameContainer(a.getId,a.getName)
     }
-    socStatus.getDocument() match {
-      case null => {}
-      case doc => {
+    socStatus.getDocument match {
+      case null =>
+      case doc =>
         val docType = doc.getDocumentType
-        this.document = new DocumentContainer(docType.getId().intValue(), docType.getName, doc.getNumber, doc.getSerial, doc.getIssued, doc.getDate)
-      }
+        this.document = new DocumentContainer(docType.getId.intValue(), docType.getName, doc.getNumber, doc.getSerial, doc.getIssued, doc.getDate)
     }
-    this.rangeDisabilityDate = new DatePeriodContainer(socStatus.getBegDate(), socStatus.getEndDate());
+    this.rangeDisabilityDate = new DatePeriodContainer(socStatus.getBegDate, socStatus.getEndDate)
     if (socStatus.getBenefitCategoryId!=null) {
       this.benefitsCategory = new BenefitsCategoryContainer(socStatus.getBenefitCategoryId.getId.intValue(), "")
     }
@@ -839,21 +822,19 @@ class OccupationContainer{
   @BeanProperty
   var socialStatus : SocialStatusContainer = _
   @BeanProperty
-  var works : LinkedList[ClientWorkContainer] = new  LinkedList[ClientWorkContainer]
+  var works : util.LinkedList[ClientWorkContainer] = new  util.LinkedList[ClientWorkContainer]
 	
 	def this(socStatus : ClientSocStatus, clientWork: java.util.List[ClientWork]) = {
 	  this()
-	  this.id = socStatus.getId().intValue();
-    this.comment = socStatus.getNote()
-	  socStatus.getSocStatusType() match {
-	    case null => {}
-	    case a => {
-	      	  this.socialStatus = new SocialStatusContainer(
-			  			a.getId().intValue(),
-			  			a.getName())
-	      
-	    }
-	  }
+	  this.id = socStatus.getId
+    this.comment = socStatus.getNote
+	  socStatus.getSocStatusType match {
+	    case null =>
+      case a =>
+        this.socialStatus = new SocialStatusContainer(
+          a.getId.intValue(),
+          a.getName)
+    }
     clientWork.foreach(w => this.works.add(new ClientWorkContainer(w, socStatus.getSocStatusType.getId.intValue())))
 	}
 }
@@ -887,20 +868,17 @@ class ClientWorkContainer {
     this.id = work.getId.intValue()
 
     socStatusTypeId match {
-      case 310 => {                //работающий
+      case 310 => //работающий
         this.workingPlace = work.getFreeInput
         this.position = work.getPost
-      }
-     // case 311 => {}            //неработающий
+      // case 311 => {}            //неработающий
      // case 312 => {}            //неработающий пенсионер
-      case 313 => {               //Дошкольник
+      case 313 => //Дошкольник
         this.preschoolNumber = work.getFreeInput
-      }
-      case 314 => {               //Учащийся
+      case 314 => //Учащийся
         this.schoolNumber = work.getFreeInput
         this.classNumber = work.getPost
-      }
-      case 315 => {               //Военнослужащий
+      case 315 => //Военнослужащий
         this.militaryUnit = work.getFreeInput
         if (work.getRankId!=null){
           this.rank = new RankContainer(work.getRankId.intValue(), "")
@@ -908,13 +886,11 @@ class ClientWorkContainer {
         if (work.getArmId!=null){
           this.forceBranch = new ForceBranchContainer(work.getArmId.intValue(), "") //work.getArmId.getId.intValue(),
         }
-      }
       //case 318 => {}              //Организован
       //case 319 => {}              //Неорганизован
-      case _ => {
+      case _ =>
         this.workingPlace = work.getFreeInput
         this.position = work.getPost
-      }
     }
   }
 }
@@ -930,8 +906,8 @@ class SocialStatusContainer {
 	
 	def this( id : Int, status : String) = {
 	  this()
-	  this.id = id;
-	  this.status = status
+	  this.id = id
+    this.status = status
 	}
 }
 
@@ -946,8 +922,8 @@ class RankContainer {
 	
 	def this( id : Int, rank : String) = {
 	  this()
-	  this.id = id;
-	  this.rank = rank
+	  this.id = id
+    this.rank = rank
 	}
 }
 
@@ -962,8 +938,8 @@ class ForceBranchContainer {
 	
 	def this( id : Int, branch : String) = {
 	  this()
-	  this.id = id;
-	  this.branch = branch
+	  this.id = id
+    this.branch = branch
 	}
 }
 
@@ -978,8 +954,8 @@ class BenefitsCategoryContainer  {
 	
 	def this( id : Int, category : String) = {
 	  this()
-	  this.id = id;
-	  this.category = category
+	  this.id = id
+    this.category = category
 	}
 }
 
@@ -1067,14 +1043,14 @@ class QuotaRequestData {
     this()
     this.filter = if(filter!=null) {filter} else {null}
     this.sortingField = sortingField match {
-      case null => {"id"}
-      case _ => {sortingField}
+      case null => "id"
+      case _ => sortingField
     }
     this.sortingFieldInternal = this.toSortingString(this.sortingField)
 
     this.sortingMethod = sortingMethod match {
-      case null => {"asc"}
-      case _ => {sortingMethod}
+      case null => "asc"
+      case _ => sortingMethod
     }
     this.limit = limit
     this.page = if(page>1)page else 1
@@ -1105,12 +1081,12 @@ class QuotaRequestData {
 
   def toSortingString (sortingField: String) = {
     sortingField match {
-      case "quotaTicket" => {"cq.quotaTicket"}
-      case "request" => {"cq.request"}
-      case "amount" => {"cq.amount"}
-      case "diagnosis" => {"cq.mkb.diagID"}
-      case "quotaType" => {"cq.quotaType.code"}
-      case _ => {"cq.id"}
+      case "quotaTicket" => "cq.quotaTicket"
+      case "request" => "cq.request"
+      case "amount" => "cq.amount"
+      case "diagnosis" => "cq.mkb.diagID"
+      case "quotaType" => "cq.quotaType.code"
+      case _ => "cq.id"
     }
   }
 }

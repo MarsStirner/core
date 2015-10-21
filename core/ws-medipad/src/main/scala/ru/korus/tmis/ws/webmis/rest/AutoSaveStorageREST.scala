@@ -45,5 +45,5 @@ class AutoSaveStorageREST {
       wsImpl.deleteAutoSaveField(id, mkAuth(servRequest))
   }
 
-  private def mkAuth(servRequest: HttpServletRequest) = wsImpl.checkTokenCookies(util.Arrays.asList(servRequest.getCookies:_*))
+  private def mkAuth(servRequest: HttpServletRequest) = wsImpl.checkTokenCookies(servRequest.getCookies)
 }

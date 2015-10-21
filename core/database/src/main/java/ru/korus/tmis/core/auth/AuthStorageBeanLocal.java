@@ -70,7 +70,7 @@ public interface AuthStorageBeanLocal {
      * @return Данные аутентификации пользователя
      * @throws CoreException
      */
-    AuthData checkTokenCookies(Iterable<Cookie> cookies)
+    AuthData checkTokenCookies(Cookie[] cookies)
            throws CoreException;//AuthenticationException
 
     void timeoutHandler();

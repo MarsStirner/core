@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.auth
 
+import java.rmi.activation.ActivationGroup_Stub
 import javax.xml.bind.annotation.XmlType._
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
 import javax.xml.bind.annotation.XmlRootElement._
@@ -44,4 +45,15 @@ class AuthWithTokenEntry {
     this()
     this.roleId = roleId
   }
+}
+
+@XmlType(name = "TokenInfoRequest")
+@XmlRootElement(name = "TokenInfoRequest")
+class TokenInfoRequest {
+  @BeanProperty
+  var token: String = _
+
+  @BeanProperty
+  var prolong: Boolean = _
+
 }

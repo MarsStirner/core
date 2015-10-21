@@ -25,7 +25,7 @@ class OrganizationImpl {
   def getOrganizationById(@Context servRequest:HttpServletRequest,
                           @QueryParam("callback") callback: String,
                           @PathParam("id") id: Int): JSONWithPadding = {
-    new JSONWithPadding(wsImpl.getOrganizationById(id, wsImpl.checkTokenCookies(util.Arrays.asList(servRequest.getCookies:_*))), callback)
+    new JSONWithPadding(wsImpl.getOrganizationById(id, wsImpl.checkTokenCookies(servRequest.getCookies)), callback)
   }
 
 }

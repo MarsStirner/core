@@ -424,12 +424,12 @@ class PatientBean
     var oldPatient: Patient = null
     var patientVersion: Int = 0
     if (id > 0) {
-      patientVersion = patientEntry.getVersion()
+      patientVersion = patientEntry.getVersion
       oldPatient = Patient.clone(dbPatient.getPatientById(id))
     }
     var patient: Patient = null
     //create or update patient data
-    val medInfo: MedicalInfoContainer = patientEntry.getMedicalInfo()
+    val medInfo: MedicalInfoContainer = patientEntry.getMedicalInfo
     var bloodDate: Date = new Date()
     var bloodType: Int = 0
     var bloodPhenotypeId: java.lang.Integer = null
@@ -779,16 +779,7 @@ class PatientBean
       }
     )
     clientAllergies.foreach((clientAllergy) => {
-      var j = 0
-      breakable {
-        set.foreach(i => {
-          if (i == clientAllergy.getId()) {
-            j = j + 1
-            break
-          }
-        })
-      }
-      if (j == 0) {
+      if (!set.contains(clientAllergy.getId)) {
         dbClientAllergy.insertOrUpdateClientAllergy(
           clientAllergy.getId(),
           clientAllergy.getDegree(),

@@ -157,8 +157,10 @@ class AuthStorageBean
       val authToken: AuthToken = new AuthToken(token)
       val authData : AuthData = getAuthData(authToken)
       if(authData != null){
+        authData.setDeadline(casResp.getDeadline.toLong)
+        authData.setTtl(casResp.getTtl.toLong)
         authMap.put(authToken, (authData, new Date(casResp.getDeadline.toLong*1000L)))
-        authData
+        return authData
       } else {
         logger.error("CAS RESPONSE IS SUCCESS, BUT WE HASN'T IT IN MAP!!!!!")
       }
@@ -166,7 +168,10 @@ class AuthStorageBean
     throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.invalidToken"))
   }
 
-  def checkTokenCookies(cookies: lang.Iterable[Cookie]): AuthData = {
+  def checkTokenCookies(cookies: Array[Cookie]): AuthData = {
+    if(cookies == null){
+      throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.invalidToken"))
+    }
     var token: String = null
     var curRole: String = null
     for (cookie <- cookies) {

@@ -10,7 +10,6 @@ import ru.korus.tmis.core.exception.CoreException;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.util.Arrays;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -42,7 +41,7 @@ public class AuthInterceptor extends HandlerInterceptorAdapter {
                     }
                 }
                 if (cookies != null && countAuthToken == 1) {
-                    authData = authStorageBeanLocal.checkTokenCookies(Arrays.asList(request.getCookies()));
+                    authData = authStorageBeanLocal.checkTokenCookies(request.getCookies());
                 } else if (countAuthToken > 1) {
                     clearCooke(response, cookies);
                 }
