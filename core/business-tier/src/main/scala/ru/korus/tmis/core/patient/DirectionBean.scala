@@ -647,7 +647,7 @@ with I18nable {
       val allActions: util.List[Action] = dbJobTicketBean.getActionsForJobTicket(f.getId)
       //По умолчанию считается что посылаются все экшены из жобтикета (filter еще не отправленные),
       // соответственно если коллекции (запрошенные экшены) и (все экшены жобтикета) не равны, то послыаются не все экшены
-      var isAllActionSent: Boolean = CollectionUtils.isEqualCollection(allActions.filter(_.getStatus != 1).map(_.getId), f.getData.map(_.getId))
+      var isAllActionSent: Boolean = CollectionUtils.isEqualCollection(allActions.filter(_.getStatus == 0).map(_.getId), f.getData.map(_.getId))
        f.getData.foreach(a => {
           val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(a.getId.intValue())
           if (labCode != null && labCode.compareTo("0101") == 0) {
