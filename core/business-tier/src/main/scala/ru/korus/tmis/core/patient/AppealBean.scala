@@ -3,6 +3,7 @@ package ru.korus.tmis.core.patient
 import java.util
 
 import grizzled.slf4j.Logging
+import org.slf4j.LoggerFactory
 import ru.korus.tmis.core.database.finance.DbEventLocalContractLocal
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.data._
@@ -28,6 +29,8 @@ class AppealBean extends AppealBeanLocal
 with Logging
 with I18nable
 with CAPids {
+
+  val loggerA : org.slf4j.Logger = LoggerFactory.getLogger("ru.korus.tmis.communication.A")
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -147,10 +150,16 @@ with CAPids {
   def insertAppealForPatient(appealData: AppealData, patientId: Int, userData: AuthData, staff: Staff) = {
 
     //1. Event и проверка данных на валидность
+    loggerA.warn("start")
     val newEvent = this.verificationData(patientId, staff, appealData, true)
+    loggerA.warn("endVerify")
     dbManager.persist(newEvent)
+    loggerA.warn("endPersist")
     val res = insertOrModifyAppeal(appealData, newEvent, true, userData, staff)
+    loggerA.warn("endinsertOrModifyAppeal")
     updateTempInvalid(newEvent, appealData.data.tempInvalid, staff)
+    loggerA.warn("endupdateOrModifyAppeal")
+    loggerA.warn("end")
     res
   }
 
@@ -191,8 +200,7 @@ with CAPids {
       action.setStatus(ActionStatus.FINISHED.getCode) //TODO: Материть Александра!
       dbManager.persist(action)
       list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(i18n("db.actionType.hospitalization.primary").toInt).toList
-    }
-    else {
+    } else {
       action = actionBean.updateAction(temp.getId.intValue(),
         temp.getVersion.intValue, userData,
         staff)
@@ -224,7 +232,7 @@ with CAPids {
        entities = entities + action*/
 
     //3. Action Property
-
+    loggerA.warn("AP start")
     list.foreach(f => {
       val ap: ActionProperty =
         if (flgCreate && f.isInstanceOf[ActionPropertyType]) {
@@ -297,7 +305,10 @@ with CAPids {
       }
     })
 
+    loggerA.warn("AP end")
+
     if (!flgCreate) dbManager.mergeAll(entities) else dbManager.persistAll(entities)
+    loggerA.warn("PALL end")
     /*
    if (!flgCreate) {
      val newValues = actionPropertyBean.getActionPropertiesByActionId(action.getId.intValue)
@@ -347,6 +358,7 @@ with CAPids {
     }
     //******
     //Создание/Редактирование записей для законных представителей
+    loggerA.warn("CR start")
     val clientRelations = if (appealData.data.getHospitalizationWith == null) {
       new java.util.LinkedList[LegalRepresentativeContainer]()
     } else {
@@ -387,14 +399,16 @@ with CAPids {
       })
     })
     if (setRel != null && setRel.size > 0) dbManager.mergeAll(setRel)
+    loggerA.warn("CR end")
     //*****
     //Создание/редактирование записи для Event_Persons
     if (flgCreate)
       setExecPersonForAppeal(newEvent.getId.intValue(), 0, staff, ExecPersonSetType.EP_CREATE_APPEAL)
+    loggerA.warn("setExecPersonForAppeal end")
 
     //Создание/редактирование диагнозов (отд. записи)
     var map = Map.empty[String, java.util.Set[AnyRef]]
-
+    loggerA.warn("DIAG start")
     var diagFlatCodes: Set[String] = Set()
     appealData.data.diagnoses.foreach(f => if (f.getDiagnosisKind != null && !f.getDiagnosisKind.isEmpty) diagFlatCodes += f.getDiagnosisKind)
     diagFlatCodes.foreach(flatCode => {
@@ -415,8 +429,9 @@ with CAPids {
         .toSet[AnyRef]
       map += (flatCode -> values)
     })
+    loggerA.warn("DIAG subEnd")
     val diagnoses = diagnosisBean.insertDiagnoses(newEvent.getId.intValue(), null, mapAsJavaMap(map), staff)
-
+    loggerA.warn("DIAG end")
     if (appealData.data.getPayer != null
       && appealData.data.getPaymentContract != null) {
 

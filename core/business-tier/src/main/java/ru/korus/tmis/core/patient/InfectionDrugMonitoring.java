@@ -17,6 +17,10 @@ import java.util.Date;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class InfectionDrugMonitoring implements Comparable {
 
+    private Integer actionId;
+
+    private Integer index;
+
     private String therapyName;
 
     private String drugName;
@@ -24,6 +28,24 @@ public class InfectionDrugMonitoring implements Comparable {
     private Date begDate;
 
     private Date endDate;
+
+
+    public Integer getActionId() {
+        return actionId;
+    }
+
+    public void setActionId(final Integer actionId) {
+        this.actionId = actionId;
+    }
+
+    public void setIndex(final Integer index) {
+
+        this.index = index;
+    }
+
+    public Integer getIndex() {
+        return index;
+    }
 
     public String getTherapyName() {
         return therapyName;
@@ -89,4 +111,6 @@ public class InfectionDrugMonitoring implements Comparable {
         }
         return ((InfectionDrugMonitoring) o).getBegDate().compareTo(begDate);
     }
+
+
 }

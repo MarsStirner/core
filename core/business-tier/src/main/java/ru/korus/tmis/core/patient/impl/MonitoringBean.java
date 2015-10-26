@@ -1,13 +1,14 @@
 package ru.korus.tmis.core.patient.impl;
 
-import ru.korus.tmis.core.database.common.DbActionBean;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
-import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.APValue;
+import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.ActionProperty;
+import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.patient.InfectionDrugMonitoring;
 import ru.korus.tmis.core.patient.MonitoringBeanLocal;
-import ru.korus.tmis.core.values.InfectionControl;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -52,7 +53,7 @@ public class MonitoringBean implements MonitoringBeanLocal {
             final List<InfectionDrugMonitoring> allMonitoring = new LinkedList<InfectionDrugMonitoring>();
             final InfectionDrugMonitoring infectionDrugMonitorings[] = new InfectionDrugMonitoring[8];
             for (Action action : actionList) {
-                for (int index = 0; index < infectionDrugMonitorings.length; ++index) {
+                for (int index = 1; index <= infectionDrugMonitorings.length; index++) {
                     ActionProperty propDrugName = getPropDrugName(action, prefix, index);
                     if (propDrugName != null) {
                         InfectionDrugMonitoring infectionDrugMonitoring = toInfectionDrugMonitoring(action, propDrugName, prefix, index);
@@ -126,6 +127,8 @@ public class MonitoringBean implements MonitoringBeanLocal {
 
     private InfectionDrugMonitoring toInfectionDrugMonitoring(Action action, ActionProperty propDrugName, String prefix, Integer index) throws CoreException {
         InfectionDrugMonitoring res = new InfectionDrugMonitoring();
+        res.setActionId(action.getId());
+        res.setIndex(index);
         List<APValue> actionPropValueList = dbActionPropertyBeanLocal.getActionPropertyValue(propDrugName);
         if (!actionPropValueList.isEmpty()
                 && actionPropValueList.get(0).getValue() instanceof String) {

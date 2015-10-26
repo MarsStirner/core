@@ -3,9 +3,10 @@ package ru.korus.tmis.core.database.bak;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.bak.BbtResponse;
-import ru.korus.tmis.core.entity.model.bak.RbMicroorganism;
 
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.util.List;
@@ -25,6 +26,7 @@ public class DbBbtResponseBean implements DbBbtResponseBeanLocal {
     private EntityManager em = null;
 
     @Override
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void add(final BbtResponse bbtResponse) {
         final BbtResponse response = get(bbtResponse.getId());
         if (response == null) {

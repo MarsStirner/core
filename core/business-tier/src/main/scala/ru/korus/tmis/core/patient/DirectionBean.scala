@@ -483,7 +483,7 @@ with I18nable {
             apSet = apSet + apv.unwrap
         } else {
           //если диагноз не пришел, то запишем дефолтный
-          var props = actionPropertyBean.getActionPropertyValue(ap)
+          val props = actionPropertyBean.getActionPropertyValue(ap)
           if (props.get(0).getValueAsString.compareTo("") == 0) {
             val diagnosis = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(action.getEvent.getId.intValue())
             if (diagnosis != null) {
@@ -644,10 +644,10 @@ with I18nable {
   def sendActionsToLaboratory(data: SendActionsToLaboratoryDataList, authData: Staff) = {
     var isSuccess: Boolean = true
     data.getData.foreach(f => {
-      var allActions: util.List[Action] = dbJobTicketBean.getActionsForJobTicket(f.getId)
-      //По умолчанию считается что посылаются все экшены из жобтикета,
+      val allActions: util.List[Action] = dbJobTicketBean.getActionsForJobTicket(f.getId)
+      //По умолчанию считается что посылаются все экшены из жобтикета (filter еще не отправленные),
       // соответственно если коллекции (запрошенные экшены) и (все экшены жобтикета) не равны, то послыаются не все экшены
-      var isAllActionSent: Boolean = CollectionUtils.isEqualCollection(allActions.map(_.getId), f.getData.map(_.getId))
+      var isAllActionSent: Boolean = CollectionUtils.isEqualCollection(allActions.filter(_.getStatus != 1).map(_.getId), f.getData.map(_.getId))
        f.getData.foreach(a => {
           val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(a.getId.intValue())
           if (labCode != null && labCode.compareTo("0101") == 0) {
