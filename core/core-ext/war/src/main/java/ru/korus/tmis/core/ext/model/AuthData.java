@@ -9,6 +9,7 @@ package ru.korus.tmis.core.ext.model;
 public class AuthData {
 
     private Integer userId;
+    private String authToken;
 
     public Integer getUserId() {
         return userId;
@@ -16,5 +17,13 @@ public class AuthData {
 
     public void setUserId(Integer userId) {
         this.userId = userId;
+    }
+
+    public void setAuthToken(final String authToken) {
+        this.authToken = authToken;
+    }
+
+    public String getAuthToken() {
+        return authToken;
     }
 }

@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.ext.model.templates;
 
-import javax.swing.*;
+import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+
 import java.util.LinkedList;
 import java.util.List;
 
@@ -10,14 +11,34 @@ import java.util.List;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
+@JsonIgnoreProperties(ignoreUnknown = true)
 public class ActionTemplateData {
     private Integer id;
     private Integer groupId;
     private Integer actionId;
+    private String authToken;
+    private Integer user_id;
     private String name;
     private List<ActionTemplateData> templates;
     private Integer specialityId;
     private Integer ownerId;
+
+
+    public String getAuthToken() {
+        return authToken;
+    }
+
+    public void setAuthToken(final String authToken) {
+        this.authToken = authToken;
+    }
+
+    public Integer getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(final Integer user_id) {
+        this.user_id = user_id;
+    }
 
     public void setId(Integer id) {
         this.id = id;

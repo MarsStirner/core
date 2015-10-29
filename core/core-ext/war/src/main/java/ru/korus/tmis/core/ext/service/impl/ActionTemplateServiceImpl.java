@@ -1,7 +1,14 @@
 package ru.korus.tmis.core.ext.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.client.RestTemplate;
+import ru.korus.tmis.core.ext.ambulatoryService.ActionTemplateCreateRequest;
+import ru.korus.tmis.core.ext.ambulatoryService.ActionTemplateCreateResponse;
 import ru.korus.tmis.core.ext.entities.s11r64.Action;
 import ru.korus.tmis.core.ext.entities.s11r64.ActionTemplate;
 import ru.korus.tmis.core.ext.model.AuthData;
@@ -11,7 +18,6 @@ import ru.korus.tmis.core.ext.repositories.s11r64.ActionRepository;
 import ru.korus.tmis.core.ext.repositories.s11r64.ActionTemplateRepository;
 import ru.korus.tmis.core.ext.service.ActionTemplateService;
 
-import javax.persistence.EntityNotFoundException;
 import java.util.*;
 
 /**
@@ -74,21 +80,39 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
     @Override
     public ActionTemplateData createActionTemplate(ActionTemplateData actionTemplateData, AuthData authData) {
         Action action = actionTemplateData.getActionId() == null ? null : actionRepository.findOne(actionTemplateData.getActionId());
-        final Date now = new Date();
-        ActionTemplate actionTemplate = new ActionTemplate();
-        actionTemplate.setAction(action);
-        actionTemplate.setCreateDatetime(now);
-        actionTemplate.setModifyDatetime(now);
-        actionTemplate.setModifyPerson_id(authData == null ? null : authData.getUserId());
-        actionTemplate.setName(actionTemplateData.getName());
-        if (actionTemplateData.getGroupId() != null) {
-            ActionTemplate actionTemplateGroup = actionTemplateRepository.findOne(actionTemplateData.getGroupId());
-            actionTemplate.setGroup(actionTemplateGroup);
+        final RestTemplate restTemplate = new RestTemplate();
+
+        final ActionTemplateCreateRequest request = new ActionTemplateCreateRequest();
+        request.setAid(actionTemplateData.getActionId());
+        request.setName(actionTemplateData.getName());
+        request.setGid(actionTemplateData.getGroupId());
+        request.setUser_id(actionTemplateData.getUser_id());
+
+        final HttpHeaders requestHeaders = new HttpHeaders();
+        requestHeaders.add("Cookie", "authToken=" + actionTemplateData.getAuthToken());
+
+        final HttpEntity<ActionTemplateCreateRequest> requestEntity = new HttpEntity<>(request, requestHeaders);
+
+        final Map<String, Object> uriVariables = new HashMap<>(2);
+        uriVariables.put("actionType_id", action != null ? action.getActionType_id() : 0);
+        //uriVariables.put("action_id", actionTemplateData.getActionId());
+
+
+        final ResponseEntity<ActionTemplateCreateResponse> response =
+                restTemplate.exchange(
+                        "http://mis-core.pol.fccho-moscow.ru:5000/actions/api/templates/{actionType_id}",
+                        HttpMethod.PUT,
+                        requestEntity,
+                        ActionTemplateCreateResponse.class,
+                        uriVariables
+                );
+        final ActionTemplateCreateResponse result = response.getBody();
+        if("OK".equals(result.getMeta().getName())){
+            final ActionTemplate res = actionTemplateRepository.getOne(result.getResult().getId());
+            return toActionTemplateData(res, action == null ? null : action.getActionType_id());
+        }  else {
+            return null;
         }
-        actionTemplate.setSpecialityId(actionTemplateData.getSpecialityId());
-        actionTemplate.setOwnerId(actionTemplateData.getOwnerId());
-        actionTemplate = actionTemplateRepository.saveAndFlush(actionTemplate);
-        return toActionTemplateData(actionTemplate, action == null ? null : action.getActionType_id());
     }
 
     private ActionTemplateData toActionTemplateData(ActionTemplate actionTemplate, Integer actionTypeId) {

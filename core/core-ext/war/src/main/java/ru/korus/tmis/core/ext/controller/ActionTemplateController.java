@@ -6,7 +6,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
-import ru.korus.tmis.core.ext.entities.s11r64.ActionTemplate;
 import ru.korus.tmis.core.ext.model.AuthData;
 import ru.korus.tmis.core.ext.model.templates.ActionTemplateData;
 import ru.korus.tmis.core.ext.model.templates.ActionTemplateDataContainer;

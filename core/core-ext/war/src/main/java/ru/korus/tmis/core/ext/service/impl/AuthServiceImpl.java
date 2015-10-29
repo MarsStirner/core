@@ -27,6 +27,8 @@ public class AuthServiceImpl implements AuthService {
                     } catch (NumberFormatException ex) {
                         ex.printStackTrace();
                     }
+                } else if("authToken".equals(c.getName()) && c.getValue() != null){
+                  res.setAuthToken(c.getValue());
                 }
             }
         }
