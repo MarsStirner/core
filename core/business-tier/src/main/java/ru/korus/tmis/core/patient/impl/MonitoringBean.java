@@ -53,7 +53,7 @@ public class MonitoringBean implements MonitoringBeanLocal {
             final List<InfectionDrugMonitoring> allMonitoring = new LinkedList<InfectionDrugMonitoring>();
             final InfectionDrugMonitoring infectionDrugMonitorings[] = new InfectionDrugMonitoring[8];
             for (Action action : actionList) {
-                for (int index = 1; index <= infectionDrugMonitorings.length; index++) {
+                for (int index = 0; index < infectionDrugMonitorings.length; index++) {
                     ActionProperty propDrugName = getPropDrugName(action, prefix, index);
                     if (propDrugName != null) {
                         InfectionDrugMonitoring infectionDrugMonitoring = toInfectionDrugMonitoring(action, propDrugName, prefix, index);
