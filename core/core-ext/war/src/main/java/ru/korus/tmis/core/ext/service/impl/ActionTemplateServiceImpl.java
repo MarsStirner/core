@@ -97,7 +97,7 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
         uriVariables.put("actionType_id", action != null ? action.getActionType_id() : 0);
         //uriVariables.put("action_id", actionTemplateData.getActionId());
 
-
+       //TODO адрес амбулатории хранить надо где-то в настройках
         final ResponseEntity<ActionTemplateCreateResponse> response =
                 restTemplate.exchange(
                         "http://mis-core.pol.fccho-moscow.ru:5000/actions/api/templates/{actionType_id}",
