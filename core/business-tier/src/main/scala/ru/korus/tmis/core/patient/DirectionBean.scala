@@ -813,10 +813,16 @@ with I18nable {
     }
     val comment: String = action.getNote
     diag.setOrderComment(comment)
-    val department: OrgStructure = getOrgStructureByEvent(action.getEvent)
+    var department: OrgStructure = getOrgStructureByEvent(action.getEvent)
+    if(department == null){
+      warn("No department found for Action[%s] in moving's, search in RECEIVE Action".format(action.getId))
+      department = getOrgStructureFromRecievedActionInEvent(action.getEvent)
+    }
     if (department != null) {
       diag.setOrderDepartmentMisCode(String.valueOf(department.getId))
       diag.setOrderDepartmentName(department.getName)
+    } else {
+       error("No department found for Action[%s]".format(action.getId))
     }
     val doctorLastname: String = action.getAssigner.getLastName
     val doctorFirstname: String = action.getAssigner.getFirstName
@@ -889,6 +895,28 @@ with I18nable {
         }
       }
     }
+    null
+  }
+
+  def getOrgStructureFromRecievedActionInEvent(e: Event): OrgStructure = {
+    val orgStructureAP = dbCustomQuery.getOrgStructureByReceivedActionByEvents(Collections.singletonList(e))
+    orgStructureAP.get(e) match {
+      case null => {
+        warn("OrgStructure from received Action not found for " + e)
+      }
+      case ap: ActionProperty => {
+        val apvs = dbActionProperty.getActionPropertyValue(ap)
+        apvs.foreach(
+          (apv) => {
+            apv.getValue match {
+              case os: OrgStructure =>
+                return os
+              case _ =>
+            }
+          })
+      }
+    }
+
     null
   }
 }
