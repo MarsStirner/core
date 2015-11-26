@@ -460,6 +460,8 @@ public interface WebMisREST extends Serializable {
 
     List<TherapyContainer> getTherapiesInfo(int eventId) throws CoreException;
 
+    List<TherapyContainer> getAllTherapiesInfo(int eventId) throws CoreException;
+
     /**
      * Залочить действие
      *

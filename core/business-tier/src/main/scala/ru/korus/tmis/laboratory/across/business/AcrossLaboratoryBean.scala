@@ -26,6 +26,8 @@ import ru.korus.tmis.scala.util.Types.JList
 import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 import ru.korus.tmis.util.CompileTimeConfigManager
 import scala.language.reflectiveCalls
+import ru.korus.tmis.scala.util.General.cast_implicits
+import ru.korus.tmis.scala.util.General.typedEquality
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
@@ -451,7 +453,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   def setAnalysisResults(a: Action, results: List[AnalysisResultAcross], finished: Boolean, biomaterialDefects: String) = {
     // Сохраняем результаты анализов
     val entities = scala.collection.mutable.Buffer[AnyRef](a)
-    import ru.korus.tmis.scala.util.General.typedEquality
 
     results.foreach {
       r =>
@@ -605,16 +606,15 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
   def setLis2AnalysisResults(requestId: Int, barCode: Int, period: Int, lastPiece: Boolean, lis_results: JList[AResult2],
                              biomaterialDefects: String) = {
-
-    import ru.korus.tmis.scala.util.General.cast_implicits
+    info("Acquired requestId = " + requestId)
+    info("Acquired barCode = " + barCode)
+    info("Acquired lastPiece = " + lastPiece)
 
     val results: mutable.Buffer[AnalysisResultAcross] = lis_results map {
       _.castTo[AnalysisResultAcross]
     }
 
-    info("Acquired requestId = " + requestId)
-    info("Acquired barCode = " + barCode)
-    info("Acquired lastPiece = " + lastPiece)
+
     info("Acquired results = " + results)
     info("Acquired biomaterialDefects = " + biomaterialDefects)
 
@@ -631,6 +631,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         setAnalysisResults(a, res, lastPiece, biomaterialDefects)
     }.sum
 
+    info("end")
     if (ress == 0) 0 else 1
   }
 

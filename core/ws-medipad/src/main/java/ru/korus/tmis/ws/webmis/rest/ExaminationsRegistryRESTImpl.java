@@ -14,10 +14,7 @@ import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.GenericEntity;
 import javax.ws.rs.core.UriInfo;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 /**
  * Список REST-сервисов для работы с осмотрами
@@ -330,6 +327,7 @@ public class ExaminationsRegistryRESTImpl {
         return new JSONWithPadding(this.wsImpl.getListOfAssessmentsForPatientByEvent(alrd, mkAuth(servRequest)), callback);
     }
 
+     //TODO переписать все
     @GET
     @Path("/therapies")
     @Produces({"application/javascript", "application/x-javascript", "application/xml"})
@@ -343,6 +341,23 @@ public class ExaminationsRegistryRESTImpl {
 
         ListContainer l = new ListContainer();
         l.setData(wsImpl.getTherapiesInfo(patientId));
+        return new JSONWithPadding(l, callback);
+    }
+
+    //TODO переписать все
+    @GET
+    @Path("/alltherapies")
+    @Produces({"application/javascript", "application/x-javascript", "application/xml"})
+    public Object calculateAll(@Context HttpServletRequest servRequest,
+            @PathParam("eventId") int eventId,
+            @PathParam("patientId") int patientId,
+            @QueryParam("callback") String callback,
+            @QueryParam("query") String query) throws CoreException {
+        if(patientId < 1)
+            throw new IllegalArgumentException("Path param 'patientId' cannot be less than 1");
+
+        ListContainer l = new ListContainer();
+        l.setData(wsImpl.getAllTherapiesInfo(patientId));
         return new JSONWithPadding(l, callback);
     }
 

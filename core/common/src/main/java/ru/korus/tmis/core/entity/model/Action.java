@@ -24,9 +24,11 @@ import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
                 @NamedQuery(name = "Action.findLatestMove", query = "SELECT a FROM Action a WHERE (a.actionType.flatCode = 'moving' OR a.actionType.flatCode = 'received')" +
                         " AND a.event.id = :eventId AND a.deleted = 0 ORDER BY a.createDatetime DESC"),
                 @NamedQuery(name = "Action.AllActionsOfPatientThatHasActionProperty",
-                        query = "SELECT a FROM Action a, ActionProperty ap, ActionPropertyType apt WHERE a.deleted = 0 AND " +
-                                "a.event.patient.id = :patientId " +
-                                "AND ap.action.id = a.id AND apt.id = ap.actionPropertyType.id AND apt.code = :code"),
+                        query = "SELECT a FROM ActionProperty ap " +
+                                "INNER JOIN ap.action a " +
+                                "INNER JOIN ap.actionPropertyType apt " +
+                                "WHERE ap.deleted = 0 AND a.deleted = 0 AND a.event.patient.id = :patientId AND apt.code = :code " +
+                                "ORDER BY a.begDate desc "),
                 @NamedQuery(name = "Action.actionByTypeCodeAndPatientOrderByDate", query = "SELECT a FROM Action a WHERE" +
                         " a.actionType.code IN :codes " +
                         "AND a.event.deleted = 0 " +
