@@ -30,10 +30,10 @@ public final class Constants {
     public static final String QUERY_NAME_MULTIPLE_BIRTH_CONTACT_TYPE = "SpecialVar_getMultipleBirthContactTypeId";
 
     //MainQueries
-    public static final String QUERY_NAME_STATIONARY_MAIN = "SpecialVar_TFOMSv2_FlatStationar";
-    public static final String QUERY_NAME_POLICLINIC_MAIN = "SpecialVar_TFOMSv2_Policlinic";
-    public static final String QUERY_NAME_POLICLINIC_ADDITIONAL = "SpecialVar_TFOMSv2_Policlinic_Additional";
-    public static final String QUERY_NAME_DISPANSERIZATION_ADDITIONAL = "SpecialVar_TFOMSv2_Dispanserization_Additional";
+    public static final String QUERY_NAME_STATIONARY_MAIN = "SpecialVar_TFOMS_FlatStationar";
+    public static final String QUERY_NAME_POLICLINIC_MAIN = "SpecialVar_TFOMS_Policlinic";
+    public static final String QUERY_NAME_POLICLINIC_ADDITIONAL = "SpecialVar_TFOMS_Policlinic_Additional";
+    public static final String QUERY_NAME_DISPANSERIZATION_ADDITIONAL = "SpecialVar_TFOMS_Dispanserization_Additional";
 
     public static final String STOMATOLOGY_MEDICAL_KIND_CODE = "T";
     public static final String UET_UNIT_CODE = "5";
@@ -41,14 +41,9 @@ public final class Constants {
     public static final String QUERY_NAME_ACCOUNTITEM_CHECK_PRIMARY = "SpecialVar_TFOMS_AccountItemCheck_Primary";
     public static final String QUERY_NAME_ACCOUNTITEM_CHECK_ADDITIONAL = "SpecialVar_TFOMS_AccountItemCheck_Additional";
 
-    public static final String QUERY_NAME_PATIENT_PROPERTIES = "SpecialVar_TFOMS_Patient_Properties";
-    public static final String QUERY_NAME_PATIENT_DOCUMENT = "SpecialVar_TFOMS_Patient_Document";
-    public static final String QUERY_NAME_PATIENT_POLICY = "SpecialVar_TFOMS_Patient_Policy";
     public static final String QUERY_NAME_PATIENT_OKATOG = "SpecialVar_TFOMS_Patient_OKATOG";
     public static final String QUERY_NAME_PATIENT_OKATOP = "SpecialVar_TFOMS_Patient_OKATOP";
-    public static final String QUERY_NAME_PATIENT_SPOKESMAN = "SpecialVar_TFOMS_Patient_Spokesman";
 
-    public static final String OS_SLUCH = "SpecialVar_TFOMS_OS_SLUCH";
     public static final String NULL = "NULL";
 
 
@@ -71,6 +66,13 @@ public final class Constants {
     public static final String PARAM_NAME_OBSOLETE_INFIS_CODE = "@obsoleteInfisCode";
     public static final String PARAM_NAME_LEVEL_MO = "@levelMO";
     public static final String PARAM_NAME_SMO_AREA = "@SMOArea";
+    //Параметры случая
+    public static final String PARAM_NAME_CLIENT_ID = "@clientId";
+    public static final String PARAM_NAME_RB_SERVICE_INFIS = "@serviceInfisCode";
+    public static final String PARAM_NAME_EVENT_TYPE_ID = "@eventTypeId";
+    public static final String PARAM_NAME_CHECK_DATE = "@checkDate";
+    public static final String PARAM_NAME_INSURER_AREA = "@InsurerArea";
+    public static final String PARAM_NAME_ACTION_ID = "@actionId";
 
     //Pre Select section
     public static final String PARAM_NAME_MOVING_ACTION_TYPE = "@movingActionTypeId";
@@ -84,13 +86,7 @@ public final class Constants {
 
     public static final String PARAM_NAME_MULTIPLE_BIRTH_CONTACT_TYPE = "@multipleBirthContactTypeId";
 
-    //Параметры случая
-    public static final String PARAM_NAME_CLIENT_ID = "@clientId";
-    public static final String PARAM_NAME_RB_SERVICE_INFIS = "@serviceInfisCode";
-    public static final String PARAM_NAME_EVENT_TYPE_ID = "@eventTypeId";
-    public static final String PARAM_NAME_CHECK_DATE = "@checkDate";
-    public static final String PARAM_NAME_INSURER_AREA = "@InsurerArea";
-    public static final String PARAM_NAME_ACTION_ID = "@actionId";
+
 
 
     private Constants() {

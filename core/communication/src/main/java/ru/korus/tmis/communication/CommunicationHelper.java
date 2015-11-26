@@ -1,16 +1,21 @@
 package ru.korus.tmis.communication;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
+import ru.korus.tmis.core.database.common.DbPatientBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.AppointmentType;
-import ru.korus.tmis.schedule.TypeOfQuota;
+import ru.korus.tmis.core.entity.model.Schedule;
+import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.schedule.*;
+import ru.korus.tmis.schedule.PersonSchedule;
 
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * Author: Upatov Egor <br>
@@ -22,9 +27,15 @@ public class CommunicationHelper {
 
     //Logger
     private static final Logger logger = LoggerFactory.getLogger(CommunicationHelper.class);
+    private static RbTimeQuotingType BETWEEN_CABINET_QUOTING_TYPE;
+    private static RbTimeQuotingType FROM_OTHER_LPU_QUOTING_TYPE;
+    private static RbTimeQuotingType FROM_PORTAL_QUOTING_TYPE;
+    private static RbTimeQuotingType FROM_REGISTRY_QUOTING_TYPE;
+    private static RbTimeQuotingType SECOND_VISIT_QUOTING_TYPE;
 
     /**
      * Конвертация строки с указанием возраста в Дату
+     *
      * @param agePart строка с указанием возраста
      * @return Дата рождения, соответствующая этому возрасту (от сейчас)
      */
@@ -187,6 +198,66 @@ public class CommunicationHelper {
         }
     }
 
+    public static RbTimeQuotingType getQuotingType(final EnqueuePatientParameters parameters) {
+        if (parameters.isSetQuotingType()) {
+            switch (parameters.getQuotingType()) {
+                case BETWEEN_CABINET: {
+                    return BETWEEN_CABINET_QUOTING_TYPE;
+                }
+                case FROM_OTHER_LPU: {
+                    return FROM_OTHER_LPU_QUOTING_TYPE;
+                }
+                case FROM_PORTAL: {
+                    return FROM_PORTAL_QUOTING_TYPE;
+                }
+                case FROM_REGISTRY: {
+                    return FROM_REGISTRY_QUOTING_TYPE;
+                }
+                case SECOND_VISIT: {
+                    return SECOND_VISIT_QUOTING_TYPE;
+                }
+                default: {
+                    //НЕ должно выполнятся
+                    return FROM_REGISTRY_QUOTING_TYPE;
+                }
+            }
+        } else if (parameters.isSetHospitalUidFrom() && !parameters.getHospitalUidFrom().isEmpty()) {
+            return FROM_OTHER_LPU_QUOTING_TYPE;
+        } else {
+            return FROM_PORTAL_QUOTING_TYPE;
+        }
+    }
+
+    public static RbTimeQuotingType getQuotingType(final ScheduleParameters parameters) {
+        if (parameters.isSetQuotingType()) {
+            switch (parameters.getQuotingType()) {
+                case BETWEEN_CABINET: {
+                    return BETWEEN_CABINET_QUOTING_TYPE;
+                }
+                case FROM_OTHER_LPU: {
+                    return FROM_OTHER_LPU_QUOTING_TYPE;
+                }
+                case FROM_PORTAL: {
+                    return FROM_PORTAL_QUOTING_TYPE;
+                }
+                case FROM_REGISTRY: {
+                    return FROM_REGISTRY_QUOTING_TYPE;
+                }
+                case SECOND_VISIT: {
+                    return SECOND_VISIT_QUOTING_TYPE;
+                }
+                default: {
+                    //НЕ должно выполнятся
+                    return FROM_REGISTRY_QUOTING_TYPE;
+                }
+            }
+        } else if (parameters.isSetHospitalUidFrom() && !parameters.getHospitalUidFrom().isEmpty()) {
+            return FROM_OTHER_LPU_QUOTING_TYPE;
+        } else {
+            return FROM_PORTAL_QUOTING_TYPE;
+        }
+    }
+
     public static TypeOfQuota getTypeOfQuota(final GetTimeWorkAndStatusParameters parameters) {
         if (parameters.isSetHospitalUidFrom() && !parameters.getHospitalUidFrom().isEmpty()) {
             return TypeOfQuota.FROM_OTHER_LPU;
@@ -210,4 +281,82 @@ public class CommunicationHelper {
             return AppointmentType.PORTAL;
         }
     }
+
+    public static List<PersonSchedule> groupSchedulesByDate(final List<Schedule> scheduleList, final Staff person) {
+        final Map<LocalDate, List<Schedule>> groupedList = new LinkedHashMap<LocalDate, List<Schedule>>(scheduleList.size());
+        for (Schedule currentSchedule : scheduleList) {
+            final LocalDate key = new LocalDate(currentSchedule.getDate());
+            if (!groupedList.containsKey(key)) {
+                final List<Schedule> newList = new ArrayList<Schedule>(2);
+                newList.add(currentSchedule);
+                groupedList.put(key, newList);
+            } else {
+                groupedList.get(key).add(currentSchedule);
+            }
+        }
+        final List<PersonSchedule> personScheduleList = new ArrayList<PersonSchedule>(groupedList.size());
+        for (Map.Entry<LocalDate, List<Schedule>> entry : groupedList.entrySet()) {
+            personScheduleList.add(new PersonSchedule(entry.getKey(), person, entry.getValue()));
+        }
+        return personScheduleList;
+    }
+
+    public static int getTotalTicketCount(final List<Schedule> scheduleList) {
+        int count = 0;
+        for (Schedule current : scheduleList) {
+            count += current.getNumTickets();
+        }
+        return count;
+    }
+
+    public static Patient findPatientById(final DbPatientBeanLocal patientBean, final int patientId) throws ru.korus.tmis.communication.thriftgen.NotFoundException {
+        try {
+            final Patient result = patientBean.getPatientById(patientId);
+            if (result.getDeleted()) {
+                logger.error("Patient[{}] is marked as deleted", patientId);
+                throw new NotFoundException(CommunicationErrors.msgInvalidClientId.getMessage());
+            }
+            //проверить жив ли пациент
+            if (!patientBean.isAlive(result)) {
+                logger.warn("Unfortunately this patient is dead.");
+                throw new NotFoundException(CommunicationErrors.msgPatientMarkedAsDead.getMessage());
+            }
+            return result;
+        } catch (CoreException e) {
+            logger.error("Not founded any patient with id={}", patientId);
+            throw new NotFoundException(CommunicationErrors.msgWrongPatientId.getMessage());
+        }
+    }
+
+    public static Staff findPersonById(final DbStaffBeanLocal staffBean, final int personId) throws ru.korus.tmis.communication.thriftgen.NotFoundException {
+        try {
+            final Staff result = staffBean.getStaffById(personId);
+            if (result.getDeleted()) {
+                logger.error("Person[{}] is marked as deleted", personId);
+                throw new NotFoundException(CommunicationErrors.msgWrongDoctorId.getMessage());
+            }
+            return result;
+        } catch (CoreException e) {
+            logger.error("Not founded any person with id={}", personId);
+            throw new NotFoundException(CommunicationErrors.msgWrongDoctorId.getMessage());
+        }
+    }
+
+    public static void setQuotingTypeList(final List<RbTimeQuotingType> quotingTypeList) {
+        for (RbTimeQuotingType current : quotingTypeList) {
+            if (RbTimeQuotingType.FROM_REGISTRY_QUOTING_TYPE_CODE.equals(current.getCode())) {
+                FROM_REGISTRY_QUOTING_TYPE = current;
+            } else if (RbTimeQuotingType.SECOND_VISIT_QUOTING_TYPE_CODE.equals((current.getCode()))) {
+                SECOND_VISIT_QUOTING_TYPE = current;
+            } else if (RbTimeQuotingType.BETWEEN_CABINET_QUOTING_TYPE_CODE.equals((current.getCode()))) {
+                BETWEEN_CABINET_QUOTING_TYPE = current;
+            } else if (RbTimeQuotingType.FROM_OTHER_LPU_QUOTING_TYPE_CODE.equals((current.getCode()))) {
+                FROM_OTHER_LPU_QUOTING_TYPE = current;
+            } else if (RbTimeQuotingType.FROM_PORTAL_QUOTING_TYPE_CODE.equals((current.getCode()))) {
+                FROM_PORTAL_QUOTING_TYPE = current;
+            }
+        }
+    }
+
+
 }

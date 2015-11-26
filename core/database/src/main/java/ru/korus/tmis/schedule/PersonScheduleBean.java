@@ -505,7 +505,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             if (currentTicket.isAvailable()
                     && currentTicket.isFree()
                     && currentTicket.getBegTime().after(
-                    DateConvertions.convertUTCMillisecondsToLocalDate(checkDateTime - currentAmbulatoryDaty))
+                    DateConvertions.convertUTCMillisecondsToDate(checkDateTime - currentAmbulatoryDaty))
                     ) {
                 return currentTicket;
             }
@@ -520,7 +520,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
                                                      final QueueActionParam queueActionParam
     ) {
         //Отсечение даты от запрошеного даты-времени записи
-        final Date paramsTime = DateConvertions.convertUTCMillisecondsToLocalDate(new LocalTime(paramsDateTime).getMillisOfDay());
+        final Date paramsTime = DateConvertions.convertUTCMillisecondsToDate(new LocalTime(paramsDateTime).getMillisOfDay());
         final Date paramsDate = new LocalDate(paramsDateTime).toDate();
         logger.info("paramsDate is {}", paramsDate);
         logger.info("paramsTime is {}, millis={}", paramsTime, paramsTime.getTime());

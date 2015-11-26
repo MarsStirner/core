@@ -7,6 +7,8 @@ import ru.korus.tmis.core.database.common.*;
 import ru.korus.tmis.core.database.epgu.EPGUTicketBeanLocal;
 import ru.korus.tmis.schedule.PatientQueueBeanLocal;
 import ru.korus.tmis.schedule.PersonScheduleBeanLocal;
+import ru.korus.tmis.schedule.ScheduleBean;
+import ru.korus.tmis.schedule.ScheduleBeanLocal;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
@@ -54,12 +56,16 @@ public class CommunicationServerBean {
     private DbRbPolicyTypeBeanLocal dbRbPolicyTypeBeanLocal = null;
 
     @EJB(beanName = "EPGUTicketBean")
-    private EPGUTicketBeanLocal  ticketBeanLocal = null;
+    private EPGUTicketBeanLocal ticketBeanLocal = null;
 
     @EJB(beanName = "PersonScheduleBean")
     private PersonScheduleBeanLocal personScheduleBeanLocal = null;
 
+    @EJB(beanName = "ScheduleBean")
+    private ScheduleBeanLocal scheduleBeanLocal = null;
+
     private CommServer server = null;
+    private CommunicationServer communicationServer = null;
 
     @PostConstruct
     public void initialize() {
@@ -86,13 +92,46 @@ public class CommunicationServerBean {
         } catch (Exception exception) {
             logger.error("Exception while initialize CommunicationBean", exception);
         }
+        //TODO
+        //На embedded-glassfish не успевают сформироваться дескрипторы для @entity, и запрос вылетает с ошибкой, что не позволяет запустить сервис
+        //Так что ждем 15 секунд до запроса
+        try {
+            Thread.sleep(15000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+        CommunicationHelper.setQuotingTypeList(scheduleBeanLocal.getQuotingTypeList());
+
+        try {
+            communicationServer = CommunicationServer.getInstance();
+            CommunicationServer.setOrgStructureBean(dbOrgStructureBeanLocal);
+            CommunicationServer.setPatientBean(dbPatientBeanLocal);
+            CommunicationServer.setStaffBean(dbStaffBeanLocal);
+            CommunicationServer.setSpecialityBean(dbQuotingBySpecialityBeanLocal);
+            CommunicationServer.setOrganisationBean(dbOrganizationBeanLocal);
+            CommunicationServer.setPatientQueueBean(patientQueueBeanLocal);
+            ////////////////////////////////////////////////////////////
+            CommunicationServer.setDocumentBean(dbClientDocumentBeanLocal);
+            CommunicationServer.setDocumentTypeBean(dbRbDocumentTypeBeanLocal);
+            CommunicationServer.setPolicyBean(dbClientPolicyBeanLocal);
+            CommunicationServer.setPolicyTypeBean(dbRbPolicyTypeBeanLocal);
+            CommunicationServer.setQueueTicketBean(ticketBeanLocal);
+            ////////////////////////////////////////////////////////////
+            CommunicationServer.setScheduleBean(scheduleBeanLocal);
+            communicationServer.startService();
+        } catch (Exception exception) {
+            logger.error("Exception while initialize CommunicationBean", exception);
+        }
         logger.info("CommunicationServerBean end of post construct");
     }
+
+
 
     @PreDestroy
     public void destroy() {
         logger.warn("PreDestroy called around CommunicationServerBean.");
         server.endWork();
+        communicationServer.endWork();
     }
 
 

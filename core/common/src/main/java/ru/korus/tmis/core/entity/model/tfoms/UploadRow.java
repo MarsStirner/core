@@ -17,6 +17,8 @@ import static ru.korus.tmis.core.entity.model.tfoms.ObjectParser.*;
 
 public class UploadRow implements Informationable {
 
+    private static int nextIdentifier = 1;
+
     private enum FieldNames {
         ID("ID"),
         EVENT("EventId"),
@@ -381,6 +383,9 @@ public class UploadRow implements Informationable {
             } else if (FieldNames.METOD_HMP.getValue().equalsIgnoreCase(key)) {
                 this.METOD_HMP = getStringValue(entry.getValue());
             }
+        }
+        if(id == null){
+            id = nextIdentifier++;
         }
     }
 

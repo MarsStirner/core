@@ -79,4 +79,8 @@ public class RbReasonOfAbsence {
     public String toString() {
         return this.getClass().getName() + "{id=" + id + "}";
     }
+
+    public String getInfo() {
+        return new StringBuilder("rbReasonOfAbsence[").append(id).append("]{").append(code).append(' ').append(name).append('}').toString();
+    }
 }

@@ -30,8 +30,9 @@ public class EPGUTicketBean implements EPGUTicketBeanLocal {
     public List<QueueTicket> pullDatabase() {
         return em.createNamedQuery("QueueTicket.getChanges", QueueTicket.class)
                 .setParameter("statusList", ImmutableList.of(
-                        QueueTicket.Status.NEW.toString(),
-                        QueueTicket.Status.CANCELLED.toString())
+                                QueueTicket.Status.NEW.toString(),
+                                QueueTicket.Status.CANCELLED.toString()
+                        )
                 )
                 .getResultList();
     }

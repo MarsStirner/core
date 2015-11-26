@@ -6,9 +6,7 @@ import org.apache.thrift.protocol.TProtocol;
 import org.apache.thrift.transport.TSocket;
 import org.apache.thrift.transport.TTransport;
 import org.apache.thrift.transport.TTransportException;
-import org.joda.time.DateMidnight;
-import org.joda.time.DateTime;
-import org.joda.time.DateTimeZone;
+import org.joda.time.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
@@ -36,7 +34,7 @@ public class CommunicationServiceTest {
     private Communications.Client client;
     private String[] hosts = {"10.2.1.58", "localhost", "192.168.1.100"};
     private static int port = 7911;
-    private static int timeout = 3500000;
+    private static int timeout = 350000;
     private TTransport transport;
 
     @BeforeClass
@@ -378,7 +376,7 @@ public class CommunicationServiceTest {
         Amb result;
         GetTimeWorkAndStatusParameters parameters = new GetTimeWorkAndStatusParameters()
                 .setPersonId(242)
-                .setDate(new DateMidnight().getMillis());
+                .setDate(new DateTime().getMillis());
         // .setHospitalUidFrom("");
         try {
             result = client.getWorkTimeAndStatus(parameters);

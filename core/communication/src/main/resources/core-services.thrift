@@ -4,6 +4,7 @@ namespace java ru.korus.tmis.communication.thriftgen
 typedef i64 timestamp
 typedef i16 short
 
+
 /////////////////////////////////////////////////////////////////////
 //Enums
 /////////////////////////////////////////////////////////////////////
@@ -39,10 +40,10 @@ enum CouponStatus{
 /////////////////////////////////////////////////////////////////////
 //Exceptions
 /////////////////////////////////////////////////////////////////////
-
 exception NotFoundException {
  1: string error_msg;
 }
+
 exception SQLException {
   1: i32 error_code;
   2: string error_msg;
@@ -501,6 +502,7 @@ struct EnqueuePatientParameters{
 3:optional timestamp dateTime;
 4:optional string note;
 5:optional string hospitalUidFrom;
+6:optional QuotingType quotingType;
 }
 
 struct FindPatientParameters{
@@ -593,6 +595,11 @@ service Communications{
 /////////////////////////////////////////////////////////////////////
 //Methods 
 /////////////////////////////////////////////////////////////////////
+/**
+ * Версия сервиса
+ * @return номер версии
+ */
+ i32 getVersion();
 
 /**
  * получение информации об организации(ЛПУ) по ее инфис-коду

@@ -38,6 +38,7 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
   private static final org.apache.thrift.protocol.TField DATE_TIME_FIELD_DESC = new org.apache.thrift.protocol.TField("dateTime", org.apache.thrift.protocol.TType.I64, (short)3);
   private static final org.apache.thrift.protocol.TField NOTE_FIELD_DESC = new org.apache.thrift.protocol.TField("note", org.apache.thrift.protocol.TType.STRING, (short)4);
   private static final org.apache.thrift.protocol.TField HOSPITAL_UID_FROM_FIELD_DESC = new org.apache.thrift.protocol.TField("hospitalUidFrom", org.apache.thrift.protocol.TType.STRING, (short)5);
+  private static final org.apache.thrift.protocol.TField QUOTING_TYPE_FIELD_DESC = new org.apache.thrift.protocol.TField("quotingType", org.apache.thrift.protocol.TType.I32, (short)6);
 
   private static final Map<Class<? extends IScheme>, SchemeFactory> schemes = new HashMap<Class<? extends IScheme>, SchemeFactory>();
   static {
@@ -50,6 +51,11 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
   public long dateTime; // optional
   public String note; // optional
   public String hospitalUidFrom; // optional
+  /**
+   * 
+   * @see QuotingType
+   */
+  public QuotingType quotingType; // optional
 
   /** The set of fields this struct contains, along with convenience methods for finding and manipulating them. */
   public enum _Fields implements org.apache.thrift.TFieldIdEnum {
@@ -57,7 +63,12 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
     PERSON_ID((short)2, "personId"),
     DATE_TIME((short)3, "dateTime"),
     NOTE((short)4, "note"),
-    HOSPITAL_UID_FROM((short)5, "hospitalUidFrom");
+    HOSPITAL_UID_FROM((short)5, "hospitalUidFrom"),
+    /**
+     * 
+     * @see QuotingType
+     */
+    QUOTING_TYPE((short)6, "quotingType");
 
     private static final Map<String, _Fields> byName = new HashMap<String, _Fields>();
 
@@ -82,6 +93,8 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
           return NOTE;
         case 5: // HOSPITAL_UID_FROM
           return HOSPITAL_UID_FROM;
+        case 6: // QUOTING_TYPE
+          return QUOTING_TYPE;
         default:
           return null;
       }
@@ -126,7 +139,7 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
   private static final int __PERSONID_ISSET_ID = 1;
   private static final int __DATETIME_ISSET_ID = 2;
   private byte __isset_bitfield = 0;
-  private _Fields optionals[] = {_Fields.DATE_TIME,_Fields.NOTE,_Fields.HOSPITAL_UID_FROM};
+  private _Fields optionals[] = {_Fields.DATE_TIME,_Fields.NOTE,_Fields.HOSPITAL_UID_FROM,_Fields.QUOTING_TYPE};
   public static final Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> metaDataMap;
   static {
     Map<_Fields, org.apache.thrift.meta_data.FieldMetaData> tmpMap = new EnumMap<_Fields, org.apache.thrift.meta_data.FieldMetaData>(_Fields.class);
@@ -140,6 +153,8 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
     tmpMap.put(_Fields.HOSPITAL_UID_FROM, new org.apache.thrift.meta_data.FieldMetaData("hospitalUidFrom", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
         new org.apache.thrift.meta_data.FieldValueMetaData(org.apache.thrift.protocol.TType.STRING)));
+    tmpMap.put(_Fields.QUOTING_TYPE, new org.apache.thrift.meta_data.FieldMetaData("quotingType", org.apache.thrift.TFieldRequirementType.OPTIONAL, 
+        new org.apache.thrift.meta_data.EnumMetaData(org.apache.thrift.protocol.TType.ENUM, QuotingType.class)));
     metaDataMap = Collections.unmodifiableMap(tmpMap);
     org.apache.thrift.meta_data.FieldMetaData.addStructMetaDataMap(EnqueuePatientParameters.class, metaDataMap);
   }
@@ -172,6 +187,9 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
     if (other.isSetHospitalUidFrom()) {
       this.hospitalUidFrom = other.hospitalUidFrom;
     }
+    if (other.isSetQuotingType()) {
+      this.quotingType = other.quotingType;
+    }
   }
 
   public EnqueuePatientParameters deepCopy() {
@@ -188,6 +206,7 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
     this.dateTime = 0;
     this.note = null;
     this.hospitalUidFrom = null;
+    this.quotingType = null;
   }
 
   public int getPatientId() {
@@ -307,6 +326,38 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
     }
   }
 
+  /**
+   * 
+   * @see QuotingType
+   */
+  public QuotingType getQuotingType() {
+    return this.quotingType;
+  }
+
+  /**
+   * 
+   * @see QuotingType
+   */
+  public EnqueuePatientParameters setQuotingType(QuotingType quotingType) {
+    this.quotingType = quotingType;
+    return this;
+  }
+
+  public void unsetQuotingType() {
+    this.quotingType = null;
+  }
+
+  /** Returns true if field quotingType is set (has been assigned a value) and false otherwise */
+  public boolean isSetQuotingType() {
+    return this.quotingType != null;
+  }
+
+  public void setQuotingTypeIsSet(boolean value) {
+    if (!value) {
+      this.quotingType = null;
+    }
+  }
+
   public void setFieldValue(_Fields field, Object value) {
     switch (field) {
     case PATIENT_ID:
@@ -349,6 +400,14 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
       }
       break;
 
+    case QUOTING_TYPE:
+      if (value == null) {
+        unsetQuotingType();
+      } else {
+        setQuotingType((QuotingType)value);
+      }
+      break;
+
     }
   }
 
@@ -368,6 +427,9 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
 
     case HOSPITAL_UID_FROM:
       return getHospitalUidFrom();
+
+    case QUOTING_TYPE:
+      return getQuotingType();
 
     }
     throw new IllegalStateException();
@@ -390,6 +452,8 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
       return isSetNote();
     case HOSPITAL_UID_FROM:
       return isSetHospitalUidFrom();
+    case QUOTING_TYPE:
+      return isSetQuotingType();
     }
     throw new IllegalStateException();
   }
@@ -449,6 +513,15 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
       if (!(this_present_hospitalUidFrom && that_present_hospitalUidFrom))
         return false;
       if (!this.hospitalUidFrom.equals(that.hospitalUidFrom))
+        return false;
+    }
+
+    boolean this_present_quotingType = true && this.isSetQuotingType();
+    boolean that_present_quotingType = true && that.isSetQuotingType();
+    if (this_present_quotingType || that_present_quotingType) {
+      if (!(this_present_quotingType && that_present_quotingType))
+        return false;
+      if (!this.quotingType.equals(that.quotingType))
         return false;
     }
 
@@ -518,6 +591,16 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
         return lastComparison;
       }
     }
+    lastComparison = Boolean.valueOf(isSetQuotingType()).compareTo(typedOther.isSetQuotingType());
+    if (lastComparison != 0) {
+      return lastComparison;
+    }
+    if (isSetQuotingType()) {
+      lastComparison = org.apache.thrift.TBaseHelper.compareTo(this.quotingType, typedOther.quotingType);
+      if (lastComparison != 0) {
+        return lastComparison;
+      }
+    }
     return 0;
   }
 
@@ -568,6 +651,16 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
         sb.append("null");
       } else {
         sb.append(this.hospitalUidFrom);
+      }
+      first = false;
+    }
+    if (isSetQuotingType()) {
+      if (!first) sb.append(", ");
+      sb.append("quotingType:");
+      if (this.quotingType == null) {
+        sb.append("null");
+      } else {
+        sb.append(this.quotingType);
       }
       first = false;
     }
@@ -658,6 +751,14 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
               org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
             }
             break;
+          case 6: // QUOTING_TYPE
+            if (schemeField.type == org.apache.thrift.protocol.TType.I32) {
+              struct.quotingType = QuotingType.findByValue(iprot.readI32());
+              struct.setQuotingTypeIsSet(true);
+            } else { 
+              org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
+            }
+            break;
           default:
             org.apache.thrift.protocol.TProtocolUtil.skip(iprot, schemeField.type);
         }
@@ -704,6 +805,13 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
           oprot.writeFieldEnd();
         }
       }
+      if (struct.quotingType != null) {
+        if (struct.isSetQuotingType()) {
+          oprot.writeFieldBegin(QUOTING_TYPE_FIELD_DESC);
+          oprot.writeI32(struct.quotingType.getValue());
+          oprot.writeFieldEnd();
+        }
+      }
       oprot.writeFieldStop();
       oprot.writeStructEnd();
     }
@@ -733,7 +841,10 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
       if (struct.isSetHospitalUidFrom()) {
         optionals.set(2);
       }
-      oprot.writeBitSet(optionals, 3);
+      if (struct.isSetQuotingType()) {
+        optionals.set(3);
+      }
+      oprot.writeBitSet(optionals, 4);
       if (struct.isSetDateTime()) {
         oprot.writeI64(struct.dateTime);
       }
@@ -742,6 +853,9 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
       }
       if (struct.isSetHospitalUidFrom()) {
         oprot.writeString(struct.hospitalUidFrom);
+      }
+      if (struct.isSetQuotingType()) {
+        oprot.writeI32(struct.quotingType.getValue());
       }
     }
 
@@ -752,7 +866,7 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
       struct.setPatientIdIsSet(true);
       struct.personId = iprot.readI32();
       struct.setPersonIdIsSet(true);
-      BitSet incoming = iprot.readBitSet(3);
+      BitSet incoming = iprot.readBitSet(4);
       if (incoming.get(0)) {
         struct.dateTime = iprot.readI64();
         struct.setDateTimeIsSet(true);
@@ -764,6 +878,10 @@ public class EnqueuePatientParameters implements org.apache.thrift.TBase<Enqueue
       if (incoming.get(2)) {
         struct.hospitalUidFrom = iprot.readString();
         struct.setHospitalUidFromIsSet(true);
+      }
+      if (incoming.get(3)) {
+        struct.quotingType = QuotingType.findByValue(iprot.readI32());
+        struct.setQuotingTypeIsSet(true);
       }
     }
   }

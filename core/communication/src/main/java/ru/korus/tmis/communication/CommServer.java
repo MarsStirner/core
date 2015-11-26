@@ -4,16 +4,16 @@ import org.apache.thrift.TException;
 import org.apache.thrift.server.TServer;
 import org.apache.thrift.server.TThreadPoolServer;
 import org.apache.thrift.transport.TServerSocket;
-import org.joda.time.DateMidnight;
 import org.joda.time.DateTimeZone;
+import org.joda.time.LocalDate;
+import org.joda.time.LocalDateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 import ru.korus.tmis.communication.thriftgen.*;
 import ru.korus.tmis.communication.thriftgen.Address;
 import ru.korus.tmis.communication.thriftgen.OrgStructure;
 import ru.korus.tmis.communication.thriftgen.Queue;
+import ru.korus.tmis.communication.thriftgen.Schedule;
 import ru.korus.tmis.communication.thriftgen.Speciality;
 import ru.korus.tmis.core.database.*;
 import ru.korus.tmis.core.database.common.*;
@@ -23,7 +23,6 @@ import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.communication.QueueTicket;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.exception.NoSuchPatientException;
-import ru.korus.tmis.scala.util.ConfigManager;
 import ru.korus.tmis.schedule.*;
 
 import javax.ejb.EJBException;
@@ -40,6 +39,9 @@ import java.util.*;
 public class CommServer implements Communications.Iface {
     //Logger
     private static final Logger logger = LoggerFactory.getLogger(CommServer.class);
+
+    private static final int PROTOCOL_VERSION = 1;
+
     //private static final Marker LOGGING_SUBSYSTEM_MARKER = MarkerFactory.getMarker("LOGGING_SUBSYSTEM_MARKER");
     //Beans
     private static DbOrgStructureBeanLocal orgStructureBean = null;
@@ -92,7 +94,7 @@ public class CommServer implements Communications.Iface {
             throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getOrgStructures(id={}, recursive={}, infisCode={})",
-                new Object[] { currentRequestNum, parentId, recursive, infisCode});
+                currentRequestNum, parentId, recursive, infisCode);
         //Список для хранения сущностей из БД
         final List<ru.korus.tmis.core.entity.model.OrgStructure> orgStructureList;
         try {
@@ -112,7 +114,7 @@ public class CommServer implements Communications.Iface {
             resultList.add(ParserToThriftStruct.parseOrgStructure(current));
         }
         logger.info("End of #{} getOrgStructures. Return (size={} DATA=({})) as result.",
-                new Object[] { currentRequestNum, resultList.size(), resultList });
+                currentRequestNum, resultList.size(), resultList);
         return resultList;
     }
 
@@ -130,7 +132,7 @@ public class CommServer implements Communications.Iface {
     public List<OrgStructure> getAllOrgStructures(int parentId, boolean recursive, String infisCode) throws NotFoundException, SQLException, TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getAllOrgStructures(id={}, recursive={}, infisCode={})",
-                new Object[] { currentRequestNum, parentId, recursive, infisCode });
+                currentRequestNum, parentId, recursive, infisCode);
         //Список для хранения сущностей из БД
         final List<ru.korus.tmis.core.entity.model.OrgStructure> orgStructureList;
         try {
@@ -150,7 +152,7 @@ public class CommServer implements Communications.Iface {
             resultList.add(ParserToThriftStruct.parseOrgStructure(current));
         }
         logger.info("End of #{} getAllOrgStructures. Return (size={} DATA=({})) as result.",
-                new Object[] { currentRequestNum, resultList.size(), resultList });
+                currentRequestNum, resultList.size(), resultList);
         return resultList;
     }
 
@@ -178,7 +180,7 @@ public class CommServer implements Communications.Iface {
             throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.findOrgStructureByAddress(streetKLADR={}, pointKLADR={}, number={}/{} flat={})",
-                new Object[] { currentRequestNum, params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat() });
+                currentRequestNum, params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
         final List<Integer> resultList = orgStructureBean.getOrgStructureIdListByAddress(
                 params.getPointKLADR(), params.getStreetKLADR(), params.getNumber(), params.getCorpus(), params.getFlat());
         if (resultList.isEmpty()) {
@@ -186,7 +188,7 @@ public class CommServer implements Communications.Iface {
             throw new NotFoundException().setError_msg("No one OrgStructure found.");
         }
         logger.info("End of #{} findOrgStructureByAddress. Return (size={} DATA=({})) as result.",
-                new Object[] { currentRequestNum, resultList.size(), resultList });
+                currentRequestNum, resultList.size(), resultList);
         return resultList;
     }
 
@@ -204,7 +206,7 @@ public class CommServer implements Communications.Iface {
             throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getPersonnel(OrgStructureId={}, recursive={}, infisCode={})",
-                new Object[] { currentRequestNum, orgStructureId, recursive, infisCode });
+                currentRequestNum, orgStructureId, recursive, infisCode);
         final List<Staff> personnelList;
         try {
             personnelList = orgStructureBean.getPersonnel(orgStructureId, recursive, infisCode);
@@ -221,9 +223,8 @@ public class CommServer implements Communications.Iface {
             resultList.add(ParserToThriftStruct.parseStaff(person));
         }
         logger.info("End of #{} getPersonnel. Return (size={} DATA=({})) as result.",
-                new Object[] { currentRequestNum, resultList.size(), resultList });
+                currentRequestNum, resultList.size(), resultList);
         return resultList;
-
     }
 
     //TODO Не реализовано
@@ -245,7 +246,7 @@ public class CommServer implements Communications.Iface {
         logger.info("#{} Call method -> CommServer.getTicketsAvailability({})", currentRequestNum, params);
 
         final List<ExtendedTicketsAvailability> result = new ArrayList<ExtendedTicketsAvailability>(0);
-        logger.info("End of #{} getTicketsAvailability. Return (Size={}), DATA={})", new Object[] { currentRequestNum, result.size(), result });
+        logger.info("End of #{} getTicketsAvailability. Return (Size={}), DATA={})", currentRequestNum, result.size(), result);
         throw new TException(CommunicationErrors.msgNotImplemented.getMessage());
     }
 
@@ -262,9 +263,9 @@ public class CommServer implements Communications.Iface {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getWorkTimeAndStatus({})", currentRequestNum, params);
         if (!params.isSetDate()) {
-            params.setDate(new DateMidnight(DateTimeZone.UTC).getMillis());
+            params.setDate(DateConvertions.convertLocalDateTimeToUTCMilliseconds(new LocalDateTime()));
         }
-        final Date paramsDate = DateConvertions.convertUTCMillisecondsToLocalDate(params.getDate());
+        final Date paramsDate = DateConvertions.convertUTCMillisecondsToDate(params.getDate());
         logger.debug("Readable date: {}", paramsDate);
         Action personAction = null;
         //Доктор для которого получаем расписание
@@ -331,8 +332,8 @@ public class CommServer implements Communications.Iface {
         final ru.korus.tmis.core.entity.model.Patient patient;
         try {
             patient = patientBean.insertOrUpdatePatient(0, params.firstName, params.patrName, params.lastName,
-                    DateConvertions.convertUTCMillisecondsToLocalDate(params.getBirthDate()), "",
-                    CommunicationHelper.getSexAsString(params.getSex()), "0", "0", "", null, 0, null, null, "", "", null, 0);
+                    DateConvertions.convertUTCMillisecondsToDate(params.getBirthDate()), "",
+                    CommunicationHelper.getSexAsString(params.getSex()), "0", "0", "", null, 0, "", "", null, 0);
             patientBean.savePatientToDataBase(patient);
             logger.debug("Patient ={}", patient);
             if (patient.getId() == 0 || patient.getId() == null) {
@@ -463,13 +464,13 @@ public class CommServer implements Communications.Iface {
                             serial = document.get(DocumentMapFields.SERIAL.getFieldName());
                         } else {
                             logger.error("#{} Document map not contain {} field. Map value ={}",
-                                    new Object[] { currentRequestNum, DocumentMapFields.SERIAL.getFieldName(), document.toString() });
+                                    currentRequestNum, DocumentMapFields.SERIAL.getFieldName(), document.toString());
                             return new PatientStatus().setSuccess(false)
                                     .setMessage(CommunicationErrors.msgNoDocumentsAttached.getMessage());
                         }
                     } else {
                         logger.error("#{} Document map not contain {} field. Map value ={}",
-                                new Object[] { currentRequestNum, DocumentMapFields.NUMBER.getFieldName(), document.toString() });
+                                currentRequestNum, DocumentMapFields.NUMBER.getFieldName(), document.toString());
                         return new PatientStatus().setSuccess(false)
                                 .setMessage(CommunicationErrors.msgNoDocumentsAttached.getMessage());
                     } // Конец проверки и инициализации серии и номера
@@ -490,10 +491,10 @@ public class CommServer implements Communications.Iface {
                         );
                     } else {
                         logger.error("In document map there no \"{}\", or \"{}\", or \"{}\" But map has keys {}",
-                                new Object[] { DocumentMapFields.CLIENT_ID.getFieldName(),
+                                DocumentMapFields.CLIENT_ID.getFieldName(),
                                 DocumentMapFields.DOCUMENT_CODE.getFieldName(),
                                 DocumentMapFields.POLICY_TYPE.getFieldName(),
-                                document.keySet() });
+                                document.keySet());
                         throw new NotFoundException(CommunicationErrors.msgNoDocumentsAttached.getMessage());
                     }
                 }
@@ -505,7 +506,7 @@ public class CommServer implements Communications.Iface {
         if (logger.isDebugEnabled()) {
             for (ru.korus.tmis.core.entity.model.Patient pat : patientsList) {
                 logger.debug("Patent in result: ID={} FULLNAME={} {} {} SEX={}", pat.getId(),
-                        new Object[] { pat.getLastName(), pat.getFirstName(), pat.getPatrName(), pat.getSex() });
+                        pat.getLastName(), pat.getFirstName(), pat.getPatrName(), pat.getSex());
             }
         }
         final PatientStatus result;
@@ -574,8 +575,8 @@ public class CommServer implements Communications.Iface {
         }
         if (logger.isDebugEnabled()) {
             for (ru.korus.tmis.core.entity.model.Patient pat : patientsList) {
-                logger.debug("Patent in result: ID={} FULLNAME={} {} {} SEX={}", new Object[] { pat.getId(),
-                        pat.getLastName(), pat.getFirstName(), pat.getPatrName(), pat.getSex() });
+                logger.debug("Patent in result: ID={} FULLNAME={} {} {} SEX={}", pat.getId(),
+                        pat.getLastName(), pat.getFirstName(), pat.getPatrName(), pat.getSex());
             }
         }
         final List<ru.korus.tmis.communication.thriftgen.Patient> resultList =
@@ -583,7 +584,7 @@ public class CommServer implements Communications.Iface {
         for (ru.korus.tmis.core.entity.model.Patient pat : patientsList) {
             resultList.add(ParserToThriftStruct.parsePatient(pat));
         }
-        logger.info("End of #{} findPatients. Return (Size={}), DATA={})", new Object[] { currentRequestNum, resultList.size(), resultList });
+        logger.info("End of #{} findPatients. Return (Size={}), DATA={})", currentRequestNum, resultList.size(), resultList);
         return resultList;
     }
 
@@ -606,13 +607,13 @@ public class CommServer implements Communications.Iface {
         logger.info("#{} Call method -> CommServer.findPatientByPolicyAndDocument({})", currentRequestNum, params);
         final PatientStatus result = new PatientStatus();
         //Поиск пациентов по ФИО, полу и ДР
-        logger.debug("birthDate = {}", DateConvertions.convertUTCMillisecondsToLocalDate(params.getBirthDate()));
+        logger.debug("birthDate = {}", DateConvertions.convertUTCMillisecondsToDate(params.getBirthDate()));
         final List<Patient> patientList = patientBean.findPatientsByPersonalInfo(
                 params.getLastName(),
                 params.getFirstName(),
                 params.getPatrName(),
                 params.getSex(),
-                DateConvertions.convertUTCMillisecondsToLocalDate(params.getBirthDate())
+                DateConvertions.convertUTCMillisecondsToDate(params.getBirthDate())
         );
         if (!patientList.isEmpty()) {
             //Вывод в лог
@@ -875,9 +876,9 @@ public class CommServer implements Communications.Iface {
             logger.error("End of #{}.Doctor not found by ID={}", currentRequestNum, params.getPersonId());
             throw new NotFoundException().setError_msg("Doctor not found by ID=" + params.getPersonId());
         }
-        final Date begDate = DateConvertions.convertUTCMillisecondsToLocalDate(params.getBeginDateTime());
+        final Date begDate = DateConvertions.convertUTCMillisecondsToDate(params.getBeginDateTime());
         final Date endDate = (params.isSetEndDateTime() && params.getBeginDateTime() < params.getEndDateTime()) ?
-                DateConvertions.convertUTCMillisecondsToLocalDate(params.getEndDateTime()) : new DateMidnight(begDate).plusMonths(1).toDate();
+                DateConvertions.convertUTCMillisecondsToDate(params.getEndDateTime()) : new LocalDate(begDate).plusMonths(1).toDate();
         logger.debug("From {} to {}.", begDate, endDate);
         List<Action> doctorActions = staffBean.getPersonShedule(doctor.getId(), begDate, endDate);
         logger.debug("Ambulatory Actions count = {}. DATA:", doctorActions.size());
@@ -906,7 +907,7 @@ public class CommServer implements Communications.Iface {
             }
         }
         logger.info("End of #{} getFirstFreeTicket. No one is founded", currentRequestNum);
-        throw new NotFoundException().setError_msg("No free ticket founded.");
+        throw new NotFoundException().setError_msg(CommunicationErrors.msgNoFreeTicket.getMessage());
     }
 
     /**
@@ -935,9 +936,9 @@ public class CommServer implements Communications.Iface {
             logger.error("End of #{}. Doctor not found by ID={}", currentRequestNum, params.getPersonId());
             throw new NotFoundException().setError_msg("Doctor not found by ID=" + params.getPersonId());
         }
-        final Date begInterval = DateConvertions.convertUTCMillisecondsToLocalDate(params.getBeginDateTime());
+        final Date begInterval = DateConvertions.convertUTCMillisecondsToDate(params.getBeginDateTime());
         final Date endInterval = (params.isSetEndDateTime() && params.getBeginDateTime() < params.getEndDateTime()) ?
-                DateConvertions.convertUTCMillisecondsToLocalDate(params.getEndDateTime()) : new DateMidnight(begInterval).plusMonths(1).toDate();
+                DateConvertions.convertUTCMillisecondsToDate(params.getEndDateTime()) : new LocalDate(begInterval).plusMonths(1).toDate();
         logger.debug("From [{}] to [{}]", begInterval, endInterval);
         final ru.korus.tmis.communication.thriftgen.PersonSchedule result = new ru.korus.tmis.communication.thriftgen.PersonSchedule();
         final List<Action> schedule = staffBean.getPersonShedule(doctor.getId(), begInterval, endInterval);
@@ -990,7 +991,7 @@ public class CommServer implements Communications.Iface {
         // если нет одного из пациентов, то вернуть всех кроме него.
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getPatientInfo({}) total size={}",
-                new Object[] { currentRequestNum, patientIds, patientIds.size() });
+                currentRequestNum, patientIds, patientIds.size());
         if (patientIds.size() == 0) return new HashMap<Integer, ru.korus.tmis.communication.thriftgen.Patient>();
         final Map<Integer, ru.korus.tmis.communication.thriftgen.Patient> resultMap = new HashMap<Integer, ru.korus.tmis.communication.thriftgen.Patient>(patientIds.size());
         for (Integer current : patientIds) {
@@ -998,29 +999,16 @@ public class CommServer implements Communications.Iface {
                 try {
                     final Patient requested = patientBean.getPatientById(current);
                     if (requested != null) {
-                        final List<ClientDocument> passports = new ArrayList<ClientDocument>(3);
-                        for (ClientDocument currentDocument : requested.getActiveClientDocuments()) {
-                            if (ConfigManager.codes().getValue("rbDocumentType.passport").equalsIgnoreCase(currentDocument.getDocumentType().getCode())) {
-                                passports.add(currentDocument);
-                            }
-                        }
-                        final List<ClientPolicy> omsPolicies = new ArrayList<ClientPolicy>(3);
-                        logger.debug(ConfigManager.codes().getValueList("rbPolicyType.oms").toString());
-                        for(ClientPolicy currentPolicy : requested.getActiveClientPolicies()){
-                            if(ConfigManager.codes().getValueList("rbPolicyType.oms").contains(currentPolicy.getPolicyType().getCode())){
-                                omsPolicies.add(currentPolicy);
-                            }
-                        }
-                        resultMap.put(current, ParserToThriftStruct.parsePatient(requested, passports, omsPolicies));
+                        resultMap.put(current, ParserToThriftStruct.parsePatient(requested));
                         logger.debug("Add patient ID={},NAME={} {}",
-                                new Object[] { requested.getId(), requested.getFirstName(), requested.getLastName() });
+                                requested.getId(), requested.getFirstName(), requested.getLastName());
                     }
                 } catch (CoreException e) {
                     logger.warn("Missing patient with ID={}, No such patient in DB.", current);
                 }
             }
         }
-        logger.info("End of #{} getPatientInfo. Return (Size={}), DATA={})", new Object[] { currentRequestNum, resultMap.size(), resultMap });
+        logger.info("End of #{} getPatientInfo. Return (Size={}), DATA={})", currentRequestNum, resultMap.size(), resultMap);
         return resultMap;
     }
 
@@ -1035,7 +1023,7 @@ public class CommServer implements Communications.Iface {
     public EnqueuePatientStatus enqueuePatient(final EnqueuePatientParameters params) throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.enqueuePatient({})", currentRequestNum, params);
-        final Date paramsDateTime = DateConvertions.convertUTCMillisecondsToLocalDate(params.getDateTime());
+        final Date paramsDateTime = DateConvertions.convertUTCMillisecondsToDate(params.getDateTime());
         logger.debug("Date: {}", paramsDateTime);
         //Выбранный пациент
         final Patient patient;
@@ -1175,7 +1163,7 @@ public class CommServer implements Communications.Iface {
     public DequeuePatientStatus dequeuePatient(final int patientId, final int queueId) throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.dequeuePatient(PatientID={}, QueueID={})",
-                new Object[] { currentRequestNum, patientId, queueId });
+                currentRequestNum, patientId, queueId);
         Action queueAction = null;
         final DequeuePatientStatus result = new DequeuePatientStatus();
         try {
@@ -1198,8 +1186,8 @@ public class CommServer implements Communications.Iface {
                         return result;
                     }
                     String hospitalUidFrom = queueAction.getHospitalUidFrom();
-                    if (!"0".equals(queueAction.getHospitalUidFrom()) || (queueAction.getHospitalUidFrom() != null)
-                            || !queueAction.getHospitalUidFrom().isEmpty()) {
+                    if (!"0".equals(queueAction.getHospitalUidFrom()) && (queueAction.getHospitalUidFrom() != null)
+                            && !queueAction.getHospitalUidFrom().isEmpty()) {
                         updateQuotingBySpeciality(queueAction, hospitalUidFrom);
                     }
                     result.setSuccess(personScheduleBean.dequeuePatient(queueAction));
@@ -1256,11 +1244,21 @@ public class CommServer implements Communications.Iface {
         }
         List<Speciality> resultList = new ArrayList<Speciality>(quotingBySpecialityList.size());
         for (QuotingBySpeciality item : quotingBySpecialityList) {
-            resultList.add(ParserToThriftStruct.parseQuotingBySpeciality(item));
+            resultList.add(ParserToThriftStruct.parseSpeciality(item));
         }
         logger.info("End of #{} getSpecialities. Return (Size={}), DATA={})",
-                new Object[] { currentRequestNum, resultList.size(), resultList });
+                currentRequestNum, resultList.size(), resultList);
         return resultList;
+    }
+
+    /**
+     * Версия сервиса
+     *
+     * @return номер версии
+     */
+    @Override
+    public int getVersion() throws TException {
+        return PROTOCOL_VERSION;
     }
 
     /**
@@ -1297,7 +1295,7 @@ public class CommServer implements Communications.Iface {
     public List<Address> getAddresses(final int orgStructureId, final boolean recursive, final String infisCode) throws TException {
         final int currentRequestNum = ++requestNum;
         logger.info("#{} Call method -> CommServer.getAddresses(orgStructureId={}, recursive={}, infisCode={})",
-                new Object[] { currentRequestNum, orgStructureId, recursive, infisCode });
+                currentRequestNum, orgStructureId, recursive, infisCode);
         //Список для хранения сущностей из БД
         final List<ru.korus.tmis.core.entity.model.OrgStructure> orgStructureList = new ArrayList<ru.korus.tmis.core.entity.model.OrgStructure>();
         try {
@@ -1331,7 +1329,7 @@ public class CommServer implements Communications.Iface {
                 }
             }
         }
-        logger.info("End of #{} getAddresses. Return (Size={}), DATA={})", new Object[] { currentRequestNum, resultList.size(), resultList });
+        logger.info("End of #{} getAddresses. Return (Size={}), DATA={})", currentRequestNum, resultList.size(), resultList);
         return resultList;
     }
 
@@ -1362,7 +1360,7 @@ public class CommServer implements Communications.Iface {
             logger.debug("CONTACT={}", current);
         }
         logger.info("End of #{} getPatientContacts. Return (Size={}), DATA={})",
-                new Object[] { currentRequestNum, resultList.size(), resultList });
+                currentRequestNum, resultList.size(), resultList);
         return resultList;
     }
 
@@ -1375,7 +1373,7 @@ public class CommServer implements Communications.Iface {
         final List<OrgStructuresProperties> resultList = new ArrayList<OrgStructuresProperties>(0);
 
         logger.info("End of #{} getPatientOrgStructures. Return (Size={}), DATA={})",
-                new Object[] { currentRequestNum, resultList.size(), resultList });
+                currentRequestNum, resultList.size(), resultList);
         throw new TException(CommunicationErrors.msgNotImplemented.getMessage());
     }
 

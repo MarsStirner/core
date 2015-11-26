@@ -753,12 +753,12 @@ public class Staff implements Serializable {
      * @return строка с описанием
      */
     public String getInfoString(){
-        return new StringBuilder("Staff[id=").append(id)
-                .append(" sex=").append(sex)
+        return new StringBuilder("Person[").append(id)
+                .append("]{ sex=").append(sex)
                 .append(" FIO=\"").append(lastName)
                 .append(" ").append(firstName)
                 .append(" ").append(patrName)
-                .append("\" Speciality=").append(speciality != null ? speciality.getName() : "null")
-                .append(']').toString();
+                .append(" Speciality=").append(speciality != null ? speciality.getName() : "null")
+                .append('}').toString();
     }
 }
