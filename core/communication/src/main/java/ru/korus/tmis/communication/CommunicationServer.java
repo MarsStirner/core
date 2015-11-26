@@ -363,9 +363,26 @@ public class CommunicationServer implements Communications.Iface {
         }
         final ru.korus.tmis.core.entity.model.Patient patient;
         try {
-            patient = patientBean.insertOrUpdatePatient(0, params.firstName, params.patrName, params.lastName,
-                    DateConvertions.convertUTCMillisecondsToDate(params.getBirthDate()), "",
-                    CommunicationHelper.getSexAsString(params.getSex()), "0", "0", "", null, 0, "", "", null, 0);
+            patient = patientBean.insertOrUpdatePatient(
+                    0,
+                    params.firstName,
+                    params.patrName,
+                    params.lastName,
+                    DateConvertions.convertUTCMillisecondsToDate(params.getBirthDate()),
+                    "",
+                    CommunicationHelper.getSexAsString(params.getSex()),
+                    "0",
+                    "0",
+                    "",
+                    null,
+                    0,
+                    0,
+                    null,
+                    "",
+                    "",
+                    null,
+                    0
+            );
             patientBean.savePatientToDataBase(patient);
             logger.debug("Patient ={}", patient);
             if (patient.getId() == null || patient.getId() == 0) {
@@ -867,7 +884,7 @@ public class CommunicationServer implements Communications.Iface {
     @Override
     public List<QueueCoupon> checkForNewQueueCoupons() throws TException {
         final int currentRequestNum = ++requestNum;
-        logger.info("#{} Call method -> CommServer.checkForNewQueueCoupons()", currentRequestNum);
+        logger.info("#{} Call method -> CommunicationServer.checkForNewQueueCoupons()", currentRequestNum);
         final List<QueueCoupon> result = new ArrayList<QueueCoupon>();
         final List<QueueTicket> databaseChangeList = queueTicketBean.pullDatabase();
         //        Если изменений нету

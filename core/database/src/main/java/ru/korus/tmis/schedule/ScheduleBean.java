@@ -6,6 +6,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 
+import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
@@ -18,7 +19,7 @@ import java.util.*;
  * Company: Korus Consulting IT <br>
  * Description: <br>
  */
-@Stateless
+@Singleton
 public class ScheduleBean implements ScheduleBeanLocal {
 
     private static final Logger LOGGER = LoggerFactory.getLogger("SCHEDULE");
