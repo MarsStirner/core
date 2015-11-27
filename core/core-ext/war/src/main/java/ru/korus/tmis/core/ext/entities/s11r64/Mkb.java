@@ -2,8 +2,8 @@ package ru.korus.tmis.core.ext.entities.s11r64;
 
 import ru.korus.tmis.core.ext.entities.s11r64.vmp.MKB_VMPQuotaFilter;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 
 
@@ -26,13 +26,13 @@ public class Mkb implements Serializable {
 	private Integer ageBc;
 
 	@Column(name="age_bu")
-	private byte ageBu;
+	private Byte ageBu;
 
 	@Column(name="age_ec")
 	private Integer ageEc;
 
 	@Column(name="age_eu")
-	private byte ageEu;
+	private Byte ageEu;
 
 	private String blockID;
 
