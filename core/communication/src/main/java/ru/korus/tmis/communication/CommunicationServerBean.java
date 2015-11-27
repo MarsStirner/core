@@ -20,7 +20,6 @@ import javax.ejb.*;
 @Startup
 @Singleton
 @LocalBean
-@DependsOn("scheduleBeanLocal")
 public class CommunicationServerBean {
     static final Logger logger = LoggerFactory.getLogger(CommunicationServerBean.class);
 

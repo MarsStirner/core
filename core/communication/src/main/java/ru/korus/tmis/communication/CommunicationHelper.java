@@ -343,16 +343,17 @@ public class CommunicationHelper {
     }
 
     public static void setQuotingTypeList(final List<RbTimeQuotingType> quotingTypeList) {
+        logger.error("INIT WITH {}", quotingTypeList);
         for (RbTimeQuotingType current : quotingTypeList) {
             if (RbTimeQuotingType.FROM_REGISTRY_QUOTING_TYPE_CODE.equals(current.getCode())) {
                 FROM_REGISTRY_QUOTING_TYPE = current;
-            } else if (RbTimeQuotingType.SECOND_VISIT_QUOTING_TYPE_CODE.equals((current.getCode()))) {
+            } else if (RbTimeQuotingType.SECOND_VISIT_QUOTING_TYPE_CODE.equals(current.getCode())) {
                 SECOND_VISIT_QUOTING_TYPE = current;
-            } else if (RbTimeQuotingType.BETWEEN_CABINET_QUOTING_TYPE_CODE.equals((current.getCode()))) {
+            } else if (RbTimeQuotingType.BETWEEN_CABINET_QUOTING_TYPE_CODE.equals(current.getCode())) {
                 BETWEEN_CABINET_QUOTING_TYPE = current;
-            } else if (RbTimeQuotingType.FROM_OTHER_LPU_QUOTING_TYPE_CODE.equals((current.getCode()))) {
+            } else if (RbTimeQuotingType.FROM_OTHER_LPU_QUOTING_TYPE_CODE.equals(current.getCode())) {
                 FROM_OTHER_LPU_QUOTING_TYPE = current;
-            } else if (RbTimeQuotingType.FROM_PORTAL_QUOTING_TYPE_CODE.equals((current.getCode()))) {
+            } else if (RbTimeQuotingType.FROM_PORTAL_QUOTING_TYPE_CODE.equals(current.getCode())) {
                 FROM_PORTAL_QUOTING_TYPE = current;
             }
         }

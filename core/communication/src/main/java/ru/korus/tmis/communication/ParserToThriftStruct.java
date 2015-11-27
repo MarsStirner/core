@@ -359,7 +359,7 @@ public final class ParserToThriftStruct {
         final TTicket result = new TTicket();
         result.setBegTime(DateConvertions.convertDateToUTCMilliseconds(item.getBegTime()));
         result.setEndTime(DateConvertions.convertDateToUTCMilliseconds(item.getEndTime()));
-        result.setDate(DateConvertions.convertDateToUTCMilliseconds(item.getSchedule().getDate()));
+        result.setDate(DateConvertions.convertLocalDateToUTCMilliseconds(new LocalDate(item.getSchedule().getDate())));
         if (item.getSchedule().getOffice() != null) {
             result.setOffice(item.getSchedule().getOffice().getName());
         }
