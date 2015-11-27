@@ -1367,10 +1367,7 @@ public class CommunicationServer implements Communications.Iface {
                     logger.info("Starting CommunicationServer on port {}", PORT_NUMBER);
                     server.serve();
                 } catch (Exception e) {
-                    logger.error("Failed to start CommunicationServer on port {}. Exception={}", PORT_NUMBER, e.getMessage());
-                    if (logger.isDebugEnabled()) {
-                        logger.error("StackTrace:\n", e);
-                    }
+                    logger.error("Failed to start CommunicationServer on port {}.", PORT_NUMBER, e);
                 }
             }
         });
