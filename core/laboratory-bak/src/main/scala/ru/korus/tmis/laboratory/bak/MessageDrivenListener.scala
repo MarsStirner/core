@@ -127,7 +127,9 @@ class MessageDrivenListener extends LISMessageReceiver {
     recordTarget.setTypeCode("RCT")
     val patientRole: PatientRoleInfo = new PatientRoleInfo
     patientRole.setClassCode("PAT")
-    patientRole.setAddr(patientInfo.getClientAddresses.get(0).getFreeInput)
+    if(!patientInfo.getClientAddresses.isEmpty) {
+      patientRole.setAddr(patientInfo.getClientAddresses.get(0).getFreeInput)
+    }
     val patientId: PatientIDInfo = new PatientIDInfo
     patientId.setExtension(String.valueOf(patientInfo.getId))
     patientId.setRoot(GUID)
