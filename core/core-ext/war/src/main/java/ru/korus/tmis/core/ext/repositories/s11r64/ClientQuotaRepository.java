@@ -17,6 +17,6 @@ public interface ClientQuotaRepository extends JpaRepository<Client_Quoting, Int
     @Query("SELECT cq FROM Client_Quoting cq WHERE cq.event.id = :eventId AND cq.deleted = 0")
     List<Client_Quoting> findByEventId(@Param(value = "eventId") Integer eventId);
 
-    @Query("SELECT cq FROM Client_Quoting cq WHERE cq.event.client.id = :clientId ORDER BY cq.event.createDatetime ASC")
+    @Query("SELECT cq FROM Client_Quoting cq WHERE cq.deleted = 0 AND  cq.event.client.id = :clientId ORDER BY cq.event.createDatetime ASC")
     List<Client_Quoting> findByClientIdOrderByTime(@Param(value = "clientId") Integer clientId);
 }

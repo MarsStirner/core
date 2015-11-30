@@ -1241,7 +1241,6 @@ public class CommunicationServer implements Communications.Iface {
                 resultList.add(ParserToThriftStruct.parseQueue(currentTicket));
             } else {
                 logger.debug("ScheduleClientTicket[{}] is before CURDATE. skip it.", currentTicket.getId());
-                //continue;
             }
         }
         logger.info("End of #{}. Return {} tickets.", currentRequestNum, resultList.size());
