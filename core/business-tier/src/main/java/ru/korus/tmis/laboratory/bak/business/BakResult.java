@@ -82,6 +82,7 @@ public class BakResult implements BakResultBeanLocal {
     /**
      * Обработка результатов, определение типа ИФА или БАК-посев
      */
+    @Override
    public  void processRequest(final POLBIN224100UV01 request, final ToLog toLog) throws CoreException {
 
         final List<IFA> ifaList = processIFA(request);
@@ -175,12 +176,14 @@ public class BakResult implements BakResultBeanLocal {
                     ifaCommentPropId = type.getId();
                 }
             }
-            if(ifaResultPropId > 0)
+            if(ifaResultPropId > 0) {
                 db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), ifaResultPropId, true);
-            else if(ifa.getFullResult().equals("NO CHRG"))
+            } else if("NO CHRG".equals(ifa.getFullResult())) {
                 ; //TODO Дефект биоматериала комментарий запишется в свойство, но, возможно, требуется отразить еще как-то
-            if(ifaCommentPropId > 0 && ifa.getComment() != null)
+            }
+            if(ifaCommentPropId > 0 && ifa.getComment() != null) {
                 db.addSinglePropBasic(ifa.getComment(), APValueString.class, ifa.getActionId(), ifaCommentPropId, true);
+            }
             toLog.addN("Save IFA result [#], ifaResultPropId [#]", ifa.getFullResult(), ifaResultPropId);
             // Изменяем статус действия на "Закончено"
             if (ifa.isComplete()) {
