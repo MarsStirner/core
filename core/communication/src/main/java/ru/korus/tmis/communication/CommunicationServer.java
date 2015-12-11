@@ -379,7 +379,7 @@ public class CommunicationServer implements Communications.Iface {
                     0,
                     null,
                     "",
-                    "",
+                    "Запись с портала Электронной Регистратуры",
                     null,
                     0
             );

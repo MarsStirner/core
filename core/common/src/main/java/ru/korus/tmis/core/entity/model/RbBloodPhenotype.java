@@ -1,8 +1,9 @@
 package ru.korus.tmis.core.entity.model;
 
+import javax.persistence.Entity;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.io.Serializable;
-import javax.persistence.*;
-import java.util.List;
 
 
 /**
@@ -10,6 +11,7 @@ import java.util.List;
  * 
  */
 @Entity
+@Table(name = "rbBloodPhenotype")
 public class RbBloodPhenotype implements Serializable {
 	private static final long serialVersionUID = 1L;
 

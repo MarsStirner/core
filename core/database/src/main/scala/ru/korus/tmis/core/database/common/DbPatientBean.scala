@@ -164,8 +164,7 @@ class DbPatientBean
       }
       p.setModifyPerson(sessionUser)
       p.setModifyDatetime(now)
-    }
-    else {
+    } else {
       p = new Patient
       p.setCreatePerson(sessionUser)
       p.setCreateDatetime(now)
@@ -204,8 +203,11 @@ class DbPatientBean
     if (rbBloodPhenotype != null) {
       p.setRbBloodPhenotype(em.find(classOf[RbBloodPhenotype], rbBloodPhenotype))
     }
-
-    p.setBloodKell(bloodKell)
+    if(bloodKell != null) {
+      p.setBloodKell(bloodKell)
+    } else {
+      p.setBloodKell(BloodKell.NOT_DEFINED)
+    }
 
     p.setDeleted(false)
     p.setModifyPerson(sessionUser)
