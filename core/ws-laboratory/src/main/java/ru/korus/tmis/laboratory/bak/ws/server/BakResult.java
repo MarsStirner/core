@@ -1,16 +1,13 @@
 package ru.korus.tmis.laboratory.bak.ws.server;
 
 import org.apache.commons.lang.StringUtils;
-import org.joda.time.DateTime;
-import org.joda.time.format.DateTimeFormat;
-import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.database.bak.*;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionPropertyTypeBeanLocal;
 import ru.korus.tmis.core.database.common.DbCustomQueryLocal;
-import ru.korus.tmis.core.database.bak.*;
 import ru.korus.tmis.core.database.dbutil.Database;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.bak.*;
@@ -52,7 +49,9 @@ import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
         name = "service-bak-results")
 public class BakResult implements BakResultService {
 
-    private static final Logger logger = LoggerFactory.getLogger(BakResult.class);
+    private static final Logger LOGGER = LoggerFactory.getLogger(BakResult.class);
+    private static final String CONTEXT_PATH__RU_KORUS_TMIS_LIS_DATA_MODEL_HL7_COMPLEX = "ru.korus.tmis.lis.data.model.hl7.complex";
+    public static final String DATE_FORMAT_YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 
     @EJB
     private DbActionBeanLocal dbAction;
@@ -106,19 +105,18 @@ public class BakResult implements BakResultService {
         final ToLog toLog = new ToLog("setAnalysisResults");
         MCCIIN000002UV01 response;
         try {
-            toLog.addN("Request: " + Utils.marshallMessage(request, "ru.korus.tmis.lis.data.model.hl7.complex"));
+            toLog.addN("Request: " + Utils.marshallMessage(request, CONTEXT_PATH__RU_KORUS_TMIS_LIS_DATA_MODEL_HL7_COMPLEX));
             processRequest(request, toLog);
-            //flushToDB(request, toLog);
             response = createSuccessResponse();
-            toLog.addN("Response: " + Utils.marshallMessage(response, "ru.korus.tmis.lis.data.model.hl7.complex"));
+            toLog.addN("Response: " + Utils.marshallMessage(response, CONTEXT_PATH__RU_KORUS_TMIS_LIS_DATA_MODEL_HL7_COMPLEX));
             return response;
-        } catch (Throwable e) {
-            logger.error("Exception: " + e, e);
+        } catch (Exception e) {
+            LOGGER.error("Exception in setAnalysisResults:", e);
             toLog.addN("Exception: #", e);
             response = createErrorResponse();
-            toLog.addN("Response:" + Utils.marshallMessage(response, "ru.korus.tmis.lis.data.model.hl7.complex"));
+            toLog.addN("Response:" + Utils.marshallMessage(response, CONTEXT_PATH__RU_KORUS_TMIS_LIS_DATA_MODEL_HL7_COMPLEX));
         } finally {
-            logger.info(toLog.releaseString());
+            LOGGER.info(toLog.releaseString());
         }
         return response;
     }
@@ -143,20 +141,15 @@ public class BakResult implements BakResultService {
         }
     }
 
-    private IFA getIfa(final Map<Integer, IFA> ifaMap, final int actionId) {
-        IFA ifa = new IFA();
-        ifaMap.put(actionId, ifa);
-        return ifa;
-    }
 
     /**
      * Выборка данных по ИФА исследованию
      *
-     * @param request
+     * @param request  тело запроса  POLBIN224100UV01
      * @return значение ИФА исследования, null - это не ИФА исследование
      */
     @NotNull
-    private List<IFA> processIFA(final POLBIN224100UV01 request) {
+    private static List<IFA> processIFA(final POLBIN224100UV01 request) {
         final List<IFA> result = new ArrayList<>();
         try {
             for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
@@ -165,7 +158,7 @@ public class BakResult implements BakResultService {
                     final POLBMT004000UV01ObservationBattery observationBatteryValue = observationBattery.getValue();
                     final String orderMisId = observationBatteryValue.getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
                     final POLBMT004000UV01ObservationEvent componentObservationEventValue = observationBatteryValue.getComponent1().get(0).getObservationEvent().getValue();
-                    final boolean finalFlag = componentObservationEventValue.getStatusCode().getCode().equals("true");
+                    final boolean finalFlag = "true".equals(componentObservationEventValue.getStatusCode().getCode());
                     final String code = componentObservationEventValue.getCode().getCode();
                     final List<CE> ceList = componentObservationEventValue.getConfidentialityCode();
                     if (ceList != null && !ceList.isEmpty()) {
@@ -185,7 +178,7 @@ public class BakResult implements BakResultService {
                 }
             }
         } catch (Exception e) {
-            logger.error("Exception in processIFA", e);
+            LOGGER.error("Exception in processIFA", e);
         }
         return result;
     }
@@ -208,11 +201,11 @@ public class BakResult implements BakResultService {
                         ifaResultPropId = type.getId();
                 }
                 //Если среди свойст экшена есть совства с ActionPropertyType.code = 'ifa', то заполняются они (приоритетнее совпадения по коду теста)
-                if (type.getCode() != null && "ifa".equals(type.getCode())) {
+                if ("ifa".equals(type.getCode())) {
                     ifaResultPropId = type.getId();
                 }
                 //Поиск комментария, куда будет записан комментарий к ИФА-исследованию
-                if(type.getCode() != null && "comment".equals(type.getCode())) {
+                if("comment".equals(type.getCode())) {
                     ifaCommentPropId = type.getId();
                 }
             }
@@ -228,13 +221,13 @@ public class BakResult implements BakResultService {
                 toLog.addN("Save status [#]", ActionStatus.FINISHED.getCode());
             }
         } catch (Exception e) {
-            logger.error("Exception in saveIFA:", e);
+            LOGGER.error("Exception in saveIFA:", e);
             toLog.add("Problem save to ActionProperty IFA values: " + e + "]\n");
             throw new CoreException("Не удалось сохранить данные по ИФА", e);
         }
     }
 
-    private BakPosev getBakPosevByActionId(final Map<Integer, BakPosev> bakPosevMap, final int actionId) {
+    private static BakPosev getBakPosevByActionId(final Map<Integer, BakPosev> bakPosevMap, final int actionId) {
         BakPosev bakPosev = bakPosevMap.get(actionId);
         if (bakPosev == null) {
             bakPosev = new BakPosev(actionId);
@@ -246,12 +239,12 @@ public class BakResult implements BakResultService {
     /**
      * Выборка данных по БАК-посеву
      *
-     * @param request
-     * @return
+     * @param request тело запроса POLBIN224100UV01
+     * @return списко структур данных по БАК посевам
      */
     @NotNull
     private List<BakPosev> processBakPosev(final POLBIN224100UV01 request) throws CoreException {
-        final Map<Integer, BakPosev> bakMap = new LinkedHashMap<Integer, BakPosev>();
+        final Map<Integer, BakPosev> bakMap = new LinkedHashMap<>();
         for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
             if (subj.getObservationReport() != null) {
                 try {
@@ -268,7 +261,7 @@ public class BakResult implements BakResultService {
                             getLisCode(request)));
 
                 } catch (Exception e) {
-                    logger.error("Exception: " + e, e);
+                    LOGGER.error("Exception: " + e, e);
                     throw new CoreException("Ошибка в формате тега observationReport");
                 }
 
@@ -280,7 +273,7 @@ public class BakResult implements BakResultService {
 
                     for (POLBMT004000UV01Component2 p : subj.getObservationBattery().getValue().getComponent1()) {
                         bakPosev.setGeneralComment(p.getObservationEvent().getValue().getCode().getCodeSystemName());
-                        bakPosev.setComplete(p.getObservationEvent().getValue().getStatusCode().getCode().equals("true"));
+                        bakPosev.setComplete("true".equals(p.getObservationEvent().getValue().getStatusCode().getCode()));
                         for (POLBMT004000UV01Component2 comp : p.getObservationEvent().getValue().getComponent1()) {
                             final String microorgCode = comp.getObservationEvent().getValue().getCode().getCode();
                             final String microorgName = comp.getObservationEvent().getValue().getCode().getDisplayName();
@@ -291,7 +284,7 @@ public class BakResult implements BakResultService {
                         }
                     }
                 } catch (Exception e) {
-                    logger.error("Exception: " + e, e);
+                    LOGGER.error("Exception: " + e, e);
                     throw new CoreException("Ошибка в формате тега observationBattery");
                 }
 
@@ -304,14 +297,13 @@ public class BakResult implements BakResultService {
 
                     for (POLBMT004000UV01Component2 component2 : value.getComponent1()) {
                         for (POLBMT004000UV01Component2 pp : component2.getObservationBattery().getValue().getComponent1()) {
-                            final String antibioticCode = getValue(pp.getObservationEvent().getValue().getCode().getCode());
-                            final String antibioticName = getValue(pp.getObservationEvent().getValue().getCode().getDisplayName());
-                            final String antibioticConcentration = getValue(pp.getObservationEvent().getValue().getCode().getCodeSystem());
-                            final String antibioticSensitivity = getValue(pp.getObservationEvent().getValue().getCode().getTranslation().get(0).getCode());
-                            final String antibioticComment = getValue(pp.getObservationEvent().getValue().getStatusCode().getCode());
-
-                            Antibiotic antibiotic = new Antibiotic(
-                                    antibioticCode, antibioticName);
+                            final CD componentObservationEventCodeValue = pp.getObservationEvent().getValue().getCode();
+                            final String antibioticCode = StringUtils.defaultString(componentObservationEventCodeValue.getCode());
+                            final String antibioticName =  StringUtils.defaultString(componentObservationEventCodeValue.getDisplayName());
+                            final String antibioticConcentration =  StringUtils.defaultString(componentObservationEventCodeValue.getCodeSystem());
+                            final String antibioticSensitivity =  StringUtils.defaultString(componentObservationEventCodeValue.getTranslation().get(0).getCode());
+                            final String antibioticComment =  StringUtils.defaultString(pp.getObservationEvent().getValue().getStatusCode().getCode());
+                            Antibiotic antibiotic = new Antibiotic(antibioticCode, antibioticName);
                             antibiotic.setConcentration(antibioticConcentration);
                             antibiotic.setSensitivity(antibioticSensitivity);
                             antibiotic.setComment(antibioticComment);
@@ -320,16 +312,12 @@ public class BakResult implements BakResultService {
                         }
                     }
                 } catch (Exception e) {
-                    logger.error("Exception: " + e, e);
+                    LOGGER.error("Exception in processBakPosev:", e);
                     throw new CoreException("Ошибка в формате тега specimenObservationCluster");
                 }
             }
         }
-        return new LinkedList<BakPosev>(bakMap.values());
-    }
-
-    private String getValue(final String value) {
-        return value != null ? value : "";
+        return new LinkedList<>(bakMap.values());
     }
 
     /**
@@ -412,65 +400,18 @@ public class BakResult implements BakResultService {
 
         } catch (Exception e) {
             toLog.addN("Exception " + e);
-            logger.error("Exception " + e, e);
+            LOGGER.error("Exception " + e, e);
             throw new CoreException("Не удалось сохранить данные по БАК-посеву");
         }
     }
 
     /**
-     * Определение actionId, к которому прявязаны результаты
-     */
-//    private int getActionId(final POLBIN224100UV01 request) throws CoreException {
-//        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
-//            if (subj.getObservationBattery() != null) {
-//                return Integer.parseInt(subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension());
-//            }
-//        }
-//        throw new CoreException("Отсутствует actionId");
-//    }
-
-//    private void saveIfaToProperty(int actionId, String resultValue, String resultText, ToLog toLog) {
-//        try {
-//            final String ifaValue = resultValue + "/" + resultText;
-//
-//            final Action action = dbAction.getActionById(actionId);
-//            int aptId = 0;
-//            for (ActionProperty property : action.getActionProperties()) {
-//                final ActionPropertyType type = property.getType();
-//                if (type.getCode() != null && "ifa".equals(type.getCode())) {
-//                    aptId = type.getId();
-//                }
-//            }
-//            db.addSinglePropBasic(ifaValue, APValueString.class, actionId, aptId, true);
-//            toLog.add("Save IFA result [" + ifaValue + "], aptId [" + aptId + "]\n");
-//        } catch (Exception e) {
-//            logger.error("Exception: " + e, e);
-//            toLog.add("Problem save to ActionProperty IFA values: " + e + "]\n");
-//        }
-//    }
-
-    /**
-     * Описание дефектов биоматериала
-     *
-     * @param request
-     * @return
-     */
-    private String getDefects(POLBIN224100UV01 request) {
-        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
-            if (subj.getObservationBattery() != null) {
-                return subj.getObservationBattery().getValue().getCode().getCode();
-            }
-        }
-        return "";
-    }
-
-    /**
      * Получить код лаборатории
      *
-     * @param request
-     * @return
+     * @param request  тело запроса POLBIN224100UV01
+     * @return  Строковое значение кода лаборатории
      */
-    private String getLisCode(POLBIN224100UV01 request) {
+    private static String getLisCode(POLBIN224100UV01 request) {
         // Код лаборатории
         return request.getControlActProcess().getAuthorOrPerformer()
                 .get(0)
@@ -479,30 +420,11 @@ public class BakResult implements BakResultService {
                 .getValue().getCode().getCode();
     }
 
-    /**
-     * Метод определения табличная форма или нет
-     *
-     * @param request
-     * @return true - табличная форма представления (есть табличка с дефектами и прибор), false - микроорганизмы
-     */
-    private boolean detectTableForm(POLBIN224100UV01 request) {
-        for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
-            if (subj.getObservationEvent() != null) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private DateTime createDate(String date) {
-        final DateTimeFormatter formatter = DateTimeFormat.forPattern("yyyyMMddHHmm");
-        return formatter.parseDateTime(date);
-    }
 
     /**
      * Создание ответного сообщения о успешном принятии результатов
      */
-    private MCCIIN000002UV01 createSuccessResponse() {
+    private static MCCIIN000002UV01 createSuccessResponse() {
         final MCCIIN000002UV01 response = new MCCIIN000002UV01();
 
         final II id2 = new II();
@@ -510,7 +432,7 @@ public class BakResult implements BakResultService {
         response.setId(id2);
 
         final TS creationTime = new TS();
-        creationTime.setValue(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+        creationTime.setValue(new SimpleDateFormat(DATE_FORMAT_YYYYMMDDHHMMSS).format(new Date()));
 
         final II interactionId = new II();
         interactionId.setExtension("MCCI_IN000002UV01");
@@ -529,10 +451,6 @@ public class BakResult implements BakResultService {
         sender.setTypeCode(CommunicationFunctionType.SND);
         final MCCIMT000200UV01Device device = new MCCIMT000200UV01Device();
         device.setClassCode(EntityClassDevice.DEV);
-//        device.setDeterminerCode("INSTANCE");
-        final II id = new II();
-//        id.getNullFlavor().add("NULL");
-//        device.getId().add(id);
         sender.setDevice(device);
 
 
@@ -576,7 +494,7 @@ public class BakResult implements BakResultService {
     /**
      * Создание ответного сообщения о неуспешном принятии результатов
      */
-    private MCCIIN000002UV01 createErrorResponse() {
+    private static MCCIIN000002UV01 createErrorResponse() {
         final MCCIIN000002UV01 response = new MCCIIN000002UV01();
 
         final II id2 = new II();
@@ -584,7 +502,7 @@ public class BakResult implements BakResultService {
         response.setId(id2);
 
         final TS creationTime = new TS();
-        creationTime.setValue(new SimpleDateFormat("yyyyMMddHHmmss").format(new Date()));
+        creationTime.setValue(new SimpleDateFormat(DATE_FORMAT_YYYYMMDDHHMMSS).format(new Date()));
 
         final II interactionId = new II();
         interactionId.setExtension("MCCI_IN000002UV01");
@@ -603,10 +521,6 @@ public class BakResult implements BakResultService {
         sender.setTypeCode(CommunicationFunctionType.SND);
         final MCCIMT000200UV01Device device = new MCCIMT000200UV01Device();
         device.setClassCode(EntityClassDevice.DEV);
-//        device.setDeterminerCode("INSTANCE");
-        final II id = new II();
-//        id.getNullFlavor().add("NULL");
-//        device.getId().add(id);
         sender.setDevice(device);
 
 
@@ -660,7 +574,7 @@ public class BakResult implements BakResultService {
                             @WebParam(name = "orderBiomaterialName", targetNamespace = Namespace)
                             String orderBiomaterialName) throws CoreException {
 
-        logger.info("Bak Delivered [{}],[{}],[{}],[{}]", new Object[] {orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName});
+        LOGGER.info("Bak Delivered [{}],[{}],[{}],[{}]", orderBarCode, takenTissueJournal, tissueTime, orderBiomaterialName);
         return 0;
     }
 }
