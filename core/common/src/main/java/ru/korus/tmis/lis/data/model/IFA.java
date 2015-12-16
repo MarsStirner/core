@@ -19,6 +19,7 @@ public class IFA {
      * Признак завершенности исследования
      */
     private boolean complete;
+    private String code;
 
     public IFA() {
 
@@ -64,6 +65,13 @@ public class IFA {
         this.comment = comment;
     }
 
+    public void setCode(final String code) {
+        this.code = code;
+    }
+
+    public String getCode() {
+        return code;
+    }
     /**
      * Вывод результата в формате {значение}/{текст}
      * @return
@@ -78,8 +86,10 @@ public class IFA {
         sb.append("result='").append(text).append('\'');
         sb.append(", value='").append(value).append('\'');
         sb.append(", actionId=").append(actionId);
-        sb.append('}');
+        sb.append(", code='").append(code)
+                .append("'}");
         return sb.toString();
     }
+
 
 }

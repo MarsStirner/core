@@ -1,5 +1,6 @@
 package ru.korus.tmis.laboratory.bak.business;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -101,12 +102,10 @@ public class BakResult implements BakResultBeanLocal {
     }
 
     private IFA getIfa(final Map<Integer, IFA> ifaMap, final int actionId) {
-        IFA ifa = ifaMap.get(actionId);
-        if (ifa == null) {
-            ifa = new IFA();
+           IFA ifa = new IFA();
             ifaMap.put(actionId, ifa);
-        }
         return ifa;
+
     }
 
     /**
@@ -125,6 +124,7 @@ public class BakResult implements BakResultBeanLocal {
                     final String orderMisId = subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
                     final boolean finalFlag = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getStatusCode().getCode().equals("true");
                     final String comment = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getCode().getCodeSystem();
+                    final String code = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getCode().getCode();
                     final List<CE> ceList = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getConfidentialityCode();
                     if (ceList != null && !ceList.isEmpty()) {
                         final String text = ceList.get(0).getDisplayName();
@@ -136,6 +136,7 @@ public class BakResult implements BakResultBeanLocal {
                             ifa.setValue(value);
                             ifa.setActionId(actionId);
                             ifa.setComplete(finalFlag);
+                            ifa.setCode(code);
                             if(comment != null) {
                                 if (ifa.getComment() == null)
                                     ifa.setComment(comment);
@@ -170,6 +171,11 @@ public class BakResult implements BakResultBeanLocal {
             int ifaCommentPropId = 0;
             for (ActionProperty property : action.getActionProperties()) {
                 final ActionPropertyType type = property.getType();
+                if(StringUtils.isNotEmpty(ifa.getCode())){
+                    if(ifa.getCode().equals(property.getType().getTest().getCode())){
+                        ifaResultPropId = type.getId();
+                    }
+                }
                 if (type.getCode() != null && "ifa".equals(type.getCode())) {
                     ifaResultPropId = type.getId();
                 } else if(type.getCode() != null && "comment".equals(type.getCode())) {

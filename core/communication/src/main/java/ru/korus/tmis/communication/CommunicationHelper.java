@@ -161,6 +161,13 @@ public class CommunicationHelper {
         if (!params.isSetPatrName() || params.getPatrName().length() == 0) {
             params.setPatrName("");
         }
+        if(!params.isSetDocumentNumber()
+                || !params.isSetDocumentSerial()
+                || !params.isSetDocumentTypeCode()
+                || params.getDocumentTypeCode().isEmpty())   {
+            allParamsIsSet = false;
+            errorMessage.append("Не указан документ\n");
+        }
         if (!allParamsIsSet) {
             result.setMessage(errorMessage.toString());
         }

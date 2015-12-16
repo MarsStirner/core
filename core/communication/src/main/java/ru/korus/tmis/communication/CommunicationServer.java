@@ -361,7 +361,7 @@ public class CommunicationServer implements Communications.Iface {
             logger.warn("End of #{} addPatient. Error message=\"{}\"", currentRequestNum, result.getMessage());
             return result.setSuccess(false).setPatientId(0);
         }
-        final ru.korus.tmis.core.entity.model.Patient patient;
+        ru.korus.tmis.core.entity.model.Patient patient = null;
         try {
             patient = patientBean.insertOrUpdatePatient(
                     0,
@@ -384,39 +384,54 @@ public class CommunicationServer implements Communications.Iface {
                     0
             );
             patientBean.savePatientToDataBase(patient);
-            logger.debug("Patient ={}", patient);
-            if (patient.getId() == null || patient.getId() == 0) {
-                throw new CoreException("Something is wrong while saving");
-            } else {
-                logger.debug("Patient saved in DB, and now has id={}", patient.getId());
-            }
-            //Сохранение документов (если заполнены)
-            if (params.isSetDocumentNumber()
-                    && params.isSetDocumentSerial()
-                    && params.isSetDocumentTypeCode()
-                    && !params.getDocumentTypeCode().isEmpty()) {
+        } catch (Exception e) {
+            logger.error("Exception while saving new patient personal info", e);
+        }
+        if(patient != null && patient.getId() != 0) {
+            logger.debug("Patient = {}", patient);
+        } else {
+            result.setMessage("Error while saving Patient to database.").setSuccess(false);
+            logger.info("End of #{} addPatient. Return \"{}\"", currentRequestNum, result);
+            return result;
+        }
+        ClientDocument document = null;
+        //Сохранение документов (если заполнены)
+        if (params.isSetDocumentNumber()
+                && params.isSetDocumentSerial()
+                && params.isSetDocumentTypeCode()
+                && !params.getDocumentTypeCode().isEmpty()) {
+            try {
                 final RbDocumentType documentType = documentTypeBean.findByCode(params.getDocumentTypeCode());
                 if (documentType != null) {
-                    final ClientDocument document = documentBean.insertOrUpdateClientDocument(
-                            0,
-                            documentType.getId(),
-                            "",
-                            params.getDocumentNumber(),
-                            params.getDocumentSerial(),
-                            new Date(),
-                            new Date(),
-                            patient,
-                            null);
-                    final ClientDocument persistedDocument = documentBean.persistNewDocument(document);
-                    logger.debug("Persisted Document[{}]", persistedDocument.getId());
+                    document = documentBean.insertOrUpdateClientDocument(
+                            0, documentType.getId(), "", params.getDocumentNumber(), params.getDocumentSerial(), new Date(), null, patient, null
+                    );
+                    documentBean.persistNewDocument(document);
                 } else {
                     logger.warn("With code[{}] no one rbDocumentType founded", params.getDocumentTypeCode());
                 }
+            } catch (Exception e) {
+                logger.error("Exception while saving new patient document", e);
             }
-            //Сохранение полисов (если заполнены)
-            if (params.isSetPolicyNumber()
-                    && params.isSetPolicyTypeCode()
-                    && !params.getPolicyTypeCode().isEmpty()) {
+        }  // Лишний if, т.к. для ГНЦ паспорт (документ) обязательно должен быть указан
+        if(document != null && document.getId() != 0) {
+            logger.debug("Document = {}", document);
+        } else {
+            try {
+                patientBean.deletePatient(patient.getId());
+            } catch (CoreException ex){
+                logger.error("Id delete patient", ex);
+            }
+            result.setMessage("Error while saving Patient document to database.").setSuccess(false);
+            logger.info("End of #{} addPatient. Return \"{}\"", currentRequestNum, result);
+            return result;
+        }
+        ClientPolicy policy = null;
+        //Сохранение полисов (если заполнены)
+        if (params.isSetPolicyNumber()
+                && params.isSetPolicyTypeCode()
+                && !params.getPolicyTypeCode().isEmpty()) {
+            try {
                 final RbPolicyType policyType = policyTypeBean.findByCode(params.getPolicyTypeCode());
                 if (policyType != null) {
                     //страховщик
@@ -428,7 +443,7 @@ public class CommunicationServer implements Communications.Iface {
                             logger.warn("Couldn't find organisation with InfisCode=\"{}\"", params.getPolicyInsurerInfisCode());
                         }
                     }
-                    final ClientPolicy policy = policyBean.insertOrUpdateClientPolicy(
+                    policy = policyBean.insertOrUpdateClientPolicy(
                             0,
                             policyType.getId(),
                             insurer != null ? insurer.getId() : 0,
@@ -439,17 +454,17 @@ public class CommunicationServer implements Communications.Iface {
                             "",
                             "Данные из ТФОМС",
                             patient,
-                            null);
-                    final ClientPolicy persistedPolicy = policyBean.persistNewPolicy(policy);
-                    logger.debug("Persisted policy[{}]", persistedPolicy.getId());
+                            null
+                    );
+                    policyBean.persistNewPolicy(policy);
                 } else {
                     logger.warn("With code[{}] no one rbPolicyType founded", params.getPolicyTypeCode());
                 }
+            } catch (Exception e) {
+                logger.error("Exception while saving new patient policy", e);
             }
-        } catch (CoreException e) {
-            logger.error("Error while saving to database", e);
-            return result.setMessage("Error while saving to database. Message=" + e.getMessage()).setSuccess(false);
         }
+        logger.debug("Policy = {}", policy);
         result.setMessage("Successfully added patient to database").setSuccess(true).setPatientId(patient.getId());
         logger.info("End of #{} addPatient. Return \"{}\"", currentRequestNum, result);
         return result;

@@ -1,5 +1,6 @@
 package ru.korus.tmis.laboratory.bak.ws.server;
 
+import org.apache.commons.lang.StringUtils;
 import org.joda.time.DateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -26,6 +27,7 @@ import javax.jws.WebParam;
 import javax.jws.WebResult;
 import javax.jws.WebService;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.JAXBElement;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.UUID;
@@ -104,17 +106,17 @@ public class BakResult implements BakResultService {
         final ToLog toLog = new ToLog("setAnalysisResults");
         MCCIIN000002UV01 response;
         try {
-            toLog.addN("Request: \n#", Utils.marshallMessage(request, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
+            toLog.addN("Request: " + Utils.marshallMessage(request, "ru.korus.tmis.lis.data.model.hl7.complex"));
             processRequest(request, toLog);
             //flushToDB(request, toLog);
             response = createSuccessResponse();
-            toLog.addN("Response: \n#", Utils.marshallMessage(response, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
+            toLog.addN("Response: " + Utils.marshallMessage(response, "ru.korus.tmis.lis.data.model.hl7.complex"));
             return response;
         } catch (Throwable e) {
             logger.error("Exception: " + e, e);
             toLog.addN("Exception: #", e);
             response = createErrorResponse();
-            toLog.addN("Response: \n#", Utils.marshallMessage(response, "ru.korus.tmis.laboratory.bak.ws.server.model.hl7.complex"));
+            toLog.addN("Response:" + Utils.marshallMessage(response, "ru.korus.tmis.lis.data.model.hl7.complex"));
         } finally {
             logger.info(toLog.releaseString());
         }
@@ -142,11 +144,8 @@ public class BakResult implements BakResultService {
     }
 
     private IFA getIfa(final Map<Integer, IFA> ifaMap, final int actionId) {
-        IFA ifa = ifaMap.get(actionId);
-        if (ifa == null) {
-            ifa = new IFA();
-            ifaMap.put(actionId, ifa);
-        }
+        IFA ifa = new IFA();
+        ifaMap.put(actionId, ifa);
         return ifa;
     }
 
@@ -158,37 +157,37 @@ public class BakResult implements BakResultService {
      */
     @NotNull
     private List<IFA> processIFA(final POLBIN224100UV01 request) {
-        final Map<Integer, IFA> ifaMap = new HashMap<Integer, IFA>();
+        final List<IFA> result = new ArrayList<>();
         try {
             for (POLBIN224100UV01MCAIMT700201UV01Subject2 subj : request.getControlActProcess().getSubject()) {
-
-                if (subj.getObservationBattery() != null) {
-                    final String orderMisId = subj.getObservationBattery().getValue().getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
-                    final boolean finalFlag = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getStatusCode().getCode().equals("true");
-                    final List<CE> ceList = subj.getObservationBattery().getValue().getComponent1().get(0).getObservationEvent().getValue().getConfidentialityCode();
+                final JAXBElement<POLBMT004000UV01ObservationBattery> observationBattery = subj.getObservationBattery();
+                if (observationBattery != null) {
+                    final POLBMT004000UV01ObservationBattery observationBatteryValue = observationBattery.getValue();
+                    final String orderMisId = observationBatteryValue.getInFulfillmentOf().get(0).getPlacerOrder().getValue().getId().get(0).getExtension();
+                    final POLBMT004000UV01ObservationEvent componentObservationEventValue = observationBatteryValue.getComponent1().get(0).getObservationEvent().getValue();
+                    final boolean finalFlag = componentObservationEventValue.getStatusCode().getCode().equals("true");
+                    final String code = componentObservationEventValue.getCode().getCode();
+                    final List<CE> ceList = componentObservationEventValue.getConfidentialityCode();
                     if (ceList != null && !ceList.isEmpty()) {
                         final String text = ceList.get(0).getDisplayName();
                         final String value = ceList.get(0).getCode();
                         if (!text.isEmpty() || !value.isEmpty()) {
                             final int actionId = Integer.parseInt(orderMisId);
-                            final IFA ifa = getIfa(ifaMap, actionId);
+                            final IFA ifa = new IFA();
                             ifa.setText(text);
                             ifa.setValue(value);
                             ifa.setActionId(actionId);
                             ifa.setComplete(finalFlag);
+                            ifa.setCode(code);
+                            result.add(ifa);
                         }
                     }
-               /* } else if (subj.getObservationReport() != null) {
-                    final POLBMT004000UV01ObservationReport value = subj.getObservationReport().getValue();
-                    final int actionId = Integer.parseInt(value.getId().get(0).getRoot());
-                    final IFA statusIfa = getIfa(ifaMap, actionId);
-                    statusIfa.setComplete(value.getStatusCode().getCode().equals("true")); */
                 }
             }
         } catch (Exception e) {
-            logger.error("Exception " + e, e);
+            logger.error("Exception in processIFA", e);
         }
-        return new LinkedList<IFA>(ifaMap.values());
+        return result;
     }
 
     /**
@@ -204,16 +203,22 @@ public class BakResult implements BakResultService {
             int ifaCommentPropId = 0;
             for (ActionProperty property : action.getActionProperties()) {
                 final ActionPropertyType type = property.getType();
+                if(StringUtils.isNotEmpty(ifa.getCode())){
+                    if(property.getType().getTest() != null && ifa.getCode().equals(property.getType().getTest().getCode())){
+                        ifaResultPropId = type.getId();
+                    }
+                }
                 if (type.getCode() != null && "ifa".equals(type.getCode())) {
                     ifaResultPropId = type.getId();
                 } else if(type.getCode() != null && "comment".equals(type.getCode())) {
                     ifaCommentPropId = type.getId();
                 }
             }
-            if(ifaResultPropId > 0)
+            if(ifaResultPropId > 0) {
                 db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), ifaResultPropId, true);
-            else if(ifa.getFullResult().equals("NO CHRG"))
+            } else if("NO CHRG".equals(ifa.getFullResult())) {
                 ; //TODO Дефект биоматериала комментарий запишется в свойство, но, возможно, требуется отразить еще как-то
+            }
             if(ifaCommentPropId > 0 && ifa.getComment() != null)
                 db.addSinglePropBasic(ifa.getComment(), APValueString.class, ifa.getActionId(), ifaCommentPropId, true);
             toLog.addN("Save IFA result [#], ifaResultPropId [#]", ifa.getFullResult(), ifaResultPropId);
