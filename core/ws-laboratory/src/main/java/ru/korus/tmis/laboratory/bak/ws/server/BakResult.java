@@ -193,8 +193,8 @@ public class BakResult implements BakResultService {
     /**
      * Сохранение ИФА исседования
      *
-     * @param ifa
-     * @param toLog
+     * @param ifa Ифа исследование с результатом лабораторного теста
+     * @param toLog логгер
      */
     private void saveIFA(final IFA ifa, final ToLog toLog) throws CoreException {
         try {
@@ -203,21 +203,21 @@ public class BakResult implements BakResultService {
             int ifaCommentPropId = 0;
             for (ActionProperty property : action.getActionProperties()) {
                 final ActionPropertyType type = property.getType();
-                if(StringUtils.isNotEmpty(ifa.getCode())){
-                    if(property.getType().getTest() != null && ifa.getCode().equals(property.getType().getTest().getCode())){
+                //Если у свойства есть Тест И его код совпадает с кодом ИФА-исследования, то нужно устаналивать значение этого свойства
+                if(property.getType().getTest() != null && StringUtils.equals(ifa.getCode(), property.getType().getTest().getCode())){
                         ifaResultPropId = type.getId();
-                    }
                 }
+                //Если среди свойст экшена есть совства с ActionPropertyType.code = 'ifa', то заполняются они (приоритетнее совпадения по коду теста)
                 if (type.getCode() != null && "ifa".equals(type.getCode())) {
                     ifaResultPropId = type.getId();
-                } else if(type.getCode() != null && "comment".equals(type.getCode())) {
+                }
+                //Поиск комментария, куда будет записан комментарий к ИФА-исследованию
+                if(type.getCode() != null && "comment".equals(type.getCode())) {
                     ifaCommentPropId = type.getId();
                 }
             }
             if(ifaResultPropId > 0) {
                 db.addSinglePropBasic(ifa.getFullResult(), APValueString.class, ifa.getActionId(), ifaResultPropId, true);
-            } else if("NO CHRG".equals(ifa.getFullResult())) {
-                ; //TODO Дефект биоматериала комментарий запишется в свойство, но, возможно, требуется отразить еще как-то
             }
             if(ifaCommentPropId > 0 && ifa.getComment() != null)
                 db.addSinglePropBasic(ifa.getComment(), APValueString.class, ifa.getActionId(), ifaCommentPropId, true);
@@ -228,7 +228,7 @@ public class BakResult implements BakResultService {
                 toLog.addN("Save status [#]", ActionStatus.FINISHED.getCode());
             }
         } catch (Exception e) {
-            logger.error("Exception: " + e, e);
+            logger.error("Exception in saveIFA:", e);
             toLog.add("Problem save to ActionProperty IFA values: " + e + "]\n");
             throw new CoreException("Не удалось сохранить данные по ИФА", e);
         }
