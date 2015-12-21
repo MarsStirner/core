@@ -21,7 +21,6 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.ActionsListDataFilter
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
-import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal
 import ru.korus.tmis.lis.data._
 import ru.korus.tmis.lis.data.jms.LISMessageReceiver
 import ru.korus.tmis.scala.util.ConfigManager._
@@ -96,9 +95,6 @@ with I18nable {
   @EJB
   var lisAcross: AcrossBusinessBeanLocal = _
 
-  //todo должен быть вызов веб-сервиса с передачей actionId
-  @EJB
-  var lisBak: BakBusinessBeanLocal = _
 
   def summary(direction: Action) = {
     val group = new CommonGroup(0, "Summary")

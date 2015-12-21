@@ -3,7 +3,6 @@ package ru.korus.tmis.laboratory.bak.ws.client;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.core.patient.DirectionBeanLocal;
 import ru.korus.tmis.laboratory.bak.BakRequestService;
-import ru.korus.tmis.laboratory.bak.business.BakBusinessBeanLocal;
 
 import javax.ejb.EJB;
 import javax.jws.WebService;
@@ -21,8 +20,6 @@ import javax.jws.WebService;
   name = "service-bak-request")
 public class BakRequest implements BakRequestService {
 
-    @EJB
-    private BakBusinessBeanLocal bakBusinessBean;
 
     @EJB
     private DirectionBeanLocal directionBeanLocal;
