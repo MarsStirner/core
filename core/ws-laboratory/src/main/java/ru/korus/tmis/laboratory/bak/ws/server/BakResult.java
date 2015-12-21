@@ -50,6 +50,7 @@ import static ru.korus.tmis.util.CompileTimeConfigManager.Laboratory.Namespace;
 public class BakResult implements BakResultService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(BakResult.class);
+
     private static final String CONTEXT_PATH__RU_KORUS_TMIS_LIS_DATA_MODEL_HL7_COMPLEX = "ru.korus.tmis.lis.data.model.hl7.complex";
     public static final String DATE_FORMAT_YYYYMMDDHHMMSS = "yyyyMMddHHmmss";
 
@@ -321,11 +322,19 @@ public class BakResult implements BakResultService {
     }
 
     /**
-     * Запись результатов БАК-посева в БД. Метод необходимо оптимизировать, убрать лишние запросы для получения id
+     * Запись результатов БАК-посева в БД.
      */
     private void saveBakPosev(final BakPosev bakPosev, final ToLog toLog) throws CoreException {
         try {
-            int actionId = bakPosev.getActionId();
+            final Action action = dbAction.getActionById(bakPosev.getActionId());
+            if(action == null){
+                LOGGER.error("Action[{}] not found. Args: {}", bakPosev.getActionId(), bakPosev);
+                throw new CoreException("Не удалось сохранить данные по БАК-посеву");
+            }  else if(ActionStatus.FINISHED.getCode() == action.getStatus()){
+                LOGGER.error("Action[{}] has status = FINISHED and no more modification is allowed. Args: {}", bakPosev.getActionId(), bakPosev);
+                throw new CoreException("Не удалось сохранить данные по БАК-посеву");
+            }
+            int actionId = action.getId();
             toLog.addN("Clean old actionId #", actionId);
             // пришли уточняющие данные, стираем старые данные
             dbBbtResponseBean.remove(actionId);

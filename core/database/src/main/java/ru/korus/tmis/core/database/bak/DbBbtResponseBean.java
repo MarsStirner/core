@@ -34,6 +34,12 @@ public class DbBbtResponseBean implements DbBbtResponseBeanLocal {
             logger.info("create BbtResponse {}", bbtResponse);
         } else {
             logger.info("find BbtResponse {}", response);
+            response.setCodeLIS(bbtResponse.getCodeLIS());
+            response.setDoctorId(bbtResponse.getDoctorId());
+            response.setDefects(bbtResponse.getDefects());
+            response.setFinalFlag(bbtResponse.getFinalFlag());
+            em.merge(response);
+            logger.info("changed BbtResponse {}", response);
         }
     }
 
