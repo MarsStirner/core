@@ -9,7 +9,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import java.util.List;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -45,10 +44,7 @@ public class DbBbtResponseBean implements DbBbtResponseBeanLocal {
 
     @Override
     public BbtResponse get(final Integer id) {
-        List<BbtResponse> responseList =
-                em.createQuery("SELECT a FROM BbtResponse a WHERE a.id = :id", BbtResponse.class)
-                        .setParameter("id", id).getResultList();
-        return !responseList.isEmpty() ? responseList.get(0) : null;
+        return em.find(BbtResponse.class, id);
     }
 
     @Override
