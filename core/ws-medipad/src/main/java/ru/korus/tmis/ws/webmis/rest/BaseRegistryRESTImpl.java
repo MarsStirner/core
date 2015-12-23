@@ -59,6 +59,9 @@ public class BaseRegistryRESTImpl implements Serializable {
     @EJB
     private APQLEndPoint apqlEndPoint;
 
+    @EJB
+    private HsctRestImpl hsctImpl;
+
 
     @Path("/")
     public CustomInfoRESTImpl getCustomInfoRESTImpl() {
@@ -109,6 +112,9 @@ public class BaseRegistryRESTImpl implements Serializable {
     public JobImpl getJobImpl() {
         return jobImpl;
     }
+
+    @Path("/hsct")
+    public HsctRestImpl getHsctImpl() { return hsctImpl;}
 
     @Path("/apql")
     public APQLEndPoint getAPQL() {
