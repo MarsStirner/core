@@ -31,7 +31,7 @@ public class HsctRestImpl {
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Produces({MediaType.APPLICATION_JSON, "application/javascript", "application/x-javascript"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML+ ";charset=utf-8"})
     public Object sendActionToHsgt(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, HsctRequestActionContainer data) {
         LOGGER.info("call sendActionToHsgt({})", data);
         return new JSONWithPadding(hsctBean.sendActionToHsct(data.getId()),  callback);
