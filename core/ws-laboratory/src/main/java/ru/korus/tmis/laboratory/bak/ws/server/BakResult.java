@@ -196,10 +196,11 @@ public class BakResult implements BakResultService {
             if(action == null){
                 LOGGER.error("Action[{}] not found. Args: {}", ifa.getActionId(), ifa);
                 throw new CoreException("Не удалось сохранить данные по ИФА");
-            }  else if(ActionStatus.FINISHED.getCode() == action.getStatus()){
-                LOGGER.error("Action[{}] has status = FINISHED and no more modification is allowed. Args: {}", ifa.getActionId(), ifa);
-                throw new CoreException("Не удалось сохранить данные по ИФА");
             }
+//            else if(ActionStatus.FINISHED.getCode() == action.getStatus()){
+//                LOGGER.error("Action[{}] has status = FINISHED and no more modification is allowed. Args: {}", ifa.getActionId(), ifa);
+//                throw new CoreException("Не удалось сохранить данные по ИФА");
+//            }
             int ifaResultPropId = 0;
             int ifaCommentPropId = 0;
             for (ActionProperty property : action.getActionProperties()) {
@@ -337,10 +338,11 @@ public class BakResult implements BakResultService {
             if(action == null){
                 LOGGER.error("Action[{}] not found. Args: {}", bakPosev.getActionId(), bakPosev);
                 throw new CoreException("Не удалось сохранить данные по БАК-посеву");
-            }  else if(ActionStatus.FINISHED.getCode() == action.getStatus()){
-                LOGGER.error("Action[{}] has status = FINISHED and no more modification is allowed. Args: {}", bakPosev.getActionId(), bakPosev);
-                throw new CoreException("Не удалось сохранить данные по БАК-посеву");
-            }
+           }
+// else if(ActionStatus.FINISHED.getCode() == action.getStatus()){
+//                LOGGER.error("Action[{}] has status = FINISHED and no more modification is allowed. Args: {}", bakPosev.getActionId(), bakPosev);
+//                throw new CoreException("Не удалось сохранить данные по БАК-посеву");
+//            }
             int actionId = action.getId();
             toLog.addN("Clean old actionId #", actionId);
             // пришли уточняющие данные, стираем старые данные

@@ -16,22 +16,30 @@
         <module>common</module>
         <module>database</module>
         <module>config</module>
+
+        <module>ws-finance</module>
         <module>finance-ear</module>
+
+        <module>ws-transfusion</module>
         <module>transfusion-ear</module>
+
+        <module>communication</module>
+        <module>communication-ear</module>
+
         <module>drugstore-tier</module>
-        <module>server</module>
+
         <module>ws-medipad</module>
         <module>ws-laboratory</module>
         <module>docs</module>
         <module>referencebook</module>
-        <module>ws-finance</module>
-        <module>ws-transfusion</module>
-        <module>communication</module>
+
         <module>ws-users-mgr</module>
         <module>ws-tfoms</module>
         <module>ws-risar</module>
         <module>admin-panel</module>
         <module>laboratory-bak</module>
+
+        <module>server</module>
     </modules>
 
 

@@ -46,5 +46,12 @@
                 <include>**/*.ear</include>
             </includes>
         </fileSet>
+        <fileSet>
+            <directory>../communication-ear/target/</directory>
+            <outputDirectory>/${project.build.finalName}/</outputDirectory>
+            <includes>
+                <include>**/*.ear</include>
+            </includes>
+        </fileSet>
     </fileSets>
 </assembly>
