@@ -638,6 +638,8 @@ object ConfigManager extends Configuration {
     var MaxThreads = 5
   }
 
+  val codes = new Codes
+
   class Codes extends Configuration {
     val bundle = ResourceBundle.getBundle("codes", Utf8ResourceBundleControl.Singleton)
 
@@ -652,7 +654,39 @@ object ConfigManager extends Configuration {
     }
   }
 
-  val codes = new Codes
+  /**
+   * Для интеграции с ТГСК
+   */
+  var TgskProp = new TgskPropClass
+
+  class TgskPropClass extends Configuration {
+    /**
+     * Включен ли сервис
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var Active = "off"
+
+    def isActive = "on".equals(Active)
+
+    /**
+     * URL сервиса
+     */
+    var ServiceUrl = "http://rpdt01.fccho-moscow.ru:3003/integration/mis/requests"
+
+    /**
+     * Login basic http auth
+     */
+    var User = "korus"
+
+    /**
+     * Password basic http auth
+     */
+    var Password = "nrzhzVsZ8f4X8xM4vkUs"
+  }
+
+
+
 
 }
 
