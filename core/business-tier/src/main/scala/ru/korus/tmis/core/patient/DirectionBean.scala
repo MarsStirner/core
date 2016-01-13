@@ -359,7 +359,7 @@ with I18nable {
       } catch {
         // Если произошла ошибка в процессе проставления JobTickets -
         // то помечаем действие лабораторного исследования как удаленное
-        case e: Throwable => {
+        case e: Exception => {
           actions.foreach(a => {
             val act = em.find(classOf[Action], a.getId)
             if(act != null) { act.setDeleted(true); em.flush() }
@@ -641,9 +641,10 @@ with I18nable {
     var isSuccess: Boolean = true
     data.getData.foreach(f => {
       val allActions: util.List[Action] = dbJobTicketBean.getActionsForJobTicket(f.getId)
-      //По умолчанию считается что посылаются все экшены из жобтикета (filter еще не отправленные),
-      // соответственно если коллекции (запрошенные экшены) и (все экшены жобтикета) не равны, то послыаются не все экшены
-      var isAllActionSent: Boolean = CollectionUtils.isEqualCollection(allActions.filter(_.getStatus == 0).map(_.getId), f.getData.map(_.getId))
+      //По умолчанию считается что посылаются все не отправленные экшены из жобтикета (filter еще не отправленные),
+      // соответственно если коллекция A (Неотправленные экшены из жобтикета) является подколлекцией Б (все экшены для отправки), то посылаются  все экшены
+      // В данном случае подколлекция- это когда частота встречи E(элемент) в A всегда меньше или равна частоте встречи E в Б.
+      var isAllActionSent: Boolean = CollectionUtils.isSubCollection(allActions.filter(_.getStatus == 0).map(_.getId), f.getData.map(_.getId))
        f.getData.foreach(a => {
           val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(a.getId.intValue())
           if (labCode != null && labCode.compareTo("0101") == 0) {
