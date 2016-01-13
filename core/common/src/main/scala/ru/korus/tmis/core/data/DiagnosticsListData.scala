@@ -408,7 +408,7 @@ class LaboratoryDiagnosticsListEntry {
                         staff.getId.intValue() == action.getAssigner.getId.intValue() )
     this.isEditable = (action.getStatus == 0 && action.getEvent.getExecDate == null && isTrueDoctor && (jt == null || (jt != null && jt.getStatus == 0)))
     laboratoryTitle = getLabNameByAction(action)
-    this.takingTime = if( jt == null ) null else jt.getDatetime
+    this.takingTime = if( jt == null ) new Date(0) else jt.getDatetime
     this.mnem = if (action.getActionType == null ) null else action.getActionType.getMnemonic
   }
 
