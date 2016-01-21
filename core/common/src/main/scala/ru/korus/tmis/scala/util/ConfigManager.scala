@@ -657,17 +657,26 @@ object ConfigManager extends Configuration {
   /**
    * Для интеграции с ТГСК
    */
-  var TgskProp = new TgskPropClass
+  var HsctProp = new HsctPropClass
 
-  class TgskPropClass extends Configuration {
+  class HsctPropClass extends Configuration {
     /**
      * Включен ли сервис
      * on - включен
      * off - выключен (по умолчанию)
      */
-    var Active = "off"
+    var SendActive = "on"
 
-    def isActive = "on".equals(Active)
+    def isSendActive = "on".equals(SendActive)
+
+    /**
+     * Включен ли сервис
+     * on - включен
+     * off - выключен (по умолчанию)
+     */
+    var ReceiveActive = "on"
+
+    def isReceiveActive = "on".equals(ReceiveActive)
 
     /**
      * URL сервиса
@@ -677,17 +686,23 @@ object ConfigManager extends Configuration {
     /**
      * Login basic http auth
      */
-    var User = "korus"
+    var SendUser = "korus"
 
     /**
      * Password basic http auth
      */
-    var Password = "nrzhzVsZ8f4X8xM4vkUs"
+    var SendPassword = "nrzhzVsZ8f4X8xM4vkUs"
+
+    /**
+     * Login basic http auth
+     */
+    var ReceiveUser = "hsct"
+
+    /**
+     * Password basic http auth
+     */
+    var ReceivedPassword = "0YPRgtC60LDQutGA0Y8="
   }
-
-
-
-
 }
 
 trait I18nable {

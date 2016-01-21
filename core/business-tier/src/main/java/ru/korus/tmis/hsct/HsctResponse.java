@@ -1,6 +1,7 @@
 package ru.korus.tmis.hsct;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
+import ru.korus.tmis.hsct.external.HsctExternalRequest;
 
 import javax.xml.bind.annotation.*;
 
@@ -23,6 +24,9 @@ public class HsctResponse {
 
     @XmlElement(name="hsct_request_id")
     private Integer hsctRequestId;
+
+    @XmlElement(name="ROOT")
+    private HsctExternalRequest test;
 
     public HsctResponse() {
     }
@@ -59,5 +63,13 @@ public class HsctResponse {
         sb.append(", hsctRequestId=").append(hsctRequestId);
         sb.append('}');
         return sb.toString();
+    }
+
+    public void setTest(final HsctExternalRequest test) {
+        this.test = test;
+    }
+
+    public HsctExternalRequest getTest() {
+        return test;
     }
 }

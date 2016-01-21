@@ -7,5 +7,8 @@ package ru.korus.tmis.hsct;
  * Description: <br>
  */
 public class Constants {
-    public static String ACTION_TYPE_CODE = "hsct";
+    public static final String ACTION_TYPE_CODE = "hsct";
+    public static final String DATE_TIME_FORMAT = "yyyy-MM-dd HH:mm:ss";
+    public static final String DATE_FORMAT = "yyyy-MM-dd";
+    public static final String MONTH_FORMAT = "yyyy-MM";
 }
