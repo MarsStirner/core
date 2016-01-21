@@ -246,7 +246,7 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/mkbs")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getAllActionTypeNames(@Context HttpServletRequest servRequest,
+    public Object getMkbs(@Context HttpServletRequest servRequest,
                                         @QueryParam("sortingField") String sortingField,
                                         @QueryParam("sortingMethod") String sortingMethod,
                                         @QueryParam("limit") int limit,

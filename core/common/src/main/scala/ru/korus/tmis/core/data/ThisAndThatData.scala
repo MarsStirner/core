@@ -4,13 +4,14 @@ import java.io.IOException
 import java.text.{DateFormat, SimpleDateFormat}
 import java.util
 import java.util.{ArrayList, Calendar, Date}
-import javax.xml.bind.annotation.{XmlRootElement, XmlType}
+import javax.xml.bind.annotation.{XmlRootElement, XmlTransient, XmlType}
 
 import org.codehaus.jackson.annotate.{JsonIgnoreProperties, JsonSubTypes, JsonTypeInfo}
 import org.codehaus.jackson.map.ObjectMapper
 import org.codehaus.jackson.map.annotate.JsonView
+import org.slf4j.LoggerFactory
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.entity.model.kladr.{Street, Kladr}
+import ru.korus.tmis.core.entity.model.kladr.{Kladr, Street}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.{AbstractListDataFilter, ListDataFilter}
 import ru.korus.tmis.scala.util.ConfigManager
@@ -46,26 +47,14 @@ class ListDataRequest {
            page: Int,
            filter: AbstractListDataFilter) = {
     this()
-    this.filter = if (filter != null) {
-      filter
-    } else {
-      new DefaultListDataFilter()
-    }
+    this.filter = if (filter != null) filter else new DefaultListDataFilter()
     this.sortingField = sortingField match {
-      case null => {
-        "id"
-      }
-      case _ => {
-        sortingField
-      }
+      case null => "id"
+      case _ => sortingField
     }
     this.sortingMethod = sortingMethod match {
-      case null => {
-        "asc"
-      }
-      case _ => {
-        sortingMethod
-      }
+      case null => "asc"
+      case _ => sortingMethod
     }
     this.limit = limit
     this.page = if (page > 1) page else 1
@@ -86,12 +75,15 @@ class AllPersonsListData {
   @BeanProperty
   var requestData: ListDataRequest = _
   @BeanProperty
-  var data: ArrayList[DoctorContainer] = new ArrayList[DoctorContainer]
+  var data: util.List[DoctorContainer] = _
 
-  def this(persons: java.util.List[Staff], requestData: ListDataRequest) = {
+  def this(persons: util.List[Staff], requestData: ListDataRequest) = {
     this()
     this.requestData = requestData
-    persons.foreach(p => this.data.add(new DoctorContainer(p)))
+    if (!persons.isEmpty) {
+      this.data = new util.ArrayList[DoctorContainer](persons.size())
+      persons.foreach(p => this.data.add(new DoctorContainer(p)))
+    }
   }
 }
 
@@ -102,12 +94,15 @@ class FreePersonsListData {
   @BeanProperty
   var requestData: ListDataRequest = _
   @BeanProperty
-  var data: ArrayList[DoctorWithScheduleContainer] = new ArrayList[DoctorWithScheduleContainer]
+  var data: util.List[DoctorWithScheduleContainer] = _
 
-  def this(personsWithSchedule: java.util.HashMap[Staff, java.util.LinkedList[APValueTime]], requestData: ListDataRequest) = {
+  def this(personsWithSchedule: java.util.HashMap[Staff, java.util.List[APValueTime]], requestData: ListDataRequest) = {
     this()
     this.requestData = requestData
-    personsWithSchedule.foreach(p => this.data.add(new DoctorWithScheduleContainer(p._1, p._2)))
+    if (!personsWithSchedule.isEmpty) {
+      this.data = new util.ArrayList[DoctorWithScheduleContainer](personsWithSchedule.size())
+      personsWithSchedule.foreach(p => this.data.add(new DoctorWithScheduleContainer(p._1, p._2)))
+    }
   }
 }
 
@@ -118,13 +113,15 @@ class DoctorWithScheduleContainer {
   @BeanProperty
   var doctor: DoctorContainer = _
   @BeanProperty
-  var schedule: java.util.LinkedList[ScheduleContainer] = new java.util.LinkedList[ScheduleContainer]
+  var schedule: java.util.List[ScheduleContainer] = _
 
-  def this(staff: Staff, times: java.util.LinkedList[APValueTime]) {
-    //
+  def this(staff: Staff, times: java.util.List[APValueTime]) {
     this()
     this.doctor = new DoctorContainer(staff)
-    times.foreach(t => this.schedule.add(new ScheduleContainer(t)))
+    if (!times.isEmpty) {
+      this.schedule = new util.ArrayList[ScheduleContainer](times.size())
+      times.foreach(t => this.schedule.add(new ScheduleContainer(t)))
+    }
   }
 }
 
@@ -182,31 +179,29 @@ class FreePersonsListDataFilter extends AbstractListDataFilter {
     this.speciality = speciality
     this.doctorId = doctorId
     this.actionType = actionType
-    this.beginDate = if (beginDate == 0) {
-      null
-    } else {
-      new Date(beginDate)
+    this.beginDate = beginDate match {
+      case 0 => null
+      case _ => new Date(beginDate)
     }
-    this.endDate = if (endDate == 0) {
-      null
-    } else {
-      new Date(endDate)
+    this.endDate = endDate match {
+      case 0 => null
+      case _ => new Date(endDate)
     }
 
     //парсинг чистой даты и чистого времени    (дату достаем только начала(дб этот день))
-    val formatter: DateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00");
-    val formatter2: DateFormat = new SimpleDateFormat("0000-00-00 HH:mm:ss");
-    val date: Date = formatter.parse(formatter.format(beginDate));
-    val btime: Date = formatter2.parse(formatter2.format(beginDate));
-    val etime: Date = formatter2.parse(formatter2.format(endDate));
+    val formatter: DateFormat = new SimpleDateFormat("yyyy-MM-dd 00:00:00")
+    val formatter2: DateFormat = new SimpleDateFormat("0000-00-00 HH:mm:ss")
+    val date: Date = formatter.parse(formatter.format(beginDate))
+    val btime: Date = formatter2.parse(formatter2.format(beginDate))
+    val etime: Date = formatter2.parse(formatter2.format(endDate))
     this.beginOnlyDate = date
     this.beginOnlyTime = btime
     this.endOnlyTime = etime
   }
 
   @Override
-  def toQueryStructure() = {
-    var qs = new QueryDataStructure()
+  def toQueryStructure = {
+    val qs = new QueryDataStructure
     if (this.speciality > 0) {
       qs.query += "AND s.speciality.id = :speciality\n"
       qs.add("speciality", this.speciality: java.lang.Integer)
@@ -215,7 +210,7 @@ class FreePersonsListDataFilter extends AbstractListDataFilter {
       qs.add("actionType", this.actionType: java.lang.Integer)
     }
     if (this.doctorId > 0) {
-      qs.query += ("AND s.id = :doctorId\n")
+      qs.query += "AND s.id = :doctorId\n"
       qs.add("doctorId", this.doctorId: java.lang.Integer)
     }
     if (this.beginOnlyDate != null) {
@@ -228,21 +223,11 @@ class FreePersonsListDataFilter extends AbstractListDataFilter {
   @Override
   def toSortingString(sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case "fio" | "fullname" => {
-        "s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)
-      }
-      case "lastname" => {
-        "s.lastName %s".format(sortingMethod)
-      }
-      case "firstname" | "name" => {
-        "s.firstName %s".format(sortingMethod)
-      }
-      case "patrname" => {
-        "s.patrName %s".format(sortingMethod)
-      }
-      case _ => {
-        "s.id %s".format(sortingMethod)
-      }
+      case "fio" | "fullname" => "s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)
+      case "lastname" => "s.lastName %s".format(sortingMethod)
+      case "firstname" | "name" => "s.firstName %s".format(sortingMethod)
+      case "patrname" =>  "s.patrName %s".format(sortingMethod)
+      case _ =>  "s.id %s".format(sortingMethod)
     }
     sorting = "ORDER BY " + sorting
     sorting
@@ -265,8 +250,8 @@ class PersonsListDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
-    var qs = new QueryDataStructure()
+  def toQueryStructure = {
+    val qs = new QueryDataStructure
     if (this.department > 0) {
       qs.query += "AND s.orgStructure.id = :department\n"
       qs.add("department", this.department: java.lang.Integer)
@@ -277,21 +262,11 @@ class PersonsListDataFilter extends AbstractListDataFilter {
   @Override
   def toSortingString(sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case "fio" | "fullname" => {
-        "s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)
-      }
-      case "lastname" => {
-        "s.lastName %s".format(sortingMethod)
-      }
-      case "firstname" | "name" => {
-        "s.firstName %s".format(sortingMethod)
-      }
-      case "patrname" => {
-        "s.patrName %s".format(sortingMethod)
-      }
-      case _ => {
-        "s.id %s".format(sortingMethod)
-      }
+      case "fio" | "fullname" => "s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)
+      case "lastname" => "s.lastName %s".format(sortingMethod)
+      case "firstname" | "name" => "s.firstName %s".format(sortingMethod)
+      case "patrname" =>  "s.patrName %s".format(sortingMethod)
+      case _ => "s.id %s".format(sortingMethod)
     }
     sorting = "ORDER BY " + sorting
     sorting
@@ -305,13 +280,15 @@ class AllDepartmentsListData extends AbstractDefaultData {
   @BeanProperty
   var requestData: ListDataRequest = _
   @BeanProperty
-  var data: ArrayList[IdNameContainer] = new ArrayList[IdNameContainer]
+  var data: util.List[IdNameContainer] = _
 
   def this(departments: java.util.List[OrgStructure], requestData: ListDataRequest) = {
     this()
     this.requestData = requestData
-    if (departments != null && !departments.isEmpty)
+    if (departments != null && !departments.isEmpty){
+      this.data = new util.ArrayList[IdNameContainer](departments.size())
       departments.foreach(org => this.data.add(new IdNameContainer(org.getId.intValue(), org.getName)))
+    }
   }
 
   override def dataToString = {
@@ -334,20 +311,21 @@ class ActionTypesListData {
   @BeanProperty
   var requestData: ListDataRequest = _
   @BeanProperty
-  var data: util.List[ActionTypesListEntry] = new util.ArrayList[ActionTypesListEntry]
+  var data: util.List[ActionTypesListEntry] = _
 
   def this(requestData: ListDataRequest, getAllActionTypeWithFilter: (Int, Int, String, ListDataFilter) => java.util.List[ActionType]) = {
     this()
     this.requestData = requestData
     val ats = getAllActionTypeWithFilter(0, 0, this.requestData.sortingFieldInternal, this.requestData.filter.unwrap()).map(new ActionTypesListEntry(_))
     val hashMap = ats.map(at => at.getId -> at).toMap
+    this.data = new util.ArrayList[ActionTypesListEntry](ats.size)
     ats.foreach(e => {
-      if(e.getGroupId > 0)
+      if (e.getGroupId > 0)
         hashMap.get(e.getGroupId) match {
           case None => data.add(e)
           case Some(x: ActionTypesListEntry) => x.getGroups.add(e)
         }
-       else
+      else
         data.add(e)
     })
   }
@@ -361,13 +339,13 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   var code: String = _
 
   @BeanProperty
-  var flatCodes: java.util.List[String] = new java.util.LinkedList[String]
+  var flatCodes: java.util.List[String] = _
 
   @BeanProperty
   var groupId: Int = 0
 
   @BeanProperty
-  var mnemonics: java.util.List[String] = new java.util.LinkedList[String]
+  var mnemonics: java.util.List[String] = _
 
   @BeanProperty
   var view: String = "all"
@@ -390,9 +368,9 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
       this.code = code_x
     this.groupId = groupId
     if (flatCodes != null && flatCodes.size() > 0) {
-      this.flatCodes = flatCodes.filter(p => (p != null && !p.isEmpty))
+      this.flatCodes = flatCodes.filter(p => p != null && !p.isEmpty)
     }
-    this.mnemonics = mnemonics.filter(p => (p != null && !p.isEmpty))
+    this.mnemonics = mnemonics.filter(p => p != null && !p.isEmpty)
     if (view != null && !view.isEmpty) {
       this.view = view
     }
@@ -432,24 +410,12 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   @Override
   def toSortingString(sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case "groupId" => {
-        "at.groupId %s"
-      }
-      case "code" => {
-        "at.code %s"
-      }
-      case "name" => {
-        "at.name %s"
-      }
-      case "flatCode" => {
-        "at.flatCode %s"
-      }
-      case "mnem" => {
-        "at.mnemonic %s"
-      }
-      case _ => {
-        "at.id %s"
-      }
+      case "groupId" => "at.groupId %s"
+      case "code" => "at.code %s"
+      case "name" => "at.name %s"
+      case "flatCode" => "at.flatCode %s"
+      case "mnem" => "at.mnemonic %s"
+      case _ => "at.id %s"
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)
     sorting
@@ -489,7 +455,7 @@ class ActionTypesListEntry {
 
   @JsonView(Array(classOf[ActionTypesListDataViews.DefaultView]))
   @BeanProperty
-  var groups: util.ArrayList[ActionTypesListEntry] = new util.ArrayList[ActionTypesListEntry]
+  var groups: util.List[ActionTypesListEntry] = new util.ArrayList[ActionTypesListEntry]
 
   def this(actionType: ActionType) {
     this()
@@ -525,7 +491,7 @@ class AllMKBListData {
   var requestData: ListDataRequest = _
 
   @BeanProperty
-  var data: java.util.LinkedList[AbstractMKBContainer] = new java.util.LinkedList[AbstractMKBContainer] //AnyRef = _//java.util.LinkedList[ClassMKBContainer] = new java.util.LinkedList[ClassMKBContainer]
+  var data: java.util.List[AbstractMKBContainer] = _
 
 
   def this(mkbs: java.util.List[Mkb],
@@ -533,14 +499,16 @@ class AllMKBListData {
            requestData: ListDataRequest) = {
     this()
     this.requestData = requestData
-
+    if(mkbs != null && !mkbs.isEmpty){
+      data = new util.ArrayList[AbstractMKBContainer](mkbs.size())
+    }
     //Анализ формы вывода
     requestData.filter.asInstanceOf[MKBListRequestDataFilter].view match {
       case "class" => {
         val classMap = getGroupedValuesByLevel(mkbs, CLASS_LEVEL)
         this.requestData.setRecordsCount(classMap.size)
         classMap.foreach(f => {
-          val (minDiagId, maxDiagId) = this.getMinAndMaxDiagId(f._2.getClassName, mkbs)
+          val (minDiagId, maxDiagId) = getMinAndMaxDiagId(f._2.getClassName, mkbs)
           this.data.add(new ClassMKBContainer(f._1, f._2.getClassName, minDiagId, maxDiagId))
         })
       }
@@ -557,7 +525,7 @@ class AllMKBListData {
       case "mkb" => {
         val mkbMap = getGroupedValuesByLevel(mkbs, MKB_LEVEL)
         this.requestData.setRecordsCount(mkbMap.size)
-        mkbMap.foreach(f => this.data.asInstanceOf[java.util.LinkedList[MKBContainerEx]].add(new MKBContainerEx(f._2)))
+        mkbMap.foreach(f => this.data.asInstanceOf[java.util.ArrayList[MKBContainerEx]].add(new MKBContainerEx(f._2)))
       }
       case _ => {
         //дерево тогда анализируем дисплей
@@ -569,21 +537,21 @@ class AllMKBListData {
             rolled.foreach(f => {
               val (minDiagId, maxDiagId) = this.getMinAndMaxDiagId(f._2.getClassName, mkbs)
               if (!classMap.containsKey(f._1)) {
-                this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
+                this.data.asInstanceOf[java.util.ArrayList[ClassMKBContainer]]
                   .add(new ClassMKBContainer(f._1, f._2.getClassName, minDiagId, maxDiagId))
               }
               else {
                 val filtredMkbs = getFilteredValuesByLevel(mkbs, classMap.get(f._1), CLASS_LEVEL)
-                this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
+                this.data.asInstanceOf[java.util.ArrayList[ClassMKBContainer]]
                   .add(new ClassMKBContainer(f._1,
-                  f._2.getClassName,
-                  minDiagId,
-                  maxDiagId,
-                  filtredMkbs,
-                  mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, Mkb]]],
-                  getGroupedValuesByLevel,
-                  getFilteredValuesByLevel,
-                  getRolledBrunch))
+                    f._2.getClassName,
+                    minDiagId,
+                    maxDiagId,
+                    filtredMkbs,
+                    mkbs_display.asInstanceOf[java.util.Map[String, java.util.Map[String, Mkb]]],
+                    getGroupedValuesByLevel,
+                    getFilteredValuesByLevel,
+                    getRolledBrunch))
               }
             })
           }
@@ -591,7 +559,7 @@ class AllMKBListData {
             classMap.foreach(f => {
               val (minDiagId, maxDiagId) = this.getMinAndMaxDiagId(f._2.getClassName, mkbs)
               val filtredMkbs = getFilteredValuesByLevel(mkbs, f._2, CLASS_LEVEL)
-              this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
+              this.data.asInstanceOf[java.util.ArrayList[ClassMKBContainer]]
                 .add(new ClassMKBContainer(f._1, f._2.getClassName, minDiagId, maxDiagId, filtredMkbs, null, getGroupedValuesByLevel _, getFilteredValuesByLevel _, null))
             })
           }
@@ -600,7 +568,7 @@ class AllMKBListData {
           classMap.foreach(f => {
             val (minDiagId, maxDiagId) = this.getMinAndMaxDiagId(f._2.getClassName, mkbs)
             val filtredMkbs = getFilteredValuesByLevel(mkbs, f._2, CLASS_LEVEL)
-            this.data.asInstanceOf[java.util.LinkedList[ClassMKBContainer]]
+            this.data.asInstanceOf[java.util.ArrayList[ClassMKBContainer]]
               .add(new ClassMKBContainer(f._1, f._2.getClassName, minDiagId, maxDiagId, filtredMkbs, null, getGroupedValuesByLevel _, getFilteredValuesByLevel _, null))
           })
         }
@@ -614,7 +582,6 @@ class AllMKBListData {
   private val MKB_LEVEL = 3
 
   private def getGroupedValuesByLevel(mkbs: java.util.List[Mkb], level: Int) = {
-
     mkbs.foldLeft(new java.util.LinkedHashMap[String, Mkb])(
       (map, f) => {
         if ((level == SUBGROUP_LEVEL && f.getDiagID.indexOf(".") <= 0) ||
@@ -629,11 +596,10 @@ class AllMKBListData {
   }
 
   private def getFilteredValuesByLevel(mkbs: java.util.List[Mkb], compared: Mkb, level: Int) = {
-
-    mkbs.foldLeft(new java.util.LinkedList[Mkb])(
+    mkbs.foldLeft(new java.util.ArrayList[Mkb])(
       (list, p) => {
         if ((levelConstruct(p, level) == levelConstruct(compared, level) && (level != SUBGROUP_LEVEL)) ||
-          ((level == SUBGROUP_LEVEL) && (levelConstruct(p, level).contains(levelConstruct(compared, level))) && (levelConstruct(p, level) != levelConstruct(compared, level)))) {
+          ((level == SUBGROUP_LEVEL) && levelConstruct(p, level).contains(levelConstruct(compared, level)) && (levelConstruct(p, level) != levelConstruct(compared, level)))) {
           list.add(p)
           list
         } else list
@@ -672,14 +638,19 @@ class AllMKBListData {
   }
 
   private def getMinAndMaxDiagId(clsName: String, mkbs: java.util.List[Mkb]) = {
-    val clsMkbs = mkbs.filter(mkb => mkb.getClassName.compareTo(clsName) == 0)
-    val minMkb = clsMkbs.find(p => p.getId.intValue() == clsMkbs.map(_.getId.intValue()).foldLeft(Int.MaxValue)((i, m) => m.min(i))).getOrElse(null)
-    val maxMkb = clsMkbs.find(p => p.getId.intValue() == clsMkbs.map(_.getId.intValue()).foldLeft(Int.MinValue)((i, m) => m.max(i))).getOrElse(null)
-    val minDiagId: String = if (minMkb != null) minMkb.getDiagID else null
-    val maxDiagId: String = if (maxMkb != null) maxMkb.getDiagID else null
-
-    (minDiagId, maxDiagId)
+    val clsMkbs = mkbs.filter(mkb => clsName.equals(mkb.getClassName))
+    if (clsMkbs.isEmpty) {
+      (null, null)
+    } else {
+      val (minimal, maximal) = clsMkbs.foldLeft((clsMkbs.head, clsMkbs.head)) {
+        case ((min, max), x) => (if (x.getId < min.getId) x else min, if (x.getId > max.getId) x else max)
+      }
+      // return tuple
+      (if (minimal != null) minimal.getDiagID else null, if (maximal != null) maximal.getDiagID else null)
+    }
   }
+
+
 }
 
 @XmlType(name = "mkbListRequestDataFilter")
@@ -732,36 +703,35 @@ class MKBListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
-    var qs = new QueryDataStructure()
-
+  def toQueryStructure = {
+    val qs = new QueryDataStructure
     if (this.mkbId > 0) {
-      qs.query += ("AND mkb.id = :id\n")
+      qs.query += "AND mkb.id = :id\n"
       qs.add("id", this.mkbId: java.lang.Integer)
-    }
-    else {
-      qs.query += ("AND mkb.deleted = 0\n")
+    } else {
+      qs.query += "AND mkb.deleted = :deleted\n"
+      qs.add("deleted", false: java.lang.Boolean)
       if (this.code != null && !this.code.isEmpty) {
-        qs.query += ("AND upper(mkb.diagID) LIKE upper(:code)\n")
+        qs.query += "AND upper(mkb.diagID) LIKE upper(:code)\n"
         qs.add("code", this.code + "%")
       } else {
         if (this.groupId != null && !this.groupId.isEmpty) {
-          qs.query += ("AND upper(mkb.blockID) = upper(:blockId)\n")
+          qs.query += "AND upper(mkb.blockID) = upper(:blockId)\n"
           qs.add("blockId", this.groupId)
         } else {
           if (this.classId != null && !this.classId.isEmpty) {
-            qs.query += ("AND upper(mkb.classID) = upper(:classId)\n")
+            qs.query += "AND upper(mkb.classID) = upper(:classId)\n"
             qs.add("classId", this.classId)
           }
         }
       }
       if (this.diagnosis != null && !this.diagnosis.isEmpty) {
-        qs.query += ("AND upper(mkb.diagName) LIKE upper(:diagnosis)\n")
+        qs.query += "AND upper(mkb.diagName) LIKE upper(:diagnosis)\n"
         qs.add("diagnosis", "%" + this.diagnosis + "%")
       }
     }
     if (this.sex > 0) {
-      qs.query += ("AND (mkb.sex = :sex OR mkb.sex = '0')\n")
+      qs.query += "AND (mkb.sex = :sex OR mkb.sex = '0')\n"
       qs.add("sex", this.sex: java.lang.Integer)
     }
     qs
@@ -770,52 +740,19 @@ class MKBListRequestDataFilter extends AbstractListDataFilter {
   @Override
   def toSortingString(sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case "classId" => {
-        "mkb.classID %s"
-      }
-      case "blockId" => {
-        "mkb.blockID %s"
-      }
-      case "code" => {
-        "mkb.diagID %s"
-      }
-      case "diagnosis" => {
-        "mkb.diagName %s"
-      }
-      case _ => {
-        "mkb.id %s"
-      }
+      case "classId" => "mkb.classID %s"
+      case "blockId" => "mkb.blockID %s"
+      case "code" => "mkb.diagID %s"
+      case "diagnosis" => "mkb.diagName %s"
+      case _ => "mkb.id %s"
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)
     sorting
   }
 }
 
-/*@JsonTypeInfo(
-use = JsonTypeInfo.Id.NAME,
-include = JsonTypeInfo.As.PROPERTY,
-property = "type")
-@JsonSubTypes({
-@JsonSubTypes.Type(value = DefaultListDataFilter.class, name = "DefaultListDataFilter"),
-@JsonSubTypes.Type(value = DictionaryListRequestDataFilter.class, name = "DictionaryListRequestDataFilter"),
-@JsonSubTypes.Type(value = MKBListRequestDataFilter.class, name = "MKBListRequestDataFilter")
-})
-public abstract class AbstractMKBContainer implements MKBContainerEx {
-
-@Override
-public abstract String toSortingString (String sortingField, String sortingMethod);
-
-@Override
-public abstract QueryDataStructure toQueryStructure();
-
-@Override
-public ListDataFilter unwrap() {
-return this;
-}
-}  */
 
 trait IMKBContainer {
-
   @BeanProperty
   var id: String = _
 
@@ -840,7 +777,6 @@ trait IMKBContainer {
   )
 )
 abstract class AbstractMKBContainer extends IMKBContainer {
-
   @Override
   def getLEVEL = 0
 
@@ -862,7 +798,7 @@ class ClassMKBContainer extends AbstractMKBContainer {
 
   @JsonView(Array(classOf[AllMKBListDataViews.DefaultView]))
   @BeanProperty
-  var groups: java.util.LinkedList[GroupMKBContainer] = new java.util.LinkedList[GroupMKBContainer]
+  var groups: java.util.List[GroupMKBContainer] = new java.util.ArrayList[GroupMKBContainer]
 
   def this(id: String, code: String) {
     this()
@@ -883,7 +819,7 @@ class ClassMKBContainer extends AbstractMKBContainer {
            mkbs: java.util.List[Mkb],
            mkbs_display: java.util.Map[String, java.util.Map[String, Mkb]],
            mGroupedValuesByLevel: (java.util.List[Mkb], Int) => java.util.LinkedHashMap[String, Mkb],
-           mFilteredValuesByLevel: (java.util.List[Mkb], Mkb, Int) => java.util.LinkedList[Mkb],
+           mFilteredValuesByLevel: (java.util.List[Mkb], Mkb, Int) => java.util.ArrayList[Mkb],
            mRolledBrunch: (java.util.Map[String, java.util.Map[String, Mkb]], Int) => java.util.Map[String, Mkb]) {
     this(id, code, diagIdMin, diagIdMax)
 
@@ -934,7 +870,7 @@ class GroupMKBContainer extends AbstractMKBContainer {
 
   @JsonView(Array(classOf[AllMKBListDataViews.DefaultView]))
   @BeanProperty
-  var subGroups: java.util.LinkedList[SubGroupMKBContainer] = new java.util.LinkedList[SubGroupMKBContainer]
+  var subGroups: java.util.List[SubGroupMKBContainer] = new java.util.ArrayList[SubGroupMKBContainer]
 
   def this(id: String, code: String) {
     this()
@@ -944,10 +880,10 @@ class GroupMKBContainer extends AbstractMKBContainer {
 
   def this(id: String,
            code: String,
-           mkbs: java.util.LinkedList[Mkb],
+           mkbs: java.util.ArrayList[Mkb],
            mkbs_display: java.util.Map[String, java.util.Map[String, Mkb]],
            mGroupedValuesByLevel: (java.util.List[Mkb], Int) => java.util.LinkedHashMap[String, Mkb],
-           mFilteredValuesByLevel: (java.util.List[Mkb], Mkb, Int) => java.util.LinkedList[Mkb],
+           mFilteredValuesByLevel: (java.util.List[Mkb], Mkb, Int) => java.util.ArrayList[Mkb],
            mRolledBrunch: (java.util.Map[String, java.util.Map[String, Mkb]], Int) => java.util.Map[String, Mkb]) {
     this(id, code)
 
@@ -996,7 +932,7 @@ class SubGroupMKBContainer extends AbstractMKBContainer {
 
   @JsonView(Array(classOf[AllMKBListDataViews.DefaultView]))
   @BeanProperty
-  var mkbs: java.util.LinkedList[MKBContainerEx] = new java.util.LinkedList[MKBContainerEx]
+  var mkbs: java.util.List[MKBContainerEx] = new java.util.ArrayList[MKBContainerEx]
 
   def this(mkbSubGroup: (String, java.util.List[Mkb]),
            mkbs_display: Object,
@@ -1017,7 +953,7 @@ class SubGroupMKBContainer extends AbstractMKBContainer {
 
   def this(id: String,
            code: String,
-           mkbs: java.util.LinkedList[Mkb],
+           mkbs: java.util.ArrayList[Mkb],
            mGroupedValuesByLevel: (java.util.List[Mkb], Int) => java.util.LinkedHashMap[String, Mkb]) {
     this(id, code)
 
@@ -1055,7 +991,7 @@ class ThesaurusListData {
   @BeanProperty
   var requestData: ListDataRequest = _
   @BeanProperty
-  var data: ArrayList[ThesaurusContainer] = new ArrayList[ThesaurusContainer]
+  var data: util.List[ThesaurusContainer] = new util.ArrayList[ThesaurusContainer]
 
   def this(thesaurus: java.util.List[Thesaurus], requestData: ListDataRequest) = {
     this()
@@ -1086,20 +1022,19 @@ class ThesaurusListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
-    var qs = new QueryDataStructure()
-
+  def toQueryStructure = {
+    val qs = new QueryDataStructure
     if (this.id > 0) {
-      qs.query += ("AND r.id = :id\n")
+      qs.query += "AND r.id = :id\n"
       qs.add("id", this.id: java.lang.Integer)
     }
     else {
       if (this.groupId != null && !this.groupId.isEmpty) {
-        qs.query += ("AND upper(r.groupId) = upper(:groupId)\n")
+        qs.query += "AND upper(r.groupId) = upper(:groupId)\n"
         qs.add("groupId", this.groupId)
       }
       if (this.code != null && !this.code.isEmpty) {
-        qs.query += ("AND upper(r.code) LIKE upper(:code)\n")
+        qs.query += "AND upper(r.code) LIKE upper(:code)\n"
         qs.add("code", this.code + "%")
       }
     }
@@ -1109,15 +1044,9 @@ class ThesaurusListRequestDataFilter extends AbstractListDataFilter {
   @Override
   def toSortingString(sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case "groupId" => {
-        "r.groupID %s"
-      }
-      case "code" => {
-        "r.code %s"
-      }
-      case _ => {
-        "r.id %s"
-      }
+      case "groupId" => "r.groupID %s"
+      case "code" => "r.code %s"
+      case _ => "r.id %s"
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)
     sorting
@@ -1153,7 +1082,7 @@ class DictionaryListData {
   @BeanProperty
   var requestData: ListDataRequest = _
   @BeanProperty
-  var data: ArrayList[DictionaryContainer] = new ArrayList[DictionaryContainer]
+  var data: util.List[DictionaryContainer] = new util.ArrayList[DictionaryContainer]
 
   def this(requestData: ListDataRequest) = {
     this()
@@ -1168,41 +1097,41 @@ class DictionaryListData {
         this.requestData.filter.asInstanceOf[DictionaryListRequestDataFilter].dictName match {
           case "KLADR" => {
             if (dict.isInstanceOf[Kladr]) {
-              var elem = dict.asInstanceOf[Kladr]
+              val elem = dict.asInstanceOf[Kladr]
               this.data.add(new DictionaryContainer(elem.getCode, elem.getName, elem.getSocr, elem.getIndex))
-            } else if (dict.isInstanceOf[Street]){
-              var elem = dict.asInstanceOf[Street]
+            } else if (dict.isInstanceOf[Street]) {
+              val elem = dict.asInstanceOf[Street]
               this.data.add(new DictionaryContainer(elem.getCode, elem.getName, elem.getSocr, elem.getIndex))
             } else {
               this.data.add(new DictionaryContainer(0, ""))
             }
           }
-          case "relationships" =>   {
-            var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.Integer, java.lang.Integer)]
+          case "relationships" => {
+            val elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.Integer, java.lang.Integer)]
             this.data.add(new DictionaryContainer(elem._1.intValue(),
-              elem._2, elem._3.intValue(), elem._4.intValue() ))
+              elem._2, elem._3.intValue(), elem._4.intValue()))
           }
           case "operationTypes" => {
-            var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.String)]
+            val elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.String)]
             val container: DictionaryContainer = new DictionaryContainer(elem._1.intValue, elem._2.asInstanceOf[String])
             container.setCodeOperation(elem._3.asInstanceOf[String])
             this.data.add(container)
           }
           case _ => {
             if (dict.isInstanceOf[(java.lang.Integer, java.lang.String)]) {
-              var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String)]
+              val elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String)]
               this.data.add(new DictionaryContainer(elem._1.intValue(),
                 elem._2))
             } else if (dict.isInstanceOf[(java.lang.Integer, java.lang.String, java.lang.Integer)]) {
               //Insurance
-              var elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.Integer)]
+              val elem = dict.asInstanceOf[(java.lang.Integer, java.lang.String, java.lang.Integer)]
               if (elem._3.isInstanceOf[java.lang.Integer]) {
                 this.data.add(new DictionaryContainer(elem._1.intValue(), elem._2, elem._3.intValue()))
               } else if (elem._3.isInstanceOf[java.lang.String]) {
                 this.data.add(new DictionaryContainer(elem._1.intValue, elem._2, elem._3.asInstanceOf[java.lang.String]))
               }
             } else if (dict.isInstanceOf[java.lang.String]) {
-              var elem = dict.asInstanceOf[java.lang.String]
+              val elem = dict.asInstanceOf[java.lang.String]
               this.data.add(new DictionaryContainer(-1, elem))
             } else if (dict.isInstanceOf[(java.lang.Integer, java.lang.String, java.lang.String)]) {
               //requestTypes
@@ -1265,8 +1194,7 @@ class DictionaryContainer {
   var codeOperation: String = _
 
 
-  def this(id: Int,
-           value: String) {
+  def this(id: Int, value: String) {
     this()
     this.id = id
     this.value = value
@@ -1274,8 +1202,8 @@ class DictionaryContainer {
 
   def this(id: Int,
            value: String,
-            leftSex: Int,
-            rightSex: Int) {
+           leftSex: Int,
+           rightSex: Int) {
     this(id, value)
     this.leftSex = leftSex
     this.rightSex = rightSex
@@ -1311,12 +1239,8 @@ class DictionaryContainer {
 
   def toSortingString(sortingField: String) = {
     val sortingFieldInternal = sortingField match {
-      case "value" => {
-        "r.value"
-      }
-      case _ => {
-        "r.id"
-      }
+      case "value" => "r.value"
+      case _ =>  "r.id"
     }
     sortingFieldInternal
   }
@@ -1370,31 +1294,31 @@ class DictionaryListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
-    var qs = new QueryDataStructure()
+  def toQueryStructure = {
+    val qs = new QueryDataStructure
     if (this.headId > 0 && dictName.compare("insurance") == 0) {
-      qs.query += ("AND r.headId = :headId\n")
+      qs.query += "AND r.headId = :headId\n"
       qs.add("headId", this.headId: java.lang.Integer)
     }
     else if (this.groupId > 0 && dictName.compare("clientDocument") == 0) {
-      qs.query += ("AND r.documentTypeGroup.id = :headId\n")
+      qs.query += "AND r.documentTypeGroup.id = :headId\n"
       qs.add("headId", this.groupId: java.lang.Integer)
     }
     else if (this.value != null && !this.value.isEmpty && dictName.compare("policyTypes") == 0) {
-      qs.query += ("AND upper(r.name) LIKE :name\n")
+      qs.query += "AND upper(r.name) LIKE :name\n"
       qs.add("name", this.value + "%")
     }
     else if (dictName.compare("socStatus") == 0) {
-      qs.query += ("AND ssc.code = '1'\n")
+      qs.query += "AND ssc.code = '1'\n"
     }
     else if (dictName.compare("disabilityTypes") == 0) {
-      qs.query += ("AND ssc.code = '2'\n")
+      qs.query += "AND ssc.code = '2'\n"
     }
     else if (dictName.compare("citizenships") == 0) {
-      qs.query += ("AND ssc.code = '4'\n")
+      qs.query += "AND ssc.code = '4'\n"
     }
     else if (dictName.compare("citizenships2") == 0) {
-      qs.query += ("AND ssc.code = '5'\n")
+      qs.query += "AND ssc.code = '5'\n"
     }
     else if (this.level != null && !this.level.isEmpty && dictName.compare("KLADR") == 0) {
       //Спецификация алгоритма: https://docs.google.com/document/d/15HtJdZ1OwP0TaeyWB1R0MOjluaEQcpO3U7w8g2hssgA/edit#heading=h.jwlb9dw58lw6
@@ -1514,7 +1438,7 @@ class DepartmentsDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
+  def toQueryStructure = {
     val qs = new QueryDataStructure()
 
     if (hasBeds) {
@@ -1524,13 +1448,14 @@ class DepartmentsDataFilter extends AbstractListDataFilter {
     }
 
     // Temporary implementation
-    if(withoutChildren) {
+    if (withoutChildren) {
       qs.query += String.format("AND (exists (SELECT  oshb.masterDepartment.id FROM OrgStructureHospitalBed oshb WHERE oshb.masterDepartment.id = os.id) OR " +
         "os.code = 'Консультативно-поликлиническое отделение' OR os.id = %s)", ConfigManager.Messages("db.dayHospital.id"))
     }
 
     if (hasPatients) {
-      val res = """ AND exists(
+      val res =
+        """ AND exists(
           SELECT e
           FROM
             Event e,
@@ -1574,7 +1499,7 @@ class DepartmentsDataFilter extends AbstractListDataFilter {
             )
           AND
             e.deleted = 0)
-                """.format(ConfigManager.Messages("db.action.movingFlatCode"), ConfigManager.Messages("db.action.leavingFlatCode"))
+        """.format(ConfigManager.Messages("db.action.movingFlatCode"), ConfigManager.Messages("db.action.leavingFlatCode"))
       qs.query += res
     }
     qs
@@ -1583,12 +1508,8 @@ class DepartmentsDataFilter extends AbstractListDataFilter {
   @Override
   def toSortingString(sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case "name" => {
-        "os.name %s"
-      }
-      case _ => {
-        "os.id %s"
-      }
+      case "name" => "os.name %s"
+      case _ => "os.id %s"
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)
     sorting
@@ -1629,15 +1550,14 @@ class EventTypesListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
-    var qs = new QueryDataStructure()
-
+  def toQueryStructure = {
+    val qs = new QueryDataStructure
     if (this.financeId > 0) {
-      qs.query += ("AND et.finance.id = :financeId\n")
+      qs.query += "AND et.finance.id = :financeId\n"
       qs.add("financeId", this.financeId: java.lang.Integer)
     }
     if (this.requestTypeId > 0) {
-      qs.query += ("AND et.requestType.id = :requestTypeId\n")
+      qs.query += "AND et.requestType.id = :requestTypeId\n"
       qs.add("requestTypeId", this.requestTypeId: java.lang.Integer)
     }
     qs
@@ -1646,12 +1566,8 @@ class EventTypesListRequestDataFilter extends AbstractListDataFilter {
   @Override
   def toSortingString(sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case "name" => {
-        "et.name %s"
-      }
-      case _ => {
-        "et.id %s"
-      }
+      case "name" => "et.name %s"
+      case _ => "et.id %s"
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)
     sorting
@@ -1665,7 +1581,7 @@ class EventTypesListData {
   @BeanProperty
   var requestData: ListDataRequest = _
   @BeanProperty
-  var data: ArrayList[DictionaryContainer] = new ArrayList[DictionaryContainer]
+  var data: util.List[DictionaryContainer] = new ArrayList[DictionaryContainer]
 
   def this(requestData: ListDataRequest) {
     this()
@@ -1701,14 +1617,14 @@ class GroupTypesListData {
         requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getGroupCode != null &&
           requestData.getFilter.asInstanceOf[QuotaTypesListRequestDataFilter].getGroupCode.compareTo("") != 0)) {
       //this.requestData.setRecordsCount(classMap.size)
-      this.data = new java.util.LinkedList[QuotaTypeContainer]
-      quotaTypes.foreach(f => this.data.asInstanceOf[java.util.LinkedList[QuotaTypeContainer]].add(new QuotaTypeContainer(f)))
+      this.data = new java.util.ArrayList[QuotaTypeContainer]
+      quotaTypes.foreach(f => this.data.asInstanceOf[java.util.ArrayList[QuotaTypeContainer]].add(new QuotaTypeContainer(f)))
     } else {
-      this.data = new java.util.LinkedList[GroupQuotaTypeContainer]
+      this.data = new java.util.ArrayList[GroupQuotaTypeContainer]
       quotaTypes.foreach(f => {
         if (f.getGroupCode == null) {
           val temp = new GroupQuotaTypeContainer(f, quotaTypes)
-          this.data.asInstanceOf[java.util.LinkedList[GroupQuotaTypeContainer]].add(temp)
+          this.data.asInstanceOf[java.util.ArrayList[GroupQuotaTypeContainer]].add(temp)
         }
       })
     }
@@ -1727,10 +1643,10 @@ class GroupQuotaTypeContainer {
   var code: String = _
 
   @BeanProperty
-  var types: java.util.List[QuotaTypeContainer] = new java.util.LinkedList[QuotaTypeContainer]
+  var types: util.List[QuotaTypeContainer] = new util.ArrayList[QuotaTypeContainer]
 
   def this(groupQuotaType: QuotaType,
-           quotaTypes: java.util.List[QuotaType]) {
+           quotaTypes: util.List[QuotaType]) {
     this()
     this.id = groupQuotaType.getId.intValue()
     this.code = groupQuotaType.getCode
@@ -1793,20 +1709,20 @@ class QuotaTypesListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
-    var qs = new QueryDataStructure()
-    qs.query += ("WHERE r.deleted = 0\n")
+  def toQueryStructure = {
+    val qs = new QueryDataStructure()
+    qs.query += "WHERE r.deleted = 0\n"
 
     if (this.id > 0) {
-      qs.query += ("AND r.id = :id\n")
+      qs.query += "AND r.id = :id\n"
       qs.add("id", this.id: java.lang.Integer)
     }
     else if (this.code != null && !this.code.isEmpty) {
-      qs.query += ("AND r.code = :code\n")
+      qs.query += "AND r.code = :code\n"
       qs.add("code", this.code)
     }
     else if (this.groupCode != null && !this.groupCode.isEmpty) {
-      qs.query += ("AND r.groupCode =  :groupCode\n")
+      qs.query += "AND r.groupCode =  :groupCode\n"
       qs.add("groupCode", this.groupCode)
     }
     qs
@@ -1815,12 +1731,8 @@ class QuotaTypesListRequestDataFilter extends AbstractListDataFilter {
   @Override
   def toSortingString(sortingField: String, sortingMethod: String) = {
     var sorting = sortingField match {
-      case "code" => {
-        "r.code %s"
-      }
-      case _ => {
-        "r.id %s"
-      }
+      case "code" => "r.code %s"
+      case _ => "r.id %s"
     }
     sorting = "ORDER BY " + sorting.format(sortingMethod)
     sorting
@@ -1832,7 +1744,7 @@ class QuotaTypesListRequestDataFilter extends AbstractListDataFilter {
 class DefaultListDataFilter extends AbstractListDataFilter {
 
   @Override
-  def toQueryStructure() = new QueryDataStructure()
+  def toQueryStructure = new QueryDataStructure()
 
   @Override
   def toSortingString(sortingField: String, sortingMethod: String) = ""

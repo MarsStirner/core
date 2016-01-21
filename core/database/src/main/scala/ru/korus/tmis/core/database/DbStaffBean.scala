@@ -116,11 +116,11 @@ class DbStaffBean
   def getEmptyPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, citoActionsCount: Int) = {
 
     //TODO: как то надо подрубить пэйджинг, сортировки и общее кол-во
-    val queryStr = filter.toQueryStructure()
+    val queryStr = filter.toQueryStructure
 
     //Получение всех врачей по графику
     val sqlRequest = AllEmptyStaffWithFilterQuery.format("s, time", queryStr.query, sorting)
-    var typed = em.createQuery(sqlRequest, classOf[Array[AnyRef]]).setParameter("citoActionsCount", citoActionsCount)
+    val typed = em.createQuery(sqlRequest, classOf[Array[AnyRef]]).setParameter("citoActionsCount", citoActionsCount)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -132,15 +132,14 @@ class DbStaffBean
       throw new CoreException(i18n("error.staffsNotFound"))
     }                     */
 
-    var retMap = new java.util.HashMap[Staff, java.util.LinkedList[APValueTime]]
+    val retMap = new java.util.HashMap[Staff, java.util.List[APValueTime]]
     result.foreach(f => {
       if (f(0).isInstanceOf[Staff]) {
         val staff = f(0).asInstanceOf[Staff]
-        if (retMap.containsKey(staff) == false) {
+        if (!retMap.containsKey(staff)) {
           if (f(1).isInstanceOf[APValueTime]) {
             val time = f(1).asInstanceOf[APValueTime]
-            var timeList = new util.LinkedList[APValueTime]
-
+            val timeList = new util.ArrayList[APValueTime]
             timeList.add(time)
             retMap.put(staff, timeList)
           }
@@ -160,43 +159,16 @@ class DbStaffBean
         staff
       }
     })
-    /*
-   var retList = new java.util.LinkedList[Staff]
-   retMap.foreach(f => {
-     if (f._2.getTime <= filter.asInstanceOf[FreePersonsListDataFilter].beginOnlyTime.getTime &&
-       f._2.getTime >= filter.asInstanceOf[FreePersonsListDataFilter].endOnlyTime.getTime &&
-       filter.asInstanceOf[FreePersonsListDataFilter].beginOnlyTime.getTime < filter.asInstanceOf[FreePersonsListDataFilter].endOnlyTime.getTime) {
-       retList.add(f._1)
-     }
-   })
-
-   //Возвращаем врачей у кого консультации в это время уже запланированы
-   val ids = retList.map((st) => st.getId.intValue)
-   var result2 = em.createQuery(AllStaffWithoutCurrentConsultancyQuery, classOf[Staff])
-     .setParameter("executorIds", asJavaCollection(ids))
-     .setParameter("code", "4104")
-     .setParameter("begDate", filter.asInstanceOf[FreePersonsListDataFilter].beginDate)
-     .setParameter("endDate", filter.asInstanceOf[FreePersonsListDataFilter].endDate)
-     .getResultList
-
-   //Сопоставляем график и занятых врачей
-   result2.foreach(s => {
-     if (retList.contains(s)) {
-       retList.remove(s)
-     }
-
-   })
-   */
     retMap
   }
 
   def getActionPropertyForPersonByRequest(filter: ListDataFilter) = {
     //TODO: как то надо подрубить пэйджинг, сортировки и общее кол-во
-    val queryStr = filter.toQueryStructure()
+    val queryStr = filter.toQueryStructure
 
     //Получение всех врачей по графику
     val sqlRequest = ActionPropertyForStaffWithFilterQuery.format(queryStr.query)
-    var typed = em.createQuery(sqlRequest, classOf[ActionProperty])
+    val typed = em.createQuery(sqlRequest, classOf[ActionProperty])
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))

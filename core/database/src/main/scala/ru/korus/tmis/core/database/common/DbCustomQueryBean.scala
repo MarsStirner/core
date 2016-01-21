@@ -775,9 +775,9 @@ class DbCustomQueryBean
 
   def getCountOfMkbsWithFilter(filter: Object) = {
 
-    var queryStr: QueryDataStructure = filter match {
-      case f: MKBListRequestDataFilter => f.toQueryStructure()
-      case _ => new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case f: MKBListRequestDataFilter => f.toQueryStructure
+      case _ => new QueryDataStructure
     }
 
     if (queryStr.data.size() > 0) {
@@ -786,7 +786,7 @@ class DbCustomQueryBean
       }
     }
 
-    var typed = em.createQuery(AllMkbWithFilterQuery.format("count(mkb)", queryStr.query, ""), classOf[Long])
+    val typed = em.createQuery(AllMkbWithFilterQuery.format("count(mkb)", queryStr.query, ""), classOf[Long])
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))

@@ -237,7 +237,7 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
       qs.add("code", this.code + "%")
     }
     if (this.eventId > 0) {
-      qs.query += ("AND a.event.id = :eventId\n")
+      qs.query += "AND a.event.id = :eventId\n"
       qs.add("eventId", this.eventId: java.lang.Integer)
     }
     /*if (this.diagnosticDate != null) {
@@ -277,7 +277,7 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
       qs.query += "AND a.isUrgent = :urgent\n"
       qs.add("urgent", (this.urgent != 0): java.lang.Boolean)
     }
-    if (this.mnemonic != null && !this.mnemonic.isEmpty) {
+    if (this.mnemonic != null && this.mnemonic.nonEmpty) {
       qs.query += "AND a.actionType.mnemonic IN :mnemonic\n"
       qs.add("mnemonic", asJavaCollection(this.mnemonic))
     }
