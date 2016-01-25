@@ -9,7 +9,8 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "rbDiagnosisType")
 @NamedQueries(
         {
-                @NamedQuery(name = "RbDiagnosisType.findAll", query = "SELECT dt FROM RbDiagnosisType dt")
+                @NamedQuery(name = "RbDiagnosisType.findAll", query = "SELECT dt FROM RbDiagnosisType dt"),
+                @NamedQuery(name="RbDiagnosisType.findByFlatCode", query="SELECT dt FROM RbDiagnosisType dt WHERE dt.flatCode = :flatCode")
         })
 @XmlType(name = "rbDiagnosisType")
 @XmlRootElement(name = "rbDiagnosisType")

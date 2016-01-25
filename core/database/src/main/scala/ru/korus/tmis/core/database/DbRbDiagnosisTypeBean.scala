@@ -1,14 +1,14 @@
 package ru.korus.tmis.core.database
 
-import javax.interceptor.Interceptors
-
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
+
+import grizzled.slf4j.Logging
 import ru.korus.tmis.core.entity.model.RbDiagnosisType
 import ru.korus.tmis.core.exception.NoSuchRbDiagnosisTypeException
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.collection.JavaConversions._
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
 /**
@@ -17,39 +17,32 @@ import scala.language.reflectiveCalls
  */
 
 @Stateless
-class DbRbDiagnosisTypeBean  extends DbRbDiagnosisTypeBeanLocal
-                                with Logging
-                                with I18nable {
+class DbRbDiagnosisTypeBean extends DbRbDiagnosisTypeBeanLocal
+with Logging
+with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
   def getRbDiagnosisTypeById(id: Int) = {
-    val result = em.createQuery(RbDiagnosisTypeFindQuery.format(ByIdSubQuery),classOf[RbDiagnosisType])
-                   .setParameter("id", id)
-                   .getResultList
-
-    result.size match {
-      case 0 => {
-        throw new NoSuchRbDiagnosisTypeException( ConfigManager.ErrorCodes.RbDiagnosisTypeNotFound,
-                                                  id,
-                                                  i18n("error.rbDiagnosisTypeNotFound").format("id: %d".format(id)))
-      }
-      case size => {
-
-        result(0)
-      }
+    val result = em.find(classOf[RbDiagnosisType], id)
+    if (result != null) {
+      result
+    } else {
+      throw new NoSuchRbDiagnosisTypeException(ConfigManager.ErrorCodes.RbDiagnosisTypeNotFound,
+        id,
+        i18n("error.rbDiagnosisTypeNotFound").format("id: %d".format(id)))
     }
   }
 
   def getRbDiagnosisTypeByFlatCode(flatCode: String) = {
-    val result = em.createQuery(RbDiagnosisTypeFindQuery.format(ByFlatCodeSubQuery),classOf[RbDiagnosisType])
+    val result = em.createNamedQuery("RbDiagnosisType.findByFlatCode", classOf[RbDiagnosisType])
       .setParameter("flatCode", flatCode)
       .getResultList
 
     result.size match {
       case 0 => {
-        throw new NoSuchRbDiagnosisTypeException( ConfigManager.ErrorCodes.RbDiagnosisTypeNotFound,
+        throw new NoSuchRbDiagnosisTypeException(ConfigManager.ErrorCodes.RbDiagnosisTypeNotFound,
           flatCode,
           i18n("error.rbDiagnosisTypeNotFound").format("flatCode: %s".format(flatCode)))
       }
@@ -60,15 +53,23 @@ class DbRbDiagnosisTypeBean  extends DbRbDiagnosisTypeBeanLocal
     }
   }
 
-  val RbDiagnosisTypeFindQuery =
-    """
-      SELECT dt
-      FROM RbDiagnosisType dt
-      WHERE
-      %s
-    """
+  /**
+   * Возвращает тип даигноза \ диагностики по заданному коду
+   * @param flatCode полский код типа дагноза\диагностики
+   * @return тип диагноза \ диагностики с заданным кодом. null если по коду ничего не нашли
+   */
+  override def getByFlatCode(flatCode: String): RbDiagnosisType = {
+    em.createNamedQuery("RbDiagnosisType.findByFlatCode", classOf[RbDiagnosisType])
+      .setParameter("flatCode", flatCode)
+      .getResultList.headOption.orNull
+  }
 
-  val ByIdSubQuery = """ dt.id = :id """
-
-  val ByFlatCodeSubQuery = """ dt.flatCode = :flatCode """
+  /**
+   * Возвращает тип даигноза \ диагностики по заданному идентификатору
+   * @param id  идентифкатор сущности
+   * @return тип диагноза \ диагностики с заданным идентификатором. null если по коду ничего не нашли
+   */
+  override def getById(id: Int): RbDiagnosisType = {
+    em.find(classOf[RbDiagnosisType], id)
+  }
 }

@@ -25,4 +25,20 @@ public interface DbMkbBeanLocal {
      * @see Mkb
      */
     Mkb getMkbByCode(String code) throws CoreException;
+
+    /**
+     * Получение МКБ по его коду (без исключений если не найдено МКБ)
+     * @see #getMkbByCode(String) То-же самое но с исключением
+     * @param code Код МКБ Диагноза
+     * @return Данные о обращении как Mkb entity \ null если не найдено
+     */
+    Mkb getByCode(final String code);
+
+    /**
+     * Получение МКБ по его коду (без исключений если не найдено МКБ)
+     * @see #getMkbById То-же самое но с исключением
+     * @param id Идентификатор диагноза
+     * @return Данные о обращении как Mkb entity \ null если не найдено
+     */
+    Mkb getById(int id);
 }

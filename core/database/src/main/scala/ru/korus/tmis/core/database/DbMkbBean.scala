@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database
 
+import org.apache.commons.lang.StringUtils
 import ru.korus.tmis.core.entity.model.{Mkb, Nomenclature}
 
 
@@ -70,4 +71,15 @@ class DbMkbBean
     WHERE
       m.diagID = :code
                        """
+
+  override def getByCode(code: String): Mkb = {
+    if(StringUtils.isEmpty(code)){
+      return null
+    }
+    em.createNamedQuery("Mkb.findByCode", classOf[Mkb]).setParameter("code", code).getResultList.headOption.orNull
+  }
+
+  override def getById(id: Int): Mkb = {
+    if(id > 0) em.find(classOf[Mkb], id) else null
+  }
 }
