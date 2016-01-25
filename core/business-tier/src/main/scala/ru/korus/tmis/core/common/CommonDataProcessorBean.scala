@@ -40,6 +40,7 @@ class CommonDataProcessorBean
   val AWI = ConfigManager.AWI
   val APWI = ConfigManager.APWI
 
+
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
@@ -379,42 +380,42 @@ class CommonDataProcessorBean
         var executorId: Int = -1
         //var toOrder: Boolean = false
 
-        var res = aps.find(p => p.name == AWI.assessmentBeginDate.toString).getOrElse(null)
+        var res = aps.find(p => p.name == AWI.assessmentBeginDate.toString).orNull
         if (res != null) {
           beginDate = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => null
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
-        res = aps.find(p => p.name == AWI.assessmentEndDate.toString).getOrElse(null)
+        res = aps.find(p => p.name == AWI.assessmentEndDate.toString).orNull
         if (res != null) {
           endDate = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => null
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
-        res = aps.find(p => p.name == AWI.finance.toString).getOrElse(null)
+        res = aps.find(p => p.name == AWI.finance.toString).orNull
         if (res != null) {
           finance = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => 0
             case Some(x) => x.toInt
           }
         }
-        res = aps.find(p => p.name == AWI.plannedEndDate.toString).getOrElse(null)
+        res = aps.find(p => p.name == AWI.plannedEndDate.toString).orNull
         if (res != null) {
           plannedEndDate = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => null
             case Some(x) => ConfigManager.DateFormatter.parse(x)
           }
         }
-        res = aps.find(p => p.name == AWI.assignerId.toString).getOrElse(null)
+        res = aps.find(p => p.name == AWI.assignerId.toString).orNull
         if (res != null) {
           assignerId = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => 0
             case Some(x) => x.toInt
           }
         }
-        res = aps.find(p => p.name == AWI.executorId.toString).getOrElse(null)
+        res = aps.find(p => p.name == AWI.executorId.toString).orNull
         if (res != null) {
           executorId = res.getPropertiesMap.get(APWI.Value.toString) match {
             case None | Some("") => 0
@@ -545,8 +546,8 @@ class CommonDataProcessorBean
   private def saveDiagnoses(eventId: Int, action: Action, apList: java.util.List[ActionProperty], apValue: java.util.List[APValue], userData: Staff): java.util.List[AnyRef] = {
 
     var map = Map.empty[String, java.util.Set[AnyRef]]
-    val characterAP = apList.find(p => p.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseCharacter")) == 0).getOrElse(null)
-    val stageAP = apList.find(p => p.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseStage")) == 0).getOrElse(null)
+    val characterAP = apList.find(p => p.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseCharacter")) == 0).orNull
+    val stageAP = apList.find(p => p.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("db.apt.documents.codes.diseaseStage")) == 0).orNull
     var isStageSaved = false
     var preCharacterId = 0
     var preStageId = 0
@@ -576,14 +577,14 @@ class CommonDataProcessorBean
       var characterId = 0
       var stageId = 0
       if (ap.getType.getTypeName.compareTo("MKB") == 0) {
-        val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode != null && !ap.equals(p) && ap.getType.getCode.contains(p.getType.getCode) /*p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 3))==0*/).getOrElse(null)
+        val descriptionAP = apList.find(p => ap.getType.getCode != null && p.getType.getCode != null && !ap.equals(p) && ap.getType.getCode.contains(p.getType.getCode) /*p.getType.getCode.compareTo(ap.getType.getCode.substring(0, ap.getType.getCode.size - 3))==0*/).orNull
         if (ap.getType.getCode != null) {
           if (ap.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb")) == 0) {
             characterId = preCharacterId
             stageId = preStageId
             isStageSaved = true
           } else if (ap.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.mainDiagMkb")) == 0 && !isStageSaved) {
-            if (apList.find(p => ap.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb")) == 0).getOrElse(null) == null) {
+            if (apList.find(p => ap.getType.getCode != null && p.getType.getCode != null && p.getType.getCode.compareTo(i18n("appeal.diagnosis.diagnosisKind.finalMkb")) == 0).orNull == null) {
               characterId = preCharacterId
               stageId = preStageId
             }

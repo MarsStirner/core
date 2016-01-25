@@ -93,13 +93,9 @@ public class Diagnosis implements Serializable {
 
     @ManyToOne
     @JoinColumn(name = "MKB", referencedColumnName = "DiagID")
-    //@NotNull
-    //@Valid
-    //@Size(min = 1, max = 8)
     private Mkb mkb;
 
     @Column(name = "MKBEx")
-    //@Size(min = 1, max = 8)
     private String mkbExCode;
 
     @Basic(optional = false)
@@ -247,9 +243,6 @@ public class Diagnosis implements Serializable {
 
     public void setMkb(final Mkb mkb) {
         this.mkb = mkb;
-        if (mkb != null && !mkb.getDiagnosis().contains(this)) {
-            mkb.addDiagnosis(this);
-        }
     }
 
     @Override
@@ -278,7 +271,6 @@ public class Diagnosis implements Serializable {
     }
 
     public static Diagnosis clone(Diagnosis self) throws CloneNotSupportedException {
-        Diagnosis newDiagnosis = (Diagnosis) self.clone();
-        return newDiagnosis;
+       return (Diagnosis) self.clone();
     }
 }

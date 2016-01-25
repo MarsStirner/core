@@ -190,7 +190,7 @@ public class Patient implements Serializable, Cloneable {
     public List<ClientPolicy> getActiveClientPolicies() {
         List<ClientPolicy> activePolicies = new LinkedList<ClientPolicy>();
         for (ClientPolicy p : clientPolicies) {
-            if (p.isDeleted() == false) {
+            if (!p.isDeleted()) {
                 activePolicies.add(p);
             }
         }
@@ -214,7 +214,7 @@ public class Patient implements Serializable, Cloneable {
     public List<ClientRelation> getActiveClientRelatives() {
         List<ClientRelation> activeRelations = new LinkedList<ClientRelation>();
         for (ClientRelation r : clientRelatives) {
-            if (r.isDeleted() == false) {
+            if (!r.isDeleted()) {
                 activeRelations.add(r);
             }
         }
@@ -238,7 +238,7 @@ public class Patient implements Serializable, Cloneable {
     public List<ClientContact> getActiveClientContacts() {
         List<ClientContact> activeContacts = new LinkedList<ClientContact>();
         for (ClientContact c : clientContacts) {
-            if (c.isDeleted() == false) {
+            if (!c.isDeleted()) {
                 activeContacts.add(c);
             }
         }
@@ -258,7 +258,7 @@ public class Patient implements Serializable, Cloneable {
     public List<ClientAddress> getActiveClientAddresses() {
         List<ClientAddress> activeAddresses = new LinkedList<ClientAddress>();
         for (ClientAddress c : clientAddresses) {
-            if (c.isDeleted() == false) {
+            if (!c.isDeleted()) {
                 activeAddresses.add(c);
             }
         }
@@ -286,7 +286,7 @@ public class Patient implements Serializable, Cloneable {
     public List<ClientAllergy> getActiveClientAllergies() {
         List<ClientAllergy> activeClientAllergies = new LinkedList<ClientAllergy>();
         for (ClientAllergy c : clientAllergies) {
-            if (c.isDeleted() == false) {
+            if (!c.isDeleted()) {
                 activeClientAllergies.add(c);
             }
         }
@@ -310,7 +310,7 @@ public class Patient implements Serializable, Cloneable {
     public List<ClientIntoleranceMedicament> getActiveClientIntoleranceMedicaments() {
         List<ClientIntoleranceMedicament> activeClientIntoleranceMedicaments = new LinkedList<ClientIntoleranceMedicament>();
         for (ClientIntoleranceMedicament c : clientIntoleranceMedicaments) {
-            if (c.isDeleted() == false) {
+            if (!c.isDeleted()) {
                 activeClientIntoleranceMedicaments.add(c);
             }
         }
@@ -348,7 +348,7 @@ public class Patient implements Serializable, Cloneable {
     public List<ClientWork> getActiveClientWorks() {
         List<ClientWork> activeClientWorks = new LinkedList<ClientWork>();
         for (ClientWork c : clientWorks) {
-            if (c.getDeleted() == false) {
+            if (!c.getDeleted()) {
                 activeClientWorks.add(c);
             }
         }
@@ -369,7 +369,7 @@ public class Patient implements Serializable, Cloneable {
     public List<ClientSocStatus> getActiveClientSocStatuses() {
         List<ClientSocStatus> activeSocStatuses = new LinkedList<ClientSocStatus>();
         for (ClientSocStatus c : clientSocStatuses) {
-            if (c.getDeleted() == false) {
+            if (!c.getDeleted()) {
                 activeSocStatuses.add(c);
             }
         }
