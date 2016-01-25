@@ -14,6 +14,7 @@ import javax.xml.bind.annotation.XmlType;
 @Table(name = "MKB")
 @NamedQueries({
         @NamedQuery(name = "Mkb.findAll", query = "SELECT m FROM Mkb m"),
+        @NamedQuery(name = "Mkb.findByCode", query = "SELECT m FROM Mkb m WHERE m.diagID = :code"),
         @NamedQuery(name = "Mkb.findById", query = "SELECT m FROM Mkb m WHERE m.id = :id")})
 @XmlType(name = "mkb")
 @XmlRootElement(name = "mkb")
@@ -158,21 +159,6 @@ private List<Diagnosis> diagnosis =
 
     public void setBlockName(String blockName) {
         this.blockName = blockName;
-    }
-
-    @OneToMany(mappedBy = "mkb", cascade = CascadeType.ALL)
-    //(fetch = FetchType.LAZY, mappedBy = "pk.fdField", cascade=CascadeType.ALL)
-    private List<Diagnosis> diagnosis = new LinkedList<Diagnosis>();
-
-    public List<Diagnosis> getDiagnosis() {
-        return diagnosis;
-    }
-
-    public void addDiagnosis(final Diagnosis diagnosis) {
-        this.diagnosis.add(diagnosis);
-        if (diagnosis.getMkb() != this) {
-            diagnosis.setMkb(this);
-        }
     }
 
     public String getDiagID() {
