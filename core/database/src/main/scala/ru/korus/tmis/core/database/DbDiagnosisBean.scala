@@ -1,16 +1,17 @@
 package ru.korus.tmis.core.database
 
-import common.{DbEventPersonBeanLocal, DbPatientBeanLocal}
-import javax.ejb.{EJB, TransactionAttributeType, TransactionAttribute, Stateless}
-import grizzled.slf4j.Logging
+import java.util.Date
+import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
+
+import grizzled.slf4j.Logging
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import ru.korus.tmis.core.data.TableCol
+import ru.korus.tmis.core.database.common.{DbEventPersonBeanLocal, DbPatientBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
-import java.util.Date
-import scala.collection.JavaConversions._
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.language.reflectiveCalls
 
 /**
@@ -48,19 +49,12 @@ with I18nable {
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getDiagnosisById(id: Int) = {
-    val result = em.createQuery(DiagnosisByIdQuery, classOf[Diagnosis])
-      .setParameter("id", id)
-      .getResultList
-
-    result.size match {
-      case 0 => {
-        throw new CoreException(ConfigManager.ErrorCodes.DiagnosisNotFound,
-          i18n("error.diagnosisNotFound").format(id))
-      }
-      case size => {
-
-        result(0)
-      }
+    val result = em.find(classOf[Diagnosis], id)
+    if (result != null) {
+      result
+    } else {
+      throw new CoreException(ConfigManager.ErrorCodes.DiagnosisNotFound,
+        i18n("error.diagnosisNotFound").format(id))
     }
   }
 
@@ -77,7 +71,7 @@ with I18nable {
     val save: Diagnosis => Diagnosis = if (id > 0) {
       diagnosis = getDiagnosisById(id)
       oldDiagnosis = Diagnosis.clone(diagnosis)
-      val fun = { d: Diagnosis => em.merge(d)}
+      val fun = { d: Diagnosis => em.merge(d) }
       fun
     }
     else {
@@ -100,7 +94,6 @@ with I18nable {
     } catch {
       case e: Exception => mkb = null
     }
-
     if (client == null || diagnosisType == null || mkb == null) {
       diagnosis = null
     }
@@ -114,8 +107,8 @@ with I18nable {
       diagnosis.setPerson(staff)
       diagnosis.setEndDate(now)
     }
+    if (diagnosis != null) save(diagnosis) else null
 
-    save(diagnosis)
   }
 
   override def createDiagnosis(ap: ActionProperty, tableCol: TableCol, staff: Staff): Diagnosis = {
@@ -127,29 +120,22 @@ with I18nable {
     diagnosis.setModifyPerson(staff)
     diagnosis.setPatient(ap.getAction.getEvent.getPatient)
 
-    val staffId =  if(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_PERSON) != null ) {
+    val staffId = if (tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_PERSON) != null) {
       tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_PERSON).getPerson.getId
     }
     else -1
 
-    val setPerson: Staff = if(staffId > 0) dbStaff.getStaffById(staffId) else null
+    val setPerson: Staff = if (staffId > 0) dbStaff.getStaffById(staffId) else null
 
     diagnosis.setDiagnosisType(
       dbRbDiagnosisTypeBean.getRbDiagnosisTypeById(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_TYPE).getRbValue.getId))
     diagnosis.setCharacter(dbRbDiseaseCharacterBeanLocal.getDiseaseCharacterById(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_CHARACTER).getRbValue.getId))
-    diagnosis.setMkb( dbMKBBean.getMkbByCode(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_MKB).getValue.asInstanceOf[String]))
+    diagnosis.setMkb(dbMKBBean.getMkbByCode(tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_DIAG_MKB).getValue))
     diagnosis.setPerson(setPerson)
     val date: Date = tableCol.getValues.get(DbDiagnosticBeanLocal.INDX_SET_DATE).getDate
     diagnosis.setSetDate(date)
     diagnosis.setEndDate(date)
     em.persist(diagnosis)
-    return diagnosis
+    diagnosis
   }
-
-  val DiagnosisByIdQuery = """
-    SELECT dias
-    FROM Diagnosis dias
-    WHERE
-      dias.id = :id
-                           """
 }

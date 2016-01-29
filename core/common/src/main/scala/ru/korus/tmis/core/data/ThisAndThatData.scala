@@ -499,9 +499,7 @@ class AllMKBListData {
            requestData: ListDataRequest) = {
     this()
     this.requestData = requestData
-    if(mkbs != null && !mkbs.isEmpty){
-      data = new util.ArrayList[AbstractMKBContainer](mkbs.size())
-    }
+    data = new util.ArrayList[AbstractMKBContainer](if(mkbs != null) mkbs.size() else 0)
     //Анализ формы вывода
     requestData.filter.asInstanceOf[MKBListRequestDataFilter].view match {
       case "class" => {

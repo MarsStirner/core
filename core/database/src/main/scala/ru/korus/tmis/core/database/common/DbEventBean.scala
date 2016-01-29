@@ -1,29 +1,20 @@
 package ru.korus.tmis.core.database.common
 
 
-import ru.korus.tmis.core.entity.model.{OrgStructure, ActionType, Event}
-
-import grizzled.slf4j.Logging
+import java.util
 import java.util.{Calendar, Date}
-import javax.persistence.{EntityManager, PersistenceContext}
-import javax.ejb.{TransactionAttributeType, TransactionAttribute, Stateless}
-import javax.interceptor.Interceptors
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
+
+import com.google.common.collect.{HashMultimap, Multimap}
+import grizzled.slf4j.Logging
+import ru.korus.tmis.core.data._
+import ru.korus.tmis.core.database._
+import ru.korus.tmis.core.entity.model.{ActionType, Event, OrgStructure, _}
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.scala.util.I18nable
 
 import scala.collection.JavaConversions._
-import javax.ejb.{EJB, TransactionAttributeType, TransactionAttribute, Stateless}
-import ru.korus.tmis.core.auth.AuthData
-import scala._
-import javax.persistence.{TypedQuery, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model._
-import fd.FDRecord
-import ru.korus.tmis.core.data._
-import ru.korus.tmis.core.exception.CoreException
-import scala.Some
-import ru.korus.tmis.scala.util.I18nable
-import ru.korus.tmis.core.database._
-import scala.Some
-import com.google.common.collect.{Multimap, HashMultimap}
-import java.util
 import scala.language.reflectiveCalls
 
 //
@@ -76,10 +67,8 @@ class DbEventBean
     em.flush()
   }
 
-  //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEventById(id: Int) = {
-    val e = em.find(classOf[Event], id)
-    e
+    em.find(classOf[Event], id)
   }
 
   def getActionTypeFilter(eventId: Int) = {
@@ -97,8 +86,8 @@ class DbEventBean
       .setParameter("eid", eventId)
       .getResultList
       .sortBy {
-      case (Array(org, date)) => date.asInstanceOf[Date].getTime
-    }
+        case (Array(org, date)) => date.asInstanceOf[Date].getTime
+      }
       .lastOption.map {
       _.head
     }
@@ -329,15 +318,17 @@ class DbEventBean
     res
   }
 
-  val EventGetCountRecords = """
+  val EventGetCountRecords =
+    """
   SELECT count(e)
   FROM
     Event e
   WHERE
     %s
-                             """
+    """
 
-  val EventFindActiveByBirthDateAndFullNameQuery = """
+  val EventFindActiveByBirthDateAndFullNameQuery =
+    """
   SELECT %s
     FROM
   Event e
@@ -361,9 +352,10 @@ class DbEventBean
   AND
     e.deleted = 0
   ORDER BY e.%s %s
-                                                   """
+    """
 
-  val EventFindActiveByBirthDateQuery = """
+  val EventFindActiveByBirthDateQuery =
+    """
   SELECT %s
     FROM
   Event e
@@ -385,9 +377,10 @@ class DbEventBean
   AND
     e.deleted = 0
   ORDER BY e.%s %s
-                                        """
+    """
 
-  val EventFindActiveByFullNameQuery = """
+  val EventFindActiveByFullNameQuery =
+    """
   SELECT %s
     FROM
   Event e
@@ -409,10 +402,11 @@ class DbEventBean
   AND
     e.deleted = 0
   ORDER BY e.%s %s
-                                       """
+    """
 
 
-  val EventFindActiveByExternalIdQuery = """
+  val EventFindActiveByExternalIdQuery =
+    """
   SELECT %s
     FROM
   Event e
@@ -434,9 +428,10 @@ class DbEventBean
   AND
     e.deleted = 0
   ORDER BY e.%s %s
-                                         """
+    """
 
-  val EventFindActiveByEventIdQuery = """
+  val EventFindActiveByEventIdQuery =
+    """
   SELECT %s
   FROM
     Event e
@@ -458,9 +453,10 @@ class DbEventBean
   AND
     e.deleted = 0
   ORDER BY e.%s %s
-                                      """
+    """
 
-  val AllEventsBetweenDate = """
+  val AllEventsBetweenDate =
+    """
   SELECT %s
   FROM
     Event e
@@ -480,9 +476,10 @@ class DbEventBean
   AND
       e.deleted = 0
   ORDER BY e.%s %s
-                             """
+    """
 
-  val AllOrgStructuresForEventQuery = """
+  val AllOrgStructuresForEventQuery =
+    """
     SELECT org, a.begDate
     FROM
       Action a,
@@ -501,10 +498,11 @@ class DbEventBean
     AND
       ap.deleted = 0 AND
       a.deleted = 0
-                                      """.format(i18n("db.action.movingFlatCode"), i18n("db.apt.departmentName"))
+    """.format(i18n("db.action.movingFlatCode"), i18n("db.apt.departmentName"))
 
 
-  val ActionTypeFilterByEventIdQuery = """
+  val ActionTypeFilterByEventIdQuery =
+    """
     SELECT at
     FROM
       EventTypeAction eta JOIN eta.actionType at,
@@ -515,9 +513,10 @@ class DbEventBean
       eta.eventType = e.eventType
     AND
       at.deleted = 0
-                                       """
+    """
 
-  val EventByIdQuery = """
+  val EventByIdQuery =
+    """
     SELECT e
     FROM
       Event e
@@ -525,9 +524,10 @@ class DbEventBean
       e.id = :id
     AND
       e.deleted = 0
-                       """
+    """
 
-  val EventTypeByIdQuery = """
+  val EventTypeByIdQuery =
+    """
     SELECT et
     FROM
       EventType et
@@ -535,8 +535,9 @@ class DbEventBean
       et.id = :id
     AND
       et.deleted = 0
-                           """
-  val EventTypeByCodeQuery = """
+    """
+  val EventTypeByCodeQuery =
+    """
     SELECT et
     FROM
       EventType et
@@ -544,18 +545,20 @@ class DbEventBean
       et.code = :code
     AND
       et.deleted = 0
-                             """
+    """
 
-  val RbCounterByEventTypeCntQuery = """
+  val RbCounterByEventTypeCntQuery =
+    """
     SELECT
       rbc.id
     FROM
       rbCounter rbc
     WHERE
       rbc.id = :id
-                                     """
+    """
 
-  val EventByPatientQuery = """
+  val EventByPatientQuery =
+    """
     SELECT e
     FROM
       Event e
@@ -563,9 +566,10 @@ class DbEventBean
       e.patient = :patient
     AND
       e.deleted = 0
-                            """
+    """
 
-  val EventByPatientWithExistsActionByTypeQuery = """
+  val EventByPatientWithExistsActionByTypeQuery =
+    """
     SELECT e
     FROM
       Event e
@@ -584,8 +588,9 @@ class DbEventBean
           a.actionType = :actionType
         AND
           a.deleted = 0)
-                                                  """
-  val EventTypeIdByFDRecordIdQuery = """
+    """
+  val EventTypeIdByFDRecordIdQuery =
+    """
   SELECT Max(et.id)
   FROM
     EventType et,
@@ -594,7 +599,7 @@ class DbEventBean
     fdfv.pk.fdRecord.id = '%s'
   AND
     et.code = fdfv.value
-                                     """
+    """
 
   val EventTypeIdByRequestTypeIdAndFinanceIdQuery =
     """
@@ -607,7 +612,8 @@ class DbEventBean
       %s
     """
 
-  val AllAppealsWithFilterQuery = """
+  val AllAppealsWithFilterQuery =
+    """
     SELECT %s
     FROM
       Event e
@@ -623,7 +629,7 @@ class DbEventBean
       )
     %s
     %s
-                                  """
+    """
 
 
 }
