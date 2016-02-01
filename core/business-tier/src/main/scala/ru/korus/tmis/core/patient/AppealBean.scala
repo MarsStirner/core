@@ -387,8 +387,30 @@ with CAPids {
       setExecPersonForAppeal(event.getId.intValue(), 0, staff, ExecPersonSetType.EP_CREATE_APPEAL)
 
     //Создание/редактирование диагнозов (отд. записи)
-    val diagnosisInfo = createDiagnosticAndDiagnosis(data, event, staff)
-    logger.info("CreateOrModifyAppeal: diagnosisInfo={}", diagnosisInfo)
+    //val diagnosisInfo = createDiagnosticAndDiagnosis(data, event, staff)
+    //Создание/редактирование диагнозов (отд. записи)
+    var map = Map.empty[String, java.util.Set[AnyRef]]
+    var diagFlatCodes: Set[String] = Set()
+    appealData.data.diagnoses.foreach(f => if (f.getDiagnosisKind != null && !f.getDiagnosisKind.isEmpty) diagFlatCodes += f.getDiagnosisKind)
+    diagFlatCodes.foreach(flatCode => {
+      val values = appealData.data.diagnoses.filter(p => p.getDiagnosisKind.compareTo(flatCode) == 0)
+        .map(f => {
+          var mkb: Mkb = null
+          try {
+            mkb = dbMkbBean.getMkbByCode(f.getMkb.getCode)
+          } catch {
+            case e: Exception => mkb = null
+          }
+          (Integer.valueOf(f.getDiagnosticId),
+            f.getDescription,
+            if (mkb != null) Integer.valueOf(mkb.getId.intValue) else -1,
+            0, // characterId
+            0) // stageId
+        })
+        .toSet[AnyRef]
+      map += (flatCode -> values)
+    })
+    val diagnoses = diagnosisBean.insertDiagnoses(event.getId.intValue(), null, mapAsJavaMap(map), staff)
     //Установка локальных контрактов из входных данных (если необходимо)
     val eventLocalContract = createEventLocalContract(data, event)
     event.getId.intValue()
@@ -410,6 +432,7 @@ with CAPids {
     }
   }
 
+  /*
   def createDiagnosticAndDiagnosis(data: AppealEntry, event: Event, staff: Staff): util.Map[Diagnosis, util.List[Diagnostic]] = {
     val result = new util.LinkedHashMap[Diagnosis, util.List[Diagnostic]](data.diagnoses.size())
     for (x <- data.diagnoses) {
@@ -421,9 +444,10 @@ with CAPids {
           val mkb: Mkb = dbMkbBean.getByCode(x.getMkb.getCode)
           if (mkb == null) {
             logger.error("Diagnosis skipped[{}]: Mkb code=\'{}\' not founded", x, x.getMkb.getCode: Any)
-          } else if (!ObjectUtils.equals(x.getMkb.getId, mkb.getId)) {
-            logger.error("Diagnosis skipped[%s]: Mkb code=\'%s\' identifiers mismatch: requested [%d] actual [%d] ".format(x, x.getMkb.getCode, x.getMkb.getId, mkb.getId.toInt))
-          } else {
+          } //else if (!ObjectUtils.equals(x.getMkb.getId, mkb.getId)) {
+           // logger.error("Diagnosis skipped[%s]: Mkb code=\'%s\' identifiers mismatch: requested [%d] actual [%d] ".format(x, x.getMkb.getCode, x.getMkb.getId, mkb.getId.toInt))
+          //} TODO вернуть эту проверку после исправления выбора МКБ из диалогового окна
+          else {
             val diagnosisType: RbDiagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(x.getDiagnosisKind)
             if (diagnosisType == null) {
               logger.error("rbDiagnosisType with flatCode=\'%s\' not found".format(x.getDiagnosisKind))
@@ -450,9 +474,10 @@ with CAPids {
           val mkb: Mkb = dbMkbBean.getByCode(x.getMkb.getCode)
           if (mkb == null) {
             logger.error("Diagnosis skipped[{}]: Mkb code=\'{}\' not founded", x, x.getMkb.getCode: Any)
-          } else if (!ObjectUtils.equals(x.getMkb.getId, mkb.getId)) {
-            logger.error("Diagnosis skipped[%s]: Mkb code=\'%s\' identifiers mismatch: requested [%d] actual [%d] ".format(x, x.getMkb.getCode, x.getMkb.getId, mkb.getId.toInt))
-          } else {
+          } // else if (!ObjectUtils.equals(x.getMkb.getId, mkb.getId)) {
+          // logger.error("Diagnosis skipped[%s]: Mkb code=\'%s\' identifiers mismatch: requested [%d] actual [%d] ".format(x, x.getMkb.getCode, x.getMkb.getId, mkb.getId.toInt))
+          //} TODO вернуть эту проверку после исправления выбора МКБ из диалогового окна
+         else {
             val diagnosisType: RbDiagnosisType = dbRbDiagnosisTypeBean.getRbDiagnosisTypeByFlatCode(x.getDiagnosisKind)
             if (diagnosisType == null) {
               logger.error("rbDiagnosisType with flatCode=\'%s\' not found".format(x.getDiagnosisKind))
@@ -482,6 +507,7 @@ with CAPids {
     }
     result
   }
+  */
 
   def getAppealById(id: Int) = {
     //запрос  данных из Эвента
