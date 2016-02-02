@@ -249,8 +249,7 @@ with CAPids {
     val inPatientEntry = patientData.getData
     if (inPatientEntry != null) {
       if (auth != null) {
-        val outPatientEntry: PatientEntry = patientBean.savePatient(-1, inPatientEntry, dbStaff.getStaffById(auth.getUserId)) //currentAuthData
-
+        val outPatientEntry: PatientEntry = patientBean.savePatient(-1, inPatientEntry, auth.getUser)
         patientData.setData(outPatientEntry)
         return patientData
       }
@@ -266,7 +265,7 @@ with CAPids {
     val inPatientEntry = patientData.getData
     if (inPatientEntry != null) {
       if (auth != null) {
-        val outPatientEntry: PatientEntry = patientBean.savePatient(id, inPatientEntry, dbStaff.getStaffById(auth.getUserId))
+        val outPatientEntry: PatientEntry = patientBean.savePatient(id, inPatientEntry, auth.getUser)
         patientData.setData(outPatientEntry)
         return patientData
       }
@@ -292,12 +291,12 @@ with CAPids {
   //Insert or modify appeal
   @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
   def insertAppealForPatient(appealData: AppealData, patientId: Int, auth: AuthData) = {
-    val ide = appealBean.insertAppealForPatient(appealData, patientId, auth, dbStaff.getStaffById(auth.getUserId))
+    val ide = appealBean.insertAppealForPatient(appealData, patientId, auth, auth.getUser)
     constructAppealData(ide)
   }
 
   def updateAppeal(appealData: AppealData, eventId: Int, auth: AuthData) = {
-    val ide = appealBean.updateAppeal(appealData, eventId, auth, dbStaff.getStaffById(auth.getUserId))
+    val ide = appealBean.updateAppeal(appealData, eventId, auth, auth.getUser)
     constructAppealData(ide)
   }
 
@@ -969,14 +968,14 @@ with CAPids {
 
     val isPrimary = data.getData.find(ce => ce.getTypeId.compareTo(i18n("db.actionType.primary").toInt) == 0).orNull != null //Врач прописывается только для первичного осмотра  (ид=139)
     if (isPrimary)
-      appealBean.setExecPersonForAppeal(eventId, 0, dbStaff.getStaffById(authData.getUserId), ExecPersonSetType.EP_CREATE_PRIMARY)
+      appealBean.setExecPersonForAppeal(eventId, 0, authData.getUser, ExecPersonSetType.EP_CREATE_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean createOrUpdatePrimaryAssessmentForEventId(eventId,
       data,
       null,
       authData,
-      dbStaff.getStaffById(authData.getUserId),
+      authData.getUser,
       baseUri,
       notifyAction,
       postProcessing())
@@ -992,14 +991,14 @@ with CAPids {
 
     //создаем ответственного, если до этого был другой
     if (data.getData.find(ce => ce.getTypeId.compareTo(i18n("db.actionType.primary").toInt) == 0).orNull != null) //Врач прописывается только для первичного осмотра  (ид=139)
-      appealBean.setExecPersonForAppeal(actionId, 0, dbStaff.getStaffById(authData.getUserId), ExecPersonSetType.EP_MODIFY_PRIMARY)
+      appealBean.setExecPersonForAppeal(actionId, 0, authData.getUser, ExecPersonSetType.EP_MODIFY_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean createOrUpdatePrimaryAssessmentForEventId(null,
       data,
       actionId,
       authData,
-      dbStaff.getStaffById(authData.getUserId),
+      authData.getUser,
       baseUri,
       notifyAction,
       postProcessing())
@@ -1113,7 +1112,7 @@ with CAPids {
 
   //Снятие пациента с койки
   def callOffHospitalBedForPatient(actionId: Int, authData: AuthData) = {
-    hospitalBedBean.callOffHospitalBedForPatient(actionId, authData, dbStaff.getStaffById(authData.getUserId))
+    hospitalBedBean.callOffHospitalBedForPatient(actionId, authData, authData.getUser)
   }
 
   //Список коек
@@ -1147,7 +1146,7 @@ with CAPids {
 
   def movingPatientToDepartment(eventId: Int, data: HospitalBedData, authData: AuthData) = {
 
-    val action = hospitalBedBean.movingPatientToDepartment(eventId, data, authData, dbStaff.getStaffById(authData.getUserId))
+    val action = hospitalBedBean.movingPatientToDepartment(eventId, data, authData, authData.getUser)
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MoveView]))
@@ -1220,13 +1219,12 @@ with CAPids {
         ajtList.add((a, dbJobTicketBean.getJobTicketForAction(a.getId.intValue())))
       })
     }
-    val list = new DiagnosticsListData(ajtList, requestData, dbStaff.getStaffById(authData.getUserId))
+    val list = new DiagnosticsListData(ajtList, requestData, authData.getUser)
     list
   }
 
   def getInfoAboutDiagnosticsForPatientByEvent(actionId: Int, authData: AuthData) = {
-    val json_data = directionBean.getDirectionById(actionId, "Diagnostic", null, dbStaff.getStaffById(authData.getUserId))
-    json_data
+    directionBean.getDirectionById(actionId, "Diagnostic", null, authData.getUser)
   }
 
   def getFreePersons(requestData: ListDataRequest, beginDate: Long) = {
@@ -1338,7 +1336,7 @@ with CAPids {
   def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     val json = directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB",
       auth,
-      dbStaff.getStaffById(auth.getUserId),
+      auth.getUser,
       postProcessingForDiagnosis)
     json.getData.map(entity => entity.getId.intValue()).foreach(a_id => {
       val action = actionBean.getActionById(a_id)
@@ -1352,35 +1350,35 @@ with CAPids {
 
   def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB",
-      auth, dbStaff.getStaffById(auth.getUserId), postProcessingForDiagnosis) // postProcessingForDiagnosis
+      auth, auth.getUser, postProcessingForDiagnosis) // postProcessingForDiagnosis
   }
 
   def insertInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG",
-      auth, dbStaff.getStaffById(auth.getUserId), postProcessingForDiagnosis) // postProcessingForDiagnosis
+      auth, auth.getUser, postProcessingForDiagnosis) // postProcessingForDiagnosis
   }
 
   def modifyInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
     directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG",
-      auth,  dbStaff.getStaffById(auth.getUserId), postProcessingForDiagnosis) // postProcessingForDiagnosis
+      auth,  auth.getUser, postProcessingForDiagnosis) // postProcessingForDiagnosis
   }
 
   def insertConsultation(request: ConsultationRequestData, authData: AuthData) = {
-    val actionId = directionBean.createConsultation(request, authData, dbStaff.getStaffById(authData.getUserId))
-    val json = directionBean.getDirectionById(actionId, "Consultation", null, dbStaff.getStaffById(authData.getUserId))
+    val actionId = directionBean.createConsultation(request, authData, authData.getUser)
+    val json = directionBean.getDirectionById(actionId, "Consultation", null, authData.getUser)
     json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
     json
   }
 
   def modifyConsultation(request: ConsultationRequestData, authData: AuthData) = {
-    val actionId = directionBean.createConsultation(request, authData,  dbStaff.getStaffById(authData.getUserId))
-    val json = directionBean.getDirectionById(actionId, "Consultation", null,  dbStaff.getStaffById(authData.getUserId))
+    val actionId = directionBean.createConsultation(request, authData,  authData.getUser)
+    val json = directionBean.getDirectionById(actionId, "Consultation", null,  authData.getUser)
     json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
     json
   }
 
   def removeDirection(data: AssignmentsToRemoveDataList, directionType: String, auth: AuthData) = {
-    directionBean.removeDirections(data, directionType,  dbStaff.getStaffById(auth.getUserId))
+    directionBean.removeDirections(data, directionType,  auth.getUser)
   }
 
   def checkCountOfConsultations(eventId: Int, pqt: Int, executorId: Int, data: Long) {
@@ -1597,7 +1595,7 @@ with CAPids {
           request.sortingFieldInternal,
           request.filter.unwrap(),
           request.rewriteRecordsCount,
-          dbStaff.getStaffById(auth.getUserId).getOrgStructure)
+          auth.getUser.getOrgStructure)
       case "finance" =>
         //  Типы оплаты
         mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
@@ -1607,7 +1605,7 @@ with CAPids {
           request.filter.unwrap(),
           request.rewriteRecordsCount,
           eventId,
-          dbStaff.getStaffById(auth.getUserId).getOrgStructure)
+          auth.getUser.getOrgStructure)
       case "quotaStatus" =>
         //   Статусы квот
         mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
@@ -1648,7 +1646,7 @@ with CAPids {
   //Сервисы по назначениям
   def insertAssignment(assignmentData: AssignmentData, eventId: Int, auth: AuthData) = {
 
-    val action = assignmentBean.insertAssignmentForPatient(assignmentData, eventId, auth,  dbStaff.getStaffById(auth.getUserId))
+    val action = assignmentBean.insertAssignmentForPatient(assignmentData, eventId, auth,  auth.getUser)
     assignmentBean.getAssignmentById(action.getId.intValue())
   }
 
@@ -1718,11 +1716,11 @@ with CAPids {
   }
 
   def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
-    directionBean.updateJobTicketsStatuses(data,  dbStaff.getStaffById(authData.getUserId))
+    directionBean.updateJobTicketsStatuses(data,  authData.getUser)
   }
 
   def sendActionsToLaboratory(data: SendActionsToLaboratoryDataList, authData: AuthData) = {
-    directionBean.sendActionsToLaboratory(data,  dbStaff.getStaffById(authData.getUserId))
+    directionBean.sendActionsToLaboratory(data,  authData.getUser)
   }
 
   def deletePatientInfo(id: Int) = patientBean.deletePatientInfo(id)
@@ -1734,7 +1732,7 @@ with CAPids {
   def insertBloodTypeForPatient(patientId: Int, data: BloodHistoryData, authData: AuthData) = {
     patientBean.insertBloodTypeForPatient(patientId,
       data,
-      dbStaff.getStaffById(authData.getUserId))
+      authData.getUser)
   }
 
   def getMonitoringInfoByAppeal(eventId: Int, condition: Int, authData: AuthData) = {
@@ -1774,7 +1772,7 @@ with CAPids {
   }
 
   def setExecPersonForAppeal(eventId: Int, personId: Int, authData: AuthData) = {
-    appealBean.setExecPersonForAppeal(eventId, personId, dbStaff.getStaffById(authData.getUserId), ExecPersonSetType.EP_SET_IN_LPU)
+    appealBean.setExecPersonForAppeal(eventId, personId, authData.getUser, ExecPersonSetType.EP_SET_IN_LPU)
   }
 
   def getLayoutAttributes = new LayoutAttributeListData(dbLayoutAttributeBean.getAllLayoutAttributes)

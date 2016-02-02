@@ -50,7 +50,7 @@ public class HospitalBedRegistryRESTImpl {
                                                HospitalBedData data) throws CoreException {
 
         AuthData authData = mkAuth(servRequest);
-        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        Staff staff = authData.getUser();
         return new JSONWithPadding(wsImpl.registryPatientToHospitalBed(eventId, data, authData, staff), callback);
     }
 
@@ -73,7 +73,7 @@ public class HospitalBedRegistryRESTImpl {
                                              HospitalBedData data,
                                              @PathParam("actionId") int actionId) throws CoreException {
         AuthData authData = mkAuth(servRequest);
-        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        Staff staff = authData.getUser();
         return new JSONWithPadding(wsImpl.modifyPatientToHospitalBed(actionId, data, authData, staff), callback);
     }
 

@@ -1,24 +1,26 @@
 package ru.korus.tmis.ws.impl
 
-import ru.korus.tmis.core.assessment.AssessmentBeanLocal
-import ru.korus.tmis.core.diagnostic.DiagnosticBeanLocal
-import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal
-import ru.korus.tmis.ws.medipad.MedipadWebService
-import javax.inject.Named
-import grizzled.slf4j.Logging
+import java.util._
 import javax.annotation.Resource
 import javax.ejb.EJB
+import javax.inject.Named
 import javax.jws.{HandlerChain, WebService}
 import javax.xml.ws.WebServiceContext
+
+import grizzled.slf4j.Logging
 import org.apache.shiro.SecurityUtils
+import ru.korus.tmis.core.assessment.AssessmentBeanLocal
+import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
-import common.{DbOrgStructureBeanLocal, DbEventPersonBeanLocal, DbContractBeanLocal}
-import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
+import ru.korus.tmis.core.database.common.{DbContractBeanLocal, DbEventPersonBeanLocal, DbOrgStructureBeanLocal}
+import ru.korus.tmis.core.diagnostic.DiagnosticBeanLocal
+import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.patient._
-import java.util._
-import ru.korus.tmis.scala.util.{Defaultible, I18nable, ConfigManager}
+import ru.korus.tmis.core.thesaurus.ThesaurusBeanLocal
+import ru.korus.tmis.scala.util.{ConfigManager, Defaultible, I18nable}
+import ru.korus.tmis.ws.medipad.MedipadWebService
+
 import scala.language.reflectiveCalls
 
 @Named
@@ -105,12 +107,12 @@ class MedipadWSImpl
 
   //////////////////////////////////////////////////////////////////////////////
 
-  def getCurrentPatients(): CommonData = {
+  def getCurrentPatients: CommonData = {
     requiresPermissions(Array("clientEventRead", "clientActionRead"))
 
     if (currentUser.isPermitted("existsSeesStructure")
       || currentUser().isPermitted("inflowSeesStructure")) {
-      return patientBean.getCurrentPatientsForDepartment(dbStaff.getStaffById(currentAuthData.getUserId))
+      return patientBean.getCurrentPatientsForDepartment(currentAuthData().getUser)
     } else if (currentUser.isPermitted("existsSeesSelf")
       || currentUser().isPermitted("inflowSeesSelf")) {
       return patientBean.getCurrentPatientsForDoctor(currentAuthData)
@@ -122,25 +124,26 @@ class MedipadWSImpl
   }
 
   //////////////////////////////////////////////////////////////////////////////
+
   import Defaultible._
 
-  private def checkingVersion[A: Defaultible](globalVersion: String)(td: =>A) = {
+  private def checkingVersion[A: Defaultible](globalVersion: String)(td: => A) = {
     if (globalVersion == dbVersionBean.getGlobalVersion) defaultValue[A]
     else td
   }
 
   private implicit val commonDataDefault = setDefault(new CommonData)
   private implicit val thesaurusDefault = setDefault(new ThesaurusData)
-    
+
   //////////////////////////////////////////////////////////////////////////////
 
   def getAssessmentTypes(globalVersion: String,
                          eventId: Int): CommonData = checkingVersion(globalVersion) {
-      assessmentBean.getAssessmentTypes(eventId, dbStaff.getStaffById(currentAuthData.getUserId))
+    assessmentBean.getAssessmentTypes(eventId, currentAuthData.getUser)
   }
 
   def getAllAssessmentTypes(globalVersion: String) = checkingVersion(globalVersion) {
-      assessmentBean.getAllAssessmentTypes
+    assessmentBean.getAllAssessmentTypes
   }
 
   def getAllAssessmentsForPatient(eventId: Int) = {
@@ -162,9 +165,9 @@ class MedipadWSImpl
                                  assessment: CommonData) = {
     requiresPermissions(Array("clientAssessmentCreate"))
     assessmentBean.createAssessmentForEventId(eventId,
-                                              assessment,
-                                              currentAuthData,
-                                              dbStaff.getStaffById(currentAuthData.getUserId));
+      assessment,
+      currentAuthData,
+      currentAuthData.getUser)
   }
 
   def modifyAssessmentForPatient(eventId: Int,
@@ -172,16 +175,16 @@ class MedipadWSImpl
                                  assessment: CommonData) = {
     requiresPermissions(Array("clientAssessmentUpdate"))
     assessmentBean.modifyAssessmentById(assessmentId,
-                                        assessment,
-                                        currentAuthData,
-                                        dbStaff.getStaffById(currentAuthData.getUserId));
+      assessment,
+      currentAuthData,
+      currentAuthData.getUser)
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   def getDiagnosticTypes(globalVersion: String,
                          eventId: Int) = checkingVersion(globalVersion) {
-    diagnosticBean.getDiagnosticTypes(eventId, dbStaff.getStaffById(currentAuthData.getUserId))
+    diagnosticBean.getDiagnosticTypes(eventId, currentAuthData.getUser)
   }
 
   def getAllDiagnosticTypes(globalVersion: String) = checkingVersion(globalVersion) {
@@ -203,9 +206,9 @@ class MedipadWSImpl
     requiresPermissions(Array("clientDiagnosticCreate"))
     val auth = currentAuthData
     diagnosticBean.createDiagnosticForEventId(eventId,
-                                              diagnostic,
-                                              auth,
-                                              dbStaff.getStaffById(currentAuthData.getUserId))
+      diagnostic,
+      auth,
+      currentAuthData.getUser)
   }
 
   def modifyDiagnosticForPatient(eventId: Int,
@@ -213,36 +216,37 @@ class MedipadWSImpl
                                  diagnostic: CommonData) = {
     requiresPermissions(Array("clientDiagnosticUpdate"))
     diagnosticBean.modifyDiagnosticById(diagnosticId,
-                                        diagnostic,
-                                        currentAuthData,
-                                        dbStaff.getStaffById(currentAuthData.getUserId))
+      diagnostic,
+      currentAuthData,
+      currentAuthData.getUser)
   }
 
   def callOffDiagnosticForPatient(eventId: Int,
                                   diagnosticId: Int) = {
     requiresPermissions(Array("clientDiagnosticUpdate"))
     diagnosticBean.updateDiagnosticStatusById(eventId,
-                                              diagnosticId,
-                                              ConfigManager.ActionStatus.Canceled)
+      diagnosticId,
+      ConfigManager.ActionStatus.Canceled)
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  def getThesaurus(globalVersion: String) = checkingVersion(globalVersion){
+  def getThesaurus(globalVersion: String) = checkingVersion(globalVersion) {
     thesaurusBean.getThesaurus
   }
 
-  def getThesaurusByCode(globalVersion: String, code: Int) = checkingVersion(globalVersion){
+  def getThesaurusByCode(globalVersion: String, code: Int) = checkingVersion(globalVersion) {
     thesaurusBean.getThesaurusByCode(code)
   }
 
-  def getMkb(globalVersion: String) = checkingVersion(globalVersion){
+  def getMkb(globalVersion: String) = checkingVersion(globalVersion) {
     thesaurusBean.getMkb
   }
 
-  def getAllDepartmentsByHasBeds(hasBeds: String, hasPatients: String) = { //Для медипада
-  val flgBeds = hasBeds.toLowerCase.compareTo("true")==0 || hasBeds.toLowerCase.compareTo("yes")==0
-    val flgPatients = hasPatients.toLowerCase.compareTo("true")==0 || hasPatients.toLowerCase.compareTo("yes")==0
+  def getAllDepartmentsByHasBeds(hasBeds: String, hasPatients: String) = {
+    //Для медипада
+    val flgBeds = hasBeds.toLowerCase.compareTo("true") == 0 || hasBeds.toLowerCase.compareTo("yes") == 0
+    val flgPatients = hasPatients.toLowerCase.compareTo("true") == 0 || hasPatients.toLowerCase.compareTo("yes") == 0
     val filter = new DepartmentsDataFilter(flgBeds, flgPatients)
     new AllDepartmentsListDataMP(dbOrgStructureBean.getAllOrgStructuresByRequest(0, 0, "", filter.unwrap()), null)
   }

@@ -145,7 +145,7 @@ public class Patient implements Serializable, Cloneable {
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<TempInvalid> tempInvalids = new LinkedList<TempInvalid>();
 
-    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)//{CascadeType.PERSIST, CascadeType.REMOVE}
+    @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL)
     private List<ClientDocument> clientDocuments = new LinkedList<ClientDocument>();
 
     public List<Event> getEvents() {

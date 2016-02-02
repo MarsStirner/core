@@ -45,7 +45,7 @@ class DbEventPersonBean
       em.merge(ep2)
     }
     val ep = new EventPerson
-    ep.setPerson(dbStaff.getStaffByIdWithoutDetach(sessionUser.getId))
+    ep.setPerson(sessionUser)
     if (event != null) {
       ep.setEvent(event)
     }
@@ -79,22 +79,7 @@ class DbEventPersonBean
   }
 
   def getEventPersonById(id: Int) = {
-    val query = em.createQuery(EventPersonFindQuery,
-      classOf[EventPerson])
-      .setParameter("id", id)
-
-    val result = query.getResultList
-    result.size match {
-      case 0 => {  null
-        //throw new CoreException(
-        //  ConfigManager.ErrorCodes.EventPersonNotFound,
-        //  i18n("error.eventPersonNotFound").format(id))
-      }
-      case size => {
-
-        result(0)
-      }
-    }
+    em.find(classOf[EventPerson], id)
   }
 
   // проверка на ответственного за госпитализацию (евент). Если юзер не ответственен за евент, для которого он создает акшен, то выдадим ошибку.
@@ -116,14 +101,6 @@ class DbEventPersonBean
         result(0)
     }
   }
-
-  val EventPersonFindQuery = """
-    SELECT r
-    FROM
-      EventPerson r
-    WHERE
-      r.id = :id
-                           """
 
   val LastEventPersonByEventIdFindQuery = """
     SELECT r

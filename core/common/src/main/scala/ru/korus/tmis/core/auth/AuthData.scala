@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.auth
 
+import org.codehaus.jackson.annotate.JsonIgnore
 import ru.korus.tmis.core.entity.model.{Staff, Role}
 
 import scala.beans.BeanProperty
@@ -41,7 +42,12 @@ class AuthData() {
   @BeanProperty
   var roles: java.util.Set[Role] = _
 
+  @JsonIgnore
   var userRole: Role = _
+
+  @JsonIgnore
+  @XmlTransient
+  var user: Staff = _
 
   @BeanProperty
   var deadline : Long = _
@@ -49,10 +55,12 @@ class AuthData() {
   @BeanProperty
   var ttl : Long = _
 
+
   /**
    * Получение Роли как Role entity
    * @return Role entity
    */
+  @JsonIgnore
   @XmlTransient
   def getUserRole = {
     userRole
@@ -64,6 +72,20 @@ class AuthData() {
    */
   def setUserRole(userRole: Role) = {
     this.userRole = userRole
+  }
+
+  /**
+   * Получение Роли как Role entity
+   * @return Role entity
+   */
+  @JsonIgnore
+  @XmlTransient
+  def getUser = {
+    user
+  }
+
+  def setUser(staff: Staff): Unit ={
+    user = staff
   }
 
   /**
@@ -95,6 +117,7 @@ class AuthData() {
     this.userPatronymicName = userPatronymicName
     this.userSpecs = userSpecs
     this.userRole = userRole
+    this.user = user
     this.doctor = new DoctorSpecsContainer(user)
     this.roles = user.getRoles
     this.deadline = deadline

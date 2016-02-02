@@ -158,12 +158,7 @@ public class AuthenticationRESTImpl {
             @Context HttpServletRequest servRequest, @QueryParam("roleId") int roleId, @QueryParam("callback") String callback
     ) throws AuthenticationException {
         AuthData authData = webmisImpl.checkTokenCookies(servRequest.getCookies());
-        Staff staff = null;
-        try {
-            staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
-        } catch (CoreException e) {
-            throw new AuthenticationException();
-        }
+        Staff staff = authData.getUser();
         for (Role r : staff.getRoles()) {
             if (r.getId().equals(roleId)) {
                 authData.setUserRole(r);
@@ -181,8 +176,7 @@ public class AuthenticationRESTImpl {
     @Produces({"application/javascript", "application/x-javascript", "application/xml", MediaType.APPLICATION_JSON})
     public Object getTokenInfo(TokenInfoRequest request) throws AuthenticationException, IOException {
         try {
-            ObjectMapper mapper = new ObjectMapper();
-            return   mapper.writeValueAsString(authStorage.checkToken(request.getToken(), request.getProlong()));
+            return new ObjectMapper().writeValueAsString(authStorage.checkToken(request.getToken(), request.getProlong()));
         } catch (CoreException e) {
             throw new AuthenticationException("Недопустимый токен");
         }

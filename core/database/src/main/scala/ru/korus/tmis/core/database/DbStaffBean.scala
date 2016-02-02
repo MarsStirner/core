@@ -5,20 +5,15 @@ import ru.korus.tmis.core.exception.{CoreException, NoSuchUserException}
 
 import grizzled.slf4j.Logging
 import javax.ejb.Stateless
-import javax.interceptor.Interceptors
 import scala.collection.JavaConversions._
 import java.util.Date
 import javax.persistence.{Query, TemporalType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.{APValueTime, ActionProperty, Action, Staff}
 import ru.korus.tmis.core.data.{PersonsListDataFilter, FreePersonsListDataFilter, QueryDataStructure}
 import ru.korus.tmis.core.filter.ListDataFilter
-import org.slf4j.{LoggerFactory, Logger}
 import java.util
 
-import org.eclipse.persistence.jpa.JpaEntityManager
 import org.eclipse.persistence.sessions.{DatabaseRecord, Session}
-import org.eclipse.persistence.internal.jpa.EJBQueryImpl
-import org.eclipse.persistence.queries.DatabaseQuery
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
@@ -32,7 +27,6 @@ class DbStaffBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  private final val commlogger: Logger = LoggerFactory.getLogger("ru.korus.tmis.communication");
 
   def getStaffByLogin(login: String) = {
     val staffs = em.createNamedQuery("Staff.findByLogin", classOf[Staff])
@@ -50,20 +44,7 @@ class DbStaffBean
   }
 
   def getStaffById(id: Int) = {
-
-    val result = em.createQuery(StaffByIdQuery, classOf[Staff])
-      .setParameter("id", id)
-      .getResultList
-
-
-    result.get(0)
-  }
-
-  def getStaffByIdWithoutDetach(id: Int) = {
-    val result = em.createQuery(StaffByIdQuery, classOf[Staff])
-      .setParameter("id", id)
-      .getResultList
-    result.get(0)
+    em.find(classOf[Staff], id)
   }
 
   def getAllPersons = {
@@ -71,19 +52,16 @@ class DbStaffBean
   }
 
   def getCountAllPersonsWithFilter(filter: Object) = {
-
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[FreePersonsListDataFilter]) {
-      filter.asInstanceOf[FreePersonsListDataFilter].toQueryStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case x: FreePersonsListDataFilter =>
+        x.toQueryStructure()
+      case _ =>
+        new QueryDataStructure()
     }
-    else {
-      new QueryDataStructure()
-    }
-
-    var typed = em.createQuery(StaffsAndCountRecordsWithFilterQuery.format("count(s)", queryStr.query, ""), classOf[Long])
+    val typed = em.createQuery(StaffsAndCountRecordsWithFilterQuery.format("count(s)", queryStr.query, ""), classOf[Long])
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
-
     val result = typed.getSingleResult
     result
   }
@@ -91,7 +69,7 @@ class DbStaffBean
 
   def getAllPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val queryStr = filter.toQueryStructure()
+    val queryStr = filter.toQueryStructure
     if (records != null) {
       val querytyped = em.createQuery(StaffsAndCountRecordsWithFilterQuery.format("count(s)", queryStr.query, ""), classOf[Long])
       if (queryStr.data.size() > 0)
@@ -181,12 +159,6 @@ class DbStaffBean
       null
     }
   }
-
-  val StaffByIdQuery = """
-  SELECT s
-  FROM Staff s
-  WHERE s.id = :id
-                       """
 
   val AllEmptyStaffWithFilterQuery = """
   SELECT %s

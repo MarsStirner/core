@@ -242,7 +242,7 @@ class AuthStorageBean
         appLock.setId(appLockStatus.getId)
         appLock.setLockTime(now)
         appLock.setRetTime(now)
-        appLock.setPerson(dbStaff.getStaffById(authData.getUserId))
+        appLock.setPerson(authData.getUser)
         lockNew.getId.setMasterId(appLockStatus.getId)
         lockNew.getId.setTableName(tableName)
         lockNew.getId.setRecordId(id)

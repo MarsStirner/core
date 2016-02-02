@@ -68,7 +68,7 @@ public class PrescriptionsRESTImpl {
     @Produces({"application/javascript", "application/x-javascript"})
     public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
         AuthData authData = wsImpl.checkTokenCookies(servRequest.getCookies());
-        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        Staff staff = authData.getUser();
         return new JSONWithPadding(prescriptionBeanLocal.create(createPrescriptionReqData, authData, staff), callback);
     }
 
@@ -77,7 +77,7 @@ public class PrescriptionsRESTImpl {
     @Produces({"application/javascript", "application/x-javascript"})
     public Object listAction(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, @PathParam("prescriptionId")Integer actionId, CreatePrescriptionReqData createPrescriptionReqData)throws CoreException {
         AuthData authData = wsImpl.checkTokenCookies(servRequest.getCookies());
-        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        Staff staff = authData.getUser();
         return new JSONWithPadding(prescriptionBeanLocal.update(actionId, createPrescriptionReqData, staff), callback);
     }
 

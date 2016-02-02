@@ -3,6 +3,7 @@ package ru.korus.tmis.ws.webmis.rest;
 import com.sun.jersey.api.json.JSONWithPadding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.hsct.HsctBean;
 import ru.korus.tmis.hsct.HsctRequestActionContainer;
 
@@ -29,12 +30,16 @@ public class HsctRestImpl {
     @EJB
     private HsctBean hsctBean;
 
+    @EJB
+    private WebMisREST wsImpl;
+
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML+ ";charset=utf-8"})
     public Object sendActionToHsgt(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, HsctRequestActionContainer data) {
-        LOGGER.info("call sendActionToHsgt({})", data);
-        return new JSONWithPadding(hsctBean.sendActionToHsct(data.getId()),  callback);
+        final AuthData authData = wsImpl.checkTokenCookies(servRequest.getCookies());
+        LOGGER.info("call sendActionToHsgt({}) by {}", data, authData);
+        return new JSONWithPadding(hsctBean.sendActionToHsct(data.getId(), authData ),  callback);
     }
 
 

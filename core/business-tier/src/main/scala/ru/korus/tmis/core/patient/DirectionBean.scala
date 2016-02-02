@@ -438,10 +438,11 @@ with I18nable {
   }
 
   def createServiceForConsultation(request: ConsultationRequestData, plannedDate: Date, userData: AuthData, staff: Staff): Action = {
-    var action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData, staff)
+    val action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData, staff)
     action.setIsUrgent(request.urgent) //если постановка в очередь срочная, то и услуга срочная
-    if (request.createPerson > 0 && dbStaffBean.getStaffById(request.createPerson) != null) {
-      action.setCreatePerson(dbStaffBean.getStaffById(request.createPerson))
+    val createPerson: Staff = dbStaffBean.getStaffById(request.createPerson)
+    if (request.createPerson > 0 &&  createPerson != null) {
+      action.setCreatePerson(createPerson)
     }
     if (request.createDateTime != null) {
       action.setCreateDatetime(request.createDateTime)

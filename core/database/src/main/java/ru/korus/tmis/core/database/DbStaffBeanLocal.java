@@ -30,8 +30,6 @@ public interface DbStaffBeanLocal {
     Staff getStaffById(int id)
             throws CoreException;
 
-    Staff getStaffByIdWithoutDetach(int id)
-            throws CoreException;
 
     List<Staff> getAllPersons()
             throws CoreException;

@@ -2,6 +2,7 @@ package ru.korus.tmis.hsct;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.hsct.external.*;
@@ -28,7 +29,7 @@ public class HsctBean {
     @EJB
     private DbActionBeanLocal dbAction;
 
-    public HsctResponse sendActionToHsct(final int actionId) {
+    public HsctResponse sendActionToHsct(final int actionId, final AuthData authData) {
         if (!ConfigManager.HsctProp().isSendActive()) {
             LOGGER.warn("Hsct integration is disabled. Action[{}] not send.", actionId);
             return createErrorResponse("Hsct integration is disabled. Request not send.");
