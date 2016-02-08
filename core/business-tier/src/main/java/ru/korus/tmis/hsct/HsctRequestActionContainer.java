@@ -15,8 +15,16 @@ import javax.xml.bind.annotation.*;
 @XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HsctRequestActionContainer {
-    @XmlElement(name="id")
+
+    @XmlElement(name = "id")
     private int id;
+
+    @XmlElement(name = "action")
+    private String action;
+
+    public HsctRequestActionContainer() {
+        //Default empty constructor
+    }
 
     public int getId() {
         return id;
@@ -26,13 +34,29 @@ public class HsctRequestActionContainer {
         this.id = id;
     }
 
-    public HsctRequestActionContainer() {
+    public String getAction() {
+        return action;
     }
+
+    public void setAction(final String action) {
+        this.action = action;
+    }
+
+    public boolean isEnqueueAction() {
+        return "enqueue".equalsIgnoreCase(action);
+    }
+
+
+    public boolean isDequeueAction() {
+        return "dequeue".equalsIgnoreCase(action);
+    }
+
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("HsctRequestActionContainer{");
         sb.append("id=").append(id);
+        sb.append(", action='").append(action).append('\'');
         sb.append('}');
         return sb.toString();
     }

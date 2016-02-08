@@ -787,4 +787,7 @@ class DbActionBean
     r
   }
 
+  override def getById(id: Int): Action = {
+    em.find(classOf[Action], id)
+  }
 }

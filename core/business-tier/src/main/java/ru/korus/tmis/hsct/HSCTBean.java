@@ -1,10 +1,13 @@
 package ru.korus.tmis.hsct;
 
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
+import ru.korus.tmis.core.database.hsct.DbQueueHsctRequestBean;
 import ru.korus.tmis.core.entity.model.Action;
+import ru.korus.tmis.core.entity.model.hsct.QueueHsctRequest;
 import ru.korus.tmis.hsct.external.*;
 import ru.korus.tmis.scala.util.ConfigManager;
 
@@ -29,38 +32,8 @@ public class HsctBean {
     @EJB
     private DbActionBeanLocal dbAction;
 
-    public HsctResponse sendActionToHsct(final int actionId, final AuthData authData) {
-        if (!ConfigManager.HsctProp().isSendActive()) {
-            LOGGER.warn("Hsct integration is disabled. Action[{}] not send.", actionId);
-            return createErrorResponse("Hsct integration is disabled. Request not send.");
-        }
-        try {
-            final Action action = dbAction.getActionById(actionId);
-            //check section
-            if (action == null || action.getDeleted()) {
-                LOGGER.error("Action[{}] not found or has deleted=1", actionId);
-                return createErrorResponse("Action[" + actionId + "] not found");
-            }
-            //TODO uncomment section on prom
-//            if (!StringUtils.equals(Constants.ACTION_TYPE_CODE, action.getActionType().getCode())) {
-//                LOGGER.error(
-//                        "Action[{}] has invalid ActionType.code=\'{}\' valid is \'{}\'",
-//                        actionId,
-//                        action.getActionType().getCode(),
-//                        Constants.ACTION_TYPE_CODE
-//                );
-//                return createErrorResponse("Action[" + actionId + "] has invalid ActionType.code=\'" + action.getActionType().getCode() + '\'');
-//            }
-            LOGGER.debug("Action[{}] is valid", actionId);
-            final HsctExternalRequest externalRequest = constructExternalHsctRequest(action);
-            final HsctResponse response =  new HsctResponse();
-            response.setTest(externalRequest);
-            return response;
-        } catch (Exception e) {
-            LOGGER.error("HsctBean.sendActionToHsct error:", e);
-            return createErrorResponse(e.getMessage());
-        }
-    }
+    @EJB
+    private DbQueueHsctRequestBean dbQueueHsctRequestBean;
 
     private HsctExternalRequest constructExternalHsctRequest(final Action action) {
         final SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
@@ -73,7 +46,7 @@ public class HsctBean {
         result.setHsctOptimalDate("2015-12");
         result.setHsctTypeCode("1");
         result.setSiblings(true);
-         //
+        //
         result.setMisId(action.getId().toString());
         final Patient patient = new Patient();
         patient.setFirstName("Имя");
@@ -126,5 +99,99 @@ public class HsctBean {
         result.setError(true);
         result.setErrorMessage(message);
         return result;
+    }
+
+    private HsctResponse checkAction(final Action action, final int actionId) {
+        if (action == null || action.getDeleted()) {
+            LOGGER.error("Action[{}] not found or has deleted=1", actionId);
+            return createErrorResponse("Action[" + actionId + "] not found");
+        }
+
+        if (!StringUtils.equals(Constants.ACTION_TYPE_CODE, action.getActionType().getCode())) {
+            LOGGER.error(
+                    "Action[{}] has invalid ActionType.code=\'{}\' valid is \'{}\'",
+                    actionId,
+                    action.getActionType().getCode(),
+                    Constants.ACTION_TYPE_CODE
+            );
+            return createErrorResponse("Action[" + actionId + "] has invalid ActionType.code=\'" + action.getActionType().getCode() + '\'');
+        }
+        LOGGER.debug("Action[{}] is valid", actionId);
+        return null;
+    }
+
+    public HsctResponse enqueueAction(final int actionId, final AuthData authData) {
+        LOGGER.debug("Call enqueueAction({}, {})", actionId, authData);
+        if (!ConfigManager.HsctProp().isSendActive()) {
+            LOGGER.warn("Hsct integration is disabled. Action[{}] will not be queued.", actionId);
+            return createErrorResponse("Hsct integration is disabled. Action will not be queued.");
+        }
+        final Action action = dbAction.getById(actionId);
+        HsctResponse response = checkAction(action, actionId);
+        if (response != null) {
+            // Проверка неудачна, возвращаем описание ошибки
+            LOGGER.debug("End of enqueueAction({}, {}). Response = {}", actionId, authData.getUserId(), response);
+            return response;
+        } else {
+            //Проверка удачна, создаем каркас ответа
+            response = new HsctResponse();
+        }
+        QueueHsctRequest queueEntry = dbQueueHsctRequestBean.getRequestByAction(action);
+        if (queueEntry == null) {
+            LOGGER.debug("Action[{}] is not in queue and need to be inserted", action.getId());
+            queueEntry = dbQueueHsctRequestBean.insertNewRequest(action, authData.getUser());
+            response.setError(false);
+            response.setErrorMessage(queueEntry.toString());
+        } else {
+            LOGGER.debug("Action[{}] is in queue[{}] and need to be modified", action.getId(), queueEntry);
+            response.setError(dbQueueHsctRequestBean.markActive(queueEntry, authData.getUser()));
+            response.setErrorMessage(queueEntry.toString());
+        }
+        LOGGER.debug("End of enqueueAction({}, {}). Response = {}", actionId, authData.getUserId(), response);
+        return response;
+    }
+
+
+    public HsctResponse dequeueAction(final int actionId, final AuthData authData) {
+        LOGGER.debug("Call dequeueAction({}, {})", actionId, authData);
+        QueueHsctRequest queueEntry = dbQueueHsctRequestBean.getRequestByActionId(actionId);
+        final HsctResponse response = new HsctResponse();
+        if (queueEntry != null) {
+            response.setError(dbQueueHsctRequestBean.markCanceled(queueEntry, authData.getUser()));
+            response.setErrorMessage(String.format("Action[%d] removed from queue :: ", actionId).concat(queueEntry.toString()));
+        } else {
+            response.setError(true);
+            response.setErrorMessage(String.format("Action[%d] not in queue", actionId));
+        }
+        LOGGER.debug("End of dequeueAction({}, {}). Response = {}", actionId, authData.getUserId(), response);
+        return response;
+    }
+
+    public QueueEntry isInEnqueue(final int actionId) {
+        LOGGER.debug("Call isInEnqueue({})", actionId);
+        QueueHsctRequest queueEntry = dbQueueHsctRequestBean.getRequestByActionId(actionId);
+        if (queueEntry != null) {
+            final QueueEntry response = new QueueEntry(queueEntry);
+            LOGGER.debug("End of isInEnqueue({}). Response = {}", actionId, response);
+            return response;
+        } else {
+            final QueueEntry response = new QueueEntry();
+            response.setActionId(0);
+            response.setInfo("NOT EXISTS");
+            response.setStatus("NOT EXISTS");
+            LOGGER.debug("End of isInEnqueue({}). Response = {}", actionId, response);
+            return response;
+        }
+    }
+
+    public QueueContainer getCurrentActive() {
+        LOGGER.debug("Call getCurrentActive()");
+       final QueueContainer response = new QueueContainer();
+        final List<QueueHsctRequest> entries = dbQueueHsctRequestBean.getAllActive();
+        for (QueueHsctRequest entry : entries) {
+            response.addToEntries(new QueueEntry(entry));
+        }
+        LOGGER.debug("End of getCurrentActive(). Response = {}", response);
+        return response;
     }
 }

@@ -255,4 +255,6 @@ public interface DbActionBeanLocal {
     Action getLatestMove(Event event);
 
     List<Action> getAllActionsOfPatientThatHasActionProperty(int patientId, String actionPropertyCode);
+
+    Action getById(int id);
 }
