@@ -44,7 +44,7 @@ public class Patient implements Serializable, Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date createDatetime;
 
-    @ManyToOne //(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "createPerson_id")
     private Staff createPerson;
 
@@ -53,7 +53,7 @@ public class Patient implements Serializable, Cloneable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date modifyDatetime;
 
-    @ManyToOne //(cascade = CascadeType.PERSIST)
+    @ManyToOne
     @JoinColumn(name = "modifyPerson_id")
     private Staff modifyPerson;
 

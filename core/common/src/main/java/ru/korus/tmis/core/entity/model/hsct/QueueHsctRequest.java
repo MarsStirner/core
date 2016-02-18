@@ -15,7 +15,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "queueHsctRequest")
-@NamedQueries({@NamedQuery(name = "QueueHsctRequest.findAllByStatuses", query = "SELECT i FROM QueueHsctRequest i WHERE i.status IN :statusList")})
+@NamedQueries({@NamedQuery(name = "QueueHsctRequest.findAllByStatuses", query = "SELECT i FROM QueueHsctRequest i WHERE i.status IN :statusList ORDER BY i.sendDateTime DESC ")})
 public class QueueHsctRequest {
 
     /**
@@ -36,9 +36,8 @@ public class QueueHsctRequest {
     /**
      * Текущий статус заявки в очереди
      */
-    @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private Status status;
+    private String status;
 
     /**
      * Время отправки заявки из очереди \планируемое время отправки  ( в зависимости от статуса )
@@ -69,7 +68,7 @@ public class QueueHsctRequest {
         this.person = person;
         this.attempts = 0;
         this.sendDateTime = new Date();
-        this.status = Status.NEW;
+        this.status = "NEW";
     }
 
     public Integer getActionId() {
@@ -88,11 +87,11 @@ public class QueueHsctRequest {
         this.person = person;
     }
 
-    public Status getStatus() {
+    public String getStatus() {
         return status;
     }
 
-    public void setStatus(final Status status) {
+    public void setStatus(final String status) {
         this.status = status;
     }
 
@@ -129,6 +128,16 @@ public class QueueHsctRequest {
         sb.append(", sendDateTime=").append(sendDateTime);
         sb.append(", attempts=").append(attempts);
         sb.append(", info='").append(info).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
+
+    public String logRow(){
+        final StringBuilder sb = new StringBuilder("{");
+        sb.append("actionId=").append(actionId);
+        sb.append(", person=").append(person != null ? person.getId() : null);
+        sb.append(", status=").append(status);
+        sb.append(", attempts=").append(attempts);
         sb.append('}');
         return sb.toString();
     }

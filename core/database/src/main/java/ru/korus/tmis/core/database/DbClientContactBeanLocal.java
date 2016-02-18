@@ -6,11 +6,14 @@ import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import java.util.List;
 
 @Local
 public interface DbClientContactBeanLocal {
     Iterable<ClientContact> getAllContacts(int patientId)
             throws CoreException;
+
+    List<ClientContact> getActiveClientContacts(int patientId);
 
     ClientContact getClientContactById(int id)
             throws CoreException;

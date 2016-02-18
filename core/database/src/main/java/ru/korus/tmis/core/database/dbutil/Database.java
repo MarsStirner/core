@@ -172,7 +172,7 @@ public class Database {
         }
         Integer newPropId;
         final List<ActionProperty> prop = getActionProp(actionId, propTypeId);
-        if (prop.size() > 0) {
+        if (!prop.isEmpty()) {
             if (isUpdate) {
                 newPropId = prop.iterator().next().getId();
             } else {

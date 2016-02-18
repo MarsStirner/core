@@ -58,4 +58,6 @@ public class SchedulerBean implements  SchedulerBeanLocal {
     public void sendNotification() {
          dbNotificationActionBeanLocal.pullDb();
     }
+
+
 }

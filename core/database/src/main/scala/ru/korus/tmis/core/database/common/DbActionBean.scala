@@ -272,7 +272,7 @@ class DbActionBean
   }
 
 
-  def getActionsByTypeCodeAndEventId(codes: java.util.Set[String], eventId: Int, sort: String, userData: AuthData) = {
+  def getActionsByTypeCodeAndEventId(codes: java.util.Set[String], eventId: Int, sort: String) = {
     val result = em.createQuery(ActionsByCodeAndEventQuery.format(sort),
       classOf[Action])
       .setParameter("codes", asJavaCollection(codes))

@@ -17,9 +17,6 @@ import javax.xml.bind.annotation.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class QueueEntry {
 
-
-
-
     @XmlElement(name="actionId")
     private Integer actionId;
 
@@ -43,7 +40,7 @@ public class QueueEntry {
 
     public QueueEntry(final QueueHsctRequest entry) {
         this.actionId = entry.getActionId();
-        this.status = entry.getStatus().toString();
+        this.status = entry.getStatus();
         this.attempts = entry.getAttempts();
         this.info = entry.getInfo();
         this.sendDateTime = entry.getSendDateTime().toString();

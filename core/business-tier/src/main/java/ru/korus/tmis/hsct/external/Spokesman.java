@@ -1,8 +1,10 @@
 package ru.korus.tmis.hsct.external;
 
+import com.google.gson.annotations.SerializedName;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -18,33 +20,38 @@ public class Spokesman {
     /**
      * Фамилия представителя пациента   family_name
      */
-    @XmlElement(name = "family_name")
+    @SerializedName("family_name")
+    @JsonProperty("family_name")
     private String lastName;
 
     /**
      * Имя представителя пациента given_name
      */
-    @XmlElement(name = "given_name")
+    @SerializedName("given_name")
+    @JsonProperty("given_name")
     private String firstName;
 
     /**
      * Отчество представителя пациента   patronymic
      */
-    @XmlElement(name = "patronymic")
+    @SerializedName("patronymic")
+    @JsonProperty("patronymic")
     private String patrName;
 
 
     /**
      * Электронная почта представителя пациента email
      */
-    @XmlElement(name = "email")
+    @SerializedName("email")
+    @JsonProperty("email")
     private String email;
 
 
     /**
      * Телефон представителя пациента phone
      */
-    @XmlElement(name = "phone")
+    @SerializedName("phone")
+    @JsonProperty("phone")
     private String phone;
 
     public Spokesman() {

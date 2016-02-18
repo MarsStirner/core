@@ -1,8 +1,10 @@
 package ru.korus.tmis.hsct.external;
 
+import com.google.gson.annotations.SerializedName;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -18,32 +20,40 @@ public class Patient {
     /**
      * ID пациента в МИС mis_id
      */
-    @XmlElement(name="mis_id")
+    @SerializedName("mis_id")
+    @JsonProperty("mis_id")
     private String misId;
 
     /**
      * Фамилия пациента   family_name
      */
-    @XmlElement(name="family_name")
+    @SerializedName("family_name")
+    @JsonProperty("family_name")
     private String lastName;
 
     /**
      * Имя пациента given_name
      */
-    @XmlElement(name="given_name")
+    @SerializedName("given_name")
+    @JsonProperty("given_name")
     private String firstName;
 
     /**
      * Отчество пациента   patronymic
      */
-    @XmlElement(name="patronymic")
+    @SerializedName("patronymic")
+    @JsonProperty("patronymic")
     private String patrName;
 
     /**
      * Дата рождения пациента  birth_date
      */
-    @XmlElement(name="birth_date")
+    @SerializedName("birth_date")
+    @JsonProperty("birth_date")
     private String birthDate;
+
+    public Patient() {
+    }
 
     public String getMisId() {
         return misId;
@@ -85,7 +95,9 @@ public class Patient {
         this.birthDate = birthDate;
     }
 
-    public Patient() {
+    @Override
+    public int hashCode() {
+        return misId != null ? misId.hashCode() : 0;
     }
 
     @Override
@@ -101,10 +113,5 @@ public class Patient {
 
         return !(misId != null ? !misId.equals(patient.misId) : patient.misId != null);
 
-    }
-
-    @Override
-    public int hashCode() {
-        return misId != null ? misId.hashCode() : 0;
     }
 }

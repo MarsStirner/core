@@ -128,7 +128,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             //logger.info("sending prescription start...");
             sendPrescriptionTo1C();
             //logger.info("sending prescription stop");
-        } catch (Throwable e) {
+        } catch (Exception e) {
             logger.error("Throwable e: " + e, e);
         }
 

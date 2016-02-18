@@ -54,7 +54,7 @@ public class HsctRestImpl {
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML+ ";charset=utf-8"})
     public Object checkInQueue(@PathParam("actionId")int actionId,
             @QueryParam("callback") String callback) {
-        return new JSONWithPadding(hsctBean.isInEnqueue(actionId), callback);
+        return new JSONWithPadding(hsctBean.isInQueue(actionId), callback);
     }
 
     @GET

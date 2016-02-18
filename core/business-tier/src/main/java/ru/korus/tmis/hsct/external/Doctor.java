@@ -1,8 +1,10 @@
 package ru.korus.tmis.hsct.external;
 
+import com.google.gson.annotations.SerializedName;
+import org.codehaus.jackson.annotate.JsonProperty;
+
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
@@ -18,32 +20,40 @@ public class Doctor {
     /**
      * ID врача mis_id
      */
-    @XmlElement(name="mis_id")
+    @SerializedName("mis_id")
+    @JsonProperty("mis_id")
     private String misId;
 
     /**
      * Фамилия врача   family_name
      */
-    @XmlElement(name="family_name")
+    @SerializedName("family_name")
+    @JsonProperty("family_name")
     private String lastName;
 
     /**
      * Имя врача given_name
      */
-    @XmlElement(name="given_name")
+    @SerializedName("given_name")
+    @JsonProperty("given_name")
     private String firstName;
 
     /**
      * Отчество врача  patronymic
      */
-    @XmlElement(name="patronymic")
+    @SerializedName("patronymic")
+    @JsonProperty("patronymic")
     private String patrName;
 
     /**
      * Отделение врача
      */
-    @XmlElement(name="department_code")
+    @SerializedName("department_code")
+    @JsonProperty("department_code")
     private String departmentCode;
+
+    public Doctor() {
+    }
 
     public String getMisId() {
         return misId;
@@ -85,7 +95,9 @@ public class Doctor {
         this.departmentCode = departmentCode;
     }
 
-    public Doctor() {
+    @Override
+    public int hashCode() {
+        return misId != null ? misId.hashCode() : 0;
     }
 
     @Override
@@ -101,10 +113,5 @@ public class Doctor {
 
         return !(misId != null ? !misId.equals(doctor.misId) : doctor.misId != null);
 
-    }
-
-    @Override
-    public int hashCode() {
-        return misId != null ? misId.hashCode() : 0;
     }
 }

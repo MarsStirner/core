@@ -1,11 +1,9 @@
 package ru.korus.tmis.hsct.external;
 
 
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
-import java.util.List;
+import com.google.gson.annotations.SerializedName;
+import org.codehaus.jackson.annotate.JsonProperty;
+import org.codehaus.jackson.map.annotate.JsonRootName;
 
 /**
  * Author: Upatov Egor <br>
@@ -13,8 +11,7 @@ import java.util.List;
  * Company: hitsl (Hi-Tech Solutions) <br>
  * Description: <br>
  */
-@XmlRootElement(name = "request")
-@XmlAccessorType(XmlAccessType.FIELD)
+@JsonRootName(value = "request")
 public class HsctExternalRequest {
 
     //Таблица 1. Поля формы заявки на ТГСК
@@ -22,151 +19,176 @@ public class HsctExternalRequest {
     /**
      * Статус болезни	Текстовое поле (string)	disease_status
      */
-    @XmlElement(name = "disease_status", required = true)
+    @SerializedName("disease_status")
+    @JsonProperty("disease_status")
     private String diseaseStatus;
 
     /**
      * Дата установки диагноза	Поле типа «Дата»	diagnosis_date
      */
-    @XmlElement(name = "diagnosis_date", required = true)
+    @SerializedName("diagnosis_date")
+    @JsonProperty("diagnosis_date")
     private String diagnosisDate;
 
     /**
      * Анти-CMV IgG	Выпадающий список с значениями: «Положительный», «Отрицательный»	anti_cmv_igg_code
      */
-    @XmlElement(name = "anti_cmv_igg_code", required = true)
+    @SerializedName("anti_cmv_igg_code")
+    @JsonProperty("anti_cmv_igg_code")
     private String antiCmvIgG;
 
     /**
      * Показания к ТСГК	Текстовое поле (string)	indications
      */
-    @XmlElement(name = "indications", required = true)
+    @SerializedName("indications")
+    @JsonProperty("indications")
     private String indications;
 
     /**
      * Дата установления показаний	Поле типа «Дата»	indications_date
      */
-    @XmlElement(name = "indications_date", required = true)
+    @SerializedName("indications_date")
+    @JsonProperty("indications_date")
     private String indicationsDate;
 
     /**
      * Оптимальный срок ТГСК 	Поле типа «Дата» 	optimal_hsct_date  :: Дата вида "yyyy-mm"
      */
-    @XmlElement(name = "optimal_hsct_date", required = true)
+    @SerializedName("optimal_hsct_date")
+    @JsonProperty("optimal_hsct_date")
     private String hsctOptimalDate;
     /**
      * Вид ТСГК	Выпадающий список с значениями: «Аутологичная», «Аллогенная»	hsct_type_code
      */
-    @XmlElement(name = "hsct_type_code", required = true)
+    @SerializedName("hsct_type_code")
+    @JsonProperty("hsct_type_code")
     private String hsctTypeCode;
 
     /**
      * Наличие сиблингов	Выпадающий список с значениями: «Есть», «Нет»	has_siblings
      */
-    @XmlElement(name = "has_siblings", required = true)
+    @SerializedName("has_siblings")
+    @JsonProperty("has_siblings")
     private boolean siblings;
 
     //Таблица 3. Другие данные, отправляемые из МИС в систему планирования ТГСК
     /**
      * ID заявки в МИС	Текстовое поле (string) mis_id
      */
-    @XmlElement(name = "mis_id")
+    @SerializedName("mis_id")
+    @JsonProperty("mis_id")
     private String misId;
 
     /**
      * Регистрационная карта пациента
      */
-    @XmlElement(name = "patient")
+    @SerializedName("patient")
+    @JsonProperty("patient")
     private Patient patient;
 
     /**
      * Отделение
      */
-    @XmlElement(name = "department_code")
+    @SerializedName("department_code")
+    @JsonProperty("department_code")
     private String departmentCode;
 
     /**
      * Данные текущего пользователя МИС, заполняющего заявку
      */
-    @XmlElement(name = "doctor")
+    @SerializedName("doctor")
+    @JsonProperty("doctor")
     private Doctor doctor;
 
     /**
      * Регистрационная карта представителя
      */
-    @XmlElement(name = "representative")
+    @SerializedName("representative")
+    @JsonProperty("representative")
     private Spokesman spokesman;
 
     /**
      * Клинический диагноз
      */
-    @XmlElement(name = "diagnosis", required = true)
+    @SerializedName("diagnosis")
+    @JsonProperty("diagnosis")
     private String diagnosis;
 
     /**
      * Основной клинический диагноз по МКБ
      */
-    @XmlElement(name = "diagnosis_icd_code", required = true)
+    @SerializedName("diagnosis_icd_code")
+    @JsonProperty("diagnosis_icd_code")
     private String diagnosisIcdCode;
 
     /**
      * complications – массив осложнений содержащий хэши с полями descript и icd_code
      */
-    @XmlElement(name = "complications")
-    private List<Item> complications;
+    @SerializedName("complications")
+    @JsonProperty("complications")
+    private String complications;
 
     /**
      * secondary_diagnoses – массив сопутств. Диагнозов содержащий хэши с полями descript и icd_code
      */
-    @XmlElement(name = "secondary_diagnoses")
-    private List<Item> secondaryDiagnoses;
+    @SerializedName("secondary_diagnoses")
+    @JsonProperty("secondary_diagnoses")
+    private String secondaryDiagnoses;
 
     /**
      * Протокол терапии  protocol_code
      */
-    @XmlElement(name = "protocol_code")
+    @SerializedName("protocol_code")
+    @JsonProperty("protocol_code")
     private String protocolCode;
 
     /**
      * Дата начала протокола  protocol_start_date
      */
-    @XmlElement(name = "protocol_start_date")
+    @SerializedName("protocol_start_date")
+    @JsonProperty("protocol_start_date")
     private String protocolStartDate;
 
     /**
      * Дата завершения протокола  protocol_end_date
      */
-    @XmlElement(name = "protocol_end_date")
+    @SerializedName("protocol_end_date")
+    @JsonProperty("protocol_end_date")
     private String protocolEndDate;
 
     /**
      * Этап терапии  protocol_code
      */
-    @XmlElement(name = "protocol_stage_code")
+    @SerializedName("protocol_stage_code")
+    @JsonProperty("protocol_stage_code")
     private String protocolStageCode;
 
     /**
      * Дата начала этапа  protocol_start_date
      */
-    @XmlElement(name = "protocol_stage_start_date")
+    @SerializedName("protocol_stage_start_date")
+    @JsonProperty("protocol_stage_start_date")
     private String protocolStageStartDate;
 
     /**
      * Дата начала этапа  protocol_start_date
      */
-    @XmlElement(name = "protocol_stage_end_date")
+    @SerializedName("protocol_stage_end_date")
+    @JsonProperty("protocol_stage_end_date")
     private String protocolStageEndDate;
 
     /**
      * Масса тела  weight
      */
-    @XmlElement(name = "weight")
+    @SerializedName("weight")
+    @JsonProperty("weight")
     private Double weight;
 
     /**
      * ДГруппа крови и резус фактор blood_type_code
      */
-    @XmlElement(name = "blood_type_code")
+    @SerializedName("blood_type_code")
+    @JsonProperty("blood_type_code")
     private String bloodTypeCode;
 
     public HsctExternalRequest() {
@@ -301,19 +323,19 @@ public class HsctExternalRequest {
         this.diagnosisIcdCode = diagnosisIcdCode;
     }
 
-    public List<Item> getComplications() {
+    public String getComplications() {
         return complications;
     }
 
-    public void setComplications(final List<Item> complications) {
+    public void setComplications(final String complications) {
         this.complications = complications;
     }
 
-    public List<Item> getSecondaryDiagnoses() {
+    public String getSecondaryDiagnoses() {
         return secondaryDiagnoses;
     }
 
-    public void setSecondaryDiagnoses(final List<Item> secondaryDiagnoses) {
+    public void setSecondaryDiagnoses(final String secondaryDiagnoses) {
         this.secondaryDiagnoses = secondaryDiagnoses;
     }
 
@@ -371,5 +393,37 @@ public class HsctExternalRequest {
 
     public void setBloodTypeCode(final String bloodTypeCode) {
         this.bloodTypeCode = bloodTypeCode;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("HsctExternalRequest{");
+        sb.append("diseaseStatus='").append(diseaseStatus).append('\'');
+        sb.append(", diagnosisDate='").append(diagnosisDate).append('\'');
+        sb.append(", antiCmvIgG='").append(antiCmvIgG).append('\'');
+        sb.append(", indications='").append(indications).append('\'');
+        sb.append(", indicationsDate='").append(indicationsDate).append('\'');
+        sb.append(", hsctOptimalDate='").append(hsctOptimalDate).append('\'');
+        sb.append(", hsctTypeCode='").append(hsctTypeCode).append('\'');
+        sb.append(", siblings=").append(siblings);
+        sb.append(", misId='").append(misId).append('\'');
+        sb.append(", patient=").append(patient);
+        sb.append(", departmentCode='").append(departmentCode).append('\'');
+        sb.append(", doctor=").append(doctor);
+        sb.append(", spokesman=").append(spokesman);
+        sb.append(", diagnosis='").append(diagnosis).append('\'');
+        sb.append(", diagnosisIcdCode='").append(diagnosisIcdCode).append('\'');
+        sb.append(", complications=").append(complications);
+        sb.append(", secondaryDiagnoses=").append(secondaryDiagnoses);
+        sb.append(", protocolCode='").append(protocolCode).append('\'');
+        sb.append(", protocolStartDate='").append(protocolStartDate).append('\'');
+        sb.append(", protocolEndDate='").append(protocolEndDate).append('\'');
+        sb.append(", protocolStageCode='").append(protocolStageCode).append('\'');
+        sb.append(", protocolStageStartDate='").append(protocolStageStartDate).append('\'');
+        sb.append(", protocolStageEndDate='").append(protocolStageEndDate).append('\'');
+        sb.append(", weight=").append(weight);
+        sb.append(", bloodTypeCode='").append(bloodTypeCode).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

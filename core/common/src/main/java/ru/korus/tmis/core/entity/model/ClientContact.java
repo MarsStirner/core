@@ -8,10 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "ClientContact")
-@NamedQueries(
-        {
-                @NamedQuery(name = "ClientContact.findAll", query = "SELECT p FROM ClientContact p")
-        })
+@NamedQueries({@NamedQuery(name = "ClientContact.findAll", query = "SELECT p FROM ClientContact p")})
 @XmlType(name = "contact")
 @XmlRootElement(name = "contact")
 public class ClientContact implements Serializable, Cloneable {
@@ -62,9 +59,14 @@ public class ClientContact implements Serializable, Cloneable {
     @Basic(optional = false)
     @Column(name = "version")
     private int version;
+
+    @ManyToOne
+    @JoinColumn(name = "client_id")
+    private Patient patient;
+
     /*
-    * END DB FIELDS
-    * */
+   * END DB FIELDS
+   * */
 
     public Integer getId() {
         return id;
@@ -146,13 +148,6 @@ public class ClientContact implements Serializable, Cloneable {
         this.version = version;
     }
 
-    /*
-   * Custom mappings
-   * */
-    @ManyToOne
-    @JoinColumn(name = "client_id")
-    private Patient patient;
-
     public Patient getPatient() {
         return patient;
     }
@@ -191,12 +186,12 @@ public class ClientContact implements Serializable, Cloneable {
     }
 
     @Override
-    public String toString() {
-        return "ru.korus.tmis.core.database.model.ClientContact[id=" + id + "]";
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public String toString() {
+        return "ru.korus.tmis.core.database.model.ClientContact[id=" + id + "]";
     }
 }

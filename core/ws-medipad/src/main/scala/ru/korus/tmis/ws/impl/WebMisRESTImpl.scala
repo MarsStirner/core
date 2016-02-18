@@ -232,7 +232,7 @@ with CAPids {
 
   def getPatientById(id: Int, auth: AuthData) = {
     if (auth != null) {
-      val patient = patientBean.getPatientById(id)
+      val patient =  patientBean.getPatientById(id)
       val map = patientBean.getKLADRAddressMapForPatient(patient)
       val street = patientBean.getKLADRStreetForPatient(patient)
 
@@ -723,7 +723,7 @@ with CAPids {
     // Получение значения свойства у предыдущих действий
     def getProperty(oldDocumentCodes: Set[String], actionTypeCodes: Set[String], event: Event): APValue = {
       if (oldDocumentCodes.contains(at.getCode)) {
-        val pastActions = pastActionsCache.getOrElseUpdate((oldDocumentCodes, event.getId, "a.begDate DESC"), actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null))
+        val pastActions = pastActionsCache.getOrElseUpdate((oldDocumentCodes, event.getId, "a.begDate DESC"), actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC"))
         if (pastActions != null && !pastActions.isEmpty)
           pastActions.head.getActionProperties.foreach(e => {
             if (e.getType.getCode != null && e.getType.getCode.equals(apt.getCode)) {
@@ -758,7 +758,7 @@ with CAPids {
       }
 
       if (oldDocumentCodes.contains(at.getCode)) {
-        val pastActions = pastActionsCache.getOrElseUpdate((oldDocumentCodes, event.getId, "a.begDate DESC"), actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC", null))
+        val pastActions = pastActionsCache.getOrElseUpdate((oldDocumentCodes, event.getId, "a.begDate DESC"), actionBean.getActionsByTypeCodeAndEventId(oldDocumentCodes, event.getId, "a.begDate DESC"))
         if (pastActions != null && !pastActions.isEmpty && getTherapyPhaseEndDate(pastActions.head) != null)
           pastActions.head.getActionProperties.foreach(e => {
             if (e.getType.getCode != null && e.getType.getCode.equals(apt.getCode)) {
@@ -968,14 +968,14 @@ with CAPids {
 
     val isPrimary = data.getData.find(ce => ce.getTypeId.compareTo(i18n("db.actionType.primary").toInt) == 0).orNull != null //Врач прописывается только для первичного осмотра  (ид=139)
     if (isPrimary)
-      appealBean.setExecPersonForAppeal(eventId, 0, authData.getUser, ExecPersonSetType.EP_CREATE_PRIMARY)
+      appealBean.setExecPersonForAppeal(eventId, 0, dbStaff.getStaffById(authData.getUserId), ExecPersonSetType.EP_CREATE_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean createOrUpdatePrimaryAssessmentForEventId(eventId,
       data,
       null,
       authData,
-      authData.getUser,
+      dbStaff.getStaffById(authData.getUserId),
       baseUri,
       notifyAction,
       postProcessing())
@@ -991,14 +991,14 @@ with CAPids {
 
     //создаем ответственного, если до этого был другой
     if (data.getData.find(ce => ce.getTypeId.compareTo(i18n("db.actionType.primary").toInt) == 0).orNull != null) //Врач прописывается только для первичного осмотра  (ид=139)
-      appealBean.setExecPersonForAppeal(actionId, 0, authData.getUser, ExecPersonSetType.EP_MODIFY_PRIMARY)
+      appealBean.setExecPersonForAppeal(actionId, 0, dbStaff.getStaffById(authData.getUserId), ExecPersonSetType.EP_MODIFY_PRIMARY)
 
     //создаем осмотр. ЕвентПерсон не флашится!!!
     val returnValue = primaryAssessmentBean createOrUpdatePrimaryAssessmentForEventId(null,
       data,
       actionId,
       authData,
-      authData.getUser,
+      dbStaff.getStaffById(authData.getUserId),
       baseUri,
       notifyAction,
       postProcessing())
@@ -1145,9 +1145,7 @@ with CAPids {
 
 
   def movingPatientToDepartment(eventId: Int, data: HospitalBedData, authData: AuthData) = {
-
     val action = hospitalBedBean.movingPatientToDepartment(eventId, data, authData, authData.getUser)
-
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MoveView]))
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action))

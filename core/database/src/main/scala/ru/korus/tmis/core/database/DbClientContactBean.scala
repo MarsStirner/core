@@ -1,6 +1,8 @@
 package ru.korus.tmis.core.database
 
 
+import java.util
+
 import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.ejb.{EJB, Stateless}
@@ -8,7 +10,7 @@ import ru.korus.tmis.core.exception.NoSuchClientContactException
 import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientContact}
 import java.util.Date
 import java.lang.Iterable
-import scala.collection.JavaConversions._
+
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
@@ -24,38 +26,16 @@ class DbClientContactBean
   @EJB
   var dbRbContactType: DbRbContactTypeBeanLocal = _
 
-  val ClientContactFindQuery = """
-    SELECT d
-    FROM
-      ClientContact d
-    WHERE
-      d.id = :id
-                               """
-
-
   def getAllContacts(patientId: Int): Iterable[ClientContact] = {
     em.createNamedQuery("ClientContact.findAll", classOf[ClientContact]).getResultList
   }
 
   def getClientContactById(id: Int): ClientContact = {
-    val result = em.createQuery(ClientContactFindQuery,
-      classOf[ClientContact])
-      .setParameter("id", id)
-      .getResultList
-
-    result.size match {
-      case 0 => {
-        throw new NoSuchClientContactException(
-          ConfigManager.ErrorCodes.ClientContactNotFound,
-          id,
-          i18n("error.clientContactNotFound").format(id))
-      }
-      case size => {
-        result.foreach(rbType => {
-
-        })
-        result(0)
-      }
+    val result = em.find(classOf[ClientContact], id)
+    if(result == null){
+      throw new NoSuchClientContactException(ConfigManager.ErrorCodes.ClientContactNotFound, id, i18n("error.clientContactNotFound").format(id))
+    }  else {
+      result
     }
   }
 
@@ -98,4 +78,8 @@ class DbClientContactBean
     c.setModifyDatetime(now)
   }
 
+  override def getActiveClientContacts(patientId: Int): util.List[ClientContact] ={
+    em.createQuery("SELECT c FROM ClientContact c WHERE c.deleted = false AND c.patient.id = :patientId ORDER BY c.createDatetime DESC", classOf[ClientContact])
+      .setParameter("patientId", patientId).getResultList
+  }
 }

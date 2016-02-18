@@ -94,11 +94,6 @@ public class Mkb implements Serializable {
     @Column(name = "deleted")
     private boolean deleted;
 
-
-    /* @OneToMany(mappedBy = "mkb", cascade = CascadeType.ALL)
-private List<Diagnosis> diagnosis =
-  new LinkedList<Diagnosis>(); */
-
     public Mkb() {
     }
 

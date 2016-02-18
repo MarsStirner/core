@@ -17,10 +17,8 @@ import java.util.Date;
 
 @Entity
 @Table(name = "ClientRelation")
-@NamedQueries(
-        {
-                @NamedQuery(name = "ClientRelation.findAll", query = "SELECT p FROM ClientRelation p")
-        })
+@NamedQueries({@NamedQuery(name = "ClientRelation.findAll", query = "SELECT p FROM ClientRelation p"), @NamedQuery(name = "ClientRelation.findByPatient",
+        query = "SELECT p FROM ClientRelation p WHERE p.deleted = false AND p.patient.id = :patientId ORDER BY p.createDatetime DESC")})
 @XmlType(name = "relation")
 @XmlRootElement(name = "relation")
 public class ClientRelation implements Serializable, Cloneable {
@@ -67,9 +65,12 @@ public class ClientRelation implements Serializable, Cloneable {
     @Basic(optional = false)
     @Column(name = "version")
     private int version;
-    /*
-    * END DB FIELDS
-    * */
+
+    @ManyToOne(cascade = CascadeType.PERSIST)
+    @JoinColumn(name = "client_id")
+    private Patient patient;
+
+
 
     public Integer getId() {
         return id;
@@ -138,17 +139,13 @@ public class ClientRelation implements Serializable, Cloneable {
     public int getVersion() {
         return version;
     }
-
-    public void setVersion(int version) {
-        this.version = version;
-    }
     /*
     * Custom mappings
     * */
 
-    @ManyToOne(cascade = CascadeType.PERSIST)
-    @JoinColumn(name = "client_id")
-    private Patient patient;
+    public void setVersion(int version) {
+        this.version = version;
+    }
 
     public Patient getPatient() {
         return patient;
@@ -192,12 +189,12 @@ public class ClientRelation implements Serializable, Cloneable {
     }
 
     @Override
-    public String toString() {
-        return "ru.korus.tmis.core.database.model.ClientRelation[id=" + id + "]";
+    public Object clone() throws CloneNotSupportedException {
+        return super.clone();
     }
 
     @Override
-    public Object clone() throws CloneNotSupportedException {
-        return super.clone();
+    public String toString() {
+        return "ru.korus.tmis.core.database.model.ClientRelation[id=" + id + "]";
     }
 }

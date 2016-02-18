@@ -1,9 +1,7 @@
 package ru.korus.tmis.hsct;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-import ru.korus.tmis.hsct.external.HsctExternalRequest;
-
-import javax.xml.bind.annotation.*;
+import org.codehaus.jackson.annotate.JsonProperty;
 
 /**
  * Author: Upatov Egor <br>
@@ -11,22 +9,13 @@ import javax.xml.bind.annotation.*;
  * Company: hitsl (Hi-Tech Solutions) <br>
  * Description: <br>
  */
-@XmlType
-@XmlRootElement
-@XmlAccessorType(XmlAccessType.FIELD)
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HsctResponse {
-    @XmlElement(name="error")
+    @JsonProperty("error")
     private boolean error;
 
-    @XmlElement(name="error_message")
+    @JsonProperty("error_message")
     private String errorMessage;
-
-    @XmlElement(name="hsct_request_id")
-    private Integer hsctRequestId;
-
-    @XmlElement(name="ROOT")
-    private HsctExternalRequest test;
 
     public HsctResponse() {
     }
@@ -47,29 +36,12 @@ public class HsctResponse {
         this.errorMessage = errorMessage;
     }
 
-    public Integer getHsctRequestId() {
-        return hsctRequestId;
-    }
-
-    public void setHsctRequestId(final Integer hsctRequestId) {
-        this.hsctRequestId = hsctRequestId;
-    }
-
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("HsctResponse{");
         sb.append("error=").append(error);
         sb.append(", errorMessage='").append(errorMessage).append('\'');
-        sb.append(", hsctRequestId=").append(hsctRequestId);
         sb.append('}');
         return sb.toString();
-    }
-
-    public void setTest(final HsctExternalRequest test) {
-        this.test = test;
-    }
-
-    public HsctExternalRequest getTest() {
-        return test;
     }
 }

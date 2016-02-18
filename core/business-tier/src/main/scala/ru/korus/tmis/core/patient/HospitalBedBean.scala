@@ -397,7 +397,6 @@ with CAPids {
     }
     else {
       throw new CoreException("Невозможно направить/перевести пациента в отделение. \nДля госпитализации с id=%s не найден осмотр при госпитализации".format(eventId.toString))
-      return null
     }
   }
 
@@ -602,7 +601,6 @@ with CAPids {
       val action = actionBean.getActionById(actionId)
       if (action.getActionType.getCode.compareTo("4202") != 0) {
         throw new CoreException("Некорректный Action id в запросе. Тип Action не 'Движение'")
-        return false
       }
     }
 

@@ -50,8 +50,8 @@ class DbClientRelationBean
                                           """
 
 
-  def getAllClientRelations(patientId: Int): Iterable[ClientRelation] = {
-    em.createNamedQuery("ClientRelation.findAll", classOf[ClientRelation]).getResultList
+  def getAllClientRelations(patientId: Int): java.util.List[ClientRelation] = {
+    em.createNamedQuery("ClientRelation.findByPatient", classOf[ClientRelation]).setParameter("patientId", patientId).getResultList
   }
 
   def getClientRelationById(id: Int): ClientRelation = {

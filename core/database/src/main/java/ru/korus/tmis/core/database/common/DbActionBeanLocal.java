@@ -140,11 +140,10 @@ public interface DbActionBeanLocal {
      * @param codes    Набор значений кодов типа действия.
      * @param eventId  Идентификатор обращения.
      * @param sort     Строка сортировки.
-     * @param userData Авторизационные данные как AuthData.
      * @return Отсортированный список действий (Action).
      * @throws CoreException
      */
-    List<Action> getActionsByTypeCodeAndEventId(Set<String> codes, int eventId, String sort, AuthData userData)
+    List<Action> getActionsByTypeCodeAndEventId(Set<String> codes, int eventId, String sort)
             throws CoreException;
 
     List<Action> getActionsByTypeCodeAndPatientOrderByDate(Set<String> codes, Patient patient)
