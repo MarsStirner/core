@@ -1,12 +1,15 @@
 package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.hsct.HsctBean;
 import ru.korus.tmis.hsct.HsctRequestActionContainer;
 import ru.korus.tmis.hsct.HsctResponse;
+import ru.korus.tmis.hsct.external.HsctExternalRequestForComplete;
+import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -14,6 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 /**
  * Author: Upatov Egor <br>
@@ -33,13 +37,13 @@ public class HsctRestImpl {
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
-    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML+ ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML + ";charset=utf-8"})
     public Object modifyQueue(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, HsctRequestActionContainer data) {
         final AuthData authData = wsImpl.checkTokenCookies(servRequest.getCookies());
         LOGGER.info("call modifyQueue({}) by {}", data, authData);
-        if(data.isEnqueueAction()){
+        if (data.isEnqueueAction()) {
             return new JSONWithPadding(hsctBean.enqueueAction(data.getId(), authData), callback);
-        } else if(data.isDequeueAction()){
+        } else if (data.isDequeueAction()) {
             return new JSONWithPadding(hsctBean.dequeueAction(data.getId(), authData), callback);
         } else {
             final HsctResponse errorResponse = new HsctResponse();
@@ -51,16 +55,26 @@ public class HsctRestImpl {
 
     @GET
     @Path("{actionId}")
-    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML+ ";charset=utf-8"})
-    public Object checkInQueue(@PathParam("actionId")int actionId,
-            @QueryParam("callback") String callback) {
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML + ";charset=utf-8"})
+    public Object checkInQueue(
+            @PathParam("actionId") int actionId, @QueryParam("callback") String callback
+    ) {
         return new JSONWithPadding(hsctBean.isInQueue(actionId), callback);
     }
 
     @GET
-    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML+ ";charset=utf-8"})
+    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML + ";charset=utf-8"})
     public Object getCurrentActive(@QueryParam("callback") String callback) {
         return new JSONWithPadding(hsctBean.getCurrentActive(), callback);
+    }
+
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
+    @Path("/response")
+    public Response setHsctRequestStatusFromExternalSystem(
+            @QueryParam("user_name") String userName, @QueryParam("user_token") String userToken, HsctExternalRequestForComplete request
+    ) {
+       return hsctBean.setRequestStatusFromExternalSystem(userName, userToken, request);
     }
 
 

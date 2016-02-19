@@ -17,15 +17,14 @@ import ru.korus.tmis.core.database.DbClientContactBeanLocal;
 import ru.korus.tmis.core.database.DbClientRelationBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.common.DbCustomQueryLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.database.hsct.DbQueueHsctRequestBean;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.hsct.QueueHsctRequest;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.hsct.external.Doctor;
-import ru.korus.tmis.hsct.external.HsctExternalRequest;
-import ru.korus.tmis.hsct.external.HsctExternalResponse;
-import ru.korus.tmis.hsct.external.Spokesman;
+import ru.korus.tmis.hsct.external.*;
 import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.ejb.*;
@@ -33,6 +32,7 @@ import javax.ejb.Schedule;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -83,7 +83,10 @@ public class HsctBean {
             APT_CODE_HSCT_TYPE_CODE,
             APT_CODE_HAS_SIBLINGS
     );
+    //Свойства куда будут писаться результаты
     private static final String APT_CODE_RESULT = "result";
+    private static final String APT_CODE_IS_COMPLETED = "is_completed";
+    ///////////Свойства дневников
     private static final String APT_JOURNAL_THERAPY_TITLE = "therapyTitle";
     private static final String APT_JOURNAL_THERAPY_BEG_DATE = "therapyBegDate";
     private static final String APT_JOURNAL_THERAPY_END_DATE = "therapyEndDate";
@@ -102,6 +105,7 @@ public class HsctBean {
     );
     private static final ImmutableSet<String> THERAPY_AT_CODES = ImmutableSet.of("1_1_01", "1_2_18", "1_2_19", "1_2_20", "1_2_22", "1_2_23");
 
+
     private static ObjectMapper mapper;
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em;
@@ -117,6 +121,9 @@ public class HsctBean {
     private DbEventBeanLocal dbEvent;
     @EJB
     private DbClientContactBeanLocal dbClientContact;
+
+    @EJB
+    private DbCustomQueryLocal dbCustomQuery;
 
 
     /**
@@ -247,6 +254,46 @@ public class HsctBean {
         LOGGER.debug("#{} End of getCurrentActive(). Response = {}", num, response);
         return response;
     }
+
+
+    public Response setRequestStatusFromExternalSystem(final String userName, final String token, final HsctExternalRequestForComplete request) {
+        final int num = REST_COUNTER.incrementAndGet();
+        LOGGER.info("#{} Call setHsctRequestStatusFromExternalSystem (user_name=\'{}\', user_token=\'{}\') DATA: {}", num, userName, token, request);
+        if (!ConfigManager.HsctProp().isReceiveActive()) {
+            LOGGER.info("#{} Integration is disabled for RECEIVE events. End with 503", num);
+            return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Integration disabled").build();
+        }
+        if (StringUtils.equals(userName, ConfigManager.HsctProp().ReceiveUser()) && StringUtils.equalsIgnoreCase(
+                token, ConfigManager.HsctProp().ReceivedPassword()
+        )) {
+            if (request == null) {
+                LOGGER.info("#{} Request is null or not deserialize. End with 400", num);
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            try {
+                final Action action = dbAction.getActionById(Integer.parseInt(request.getRequest().getMisId()));
+                final String result = request.getRequest().isCompleted() ? "Заявка одобрена" : "Заявка отклонена";
+                for (ActionProperty ap : action.getActionProperties()) {
+                    if (APT_CODE_IS_COMPLETED.equals(ap.getType().getCode())) {
+                        final APValue apValue = dbActionProperty.setActionPropertyValue(ap, result, 0);
+                        em.merge(apValue);
+                        LOGGER.debug("#{} IS_COMPLETED AP[{}]", num, apValue);
+                        break;
+                    }
+                }
+                LOGGER.info("#{} Request finished {}. End with 200 OK", num, result);
+                return Response.ok().build();
+            } catch (Exception e) {
+                LOGGER.error("#{} Internal Error ", num, e);
+                return Response.serverError().build();
+            }
+
+        } else {
+            LOGGER.info("#{} Authentication failure. End with 403", num);
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+    }
+
 
     /***********************************************************************************************
      * END OF REST
@@ -398,12 +445,7 @@ public class HsctBean {
         final HsctExternalRequest result = new HsctExternalRequest();
         final Event event = action.getEvent();
         final Patient patient = event.getPatient();
-        final OrgStructure lastOrgStructure = dbEvent.getOrgStructureForEvent(event.getId());
-        if (lastOrgStructure == null) {
-            LOGGER.warn("Not found OrgStructure for Event[{}]", event.getId());
-        } else {
-            result.setDepartmentCode(lastOrgStructure.getCode());
-        }
+        processDepatment(result, event);
         result.setMisId(action.getId().toString());
         processActionProperties(action, result);
         processPatient(result, patient);
@@ -413,10 +455,39 @@ public class HsctBean {
         return result;
     }
 
+    private void processDepatment(final HsctExternalRequest result, final Event event) throws CoreException {
+        OrgStructure lastOrgStructure = null;
+        try {
+            lastOrgStructure = dbEvent.getOrgStructureForEvent(event.getId());
+        } catch (Exception e){
+            LOGGER.warn("Cannot get OrgStructure from movings for Event[{}]", event.getId());
+        }
+        if (lastOrgStructure == null) {
+            final Map<Event, ActionProperty> mapAP = dbCustomQuery.getOrgStructureByReceivedActionByEvents(
+                    Collections.singletonList(
+                            event
+                    )
+            );
+            if (!mapAP.isEmpty() && mapAP.values().iterator().hasNext()) {
+                final ActionProperty ap = mapAP.values().iterator().next();
+                final List<APValue> apValues = dbActionProperty.getActionPropertyValue(ap);
+                if (apValues != null && !apValues.isEmpty()) {
+                    LOGGER.debug("Getting OrgStructure from received Action[{}]-{}", ap.getAction().getId(), ap.getId());
+                    final APValue value = apValues.iterator().next();
+                    lastOrgStructure = (OrgStructure) value.getValue();
+
+                }
+            }
+        }
+        if (lastOrgStructure != null) {
+            result.setDepartmentCode(lastOrgStructure.getCode());
+        }
+    }
+
     private void processJournals(final HsctExternalRequest result, final Event event) throws CoreException {
         final SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
         final List<Action> journals = dbAction.getActionsByTypeCodeAndEventId(THERAPY_AT_CODES, event.getId(), "a.begDate DESC");
-        if (journals.isEmpty()) {
+        if (journals == null || journals.isEmpty()) {
             LOGGER.debug("No journals for event[{}]", event);
             return;
         } else {
@@ -494,17 +565,19 @@ public class HsctBean {
             boolean setPhone = false;
             boolean setMail = false;
             for (ClientContact contact : contacts) {
-                if(!setMail && "04".equals(contact.getContactType().getCode())){
+                if (!setMail && "04".equals(contact.getContactType().getCode())) {
                     spokesman.setEmail(contact.getContact());
                     LOGGER.debug("set email from {}", contact);
                     setMail = true;
                 }
-                if(!setPhone &&phoneTypes.contains(contact.getContactType().getCode())){
+                if (!setPhone && phoneTypes.contains(contact.getContactType().getCode())) {
                     spokesman.setPhone(contact.getContact());
                     LOGGER.debug("set phone from {}", contact);
                     setPhone = true;
                 }
-                if(setPhone && setMail) break;
+                if (setPhone && setMail) {
+                    break;
+                }
             }
             result.setSpokesman(spokesman);
         }
