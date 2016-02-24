@@ -272,7 +272,11 @@ public class HsctBean {
                 return Response.status(Response.Status.BAD_REQUEST).build();
             }
             try {
-                final Action action = dbAction.getActionById(Integer.parseInt(request.getRequest().getMisId()));
+                final Action action = dbAction.getById(Integer.parseInt(request.getRequest().getMisId()));
+                if(action ==null){
+                    LOGGER.info("#{} Action[{}] not found. End with 400", num, request.getRequest().getMisId());
+                    return Response.status(Response.Status.BAD_REQUEST).build();
+                }
                 final String result = request.getRequest().isCompleted() ? "Заявка одобрена" : "Заявка отклонена";
                 for (ActionProperty ap : action.getActionProperties()) {
                     if (APT_CODE_IS_COMPLETED.equals(ap.getType().getCode())) {

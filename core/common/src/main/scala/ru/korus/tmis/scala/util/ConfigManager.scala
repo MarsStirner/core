@@ -701,7 +701,7 @@ object ConfigManager extends Configuration {
     /**
      * Password basic http auth
      */
-    var ReceivedPassword = "0YPRgtC60LDQutGA0Y8="
+    var ReceivedPassword = "0YPRgtC60LDQutGA0Y8"
   }
 }
 
