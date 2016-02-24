@@ -164,7 +164,7 @@ public class ExaminationsRegistryRESTImpl {
                              @QueryParam("callback") String callback,
                              @PathParam("patientId") int patientId,
                              @PathParam("actionId")int actionId) throws CoreException {
-        wsImpl.removeAction(actionId);
+        wsImpl.removeAction(actionId, mkAuth(servRequest));
     }
 
     @GET

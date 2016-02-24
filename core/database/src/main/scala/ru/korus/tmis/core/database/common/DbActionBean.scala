@@ -1,22 +1,23 @@
 package ru.korus.tmis.core.database.common
 
-import ru.korus.tmis.core.auth.AuthData
-import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.exception.CoreException
-
-import grizzled.slf4j.Logging
+import java.text.SimpleDateFormat
+import java.util
 import java.util.Date
 import javax.ejb.{EJB, Stateless}
-import scala.collection.JavaConversions._
-import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
+import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
+
+import grizzled.slf4j.Logging
+import org.joda.time.{DateTime, DateTimeConstants}
+import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data.QueryDataStructure
-import java.util
+import ru.korus.tmis.core.database.DbActionTypeBeanLocal
+import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.ListDataFilter
-import java.text.SimpleDateFormat
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 import ru.korus.tmis.schedule.QueueActionParam
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import ru.korus.tmis.core.database.{DbStaffBeanLocal, DbActionTypeBeanLocal}
-import org.joda.time.{DateTimeConstants, DateTime}
+
+import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
 //
@@ -91,13 +92,14 @@ class DbActionBean
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionByIdWithIgnoreDeleted(id: Int) = {
     info("Requested action id[" + id + "]")
-    val result = em.createQuery( """
+    val result = em.createQuery(
+      """
                                   SELECT a
                                   FROM
                                     Action a
                                   WHERE
                                     a.id = :id
-                                 """,
+      """,
       classOf[Action])
       .setParameter("id", id)
       .getResultList
@@ -386,7 +388,8 @@ class DbActionBean
     typed.getSingleResult
   }
 
-  val GetActionForEventAndPacientInQueueType = """
+  val GetActionForEventAndPacientInQueueType =
+    """
   SELECT COUNT(a)
   FROM
     Action a
@@ -400,9 +403,10 @@ class DbActionBean
     a.event.deleted = 0
   AND
     a.deleted = '0'
-                                               """
+    """
 
-  val GetActionForDateAndPacientInQueueType = """
+  val GetActionForDateAndPacientInQueueType =
+    """
   SELECT COUNT(a)
   FROM
     Action a
@@ -414,9 +418,10 @@ class DbActionBean
     a.event.deleted = 0
   AND
     a.deleted = '0'
-                                              """
+    """
 
-  val GetEvent29AndAction19ForAction = """
+  val GetEvent29AndAction19ForAction =
+    """
   SELECT a
   FROM
     Action a
@@ -430,9 +435,10 @@ class DbActionBean
     a.actionType.id = '19'
   AND
     a.deleted = '0'
-                                       """
+    """
 
-  val ActionsByATypeIdAndEventId = """
+  val ActionsByATypeIdAndEventId =
+    """
     SELECT a.id
     FROM
       Action a
@@ -445,7 +451,7 @@ class DbActionBean
     AND
       at.id IN :atIds
     ORDER BY a.createDatetime DESC
-                                   """
+    """
 
   /*val ActionsIdFindQuery = """
     SELECT a.id
@@ -461,7 +467,8 @@ class DbActionBean
       e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id AND e2.deleted = 0)
     ORDER BY a.createDatetime DESC
                            """*/
-  val ActionsIdFindQuery = """
+  val ActionsIdFindQuery =
+    """
     SELECT a.id
     FROM
       Action a
@@ -479,9 +486,10 @@ class DbActionBean
     AND
       a.deleted = 0
     ORDER BY a.createDatetime DESC
-                           """ //
+    """ //
 
-  val ActionFindQuery = """
+  val ActionFindQuery =
+    """
     SELECT a
     FROM
       Action a
@@ -489,9 +497,10 @@ class DbActionBean
       a.id = :id
     AND
       a.deleted = 0
-                        """
+    """
 
-  val ActionByEventIdAndActionTypeQuery = """
+  val ActionByEventIdAndActionTypeQuery =
+    """
     SELECT a
     FROM
       Action a
@@ -504,9 +513,10 @@ class DbActionBean
     AND
       a.deleted = 0
     ORDER BY a.createDatetime DESC
-                                          """
+    """
 
-  val ActionByEventExternalIdQuery = """
+  val ActionByEventExternalIdQuery =
+    """
     SELECT a
     FROM Action a
     WHERE
@@ -518,9 +528,10 @@ class DbActionBean
       AND e = a.event
     )
     AND a.deleted = 0
-                                     """
+    """
 
-  val ActionLastByTypeId = """
+  val ActionLastByTypeId =
+    """
     SELECT a
     FROM
       Action a
@@ -529,9 +540,10 @@ class DbActionBean
     AND
       a.deleted = 0
     ORDER BY a.createDatetime
-                           """
+    """
 
-  val ActionsForSwitchPatientByEventQuery = """
+  val ActionsForSwitchPatientByEventQuery =
+    """
     SELECT %s
     FROM
       Action a left join a.createPerson.speciality s
@@ -541,9 +553,10 @@ class DbActionBean
     AND
       a.deleted = 0
     %s
-                                            """
+    """
 
-  val ActionsByCodeQuery = """
+  val ActionsByCodeQuery =
+    """
     SELECT a
     FROM
       Action a
@@ -553,9 +566,10 @@ class DbActionBean
       a.deleted = 0
     ORDER BY
       a.createDatetime
-                           """
+    """
 
-  val ActionsByCodeAndEventQuery = """
+  val ActionsByCodeAndEventQuery =
+    """
     SELECT a
     FROM
       Action a
@@ -567,9 +581,10 @@ class DbActionBean
       a.deleted = 0
     ORDER BY
       %s
-                                   """
+    """
 
-  val ActionTypeByCodeQuery = """
+  val ActionTypeByCodeQuery =
+    """
     SELECT at
     FROM
       ActionType at
@@ -577,7 +592,7 @@ class DbActionBean
       at.code = :code
     AND
       at.deleted = 0
-                              """
+    """
 
   def getActionTypeByCode(code: String): ActionType = {
     val result = em.createQuery(ActionTypeByCodeQuery, classOf[ActionType]).setParameter("code", code)
@@ -672,12 +687,14 @@ class DbActionBean
     action.getStatus == 0
   }
 
-  def removeAction(actionId: Int) {
-    val action: Action = this.getActionIdWithoutDetach(actionId)
+  def removeAction(actionId: Int, person: Staff) {
+    val action: Action = getById(actionId)
     if (!isOpenDoc(action)) {
       throw new CoreException("Невозможно удалить закрытый документ")
     }
     action.setDeleted(true)
+    action.setModifyDatetime(new Date)
+    action.setModifyPerson(person)
     em.merge(action)
   }
 

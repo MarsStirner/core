@@ -424,7 +424,7 @@ public interface WebMisREST extends Serializable {
      *
      * @param actionId Идентификатор удаляемого действия
      */
-    void removeAction(int actionId) throws CoreException;
+    void removeAction(int actionId, AuthData auth) throws CoreException;
 
     /**
      * Метод сохранения текста при автосохранении полей ввода

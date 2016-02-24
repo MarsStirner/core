@@ -1846,8 +1846,8 @@ with CAPids {
     authStorage.getAuthData(token)
   }
 
-  def removeAction(actionId: Int) {
-    actionBean.removeAction(actionId)
+  def removeAction(actionId: Int, authData: AuthData) {
+    actionBean.removeAction(actionId, dbStaff.getStaffById(authData.getUserId))
     dbDiagnosticBean.deleteDiagnostic(actionId)
   }
 
