@@ -8,6 +8,7 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
 import org.codehaus.jackson.map.DeserializationConfig;
+import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.slf4j.Logger;
@@ -713,7 +714,12 @@ public class HsctBean {
         LOGGER.error("#{}-{} Apache http: {}", num, rowNum, response.getStatusLine());
         final String responseBody = readFully(response.getEntity().getContent(), StandardCharsets.UTF_8);
         LOGGER.error("#{}-{} Response raw ={}", num, rowNum, responseBody);
-        HsctExternalResponse result = mapper.readValue(responseBody, HsctExternalResponse.class);
+        HsctExternalResponse result = null;
+        try {
+            result = mapper.readValue(responseBody, HsctExternalResponse.class);
+        }catch (JsonMappingException e){
+            LOGGER.error("Cannot parse entity", e);
+        }
         if (result == null) {
             result = new HsctExternalResponse();
         }
