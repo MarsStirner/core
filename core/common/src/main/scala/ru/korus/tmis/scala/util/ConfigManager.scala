@@ -681,7 +681,7 @@ object ConfigManager extends Configuration {
     /**
      * URL сервиса
      */
-    var ServiceUrl = "http://rpdt01.fccho-moscow.ru:3003/integration/mis/requests?user_name={user_name}&user_token={user_token}"
+    var ServiceUrl = "http://hsct-planning.fccho-moscow.ru/integration/mis/requests?user_name={user_name}&user_token={user_token}"
 
     /**
      * Login basic http auth

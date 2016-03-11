@@ -273,7 +273,7 @@ public class HsctBean {
             }
             try {
                 final Action action = dbAction.getById(Integer.parseInt(request.getRequest().getMisId()));
-                if(action ==null){
+                if (action == null) {
                     LOGGER.info("#{} Action[{}] not found. End with 400", num, request.getRequest().getMisId());
                     return Response.status(Response.Status.BAD_REQUEST).build();
                 }
@@ -376,6 +376,10 @@ public class HsctBean {
                 LOGGER.info("#{}-{} Successful integration with HSCT. Result is ={}", num, rowNum, resultString);
                 final String jsonRepresentation = getExternalSystemSerializer().writeValueAsString(externalRequest);
                 updateRequestStatusWithFlush(request, "FINISHED", false, resultString.concat(" :::: ").concat(jsonRepresentation));
+                action.setEndDate(new Date());
+                action.setStatus((short) 2);
+                action.setModifyDatetime(new Date());
+                dbAction.updateAction(action);
                 updateHsctResultInAction(action, resultString);
             } else {
                 final String resultString = String.format("Ошибка при приема данных на стороне ТГСК: \'%s\'", externalResponse.getRaw());
@@ -424,8 +428,20 @@ public class HsctBean {
         hasErrors = checkField(request.getDiagnosis(), "Клинический диагноз", checkResult, hasErrors);
         hasErrors = checkField(request.getDiagnosisIcdCode(), "Клинический диагноз по МКБ", checkResult, hasErrors);
         hasErrors = checkField(request.getDiagnosisDate(), "Дата установки клинического диагноза", checkResult, hasErrors);
-        hasErrors = checkField(request.getComplications(), "Осложнения", checkResult, hasErrors);
-        hasErrors = checkField(request.getSecondaryDiagnoses(), "Сопутствующие диагнозы", checkResult, hasErrors);
+        /*
+          From: Старичкова Юлия Викторовна [mailto:julia.starichkova@fccho-moscow.ru]
+            Sent: Friday, February 26, 2016 12:33 PM
+            To: Алена hitsl. Карасева; Екатерина hitsl. Воронина; Тарас hitsl. Баранюк
+            Cc: Павлюк Алексей Владимирович; Мария Уварова; Инна Ашенбреннер; Воронин Кирилл Александрович
+            Subject: RE: интеграция МИС-ТГСК
+            Добрый день.              Коллеги, обсудили с коллегами из ТГСК документ «Заявка на ТГСК».
+            Появились замечания к документу «заявка на ТГСК»:
+            1.       Сделать поля необязательными:
+                a.       «Осложнения»
+                b.      «Сопутствующие диагнозы»
+        //hasErrors = checkField(request.getComplications(), "Осложнения", checkResult, hasErrors);
+        //hasErrors = checkField(request.getSecondaryDiagnoses(), "Сопутствующие диагнозы", checkResult, hasErrors);
+        */
         hasErrors = checkField(request.getAntiCmvIgG(), "Анти-CMV IgG", checkResult, hasErrors);
         hasErrors = checkField(request.getIndications(), "Показания к ТГСК", checkResult, hasErrors);
         hasErrors = checkField(request.getIndicationsDate(), "Дата установления показаний", checkResult, hasErrors);
@@ -464,7 +480,7 @@ public class HsctBean {
         OrgStructure lastOrgStructure = null;
         try {
             lastOrgStructure = dbEvent.getOrgStructureForEvent(event.getId());
-        } catch (Exception e){
+        } catch (Exception e) {
             LOGGER.warn("Cannot get OrgStructure from movings for Event[{}]", event.getId());
         }
         if (lastOrgStructure == null) {
@@ -605,8 +621,20 @@ public class HsctBean {
         entry.setPatrName(patient.getPatrName());
         entry.setMisId(String.valueOf(patient.getId()));
         entry.setBirthDate(new SimpleDateFormat(Constants.DATE_FORMAT).format(patient.getBirthDate()));
+        switch (patient.getSex()){
+            case 1:
+                entry.setSex("m");
+                break;
+            case 2:
+                entry.setSex("f");
+                break;
+            default:
+                LOGGER.warn("Patient sex [{}] cannot be mapped to HSCT enum. Set \'u\' as undefined", patient.getSex());
+                entry.setSex("u");
+                break;
+        }
         result.setPatient(entry);
-        result.setBloodTypeCode(patient.getBloodType() == null ? "00" : patient.getBloodType().getCode());
+        result.setBloodTypeCode(patient.getBloodType() == null || StringUtils.isEmpty(patient.getBloodType().getCode()) ? null : patient.getBloodType().getCode());
     }
 
     private void processActionProperties(final Action action, final HsctExternalRequest result) throws CoreException {
@@ -721,7 +749,7 @@ public class HsctBean {
         HsctExternalResponse result = null;
         try {
             result = mapper.readValue(responseBody, HsctExternalResponse.class);
-        }catch (JsonMappingException e){
+        } catch (JsonMappingException e) {
             LOGGER.error("Cannot parse entity", e);
         }
         if (result == null) {

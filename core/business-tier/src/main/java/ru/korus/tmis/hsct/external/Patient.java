@@ -52,6 +52,14 @@ public class Patient {
     @JsonProperty("birth_date")
     private String birthDate;
 
+    /**
+     * Пол пациента
+     */
+    @SerializedName("sex")
+    @JsonProperty("sex")
+    private String sex;
+
+
     public Patient() {
     }
 
@@ -93,6 +101,14 @@ public class Patient {
 
     public void setBirthDate(final String birthDate) {
         this.birthDate = birthDate;
+    }
+
+    public String getSex() {
+        return sex;
+    }
+
+    public void setSex(final String sex) {
+        this.sex = sex;
     }
 
     @Override

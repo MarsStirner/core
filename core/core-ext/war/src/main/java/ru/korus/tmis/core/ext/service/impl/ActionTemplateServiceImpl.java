@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.korus.tmis.core.ext.ambulatoryService.ActionTemplateCreateRequest;
 import ru.korus.tmis.core.ext.ambulatoryService.ActionTemplateCreateResponse;
+import ru.korus.tmis.core.ext.config.ConfigManager;
 import ru.korus.tmis.core.ext.entities.s11r64.Action;
 import ru.korus.tmis.core.ext.entities.s11r64.ActionTemplate;
 import ru.korus.tmis.core.ext.model.AuthData;
@@ -34,6 +35,9 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
 
     @Autowired
     ActionRepository actionRepository;
+
+    @Autowired
+    ConfigManager configManager;
 
     @Override
     public ActionTemplateDataContainer getActionTemplate(Integer actionTypeId, Integer ownerId, Integer groupId, Integer specialityId) {
@@ -100,7 +104,7 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
        //TODO адрес амбулатории хранить надо где-то в настройках
         final ResponseEntity<ActionTemplateCreateResponse> response =
                 restTemplate.exchange(
-                        "http://mis-core.pol.fccho-moscow.ru:5000/actions/api/templates/{actionType_id}",
+                        configManager.getAmbulatoryUrl(),
                         HttpMethod.PUT,
                         requestEntity,
                         ActionTemplateCreateResponse.class,
