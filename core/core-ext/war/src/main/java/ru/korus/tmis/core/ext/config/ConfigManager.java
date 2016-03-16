@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.ext.config;
 
-import org.springframework.stereotype.Component;
 import ru.korus.tmis.core.ext.config.entities.DataSourceSettings;
 import ru.korus.tmis.core.ext.config.entities.Settings;
 
@@ -10,7 +9,7 @@ import ru.korus.tmis.core.ext.config.entities.Settings;
  * Company: hitsl (Hi-Tech Solutions) <br>
  * Description: <br>
  */
-@Component
+
 public class ConfigManager {
 
     private String ambulatoryUrl;

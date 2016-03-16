@@ -104,7 +104,7 @@ public class ActionTemplateServiceImpl implements ActionTemplateService {
        //TODO адрес амбулатории хранить надо где-то в настройках
         final ResponseEntity<ActionTemplateCreateResponse> response =
                 restTemplate.exchange(
-                        configManager.getAmbulatoryUrl(),
+                        configManager.getAmbulatoryUrl()+ "/actions/api/templates/{actionType_id}",
                         HttpMethod.PUT,
                         requestEntity,
                         ActionTemplateCreateResponse.class,
