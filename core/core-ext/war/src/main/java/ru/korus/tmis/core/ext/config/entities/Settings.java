@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.ext.config;
+package ru.korus.tmis.core.ext.config.entities;
 
 import com.google.gson.annotations.SerializedName;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
@@ -17,12 +17,26 @@ public class Settings {
     @SerializedName("AMBULATORY_URL")
     private String ambulatoryUrl;
 
+
+    @JsonProperty("DATASOURCE")
+    @SerializedName("DATASOURCE")
+    private DataSourceSettings dataSource;
+
+
     public String getAmbulatoryUrl() {
         return ambulatoryUrl;
     }
 
     public void setAmbulatoryUrl(final String ambulatoryUrl) {
         this.ambulatoryUrl = ambulatoryUrl;
+    }
+
+    public DataSourceSettings getDataSource() {
+        return dataSource;
+    }
+
+    public void setDataSource(final DataSourceSettings dataSource) {
+        this.dataSource = dataSource;
     }
 
     public Settings() {
@@ -32,6 +46,7 @@ public class Settings {
     public String toString() {
         final StringBuilder sb = new StringBuilder("Settings{");
         sb.append("ambulatoryUrl='").append(ambulatoryUrl).append('\'');
+        sb.append(", dataSource=").append(dataSource);
         sb.append('}');
         return sb.toString();
     }

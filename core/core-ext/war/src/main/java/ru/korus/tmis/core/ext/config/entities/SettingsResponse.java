@@ -1,4 +1,4 @@
-package ru.korus.tmis.core.ext.config;
+package ru.korus.tmis.core.ext.config.entities;
 
 import com.google.gson.annotations.SerializedName;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
