@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.entity.model.hsct.QueueHsctRequest;
+import ru.korus.tmis.core.entity.model.hsct.Status;
 
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -44,29 +45,29 @@ public class DbQueueHsctRequestBean {
 
     public boolean markActive(final QueueHsctRequest entry, final Staff user) {
         switch (entry.getStatus()) {
-            case "NEW":
+            case NEW:
                 // У новой заявки надо сменить пользователя и дату след отправки
                 entry.setSendDateTime(new Date());
                 entry.setPerson(user);
                 em.merge(entry);
                 return true;
-            case "IN_PROGRESS":
+            case IN_PROGRESS:
                 LOGGER.warn("QueueRequest[{}] is in IN_PROGRESS state and could not be changed", entry);
                 return false;
-            case "CANCELED":
+            case CANCELED:
                 // У отмененнной заявки выставляем статус как у новой , затем меняем пользователя сделавшего изменение и дату оптарвки на сейчас
-                entry.setStatus("NEW");
+                entry.setStatus(Status.NEW);
                 entry.setSendDateTime(new Date());
                 entry.setPerson(user);
                 em.merge(entry);
                 return true;
-            case "ERROR":
+            case ERROR:
                 // не меняем статус, выставляем только дату отправки и нового пользователя
                 entry.setSendDateTime(new Date());
                 entry.setPerson(user);
                 em.merge(entry);
                 return true;
-            case "FINISHED":
+            case FINISHED:
                 LOGGER.warn("QueueRequest[{}] is in FINISHED state and could not be resend", entry);
                 return false;
             default:
@@ -78,25 +79,25 @@ public class DbQueueHsctRequestBean {
 
     public boolean markCanceled(final QueueHsctRequest entry, final Staff user) {
         switch (entry.getStatus()) {
-            case "NEW":
+            case NEW:
                 // У новой заявки надо сменить пользователя
-                entry.setStatus("CANCELED");
+                entry.setStatus(Status.CANCELED);
                 entry.setPerson(user);
                 em.merge(entry);
                 return true;
-            case "IN_PROGRESS":
+            case IN_PROGRESS:
                 LOGGER.warn("QueueRequest[{}] is in IN_PROGRESS state and could not be changed", entry);
                 return false;
-            case "CANCELED":
+            case CANCELED:
                 LOGGER.warn("Already CANCELED [{}]", entry);
                 return true;
-            case "ERROR":
+            case ERROR:
                 // не меняем статус, выставляем только дату отправки и нового пользователя
-                entry.setStatus("CANCELED");
+                entry.setStatus(Status.ERROR);
                 entry.setPerson(user);
                 em.merge(entry);
                 return true;
-            case "FINISHED":
+            case FINISHED:
                 LOGGER.warn("QueueRequest[{}] is in FINISHED state and could not be resend", entry);
                 return false;
             default:
@@ -108,7 +109,7 @@ public class DbQueueHsctRequestBean {
     public List<QueueHsctRequest> getAllActive() {
         try {
             return em.createNamedQuery("QueueHsctRequest.findAllByStatuses", QueueHsctRequest.class).setParameter(
-                    "statusList", ImmutableList.of("NEW", "ERROR", "IN_PROGRESS")
+                    "statusList", ImmutableList.of(Status.NEW, Status.ERROR, Status.IN_PROGRESS)
             ).getResultList();
         } catch (Exception e) {
             LOGGER.error("Exception while getAllActive", e);

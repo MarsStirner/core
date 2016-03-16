@@ -5,8 +5,6 @@ import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
 import org.codehaus.jackson.map.annotate.JsonRootName;
 
-import java.util.List;
-
 /**
  * Author: Upatov Egor <br>
  * Date: 15.02.2016, 13:57 <br>
@@ -18,9 +16,6 @@ import java.util.List;
 public class HsctExternalResponse {
     @JsonProperty("id")
     private Integer id;
-
-    @JsonProperty("error")
-    private List<HsctExternalRequest> error;
 
     @JsonIgnore
     private String raw;
@@ -37,13 +32,6 @@ public class HsctExternalResponse {
         this.id = id;
     }
 
-    public List<HsctExternalRequest> getError() {
-        return error;
-    }
-
-    public void setError(final List<HsctExternalRequest> error) {
-        this.error = error;
-    }
 
     public String getRaw() {
         return raw;
@@ -57,7 +45,6 @@ public class HsctExternalResponse {
     public String toString() {
         final StringBuilder sb = new StringBuilder("HsctExternalResponse{");
         sb.append("id=").append(id);
-        sb.append(", error=").append(error);
         sb.append('}');
         return sb.toString();
     }

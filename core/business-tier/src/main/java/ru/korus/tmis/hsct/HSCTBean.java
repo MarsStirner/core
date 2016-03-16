@@ -24,6 +24,7 @@ import ru.korus.tmis.core.database.hsct.DbQueueHsctRequestBean;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.hsct.QueueHsctRequest;
+import ru.korus.tmis.core.entity.model.hsct.Status;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.hsct.external.*;
 import ru.korus.tmis.scala.util.ConfigManager;
@@ -107,7 +108,9 @@ public class HsctBean {
     );
     private static final ImmutableSet<String> THERAPY_AT_CODES = ImmutableSet.of("1_1_01", "1_2_18", "1_2_19", "1_2_20", "1_2_22", "1_2_23");
 
-    private static final ImmutableSet<String> WEIGHT_AT_CODES = ImmutableSet.of("1_1_32", "1_1_31", "1_1_03_1", "1_1_01", "1_2_18", "1_2_19", "1_2_20", "1_2_22", "1_2_23");
+    private static final ImmutableSet<String> WEIGHT_AT_CODES = ImmutableSet.of(
+            "1_1_32", "1_1_31", "1_1_03_1", "1_1_01", "1_2_18", "1_2_19", "1_2_20", "1_2_22", "1_2_23"
+    );
 
     private static final String APT_WEIGHT = "WEIGHT";
     private static final ImmutableSet<String> WEIGHT_APT_CODES = ImmutableSet.of(APT_WEIGHT);
@@ -198,7 +201,7 @@ public class HsctBean {
         LOGGER.info("#{} Call dequeueAction({}, {})", num, actionId, authData);
         QueueHsctRequest queueEntry = dbQueueHsctRequest.getRequestByActionId(actionId);
         if (queueEntry != null) {
-            final boolean canceled = dbQueueHsctRequest.markCanceled(queueEntry, authData == null? null : authData.getUser());
+            final boolean canceled = dbQueueHsctRequest.markCanceled(queueEntry, authData == null ? null : authData.getUser());
             LOGGER.debug("#{} Cancelled result={}. Entity = {}", num, canceled, queueEntry);
             final String message = String.format("Action[%d] canceled in queue", actionId);
             LOGGER.info("#{} End of dequeue. Return { success } \'{}\'", num, message);
@@ -284,39 +287,35 @@ public class HsctBean {
         if (!ConfigManager.HsctProp().isReceiveActive()) {
             LOGGER.info("#{} Integration is disabled for RECEIVE events. End with 503", num);
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Integration disabled").build();
-        }
-        if (StringUtils.equals(userName, ConfigManager.HsctProp().ReceiveUser()) && StringUtils.equalsIgnoreCase(
+        } else if (request == null) {
+            LOGGER.info("#{} Request is null or not deserialize. End with 400", num);
+            return Response.status(Response.Status.BAD_REQUEST).build();
+        } else if (!StringUtils.equals(userName, ConfigManager.HsctProp().ReceiveUser()) || !StringUtils.equalsIgnoreCase(
                 token, ConfigManager.HsctProp().ReceivedPassword()
         )) {
-            if (request == null) {
-                LOGGER.info("#{} Request is null or not deserialize. End with 400", num);
-                return Response.status(Response.Status.BAD_REQUEST).build();
-            }
-            try {
-                final Action action = dbAction.getById(Integer.parseInt(request.getRequest().getMisId()));
-                if (action == null) {
-                    LOGGER.info("#{} Action[{}] not found. End with 400", num, request.getRequest().getMisId());
-                    return Response.status(Response.Status.BAD_REQUEST).build();
-                }
-                final String result = request.getRequest().isCompleted() ? "Заявка одобрена" : "Заявка отклонена";
-                for (ActionProperty ap : action.getActionProperties()) {
-                    if (APT_CODE_IS_COMPLETED.equals(ap.getType().getCode())) {
-                        final APValue apValue = dbActionProperty.setActionPropertyValue(ap, result, 0);
-                        em.merge(apValue);
-                        LOGGER.debug("#{} IS_COMPLETED AP[{}]", num, apValue);
-                        break;
-                    }
-                }
-                LOGGER.info("#{} Request finished {}. End with 200 OK", num, result);
-                return Response.ok().build();
-            } catch (Exception e) {
-                LOGGER.error("#{} Internal Error ", num, e);
-                return Response.serverError().build();
-            }
-
-        } else {
             LOGGER.info("#{} Authentication failure. End with 403", num);
             return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        try {
+            final Action action = dbAction.getById(Integer.parseInt(request.getRequest().getMisId()));
+            if (action == null) {
+                LOGGER.info("#{} Action[{}] not found. End with 400", num, request.getRequest().getMisId());
+                return Response.status(Response.Status.BAD_REQUEST).build();
+            }
+            final String result = request.getRequest().isCompleted() ? "Заявка одобрена" : "Заявка отклонена";
+            for (ActionProperty ap : action.getActionProperties()) {
+                if (APT_CODE_IS_COMPLETED.equals(ap.getType().getCode())) {
+                    final APValue apValue = dbActionProperty.setActionPropertyValue(ap, result, 0);
+                    em.merge(apValue);
+                    LOGGER.debug("#{} IS_COMPLETED AP[{}]", num, apValue);
+                    break;
+                }
+            }
+            LOGGER.info("#{} Request finished {}. End with 200 OK", num, result);
+            return Response.ok().build();
+        } catch (Exception e) {
+            LOGGER.error("#{} Internal Error ", num, e);
+            return Response.serverError().build();
         }
     }
 
@@ -381,13 +380,13 @@ public class HsctBean {
             em.remove(request);
             return;
         }
-        updateRequestStatusWithFlush(request, "IN_PROGRESS", true, null);
+        updateRequestStatusWithFlush(request, Status.IN_PROGRESS, true, null);
         try {
             final HsctExternalRequest externalRequest = constructExternalHsctRequest(action, request.getPerson());
             final String checkExternalRequestResult = checkExternalRequest(externalRequest);
             if (StringUtils.isNotEmpty(checkExternalRequestResult)) {
                 LOGGER.error("#{}-{} Check after construction of externalRequest failed. Message = \'{}\'", num, rowNum, checkExternalRequestResult);
-                updateRequestStatusWithFlush(request, "ERROR", false, checkExternalRequestResult);
+                updateRequestStatusWithFlush(request, Status.ERROR, false, checkExternalRequestResult);
                 updateHsctResultInAction(action, checkExternalRequestResult);
                 unlockAction(action);
                 dequeueAction(action.getId(), null);
@@ -398,14 +397,14 @@ public class HsctBean {
                 final String resultString = String.format("Успешно отправлено в ТГСК, получен идентифкатор заявки = %d", externalResponse.getId());
                 LOGGER.info("#{}-{} Successful integration with HSCT. Result is ={}", num, rowNum, resultString);
                 final String jsonRepresentation = getExternalSystemSerializer().writeValueAsString(externalRequest);
-                updateRequestStatusWithFlush(request, "FINISHED", false, resultString.concat(" :::: ").concat(jsonRepresentation));
+                updateRequestStatusWithFlush(request, Status.FINISHED, false, resultString.concat(" :::: ").concat(jsonRepresentation));
                 lockAction(action);
                 updateHsctResultInAction(action, resultString);
             } else {
                 final String resultString = String.format("Ошибка при приема данных на стороне ТГСК: \'%s\'", externalResponse.getRaw());
                 LOGGER.info("#{}-{} Failed integration with HSCT. Result is ={}", num, rowNum, resultString);
                 final String jsonRepresentation = getExternalSystemSerializer().writeValueAsString(externalRequest);
-                updateRequestStatusWithFlush(request, "ERROR", false, resultString.concat(" :::: ").concat(jsonRepresentation));
+                updateRequestStatusWithFlush(request, Status.ERROR, false, resultString.concat(" :::: ").concat(jsonRepresentation));
                 updateHsctResultInAction(action, resultString);
                 unlockAction(action);
                 dequeueAction(action.getId(), null);
@@ -414,7 +413,7 @@ public class HsctBean {
             //Ощибка при конструировании запроса для внешней подсистемы
             LOGGER.error("#{}-{} Unknown error: {}", num, rowNum, e);
             final String resultString = String.format("Неизвестная ошибка: \'%s\'", e.getMessage());
-            updateRequestStatusWithFlush(request, "ERROR", false, resultString);
+            updateRequestStatusWithFlush(request, Status.ERROR, false, resultString);
             updateHsctResultInAction(action, resultString);
             unlockAction(action);
         }
@@ -431,7 +430,7 @@ public class HsctBean {
     }
 
     private void updateRequestStatusWithFlush(
-            final QueueHsctRequest request, final String status, final boolean incrementAttempts, final String message
+            final QueueHsctRequest request, final Status status, final boolean incrementAttempts, final String message
     ) {
         request.setStatus(status);
         request.setSendDateTime(new Date());
@@ -515,11 +514,11 @@ public class HsctBean {
             final Map<ActionProperty, List<APValue>> map = dbActionProperty.getActionPropertiesByActionIdAndActionPropertyTypeCodes(
                     action.getId(), WEIGHT_APT_CODES
             );
-            if(map != null && !map.isEmpty()){
+            if (map != null && !map.isEmpty()) {
                 for (Map.Entry<ActionProperty, List<APValue>> entry : map.entrySet()) {
-                    if(APT_WEIGHT.equals(entry.getKey().getType().getCode())){
+                    if (APT_WEIGHT.equals(entry.getKey().getType().getCode())) {
                         final List<APValue> valueList = entry.getValue();
-                        if(valueList != null && !valueList.isEmpty()){
+                        if (valueList != null && !valueList.isEmpty()) {
                             result.setWeight(Double.valueOf(valueList.get(0).getValueAsString()));
                             LOGGER.debug(LOG_MSG_SETTED_FROM, APT_WEIGHT, action.getId());
                             return;
@@ -709,7 +708,6 @@ public class HsctBean {
 
     private void processActionProperties(final Action action, final HsctExternalRequest result) throws CoreException {
         final SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
-        final SimpleDateFormat sdf_special = new SimpleDateFormat("yyyy-MM");
         final Map<ActionProperty, List<APValue>> map = dbActionProperty.getActionPropertiesByActionIdAndActionPropertyTypeCodes(
                 action.getId(), HSCT_REQUEST_APT_CODES
         );
@@ -745,7 +743,7 @@ public class HsctBean {
                         result.setIndicationsDate(sdf.format(values.get(0).getValue()));
                         break;
                     case APT_CODE_OPTIMAL_HSCT_DATE:
-                        result.setHsctOptimalDate(sdf_special.format(values.get(0).getValue()));
+                        result.setHsctOptimalDate(new SimpleDateFormat("yyyy-MM").format(values.get(0).getValue()));
                         break;
                     case APT_CODE_HSCT_TYPE_CODE:
                         result.setHsctTypeCode(values.get(0).getValueAsString());
@@ -813,9 +811,9 @@ public class HsctBean {
         );
 
         HttpResponse response = new DefaultHttpClient().execute(post);
-        LOGGER.error("#{}-{} Apache http: {}", num, rowNum, response.getStatusLine());
+        LOGGER.info("#{}-{} Apache http: {}", num, rowNum, response.getStatusLine());
         final String responseBody = readFully(response.getEntity().getContent(), StandardCharsets.UTF_8);
-        LOGGER.error("#{}-{} Response raw ={}", num, rowNum, responseBody);
+        LOGGER.info("#{}-{} Response raw ={}", num, rowNum, responseBody);
         HsctExternalResponse result = null;
         try {
             result = mapper.readValue(responseBody, HsctExternalResponse.class);

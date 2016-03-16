@@ -15,7 +15,8 @@ import java.util.Date;
 
 @Entity
 @Table(name = "queueHsctRequest")
-@NamedQueries({@NamedQuery(name = "QueueHsctRequest.findAllByStatuses", query = "SELECT i FROM QueueHsctRequest i WHERE i.status IN :statusList ORDER BY i.sendDateTime DESC ")})
+@NamedQueries({@NamedQuery(name = "QueueHsctRequest.findAllByStatuses",
+        query = "SELECT i FROM QueueHsctRequest i WHERE i.status IN :statusList ORDER BY i.sendDateTime DESC ")})
 public class QueueHsctRequest {
 
     /**
@@ -37,7 +38,8 @@ public class QueueHsctRequest {
      * Текущий статус заявки в очереди
      */
     @Column(name = "status", nullable = false)
-    private String status;
+    @Enumerated(EnumType.STRING)
+    private Status status;
 
     /**
      * Время отправки заявки из очереди \планируемое время отправки  ( в зависимости от статуса )
@@ -68,7 +70,7 @@ public class QueueHsctRequest {
         this.person = person;
         this.attempts = 0;
         this.sendDateTime = new Date();
-        this.status = "NEW";
+        this.status = Status.NEW;
     }
 
     public Integer getActionId() {
@@ -87,11 +89,11 @@ public class QueueHsctRequest {
         this.person = person;
     }
 
-    public String getStatus() {
+    public Status getStatus() {
         return status;
     }
 
-    public void setStatus(final String status) {
+    public void setStatus(final Status status) {
         this.status = status;
     }
 
@@ -132,7 +134,7 @@ public class QueueHsctRequest {
         return sb.toString();
     }
 
-    public String logRow(){
+    public String logRow() {
         final StringBuilder sb = new StringBuilder("{");
         sb.append("actionId=").append(actionId);
         sb.append(", person=").append(person != null ? person.getId() : null);
