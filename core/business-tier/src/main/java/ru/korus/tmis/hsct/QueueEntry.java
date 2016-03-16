@@ -1,5 +1,6 @@
 package ru.korus.tmis.hsct;
 
+import org.apache.commons.lang.StringUtils;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import ru.korus.tmis.core.entity.model.hsct.QueueHsctRequest;
 
@@ -17,22 +18,22 @@ import javax.xml.bind.annotation.*;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class QueueEntry {
 
-    @XmlElement(name="actionId")
+    @XmlElement(name = "actionId")
     private Integer actionId;
 
-    @XmlElement(name="status")
+    @XmlElement(name = "status")
     private String status;
 
-    @XmlElement(name="attempts")
+    @XmlElement(name = "attempts")
     private Integer attempts;
 
-    @XmlElement(name="info")
+    @XmlElement(name = "info")
     private String info;
 
-    @XmlElement(name="sendDateTime")
+    @XmlElement(name = "sendDateTime")
     private String sendDateTime;
 
-    @XmlElement(name="person")
+    @XmlElement(name = "person")
     private String person;
 
     public QueueEntry() {
@@ -44,7 +45,7 @@ public class QueueEntry {
         this.attempts = entry.getAttempts();
         this.info = entry.getInfo();
         this.sendDateTime = entry.getSendDateTime().toString();
-        this.person = entry.getPerson().getInfoString();
+        this.person = entry.getPerson() == null ? null : entry.getPerson().getInfoString();
     }
 
     public Integer getActionId() {
@@ -101,7 +102,7 @@ public class QueueEntry {
         sb.append("actionId=").append(actionId);
         sb.append(", status='").append(status).append('\'');
         sb.append(", attempts=").append(attempts);
-        sb.append(", info='").append(info).append('\'');
+        sb.append(", info='").append(StringUtils.substring(info, 0, 10)).append('\'');
         sb.append(", sendDateTime='").append(sendDateTime).append('\'');
         sb.append(", person='").append(person).append('\'');
         sb.append('}');

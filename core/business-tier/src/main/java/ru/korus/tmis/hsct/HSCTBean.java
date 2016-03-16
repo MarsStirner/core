@@ -40,7 +40,10 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 
 
@@ -94,20 +97,23 @@ public class HsctBean {
     private static final String APT_JOURNAL_PHASE_TITLE = "therapyPhaseTitle";
     private static final String APT_JOURNAL_PHASE_BEG_DATE = "therapyPhaseBegDate";
     private static final String APT_JOURNAL_PHASE_END_DATE = "therapyPhaseEndDate";
-    private static final String APT_JOURNAL_WEIGHT = "WEIGHT";
     private static final ImmutableSet<String> THERAPY_APT_CODES = ImmutableSet.of(
             APT_JOURNAL_THERAPY_TITLE,
             APT_JOURNAL_THERAPY_BEG_DATE,
             APT_JOURNAL_THERAPY_END_DATE,
             APT_JOURNAL_PHASE_TITLE,
             APT_JOURNAL_PHASE_BEG_DATE,
-            APT_JOURNAL_PHASE_END_DATE,
-            APT_JOURNAL_WEIGHT
+            APT_JOURNAL_PHASE_END_DATE
     );
     private static final ImmutableSet<String> THERAPY_AT_CODES = ImmutableSet.of("1_1_01", "1_2_18", "1_2_19", "1_2_20", "1_2_22", "1_2_23");
 
+    private static final ImmutableSet<String> WEIGHT_AT_CODES = ImmutableSet.of("1_1_32", "1_1_31", "1_1_03_1", "1_1_01", "1_2_18", "1_2_19", "1_2_20", "1_2_22", "1_2_23");
+
+    private static final String APT_WEIGHT = "WEIGHT";
+    private static final ImmutableSet<String> WEIGHT_APT_CODES = ImmutableSet.of(APT_WEIGHT);
 
     private static ObjectMapper mapper;
+
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em;
     @EJB
@@ -150,6 +156,7 @@ public class HsctBean {
             return createErrorResponse(checkResult);
         }
         LOGGER.debug("#{} Action[{}] is valid", num, actionId);
+        lockAction(action);
         QueueHsctRequest queueEntry = dbQueueHsctRequest.getRequestByAction(action);
         if (queueEntry == null) {
             LOGGER.debug("#{} Action[{}] is not in queue and need to be inserted", num, action.getId());
@@ -162,6 +169,20 @@ public class HsctBean {
             LOGGER.info("#{} End of enqueueAction. Modified in queue {}", num, queueEntry);
             return createSuccessResponse(queueEntry.toString());
         }
+    }
+
+    private void lockAction(final Action action) {
+        action.setEndDate(new Date());
+        action.setStatus((short) 2);
+        action.setModifyDatetime(new Date());
+        dbAction.updateAction(action);
+    }
+
+    private void unlockAction(final Action action) {
+        action.setEndDate(null);
+        action.setStatus((short) 1);
+        action.setModifyDatetime(new Date());
+        dbAction.updateAction(action);
     }
 
     /**
@@ -177,7 +198,7 @@ public class HsctBean {
         LOGGER.info("#{} Call dequeueAction({}, {})", num, actionId, authData);
         QueueHsctRequest queueEntry = dbQueueHsctRequest.getRequestByActionId(actionId);
         if (queueEntry != null) {
-            final boolean canceled = dbQueueHsctRequest.markCanceled(queueEntry, authData.getUser());
+            final boolean canceled = dbQueueHsctRequest.markCanceled(queueEntry, authData == null? null : authData.getUser());
             LOGGER.debug("#{} Cancelled result={}. Entity = {}", num, canceled, queueEntry);
             final String message = String.format("Action[%d] canceled in queue", actionId);
             LOGGER.info("#{} End of dequeue. Return { success } \'{}\'", num, message);
@@ -368,6 +389,8 @@ public class HsctBean {
                 LOGGER.error("#{}-{} Check after construction of externalRequest failed. Message = \'{}\'", num, rowNum, checkExternalRequestResult);
                 updateRequestStatusWithFlush(request, "ERROR", false, checkExternalRequestResult);
                 updateHsctResultInAction(action, checkExternalRequestResult);
+                unlockAction(action);
+                dequeueAction(action.getId(), null);
                 return;
             }
             final HsctExternalResponse externalResponse = sendToExternalSystem(externalRequest, serviceUrl, num, rowNum);
@@ -376,10 +399,7 @@ public class HsctBean {
                 LOGGER.info("#{}-{} Successful integration with HSCT. Result is ={}", num, rowNum, resultString);
                 final String jsonRepresentation = getExternalSystemSerializer().writeValueAsString(externalRequest);
                 updateRequestStatusWithFlush(request, "FINISHED", false, resultString.concat(" :::: ").concat(jsonRepresentation));
-                action.setEndDate(new Date());
-                action.setStatus((short) 2);
-                action.setModifyDatetime(new Date());
-                dbAction.updateAction(action);
+                lockAction(action);
                 updateHsctResultInAction(action, resultString);
             } else {
                 final String resultString = String.format("Ошибка при приема данных на стороне ТГСК: \'%s\'", externalResponse.getRaw());
@@ -387,6 +407,8 @@ public class HsctBean {
                 final String jsonRepresentation = getExternalSystemSerializer().writeValueAsString(externalRequest);
                 updateRequestStatusWithFlush(request, "ERROR", false, resultString.concat(" :::: ").concat(jsonRepresentation));
                 updateHsctResultInAction(action, resultString);
+                unlockAction(action);
+                dequeueAction(action.getId(), null);
             }
         } catch (Exception e) {
             //Ощибка при конструировании запроса для внешней подсистемы
@@ -394,6 +416,7 @@ public class HsctBean {
             final String resultString = String.format("Неизвестная ошибка: \'%s\'", e.getMessage());
             updateRequestStatusWithFlush(request, "ERROR", false, resultString);
             updateHsctResultInAction(action, resultString);
+            unlockAction(action);
         }
     }
 
@@ -473,7 +496,38 @@ public class HsctBean {
         processDoctor(result, person);
         processSpokesman(result, patient);
         processJournals(result, action.getEvent());
+        processWeight(result, action.getEvent());
         return result;
+    }
+
+    private void processWeight(final HsctExternalRequest result, final Event event) throws CoreException {
+        final List<Action> actions = dbAction.getActionsByTypeCodeAndEventId(THERAPY_AT_CODES, event.getId(), "a.begDate DESC");
+        if (actions == null || actions.isEmpty()) {
+            LOGGER.debug("No WEIGHT-actions for event[{}]", event);
+            return;
+        } else {
+            LOGGER.debug("Founded {} WEIGHT-actions", actions.size());
+        }
+        //Пербираем все журналы
+        for (Action action : actions) {
+            LOGGER.debug("Process WEIGHT-Action[{}]", action.getId());
+            //перебираем список свойст текущего журнала со значениями ( по списку кодов типов свойств)
+            final Map<ActionProperty, List<APValue>> map = dbActionProperty.getActionPropertiesByActionIdAndActionPropertyTypeCodes(
+                    action.getId(), WEIGHT_APT_CODES
+            );
+            if(map != null && !map.isEmpty()){
+                for (Map.Entry<ActionProperty, List<APValue>> entry : map.entrySet()) {
+                    if(APT_WEIGHT.equals(entry.getKey().getType().getCode())){
+                        final List<APValue> valueList = entry.getValue();
+                        if(valueList != null && !valueList.isEmpty()){
+                            result.setWeight(Double.valueOf(valueList.get(0).getValueAsString()));
+                            LOGGER.debug(LOG_MSG_SETTED_FROM, APT_WEIGHT, action.getId());
+                            return;
+                        }
+                    }
+                }
+            }
+        }
     }
 
     private void processDepatment(final HsctExternalRequest result, final Event event) throws CoreException {
@@ -506,7 +560,6 @@ public class HsctBean {
     }
 
     private void processJournals(final HsctExternalRequest result, final Event event) throws CoreException {
-        final SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
         final List<Action> journals = dbAction.getActionsByTypeCodeAndEventId(THERAPY_AT_CODES, event.getId(), "a.begDate DESC");
         if (journals == null || journals.isEmpty()) {
             LOGGER.debug("No journals for event[{}]", event);
@@ -514,62 +567,77 @@ public class HsctBean {
         } else {
             LOGGER.debug("Founded {} journals", journals.size());
         }
-        //Коллекция с остатками незаполненных КОДОВ свойств действий
-        final Set<String> remainingAPTCodes = new HashSet<>(THERAPY_APT_CODES);
+        //Пербираем все журналы
         for (Action action : journals) {
-            LOGGER.debug("Process journal Action[{}]", action.getId());
-            final Map<ActionProperty, List<APValue>> map = dbActionProperty.getActionPropertiesByActionIdAndActionPropertyTypeCodes(
-                    action.getId(), remainingAPTCodes
-            );
-            for (Map.Entry<ActionProperty, List<APValue>> entry : map.entrySet()) {
-                final List<APValue> values = entry.getValue();
-                if (!values.isEmpty()) {
-                    switch (entry.getKey().getType().getCode()) {
-                        case APT_JOURNAL_THERAPY_TITLE:
-                            result.setProtocolCode(values.get(0).getValueAsString());
-                            LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_THERAPY_TITLE, action.getId());
-                            remainingAPTCodes.remove(APT_JOURNAL_THERAPY_TITLE);
-                            break;
-                        case APT_JOURNAL_THERAPY_BEG_DATE:
-                            result.setProtocolStartDate(sdf.format(values.get(0).getValue()));
-                            LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_THERAPY_BEG_DATE, action.getId());
-                            remainingAPTCodes.remove(APT_JOURNAL_THERAPY_BEG_DATE);
-                            break;
-                        case APT_JOURNAL_THERAPY_END_DATE:
-                            result.setProtocolEndDate(sdf.format(values.get(0).getValue()));
-                            LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_THERAPY_END_DATE, action.getId());
-                            remainingAPTCodes.remove(APT_JOURNAL_THERAPY_END_DATE);
-                            break;
-                        case APT_JOURNAL_PHASE_TITLE:
-                            result.setProtocolStageCode(values.get(0).getValueAsString());
-                            LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_PHASE_TITLE, action.getId());
-                            remainingAPTCodes.remove(APT_JOURNAL_PHASE_TITLE);
-                            break;
-                        case APT_JOURNAL_PHASE_BEG_DATE:
-                            result.setProtocolStageStartDate(sdf.format(values.get(0).getValue()));
-                            LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_PHASE_BEG_DATE, action.getId());
-                            remainingAPTCodes.remove(APT_JOURNAL_PHASE_BEG_DATE);
-                            break;
-                        case APT_JOURNAL_PHASE_END_DATE:
-                            result.setProtocolStageEndDate(sdf.format(values.get(0).getValue()));
-                            LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_PHASE_END_DATE, action.getId());
-                            remainingAPTCodes.remove(APT_JOURNAL_PHASE_END_DATE);
-                            break;
-                        case APT_JOURNAL_WEIGHT:
-                            result.setWeight(Double.valueOf(values.get(0).getValueAsString()));
-                            LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_WEIGHT, action.getId());
-                            remainingAPTCodes.remove(APT_JOURNAL_WEIGHT);
-                            break;
-                        default:
-                            break;
-                    }
-                }
-            }
-            if (remainingAPTCodes.isEmpty()) {
-                LOGGER.debug("Founded all AP from journals. Break");
+            if (processJournal(action, result)) {
+                LOGGER.debug("TherapyProtocol filled from Action[{}] ", action.getId());
                 break;
             }
         }
+    }
+
+    private boolean processJournal(final Action action, final HsctExternalRequest result) throws CoreException {
+        LOGGER.debug("Process journal Action[{}]", action.getId());
+        //перебираем список свойст текущего журнала со значениями ( по списку кодов типов свойств)
+        final Map<ActionProperty, List<APValue>> map = dbActionProperty.getActionPropertiesByActionIdAndActionPropertyTypeCodes(
+                action.getId(), THERAPY_APT_CODES
+        );
+        //Если у журнала есть  APT_JOURNAL_THERAPY_TITLE заполненный, то работаем только с этим журналом, все остальные -> /dev/null/
+        for (ActionProperty property : map.keySet()) {
+            if (APT_JOURNAL_THERAPY_TITLE.equals(property.getType().getCode())) {
+                final List<APValue> valueList = map.get(property);
+                if (valueList == null || valueList.isEmpty() || StringUtils.isEmpty(valueList.get(0).toString())) {
+                    LOGGER.debug(
+                            "Action[{}] has null/empty AP[{}] with code=\'{}\'. Skip journal Action",
+                            action.getId(),
+                            property.getId(),
+                            APT_JOURNAL_THERAPY_TITLE
+                    );
+                    return false;
+                } else {
+                    LOGGER.debug(
+                            "Action[{}] has AP[{}] with code=\'{}\'. Process it!!!", action.getId(), property.getId(), APT_JOURNAL_THERAPY_TITLE
+                    );
+                    break;
+                }
+            }
+        }
+        final SimpleDateFormat sdf = new SimpleDateFormat(Constants.DATE_FORMAT);
+        //Терапия найдена - дербаним по свойствам
+        for (Map.Entry<ActionProperty, List<APValue>> entry : map.entrySet()) {
+            final List<APValue> values = entry.getValue();
+            if (!values.isEmpty()) {
+                switch (entry.getKey().getType().getCode()) {
+                    case APT_JOURNAL_THERAPY_TITLE:
+                        result.setProtocolCode(values.get(0).getValueAsString());
+                        LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_THERAPY_TITLE, action.getId());
+                        break;
+                    case APT_JOURNAL_THERAPY_BEG_DATE:
+                        result.setProtocolStartDate(sdf.format(values.get(0).getValue()));
+                        LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_THERAPY_BEG_DATE, action.getId());
+                        break;
+                    case APT_JOURNAL_THERAPY_END_DATE:
+                        result.setProtocolEndDate(sdf.format(values.get(0).getValue()));
+                        LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_THERAPY_END_DATE, action.getId());
+                        break;
+                    case APT_JOURNAL_PHASE_TITLE:
+                        result.setProtocolStageCode(values.get(0).getValueAsString());
+                        LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_PHASE_TITLE, action.getId());
+                        break;
+                    case APT_JOURNAL_PHASE_BEG_DATE:
+                        result.setProtocolStageStartDate(sdf.format(values.get(0).getValue()));
+                        LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_PHASE_BEG_DATE, action.getId());
+                        break;
+                    case APT_JOURNAL_PHASE_END_DATE:
+                        result.setProtocolStageEndDate(sdf.format(values.get(0).getValue()));
+                        LOGGER.debug(LOG_MSG_SETTED_FROM, APT_JOURNAL_PHASE_END_DATE, action.getId());
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        return true;
     }
 
     private void processSpokesman(final HsctExternalRequest result, final ru.korus.tmis.core.entity.model.Patient patient) {
@@ -621,7 +689,7 @@ public class HsctBean {
         entry.setPatrName(patient.getPatrName());
         entry.setMisId(String.valueOf(patient.getId()));
         entry.setBirthDate(new SimpleDateFormat(Constants.DATE_FORMAT).format(patient.getBirthDate()));
-        switch (patient.getSex()){
+        switch (patient.getSex()) {
             case 1:
                 entry.setSex("m");
                 break;
@@ -634,7 +702,9 @@ public class HsctBean {
                 break;
         }
         result.setPatient(entry);
-        result.setBloodTypeCode(patient.getBloodType() == null || StringUtils.isEmpty(patient.getBloodType().getCode()) ? null : patient.getBloodType().getCode());
+        result.setBloodTypeCode(
+                patient.getBloodType() == null || StringUtils.isEmpty(patient.getBloodType().getCode()) ? null : patient.getBloodType().getCode()
+        );
     }
 
     private void processActionProperties(final Action action, final HsctExternalRequest result) throws CoreException {
