@@ -69,7 +69,7 @@ public class HsctExternalRequest {
      */
     @SerializedName("has_siblings")
     @JsonProperty("has_siblings")
-    private boolean siblings;
+    private Boolean siblings;
 
     //Таблица 3. Другие данные, отправляемые из МИС в систему планирования ТГСК
     /**
@@ -259,11 +259,11 @@ public class HsctExternalRequest {
         this.hsctTypeCode = hsctTypeCode;
     }
 
-    public boolean isSiblings() {
+    public Boolean getSiblings() {
         return siblings;
     }
 
-    public void setSiblings(final boolean siblings) {
+    public void setSiblings(final Boolean siblings) {
         this.siblings = siblings;
     }
 

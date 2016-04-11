@@ -7,13 +7,12 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.protocol.HTTP;
-import org.codehaus.jackson.map.DeserializationConfig;
 import org.codehaus.jackson.map.JsonMappingException;
 import org.codehaus.jackson.map.ObjectMapper;
 import org.codehaus.jackson.map.SerializationConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.auth.AuthData;
+import org.springframework.http.HttpStatus;
 import ru.korus.tmis.core.database.DbClientContactBeanLocal;
 import ru.korus.tmis.core.database.DbClientRelationBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
@@ -140,13 +139,13 @@ public class HsctBean {
      * Записывает Action в очередь отправки в ТГСК
      *
      * @param actionId идентификатор экшена
-     * @param authData Данные пользователя, производящего запись в очередь отправки в ТГСК
+     * @param user     Данные пользователя, производящего запись в очередь отправки в ТГСК
      * @return структура для сериализации в JSON ответа по поставновке экшена в очередь.
      * this.getError() - успешность постановки, this.getErrorMessage - причина отказа \ отладочная информация
      */
-    public HsctResponse enqueueAction(final int actionId, final AuthData authData) {
+    public HsctResponse enqueueAction(final int actionId, final Staff user) throws CoreException {
         final int num = REST_COUNTER.incrementAndGet();
-        LOGGER.info("#{} Call enqueueAction({}, {})", num, actionId, authData);
+        LOGGER.info("#{} Call enqueueAction({}, {})", num, actionId, user);
         if (!checkSendConfiguration()) {
             LOGGER.warn("#{} End of enqueueAction. Integration with HSCT is not configured properly or disabled.", num);
             return createErrorResponse("Hsct integration is disabled. Action will not be queued.");
@@ -159,16 +158,17 @@ public class HsctBean {
             return createErrorResponse(checkResult);
         }
         LOGGER.debug("#{} Action[{}] is valid", num, actionId);
+        updateHsctResultInAction(action, "Заявка в очереди на отправку");
         lockAction(action);
         QueueHsctRequest queueEntry = dbQueueHsctRequest.getRequestByAction(action);
         if (queueEntry == null) {
             LOGGER.debug("#{} Action[{}] is not in queue and need to be inserted", num, action.getId());
-            queueEntry = dbQueueHsctRequest.insertNewRequest(action, authData.getUser());
+            queueEntry = dbQueueHsctRequest.insertNewRequest(action, user);
             LOGGER.info("#{} End of enqueueAction. Inserted in queue {}", num, queueEntry);
             return createSuccessResponse(queueEntry.toString());
         } else {
             LOGGER.debug("#{} Action[{}] is in queue[{}] and need to be modified", num, action.getId(), queueEntry);
-            dbQueueHsctRequest.markActive(queueEntry, authData.getUser());
+            dbQueueHsctRequest.markActive(queueEntry, user);
             LOGGER.info("#{} End of enqueueAction. Modified in queue {}", num, queueEntry);
             return createSuccessResponse(queueEntry.toString());
         }
@@ -192,16 +192,16 @@ public class HsctBean {
      * Отменяет постановку Action в очередь отправки в ТГСК
      *
      * @param actionId идентификатор экшена
-     * @param authData Данные пользователя, производящего выемку Action из очереди отправки в ТГСК
+     * @param user     Данные пользователя, производящего выемку Action из очереди отправки в ТГСК
      * @return структура для сериализации в JSON ответа по поставновке экшена в очередь.
      * this.getError() - успешность отмены, this.getErrorMessage - причина отказа \ отладочная информация
      */
-    public HsctResponse dequeueAction(final int actionId, final AuthData authData) {
+    public HsctResponse dequeueAction(final int actionId, final Staff user) {
         final int num = REST_COUNTER.incrementAndGet();
-        LOGGER.info("#{} Call dequeueAction({}, {})", num, actionId, authData);
+        LOGGER.info("#{} Call dequeueAction({}, {})", num, actionId, user);
         QueueHsctRequest queueEntry = dbQueueHsctRequest.getRequestByActionId(actionId);
         if (queueEntry != null) {
-            final boolean canceled = dbQueueHsctRequest.markCanceled(queueEntry, authData == null ? null : authData.getUser());
+            final boolean canceled = dbQueueHsctRequest.markCanceled(queueEntry, user);
             LOGGER.debug("#{} Cancelled result={}. Entity = {}", num, canceled, queueEntry);
             final String message = String.format("Action[%d] canceled in queue", actionId);
             LOGGER.info("#{} End of dequeue. Return { success } \'{}\'", num, message);
@@ -371,7 +371,7 @@ public class HsctBean {
         if (checkAction(action, request.getActionId()) != null) {
             //Проверка Action провалена, в заявке кривой Action, надо вычистить его из очереди
             LOGGER.error(
-                    "#{}-{} CRITICAL_ERROR: Action[{}] from queued request is incorrect or malformed. QueueEntry will be DELETED. Entry info = {}",
+                    "#{}-{} CRITICAL_ERROR: Action[{}] is incorrect or malformed. QueueEntry will be DELETED. Entry info = {}",
                     num,
                     rowNum,
                     request.getActionId(),
@@ -386,28 +386,36 @@ public class HsctBean {
             final String checkExternalRequestResult = checkExternalRequest(externalRequest);
             if (StringUtils.isNotEmpty(checkExternalRequestResult)) {
                 LOGGER.error("#{}-{} Check after construction of externalRequest failed. Message = \'{}\'", num, rowNum, checkExternalRequestResult);
-                updateRequestStatusWithFlush(request, Status.ERROR, false, checkExternalRequestResult);
+                updateRequestStatusWithFlush(request, Status.CANCELED, false, checkExternalRequestResult);
                 updateHsctResultInAction(action, checkExternalRequestResult);
                 unlockAction(action);
-                dequeueAction(action.getId(), null);
                 return;
             }
             final HsctExternalResponse externalResponse = sendToExternalSystem(externalRequest, serviceUrl, num, rowNum);
-            if (externalResponse.getId() != null) {
-                final String resultString = String.format("Успешно отправлено в ТГСК, получен идентифкатор заявки = %d", externalResponse.getId());
+            if (externalResponse.getRequest() != null && externalResponse.getRequest().getId() != null) {
+                final String resultString = String.format(
+                        "Успешно отправлено в ТГСК, получен идентифкатор заявки = %d",
+                        externalResponse.getRequest().getId()
+                );
                 LOGGER.info("#{}-{} Successful integration with HSCT. Result is ={}", num, rowNum, resultString);
                 final String jsonRepresentation = getExternalSystemSerializer().writeValueAsString(externalRequest);
                 updateRequestStatusWithFlush(request, Status.FINISHED, false, resultString.concat(" :::: ").concat(jsonRepresentation));
-                lockAction(action);
                 updateHsctResultInAction(action, resultString);
+                lockAction(action);
             } else {
-                final String resultString = String.format("Ошибка при приема данных на стороне ТГСК: \'%s\'", externalResponse.getRaw());
+                final String resultString = externalResponse.getErrorMessage();
                 LOGGER.info("#{}-{} Failed integration with HSCT. Result is ={}", num, rowNum, resultString);
                 final String jsonRepresentation = getExternalSystemSerializer().writeValueAsString(externalRequest);
-                updateRequestStatusWithFlush(request, Status.ERROR, false, resultString.concat(" :::: ").concat(jsonRepresentation));
+                updateRequestStatusWithFlush(
+                        request,
+                        externalResponse.isRemoveFromQueue() ? Status.CANCELED : Status.ERROR,
+                        false,
+                        resultString.concat(" :::: ").concat(jsonRepresentation)
+                );
                 updateHsctResultInAction(action, resultString);
-                unlockAction(action);
-                dequeueAction(action.getId(), null);
+                if (externalResponse.isRemoveFromQueue()) {
+                    unlockAction(action);
+                }
             }
         } catch (Exception e) {
             //Ощибка при конструировании запроса для внешней подсистемы
@@ -480,6 +488,10 @@ public class HsctBean {
         hasErrors = checkField(doctor.getFirstName(), "Врач: Имя", checkResult, hasErrors);
         hasErrors = checkField(doctor.getLastName(), "Врач: Фамилия", checkResult, hasErrors);
         hasErrors = checkField(doctor.getDepartmentCode(), "Врач: Отделение", checkResult, hasErrors);
+        if(request.getSiblings() == null){
+            checkResult.append(String.format(CHECK_MESSAGE_FOR_REQUIRED_FIELD, "Наличие сиблингов"));
+            hasErrors = true;
+        }
         return hasErrors ? checkResult.toString() : null;
     }
 
@@ -749,7 +761,12 @@ public class HsctBean {
                         result.setHsctTypeCode(values.get(0).getValueAsString());
                         break;
                     case APT_CODE_HAS_SIBLINGS:
-                        result.setSiblings("Есть".equalsIgnoreCase(values.get(0).getValueAsString()));
+                        final String strValue = values.get(0).getValueAsString();
+                        if("Есть".equals(strValue)){
+                            result.setSiblings(true);
+                        } else if("Нет".equals(strValue)){
+                            result.setSiblings(false);
+                        }
                         break;
                     default:
                         LOGGER.warn("AP[{}] has unknown APT.code=\'{}\'", entry.getKey(), entry.getKey().getType().getCode());
@@ -798,7 +815,7 @@ public class HsctBean {
         final HttpPost post = new HttpPost(fullUrl);
         final ObjectMapper externalMapper = getExternalSystemSerializer();
         final String jsonRepresentation = externalMapper.writeValueAsString(externalRequest);
-        StringEntity input = new StringEntity(jsonRepresentation, MediaType.APPLICATION_JSON, HTTP.UTF_8);
+        final StringEntity input = new StringEntity(jsonRepresentation, MediaType.APPLICATION_JSON, HTTP.UTF_8);
         post.setEntity(input);
         LOGGER.debug(
                 "#{}-{} HTTP {} {} HEADERS=\'{}\' PAYLOAD = \'{}\'",
@@ -810,20 +827,48 @@ public class HsctBean {
                 jsonRepresentation
         );
 
-        HttpResponse response = new DefaultHttpClient().execute(post);
-        LOGGER.info("#{}-{} Apache http: {}", num, rowNum, response.getStatusLine());
+        final HttpResponse response = new DefaultHttpClient().execute(post);
+        final HttpStatus httpStatus = HttpStatus.valueOf(response.getStatusLine().getStatusCode());
         final String responseBody = readFully(response.getEntity().getContent(), StandardCharsets.UTF_8);
-        LOGGER.info("#{}-{} Response raw ={}", num, rowNum, responseBody);
-        HsctExternalResponse result = null;
+        LOGGER.info("#{}-{} Status : {} RAW = \"{}\"", num, rowNum, httpStatus, responseBody);
+        /**
+         * Три вида ошибок:
+         1. Неверный логин и пароль. Это код 401, тело ответа - отсутствует. Нужно вывести: Проблема при передаче данных в систему ТГСК. Оставить заявку в очереди.
+         2. Любая ошибка с сервером планирования или где-то на пути. Это коды 5xx, тело ответа - что угодно. Вывести: Проблема при передаче данных в систему ТГСК. Оставить заявку в очереди.
+         3. Проблема в заявке. Это коды 4xx (кроме 401), тело - объект: {errorMessage: "Строка которую нужно вывести в строке Результат"}. Удалить заявку из очереди на отправку.
+         */
+        HsctExternalResponse result;
         try {
-            result = mapper.readValue(responseBody, HsctExternalResponse.class);
+            if (HttpStatus.UNAUTHORIZED.equals(httpStatus)) { //401
+                LOGGER.error("#{}-{} 401 - UNAUTHORIZED | return with error message");
+                result = new HsctExternalResponse();
+                result.setErrorMessage("Проблема при передаче данных в систему ТГСК");
+                result.setRemoveFromQueue(false);
+            } else if (httpStatus.is5xxServerError()) {
+                LOGGER.error("#{}-{} 5XX - SERVER_ERROR | return with error message");
+                result = new HsctExternalResponse();
+                result.setErrorMessage("Проблема при передаче данных в систему ТГСК");
+                result.setRemoveFromQueue(false);
+            } else if (httpStatus.is4xxClientError() && !HttpStatus.UNAUTHORIZED.equals(httpStatus)) {
+                LOGGER.error("#{}-{} 4XX - CLIENT_ERROR | return mapped message. Remove from queue");
+                result = getExternalSystemSerializer().readValue(responseBody, HsctExternalResponse.class);
+                result.setRemoveFromQueue(true);
+            } else if (HttpStatus.OK.equals(httpStatus)) {
+                LOGGER.info("#{}-{} 200 - OK | Successfully interacted. Return parsed");
+                result = getExternalSystemSerializer().readValue(responseBody, HsctExternalResponse.class);
+                result.setRemoveFromQueue(true);
+            } else {
+                LOGGER.error("#{}-{} UNKNOWN STATUS_CODE | Return error");
+                result = new HsctExternalResponse();
+                result.setRemoveFromQueue(false);
+                result.setErrorMessage("Невозможно распознать код ответа ТГСК. Обратитесь к администратору");
+            }
         } catch (JsonMappingException e) {
             LOGGER.error("Cannot parse entity", e);
-        }
-        if (result == null) {
             result = new HsctExternalResponse();
+            result.setRemoveFromQueue(false);
+            result.setErrorMessage("Невозможно преобразовать ответ от ТГСК. Обратитесь к администратору");
         }
-        result.setRaw(responseBody);
         return result;
     }
 
@@ -831,7 +876,7 @@ public class HsctBean {
         if (mapper == null) {
             mapper = new ObjectMapper();
             mapper.configure(SerializationConfig.Feature.WRAP_ROOT_VALUE, true);
-            mapper.configure(DeserializationConfig.Feature.UNWRAP_ROOT_VALUE, true);
+            //mapper.configure(DeserializationConfig.Feature.UNWRAP_ROOT_VALUE, true);
             mapper.configure(SerializationConfig.Feature.INDENT_OUTPUT, true);
             mapper.configure(SerializationConfig.Feature.WRITE_NULL_MAP_VALUES, true);
         }
@@ -846,6 +891,9 @@ public class HsctBean {
     }
 
     public String readFully(InputStream inputStream, Charset encoding) throws IOException {
+        if (inputStream == null) {
+            return null;
+        }
         ByteArrayOutputStream baos = new ByteArrayOutputStream();
         byte[] buffer = new byte[2048];
         int length;

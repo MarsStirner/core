@@ -41,7 +41,7 @@ public class QueueEntry {
 
     public QueueEntry(final QueueHsctRequest entry) {
         this.actionId = entry.getActionId();
-        this.status = entry.getStatus();
+        this.status = entry.getStatus().toString();
         this.attempts = entry.getAttempts();
         this.info = entry.getInfo();
         this.sendDateTime = entry.getSendDateTime().toString();

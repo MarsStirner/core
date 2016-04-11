@@ -686,7 +686,7 @@ with I18nable {
         })
       var res: Boolean = true
       if (isAllActionSent) {
-        res = dbJobTicketBean.modifyJobTicketStatus(f.getId, 2)
+        res = dbJobTicketBean.modifyJobTicketStatus(f.getId, JobTicket.STATUS_IS_FINISHED)
       }
       if (!res)
         isSuccess = res

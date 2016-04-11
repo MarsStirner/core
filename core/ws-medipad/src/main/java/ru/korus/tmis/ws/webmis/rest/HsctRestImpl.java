@@ -1,15 +1,15 @@
 package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.hsct.HsctBean;
 import ru.korus.tmis.hsct.HsctRequestActionContainer;
 import ru.korus.tmis.hsct.HsctResponse;
 import ru.korus.tmis.hsct.external.HsctExternalRequestForComplete;
-import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
@@ -38,13 +38,16 @@ public class HsctRestImpl {
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML + ";charset=utf-8"})
-    public Object modifyQueue(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback, HsctRequestActionContainer data) {
+    public Object modifyQueue(
+            @Context HttpServletRequest servRequest, @QueryParam("callback") String callback, HsctRequestActionContainer data
+    ) throws CoreException {
         final AuthData authData = wsImpl.checkTokenCookies(servRequest.getCookies());
+        final Staff user = authData.getUser();
         LOGGER.info("call modifyQueue({}) by {}", data, authData);
         if (data.isEnqueueAction()) {
-            return new JSONWithPadding(hsctBean.enqueueAction(data.getId(), authData), callback);
+            return new JSONWithPadding(hsctBean.enqueueAction(data.getId(), user), callback);
         } else if (data.isDequeueAction()) {
-            return new JSONWithPadding(hsctBean.dequeueAction(data.getId(), authData), callback);
+            return new JSONWithPadding(hsctBean.dequeueAction(data.getId(), user), callback);
         } else {
             final HsctResponse errorResponse = new HsctResponse();
             errorResponse.setError(true);
@@ -74,7 +77,7 @@ public class HsctRestImpl {
     public Response setHsctRequestStatusFromExternalSystem(
             @QueryParam("user_name") String userName, @QueryParam("user_token") String userToken, HsctExternalRequestForComplete request
     ) {
-       return hsctBean.setRequestStatusFromExternalSystem(userName, userToken, request);
+        return hsctBean.setRequestStatusFromExternalSystem(userName, userToken, request);
     }
 
 

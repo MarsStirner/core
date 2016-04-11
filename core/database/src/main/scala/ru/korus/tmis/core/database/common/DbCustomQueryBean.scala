@@ -1,25 +1,24 @@
 package ru.korus.tmis.core.database.common
 
-import ru.korus.tmis.core.indicators.IndicatorValue
+import java.lang.{Double => JDouble}
+import java.util.{Date, List}
+import java.{util => ju}
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext, TemporalType}
 
 import grizzled.slf4j.Logging
-
-import scala.collection.JavaConversions._
-import javax.persistence.{TemporalType, EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model._
-import scala.Predef._
-import java.util.{Date, List}
 import ru.korus.tmis.core.data._
-import javax.ejb.{EJB, Stateless}
-import scala.collection.convert.Wrappers.MapWrapper
-
-import java.lang.{Double => JDouble}
-import collection.immutable.ListMap
-import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.core.database.bak.BakDiagnosis
+import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.filter.ListDataFilter
+import ru.korus.tmis.core.indicators.IndicatorValue
+import ru.korus.tmis.scala.util.{CAPids, ConfigManager, General, I18nable}
+
+import scala.Predef._
+import scala.collection.JavaConversions._
+import scala.collection.convert.Wrappers.MapWrapper
+import scala.collection.immutable.ListMap
 import scala.collection.mutable
-import java.{util => ju}
-import ru.korus.tmis.scala.util.{ConfigManager, General, CAPids, I18nable}
 import scala.language.reflectiveCalls
 
 //
@@ -105,7 +104,7 @@ class DbCustomQueryBean
       })
     }
 
-   // if (limit * (page + 1) > 0) typedLastMoves.setMaxResults(limit * (page + 1))
+    // if (limit * (page + 1) > 0) typedLastMoves.setMaxResults(limit * (page + 1))
     var lastMovedsId = typedLastMoves.getResultList
     val typed = em.createQuery(query, classOf[ActionProperty])
 
@@ -357,14 +356,14 @@ class DbCustomQueryBean
       .setParameter("pid", p.getId)
       .getResultList
       .collect {
-      case Array(v: JDouble, date: java.util.Date) => (v, date)
-    }
+        case Array(v: JDouble, date: java.util.Date) => (v, date)
+      }
       .sortBy(_._2.getTime)
       .lastOption
       .map(_._1)
       .orElse(catchy {
-      new JDouble(p.getWeight.toDouble)
-    })
+        new JDouble(p.getWeight.toDouble)
+      })
       .orNull
     //.getOrElse{ throw new CoreException(i18n("error.noHeightForPatientFound").format(p.getId)) }
   }
@@ -653,14 +652,14 @@ class DbCustomQueryBean
       .setParameter("pid", p.getId)
       .getResultList
       .collect {
-      case Array(v: JDouble, date: java.util.Date) => (v, date)
-    }
+        case Array(v: JDouble, date: java.util.Date) => (v, date)
+      }
       .sortBy(_._2.getTime)
       .lastOption
       .map(_._1)
       .orElse(catchy {
-      new JDouble(p.getWeight.toDouble)
-    })
+        new JDouble(p.getWeight.toDouble)
+      })
       .orNull
     //.getOrElse{ throw new CoreException(i18n("error.noWeightForPatientFound").format(p.getId)) }
   }
@@ -951,7 +950,8 @@ class DbCustomQueryBean
 
   // ---- Секция кастомных запросов
 
-  val HeightQuery = """
+  val HeightQuery =
+    """
     SELECT apd.value, ap.action.begDate
     FROM ActionProperty ap, APValueDouble apd
     WHERE ap.id = apd.id.id
@@ -962,9 +962,10 @@ class DbCustomQueryBean
     AND ap.action.deleted = false
     AND ap.action.event.deleted = false
     AND ap.action.event.patient.deleted = false
-                    """
+    """
 
-  val WeightQuery = """
+  val WeightQuery =
+    """
     SELECT apd.value, ap.action.begDate
     FROM ActionProperty ap, APValueDouble apd
     WHERE ap.id = apd.id.id
@@ -975,9 +976,10 @@ class DbCustomQueryBean
     AND ap.action.deleted = false
     AND ap.action.event.deleted = false
     AND ap.action.event.patient.deleted = false
-                    """
+    """
 
-  val ActiveEventsQuery = """
+  val ActiveEventsQuery =
+    """
     SELECT e
     FROM
       Event e
@@ -1013,14 +1015,16 @@ class DbCustomQueryBean
       )
     AND
       e.deleted = 0
-                          """
+    """
 
-  val ActiveEventsByDoctorIdQuery = ActiveEventsQuery + """
+  val ActiveEventsByDoctorIdQuery = ActiveEventsQuery +
+    """
     AND
       e.executor.id = :doctorId
-                                                        """
+    """
 
-  val ActiveEventsByDepartmentIdQuery = """
+  val ActiveEventsByDepartmentIdQuery =
+    """
     SELECT e, MAX(a.createDatetime)
     FROM
       Event e,
@@ -1065,11 +1069,12 @@ class DbCustomQueryBean
     AND
       e.deleted = 0
     GROUP BY e
-                                        """.format(i18n("db.action.movingFlatCode"))
+    """.format(i18n("db.action.movingFlatCode"))
 
 
   //Спецификация https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
-  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery = """
+  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQuery =
+    """
 SELECT %s
 FROM
   ActionProperty ap
@@ -1168,7 +1173,7 @@ AND
   ap.deleted = '0'
 %s
 %s
-                                                               """
+    """
   /*      в спеке нет проверки на выписку https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
   AND a.event.id NOT IN (
         SELECT leaved.event.id
@@ -1180,27 +1185,21 @@ AND
     )
    */
 
-  val LastMovesByEvents = """
-      SELECT a.id
-  FROM Action a
-  WHERE (a.event.execDate IS NULL OR a.event.execDate > :endDate )
-  %s
-  AND a.event.deleted = '0'
-  AND a.begDate <= :endDate
-  AND a.actionType.flatCode IN :flatCodes
-  AND a.deleted = '0'
-  AND a.createDatetime = (
-    SELECT Max(a2.createDatetime)
-      FROM Action a2
-      WHERE a2.event.id = a.event.id
-        AND a2.begDate <= :endDate
-        AND a2.actionType.flatCode IN :flatCodes
-        AND a2.deleted = '0'
-    )
-  ORDER BY a.createDatetime DESC
-                          """
+  val LastMovesByEvents =
+    """
+SELECT Max(a.id)
+FROM Action a
+WHERE (a.event.execDate IS NULL OR a.event.execDate > :endDate )
+%s
+AND a.event.deleted = '0'
+AND a.begDate <= :endDate
+AND a.actionType.flatCode IN :flatCodes
+AND a.deleted = '0'
+GROUP BY a.event.id
+    """
 
-  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx = """
+  val ActiveEventsByDepartmentIdAndDoctorIdBetweenDatesQueryEx =
+    """
 SELECT ap
 FROM ActionProperty ap
 WHERE ap.action.id IN :lastMovedsId
@@ -1249,9 +1248,10 @@ AND
 )
 AND ap.deleted = 0
 %s
-                                                                 """
+    """
 
-  val ActionsByEventIdsAndFlatCodeQuery = """
+  val ActionsByEventIdsAndFlatCodeQuery =
+    """
     SELECT e, a
     FROM
       Action a JOIN a.event e
@@ -1270,14 +1270,15 @@ AND ap.deleted = 0
       a.deleted = 0
     ORDER BY
       a.createDatetime %s
-                                          """
+    """
 
   val AdmissionsByEventIdsQuery =
     ActionsByEventIdsAndFlatCodeQuery.format(
       i18n("db.action.admissionFlatCode"),
       "DESC")
 
-  val HospitalBedsByEventIdsQuery = """
+  val HospitalBedsByEventIdsQuery =
+    """
     SELECT e, ap
     FROM
       ActionProperty ap JOIN ap.action a JOIN a.event e
@@ -1300,11 +1301,12 @@ AND ap.deleted = 0
       ap.deleted = 0
     ORDER BY
       ap.createDatetime ASC
-                                    """.format(
+    """.format(
       i18n("db.action.movingFlatCode"),
       i18n("db.apt.hospitalBedName"))
 
-  val OrgStructureFromReceivedByEventIdsQuery = """
+  val OrgStructureFromReceivedByEventIdsQuery =
+    """
     SELECT e, ap
     FROM
       ActionProperty ap JOIN ap.action a JOIN a.event e
@@ -1327,11 +1329,12 @@ AND ap.deleted = 0
       ap.deleted = 0
     ORDER BY
       ap.createDatetime ASC
-                                    """.format(
-    i18n("db.action.admissionFlatCode"),
-    "Отделение поступления")
+    """.format(
+      i18n("db.action.admissionFlatCode"),
+      "Отделение поступления")
 
-  val AnamnesesByEventIdsQuery = """
+  val AnamnesesByEventIdsQuery =
+    """
     SELECT e, ap
     FROM
       ActionProperty ap JOIN ap.action a JOIN a.event e
@@ -1362,13 +1365,14 @@ AND ap.deleted = 0
       e.deleted = 0
     ORDER BY
       ap.createDatetime ASC
-                                 """.format(
+    """.format(
       i18n("db.action.preAssessmentGroupName"),
       i18n("db.apt.anamnesisName"),
       i18n("db.apt.anamnesisDename"),
       i18n("db.apt.allergoanamnesisName"))
 
-  val AllergoAnamnesesByEventIdsQuery = """
+  val AllergoAnamnesesByEventIdsQuery =
+    """
     SELECT e, ap
     FROM
       ActionProperty ap JOIN ap.action a JOIN a.event e
@@ -1397,7 +1401,7 @@ AND ap.deleted = 0
       ap.deleted = 0
     ORDER BY
       ap.createDatetime ASC
-                                        """.format(
+    """.format(
       i18n("db.action.preAssessmentGroupName"),
       i18n("db.apt.allergoanamnesisName"))
 
@@ -1428,7 +1432,8 @@ AND ap.deleted = 0
      group by e
  """.format(i18n("db.action.assessmentClass")) */
 
-  val LastAssessmentByEventIdsQuery = """
+  val LastAssessmentByEventIdsQuery =
+    """
     SELECT e, a
     FROM
       Action a
@@ -1451,9 +1456,10 @@ AND ap.deleted = 0
       AND
         a1.deleted = 0
       )
-                                      """.format(i18n("db.action.assessmentClass"), i18n("db.action.assessmentClass"))
+    """.format(i18n("db.action.assessmentClass"), i18n("db.action.assessmentClass"))
 
-  val DiagnosesByEventIdsQuery = """
+  val DiagnosesByEventIdsQuery =
+    """
     SELECT e, ap
     FROM
       ActionProperty ap JOIN ap.action a JOIN a.event e
@@ -1483,13 +1489,14 @@ AND ap.deleted = 0
     AND e.deleted = 0
     ORDER BY
       ap.createDatetime ASC
-                                 """.format(
+    """.format(
       i18n("db.action.preAssessmentGroupName"),
       i18n("db.action.epicrisisGroupName"),
       i18n("db.apt.diagnosisName01"),
       i18n("db.apt.diagnosisName02"))
 
-  val DiagnosisSubstantiationByEventIdsQuery = """
+  val DiagnosisSubstantiationByEventIdsQuery =
+    """
     SELECT e, a
     FROM
       Action a JOIN a.event e JOIN a.actionType at
@@ -1512,10 +1519,11 @@ AND ap.deleted = 0
     AND at.deleted = 0
     ORDER BY
       a.createDatetime ASC
-                                               """.format(i18n("db.action.preAssessmentGroupName"),
+    """.format(i18n("db.action.preAssessmentGroupName"),
       i18n("db.action.diagnosisSubstantiation"))
 
-  val AllAssessmentsByEventIdQuery = """
+  val AllAssessmentsByEventIdQuery =
+    """
     SELECT a
     FROM
       Action a
@@ -1525,9 +1533,10 @@ AND ap.deleted = 0
     AND a.deleted = 0
     AND a.event.deleted = 0
     AND a.actionType.deleted = 0
-                                     """.format(i18n("db.action.assessmentClass"))
+    """.format(i18n("db.action.assessmentClass"))
 
-  val AllDiagnosticsByEventIdQuery = """
+  val AllDiagnosticsByEventIdQuery =
+    """
     SELECT a
     FROM
       Action a
@@ -1537,9 +1546,10 @@ AND ap.deleted = 0
       a.deleted = 0 AND
       a.event.deleted = 0 AND
       a.actionType.deleted = 0
-                                     """.format(i18n("db.action.diagnosticClass"))
+    """.format(i18n("db.action.diagnosticClass"))
 
-  val AllDiagnosticsByEventIdAndFiltredByCodeQuery = """
+  val AllDiagnosticsByEventIdAndFiltredByCodeQuery =
+    """
     SELECT %s
     FROM
       Action a
@@ -1548,9 +1558,10 @@ AND ap.deleted = 0
     AND
       a.deleted = 0
     %s
-                                                     """
+    """
 
-  val IndicatorByEventIdAndIndicatorNameQuery = """
+  val IndicatorByEventIdAndIndicatorNameQuery =
+    """
     SELECT ap.id, apt.name, apd.value, ap.createDatetime FROM
       ActionPropertyType apt,
       ActionProperty ap,
@@ -1568,9 +1579,10 @@ AND ap.deleted = 0
       a.event.deleted = 0 AND
       ap.deleted = 0 AND
       apt.deleted = 0
-                                                """
+    """
 
-  val TreatmentActionsByEventId = """
+  val TreatmentActionsByEventId =
+    """
     SELECT a FROM
       Event e,
       Action a,
@@ -1583,21 +1595,24 @@ AND ap.deleted = 0
       e.deleted = 0 AND
       a.deleted = 0 AND
       at.deleted = 0
-                                  """.format(i18n("db.action.treatmentClass"))
+    """.format(i18n("db.action.treatmentClass"))
 
   val filterActionTypeId = " AND at.id = :actionTypeId"
-  val filterTimePeriod = """
+  val filterTimePeriod =
+    """
       AND (a.begDate IS NULL OR a.begDate BETWEEN :beginDate AND :endDate)
       AND (a.endDate IS NULL OR a.endDate BETWEEN :beginDate AND :endDate)
-                         """
+    """
 
-  val takenTissueByBarcodeQuery = """
+  val takenTissueByBarcodeQuery =
+    """
       SELECT t from TakenTissue t where t.barcode = :barcode and t.period = :period
-                                  """
+    """
 
   //TODO: тип диагноза установлен как заключительный (согласовать!)
 
-  val AllAppealsWithFilterQuery = """
+  val AllAppealsWithFilterQuery =
+    """
   SELECT %s
   FROM
     Event e
@@ -1611,9 +1626,10 @@ AND ap.deleted = 0
     AND (dia.deleted IS NULL OR dia.deleted = 0)
   %s
   %s
-                                  """
+    """
 
-  val AllAppealsWithFilterExQuery = """
+  val AllAppealsWithFilterExQuery =
+    """
   SELECT %s
   FROM
     Event e
@@ -1622,9 +1638,10 @@ AND ap.deleted = 0
   %s
   %s
   %s
-                                    """
+    """
 
-  val MainDiagnosisQuery = """
+  val MainDiagnosisQuery =
+    """
     SELECT e, dia, mkb
     FROM
       Event e
@@ -1637,9 +1654,10 @@ AND ap.deleted = 0
     AND (dia.deleted IS NULL OR dia.deleted = 0)
     %s
     GROUP BY e
-                           """
+    """
 
-  val ClinicalDiagnosisQuery = """
+  val ClinicalDiagnosisQuery =
+    """
     SELECT e, ap, apv.value
     FROM
       ActionProperty ap
@@ -1656,8 +1674,9 @@ AND ap.deleted = 0
     AND apv.value IS NOT NULL
     %s
     GROUP BY e
-                               """
-  val AttendantDiagnosisQuery = """
+    """
+  val AttendantDiagnosisQuery =
+    """
     SELECT e, ap, apv.mkb
     FROM
       ActionProperty ap
@@ -1674,25 +1693,28 @@ AND ap.deleted = 0
     AND apv.mkb IS NOT NULL
     %s
     GROUP BY e
-                                """
+    """
 
-  val AllMkbWithFilterQuery = """
+  val AllMkbWithFilterQuery =
+    """
   SELECT DISTINCT %s
   FROM
   Mkb mkb
   %s
   %s
-                              """
+    """
 
-  val AllThesaurusWithFilterQuery = """
+  val AllThesaurusWithFilterQuery =
+    """
   SELECT DISTINCT %s
   FROM
   Thesaurus r
   %s
   %s
-                                    """
+    """
 
-  val LastActionByTypeCodeAndAPTypeNameQuery = """
+  val LastActionByTypeCodeAndAPTypeNameQuery =
+    """
   SELECT a2
   FROM
     Action a2
@@ -1735,17 +1757,19 @@ AND ap.deleted = 0
     AND
       a.deleted = 0
   )
-                                               """
+    """
 
-  val DiagnosisByMkbQuery = """
+  val DiagnosisByMkbQuery =
+    """
   SELECT DISTINCT d
   FROM
     Diagnosis d
   WHERE
     d.mkb = :mkb
-                            """
+    """
   //
-  val OrgStructureSubQueryMoves = """
+  val OrgStructureSubQueryMoves =
+    """
     SELECT a.id
     FROM Action a
     WHERE a.event.id IN :ids
@@ -1769,7 +1793,8 @@ AND ap.deleted = 0
    * @param action
    */
   def getBakDiagnosis(action: Action): BakDiagnosis = {
-    val res = em.createNativeQuery( """
+    val res = em.createNativeQuery(
+      """
          SELECT MKB.DiagID, MKB.DiagName
           FROM Action
           JOIN ActionProperty ON ActionProperty.action_id = Action.id

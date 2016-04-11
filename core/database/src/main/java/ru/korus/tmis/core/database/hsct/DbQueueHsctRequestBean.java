@@ -92,8 +92,7 @@ public class DbQueueHsctRequestBean {
                 LOGGER.warn("Already CANCELED [{}]", entry);
                 return true;
             case ERROR:
-                // не меняем статус, выставляем только дату отправки и нового пользователя
-                entry.setStatus(Status.ERROR);
+                entry.setStatus(Status.CANCELED);
                 entry.setPerson(user);
                 em.merge(entry);
                 return true;

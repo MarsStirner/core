@@ -3,49 +3,49 @@ package ru.korus.tmis.hsct.external;
 import org.codehaus.jackson.annotate.JsonIgnore;
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.codehaus.jackson.map.annotate.JsonRootName;
 
 /**
  * Author: Upatov Egor <br>
- * Date: 15.02.2016, 13:57 <br>
+ * Date: 18.03.2016, 16:43 <br>
  * Company: hitsl (Hi-Tech Solutions) <br>
  * Description: <br>
  */
-@JsonRootName(value = "request")
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class HsctExternalResponse {
-    @JsonProperty("id")
-    private Integer id;
+    @JsonProperty("request")
+    private Request request;
+
+    @JsonProperty("errorMessage")
+    private String errorMessage;
 
     @JsonIgnore
-    private String raw;
-
+    private boolean removeFromQueue = false;
 
     public HsctExternalResponse() {
     }
 
-    public Integer getId() {
-        return id;
+
+    public boolean isRemoveFromQueue() {
+        return removeFromQueue;
     }
 
-    public void setId(final Integer id) {
-        this.id = id;
+    public void setRemoveFromQueue(final boolean removeFromQueue) {
+        this.removeFromQueue = removeFromQueue;
     }
 
-
-    public String getRaw() {
-        return raw;
+    public Request getRequest() {
+        return request;
     }
 
-    public void setRaw(final String raw) {
-        this.raw = raw;
+    public void setRequest(final Request request) {
+        this.request = request;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("HsctExternalResponse{");
-        sb.append("id=").append(id);
-        sb.append('}');
-        return sb.toString();
+    public String getErrorMessage() {
+        return errorMessage;
+    }
+
+    public void setErrorMessage(final String errorMessage) {
+        this.errorMessage = errorMessage;
     }
 }

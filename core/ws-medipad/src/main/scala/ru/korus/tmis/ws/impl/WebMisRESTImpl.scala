@@ -265,7 +265,7 @@ with CAPids {
     val inPatientEntry = patientData.getData
     if (inPatientEntry != null) {
       if (auth != null) {
-        val outPatientEntry: PatientEntry = patientBean.savePatient(id, inPatientEntry, auth.getUser)
+        val outPatientEntry: PatientEntry = patientBean.savePatient(id, inPatientEntry,  dbStaff.getStaffById(auth.getUserId))
         patientData.setData(outPatientEntry)
         return patientData
       }
