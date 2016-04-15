@@ -224,6 +224,22 @@ public class CustomInfoRESTImpl {
        return new JSONWithPadding(wsImpl.sendActionsToLaboratory(data, mkAuth(servRequest)), callback );
     }
 
+
+    /**
+     * Отправка Исследований в ЛИС
+     * @param data JSON с данными по отправке
+     * @return true - завершено успешно, false - завершено с ошибками
+     */
+    @PUT
+    @Path("/sendToLaboratory")
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object sendToLaboratory(@Context HttpServletRequest servRequest,
+            SendToLaboratoryDataList data) throws CoreException{
+        final AuthData authData = mkAuth(servRequest);
+        wsImpl.sendToLaboratory(data, authData);
+        return new JSONWithPadding(true);
+    }
+
     /**
      * Запрос на список обращений пациентов для отделения и/или врача.
      * Роль: врач отделения

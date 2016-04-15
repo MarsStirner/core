@@ -5,9 +5,7 @@ import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.TakenTissue;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.laboratory.across.accept2.AnalysisResult;
-import ru.korus.tmis.laboratory.across.request.BiomaterialInfo;
-import ru.korus.tmis.laboratory.across.request.DiagnosticRequestInfo;
-import ru.korus.tmis.laboratory.across.request.OrderInfo;
+
 
 import javax.ejb.Local;
 import java.util.List;

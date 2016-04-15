@@ -11,6 +11,7 @@ import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author belyaev
+ * Журнал забора тканей
  */
 @Entity
 @Table(name = "TakenTissueJournal")
@@ -67,6 +68,9 @@ public class TakenTissue implements Serializable {
     @Basic(optional = false)
     @Column(name = "period")
     private Integer period;
+
+
+
 
     public TakenTissue() {
     }

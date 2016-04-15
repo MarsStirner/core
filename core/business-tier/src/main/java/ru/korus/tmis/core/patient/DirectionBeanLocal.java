@@ -109,5 +109,7 @@ public interface DirectionBeanLocal {
 
     void sendActionToLis(int actionId) throws CoreException;
 
+    boolean sendActionToLaboratory(int actionId) throws CoreException;
+
     void sendJMSLabRequest(int actionId) throws CoreException;
 }

@@ -1,231 +1,145 @@
-/**
- * OrderInfo.java
- *
- * This file was auto-generated from WSDL
- * by the Apache Axis 1.4 Apr 22, 2006 (06:55:48 PDT) WSDL2Java emitter.
- */
 
 package ru.korus.tmis.laboratory.across.ws;
+import javax.xml.bind.JAXBElement;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlType;
 
-public class OrderInfo  implements java.io.Serializable {
-    private String diagnosticCode;
 
-    private String diagnosticName;
+/**
+ * <p>Java class for OrderInfo complex type.
+ * 
+ * <p>The following schema fragment specifies the expected content contained within this class.
+ * 
+ * <pre>
+ * &lt;complexType name="OrderInfo"&gt;
+ *   &lt;complexContent&gt;
+ *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
+ *       &lt;sequence&gt;
+ *         &lt;element name="diagnosticCode" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="diagnosticName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="indicators" type="{http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS}ArrayOfTindicator" minOccurs="0"/&gt;
+ *         &lt;element name="orderPriority" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
+ *       &lt;/sequence&gt;
+ *     &lt;/restriction&gt;
+ *   &lt;/complexContent&gt;
+ * &lt;/complexType&gt;
+ * </pre>
+ * 
+ * 
+ */
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(name = "OrderInfo", propOrder = {
+    "diagnosticCode",
+    "diagnosticName",
+    "indicators",
+    "orderPriority"
+})
+public class OrderInfo {
 
-    private int orderPriority;
-
-    private Tindicator[] indicators;
-
-    public OrderInfo() {
-    }
-
-    public OrderInfo(
-           String diagnosticCode,
-           String diagnosticName,
-           int orderPriority,
-           Tindicator[] indicators) {
-           this.diagnosticCode = diagnosticCode;
-           this.diagnosticName = diagnosticName;
-           this.orderPriority = orderPriority;
-           this.indicators = indicators;
-    }
-
+    @XmlElementRef(name = "diagnosticCode", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
+    protected JAXBElement<String> diagnosticCode;
+    @XmlElementRef(name = "diagnosticName", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
+    protected JAXBElement<String> diagnosticName;
+    @XmlElementRef(name = "indicators", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
+    protected JAXBElement<ArrayOfTindicator> indicators;
+    protected Integer orderPriority;
 
     /**
-     * Gets the diagnosticCode value for this OrderInfo.
-     *
-     * @return diagnosticCode
+     * Gets the value of the diagnosticCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link String }{@code >}
+     *     
      */
-    public String getDiagnosticCode() {
+    public JAXBElement<String> getDiagnosticCode() {
         return diagnosticCode;
     }
 
-
     /**
-     * Sets the diagnosticCode value for this OrderInfo.
-     *
-     * @param diagnosticCode
+     * Sets the value of the diagnosticCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link String }{@code >}
+     *     
      */
-    public void setDiagnosticCode(String diagnosticCode) {
-        this.diagnosticCode = diagnosticCode;
+    public void setDiagnosticCode(JAXBElement<String> value) {
+        this.diagnosticCode = value;
     }
 
-
     /**
-     * Gets the diagnosticName value for this OrderInfo.
-     *
-     * @return diagnosticName
+     * Gets the value of the diagnosticName property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link String }{@code >}
+     *     
      */
-    public String getDiagnosticName() {
+    public JAXBElement<String> getDiagnosticName() {
         return diagnosticName;
     }
 
-
     /**
-     * Sets the diagnosticName value for this OrderInfo.
-     *
-     * @param diagnosticName
+     * Sets the value of the diagnosticName property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link String }{@code >}
+     *     
      */
-    public void setDiagnosticName(String diagnosticName) {
-        this.diagnosticName = diagnosticName;
+    public void setDiagnosticName(JAXBElement<String> value) {
+        this.diagnosticName = value;
     }
 
-
     /**
-     * Gets the orderPriority value for this OrderInfo.
-     *
-     * @return orderPriority
+     * Gets the value of the indicators property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link ArrayOfTindicator }{@code >}
+     *     
      */
-    public int getOrderPriority() {
-        return orderPriority;
-    }
-
-
-    /**
-     * Sets the orderPriority value for this OrderInfo.
-     *
-     * @param orderPriority
-     */
-    public void setOrderPriority(int orderPriority) {
-        this.orderPriority = orderPriority;
-    }
-
-
-    /**
-     * Gets the indicators value for this OrderInfo.
-     *
-     * @return indicators
-     */
-    public Tindicator[] getIndicators() {
+    public JAXBElement<ArrayOfTindicator> getIndicators() {
         return indicators;
     }
 
-
     /**
-     * Sets the indicators value for this OrderInfo.
-     *
-     * @param indicators
+     * Sets the value of the indicators property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link ArrayOfTindicator }{@code >}
+     *     
      */
-    public void setIndicators(Tindicator[] indicators) {
-        this.indicators = indicators;
-    }
-
-    private Object __equalsCalc = null;
-    public synchronized boolean equals(Object obj) {
-        if (!(obj instanceof OrderInfo)) return false;
-        OrderInfo other = (OrderInfo) obj;
-        if (obj == null) return false;
-        if (this == obj) return true;
-        if (__equalsCalc != null) {
-            return (__equalsCalc == obj);
-        }
-        __equalsCalc = obj;
-        boolean _equals;
-        _equals = true &&
-            ((this.diagnosticCode==null && other.getDiagnosticCode()==null) ||
-             (this.diagnosticCode!=null &&
-              this.diagnosticCode.equals(other.getDiagnosticCode()))) &&
-            ((this.diagnosticName==null && other.getDiagnosticName()==null) ||
-             (this.diagnosticName!=null &&
-              this.diagnosticName.equals(other.getDiagnosticName()))) &&
-            this.orderPriority == other.getOrderPriority() &&
-            ((this.indicators==null && other.getIndicators()==null) ||
-             (this.indicators!=null &&
-              java.util.Arrays.equals(this.indicators, other.getIndicators())));
-        __equalsCalc = null;
-        return _equals;
-    }
-
-    private boolean __hashCodeCalc = false;
-    public synchronized int hashCode() {
-        if (__hashCodeCalc) {
-            return 0;
-        }
-        __hashCodeCalc = true;
-        int _hashCode = 1;
-        if (getDiagnosticCode() != null) {
-            _hashCode += getDiagnosticCode().hashCode();
-        }
-        if (getDiagnosticName() != null) {
-            _hashCode += getDiagnosticName().hashCode();
-        }
-        _hashCode += getOrderPriority();
-        if (getIndicators() != null) {
-            for (int i=0;
-                 i<java.lang.reflect.Array.getLength(getIndicators());
-                 i++) {
-                Object obj = java.lang.reflect.Array.get(getIndicators(), i);
-                if (obj != null &&
-                    !obj.getClass().isArray()) {
-                    _hashCode += obj.hashCode();
-                }
-            }
-        }
-        __hashCodeCalc = false;
-        return _hashCode;
-    }
-
-    // Type metadata
-    private static org.apache.axis.description.TypeDesc typeDesc =
-        new org.apache.axis.description.TypeDesc(OrderInfo.class, true);
-
-    static {
-        typeDesc.setXmlType(new javax.xml.namespace.QName("http://www.korusconsulting.ru", "OrderInfo"));
-        org.apache.axis.description.ElementDesc elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("diagnosticCode");
-        elemField.setXmlName(new javax.xml.namespace.QName("", "diagnosticCode"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("diagnosticName");
-        elemField.setXmlName(new javax.xml.namespace.QName("", "diagnosticName"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "string"));
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("orderPriority");
-        elemField.setXmlName(new javax.xml.namespace.QName("", "orderPriority"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.w3.org/2001/XMLSchema", "int"));
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
-        elemField = new org.apache.axis.description.ElementDesc();
-        elemField.setFieldName("indicators");
-        elemField.setXmlName(new javax.xml.namespace.QName("", "indicators"));
-        elemField.setXmlType(new javax.xml.namespace.QName("http://www.korusconsulting.ru", "Tindicator"));
-        elemField.setNillable(false);
-        typeDesc.addFieldDesc(elemField);
+    public void setIndicators(JAXBElement<ArrayOfTindicator> value) {
+        this.indicators = value;
     }
 
     /**
-     * Return type metadata object
+     * Gets the value of the orderPriority property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link Integer }
+     *     
      */
-    public static org.apache.axis.description.TypeDesc getTypeDesc() {
-        return typeDesc;
+    public Integer getOrderPriority() {
+        return orderPriority;
     }
 
     /**
-     * Get Custom Serializer
+     * Sets the value of the orderPriority property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link Integer }
+     *     
      */
-    public static org.apache.axis.encoding.Serializer getSerializer(
-           String mechType,
-           Class _javaType,
-           javax.xml.namespace.QName _xmlType) {
-        return
-          new  org.apache.axis.encoding.ser.BeanSerializer(
-            _javaType, _xmlType, typeDesc);
-    }
-
-    /**
-     * Get Custom Deserializer
-     */
-    public static org.apache.axis.encoding.Deserializer getDeserializer(
-           String mechType,
-           Class _javaType,
-           javax.xml.namespace.QName _xmlType) {
-        return 
-          new  org.apache.axis.encoding.ser.BeanDeserializer(
-            _javaType, _xmlType, typeDesc);
+    public void setOrderPriority(Integer value) {
+        this.orderPriority = value;
     }
 
 }

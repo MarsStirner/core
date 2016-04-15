@@ -424,6 +424,17 @@ class SendActionsToLaboratoryDataList {
   var data: util.LinkedList[JobTicketWithActions] = new util.LinkedList[JobTicketWithActions]
 }
 
+@XmlType(name = "SendActionsToLaboratoryDataList")
+@XmlRootElement(name = "SendActionsToLaboratoryDataList")
+class SendToLaboratoryDataList {
+  /**
+   * Идшники Экшенов
+   */
+  @BeanProperty
+  var ids: util.List[Int] = new util.ArrayList[Int]
+}
+
+
 @XmlType(name = "JobTicketWithAction")
 @XmlRootElement(name = "JobTicketWithAction")
 class JobTicketWithActions{

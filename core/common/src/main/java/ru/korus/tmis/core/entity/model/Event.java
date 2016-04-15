@@ -72,6 +72,7 @@ public class Event implements Serializable {
     @JoinColumn(name = "orgStructure_id", nullable = true)
     private OrgStructure orgStructure;
 
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contract_id")
     private Contract contract;
 

@@ -4,7 +4,6 @@ import java.util
 import java.util.{Collections, Date}
 import javax.annotation.Resource
 import javax.ejb.{EJB, Stateless}
-
 import javax.jms._
 import javax.persistence.{EntityManager, PersistenceContext}
 
@@ -196,7 +195,7 @@ with I18nable {
       if (tissueType == null)
         throw new CoreException(
           ConfigManager.ErrorCodes.TakenTissueNotFound, i18n("error.TissueTypeNotFound").format(
-          actions.filter(_.getActionType.getActionTypeTissueType == null).map(_.getActionType.getName).toSet.mkString(", ")
+            actions.filter(_.getActionType.getActionTypeTissueType == null).map(_.getActionType.getName).toSet.mkString(", ")
           ))
 
       if (jobAndTicket == null) {
@@ -227,7 +226,7 @@ with I18nable {
             if (takenTissue != null) a.setTakenTissue(takenTissue)
             list.add(j, jt, takenTissue, a)
             jtForAp = jt
-            if(jobTicket.getStatus == JobTicket.STATUS_IS_FINISHED) actionsSendToLIS += Tuple2(a, jt.getId)
+            if (jobTicket.getStatus == JobTicket.STATUS_IS_FINISHED) actionsSendToLIS += Tuple2(a, jt.getId)
           } else {
             val (j, jt, tt) = (fromList._1, fromList._2, fromList._3)
             j.setQuantity(j.getQuantity + 1)
@@ -314,7 +313,10 @@ with I18nable {
         catch {
           case e: Exception => {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
-            val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+            val oldNote = jt.getNote match {
+              case null => ""
+              case _ => jt.getNote
+            }
             jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + p._1.getId + "'." + e.getMessage + "\n")
             jt.setLabel("##Ошибка отправки в ЛИС##")
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
@@ -330,7 +332,10 @@ with I18nable {
         catch {
           case e: Exception => {
             val jt = dbJobTicketBean.getJobTicketById(p._2)
-            val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+            val oldNote = jt.getNote match {
+              case null => ""
+              case _ => jt.getNote
+            }
             jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + p._1.getId + "'." + e.getMessage + "\n")
             jt.setLabel("##Ошибка отправки в ЛИС## ")
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
@@ -362,7 +367,10 @@ with I18nable {
         case e: Exception => {
           actions.foreach(a => {
             val act = em.find(classOf[Action], a.getId)
-            if(act != null) { act.setDeleted(true); em.flush() }
+            if (act != null) {
+              act.setDeleted(true);
+              em.flush()
+            }
           })
           throw e
         }
@@ -441,7 +449,7 @@ with I18nable {
     val action: Action = actionBean.createAction(request.eventId.intValue(), request.actionTypeId.intValue(), userData, staff)
     action.setIsUrgent(request.urgent) //если постановка в очередь срочная, то и услуга срочная
     val createPerson: Staff = dbStaffBean.getStaffById(request.createPerson)
-    if (request.createPerson > 0 &&  createPerson != null) {
+    if (request.createPerson > 0 && createPerson != null) {
       action.setCreatePerson(createPerson)
     }
     if (request.createDateTime != null) {
@@ -468,30 +476,30 @@ with I18nable {
     actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(request.actionTypeId.intValue())
       .toList
       .foreach((apt) => {
-      val ap = actionPropertyBean.createActionProperty(action, apt.getId.intValue(), staff)
-      em.persist(ap)
+        val ap = actionPropertyBean.createActionProperty(action, apt.getId.intValue(), staff)
+        em.persist(ap)
 
-      if (ap.getType.getTypeName.compareTo("MKB") == 0 && request.diagnosis != null && request.diagnosis.getCode != null) {
-        //запишем диагноз, который пришел с клиента
-        val mkb = dbMkbBean.getMkbByCode(request.diagnosis.getCode)
-        if (mkb != null) {
-          val apv = actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0)
-          if (apv != null)
-            apSet = apSet + apv.unwrap
-        } else {
-          //если диагноз не пришел, то запишем дефолтный
-          val props = actionPropertyBean.getActionPropertyValue(ap)
-          if (props.get(0).getValueAsString.compareTo("") == 0) {
-            val diagnosis = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(action.getEvent.getId.intValue())
-            if (diagnosis != null) {
-              val apv = actionPropertyBean.setActionPropertyValue(ap, diagnosis.getId.intValue().toString, 0)
-              if (apv != null)
-                apSet = apSet + apv.unwrap
+        if (ap.getType.getTypeName.compareTo("MKB") == 0 && request.diagnosis != null && request.diagnosis.getCode != null) {
+          //запишем диагноз, который пришел с клиента
+          val mkb = dbMkbBean.getMkbByCode(request.diagnosis.getCode)
+          if (mkb != null) {
+            val apv = actionPropertyBean.setActionPropertyValue(ap, mkb.getId.intValue().toString, 0)
+            if (apv != null)
+              apSet = apSet + apv.unwrap
+          } else {
+            //если диагноз не пришел, то запишем дефолтный
+            val props = actionPropertyBean.getActionPropertyValue(ap)
+            if (props.get(0).getValueAsString.compareTo("") == 0) {
+              val diagnosis = dbCustomQueryBean.getDiagnosisForMainDiagInAppeal(action.getEvent.getId.intValue())
+              if (diagnosis != null) {
+                val apv = actionPropertyBean.setActionPropertyValue(ap, diagnosis.getId.intValue().toString, 0)
+                if (apv != null)
+                  apSet = apSet + apv.unwrap
+              }
             }
           }
-        }
-      } //else if (ap.getType.getTypeName.compareTo("queue") == 0) {
-    })
+        } //else if (ap.getType.getTypeName.compareTo("queue") == 0) {
+      })
     apSet.foreach(f => em.persist(f))
     em.flush()
     action
@@ -646,44 +654,50 @@ with I18nable {
       // соответственно если коллекция A (Неотправленные экшены из жобтикета) является подколлекцией Б (все экшены для отправки), то посылаются  все экшены
       // В данном случае подколлекция- это когда частота встречи E(элемент) в A всегда меньше или равна частоте встречи E в Б.
       var isAllActionSent: Boolean = CollectionUtils.isSubCollection(allActions.filter(_.getStatus == 0).map(_.getId), f.getData.map(_.getId))
-       f.getData.foreach(a => {
-          val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(a.getId.intValue())
-          if (labCode != null && labCode.compareTo("0101") == 0) {
-            // отправка назначения в Акросс
-            try {
-              //todo должен быть вызов веб-сервиса с передачей actionId
-              lisAcross.sendAnalysisRequestToAcross(a.getId.intValue())
-              // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
-              actionBean.updateActionStatusWithFlush(a.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
-            }
-            catch {
-              case e: Throwable =>
-                val jt = dbJobTicketBean.getJobTicketById(f.getId)
-                val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
-                jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + a.getId + "'." + e.getMessage + "\n")
-                jt.setLabel("##Ошибка отправки в ЛИС##")
-                isAllActionSent = false
-                em.merge(jt)
-            }
-          } else if (labCode != null) {
-            // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
-            try {
-              sendJMSLabRequest(a.getId.intValue(), labCode)
-              isAllActionSent = false // Статус проставляется автоматически по возвращению сообщения JMS
-              dbJobTicketBean.modifyJobTicketStatus(f.getId, JobTicket.STATUS_SENDING)
-            }
-            catch {
-              case e: Exception => {
-                val jt = dbJobTicketBean.getJobTicketById(f.getId)
-                val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
-                jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + a.getId + "'." + e.getMessage + "\n")
-                jt.setLabel("##Ошибка отправки в ЛИС##")
-                isAllActionSent = false
-                em.merge(jt)
+      f.getData.foreach(a => {
+        val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(a.getId.intValue())
+        if (labCode != null && labCode.compareTo("0101") == 0) {
+          // отправка назначения в Акросс
+          try {
+            //todo должен быть вызов веб-сервиса с передачей actionId
+            lisAcross.sendAnalysisRequestToAcross(a.getId.intValue())
+            // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
+            actionBean.updateActionStatusWithFlush(a.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+          }
+          catch {
+            case e: Throwable =>
+              val jt = dbJobTicketBean.getJobTicketById(f.getId)
+              val oldNote = jt.getNote match {
+                case null => ""
+                case _ => jt.getNote
               }
+              jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + a.getId + "'." + e.getMessage + "\n")
+              jt.setLabel("##Ошибка отправки в ЛИС##")
+              isAllActionSent = false
+              em.merge(jt)
+          }
+        } else if (labCode != null) {
+          // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
+          try {
+            sendJMSLabRequest(a.getId.intValue(), labCode)
+            isAllActionSent = false // Статус проставляется автоматически по возвращению сообщения JMS
+            dbJobTicketBean.modifyJobTicketStatus(f.getId, JobTicket.STATUS_SENDING)
+          }
+          catch {
+            case e: Exception => {
+              val jt = dbJobTicketBean.getJobTicketById(f.getId)
+              val oldNote = jt.getNote match {
+                case null => ""
+                case _ => jt.getNote
+              }
+              jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + a.getId + "'." + e.getMessage + "\n")
+              jt.setLabel("##Ошибка отправки в ЛИС##")
+              isAllActionSent = false
+              em.merge(jt)
             }
           }
-        })
+        }
+      })
       var res: Boolean = true
       if (isAllActionSent) {
         res = dbJobTicketBean.modifyJobTicketStatus(f.getId, JobTicket.STATUS_IS_FINISHED)
@@ -693,6 +707,40 @@ with I18nable {
     })
     em.flush()
     isSuccess
+  }
+
+
+  override def sendActionToLaboratory(actionId: Int): Boolean = {
+    val action: Action = actionBean.getActionById(actionId)
+    val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(actionId)
+    if(labCode == null){
+      return false
+    } else if("0101".equals(labCode)){
+      try {
+        lisAcross.sendAnalysisRequestToAcross(actionId)
+        // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
+        actionBean.updateActionStatusWithFlush(actionId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+      } catch {
+        case e: Exception =>
+          action.setNote("Отправка в ЛИС-АКРОСС не удалась: " + e.getMessage)
+          em.merge(action)
+          return false
+      }
+    } else {
+      try {
+        sendJMSLabRequest(actionId, labCode)
+        // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
+        actionBean.updateActionStatusWithFlush(actionId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+      }   catch {
+        case e: Exception => {
+          action.setNote("Отправка в ЛИС-БАК не удалась: " + e.getMessage)
+          em.merge(action)
+          return false
+        }
+      }
+    }
+    em.flush()
+    true
   }
 
 
@@ -726,11 +774,11 @@ with I18nable {
     val action = actionBean.getActionById(actionId)
 
 
-    if(action == null)
+    if (action == null)
       throw new Exception("Action ")
 
     val takingTime = action.getActionProperties.find(p => p.getType.getCode != null && p.getType.getCode.equals("TAKINGTIME"))
-    if(takingTime.isEmpty)
+    if (takingTime.isEmpty)
       throw new CoreException("Невозможно сформировать запрос в лабораторию, т.к. не удалось найти свойство " +
         "\"Время забора\" с кодом [TAKINGTIME] для исследования " + action.getActionType.getName + " [id=" +
         action.getActionType.getId + "]")
@@ -812,7 +860,7 @@ with I18nable {
     val comment: String = action.getNote
     diag.setOrderComment(comment)
     var department: OrgStructure = getOrgStructureByEvent(action.getEvent)
-    if(department == null){
+    if (department == null) {
       warn("No department found for Action[%s] in moving's, search in RECEIVE Action".format(action.getId))
       department = getOrgStructureFromRecievedActionInEvent(action.getEvent)
     }
@@ -820,7 +868,7 @@ with I18nable {
       diag.setOrderDepartmentMisCode(String.valueOf(department.getId))
       diag.setOrderDepartmentName(department.getName)
     } else {
-       error("No department found for Action[%s]".format(action.getId))
+      error("No department found for Action[%s]".format(action.getId))
     }
     val doctorLastname: String = action.getAssigner.getLastName
     val doctorFirstname: String = action.getAssigner.getFirstName
@@ -917,4 +965,6 @@ with I18nable {
 
     null
   }
+
+
 }

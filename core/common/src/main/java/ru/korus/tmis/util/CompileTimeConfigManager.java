@@ -7,8 +7,8 @@ public interface CompileTimeConfigManager {
     }
 
     public static interface Laboratory2 {
-        public final String Namespace = "http://www.korusconsulting.ru";
-        public final String ServiceName = "IAcrossIntf_FNKCservice";
+        public final String Namespace = "ru.novolabs.Integration.FTMIS";
+        public final String ServiceName = "QueryAnalysisService";
     }
 
     public static interface LaboratoryClient {

@@ -477,4 +477,5 @@ public interface WebMisREST extends Serializable {
     void releaseLock(int actionId, AuthData auth);
 
 
+    void sendToLaboratory(SendToLaboratoryDataList data, AuthData authData);
 }

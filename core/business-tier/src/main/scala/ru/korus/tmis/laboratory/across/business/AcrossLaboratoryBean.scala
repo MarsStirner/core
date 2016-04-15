@@ -2,25 +2,22 @@ package ru.korus.tmis.laboratory.across.business
 
 import java.net.{Authenticator, PasswordAuthentication}
 import java.text.SimpleDateFormat
-import java.util
 import java.util.{Collections, Date, GregorianCalendar}
 import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
-import javax.interceptor.Interceptors
 import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 import javax.xml.namespace.QName
-import javax.xml.rpc.Stub
 
 import grizzled.slf4j.Logging
-import org.apache.axis.client.{Stub => AxisStub}
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
 import ru.korus.tmis.laboratory.across.accept.AnalysisResultAcross
 import ru.korus.tmis.laboratory.across.accept2.{AnalysisResult => AResult2}
-import ru.korus.tmis.laboratory.across.request._
+import ru.korus.tmis.laboratory.across.request.DataConverter
+import ru.korus.tmis.laboratory.across.ws.{ObjectFactory, BiomaterialInfo, OrderInfo, PatientInfo, DiagnosticRequestInfo}
+
 import ru.korus.tmis.laboratory.across.{ws => lab2}
 import ru.korus.tmis.scala.util.Types.JList
 import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
@@ -57,7 +54,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
 
 
-  def getAcrossLab: lab2.IAcrossIntf_FNKC = {
+  def getAcrossLab: lab2.QueryAnalysisService = {
     import ru.korus.tmis.laboratory.across.ws._
     try {
       // Вызываем удаленный веб-сервис
@@ -77,16 +74,16 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
       val service = Option(ConfigManager.Laboratory2.WSDLUrl).map {
         it =>
           info("LIS2 Across WSDL URL specified: overriding standard url to '" + it.toString + "'")
-          new IAcrossIntf_FNKCserviceLocator(it.toString, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
+          new QueryAnalysisService(it, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
       }.getOrElse {
         val url = this.getClass.getResource("/labisws2.wsdl")
         warn("LIS Across WSDL URL not specified: using local WSDL " + url.toString)
-        new IAcrossIntf_FNKCserviceLocator(url.toString, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
+        new QueryAnalysisService(url, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
       }
 
-      val endPoint = service.getPorts.next().asInstanceOf[QName]
+      //val endPoint = service.getPorts.next().asInstanceOf[QName]
 
-      Option(ConfigManager.Laboratory2.ServiceUrl).foreach {
+/*      Option(ConfigManager.Laboratory2.ServiceUrl).foreach {
         url =>
           service.setIAcrossIntf_FNKCPortEndpointAddress(url.toString)
       }
@@ -117,8 +114,9 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         case Some(stub) => stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, false)
         case None => {}
       }
+      */
 
-      port
+      service
     } catch {
       case e: Throwable => {
         error("Error while creating LIS2 service endpoint", e)
@@ -137,32 +135,36 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         val tt = t.getType
         info("Biomaterial:Code=" + tt.getCode)
         info("Biomaterial:Name=" + tt.getName)
-        BiomaterialInfo(
-          Option(tt.getCode),
-          Option(tt.getName),
-          Option(t.getBarcode.toString), // barcode for LIS2 is taken from id
-          Option(t.getPeriod),
-          None, // no takenTissue.id for LIS
-          Option(t.getDatetimeTaken),
-          Option(t.getNote)
-        )
+        val of: ObjectFactory = new ObjectFactory
+        val res = of.createBiomaterialInfo()
+        res.setOrderBiomaterialCode(of.createBiomaterialInfoOrderBiomaterialCode(tt.getCode))
+        res.setOrderBiomaterialName(of.createBiomaterialInfoOrderBiomaterialName(tt.getName))
+        res.setOrderBarCode(of.createBiomaterialInfoOrderBarCode(t.getBarcode.toString))
+        res.setOrderPrefBarCode(t.getPeriod)
+        res.setOrderProbeDate(DataConverter.date2xmlGC(t.getDatetimeTaken))
+        res.setOrderBiomaterialComment(of.createBiomaterialInfoOrderBiomaterialComment(t.getNote))
+        res
       }
       case None => throw new CoreException(i18n("error.tissueForActionNotFound", action.getId))
     }
   }
 
+
   def getOrderInfo(a: Action, at: ActionType): OrderInfo = {
+    val of: ObjectFactory = new ObjectFactory
+    val result = of.createOrderInfo()
     // Код исследования
     val code = at.getCode
     info("OrderInfo:Code=" + code)
+    result.setDiagnosticCode(of.createOrderInfoDiagnosticCode(code))
     // Наименование исследования
     val name = at.getName
     info("OrderInfo:Name=" + name)
-
+    result.setDiagnosticName(of.createOrderInfoDiagnosticName(name))
     // Флаг срочности
-    val priority = if (a.getIsUrgent) OrderInfo.OrderPriority.Urgent else OrderInfo.OrderPriority.Normal
+    val priority = if (a.getIsUrgent) 1 else 0
     info("OrderInfo:Urgent=" + priority)
-
+    result.setOrderPriority(priority)
     // Показатели
     val apts = dbActionTypeBean.getActionTypePropertiesById(at.getId.intValue)
     val res = apts.find(apt => {
@@ -177,6 +179,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     val aptsSet = apts.toSet // для правильной работы JavaConversion
     // Получаем map из APT в AP
     val apsMap = a.getActionPropertiesByTypes(aptsSet)
+    val indicatorArray  = of.createArrayOfTindicator()
     // Фильтруем map чтобы найти показатели/методы
 
     val indicators = apsMap.collect {
@@ -186,64 +189,71 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
         val code = apt.getTest.getCode
         val name = apt.getTest.getName
-        IndicatorMetodic(Option(name), Option(code))
+        val indicator  = of.createTindicator()
+        indicator.setIndicatorCode(of.createTindicatorIndicatorCode(code))
+        indicator.setIndicatorName(of.createTindicatorIndicatorName(name))
+        indicatorArray.getTindicator.add(indicator)
     }
-
-    OrderInfo(Option(code), Option(name), Option(priority), indicators.toList)
+    result.setIndicators(of.createArrayOfTindicator(indicatorArray))
+    result
   }
 
   def getPatientInfo(patient: Patient): PatientInfo = {
+    val of: ObjectFactory = new ObjectFactory
+    val result = of.createPatientInfo()
     val misId = patient.getId.intValue
     info("Patient:Code=" + patient.getId)
+    result.setPatientMisId(misId)
     // LastName (string) -- фамилия
     val lastName = patient.getLastName
     info("Patient:Family=" + patient.getLastName)
+    result.setPatientFamily(of.createPatientInfoPatientFamily(lastName))
     // FirstName (string) -- имя
     val firstName = patient.getFirstName
     info("Patient:FirstName=" + patient.getFirstName)
+    result.setPatientName(of.createPatientInfoPatientName(firstName))
     // MiddleName (string) -- отчество
     val patrName = patient.getPatrName
     info("Patient:MiddleName=" + patient.getPatrName)
+    result.setPatientPatronum(of.createPatientInfoPatientPatronum(patrName))
     // BirthDate (datetime) -- дата рождения
     val birthDate = patient.getBirthDate
     info("Patient:BirthDate=" + patient.getBirthDate)
+    result.setPatientBirthDate(of.createPatientInfoPatientBirthDate(DataConverter.date2string(birthDate)))
     // Sex (enum) -- пол (мужской/женский/не определен)
     val sex = Sex.valueOf(patient.getSex)
     info("Patient:Sex=" + patient.getSex)
-
-    PatientInfo(misId,
-      Option(lastName),
-      Option(firstName),
-      Option(patrName),
-      Option(birthDate),
-      sex)
+    result.setPatientSex(DataConverter.sex2int(sex))
+    result
   }
 
 
 
 
   def getDiagnosticRequestInfo(a: Action): DiagnosticRequestInfo = {
+    val of: ObjectFactory = new ObjectFactory
+    val result = of.createDiagnosticRequestInfo()
     // Id (long) -- уникальный идентификатор направления в МИС (Action.id)
     val id = a.getId.intValue
     info("Request:Id=" + a.getId.intValue)
-
+    result.setOrderMisId(id)
     // номер истории болезни eventid
     val orderCaseId = "" + a.getEvent.getExternalId
     info("Request:OrderCaseId=" + orderCaseId)
-
+    result.setOrderCaseId(of.createDiagnosticRequestInfoOrderCaseId(orderCaseId))
     // код финансирования
     val orderFinanceId = getFinanceId(a.getEvent)
     info("Request:OrderFinanceId=" + orderFinanceId)
-
+    result.setOrderFinanceId(orderFinanceId)
     // CreateDate (datetime) -- дата создания направления врачом (Action.createDatetime)
     val date = a.getCreateDatetime
     info("Request:CreateDate=" + a.getCreateDatetime)
-
+    result.setOrderMisDate(DataConverter.date2xmlGC(date))
     // PregnancyDurationWeeks (int) -- срок беременности пациентки (в неделях)
     val pregMin = a.getEvent.getPregnancyWeek * 7
     val pregMax = a.getEvent.getPregnancyWeek * 7
     info("Request:PregnancyDurationWeeks=" + a.getEvent.getPregnancyWeek)
-
+    result.setOrderPregnat(pregMin / 2 + pregMax / 2)
     // Diagnosis
     val diagnosis = getDiagnosis(a.getEvent)
     val (diagCode, diagName) = diagnosis match {
@@ -259,11 +269,13 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         diagnosis
       }
     }
+    result.setOrderDiagCode(of.createDiagnosticRequestInfoOrderDiagCode(diagCode))
+    result.setOrderDiagText(of.createDiagnosticRequestInfoOrderDiagText(diagName))
 
     // Comment (string) (необязательно) – произвольный текстовый комментарий к направлению
     val comment = a.getNote
     info("Request:Comment" + comment)
-
+    result.setOrderComment(of.createDiagnosticRequestInfoOrderComment(comment))
     val department = if(
       a.getEvent.getEventType.getRequestType != null && Seq(RbRequestType.POLIKLINIKA_CODE, RbRequestType.DIAGNOSTIKA_CODE)
       .contains(a.getEvent.getEventType.getRequestType.getCode)) {
@@ -292,7 +304,8 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         (department.getName, "" + department.getId)
       }
     }
-
+    result.setOrderDepartmentMisId(of.createDiagnosticRequestInfoOrderDepartmentMisId(depCode))
+    result.setOrderDepartmentName(of.createDiagnosticRequestInfoOrderDepartmentName(depName))
     val (drLastName, drFirstName, drMiddleName, drCode) = a.getAssigner match {
       case null => {
         ("", "", "", null)
@@ -307,25 +320,11 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     info("Request.DoctorMiddleName=" + drMiddleName)
     // DoctorCode (string) -- уникальный код или идентификатор врача
     info("Request.DoctorCode=" + drCode)
-    val cc: Int = drCode.intValue()
-
-    DiagnosticRequestInfo(
-      id,
-      Option(orderCaseId),
-      Option(orderFinanceId),
-      Option(date),
-      Option(pregMin),
-      Option(pregMax),
-      Option(diagCode),
-      Option(diagName),
-      Option(comment),
-      Option(depName),
-      Option(depCode),
-      Option(drLastName),
-      Option(drFirstName),
-      Option(drMiddleName),
-      Option(cc)
-    )
+    result.setOrderDoctorFamily(of.createDiagnosticRequestInfoOrderDoctorFamily(drLastName))
+    result.setOrderDoctorName(of.createDiagnosticRequestInfoOrderDoctorName(drFirstName))
+    result.setOrderDoctorPatronum(of.createDiagnosticRequestInfoOrderDoctorPatronum(drMiddleName))
+    result.setOrderDoctorMisId(of.createDiagnosticRequestInfoOrderDoctorMisId(drCode.toString))
+    result
   }
 
   /**
@@ -642,67 +641,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     }
   }
 
-  def sendTestLis2AnalysisRequest() = {
-    val barCode = 0xCAFEBABE
 
-    val exPatient = PatientInfo(100,
-      Option("Иванов"),
-      Option("Сидор"),
-      Option("Петрович"),
-      Option(new Date(88, 10, 1)),
-      Sex.MEN
-    )
-
-    val exRequest = DiagnosticRequestInfo(220,
-      Option("111"),
-      Option(1),
-      Option(new Date(112, 2, 27, 17, 0)),
-      Option(9),
-      Option(9),
-      Option("111"),
-      Option("Рыболовецкий сейнер"),
-      Option("Без комментариев"),
-      Option("Отделение трансфузиологии"),
-      Option("42"),
-      Option("Пётрович"),
-      Option("Пётрович"),
-      Option("Пётрович"),
-      Option(21)
-    )
-
-    val exBio = BiomaterialInfo(
-      Option("XY"),
-      Option("Кровь каппилярная"),
-      Option(barCode.toString),
-      Option(barCode),
-      Option(0),
-      Option(new Date(112, 2, 27, 17, 0)),
-      Option("Без комментариев")
-    )
-
-    val exOrder = OrderInfo(
-      Option("x001"),
-      Option("RTFM"),
-      Option(OrderInfo.OrderPriority.Normal),
-      List(
-        IndicatorMetodic(Option("WBC"), Option("Г0001")),
-        IndicatorMetodic(Option("RBC"), Option("Г0010"))
-      )
-    )
-
-
-    info("connecting to LIS2 webservice...")
-
-    val labws = getAcrossLab
-
-    info("sending to LIS2 webservice...")
-    try {
-      //  labws.queryAnalysis(exPatient, exRequest, exBio, exOrder)
-      info("successfully interacted with LIS2 webservice...")
-    } catch {
-      case e: Throwable => error("Error responce from LIS webservice", e)
-    }
-  }
 
   def getAnalysisRequest(actionId: Int) = {
     val a = dbActionBean.getActionById(actionId)
@@ -724,13 +663,10 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
     // Request section
     val requestInfo = getDiagnosticRequestInfo(a)
-
     // Biomaterial section
     val biomaterialInfo = getBiomaterialInfo(a, a.getTakenTissue)
-
     // Order section
     val orderInfo = getOrderInfo(a, at)
-
     (patientInfo, requestInfo, biomaterialInfo, orderInfo)
   }
 
@@ -741,7 +677,9 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   def sendAnalysisRequestToAcross(actionId: Int) {
     // sendTestLis2AnalysisRequest()
     val (patientInfo, requestInfo, biomaterialInfo, orderInfo) = getAnalysisRequest(actionId)
-    info {
+    logger.info(patientInfo, requestInfo, biomaterialInfo, orderInfo)
+
+    info (
       """Lis data:
         |  %s
         |  %s
@@ -753,10 +691,10 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         biomaterialInfo.toString,
         orderInfo.toString
         )
-    }
+    )
     info("sending to Across LIS webservice...")
     try {
-      getAcrossLab.queryAnalysis(patientInfo, requestInfo, biomaterialInfo, orderInfo)
+      getAcrossLab.getBasicHttpBindingIqueryAnalysis.queryAnalysis(patientInfo, requestInfo, biomaterialInfo, orderInfo)
       info("successfully interacted with Across LIS webservice...")
     } catch {
       case e: Throwable =>

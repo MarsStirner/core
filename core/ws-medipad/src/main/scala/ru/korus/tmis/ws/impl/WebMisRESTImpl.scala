@@ -1721,6 +1721,12 @@ with CAPids {
     directionBean.sendActionsToLaboratory(data,  authData.getUser)
   }
 
+  override def sendToLaboratory(data: SendToLaboratoryDataList, authData: AuthData): Unit = {
+    for(actionId <- data.ids){
+      directionBean.sendActionToLaboratory(actionId)
+    }
+  }
+
   def deletePatientInfo(id: Int) = patientBean.deletePatientInfo(id)
 
   def getDiagnosesByAppeal(appealId: Int, authData: AuthData) = diagnosisBean.getDiagnosesByAppeal(appealId)
@@ -2240,5 +2246,6 @@ with CAPids {
   def releaseLock(actionId: Int, auth: AuthData) {
     authStorage.releaseAppLock(auth.getAuthToken, "Action", actionId)
   }
+
 
 }
