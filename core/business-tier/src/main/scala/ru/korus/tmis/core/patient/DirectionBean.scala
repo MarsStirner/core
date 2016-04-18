@@ -703,16 +703,40 @@ with I18nable {
   def sendActionToLis(actionId: Int) {
     val jt = dbJobTicketBean.getJobTicketForAction(actionId)
     if (jt != null) {
-      try {
-        //todo это безобразие убрать, должен быть вызов веб-сервиса с передачей actionId
-        lisAcross.sendAnalysisRequestToAcross(actionId)
-      }
-      catch {
-        case e: Exception => {
-          jt.setNote(jt.getNote + "Невозможно передать данные об исследовании '%s'. ".format(actionId.toString))
-          jt.setLabel("##Ошибка отправки в ЛИС##")
-          em.merge(jt)
-          em.flush()
+      val labCode = dbJobTicketBean.getLaboratoryCodeForActionId(actionId)
+      if (labCode != null && labCode.compareTo("0101") == 0) {
+        // отправка назначения в Акросс
+        try {
+          //todo должен быть вызов веб-сервиса с передачей actionId
+          lisAcross.sendAnalysisRequestToAcross(actionId)
+          // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
+          actionBean.updateActionStatusWithFlush(actionId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
+        }
+        catch {
+          case e: Exception => {
+            val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+            jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + actionId + "'." + e.getMessage + "\n")
+            jt.setLabel("##Ошибка отправки в ЛИС##")
+            jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
+            em.merge(jt)
+            em.flush()
+          }
+        }
+      } else if (labCode != null) {
+        // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
+        try {
+          sendJMSLabRequest(actionId, labCode)
+          dbJobTicketBean.modifyJobTicketStatus(actionId, JobTicket.STATUS_SENDING)
+        }
+        catch {
+          case e: Exception => {
+            val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
+            jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + actionId + "'." + e.getMessage + "\n")
+            jt.setLabel("##Ошибка отправки в ЛИС## ")
+            jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
+            em.merge(jt)
+            em.flush()
+          }
         }
       }
     }
@@ -770,7 +794,6 @@ with I18nable {
           case e: JMSException =>
         }
       }
-
       if (connection != null) {
         try {
           connection.close()
