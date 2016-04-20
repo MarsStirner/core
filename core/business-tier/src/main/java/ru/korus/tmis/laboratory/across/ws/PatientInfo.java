@@ -17,11 +17,11 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="patientBirthDate" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="patientFamily" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="patientMisId" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
+ *         &lt;element name="patientFamily" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="patientName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="patientPatronum" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="patientBirthDate" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="patientSex" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
@@ -33,48 +33,50 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "PatientInfo", propOrder = {
-    "patientBirthDate",
-    "patientFamily",
     "patientMisId",
+    "patientFamily",
     "patientName",
     "patientPatronum",
+    "patientBirthDate",
     "patientSex"
 })
 public class PatientInfo {
 
-    @XmlElementRef(name = "patientBirthDate", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
-    protected JAXBElement<String> patientBirthDate;
+    @XmlElementRef(name = "patientMisId", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
+    protected JAXBElement<Integer> patientMisId;
     @XmlElementRef(name = "patientFamily", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
     protected JAXBElement<String> patientFamily;
-    protected Integer patientMisId;
     @XmlElementRef(name = "patientName", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
     protected JAXBElement<String> patientName;
     @XmlElementRef(name = "patientPatronum", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
     protected JAXBElement<String> patientPatronum;
-    protected Integer patientSex;
+    @XmlElementRef(name = "patientBirthDate", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
+    protected JAXBElement<String> patientBirthDate;
+    @XmlElementRef(name = "patientSex", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
+    protected JAXBElement<Integer> patientSex;
 
     /**
-     * Gets the value of the patientBirthDate property.
+     * Gets the value of the patientMisId property.
      * 
      * @return
      *     possible object is
-     *     {@link JAXBElement }{@code <}{@link String }{@code >}
+     *     {@link Integer }
      *     
      */
-    public JAXBElement<String> getPatientBirthDate() {
-        return patientBirthDate;
+    public JAXBElement<Integer> getPatientMisId() {
+        return patientMisId;
     }
 
     /**
-     * Sets the value of the patientBirthDate property.
+     * Sets the value of the patientMisId property.
      * 
      * @param value
      *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link String }{@code >}
+     *     {@link Integer }
      *     
      */
-    public void setPatientBirthDate(JAXBElement<String> value) {
-        this.patientBirthDate = value;
+    public void setPatientMisId(JAXBElement<Integer> value) {
+        this.patientMisId = value;
     }
 
     /**
@@ -99,30 +101,6 @@ public class PatientInfo {
      */
     public void setPatientFamily(JAXBElement<String> value) {
         this.patientFamily = value;
-    }
-
-    /**
-     * Gets the value of the patientMisId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
-    public Integer getPatientMisId() {
-        return patientMisId;
-    }
-
-    /**
-     * Sets the value of the patientMisId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setPatientMisId(Integer value) {
-        this.patientMisId = value;
     }
 
     /**
@@ -174,6 +152,30 @@ public class PatientInfo {
     }
 
     /**
+     * Gets the value of the patientBirthDate property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link String }{@code >}
+     *     
+     */
+    public JAXBElement<String> getPatientBirthDate() {
+        return patientBirthDate;
+    }
+
+    /**
+     * Sets the value of the patientBirthDate property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link String }{@code >}
+     *     
+     */
+    public void setPatientBirthDate(JAXBElement<String> value) {
+        this.patientBirthDate = value;
+    }
+
+    /**
      * Gets the value of the patientSex property.
      * 
      * @return
@@ -181,7 +183,7 @@ public class PatientInfo {
      *     {@link Integer }
      *     
      */
-    public Integer getPatientSex() {
+    public JAXBElement<Integer> getPatientSex() {
         return patientSex;
     }
 
@@ -193,7 +195,7 @@ public class PatientInfo {
      *     {@link Integer }
      *     
      */
-    public void setPatientSex(Integer value) {
+    public void setPatientSex(JAXBElement<Integer> value) {
         this.patientSex = value;
     }
 

@@ -1,10 +1,8 @@
 
 package ru.korus.tmis.laboratory.across.ws;
+
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElementRef;
-import javax.xml.bind.annotation.XmlType;
+import javax.xml.bind.annotation.*;
 
 
 /**
@@ -19,8 +17,8 @@ import javax.xml.bind.annotation.XmlType;
  *       &lt;sequence&gt;
  *         &lt;element name="diagnosticCode" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="diagnosticName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
- *         &lt;element name="indicators" type="{http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS}ArrayOfTindicator" minOccurs="0"/&gt;
  *         &lt;element name="orderPriority" type="{http://www.w3.org/2001/XMLSchema}int" minOccurs="0"/&gt;
+ *         &lt;element name="indicators" type="{http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS}ArrayOfTindicator" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -33,8 +31,8 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "OrderInfo", propOrder = {
     "diagnosticCode",
     "diagnosticName",
-    "indicators",
-    "orderPriority"
+    "orderPriority",
+    "indicators"
 })
 public class OrderInfo {
 
@@ -42,9 +40,10 @@ public class OrderInfo {
     protected JAXBElement<String> diagnosticCode;
     @XmlElementRef(name = "diagnosticName", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
     protected JAXBElement<String> diagnosticName;
+    @XmlElement(name = "orderPriority", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS" )
+    protected Integer orderPriority;
     @XmlElementRef(name = "indicators", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
     protected JAXBElement<ArrayOfTindicator> indicators;
-    protected Integer orderPriority;
 
     /**
      * Gets the value of the diagnosticCode property.
@@ -95,30 +94,6 @@ public class OrderInfo {
     }
 
     /**
-     * Gets the value of the indicators property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link JAXBElement }{@code <}{@link ArrayOfTindicator }{@code >}
-     *     
-     */
-    public JAXBElement<ArrayOfTindicator> getIndicators() {
-        return indicators;
-    }
-
-    /**
-     * Sets the value of the indicators property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link ArrayOfTindicator }{@code >}
-     *     
-     */
-    public void setIndicators(JAXBElement<ArrayOfTindicator> value) {
-        this.indicators = value;
-    }
-
-    /**
      * Gets the value of the orderPriority property.
      * 
      * @return
@@ -140,6 +115,30 @@ public class OrderInfo {
      */
     public void setOrderPriority(Integer value) {
         this.orderPriority = value;
+    }
+
+    /**
+     * Gets the value of the indicators property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link ArrayOfTindicator }{@code >}
+     *     
+     */
+    public JAXBElement<ArrayOfTindicator> getIndicators() {
+        return indicators;
+    }
+
+    /**
+     * Sets the value of the indicators property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link ArrayOfTindicator }{@code >}
+     *     
+     */
+    public void setIndicators(JAXBElement<ArrayOfTindicator> value) {
+        this.indicators = value;
     }
 
 }

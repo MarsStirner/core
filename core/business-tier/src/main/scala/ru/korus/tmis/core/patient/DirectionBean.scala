@@ -722,7 +722,7 @@ with I18nable {
         actionBean.updateActionStatusWithFlush(actionId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
       } catch {
         case e: Exception =>
-          action.setNote("Отправка в ЛИС-АКРОСС не удалась: " + e.getMessage)
+          action.setNote("Отправка в ЛИС-ИННОВА не удалась: " + e.getMessage)
           em.merge(action)
           return false
       }

@@ -74,7 +74,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
       val service = Option(ConfigManager.Laboratory2.WSDLUrl).map {
         it =>
           info("LIS2 Across WSDL URL specified: overriding standard url to '" + it.toString + "'")
-          new QueryAnalysisService(it, new QName(CompileTimeConfigManager.Laboratory2.Namespace, CompileTimeConfigManager.Laboratory2.ServiceName))
+          new QueryAnalysisService(it)
       }.getOrElse {
         val url = this.getClass.getResource("/labisws2.wsdl")
         warn("LIS Across WSDL URL not specified: using local WSDL " + url.toString)
@@ -194,7 +194,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         indicator.setIndicatorName(of.createTindicatorIndicatorName(name))
         indicatorArray.getTindicator.add(indicator)
     }
-    result.setIndicators(of.createArrayOfTindicator(indicatorArray))
+    result.setIndicators(of.createOrderInfoIndicators(indicatorArray))
     result
   }
 
@@ -203,7 +203,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     val result = of.createPatientInfo()
     val misId = patient.getId.intValue
     info("Patient:Code=" + patient.getId)
-    result.setPatientMisId(misId)
+    result.setPatientMisId(of.createPatientInfoPatientMisId(misId))
     // LastName (string) -- фамилия
     val lastName = patient.getLastName
     info("Patient:Family=" + patient.getLastName)
@@ -223,7 +223,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     // Sex (enum) -- пол (мужской/женский/не определен)
     val sex = Sex.valueOf(patient.getSex)
     info("Patient:Sex=" + patient.getSex)
-    result.setPatientSex(DataConverter.sex2int(sex))
+    result.setPatientSex(of.createPatientInfoPatientSex(DataConverter.sex2int(sex)))
     result
   }
 
@@ -694,7 +694,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     )
     info("sending to Across LIS webservice...")
     try {
-      getAcrossLab.getBasicHttpBindingIqueryAnalysis.queryAnalysis(patientInfo, requestInfo, biomaterialInfo, orderInfo)
+      getAcrossLab.getFTMISEndpoint.queryAnalysis(patientInfo, requestInfo, biomaterialInfo, orderInfo)
       info("successfully interacted with Across LIS webservice...")
     } catch {
       case e: Throwable =>

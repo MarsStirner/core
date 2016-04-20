@@ -17,8 +17,8 @@ import javax.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="indicatorCode" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="indicatorName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="indicatorCode" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -29,39 +29,15 @@ import javax.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "Tindicator", propOrder = {
-    "indicatorCode",
-    "indicatorName"
+    "indicatorName",
+    "indicatorCode"
 })
 public class Tindicator {
 
-    @XmlElementRef(name = "indicatorCode", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
-    protected JAXBElement<String> indicatorCode;
     @XmlElementRef(name = "indicatorName", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
     protected JAXBElement<String> indicatorName;
-
-    /**
-     * Gets the value of the indicatorCode property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link JAXBElement }{@code <}{@link String }{@code >}
-     *     
-     */
-    public JAXBElement<String> getIndicatorCode() {
-        return indicatorCode;
-    }
-
-    /**
-     * Sets the value of the indicatorCode property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link JAXBElement }{@code <}{@link String }{@code >}
-     *     
-     */
-    public void setIndicatorCode(JAXBElement<String> value) {
-        this.indicatorCode = value;
-    }
+    @XmlElementRef(name = "indicatorCode", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
+    protected JAXBElement<String> indicatorCode;
 
     /**
      * Gets the value of the indicatorName property.
@@ -85,6 +61,30 @@ public class Tindicator {
      */
     public void setIndicatorName(JAXBElement<String> value) {
         this.indicatorName = value;
+    }
+
+    /**
+     * Gets the value of the indicatorCode property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link JAXBElement }{@code <}{@link String }{@code >}
+     *     
+     */
+    public JAXBElement<String> getIndicatorCode() {
+        return indicatorCode;
+    }
+
+    /**
+     * Sets the value of the indicatorCode property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link JAXBElement }{@code <}{@link String }{@code >}
+     *     
+     */
+    public void setIndicatorCode(JAXBElement<String> value) {
+        this.indicatorCode = value;
     }
 
 }

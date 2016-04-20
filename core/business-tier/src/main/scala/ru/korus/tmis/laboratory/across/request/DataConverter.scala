@@ -24,6 +24,7 @@ object DataConverter {
     val c = new GregorianCalendar
     c.setTime(date)
     val gc = DatatypeFactory.newInstance().newXMLGregorianCalendar(c)
+
     gc
   }
 

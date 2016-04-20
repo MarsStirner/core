@@ -29,12 +29,12 @@ import java.util.List;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "ArrayOfTindicator", propOrder = {
+@XmlType(name = "indicators", propOrder = {
     "tindicator"
 })
 public class ArrayOfTindicator {
 
-    @XmlElement(name = "Tindicator", nillable = true)
+    @XmlElement(name = "Tindicator", nillable = true,  namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS")
     protected List<Tindicator> tindicator;
 
     /**
