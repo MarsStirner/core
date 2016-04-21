@@ -4,6 +4,7 @@ import com.sun.jersey.api.json.JSONWithPadding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.Staff;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.hsct.HsctBean;
@@ -35,6 +36,9 @@ public class HsctRestImpl {
     @EJB
     private WebMisREST wsImpl;
 
+    @EJB
+    private DbStaffBeanLocal dbStaff;
+
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML + ";charset=utf-8"})
@@ -42,7 +46,7 @@ public class HsctRestImpl {
             @Context HttpServletRequest servRequest, @QueryParam("callback") String callback, HsctRequestActionContainer data
     ) throws CoreException {
         final AuthData authData = wsImpl.checkTokenCookies(servRequest.getCookies());
-        final Staff user = authData.getUser();
+        final Staff user = dbStaff.getStaffById(authData.getUserId());
         LOGGER.info("call modifyQueue({}) by {}", data, authData);
         if (data.isEnqueueAction()) {
             return new JSONWithPadding(hsctBean.enqueueAction(data.getId(), user), callback);

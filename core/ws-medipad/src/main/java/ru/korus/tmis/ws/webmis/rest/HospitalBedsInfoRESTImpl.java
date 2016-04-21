@@ -47,7 +47,7 @@ public class HospitalBedsInfoRESTImpl {
                                         @QueryParam("filter[departmentId]") int departmentId) throws CoreException {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
         AuthData authData = mkAuth(servRequest);
-        Staff staff = authData.getUser();
+        Staff staff = staffBean.getStaffById(authData.getUserId());
         int depId = (departmentId>0) ? departmentId : staff.getOrgStructure().getId();
         return new JSONWithPadding(wsImpl.getVacantHospitalBeds(depId, authData), callback);
     }
