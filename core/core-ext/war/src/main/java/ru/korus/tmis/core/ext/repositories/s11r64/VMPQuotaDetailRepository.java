@@ -35,8 +35,8 @@ public interface VMPQuotaDetailRepository extends JpaRepository<VMPQuotaDetail, 
             "WHERE qt.quotaType.id = :quotaTypeId")
     List<RbPacientModel> findByQuotaType(@Param(value = "quotaTypeId") Integer quotaTypeId);
 
-    @Query("SELECT DISTINCT qt.rbTreatment FROM VMPQuotaDetail qt WHERE qt.rbPacientModel.id = :patientModelId")
-    List<RbTreatment> findTreatmentByPatientModelId(@Param(value = "patientModelId") Integer patientModelId);
+    @Query("SELECT DISTINCT qt.rbTreatment FROM VMPQuotaDetail qt WHERE qt.rbPacientModel.id = :patientModelId AND qt.quotaType.id = :quotaTypeId")
+    List<RbTreatment> findTreatmentByPatientModelIdAndQuotaTypeId(@Param(value = "patientModelId") Integer patientModelId, @Param(value = "quotaTypeId") Integer quotaTypeId);
 
 
     @Query("SELECT qt FROM VMPQuotaDetail qt " +
