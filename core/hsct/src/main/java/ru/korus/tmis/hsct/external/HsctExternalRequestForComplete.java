@@ -24,5 +24,13 @@ public class HsctExternalRequestForComplete {
     public void setRequest(final HsctExternalRequestFroCompleteWrapper request) {
         this.request = request;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("{request=");
+        sb.append(request);
+        sb.append('}');
+        return sb.toString();
+    }
 }
 

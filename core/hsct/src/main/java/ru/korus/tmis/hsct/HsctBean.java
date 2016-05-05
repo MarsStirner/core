@@ -840,25 +840,25 @@ public class HsctBean {
         HsctExternalResponse result;
         try {
             if (HttpStatus.UNAUTHORIZED.equals(httpStatus)) { //401
-                LOGGER.error("#{}-{} 401 - UNAUTHORIZED | return with error message");
+                LOGGER.error("#{}-{} 401 - UNAUTHORIZED | return with error message", num, rowNum);
                 result = new HsctExternalResponse();
                 result.setErrorMessage("Проблема при передаче данных в систему ТГСК");
                 result.setRemoveFromQueue(false);
             } else if (httpStatus.is5xxServerError()) {
-                LOGGER.error("#{}-{} 5XX - SERVER_ERROR | return with error message");
+                LOGGER.error("#{}-{} 5XX - SERVER_ERROR | return with error message", num, rowNum);
                 result = new HsctExternalResponse();
                 result.setErrorMessage("Проблема при передаче данных в систему ТГСК");
                 result.setRemoveFromQueue(false);
             } else if (httpStatus.is4xxClientError() && !HttpStatus.UNAUTHORIZED.equals(httpStatus)) {
-                LOGGER.error("#{}-{} 4XX - CLIENT_ERROR | return mapped message. Remove from queue");
+                LOGGER.error("#{}-{} 4XX - CLIENT_ERROR | return mapped message. Remove from queue", num, rowNum);
                 result = getExternalSystemSerializer().readValue(responseBody, HsctExternalResponse.class);
                 result.setRemoveFromQueue(true);
             } else if (HttpStatus.OK.equals(httpStatus)) {
-                LOGGER.info("#{}-{} 200 - OK | Successfully interacted. Return parsed");
+                LOGGER.info("#{}-{} 200 - OK | Successfully interacted. Return parsed", num, rowNum);
                 result = getExternalSystemSerializer().readValue(responseBody, HsctExternalResponse.class);
                 result.setRemoveFromQueue(true);
             } else {
-                LOGGER.error("#{}-{} UNKNOWN STATUS_CODE | Return error");
+                LOGGER.error("#{}-{} UNKNOWN STATUS_CODE | Return error", num, rowNum);
                 result = new HsctExternalResponse();
                 result.setRemoveFromQueue(false);
                 result.setErrorMessage("Невозможно распознать код ответа ТГСК. Обратитесь к администратору");
