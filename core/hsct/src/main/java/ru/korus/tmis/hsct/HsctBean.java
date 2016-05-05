@@ -25,8 +25,8 @@ import ru.korus.tmis.core.entity.model.Patient;
 import ru.korus.tmis.core.entity.model.hsct.QueueHsctRequest;
 import ru.korus.tmis.core.entity.model.hsct.Status;
 import ru.korus.tmis.core.exception.CoreException;
+import ru.korus.tmis.hsct.config.HsctSettings;
 import ru.korus.tmis.hsct.external.*;
-import ru.korus.tmis.scala.util.ConfigManager;
 
 import javax.ejb.*;
 import javax.ejb.Schedule;
@@ -54,6 +54,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * Description: <br>
  */
 @Stateless
+@DependsOn("ApplicationConfig")
 public class HsctBean {
     private static final String LOG_MSG_SETTED_FROM = "Set {} from {}";
     private static final Logger LOGGER = LoggerFactory.getLogger("HSCT");
@@ -93,7 +94,7 @@ public class HsctBean {
     public HsctResponse enqueueAction(final int actionId, final Staff user) throws CoreException {
         final int num = REST_COUNTER.incrementAndGet();
         LOGGER.info("#{} Call enqueueAction({}, {})", num, actionId, user);
-        if (!checkSendConfiguration()) {
+        if (!HsctSettings.checkSendConfiguration()) {
             LOGGER.warn("#{} End of enqueueAction. Integration with HSCT is not configured properly or disabled.", num);
             return createErrorResponse("Hsct integration is disabled. Action will not be queued.");
         }
@@ -231,14 +232,14 @@ public class HsctBean {
     public Response setRequestStatusFromExternalSystem(final String userName, final String token, final HsctExternalRequestForComplete request) {
         final int num = REST_COUNTER.incrementAndGet();
         LOGGER.info("#{} Call setHsctRequestStatusFromExternalSystem (user_name=\'{}\', user_token=\'{}\') DATA: {}", num, userName, token, request);
-        if (!ConfigManager.HsctProp().isReceiveActive()) {
+        if (!HsctSettings.isReceiveActive()) {
             LOGGER.info("#{} Integration is disabled for RECEIVE events. End with 503", num);
             return Response.status(Response.Status.SERVICE_UNAVAILABLE).entity("Integration disabled").build();
         } else if (request == null) {
             LOGGER.info("#{} Request is null or not deserialize. End with 400", num);
             return Response.status(Response.Status.BAD_REQUEST).build();
-        } else if (!StringUtils.equals(userName, ConfigManager.HsctProp().ReceiveUser()) || !StringUtils.equalsIgnoreCase(
-                token, ConfigManager.HsctProp().ReceivedPassword()
+        } else if (!StringUtils.equals(userName, HsctSettings.ReceiveUser()) || !StringUtils.equalsIgnoreCase(
+                token, HsctSettings.ReceivePassword()
         )) {
             LOGGER.info("#{} Authentication failure. End with 403", num);
             return Response.status(Response.Status.FORBIDDEN).build();
@@ -278,10 +279,10 @@ public class HsctBean {
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void pullQueue() {
         final int number = PULL_COUNTER.incrementAndGet();
-        if (!checkSendConfiguration()) {
+        if (!HsctSettings.checkSendConfiguration()) {
             LOGGER.warn("#{} integration with HSCT is not configured properly or disabled");
         }
-        final String serviceUrl = ConfigManager.HsctProp().ServiceUrl();
+        final String serviceUrl = HsctSettings.ServiceUrl();
         LOGGER.info("#{} start pull", number);
         final List<QueueHsctRequest> requests = dbQueueHsctRequest.getAllActive();
         LOGGER.info("#{} Request to send : {}", number, requests.size());
@@ -736,29 +737,13 @@ public class HsctBean {
     }
 
 
-    private boolean checkSendConfiguration() {
-        if (!ConfigManager.HsctProp().isSendActive()) {
-            LOGGER.warn("HsctProp.sendActive is not \'on\' or is empty");
-            return false;
-        } else if (StringUtils.isEmpty(ConfigManager.HsctProp().ServiceUrl())) {
-            LOGGER.warn("HsctProp.serviceUrl is empty");
-            return false;
-        } else if (StringUtils.isEmpty(ConfigManager.HsctProp().SendUser())) {
-            LOGGER.warn("HsctProp.sendUser is empty");
-            return false;
-        } else if (StringUtils.isEmpty(ConfigManager.HsctProp().SendPassword())) {
-            LOGGER.warn("HsctProp.sendPassword is empty");
-            return false;
-        } else {
-            return true;
-        }
-    }
+
 
 
     private HsctExternalResponse sendToExternalSystem(
             final HsctExternalRequest externalRequest, final String serviceUrl, final int num, final int rowNum
     ) throws IOException {
-        final String fullUrl = constructHsctUrl(serviceUrl);
+        final String fullUrl = HsctSettings.constructServiceUrl();
         final HttpPost post = new HttpPost(fullUrl);
         final ObjectMapper externalMapper = getExternalSystemSerializer();
         final String jsonRepresentation = externalMapper.writeValueAsString(externalRequest);
@@ -828,13 +813,6 @@ public class HsctBean {
             mapper.configure(SerializationConfig.Feature.WRITE_NULL_MAP_VALUES, true);
         }
         return mapper;
-    }
-
-    private String constructHsctUrl(final String serviceUrl) {
-        return serviceUrl.replaceFirst("\\{user_name\\}", ConfigManager.HsctProp().SendUser()).replaceFirst(
-                "\\{user_token\\}", ConfigManager.HsctProp().SendPassword()
-        );
-
     }
 
     public String readFully(InputStream inputStream, Charset encoding) throws IOException {
