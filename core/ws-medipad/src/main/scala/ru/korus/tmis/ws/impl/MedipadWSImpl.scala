@@ -112,7 +112,7 @@ class MedipadWSImpl
 
     if (currentUser.isPermitted("existsSeesStructure")
       || currentUser().isPermitted("inflowSeesStructure")) {
-      return patientBean.getCurrentPatientsForDepartment(currentAuthData().getUser)
+      return patientBean.getCurrentPatientsForDepartment(dbStaff.getStaffById(currentAuthData.getUserId))
     } else if (currentUser.isPermitted("existsSeesSelf")
       || currentUser().isPermitted("inflowSeesSelf")) {
       return patientBean.getCurrentPatientsForDoctor(currentAuthData)
@@ -139,7 +139,7 @@ class MedipadWSImpl
 
   def getAssessmentTypes(globalVersion: String,
                          eventId: Int): CommonData = checkingVersion(globalVersion) {
-    assessmentBean.getAssessmentTypes(eventId, currentAuthData.getUser)
+    assessmentBean.getAssessmentTypes(eventId, dbStaff.getStaffById(currentAuthData.getUserId))
   }
 
   def getAllAssessmentTypes(globalVersion: String) = checkingVersion(globalVersion) {
@@ -167,7 +167,7 @@ class MedipadWSImpl
     assessmentBean.createAssessmentForEventId(eventId,
       assessment,
       currentAuthData,
-      currentAuthData.getUser)
+      dbStaff.getStaffById(currentAuthData.getUserId))
   }
 
   def modifyAssessmentForPatient(eventId: Int,
@@ -177,14 +177,14 @@ class MedipadWSImpl
     assessmentBean.modifyAssessmentById(assessmentId,
       assessment,
       currentAuthData,
-      currentAuthData.getUser)
+      dbStaff.getStaffById(currentAuthData.getUserId))
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
   def getDiagnosticTypes(globalVersion: String,
                          eventId: Int) = checkingVersion(globalVersion) {
-    diagnosticBean.getDiagnosticTypes(eventId, currentAuthData.getUser)
+    diagnosticBean.getDiagnosticTypes(eventId,  dbStaff.getStaffById(currentAuthData.getUserId))
   }
 
   def getAllDiagnosticTypes(globalVersion: String) = checkingVersion(globalVersion) {
@@ -208,7 +208,7 @@ class MedipadWSImpl
     diagnosticBean.createDiagnosticForEventId(eventId,
       diagnostic,
       auth,
-      currentAuthData.getUser)
+      dbStaff.getStaffById(currentAuthData.getUserId))
   }
 
   def modifyDiagnosticForPatient(eventId: Int,
@@ -218,7 +218,7 @@ class MedipadWSImpl
     diagnosticBean.modifyDiagnosticById(diagnosticId,
       diagnostic,
       currentAuthData,
-      currentAuthData.getUser)
+      dbStaff.getStaffById(currentAuthData.getUserId))
   }
 
   def callOffDiagnosticForPatient(eventId: Int,

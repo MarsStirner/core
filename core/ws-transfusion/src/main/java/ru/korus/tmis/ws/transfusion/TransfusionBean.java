@@ -21,6 +21,8 @@ import ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService_Service;
 import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 import ru.korus.tmis.ws.transfusion.procedure.SendProcedureRequest;
 
+import java.net.URL;
+
 /**
  * Author:      Sergey A. Zagrebelny <br>
  * Date:        26.02.2013, 12:20:35 <br>
@@ -58,11 +60,11 @@ public class TransfusionBean {
     @Schedule(hour = "*", minute = "*/3", second = "15", persistent = false)
     public void pullDB() {
         try {
-            logger.info("Pooling db...Trfu integration is {}", ConfigManager.TrfuProp().isActive());
+            logger.info("Pooling db...Trfu integration is {}, address = \'{}\'", ConfigManager.TrfuProp().isActive(), ConfigManager.TrfuProp().ServiceUrl());
             if (ConfigManager.TrfuProp().isActive() &&
                     ConfigManager.TrfuProp().ServiceUrl() != null && !"".equals(ConfigManager.TrfuProp().ServiceUrl().trim())) {
 
-                final TransfusionMedicalService_Service service = new TransfusionMedicalService_Service();
+                final TransfusionMedicalService_Service service = new TransfusionMedicalService_Service(new URL(ConfigManager.TrfuProp().ServiceUrl()));
                 SecurityManager sm = System.getSecurityManager();
                 System.setSecurityManager(null);
                 final TransfusionMedicalService transfusionMedicalService = service.getTransfusionMedicalService();

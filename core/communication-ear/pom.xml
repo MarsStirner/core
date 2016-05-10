@@ -5,14 +5,14 @@
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis</groupId>
     <artifactId>communication-ear</artifactId>
-    <version>2.6.1.4</version>
+    <version>2.6.1.5</version>
     <packaging>ear</packaging>
     <name>TMIS Communication EAR</name>
 
     <parent>
         <groupId>ru.korus.tmis</groupId>
         <artifactId>tmis-core</artifactId>
-        <version>2.6.1.4</version>
+        <version>2.6.1.5</version>
         <relativePath>../</relativePath>
     </parent>
 
@@ -24,28 +24,28 @@
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-common</artifactId>
-            <version>2.6.1.4</version>
+            <version>2.6.1.5</version>
             <type>jar</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.core</groupId>
             <artifactId>tmis-core-database</artifactId>
-            <version>2.6.1.4</version>
+            <version>2.6.1.5</version>
             <type>ejb</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.communication</groupId>
             <artifactId>tmis-communication</artifactId>
-            <version>2.6.1.4</version>
+            <version>2.6.1.5</version>
             <type>ejb</type>
         </dependency>
 
         <dependency>
             <groupId>ru.korus.tmis.config</groupId>
             <artifactId>config</artifactId>
-            <version>2.6.1.4</version>
+            <version>2.6.1.5</version>
             <type>jar</type>
         </dependency>
 

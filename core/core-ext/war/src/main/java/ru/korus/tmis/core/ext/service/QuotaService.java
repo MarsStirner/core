@@ -16,7 +16,7 @@ public interface QuotaService {
 
     IdCodeNames getPatientModel(Integer mkbId, Integer quotaTypeId);
 
-    IdCodeNames getTreatment(Integer patientModelId);
+    IdCodeNames getTreatment(Integer patientModelId, Integer quotaTypeId);
 
     QuotaDataContainer saveQuota(Integer eventId, QuotaDataContainer quotaData, AuthData authData);
 

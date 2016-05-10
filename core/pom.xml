@@ -6,7 +6,7 @@
     <groupId>ru.korus.tmis</groupId>
     <artifactId>tmis-core</artifactId>
     <packaging>pom</packaging>
-    <version>2.6.1.4</version>
+    <version>2.6.1.5</version>
     <name>TMIS Root Project</name>
 
 
@@ -38,14 +38,16 @@
         <module>ws-risar</module>
         <module>admin-panel</module>
         <module>laboratory-bak</module>
+        <module>hsct</module>
 
         <module>server</module>
+
     </modules>
 
 
     <properties>
         <!-- Версия ядра-->
-        <version.tmis.core>2.6.1.4</version.tmis.core>
+        <version.tmis.core>2.6.1.5</version.tmis.core>
 
         <version.logging.grizzled-slf4j>1.0.2</version.logging.grizzled-slf4j>
 

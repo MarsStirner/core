@@ -164,15 +164,7 @@ with CAPids {
           value = if (hbData.data.bedRegistration.bedId > 0)
             Integer.valueOf(hbData.data.bedRegistration.bedId)
           else null
-        }
-        else if (code.compareTo(ConfigManager.Messages("db.apt.moving.codes.hospitalBedProfile")) == 0) {
-          value = if (hbData.getData.getBedRegistration.getBedProfileId > 0)
-            Integer.valueOf(hbData.getData.getBedRegistration.getBedProfileId)
-          else null
-          //TODO Implement writing hospital bed profile
-        }
-
-        else if (code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructReceived")) == 0) {
+        } else if (code.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructReceived")) == 0) {
           if (hbData.data.bedRegistration.movedFromUnitId > 0)
             value = Integer.valueOf(hbData.data.bedRegistration.movedFromUnitId)
           else {
@@ -414,7 +406,7 @@ with CAPids {
     val map = new java.util.LinkedHashMap[OrgStructureHospitalBed, java.lang.Boolean]()
     allBeds.foreach(allBed => {
       val res = result.find(bed => allBed.getId.intValue() == bed.getId.intValue())
-      if (res == None) map.put(allBed, false)
+      if (res.isEmpty) map.put(allBed, false)
       else map.put(allBed, true)
     })
     map

@@ -72,8 +72,8 @@ public class QuotaServiceImpl implements QuotaService {
     }
 
     @Override
-    public IdCodeNames getTreatment(Integer patientModelId) {
-        List<RbTreatment> res = vmpQuotaDetailRepository.findTreatmentByPatientModelId(patientModelId);
+    public IdCodeNames getTreatment(Integer patientModelId, Integer quotaTypeId) {
+        List<RbTreatment> res = vmpQuotaDetailRepository.findTreatmentByPatientModelIdAndQuotaTypeId(patientModelId, quotaTypeId);
         return toIdCodeNames(res);
     }
 

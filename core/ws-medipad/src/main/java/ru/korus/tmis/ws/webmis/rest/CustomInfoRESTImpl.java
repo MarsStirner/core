@@ -80,7 +80,7 @@ public class CustomInfoRESTImpl {
                              @QueryParam("filter[profileBed]")List<Integer> profileBeds ) throws CoreException {
         //Отделение обязательное поле, если не задано в запросе, то берем из роли специалиста
         AuthData authData = mkAuth(servRequest);
-        Staff staff = authData.getUser();
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
         final int depId = getCurDepartamentOrDefault(departmentId, staff);
         if(profileBeds.isEmpty()) { // если профили коек не заданы, то строим для всех
             Iterable<RbHospitalBedProfile> list = wsImpl.getAllAvailableBedProfiles();
@@ -165,7 +165,7 @@ public class CustomInfoRESTImpl {
         DateTimeFormatter parser = ISODateTimeFormat.dateTimeParser();
 
         AuthData authData = mkAuth(servRequest);
-        Staff staff = authData.getUser();
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
 
         try { beginDate = parser.parseDateTime(bd).toDate();
         } catch (RuntimeException e) { beginDate = bd == null ? null : new Date(Long.parseLong(bd)); }
@@ -276,7 +276,7 @@ public class CustomInfoRESTImpl {
                                                             @QueryParam("filter[departmentId]") int departmentId,
                                                             @QueryParam("filter[doctorId]") int doctorId) throws CoreException {
         AuthData authData = mkAuth(servRequest);
-        Staff staff = authData.getUser();
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
         final int depId = getCurDepartamentOrDefault(departmentId, staff);
         PatientsListRequestData requestData = new PatientsListRequestData ( depId,
                                                                             doctorId,//auth.getUser().getId().intValue(),           //WEBMIS-809: Если параметр doctorId не указан, то ищем всех пациентов отделения.

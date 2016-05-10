@@ -387,7 +387,9 @@ public class DirectoryInfoRESTImpl {
                                 @QueryParam("callback") String callback) throws CoreException {
         EventTypesListRequestDataFilter filter = new EventTypesListRequestDataFilter(finance, requestType);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getEventTypes(request,  mkAuth(servRequest).getUser()), callback);
+        AuthData authData = mkAuth(servRequest);
+        Staff staff = authData == null ? null : dbStaffBeanLocal.getStaffById(authData.getUserId());
+        return new JSONWithPadding(wsImpl.getEventTypes(request, staff), callback);
     }
 
     /**
@@ -461,7 +463,7 @@ public class DirectoryInfoRESTImpl {
 
         AuthData auth = mkAuth(servRequest);
 
-        Staff user = auth.getUser();
+        Staff user = auth == null ? null : dbStaffBeanLocal.getStaffById(auth.getUserId());
 
         Integer orgStructId = user == null || user.getOrgStructure() == null || orgStructFilterEnable == 0 ? null : user.getOrgStructure().getId();
 

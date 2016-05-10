@@ -34,9 +34,9 @@ import java.util.Properties;
 @EnableWebMvc
 @EnableJpaRepositories("ru.korus.tmis.core.ext.repositories.s11r64")
 public class MainSpringConfiguration extends WebMvcConfigurerAdapter {
-    public static final String SYS_PROP_NAME_CONFIGURATION_SERVICE_URL = "hitsl.configService.url";
+    public static final String SYS_PROP_NAME_CONFIGURATION_SERVICE_URL = "ConfigServiceUrl.core_ext";
     public static final String DEFAULT_VALUE_CONFIGURATION_SERVICE_URL = "http://www.hitsl-config-service.ru";
-    public static final String SYS_PROP_NAME_CONFIGURATION_SERVICE_CONFIG_NAME = "hitsl.configService.configName";
+    public static final String SYS_PROP_NAME_CONFIGURATION_SERVICE_CONFIG_NAME = "ConfigServiceName.core_ext";
     public static final String DEFAULT_VALUE_CONFIGURATION_SERVICE_CONFIG_NAME = "CORE_EXT";
     public static final String PROPERTY_NAME_HIBERNATE_DIALECT_MYSQL = "org.hibernate.dialect.MySQL5InnoDBDialect";
     public static final String PROPERTY_NAME_ENTITYMANAGER_PACKAGES_TO_SCAN = "ru.korus.tmis.core.ext.entities";

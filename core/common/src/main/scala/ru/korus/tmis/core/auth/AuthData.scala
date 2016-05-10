@@ -45,10 +45,6 @@ class AuthData() {
   @JsonIgnore
   var userRole: Role = _
 
-  @JsonIgnore
-  @XmlTransient
-  var user: Staff = _
-
   @BeanProperty
   var deadline : Long = _
 
@@ -74,19 +70,7 @@ class AuthData() {
     this.userRole = userRole
   }
 
-  /**
-   * Получение Роли как Role entity
-   * @return Role entity
-   */
-  @JsonIgnore
-  @XmlTransient
-  def getUser = {
-    user
-  }
 
-  def setUser(staff: Staff): Unit ={
-    user = staff
-  }
 
   /**
    * Конструктор AuthData
@@ -117,7 +101,6 @@ class AuthData() {
     this.userPatronymicName = userPatronymicName
     this.userSpecs = userSpecs
     this.userRole = userRole
-    this.user = user
     this.doctor = new DoctorSpecsContainer(user)
     this.roles = user.getRoles
     this.deadline = deadline

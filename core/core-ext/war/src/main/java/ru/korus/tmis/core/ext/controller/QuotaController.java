@@ -38,30 +38,34 @@ public class QuotaController implements Serializable {
             headers="Accept=application/json"*/)
     @ResponseBody
     //TODO убрать "ручную" сенрриализацию в json и преобразование в utf-8
-    public byte[] getQuotaType(@RequestParam Integer mkbId,
-                           @RequestParam(required = false) Integer eventId,
-                           @RequestParam(required = false) String callback,
-                           @RequestParam(required = false) String sortingField,
-                           @RequestParam(required = false) String sortingMethod,
-                           @RequestParam(required = false) String limit,
-                           @RequestParam(required = false) String page,
-                           @RequestParam(required = false) String recordsCount,
-                           @RequestParam(required = false) String reqDateTime) {
+    public byte[] getQuotaType(
+            @RequestParam Integer mkbId,
+            @RequestParam(required = false) Integer eventId,
+            @RequestParam(required = false) String callback,
+            @RequestParam(required = false) String sortingField,
+            @RequestParam(required = false) String sortingMethod,
+            @RequestParam(required = false) String limit,
+            @RequestParam(required = false) String page,
+            @RequestParam(required = false) String recordsCount,
+            @RequestParam(required = false) String reqDateTime
+    ) {
         IdCodeNames quotaType = quotaService.getQuotaType(mkbId, eventId);
         return MyJsonUtils.toJsonWithPadding(callback, quotaType);
     }
 
     @RequestMapping(method = RequestMethod.GET, value = "pacient_model")
     @ResponseBody
-    public byte[] getPatientModel(@RequestParam(required = false) Integer mkbId,
-                                  @RequestParam Integer quotaTypeId,
-                               @RequestParam(required = false) String callback,
-                               @RequestParam(required = false) String sortingField,
-                               @RequestParam(required = false) String sortingMethod,
-                               @RequestParam(required = false) String limit,
-                               @RequestParam(required = false) String page,
-                               @RequestParam(required = false) String recordsCount,
-                               @RequestParam(required = false) String reqDateTime) {
+    public byte[] getPatientModel(
+            @RequestParam(required = false) Integer mkbId,
+            @RequestParam Integer quotaTypeId,
+            @RequestParam(required = false) String callback,
+            @RequestParam(required = false) String sortingField,
+            @RequestParam(required = false) String sortingMethod,
+            @RequestParam(required = false) String limit,
+            @RequestParam(required = false) String page,
+            @RequestParam(required = false) String recordsCount,
+            @RequestParam(required = false) String reqDateTime
+    ) {
 
 
         IdCodeNames quotaType = quotaService.getPatientModel(mkbId, quotaTypeId);
@@ -70,40 +74,47 @@ public class QuotaController implements Serializable {
 
     @RequestMapping(method = RequestMethod.GET, value = "treatment")
     @ResponseBody
-    public byte[] getTreatment(@RequestParam Integer pacientModelId,
-                                  @RequestParam(required = false) String callback,
-                                  @RequestParam(required = false) String sortingField,
-                                  @RequestParam(required = false) String sortingMethod,
-                                  @RequestParam(required = false) String limit,
-                                  @RequestParam(required = false) String page,
-                                  @RequestParam(required = false) String recordsCount,
-                                  @RequestParam(required = false) String reqDateTime) {
+    public byte[] getTreatment(
+            @RequestParam Integer pacientModelId,
+            @RequestParam Integer quotaTypeId,
+            @RequestParam(required = false) String callback,
+            @RequestParam(required = false) String sortingField,
+            @RequestParam(required = false) String sortingMethod,
+            @RequestParam(required = false) String limit,
+            @RequestParam(required = false) String page,
+            @RequestParam(required = false) String recordsCount,
+            @RequestParam(required = false) String reqDateTime
+    ) {
 
 
-        IdCodeNames quotaType = quotaService.getTreatment(pacientModelId);
+        IdCodeNames quotaType = quotaService.getTreatment(pacientModelId, quotaTypeId);
         return MyJsonUtils.toJsonWithPadding(callback, quotaType);
     }
 
 
-    @RequestMapping(method = RequestMethod.POST, consumes ="application/json", value = "/{eventId}/client_quoting")
+    @RequestMapping(method = RequestMethod.POST, consumes = "application/json", value = "/{eventId}/client_quoting")
     @ResponseBody
-    public byte[] saveQuota(@PathVariable Integer eventId,
-                            @RequestParam(required = false) String callback,
-                            @RequestBody QuotaDataContainer quotaData,
-                            HttpServletRequest request) {
+    public byte[] saveQuota(
+            @PathVariable Integer eventId,
+            @RequestParam(required = false) String callback,
+            @RequestBody QuotaDataContainer quotaData,
+            HttpServletRequest request
+    ) {
 
         final AuthData authData = authService.getAuthData(request);
         QuotaDataContainer quotaType = quotaService.saveQuota(eventId, quotaData, authData);
         return MyJsonUtils.toJsonWithPadding(callback, quotaType);
     }
 
-    @RequestMapping(method = RequestMethod.PUT, consumes ="application/json", value = "/{eventId}/client_quoting/{quotaId}")
+    @RequestMapping(method = RequestMethod.PUT, consumes = "application/json", value = "/{eventId}/client_quoting/{quotaId}")
     @ResponseBody
-    public byte[] updateQuota(@PathVariable Integer eventId,
-                              @PathVariable Integer quotaId,
-                            @RequestParam(required = false) String callback,
-                            @RequestBody QuotaDataContainer quotaData,
-                            HttpServletRequest request) {
+    public byte[] updateQuota(
+            @PathVariable Integer eventId,
+            @PathVariable Integer quotaId,
+            @RequestParam(required = false) String callback,
+            @RequestBody QuotaDataContainer quotaData,
+            HttpServletRequest request
+    ) {
 
         final AuthData authData = authService.getAuthData(request);
         quotaData.getData().setId(quotaId);
@@ -113,8 +124,9 @@ public class QuotaController implements Serializable {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{eventId}/client_quoting")
     @ResponseBody
-    public byte[] getQuota(@PathVariable Integer eventId,
-                           @RequestParam(required = false) String callback) {
+    public byte[] getQuota(
+            @PathVariable Integer eventId, @RequestParam(required = false) String callback
+    ) {
 
         QuotaDataContainer quotaType = quotaService.getQuota(eventId);
         return MyJsonUtils.toJsonWithPadding(callback, quotaType);
@@ -122,8 +134,9 @@ public class QuotaController implements Serializable {
 
     @RequestMapping(method = RequestMethod.GET, value = "/{eventId}/client_quoting/prev")
     @ResponseBody
-    public byte[] getQuotaPrev(@PathVariable Integer eventId,
-                           @RequestParam(required = false) String callback) {
+    public byte[] getQuotaPrev(
+            @PathVariable Integer eventId, @RequestParam(required = false) String callback
+    ) {
 
         QuotaDataContainer quotaType = quotaService.getQuotaPrev(eventId);
         return MyJsonUtils.toJsonWithPadding(callback, quotaType);
@@ -131,8 +144,9 @@ public class QuotaController implements Serializable {
 
     @RequestMapping(method = RequestMethod.DELETE, value = "/del/client_quoting/{quotaId}")
     @ResponseBody
-    public void removeQuota(@PathVariable Integer quotaId,
-                           @RequestParam(required = false) String callback) {
+    public void removeQuota(
+            @PathVariable Integer quotaId, @RequestParam(required = false) String callback
+    ) {
         quotaService.removeQuota(quotaId);
     }
 

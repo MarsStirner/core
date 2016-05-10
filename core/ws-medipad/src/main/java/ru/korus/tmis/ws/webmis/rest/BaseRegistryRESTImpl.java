@@ -4,7 +4,6 @@ package ru.korus.tmis.ws.webmis.rest;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import java.io.Serializable;
@@ -59,8 +58,6 @@ public class BaseRegistryRESTImpl implements Serializable {
     @EJB
     private APQLEndPoint apqlEndPoint;
 
-    @EJB
-    private HsctRestImpl hsctImpl;
 
 
     @Path("/")
@@ -113,8 +110,6 @@ public class BaseRegistryRESTImpl implements Serializable {
         return jobImpl;
     }
 
-    @Path("/hsct")
-    public HsctRestImpl getHsctImpl() { return hsctImpl;}
 
     @Path("/apql")
     public APQLEndPoint getAPQL() {

@@ -1,18 +1,19 @@
-package ru.korus.tmis.ws.webmis.rest;
+package ru.korus.tmis.hsct;
 
 import com.sun.jersey.api.json.JSONWithPadding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.auth.AuthData;
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
+import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.exception.AuthenticationException;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.hsct.HsctBean;
-import ru.korus.tmis.hsct.HsctRequestActionContainer;
-import ru.korus.tmis.hsct.HsctResponse;
 import ru.korus.tmis.hsct.external.HsctExternalRequestForComplete;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
@@ -26,6 +27,7 @@ import javax.ws.rs.core.Response;
  * Description: REST для ТГСК (отправка заявок во внешнюю систему при запросе с фронтенда <br>
  */
 @Stateless
+@Path("/")
 public class HsctRestImpl {
     private static final Logger LOGGER = LoggerFactory.getLogger("HSCT");
 
@@ -33,7 +35,10 @@ public class HsctRestImpl {
     private HsctBean hsctBean;
 
     @EJB
-    private WebMisREST wsImpl;
+    private AuthStorageBeanLocal authBean;
+
+    @EJB
+    private DbStaffBeanLocal dbStaff;
 
     @POST
     @Consumes({MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML})
@@ -41,8 +46,8 @@ public class HsctRestImpl {
     public Object modifyQueue(
             @Context HttpServletRequest servRequest, @QueryParam("callback") String callback, HsctRequestActionContainer data
     ) throws CoreException {
-        final AuthData authData = wsImpl.checkTokenCookies(servRequest.getCookies());
-        final Staff user = authData.getUser();
+        final AuthData authData = authBean.checkTokenCookies(servRequest.getCookies());
+        final Staff user = dbStaff.getStaffById(authData.getUserId());
         LOGGER.info("call modifyQueue({}) by {}", data, authData);
         if (data.isEnqueueAction()) {
             return new JSONWithPadding(hsctBean.enqueueAction(data.getId(), user), callback);
@@ -79,6 +84,5 @@ public class HsctRestImpl {
     ) {
         return hsctBean.setRequestStatusFromExternalSystem(userName, userToken, request);
     }
-
 
 }
