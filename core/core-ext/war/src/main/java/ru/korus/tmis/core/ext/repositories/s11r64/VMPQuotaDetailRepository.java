@@ -44,4 +44,13 @@ public interface VMPQuotaDetailRepository extends JpaRepository<VMPQuotaDetail, 
     List<VMPQuotaDetail> findByPatientModelIdAndTreatmentId(@Param(value = "patientModelId") Integer patientModelId,
                                                             @Param(value = "treatmentId") Integer treatmentId);
 
+
+    @Query("SELECT qt FROM VMPQuotaDetail qt LEFT JOIN qt.mkbVmpquotaFilters f " +
+            "WHERE qt.rbPacientModel.id = :patientModelId AND qt.rbTreatment.id = :treatmentId AND qt.quotaType.id = :quotaTypeId AND f.mkb.id = :mkbId")
+    List<VMPQuotaDetail> findByPatientModelIdAndTreatmentIdAndQuotaTypeIdAndMkbId(
+            @Param(value = "patientModelId") Integer patientModelId,
+            @Param(value = "treatmentId") Integer treatmentId,
+            @Param(value = "quotaTypeId") Integer quotaTypeId,
+            @Param(value = "mkbId") Integer mkbId
+    );
 }

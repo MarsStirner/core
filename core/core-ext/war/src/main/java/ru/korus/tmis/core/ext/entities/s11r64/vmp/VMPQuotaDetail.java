@@ -2,8 +2,8 @@ package ru.korus.tmis.core.ext.entities.s11r64.vmp;
 
 import ru.korus.tmis.core.ext.entities.s11r64.RbTreatment;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.List;
 
@@ -43,6 +43,7 @@ public class VMPQuotaDetail implements Serializable {
 
 	//bi-directional many-to-one association to QuotaType
 	@ManyToOne
+	@JoinColumn(name="quotaType_id")
 	private QuotaType quotaType;
 
 	public VMPQuotaDetail() {

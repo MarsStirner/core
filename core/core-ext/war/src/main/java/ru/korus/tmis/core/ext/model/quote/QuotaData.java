@@ -188,4 +188,29 @@ public class QuotaData {
     public void setPatientModelName(String patientModelName) {
         this.patientModelName = patientModelName;
     }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("QuotaData{");
+        sb.append("id=").append(id);
+        sb.append(", createDatetime=").append(createDatetime);
+        sb.append(", createPerson_id=").append(createPerson_id);
+        sb.append(", modifyDatetime=").append(modifyDatetime);
+        sb.append(", modifyPerson_id=").append(modifyPerson_id);
+        sb.append(", master_id=").append(master_id);
+        sb.append(", status=").append(status);
+        sb.append(", quotaType_id=").append(quotaType_id);
+        sb.append(", quotaTypeCode='").append(quotaTypeCode).append('\'');
+        sb.append(", quotaTypeName='").append(quotaTypeName).append('\'');
+        sb.append(", MKB='").append(MKB).append('\'');
+        sb.append(", pacientModel_id=").append(pacientModel_id);
+        sb.append(", treatment_id=").append(treatment_id);
+        sb.append(", event_id=").append(event_id);
+        sb.append(", mkbId=").append(mkbId);
+        sb.append(", DiagName='").append(DiagName).append('\'');
+        sb.append(", treatmentName='").append(treatmentName).append('\'');
+        sb.append(", patientModelName='").append(patientModelName).append('\'');
+        sb.append('}');
+        return sb.toString();
+    }
 }

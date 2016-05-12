@@ -79,10 +79,11 @@ public class QuotaServiceImpl implements QuotaService {
 
     @Override
     public QuotaDataContainer saveQuota(Integer eventId, QuotaDataContainer quotaData, AuthData authData) {
-
-        Event event = eventRepository.findOne(eventId);
-        VMPQuotaDetail vmpQuotaDetail = getVmpQuotaDetail(quotaData.getData().getPacientModel_id(),
-                quotaData.getData().getTreatment_id());
+        final Event event = eventRepository.findOne(eventId);
+        final QuotaData data = quotaData.getData();
+        VMPQuotaDetail vmpQuotaDetail = getVmpQuotaDetail(
+                data.getPacientModel_id(), data.getTreatment_id(), data.getQuotaType_id(), data.getMkbId()
+        );
         QuotaDataContainer res = new QuotaDataContainer();
         if(event != null && vmpQuotaDetail != null) {
             Client_Quoting clientQuoting = new Client_Quoting();
@@ -97,6 +98,7 @@ public class QuotaServiceImpl implements QuotaService {
         }
         return res;
     }
+
 
     private void updateQuota(QuotaDataContainer quotaData,
                              AuthData authData,
@@ -149,11 +151,13 @@ public class QuotaServiceImpl implements QuotaService {
     @Override
     public QuotaDataContainer updateQuota(Integer eventId, QuotaDataContainer quotaData, AuthData authData) {
         Event event = eventRepository.findOne(eventId);
-        VMPQuotaDetail vmpQuotaDetail = getVmpQuotaDetail(quotaData.getData().getPacientModel_id(),
-                quotaData.getData().getTreatment_id());
+        final QuotaData data = quotaData.getData();
+        VMPQuotaDetail vmpQuotaDetail = getVmpQuotaDetail(
+                data.getPacientModel_id(), data.getTreatment_id(), data.getQuotaType_id(), data.getMkbId()
+        );
         QuotaDataContainer res = new QuotaDataContainer();
-        Client_Quoting clientQuoting = quotaData.getData().getId() == null ? null :
-                clientQuotaRepository.findOne(quotaData.getData().getId());
+        Client_Quoting clientQuoting = data.getId() == null ? null :
+                clientQuotaRepository.findOne(data.getId());
         if(event != null && vmpQuotaDetail != null && clientQuoting != null) {
             updateQuota(quotaData, authData, event, vmpQuotaDetail, clientQuoting, new Date());
             clientQuotaRepository.saveAndFlush(clientQuoting);
@@ -204,8 +208,8 @@ public class QuotaServiceImpl implements QuotaService {
             }
             RbTreatment rbTreatment = vmpquotaDetail.getRbTreatment();
             if(rbTreatment != null) {
-                quotaData.setTreatment_id(rbTreatment == null ? null : rbTreatment.getId());
-                quotaData.setTreatmentName(rbTreatment == null ? null : rbTreatment.getName());
+                quotaData.setTreatment_id(rbTreatment.getId());
+                quotaData.setTreatmentName(rbTreatment.getName());
             }
         }
         quotaData.setStatus(clientQuoting.getStatus());
@@ -214,9 +218,19 @@ public class QuotaServiceImpl implements QuotaService {
     }
 
     private VMPQuotaDetail getVmpQuotaDetail( Integer pacientModelId, Integer treatmentId) {
-        List<VMPQuotaDetail> vmpQuotaDetailList = vmpQuotaDetailRepository.findByPatientModelIdAndTreatmentId(pacientModelId, treatmentId);
+        final List<VMPQuotaDetail> vmpQuotaDetailList = vmpQuotaDetailRepository.findByPatientModelIdAndTreatmentId(pacientModelId, treatmentId);
         return vmpQuotaDetailList.isEmpty() ? null : vmpQuotaDetailList.get(0);
     }
+
+    private VMPQuotaDetail getVmpQuotaDetail(
+            final Integer pacientModelId, final Integer treatmentId, final Integer quotaTypeId, final Integer mkbId
+    ) {
+        final List<VMPQuotaDetail> vmpQuotaDetailList = vmpQuotaDetailRepository.findByPatientModelIdAndTreatmentIdAndQuotaTypeIdAndMkbId(
+                pacientModelId, treatmentId, quotaTypeId, mkbId
+        );
+        return vmpQuotaDetailList.isEmpty() ? null : vmpQuotaDetailList.get(0);
+    }
+
 
 
 }
