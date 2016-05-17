@@ -67,22 +67,20 @@ public class LisInnovaBean {
         }
         log.info("#{} Found {} actions for Laboratory[{}]", logNumber, actionList.size(), INNOVA_LAB_CODE);
         for (Action action : actionList) {
-            log.info("#{} Action[{}]", logNumber, action.getId());
+            log.info("#{} Action[{}] - \'{}\'", logNumber, action.getId(), action.getActionType().getName());
         }
         final Event event = getEventByActionList(actionList, logNumber);
-        final Patient patient = event.getPatient();
+        final Patient patient = ttj.getPatient();
         final Staff doctor = actionList.get(0).getAssigner();
         log.info("#{} Event[{}]", logNumber, event.getId());
         final PatientInfo patientInfo = getPatientInfo(patient);
-        log.debug("#{} PatientInfo constructed : {}", logNumber, patientInfo);
         final DiagnosticRequestInfo diagnosticRequestInfo = getDiagnosticRequestInfo(ttj, event, doctor, logNumber);
-        log.debug("#{} DiagnosticRequestInfo constructed : {}", logNumber, diagnosticRequestInfo);
         final BiomaterialInfo biomaterialInfo = getBiomaterialInfo(ttj, logNumber);
-        log.debug("#{} BiomaterialInfo constructed : {}", logNumber, biomaterialInfo);
         final ArrayOfOrderInfo arrayOfOrderInfo = getArrayOfOrderInfo(actionList, logNumber);
-        log.debug("#{} ArrayOfOrderInfo constructed: {}", logNumber, arrayOfOrderInfo);
         try {
-            IqueryAnalysis service = new QueryAnalysisService(LisInnovaSettings.getServiceURL()).getFTMISEndpoint();
+            final QueryAnalysisService queryAnalysisService = new QueryAnalysisService(LisInnovaSettings.getServiceURL());
+            queryAnalysisService.setHandlerResolver(new JaxWsHandlerResolver());
+            final IqueryAnalysis service = queryAnalysisService.getFTMISEndpoint();
             final Integer result = service.queryAnalysis(patientInfo, diagnosticRequestInfo, biomaterialInfo, arrayOfOrderInfo);
             if (result == 0) {
                 for (Action action : actionList) {
