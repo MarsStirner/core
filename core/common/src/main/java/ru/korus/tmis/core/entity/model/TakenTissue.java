@@ -1,23 +1,33 @@
 package ru.korus.tmis.core.entity.model;
 
+import javax.persistence.*;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
-import javax.persistence.*;
-import javax.validation.constraints.Size;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 
 /**
  * @author belyaev
- * Журнал забора тканей
+ *         Журнал забора тканей
  */
 @Entity
 @Table(name = "TakenTissueJournal")
-@NamedQueries({
-        @NamedQuery(name = "TakenTissue.findAll", query = "SELECT t FROM TakenTissue t")
-})
+@NamedQueries({@NamedQuery(name = "TakenTissue.findAll", query = "SELECT t FROM TakenTissue t")})
+@NamedNativeQueries({@NamedNativeQuery(name = "TTJ.native.GET_ACTIONS_BY_TTJ_AND_LAB_CODE",
+        query = "SELECT a.* \n" +
+                "FROM Action a \n" +
+                "INNER JOIN ActionProperty ap ON ap.action_id = a.id AND ap.deleted = 0 \n" +
+                "INNER JOIN ActionPropertyType apt ON apt.id = ap.type_id AND apt.deleted = 0 \n" +
+                "INNER JOIN rbTest tst ON tst.id = apt.test_id AND tst.deleted = 0 \n" +
+                "INNER JOIN rbLaboratory_Test lab_tst ON lab_tst.test_id = tst.id \n" +
+                "INNER JOIN rbLaboratory lab ON lab.id = lab_tst.master_id \n" +
+                "INNER JOIN Action_TakenTissueJournal a_ttj ON a_ttj.action_id = a.id \n" +
+                "WHERE a_ttj.takenTissueJournal_id = ?1 \n" +
+                "AND lab.code = ?2 \n" +
+                "GROUP BY a.id ",
+        resultClass = Action.class)})
 @XmlType(name = "takenTissue")
 @XmlRootElement(name = "takenTissue")
 public class TakenTissue implements Serializable {
@@ -68,9 +78,8 @@ public class TakenTissue implements Serializable {
     @Basic(optional = false)
     @Column(name = "period")
     private Integer period;
-
-
-
+    @OneToMany(mappedBy = "takenTissue", cascade = CascadeType.ALL)
+    private List<Action> actions = new LinkedList<Action>();
 
     public TakenTissue() {
     }
@@ -175,11 +184,10 @@ public class TakenTissue implements Serializable {
         this.period = period;
     }
 
-    @OneToMany(mappedBy = "takenTissue", cascade = CascadeType.ALL)
-    private List<Action> actions = new LinkedList<Action>();
-
     public List<Action> getActions() {
-        if (actions == null) actions = new LinkedList<Action>();
+        if (actions == null) {
+            actions = new LinkedList<Action>();
+        }
         return actions;
     }
 

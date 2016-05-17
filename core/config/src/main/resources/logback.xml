@@ -292,6 +292,23 @@
     </logger>
     <!-- / ТГСК -->
 
+    <!--ЛИС-ИННОВА-->
+    <!--Appender для ЛИС-ИННОВА-->
+    <appender name="APPENDER_LIS_INNOVA" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <encoder>
+            <pattern>${log.format}</pattern>
+            <charset>UTF-8</charset>
+        </encoder>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>${com.sun.aas.instanceRoot}/logs/lis/innova/innova.%d{yyyy-MM-dd}.log.gz</fileNamePattern>
+        </rollingPolicy>
+    </appender>
+    <!--Логер для ЛИС-ИННОВА-->
+    <logger name="LIS_INNOVA" level="DEBUG" additivity="false">
+        <appender-ref ref="APPENDER_LIS_INNOVA"/>
+    </logger>
+    <!-- / ЛИС-ИННОВА -->
+
     <appender name="AUTH" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <encoder>
             <pattern>%d{HH:mm:ss.SSS} %-5level %msg%n</pattern>

@@ -1,9 +1,9 @@
 package ru.korus.tmis.core.auth
 
-import java.{lang, util}
+import java.util
 import java.util.Date
 import javax.ejb._
-import javax.servlet.http.Cookie
+import javax.servlet.http.{Cookie, HttpServletRequest}
 
 import org.slf4j.LoggerFactory
 import ru.korus.tmis.core.database.common.DbSettingsBeanLocal
@@ -85,8 +85,8 @@ class AuthStorageBean
       token.getTtl.toLong
     )
 
-    val tokenEndTime = new Date(token.getDeadline.toLong*1000L)
-    logger.debug("put token deadline {} date is {}", token.getDeadline.toLong*1000L, tokenEndTime)
+    val tokenEndTime = new Date(token.getDeadline.toLong * 1000L)
+    logger.debug("put token deadline {} date is {}", token.getDeadline.toLong * 1000L, tokenEndTime)
     authMap.put(authData.authToken, (authData, tokenEndTime))
     authData
   }
@@ -148,18 +148,18 @@ class AuthStorageBean
   @Lock(LockType.WRITE)
   override def checkToken(token: String, prolong: Boolean): AuthData = {
     var casResp: CasResp = null
-    if(prolong){
+    if (prolong) {
       casResp = casBeanLocal.checkToken(token)
     } else {
       casResp = casBeanLocal.checkTokenWithoutProlong(token)
     }
-    if(casResp.getSuccess){
+    if (casResp.getSuccess) {
       val authToken: AuthToken = new AuthToken(token)
-      val authData : AuthData = getAuthData(authToken)
-      if(authData != null){
+      val authData: AuthData = getAuthData(authToken)
+      if (authData != null) {
         authData.setDeadline(casResp.getDeadline.toLong)
         authData.setTtl(casResp.getTtl.toLong)
-        authMap.put(authToken, (authData, new Date(casResp.getDeadline.toLong*1000L)))
+        authMap.put(authToken, (authData, new Date(casResp.getDeadline.toLong * 1000L)))
         return authData
       } else {
         logger.error("CAS RESPONSE IS SUCCESS, BUT WE HASN'T IT IN MAP!!!!!")
@@ -169,7 +169,7 @@ class AuthStorageBean
   }
 
   def checkTokenCookies(cookies: Array[Cookie]): AuthData = {
-    if(cookies == null){
+    if (cookies == null) {
       throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.invalidToken"))
     }
     var token: String = null
@@ -178,7 +178,7 @@ class AuthStorageBean
       val cookieName = cookie.getName
       if ("authToken".equalsIgnoreCase(cookieName)) {
         token = cookie.getValue
-      } else if("currentRole".equalsIgnoreCase(cookieName)){
+      } else if ("currentRole".equalsIgnoreCase(cookieName)) {
         curRole = cookie.getValue
       }
     }
@@ -209,8 +209,41 @@ class AuthStorageBean
       throw new AuthenticationException(ConfigManager.TmisAuth.ErrorCodes.InvalidToken, i18n("error.tokenExceeded"))
     }
     logger.info("Token is valid")
-    authMap.put(authToken, (authData, new Date(casResp.getDeadline.toLong*1000L)))
+    authMap.put(authToken, (authData, new Date(casResp.getDeadline.toLong * 1000L)))
     authData
+  }
+
+  override def getAuthDataFromRequest(request: HttpServletRequest): AuthData = {
+    if (request != null && request.getCookies != null && request.getCookies.nonEmpty) {
+      var token: String = null
+      var curRole: String = null
+      for (cookie <- request.getCookies) {
+        cookie.getName match {
+          case "authToken" => {
+            token = cookie.getValue
+          }
+          case "currentRole" => {
+            curRole = cookie.getValue
+          }
+        }
+      }
+      if (token != null && token.nonEmpty) {
+        val authToken: AuthToken = new AuthToken(token)
+        val localStoragedAuthData = authMap.get(authToken)
+        if (localStoragedAuthData != null && (localStoragedAuthData._2.getTime - System.currentTimeMillis()) > 600000) {
+          logger.debug("Token [{}] is valid and hot: no prolong & check", token)
+          return localStoragedAuthData._1
+        } else {
+          logger.debug("Token [{}] is old: need prolong & check", token)
+          val casResp: CasResp = casBeanLocal.checkToken(token)
+          if (casResp.getSuccess) {
+            val staff: Staff = dbStaff.getStaffById(casResp.getUser_id)
+            return putToken(casResp, staff, staff.getRoles.find(_.getCode == curRole).orNull)
+          }
+        }
+      }
+    }
+    null
   }
 
   def clearAppLock() {

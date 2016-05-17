@@ -13,6 +13,7 @@ import java.util.Date;
 import java.util.Set;
 import javax.ejb.Local;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 
 @Local
 public interface AuthStorageBeanLocal {
@@ -72,6 +73,13 @@ public interface AuthStorageBeanLocal {
      */
     AuthData checkTokenCookies(Cookie[] cookies)
            throws CoreException;//AuthenticationException
+
+    /**
+     * Проверка аутентификации
+     * @param request HTTP запрос
+     * @return Данные аутентификации пользователя / null если данных нет или они не валидны
+     */
+    AuthData getAuthDataFromRequest(HttpServletRequest request);
 
     void timeoutHandler();
 

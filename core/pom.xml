@@ -38,10 +38,11 @@
         <module>ws-risar</module>
         <module>admin-panel</module>
         <module>laboratory-bak</module>
+
         <module>hsct</module>
+        <module>lis_innova</module>
 
         <module>server</module>
-
     </modules>
 
 
