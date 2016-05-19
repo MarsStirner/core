@@ -75,7 +75,7 @@ public class LisInnovaBean {
         log.info("#{} Event[{}]", logNumber, event.getId());
         final PatientInfo patientInfo = getPatientInfo(patient);
         final DiagnosticRequestInfo diagnosticRequestInfo = getDiagnosticRequestInfo(ttj, event, doctor, logNumber);
-        final BiomaterialInfo biomaterialInfo = getBiomaterialInfo(ttj, logNumber);
+        final BiomaterialInfo biomaterialInfo = getBiomaterialInfo(ttj);
         final ArrayOfOrderInfo arrayOfOrderInfo = getArrayOfOrderInfo(actionList, logNumber);
         try {
             final QueryAnalysisService queryAnalysisService = new QueryAnalysisService(LisInnovaSettings.getServiceURL());
@@ -86,12 +86,18 @@ public class LisInnovaBean {
                 for (Action action : actionList) {
                     actionBean.updateActionStatusWithFlush(action.getId(), (short) 2);
                 }
+                ttj.setNote("Sended successfully at "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                //TODO map status field or ambatory will set it automatically
+                // ttj.setStatus(2);
+                em.merge(ttj);
                 return "SENDED";
             }
             return "ERROR";
 
         } catch (Exception e) {
-            log.error("{}", e);
+            log.error("#{} End process TTJ[{}], Exception ",logNumber, ttj.getId(), e);
+            ttj.setNote("Error: "+e.getMessage());
+            em.merge(ttj);
             return e.getMessage();
         }
 
@@ -101,9 +107,8 @@ public class LisInnovaBean {
         final ObjectFactory of = new ObjectFactory();
         final ArrayOfOrderInfo result = of.createArrayOfOrderInfo();
         for (Action action : actionList) {
-            final OrderInfo item = getOrderInfo(action, logNumber);
+            final OrderInfo item = getOrderInfo(action);
             if (item != null) {
-                log.debug("#{} OrderInfo constructed: {}", logNumber, item);
                 result.getOrderInfo().add(item);
             } else {
                 log.warn("#{} Action[{}] not converted to OrderInfo!", logNumber, action.getId());
@@ -115,7 +120,7 @@ public class LisInnovaBean {
         return result;
     }
 
-    private OrderInfo getOrderInfo(final Action action, final long logNumber) {
+    private OrderInfo getOrderInfo(final Action action) {
         final ObjectFactory of = new ObjectFactory();
         final OrderInfo result = of.createOrderInfo();
         final ActionType actionType = action.getActionType();
@@ -124,12 +129,15 @@ public class LisInnovaBean {
         result.setOrderPriority(action.getIsUrgent() ? 1 : 0);
         final ArrayOfTindicator arrayOfTindicator = of.createArrayOfTindicator();
         for (ActionProperty property : action.getActionProperties()) {
-            final RbTest test = property.getType().getTest();
-            if (test != null) {
-                final Tindicator tindicator = of.createTindicator();
-                tindicator.setIndicatorCode(of.createTindicatorIndicatorCode(test.getCode()));
-                tindicator.setIndicatorName(of.createTindicatorIndicatorName(test.getName()));
-                arrayOfTindicator.getTindicator().add(tindicator);
+            // Проверка что свойство назначено в исследовании - экшене
+            if(property.getIsAssigned()) {
+                final RbTest test = property.getType().getTest();
+                if (test != null) {
+                    final Tindicator tindicator = of.createTindicator();
+                    tindicator.setIndicatorCode(of.createTindicatorIndicatorCode(test.getCode()));
+                    tindicator.setIndicatorName(of.createTindicatorIndicatorName(test.getName()));
+                    arrayOfTindicator.getTindicator().add(tindicator);
+                }
             }
         }
         if (arrayOfTindicator.getTindicator().isEmpty()) {
@@ -140,7 +148,7 @@ public class LisInnovaBean {
         return result;
     }
 
-    private BiomaterialInfo getBiomaterialInfo(final TakenTissue ttj, final long logNumber) {
+    private BiomaterialInfo getBiomaterialInfo(final TakenTissue ttj) {
         final ObjectFactory of = new ObjectFactory();
         final BiomaterialInfo result = of.createBiomaterialInfo();
         final RbTissueType tissueType = ttj.getType();
@@ -194,7 +202,7 @@ public class LisInnovaBean {
         }
         // Comment (string) (необязательно) – произвольный текстовый комментарий к направлению
         result.setOrderComment(of.createDiagnosticRequestInfoOrderComment(ttj.getNote()));
-        // TODO Врач необходимо будет согласовать пtренос этого внутрь OrderInfo, т.к. должно браться из Action.assgner
+        // TODO Врач необходимо будет согласовать перенос этого внутрь OrderInfo, т.к. должно браться из Action.assgner
         result.setOrderDoctorFamily(of.createDiagnosticRequestInfoOrderDoctorFamily(doctor.getLastName()));
         result.setOrderDoctorName(of.createDiagnosticRequestInfoOrderDoctorName(doctor.getFirstName()));
         result.setOrderDoctorPatronum(of.createDiagnosticRequestInfoOrderDoctorPatronum(doctor.getPatrName()));
@@ -227,12 +235,7 @@ public class LisInnovaBean {
     private XMLGregorianCalendar date2xmlGC(Date date) {
         final GregorianCalendar c = new GregorianCalendar();
         c.setTime(date);
-        //TODO чем отличаются если в итоге один и тот-же метод дергается?
-        try {
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(c);
-        } catch (DatatypeConfigurationException e) {
-            return new XMLGregorianCalendarImpl(c);
-        }
+        return new XMLGregorianCalendarImpl(c);
     }
 
 
