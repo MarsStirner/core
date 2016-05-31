@@ -1,66 +1,28 @@
 package ru.korus.tmis.core.entity.model.fd;
 
 import javax.persistence.*;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 
 @Entity
 @Table(name = "FDFieldValue")
-@AssociationOverrides({
-        @AssociationOverride(name = "pk.fdRecord",
-                joinColumns = @JoinColumn(name = "fdRecord_id")),
-        @AssociationOverride(name = "pk.fdField",
-                joinColumns = @JoinColumn(name = "fdField_id"))})
 public class FDFieldValue implements Serializable, Cloneable {
-
-    private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Basic(optional = false)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private Integer id;
 
-    @Basic(optional = false)
     @Column(name = "value")
     private String value = "";
 
-    private FDFieldValueId pk = new FDFieldValueId();
-
-    /*@ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fdRecord_id")
     private FDRecord record;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "fdField_id")
-    private FDField fdField; */
-    @EmbeddedId
-    public FDFieldValueId getPk() {
-        return pk;
-    }
+    private FDField fdField;
 
-    public void setPk(FDFieldValueId pk) {
-        this.pk = pk;
-    }
-
-    @Transient
-    public FDRecord getFDRecord() {
-        return getPk().getFDRecord();
-    }
-
-    public void setFDRecord(FDRecord fdRecord) {
-        getPk().setFDRecord(fdRecord);
-    }
-
-    @Transient
-    public FDField getFDField() {
-        return getPk().getFDField();
-    }
-
-    public void setFDField(FDField fdField) {
-        getPk().setFDField(fdField);
-    }
 
     public FDFieldValue() {
     }
@@ -77,7 +39,7 @@ public class FDFieldValue implements Serializable, Cloneable {
         this.id = id;
     }
 
-    /*public FDRecord getFDRecord() {
+    public FDRecord getFDRecord() {
         return record;
     }
 
@@ -91,7 +53,7 @@ public class FDFieldValue implements Serializable, Cloneable {
 
     public void setFdField(FDField fdField) {
         this.fdField = fdField;
-    } */
+    }
 
     public String getValue() {
         return value;

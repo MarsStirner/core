@@ -1,16 +1,17 @@
 package ru.korus.tmis.core.database
 
+import java.util
 import javax.ejb.Stateless
-
-import javax.interceptor.Interceptors
-import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
+
+import grizzled.slf4j.Logging
+import ru.korus.tmis.auxiliary.FDSortingStruct
 import ru.korus.tmis.core.auth.AuthData
-import scala.collection.JavaConversions._
-import ru.korus.tmis.core.entity.model.fd.{FDFieldValue, FDRecord, FlatDirectory}
-import ru.korus.tmis.auxiliary.{AuxiliaryFunctions, FDSortingStruct}
 import ru.korus.tmis.core.data.{FlatDirectoryRequestData, FlatDirectoryRequestDataListFilter, QueryDataStructure}
+import ru.korus.tmis.core.entity.model.fd.{FDField, FDFieldValue, FDRecord, FlatDirectory}
 import ru.korus.tmis.scala.util.I18nable
+
+import scala.collection.JavaConversions._
 
 @Stateless
 class DbFlatDirectoryBean extends DbFlatDirectoryBeanLocal
@@ -23,7 +24,7 @@ with I18nable {
   def getFlatDirectories(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, userData: AuthData) = {
 
     val queryStr: QueryDataStructure = if (filter.isInstanceOf[FlatDirectoryRequestDataListFilter]) {
-      filter.asInstanceOf[FlatDirectoryRequestDataListFilter].toQueryStructure()
+      filter.asInstanceOf[FlatDirectoryRequestDataListFilter].toQueryStructure
     }
     else {
       new QueryDataStructure()
@@ -43,7 +44,7 @@ with I18nable {
   def getFlatDirectoriesWithFilterRecords(page: Int, limit: Int, sorting: java.util.LinkedHashMap[java.lang.Integer, java.lang.Integer], filter: Object, request: FlatDirectoryRequestData, userData: AuthData) = {
 
     val queryStr: QueryDataStructure = if (filter.isInstanceOf[FlatDirectoryRequestDataListFilter]) {
-      filter.asInstanceOf[FlatDirectoryRequestDataListFilter].toQueryStructureForRecordsRequest()
+      filter.asInstanceOf[FlatDirectoryRequestDataListFilter].toQueryStructureForRecordsRequest
     }
     else {
       new QueryDataStructure()
@@ -106,8 +107,8 @@ with I18nable {
         var it: java.util.Iterator[FDRecord] = f._2.keySet().iterator()
         var pos = 0
 
-        while (it.hasNext() && pos < count) {
-          val key = it.next();
+        while (it.hasNext && pos < count) {
+          val key = it.next()
           if (pos >= begin) {
             map.put(key, f._2.get(key))
           }
@@ -121,20 +122,134 @@ with I18nable {
     sortingResult
   }
 
-  val flatDirectoriesWithFilterQuery = """
+  val flatDirectoriesWithFilterQuery =
+    """
   SELECT %s
   FROM FlatDirectory fd
   %s
   ORDER BY fd.id
-                                       """
+    """
 
-  val flatDirectoryRecordsWithFilterQuery = """
-
+  val flatDirectoryRecordsWithFilterQuery =
+    """
   SELECT %s
   FROM FDRecord fdr
   JOIN fdr.flatDirectory fd
   JOIN fdr.fieldValues fv
   %s
   ORDER BY fd.id ASC, fdr.order ASC
-                                            """
+    """
+
+  override def getByCode(code: String): FlatDirectory = {
+    val res = em.createNamedQuery("FlatDirectory.byCode", classOf[FlatDirectory]).setParameter("code", code).getResultList
+    if (res.nonEmpty) {
+      res.head
+    } else {
+      null
+    }
+  }
+
+  def groupListOfArray_FDRecord_FDFieldValue(records: util.List[_], fieldCount: Int): util.Map[FDRecord, util.List[FDFieldValue]] = {
+    val result = new util.LinkedHashMap[FDRecord, util.List[FDFieldValue]](records.size / fieldCount + 1)
+    var lastRecord: FDRecord = null
+    var lastValuesList: util.List[FDFieldValue] = null
+    for (record <- records) {
+      val itemsArray = record.asInstanceOf[Array[Object]]
+      val fdRecord = itemsArray(0).asInstanceOf[FDRecord]
+      if (lastRecord != fdRecord) {
+        if (lastRecord != null) {
+          result.put(lastRecord, lastValuesList)
+        }
+        lastRecord = fdRecord
+        lastValuesList = new util.ArrayList[FDFieldValue](fieldCount)
+      }
+      lastValuesList.add(itemsArray(1).asInstanceOf[FDFieldValue])
+    }
+    if (lastRecord != null) {
+      result.put(lastRecord, lastValuesList)
+    }
+    result
+  }
+
+  /**
+   * Получение записей FD (запрошенный кусок (limit+offset)) со значениями заданных полей
+   * @param flatDirectory   спарвочник, для которого нужно вытащить записи
+   * @param fields заданные поля (в результате будт только значения с этими полями)
+   * @return Порция запрошенных записей справочника
+   */
+  override def getRecordsWithFilter(
+                                     flatDirectory: FlatDirectory,
+                                     fields: util.List[FDField]
+                                     ): util.Map[FDRecord, util.List[FDFieldValue]] = {
+
+    val queryFDRecordWithFields =
+      """
+        SELECT rec, fv
+        FROM FDRecord rec
+        INNER JOIN rec.fieldValues fv
+        INNER JOIN fv.fdField fd
+        WHERE rec.deleted = 0
+        AND rec.flatDirectory.id = :flatDirectory
+        AND fd.id IN :fieldList
+        ORDER BY rec.order ASC, rec.id ASC, fd.order ASC
+      """
+    val records = em.createQuery(queryFDRecordWithFields)
+      .setParameter("fieldList", new util.ArrayList(fields.map(_.getId).toList))
+      .setParameter("flatDirectory", flatDirectory.getId)
+      .getResultList
+    groupListOfArray_FDRecord_FDFieldValue(records, fields.size())
+  }
+  //TODO
+  override def getRecordsWithFilter(
+                                     flatDirectory: FlatDirectory,
+                                     fields: util.List[FDField],
+                                     filter: util.Map[FDField, util.List[String]]
+                                     ): util.Map[FDRecord, util.List[FDFieldValue]] = {
+    val queryFDRecordWithFields =
+      """
+        SELECT rec, fv
+        FROM FDRecord rec
+        INNER JOIN rec.fieldValues fv
+        INNER JOIN fv.fdField fd
+        WHERE rec.deleted = 0
+        AND rec.flatDirectory.id = :flatDirectory
+        AND fd.id IN :fieldList
+        AND EXISTS (%s)
+        ORDER BY rec.order ASC, rec.id ASC, fd.order ASC
+      """
+    val subquery = new StringBuilder("\nSELECT _f.id FROM FDFieldValue _f WHERE _f.record.id = rec.id AND (\n")
+    for((filterField, filterValues) <- filter){
+      //TODO Possible SQL Injection point
+      subquery.append("( _f.fdField.id = ").append(filterField.getId)
+      subquery.append(" AND _f.value IN ").append(filterValues.mkString("(\'","\',\'" ,"\')")).append(" )\nOR\n")
+    }
+    subquery.setLength(subquery.length - 4)
+    subquery.append("\n)")
+    val records = em.createQuery(queryFDRecordWithFields.format(subquery.toString()))
+      .setParameter("fieldList", new util.ArrayList(fields.map(_.getId).toList))
+      .setParameter("flatDirectory", flatDirectory.getId)
+      .getResultList
+    groupListOfArray_FDRecord_FDFieldValue(records, fields.size())
+  }
+
+  override def getRecordsWithFilter(flatDirectory: FlatDirectory, fields: util.List[FDField], filter: String): util.Map[FDRecord, util.List[FDFieldValue]] = {
+    val queryFDRecordWithFields =
+      """
+        SELECT rec, fv
+        FROM FDRecord rec
+        INNER JOIN rec.fieldValues fv
+        INNER JOIN fv.fdField fd
+        WHERE rec.deleted = 0
+        AND rec.flatDirectory.id = :flatDirectory
+        AND fd.id IN :fieldList
+        AND EXISTS (SELECT _f.id FROM FDFieldValue _f WHERE _f.value = :value AND _f.record.id = rec.id)
+        ORDER BY rec.order ASC, rec.id ASC, fd.order ASC
+      """
+    val records = em.createQuery(queryFDRecordWithFields)
+      .setParameter("fieldList", new util.ArrayList(fields.map(_.getId).toList))
+      .setParameter("flatDirectory", flatDirectory.getId)
+      .setParameter("value", filter)
+      .getResultList
+    groupListOfArray_FDRecord_FDFieldValue(records, fields.size())
+  }
 }

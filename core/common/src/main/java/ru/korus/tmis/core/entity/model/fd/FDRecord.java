@@ -10,7 +10,9 @@ import java.util.Date;
 @Table(name = "FDRecord")
 @NamedQueries(
         {
-                @NamedQuery(name = "FDRecord.findAll", query = "SELECT fdr FROM FDRecord fdr")
+                @NamedQuery(name = "FDRecord.findAll", query = "SELECT fdr FROM FDRecord fdr"),
+                @NamedQuery(name = "FDRecord.byIdsWithFetchValues",
+                        query = "SELECT rec FROM FDRecord rec JOIN FETCH rec.fieldValues WHERE rec.id IN :ids ORDER BY rec.order")
         })
 @XmlType(name = "fdRecord")
 @XmlRootElement(name = "fdRecord")
@@ -52,8 +54,8 @@ public class FDRecord implements Serializable, Cloneable {
     @Column(name = "deleted")
     private boolean deleted;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.fdRecord", cascade = CascadeType.ALL)
-    private java.util.List<FDFieldValue> fieldValues = new java.util.LinkedList<FDFieldValue>();
+    @OneToMany(fetch = FetchType.LAZY, mappedBy = "record")
+    private java.util.List<FDFieldValue> fieldValues = new java.util.LinkedList<>();
 
     public java.util.List<FDFieldValue> getFieldValues() {
         return this.fieldValues;
