@@ -87,8 +87,7 @@ public class LisInnovaBean {
                     actionBean.updateActionStatusWithFlush(action.getId(), (short) 2);
                 }
                 ttj.setNote("Sended successfully at "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-                //TODO map status field or ambatory will set it automatically
-                // ttj.setStatus(2);
+                ttj.setStatus(2);
                 em.merge(ttj);
                 return "SENDED";
             }
@@ -130,7 +129,7 @@ public class LisInnovaBean {
         final ArrayOfTindicator arrayOfTindicator = of.createArrayOfTindicator();
         for (ActionProperty property : action.getActionProperties()) {
             // Проверка что свойство назначено в исследовании - экшене
-            if(property.getIsAssigned()) {
+            if(!property.getDeleted() && property.getIsAssigned()) {
                 final RbTest test = property.getType().getTest();
                 if (test != null) {
                     final Tindicator tindicator = of.createTindicator();

@@ -76,6 +76,10 @@ public class TakenTissue implements Serializable {
     private Integer barcode;
 
     @Basic(optional = false)
+    @Column(name = "status")
+    private Integer status;
+
+    @Basic(optional = false)
     @Column(name = "period")
     private Integer period;
     @OneToMany(mappedBy = "takenTissue", cascade = CascadeType.ALL)
@@ -209,6 +213,14 @@ public class TakenTissue implements Serializable {
             return false;
         }
         return true;
+    }
+
+    public Integer getStatus() {
+        return status;
+    }
+
+    public void setStatus(final Integer status) {
+        this.status = status;
     }
 
     @Override
