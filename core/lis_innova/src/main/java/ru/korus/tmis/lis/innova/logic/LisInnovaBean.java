@@ -84,7 +84,9 @@ public class LisInnovaBean {
             final Integer result = service.queryAnalysis(patientInfo, diagnosticRequestInfo, biomaterialInfo, arrayOfOrderInfo);
             if (result == 0) {
                 for (Action action : actionList) {
-                    actionBean.updateActionStatusWithFlush(action.getId(), (short) 2);
+                    if(action.getStatus() == 0) {
+                        actionBean.updateActionStatusWithFlush(action.getId(), (short) 1);
+                    }
                 }
                 ttj.setNote("Sended successfully at "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                 ttj.setStatus(2);
