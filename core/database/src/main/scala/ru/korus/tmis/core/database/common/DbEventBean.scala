@@ -596,7 +596,7 @@ class DbEventBean
     EventType et,
     FDFieldValue fdfv
   WHERE
-    fdfv.pk.fdRecord.id = '%s'
+    fdfv.record.id = '%s'
   AND
     et.code = fdfv.value
     """
@@ -625,7 +625,7 @@ class DbEventBean
         FROM
           FDFieldValue fdfv
         WHERE
-          fdfv.pk.fdRecord.flatDirectory.id = '%s'
+          fdfv.record.flatDirectory.id = '%s'
       )
     %s
     %s
