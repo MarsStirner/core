@@ -89,7 +89,7 @@ public class LisInnovaBean {
                     }
                 }
                 ttj.setNote("Sended successfully at "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
-                ttj.setStatus(2);
+                ttj.setStatus(3);
                 em.merge(ttj);
                 return "SENDED";
             }
@@ -98,6 +98,7 @@ public class LisInnovaBean {
         } catch (Exception e) {
             log.error("#{} End process TTJ[{}], Exception ",logNumber, ttj.getId(), e);
             ttj.setNote("Error: "+e.getMessage());
+            ttj.setStatus(4);
             em.merge(ttj);
             return e.getMessage();
         }

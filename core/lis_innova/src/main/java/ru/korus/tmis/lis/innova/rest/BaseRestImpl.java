@@ -56,7 +56,7 @@ public class BaseRestImpl {
             @Context HttpServletRequest servRequest, final SendActionsToLaboratoryRequest request
     ) {
         final long currentNumber = counter.incrementAndGet();
-        log.info("#{} Call POST sendToLaboratory with payload=\'{}\'", currentNumber, request);
+        log.info("#{} Call PUT sendToLaboratory with payload=\'{}\'", currentNumber, request);
         final SendActionsToLaboratoryResponse response = new SendActionsToLaboratoryResponse();
         if (request == null || request.getIds().isEmpty()) {
             log.info("#{} End. Empty request - return empty response \'{}\'", currentNumber, response);
