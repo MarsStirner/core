@@ -89,6 +89,7 @@ public class TakenTissue implements Serializable {
     @Basic(optional = false)
     @Column(name = "period")
     private Integer period;
+
     @OneToMany(mappedBy = "takenTissue", cascade = CascadeType.ALL)
     private List<Action> actions = new LinkedList<Action>();
 
