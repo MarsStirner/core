@@ -6,39 +6,48 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * Класс для передачи изображений
+ * Изображение
  */
-@XmlAccessorType(XmlAccessType.NONE)
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = {
-        "description",
+        "imageString",
         "imageData"
 })
 public class ImageValue {
     /**
      * строка описания
      */
-    private String description;
+    @XmlElement(name = "imageString")
+    private String imageString;
 
     /**
      * картинка, закодированная в Base64
      */
+    @XmlElement(name = "imageData")
     private String imageData;
 
-    @XmlElement(name = "imageString")
-    public String getDescription() {
-        return description;
+    public String getImageString() {
+        return imageString;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setImageString(final String imageString) {
+        this.imageString = imageString;
     }
 
-    @XmlElement(name = "imageData")
     public String getImageData() {
         return imageData;
     }
 
-    public void setImageData(String imageData) {
+    public void setImageData(final String imageData) {
         this.imageData = imageData;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("ImageValue{");
+        sb.append("imageString='").append(imageString).append('\'');
+        sb.append(", imageData='").append(imageData).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

@@ -9,11 +9,11 @@ import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.database.common.DbPatientBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.Patient;
-import ru.korus.tmis.core.entity.model.AppointmentType;
 import ru.korus.tmis.core.entity.model.Schedule;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.schedule.*;
+import ru.korus.tmis.schedule.CommunicationErrors;
 import ru.korus.tmis.schedule.PersonSchedule;
+import ru.korus.tmis.schedule.TypeOfQuota;
 
 import java.util.*;
 
@@ -106,7 +106,8 @@ public class CommunicationHelper {
      * @return результат проверки
      */
     public static boolean checkApplicable(
-            final Patient patient, final ru.korus.tmis.core.entity.model.Speciality speciality) {
+            final Patient patient, final ru.korus.tmis.core.entity.model.Speciality speciality
+    ) {
         logger.debug("SPECIALITY age=\"{}\" sex=\"{}\"", speciality.getAge(), speciality.getSex());
         if (speciality.getSex() != (short) 0 && speciality.getSex() != patient.getSex()) {
             return false;
@@ -161,10 +162,8 @@ public class CommunicationHelper {
         if (!params.isSetPatrName() || params.getPatrName().length() == 0) {
             params.setPatrName("");
         }
-        if(!params.isSetDocumentNumber()
-                || !params.isSetDocumentSerial()
-                || !params.isSetDocumentTypeCode()
-                || params.getDocumentTypeCode().isEmpty())   {
+        if (!params.isSetDocumentNumber() || !params.isSetDocumentSerial() || !params.isSetDocumentTypeCode() || params.getDocumentTypeCode()
+                .isEmpty()) {
             allParamsIsSet = false;
             errorMessage.append("Не указан документ\n");
         }
@@ -316,7 +315,8 @@ public class CommunicationHelper {
         return count;
     }
 
-    public static Patient findPatientById(final DbPatientBeanLocal patientBean, final int patientId) throws ru.korus.tmis.communication.thriftgen.NotFoundException {
+    public static Patient findPatientById(final DbPatientBeanLocal patientBean, final int patientId)
+            throws ru.korus.tmis.communication.thriftgen.NotFoundException {
         try {
             final Patient result = patientBean.getPatientById(patientId);
             if (result.getDeleted()) {
@@ -335,18 +335,18 @@ public class CommunicationHelper {
         }
     }
 
-    public static Staff findPersonById(final DbStaffBeanLocal staffBean, final int personId) throws ru.korus.tmis.communication.thriftgen.NotFoundException {
-        try {
-            final Staff result = staffBean.getStaffById(personId);
-            if (result.getDeleted()) {
-                logger.error("Person[{}] is marked as deleted", personId);
-                throw new NotFoundException(CommunicationErrors.msgWrongDoctorId.getMessage());
-            }
-            return result;
-        } catch (CoreException e) {
+    public static Staff findPersonById(final DbStaffBeanLocal staffBean, final int personId)
+            throws ru.korus.tmis.communication.thriftgen.NotFoundException {
+        final Staff result = staffBean.getStaffById(personId);
+        if (result == null) {
             logger.error("Not founded any person with id={}", personId);
             throw new NotFoundException(CommunicationErrors.msgWrongDoctorId.getMessage());
         }
+        if (result.getDeleted()) {
+            logger.error("Person[{}] is marked as deleted", personId);
+            throw new NotFoundException(CommunicationErrors.msgWrongDoctorId.getMessage());
+        }
+        return result;
     }
 
     public static void setQuotingTypeList(final List<RbTimeQuotingType> quotingTypeList) {

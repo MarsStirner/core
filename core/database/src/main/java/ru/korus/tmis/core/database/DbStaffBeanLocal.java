@@ -27,8 +27,7 @@ public interface DbStaffBeanLocal {
     Staff getStaffByLogin(String login)
             throws CoreException;
 
-    Staff getStaffById(int id)
-            throws CoreException;
+    Staff getStaffById(int id);
 
 
     List<Staff> getAllPersons()

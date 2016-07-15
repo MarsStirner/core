@@ -1,0 +1,165 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<definitions
+        xmlns:wsam="http://www.w3.org/2007/05/addressing/metadata"
+        xmlns:soap="http://schemas.xmlsoap.org/wsdl/soap/"
+        xmlns:tns="ru.bars.open.integration.lis.innova"
+        xmlns="http://schemas.xmlsoap.org/wsdl/"
+        targetNamespace="ru.bars.open.integration.lis.innova"
+        name="LisResultsService">
+    <types>
+        <xs:schema xmlns:tns="ru.bars.open.integration.lis.innova" xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" version="1.0" targetNamespace="ru.bars.open.integration.lis.innova">
+            <xs:element name="ExceptionFault" nillable="true" type="tns:faultBean"/>
+            <xs:element name="setAnalysisResults" type="tns:setAnalysisResults"/>
+            <xs:element name="setAnalysisResultsResponse" type="tns:setAnalysisResultsResponse"/>
+            <xs:complexType name="setAnalysisResults">
+                <xs:sequence>
+                    <!-- Идентифкатор исследования в МИС (был передан в ) -->
+                    <xs:element name="orderMisId" type="xs:int" form="qualified"/>
+                    <!-- Баркод пробирки в МИС (был передан в )-->
+                    <xs:element name="orderBarCode" type="xs:int" form="qualified"/>
+                    <!-- Префикс баркода пробирки в МИС (был передан в )-->
+                    <xs:element name="orderPrefBarCode" type="xs:int" form="qualified"/>
+                    <!-- Описание возможных дефектов пробирки с биозабором -->
+                    <xs:element name="biomaterialDefects" type="xs:string" form="qualified" minOccurs="0"/>
+                    <!-- Список с результатами заказанных исследований -->
+                    <xs:element name="researches" type="tns:researchResult" form="qualified" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+            <!-- Исследование -->
+            <xs:complexType name="researchResult">
+                <xs:sequence>
+                    <!-- Наименование исследования-->
+                    <xs:element name="name" type="xs:string" minOccurs="0"/>
+                    <!-- Код исследования -->
+                    <xs:element name="code" type="xs:string" minOccurs="0"/>
+                    <!-- Идентифкатор пользователя ЛИС, выполнившего тесты для этого исследования -->
+                    <xs:element name="personId" type="xs:int"/>
+                    <!-- Строка с информацией о пользователе ЛИС, выполнившем тесты для этого исследования (ФИО)-->
+                    <xs:element name="personInfo" type="xs:string" minOccurs="0"/>
+                    <!-- Флаг завершенности всех тестов по этому исследованию в ЛИС (должны ли присылаться изменения) -->
+                    <xs:element name="finished" type="xs:boolean"/>
+                    <!-- Примечание к исследованию -->
+                    <xs:element name="comment" type="xs:string" minOccurs="0"/>
+                    <!-- Время готовности исследования к выдаче из ЛИС ( Время выполнения тестов по исследованию ) -->
+                    <xs:element name="executeDateTime" type="xs:dateTime" minOccurs="0"/>
+                    <!--  Список результатов конкретных тестов -->
+                    <xs:element name="results" type="tns:analysisResult" minOccurs="0" maxOccurs="unbounded"/>
+                </xs:sequence>
+            </xs:complexType>
+            <!-- Результат теста -->
+            <xs:complexType name="analysisResult">
+                <xs:sequence>
+                    <!-- Название методики/показателя -->
+                    <xs:element name="indicatorName" type="xs:string" minOccurs="0"/>
+                    <!-- Код методики/показателя (Основной)-->
+                    <xs:element name="indicatorCode" type="xs:string"/>
+                    <!-- Название прибора, на котором выполнялось исследование -->
+                    <xs:element name="deviceName" type="xs:string" minOccurs="0"/>
+                    <!-- Тип значения -->
+                    <xs:element name="valueType" type="xs:int"/>
+                    <!-- Значение -->
+                    <xs:element name="resultValueText" type="xs:string"/>
+                    <!-- Список изображений -->
+                    <xs:element name="imageValues" type="tns:imageValue" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                    <!-- Результаты исследования микроорганизмов -->
+                    <xs:element name="microValues" type="tns:microOrganismResult" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                    <!-- Результаты чувствительности микроорганизмов к антибиотикам -->
+                    <xs:element name="microSensitivity" type="tns:antibioticSensitivity" nillable="true" minOccurs="0" maxOccurs="unbounded"/>
+                    <!-- Норма (для числового результата) -->
+                    <xs:element name="resultNormString" type="xs:string" minOccurs="0"/>
+                    <!-- Значение результата относительно нормы (не опр./норма/ниже критической/ниже/выше критической/выше) -->
+                    <xs:element name="resultNormalityIndex" type="xs:float" minOccurs="0"/>
+                    <!-- Единица измерения -->
+                    <xs:element name="resultUnit" type="xs:string" minOccurs="0"/>
+                    <!-- Дата выполнения  -->
+                    <xs:element name="resultSignDate" type="xs:dateTime"/>
+                    <!-- Статус результата. В это поле выводится причина в случае отсутствия результата-->
+                    <xs:element name="resultStatus" type="xs:string" minOccurs="0"/>
+                    <!-- Комментарий к методике -->
+                    <xs:element name="resultComment" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <!-- Изображение -->
+            <xs:complexType name="imageValue">
+                <xs:sequence>
+                    <!-- строка описания изображения  -->
+                    <xs:element name="imageString" type="xs:string" minOccurs="0"/>
+                    <!-- картинка, закодированная в Base64 -->
+                    <xs:element name="imageData" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <!-- Результат анализа микроорганизмов -->
+            <xs:complexType name="microOrganismResult">
+                <xs:sequence>
+                    <!--  идентификатор организма по БД ЛИС -->
+                    <xs:element name="organismLisId" type="xs:string" minOccurs="0"/>
+                    <!-- название организма -->
+                    <xs:element name="organismName" type="xs:string" minOccurs="0"/>
+                    <!-- концентрация организма -->
+                    <xs:element name="organismConcetration" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <!-- Чувствительность микроорганизма к антибиотикам -->
+            <xs:complexType name="antibioticSensitivity">
+                <xs:sequence>
+                    <!-- Идентификатор антибиотика по БД ЛИС -->
+                    <xs:element name="antibioticLisId" type="xs:string" minOccurs="0"/>
+                    <!-- Название антибиотика -->
+                    <xs:element name="antibioticName" type="xs:string" minOccurs="0"/>
+                    <!-- Количественная характеристика чувствительности, если используется анализатор -->
+                    <xs:element name="MIC" type="xs:string" minOccurs="0"/>
+                    <!-- Чувствительность -->
+                    <xs:element name="antibioticActivityValue" type="xs:string" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="setAnalysisResultsResponse">
+                <xs:sequence>
+                    <xs:element name="return" type="xs:int" form="unqualified"/>
+                </xs:sequence>
+            </xs:complexType>
+            <xs:complexType name="faultBean">
+                <xs:sequence>
+                    <xs:element name="id" type="xs:int" form="unqualified"/>
+                    <xs:element name="message" type="xs:string" form="unqualified" minOccurs="0"/>
+                </xs:sequence>
+            </xs:complexType>
+        </xs:schema>
+    </types>
+    <message name="setAnalysisResults">
+        <part name="parameters" element="tns:setAnalysisResults"/>
+    </message>
+    <message name="setAnalysisResultsResponse">
+        <part name="parameters" element="tns:setAnalysisResultsResponse"/>
+    </message>
+    <message name="CoreException">
+        <part name="fault" element="tns:ExceptionFault"/>
+    </message>
+    <portType name="service-lis-results">
+        <operation name="setAnalysisResults">
+            <input wsam:Action="ru.bars.open.integration.lis.innova/service-lis-results/setAnalysisResultsRequest" message="tns:setAnalysisResults"/>
+            <output wsam:Action="ru.bars.open.integration.lis.innova/service-lis-results/setAnalysisResultsResponse" message="tns:setAnalysisResultsResponse"/>
+            <fault message="tns:CoreException" name="CoreException" wsam:Action="ru.bars.open.integration.lis.innova/service-lis-results/setAnalysisResults/Fault/CoreException"/>
+        </operation>
+    </portType>
+    <binding name="service-lis-resultsPortBinding" type="tns:service-lis-results">
+        <soap:binding transport="http://schemas.xmlsoap.org/soap/http" style="document"/>
+        <operation name="setAnalysisResults">
+            <soap:operation soapAction=""/>
+            <input>
+                <soap:body use="literal"/>
+            </input>
+            <output>
+                <soap:body use="literal"/>
+            </output>
+            <fault name="CoreException">
+                <soap:fault name="CoreException" use="literal"/>
+            </fault>
+        </operation>
+    </binding>
+    <service name="LisResultsService">
+        <port name="service-lis-resultsPort" binding="tns:service-lis-resultsPortBinding">
+            <soap:address location="http://127.0.0.1:8080/lis_innova/LisResultsService"/>
+        </port>
+    </service>
+</definitions>
+

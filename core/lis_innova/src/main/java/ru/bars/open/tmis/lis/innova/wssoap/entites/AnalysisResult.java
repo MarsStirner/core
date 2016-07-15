@@ -1,265 +1,244 @@
 package ru.bars.open.tmis.lis.innova.wssoap.entites;
 
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 
 @XmlType(propOrder = {
-        "name",
-        "code",
+        "indicatorName",
+        "indicatorCode",
         "deviceName",
-        "valueTypeNum",
-        "textValue",
+        "valueType",
+        "resultValueText",
         "imageValues",
         "microValues",
         "microSensitivity",
-        "norm",
-        "normalityIndex",
-        "unitCode",
-        "endDate",
+        "resultNormString",
+        "resultNormalityIndex",
+        "resultUnit",
+        "resultSignDate",
         "resultStatus",
-        "comment"
+        "resultComment"
 })
+@XmlAccessorType(XmlAccessType.FIELD)
 public class AnalysisResult {
 
     /**
      * Код методики/показателя (Основной)
      */
-    private String code;
+    @XmlElement(name = "indicatorCode", required = true)
+    private String indicatorCode;
 
     /**
      * Название методики/показателя
      */
-    private String name;
+    @XmlElement(name = "indicatorName")
+    private String indicatorName;
 
     /**
      * Название прибора, на котором выполнялось исследование
      */
+    @XmlElement(name = "deviceName")
     private String deviceName;
 
     /**
      * Тип значения
      */
-    private int valueTypeNum;
+    @XmlElement(name = "valueType", required = true)
+    private int valueType;
 
     /**
      * Значение
      */
-    private String textValue;
+    @XmlElement(name = "resultValueText", required = true)
+    private String resultValueText;
 
     /**
      * Список изображений
      */
+    @XmlElement(name = "imageValues")
     private List<ImageValue> imageValues;
 
     /**
      * Результаты исследования микроорганизмов
      */
+    @XmlElement(name = "microValues")
     private List<MicroOrganismResult> microValues;
 
     /**
      * Результаты чувствительности микроорганизмов к антибиотикам
      */
+    @XmlElement(name = "microSensitivity")
     private List<AntibioticSensitivity> microSensitivity;
 
     /**
      * Норма (для числового результата)
      */
-    private String norm;
+    @XmlElement(name = "resultNormString")
+    private String resultNormString;
 
     /**
      * Значение результата относительно нормы (не опр./норма/ниже критической/ниже/выше критической/выше)
      */
-    private Float normalityIndex;
+    @XmlElement(name = "resultNormalityIndex")
+    private Float resultNormalityIndex;
 
     /**
      * Единица измерения
      */
-    private String unitCode;
+    @XmlElement(name = "resultUnit")
+    private String resultUnit;
 
     /**
      * Дата выполнения
      */
-    private Date endDate;
+    @XmlElement(name = "resultSignDate", required = true)
+    private Date resultSignDate;
 
     /**
      * Статус результата. В это поле выводится причина в случае отсутствия результата
      */
+    @XmlElement(name = "resultStatus")
     private String resultStatus;
 
     /**
      * Комментарий к методике
      */
-    private String Comment;
+    @XmlElement(name = "resultComment")
+    private String resultComment;
 
-    public List<AntibioticSensitivity> getMicroSensitivity() {
-        if (microSensitivity == null) microSensitivity = new LinkedList<AntibioticSensitivity>();
-        return microSensitivity;
+    public String getIndicatorCode() {
+        return indicatorCode;
     }
 
-    public void setMicroSensitivity(List<AntibioticSensitivity> microSensitivity) {
-        this.microSensitivity = microSensitivity;
+    public void setIndicatorCode(final String indicatorCode) {
+        this.indicatorCode = indicatorCode;
     }
 
-    public enum ValueType {
-        TEXT(1),
-        IMAGE(2),
-        NUMERIC(3),
-        DIAPASON(4);
-
-        int val;
-
-        ValueType(int v) {
-            this.val = v;
-        }
+    public String getIndicatorName() {
+        return indicatorName;
     }
 
-    @XmlElement(name = "indicatorName")
-    public String getName() {
-        return name;
+    public void setIndicatorName(final String indicatorName) {
+        this.indicatorName = indicatorName;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @XmlElement(name = "indicatorCode", required = true)
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    @XmlElement(name = "deviceName")
     public String getDeviceName() {
         return deviceName;
     }
 
-    public void setDeviceName(String deviceName) {
+    public void setDeviceName(final String deviceName) {
         this.deviceName = deviceName;
     }
 
-    @XmlElement(name = "valueType", required = true)
-    public int getValueTypeNum() {
-        return valueTypeNum;
+    public int getValueType() {
+        return valueType;
     }
 
-    public void setValueTypeNum(int valueType) {
-        this.valueTypeNum = valueType;
+    public void setValueType(final int valueType) {
+        this.valueType = valueType;
     }
 
-    @XmlTransient
-    public ValueType getValueType() {
-        return ValueType.values()[this.valueTypeNum - 1];
+    public String getResultValueText() {
+        return resultValueText;
     }
 
-    public void setValueType(ValueType valueType) {
-        this.valueTypeNum = valueType.val;
-    }
-
-    @XmlElement(name = "resultValueText", required = true)
-    public String getTextValue() {
-        return textValue;
-    }
-
-    public void setTextValue(String textValue) {
-        this.textValue = textValue;
+    public void setResultValueText(final String resultValueText) {
+        this.resultValueText = resultValueText;
     }
 
     public List<ImageValue> getImageValues() {
-        if (imageValues == null) imageValues = new LinkedList<ImageValue>();
         return imageValues;
     }
 
-    public void setImageValues(List<ImageValue> imageValues) {
+    public void setImageValues(final List<ImageValue> imageValues) {
         this.imageValues = imageValues;
     }
 
     public List<MicroOrganismResult> getMicroValues() {
-        if (microValues == null) microValues = new LinkedList<MicroOrganismResult>();
         return microValues;
     }
 
-    public void setMicroValues(List<MicroOrganismResult> microValues) {
+    public void setMicroValues(final List<MicroOrganismResult> microValues) {
         this.microValues = microValues;
     }
 
-    @XmlElement(name = "resultNormString")
-    public String getNorm() {
-        return norm;
+    public List<AntibioticSensitivity> getMicroSensitivity() {
+        return microSensitivity;
     }
 
-    public void setNorm(String norm) {
-        this.norm = norm;
+    public void setMicroSensitivity(final List<AntibioticSensitivity> microSensitivity) {
+        this.microSensitivity = microSensitivity;
     }
 
-    @XmlElement(name = "resultNormalityIndex")
-    public Float getNormalityIndex() {
-        return normalityIndex;
+    public String getResultNormString() {
+        return resultNormString;
     }
 
-    public void setNormalityIndex(Float normalityIndex) {
-        this.normalityIndex = normalityIndex;
+    public void setResultNormString(final String resultNormString) {
+        this.resultNormString = resultNormString;
     }
 
-    @XmlElement(name = "resultUnit")
-    public String getUnitCode() {
-        return unitCode;
+    public Float getResultNormalityIndex() {
+        return resultNormalityIndex;
     }
 
-    public void setUnitCode(String unitCode) {
-        this.unitCode = unitCode;
+    public void setResultNormalityIndex(final Float resultNormalityIndex) {
+        this.resultNormalityIndex = resultNormalityIndex;
     }
 
-    @XmlElement(name = "resultSignDate", required = true)
-    public Date getEndDate() {
-        return endDate;
+    public String getResultUnit() {
+        return resultUnit;
     }
 
-    public void setEndDate(Date endDate) {
-        this.endDate = endDate;
+    public void setResultUnit(final String resultUnit) {
+        this.resultUnit = resultUnit;
     }
 
-    @XmlElement()
+    public Date getResultSignDate() {
+        return resultSignDate;
+    }
+
+    public void setResultSignDate(final Date resultSignDate) {
+        this.resultSignDate = resultSignDate;
+    }
+
     public String getResultStatus() {
         return resultStatus;
     }
 
-    public void setResultStatus(String resultStatus) {
+    public void setResultStatus(final String resultStatus) {
         this.resultStatus = resultStatus;
     }
 
-    @XmlElement(name = "resultComment")
-    public String getComment() {
-        return Comment;
+    public String getResultComment() {
+        return resultComment;
     }
 
-    public void setComment(String comment) {
-        Comment = comment;
+    public void setResultComment(final String resultComment) {
+        this.resultComment = resultComment;
     }
 
     @Override
     public String toString() {
         final StringBuilder sb = new StringBuilder("AnalysisResult{");
-        sb.append("code='").append(code).append('\'');
-        sb.append(", name='").append(name).append('\'');
+        sb.append("indicatorCode='").append(indicatorCode).append('\'');
+        sb.append(", indicatorName='").append(indicatorName).append('\'');
         sb.append(", deviceName='").append(deviceName).append('\'');
-        sb.append(", valueTypeNum=").append(valueTypeNum);
-        sb.append(", textValue='").append(textValue).append('\'');
+        sb.append(", valueType=").append(valueType);
+        sb.append(", resultValueText='").append(resultValueText).append('\'');
         sb.append(", imageValues=").append(imageValues);
         sb.append(", microValues=").append(microValues);
         sb.append(", microSensitivity=").append(microSensitivity);
-        sb.append(", norm='").append(norm).append('\'');
-        sb.append(", normalityIndex=").append(normalityIndex);
-        sb.append(", unitCode='").append(unitCode).append('\'');
-        sb.append(", endDate=").append(endDate);
+        sb.append(", resultNormString='").append(resultNormString).append('\'');
+        sb.append(", resultNormalityIndex=").append(resultNormalityIndex);
+        sb.append(", resultUnit='").append(resultUnit).append('\'');
+        sb.append(", resultSignDate=").append(resultSignDate);
         sb.append(", resultStatus='").append(resultStatus).append('\'');
-        sb.append(", Comment='").append(Comment).append('\'');
+        sb.append(", resultComment='").append(resultComment).append('\'');
         sb.append('}');
         return sb.toString();
     }

@@ -8,68 +8,74 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Чувствительность микроорганизма к антибиотикам
  */
-@XmlAccessorType(XmlAccessType.PROPERTY)
-@XmlType(propOrder = {
-        "code",
-        "name",
-        "mic",
-        "value"
-})
+@XmlAccessorType(XmlAccessType.FIELD)
+@XmlType(propOrder = {"antibioticLisId", "antibioticName", "mic", "antibioticActivityValue"})
 public class AntibioticSensitivity {
 
     /**
      * Идентификатор антибиотика по БД ЛИС
      */
-    private String code;
+    @XmlElement(name = "antibioticLisId")
+    private String antibioticLisId;
 
     /**
      * Название антибиотика
      */
-    private String name;
-
-    /**
-     * Чувствительность
-     */
-    private String value;
+    @XmlElement(name = "antibioticName")
+    private String antibioticName;
 
     /**
      * Количественная характеристика чувствительности, если используется анализатор
      */
+    @XmlElement(name = "MIC")
     private String mic;
 
-    @XmlElement(name = "antibioticLisId")
-    public String getCode() {
-        return code;
-    }
-
-    public void setCode(String code) {
-        this.code = code;
-    }
-
-    @XmlElement(name = "antibioticName")
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
+    /**
+     * Чувствительность
+     */
     @XmlElement(name = "antibioticActivityValue")
-    public String getValue() {
-        return value;
+    private String antibioticActivityValue;
+
+    public String getAntibioticLisId() {
+        return antibioticLisId;
     }
 
-    public void setValue(String value) {
-        this.value = value;
+    public void setAntibioticLisId(final String antibioticLisId) {
+        this.antibioticLisId = antibioticLisId;
     }
 
-    @XmlElement(name = "MIC")
+    public String getAntibioticName() {
+        return antibioticName;
+    }
+
+    public void setAntibioticName(final String antibioticName) {
+        this.antibioticName = antibioticName;
+    }
+
     public String getMic() {
         return mic;
     }
 
-    public void setMic(String mic) {
+    public void setMic(final String mic) {
         this.mic = mic;
+    }
+
+    public String getAntibioticActivityValue() {
+        return antibioticActivityValue;
+    }
+
+    public void setAntibioticActivityValue(final String antibioticActivityValue) {
+        this.antibioticActivityValue = antibioticActivityValue;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("AntibioticSensitivity{");
+        sb.append("antibioticLisId='").append(antibioticLisId).append('\'');
+        sb.append(", antibioticName='").append(antibioticName).append('\'');
+        sb.append(", mic='").append(mic).append('\'');
+        sb.append(", antibioticActivityValue='").append(antibioticActivityValue).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }

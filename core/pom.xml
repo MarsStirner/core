@@ -11,36 +11,11 @@
 
 
     <modules>
-        <module>core-ext</module>
         <module>business-tier</module>
         <module>common</module>
         <module>database</module>
         <module>config</module>
-
-        <module>ws-finance</module>
-        <module>finance-ear</module>
-
-        <module>ws-transfusion</module>
-        <module>transfusion-ear</module>
-
-        <module>communication</module>
-        <module>communication-ear</module>
-
-        <module>drugstore-tier</module>
-
         <module>ws-medipad</module>
-        <module>ws-laboratory</module>
-        <module>docs</module>
-        <module>referencebook</module>
-
-        <module>ws-users-mgr</module>
-        <module>ws-tfoms</module>
-        <module>ws-risar</module>
-        <module>admin-panel</module>
-        <module>laboratory-bak</module>
-
-        <module>hsct</module>
-        <module>lis_innova</module>
 
         <module>server</module>
     </modules>
@@ -200,6 +175,9 @@
             <activation>
                 <activeByDefault>true</activeByDefault>
             </activation>
+            <modules>
+
+            </modules>
         </profile>
 
         <!-- Профиль для установки на стандартный Linux-сервер glassfish 4.x -->
@@ -238,6 +216,86 @@
             </properties>
         </profile>
 
+
+        <profile>
+            <id>communication</id>
+            <modules>
+                <module>communication</module>
+                <module>communication-ear</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>transfusion</id>
+            <modules>
+                <module>ws-transfusion</module>
+                <module>transfusion-ear</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>hsct</id>
+            <modules>
+                <module>hsct</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>finance</id>
+            <modules>
+                <module>ws-finance</module>
+                <module>finance-ear</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>gnc</id>
+            <modules>
+                <module>lis_innova</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>tfoms</id>
+            <modules>
+                <module>ws-tfoms</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>core-ext</id>
+            <modules>
+                <module>core-ext</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>laboratory</id>
+            <modules>
+                <module>ws-laboratory</module>
+                <module>laboratory-bak</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>utils</id>
+            <modules>
+                <module>docs</module>
+                <module>referencebook</module>
+
+                <module>ws-users-mgr</module>
+
+                <module>ws-risar</module>
+                <module>admin-panel</module>
+            </modules>
+        </profile>
+
+        <profile>
+            <id>pharmacy</id>
+            <modules>
+                <module>drugstore-tier</module>
+            </modules>
+        </profile>
 
     </profiles>
 

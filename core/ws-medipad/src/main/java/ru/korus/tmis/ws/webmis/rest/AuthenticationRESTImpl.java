@@ -158,10 +158,8 @@ public class AuthenticationRESTImpl {
             @Context HttpServletRequest servRequest, @QueryParam("roleId") int roleId, @QueryParam("callback") String callback
     ) throws AuthenticationException {
         AuthData authData = webmisImpl.checkTokenCookies(servRequest.getCookies());
-        Staff staff = null;
-        try {
-            staff = dbStaffBeanLocal.getStaffById(authData.getUserId());
-        } catch (CoreException e) {
+        Staff staff =  dbStaffBeanLocal.getStaffById(authData.getUserId());
+        if (staff == null) {
             throw new AuthenticationException();
         }
         for (Role r : staff.getRoles()) {

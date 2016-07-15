@@ -2,8 +2,8 @@ package ru.korus.tmis.laboratory.across.business
 
 import java.net.{Authenticator, PasswordAuthentication}
 import java.text.SimpleDateFormat
-import java.util.{Collections, Date, GregorianCalendar}
-import javax.ejb.{TransactionAttributeType, TransactionAttribute, EJB, Stateless}
+import java.util.{Collections, GregorianCalendar}
+import javax.ejb.{EJB, Stateless}
 import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 import javax.xml.namespace.QName
 
@@ -16,18 +16,16 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.across.accept.AnalysisResultAcross
 import ru.korus.tmis.laboratory.across.accept2.{AnalysisResult => AResult2}
 import ru.korus.tmis.laboratory.across.request.DataConverter
-import ru.korus.tmis.laboratory.across.ws.{ObjectFactory, BiomaterialInfo, OrderInfo, PatientInfo, DiagnosticRequestInfo}
-
+import ru.korus.tmis.laboratory.across.ws.{BiomaterialInfo, DiagnosticRequestInfo, ObjectFactory, OrderInfo, PatientInfo}
 import ru.korus.tmis.laboratory.across.{ws => lab2}
+import ru.korus.tmis.scala.util.General.{cast_implicits, typedEquality}
 import ru.korus.tmis.scala.util.Types.JList
 import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 import ru.korus.tmis.util.CompileTimeConfigManager
-import scala.language.reflectiveCalls
-import ru.korus.tmis.scala.util.General.cast_implicits
-import ru.korus.tmis.scala.util.General.typedEquality
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable
+import scala.language.reflectiveCalls
 
 @Stateless
 class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18nable {
@@ -51,7 +49,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
   @EJB
   var dbManager: DbManagerBeanLocal = _
-
 
 
   def getAcrossLab: lab2.QueryAnalysisService = {
@@ -83,38 +80,38 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
       //val endPoint = service.getPorts.next().asInstanceOf[QName]
 
-/*      Option(ConfigManager.Laboratory2.ServiceUrl).foreach {
-        url =>
-          service.setIAcrossIntf_FNKCPortEndpointAddress(url.toString)
-      }
+      /*      Option(ConfigManager.Laboratory2.ServiceUrl).foreach {
+              url =>
+                service.setIAcrossIntf_FNKCPortEndpointAddress(url.toString)
+            }
 
-      val handlerInfo = LoggingHandler.handlerInfo
-      val handlerChain =
-        Option(service.getHandlerRegistry.getHandlerChain(endPoint).asInstanceOf[JList[AnyRef]]).getOrElse(new util.ArrayList[AnyRef])
+            val handlerInfo = LoggingHandler.handlerInfo
+            val handlerChain =
+              Option(service.getHandlerRegistry.getHandlerChain(endPoint).asInstanceOf[JList[AnyRef]]).getOrElse(new util.ArrayList[AnyRef])
 
-      if (!handlerChain.contains(handlerInfo)) handlerChain.add(handlerInfo)
+            if (!handlerChain.contains(handlerInfo)) handlerChain.add(handlerInfo)
 
-      service.getHandlerRegistry.setHandlerChain(endPoint, handlerChain)
+            service.getHandlerRegistry.setHandlerChain(endPoint, handlerChain)
 
-      val port = service.getIAcrossIntf_FNKCPort
+            val port = service.getIAcrossIntf_FNKCPort
 
-      import ru.korus.tmis.scala.util.General.cast_implicits
+            import ru.korus.tmis.scala.util.General.cast_implicits
 
-      for (
-        user <- Option(ConfigManager.Laboratory2.User);
-        password <- Option(ConfigManager.Laboratory2.Password);
-        stub <- port.asSafe[Stub]
-      ) yield {
-        stub._setProperty(Stub.PASSWORD_PROPERTY, password)
-        stub._setProperty(Stub.USERNAME_PROPERTY, user)
-      }
+            for (
+              user <- Option(ConfigManager.Laboratory2.User);
+              password <- Option(ConfigManager.Laboratory2.Password);
+              stub <- port.asSafe[Stub]
+            ) yield {
+              stub._setProperty(Stub.PASSWORD_PROPERTY, password)
+              stub._setProperty(Stub.USERNAME_PROPERTY, user)
+            }
 
-      // Disable multiRef generation
-      port.asSafe[AxisStub] match {
-        case Some(stub) => stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, false)
-        case None => {}
-      }
-      */
+            // Disable multiRef generation
+            port.asSafe[AxisStub] match {
+              case Some(stub) => stub._setProperty(org.apache.axis.AxisEngine.PROP_DOMULTIREFS, false)
+              case None => {}
+            }
+            */
 
       service
     } catch {
@@ -179,7 +176,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     val aptsSet = apts.toSet // для правильной работы JavaConversion
     // Получаем map из APT в AP
     val apsMap = a.getActionPropertiesByTypes(aptsSet)
-    val indicatorArray  = of.createArrayOfTindicator()
+    val indicatorArray = of.createArrayOfTindicator()
     // Фильтруем map чтобы найти показатели/методы
 
     val indicators = apsMap.collect {
@@ -189,7 +186,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
         val code = apt.getTest.getCode
         val name = apt.getTest.getName
-        val indicator  = of.createTindicator()
+        val indicator = of.createTindicator()
         indicator.setIndicatorCode(of.createTindicatorIndicatorCode(code))
         indicator.setIndicatorName(of.createTindicatorIndicatorName(name))
         indicatorArray.getTindicator.add(indicator)
@@ -226,8 +223,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     result.setPatientSex(of.createPatientInfoPatientSex(DataConverter.sex2int(sex)))
     result
   }
-
-
 
 
   def getDiagnosticRequestInfo(a: Action): DiagnosticRequestInfo = {
@@ -276,15 +271,15 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     val comment = a.getNote
     info("Request:Comment" + comment)
     result.setOrderComment(of.createDiagnosticRequestInfoOrderComment(comment))
-    val department = if(
+    val department = if (
       a.getEvent.getEventType.getRequestType != null && Seq(RbRequestType.POLIKLINIKA_CODE, RbRequestType.DIAGNOSTIKA_CODE)
-      .contains(a.getEvent.getEventType.getRequestType.getCode)) {
+        .contains(a.getEvent.getEventType.getRequestType.getCode)) {
       a.getEvent.getOrgStructure
-    } else if(a.getEvent.getEventType.getRequestType == null)
+    } else if (a.getEvent.getEventType.getRequestType == null)
       null
     else {
       var res = getOrgStructureByEvent(a.getEvent)
-      if(res == null){
+      if (res == null) {
         res = getOrgStructureFromRecievedActionInEvent(a.getEvent)
       }
       res
@@ -543,7 +538,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
               }
               apv.foreach {
                 entities += _
-            }
+              }
             })
 
           }
@@ -556,7 +551,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
           val organismConcentration = r.organismConcentration
           val apsFound = aps.filter(ap => {
             val check = for (apt <- Option(ap.getType); tst <- Option(apt.getTest); oname <- organismName)
-            yield oname =!= tst.getName
+              yield oname =!= tst.getName
             check.getOrElse(false)
           })
           apsFound.foreach(ap => {
@@ -575,7 +570,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
           val antibioticName = r.name
           val apsFound = aps.filter(ap => {
             val check = for (apt <- Option(ap.getType); tst <- Option(apt.getTest); aname <- antibioticName)
-            yield aname =!= tst.getName
+              yield aname =!= tst.getName
             check.getOrElse(false)
           })
 
@@ -642,7 +637,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   }
 
 
-
   def getAnalysisRequest(actionId: Int) = {
     val a = dbActionBean.getActionById(actionId)
 
@@ -679,7 +673,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     val (patientInfo, requestInfo, biomaterialInfo, orderInfo) = getAnalysisRequest(actionId)
     logger.info(patientInfo, requestInfo, biomaterialInfo, orderInfo)
 
-    info (
+    info(
       """Lis data:
         |  %s
         |  %s

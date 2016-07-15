@@ -7,10 +7,10 @@ import ru.korus.tmis.core.filter.ListDataFilter;
 import ru.korus.tmis.core.indicators.IndicatorValue;
 import scala.Function1;
 
+import javax.ejb.Local;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
-import javax.ejb.Local;
 
 @Local
 public interface DbCustomQueryLocal {
@@ -84,8 +84,7 @@ public interface DbCustomQueryLocal {
                                   Date endTime)
             throws CoreException;
 
-    RbUnit getUnitByCode(String code)
-            throws CoreException;
+    RbUnit getUnitByCode(String code);
 
     Map<Event, Object> getAllAppealsWithFilter(int page, int limit, String sortingField, String sortingMethod, Object filter, Function1<Long, Boolean> postProcessing)
             throws CoreException;

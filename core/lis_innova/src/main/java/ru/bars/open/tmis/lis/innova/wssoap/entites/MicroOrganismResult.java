@@ -8,9 +8,9 @@ import javax.xml.bind.annotation.XmlType;
 /**
  * Результат анализа микроорганизмов
  */
-@XmlAccessorType(XmlAccessType.PROPERTY)
+@XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(propOrder = {
-        "organismCode",
+        "organismLisId",
         "organismName",
         "organismConcentration"
 })
@@ -18,42 +18,53 @@ public class MicroOrganismResult {
     /**
      * идентификатор организма по БД ЛИС
      */
-    private String organismCode;
+    @XmlElement(name = "organismLisId")
+    private String organismLisId;
 
     /**
      * название организма
      */
+    @XmlElement(name = "organismName")
     private String organismName;
 
     /**
      * концентрация организма
      */
+    @XmlElement(name = "organismConcetration")
     private String organismConcentration;
 
-    @XmlElement(name = "organismLisId")
-    public String getOrganismCode() {
-        return organismCode;
+
+    public String getOrganismLisId() {
+        return organismLisId;
     }
 
-    public void setOrganismCode(String organismCode) {
-        this.organismCode = organismCode;
+    public void setOrganismLisId(final String organismLisId) {
+        this.organismLisId = organismLisId;
     }
 
-    @XmlElement(name = "organismName")
     public String getOrganismName() {
         return organismName;
     }
 
-    public void setOrganismName(String organismName) {
+    public void setOrganismName(final String organismName) {
         this.organismName = organismName;
     }
 
-    @XmlElement(name = "organismConcetration")
     public String getOrganismConcentration() {
         return organismConcentration;
     }
 
-    public void setOrganismConcentration(String organismConcentration) {
+    public void setOrganismConcentration(final String organismConcentration) {
         this.organismConcentration = organismConcentration;
+    }
+
+    @Override
+    public String toString() {
+        final StringBuilder sb = new StringBuilder("MicroOrganismResult{");
+        sb.append("organismLisId='").append(organismLisId).append('\'');
+        sb.append(", organismName='").append(organismName).append('\'');
+        sb.append(", organismConcentration='").append(organismConcentration).append('\'');
+        sb.append('}');
+        return sb.toString();
     }
 }
