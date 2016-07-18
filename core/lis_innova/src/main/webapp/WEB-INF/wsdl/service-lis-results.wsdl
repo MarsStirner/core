@@ -13,11 +13,11 @@
             <xs:element name="setAnalysisResultsResponse" type="tns:setAnalysisResultsResponse"/>
             <xs:complexType name="setAnalysisResults">
                 <xs:sequence>
-                    <!-- Идентифкатор исследования в МИС (был передан в ) -->
+                    <!-- Идентифкатор исследования в МИС (был передан в DiagnosticRequestInfo.orderMisId) -->
                     <xs:element name="orderMisId" type="xs:int" form="qualified"/>
-                    <!-- Баркод пробирки в МИС (был передан в )-->
+                    <!-- Баркод пробирки в МИС (был передан в BiomaterialInfo.orderBarCode )-->
                     <xs:element name="orderBarCode" type="xs:int" form="qualified"/>
-                    <!-- Префикс баркода пробирки в МИС (был передан в )-->
+                    <!-- Префикс баркода пробирки в МИС (был передан в BiomaterialInfo.orderPrefBarCode )-->
                     <xs:element name="orderPrefBarCode" type="xs:int" form="qualified"/>
                     <!-- Описание возможных дефектов пробирки с биозабором -->
                     <xs:element name="biomaterialDefects" type="xs:string" form="qualified" minOccurs="0"/>
@@ -30,7 +30,7 @@
                 <xs:sequence>
                     <!-- Наименование исследования-->
                     <xs:element name="name" type="xs:string" minOccurs="0"/>
-                    <!-- Код исследования -->
+                    <!-- Код исследования (Один кодов исследований переданных в OrderInfoList[OrderInfo].diagnosticCode-->
                     <xs:element name="code" type="xs:string" minOccurs="0"/>
                     <!-- Идентифкатор пользователя ЛИС, выполнившего тесты для этого исследования -->
                     <xs:element name="personId" type="xs:int"/>
