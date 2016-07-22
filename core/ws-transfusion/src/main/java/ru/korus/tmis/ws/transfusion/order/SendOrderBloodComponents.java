@@ -164,8 +164,8 @@ public class SendOrderBloodComponents {
         result.setId(action.getId());
         final Staff assigner = action.getAssigner();
         final Event event = action.getEvent();
-        final OrgStructure orgStructure = dbEvent.getLastOrgStructureForEvent(event.getId());
-        result.setDivisionId(orgStructure == null ? null : orgStructure.getId());
+        final OrgStructure orgStructure = dbEvent.getOrgStructureForEvent(event.getId());
+        result.setDivisionId(orgStructure.getId());
         result.setIbNumber(event.getExternalId());
         result.setDoseCount(0.0);
         result.setPlanDate(Database.toXMLGregorianCalendar(action.getPlannedEndDate()));
@@ -333,10 +333,15 @@ public class SendOrderBloodComponents {
             return result;
         }
         final Event event = action.getEvent();
-        final Action latestMove = dbAction.getLatestMove(event);
+        final Action latestMove = dbAction.getLatestMove(event.getId());
         if (latestMove == null) {
             log.warn("Action[{}]: Event[{}] hasn't \'moving\' actions ", action.getId(), event.getId());
             result.add("Пациент снят с койки");
+        }
+        final OrgStructure orgStructure = dbEvent.getOrgStructureForEvent(event.getId());
+        if(orgStructure == null){
+            log.warn("Action[{}]: Event[{}] hasn't OrgStructure from \'movings\' or received Action ", action.getId(), event.getId());
+            result.add("Не задано отделение пребывания (как среди движений, так и в поступлении)");
         }
         final Patient patient = event.getPatient();
         if (patient.getBirthDate() == null) {

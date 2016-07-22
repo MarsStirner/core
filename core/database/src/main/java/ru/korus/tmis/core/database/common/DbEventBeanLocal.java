@@ -42,15 +42,7 @@ public interface DbEventBeanLocal {
 
     Set<ActionType> getActionTypeFilter(int eventId) throws CoreException;
 
-    OrgStructure getOrgStructureForEvent(int eventId) throws CoreException;
-
-    /**
-     * Получение последнего отделения из ИБ (из последнего движения[в том числе и закрытые], если нет, то из поступленияб иначе null)
-     * @param eventId  ид ИБ
-     * @return  последнее отеделние в рамках ИБ
-     * @throws CoreException
-     */
-    OrgStructure getLastOrgStructureForEvent(int eventId);
+    OrgStructure getOrgStructureForEvent(int eventId);
 
     Event createEvent(int patientId, int appealTypeId, Date begDate, Date endDate, int contractId, RbResult result, RbAcheResult acheResult, Staff execPerson, Staff createPerson) throws CoreException;
 

@@ -768,9 +768,9 @@ class DbActionBean
       .getResultList
   }
 
-  def getLatestMove(event: Event): Action = {
+  def getLatestMove(eventId: Int): Action = {
     val actions = em.createNamedQuery("Action.findLatestMove", classOf[Action])
-      .setParameter("eventId", event.getId)
+      .setParameter("eventId", eventId)
       .setMaxResults(1).getResultList
     return if (actions.isEmpty) null else actions.get(0);
   }

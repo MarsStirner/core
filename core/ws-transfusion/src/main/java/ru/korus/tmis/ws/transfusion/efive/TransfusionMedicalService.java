@@ -1,7 +1,6 @@
 
 package ru.korus.tmis.ws.transfusion.efive;
 
-import java.util.List;
 import javax.jws.WebMethod;
 import javax.jws.WebParam;
 import javax.jws.WebResult;
@@ -10,6 +9,7 @@ import javax.xml.bind.annotation.XmlSeeAlso;
 import javax.xml.ws.Action;
 import javax.xml.ws.RequestWrapper;
 import javax.xml.ws.ResponseWrapper;
+import java.util.List;
 
 
 /**
@@ -67,26 +67,6 @@ public interface TransfusionMedicalService {
         @WebParam(name = "orderInformation", targetNamespace = "")
         OrderInformation orderInformation);
 
-    /**
-     * 
-     * @param donorInfo
-     * @param patientCredentials
-     * @param procedureInfo
-     * @return
-     *     returns ru.korus.tmis.ws.transfusion.efive.OrderResult
-     */
-    @WebMethod(action = "urn:orderMedicalProcedure")
-    @WebResult(targetNamespace = "")
-    @RequestWrapper(localName = "orderMedicalProcedure", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.OrderMedicalProcedure")
-    @ResponseWrapper(localName = "orderMedicalProcedureResponse", targetNamespace = "http://www.korusconsulting.ru", className = "ru.korus.tmis.ws.transfusion.efive.OrderMedicalProcedureResponse")
-    @Action(input = "urn:orderMedicalProcedure", output = "http://www.korusconsulting.ru/transfusionMedicalService/orderMedicalProcedureResponse")
-    public OrderResult orderMedicalProcedure(
-        @WebParam(name = "donorInfo", targetNamespace = "")
-        DonorInfo donorInfo,
-        @WebParam(name = "patientCredentials", targetNamespace = "")
-        PatientCredentials patientCredentials,
-        @WebParam(name = "procedureInfo", targetNamespace = "")
-        ProcedureInfo procedureInfo);
 
     /**
      * 

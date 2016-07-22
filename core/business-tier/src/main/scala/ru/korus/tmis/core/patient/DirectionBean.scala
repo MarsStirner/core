@@ -834,10 +834,10 @@ with I18nable {
     }
     val comment: String = action.getNote
     diag.setOrderComment(comment)
-    val department: OrgStructure = dbEventBean.getLastOrgStructureForEvent(action.getEvent.getId)
+    val department: OrgStructure = dbEventBean.getOrgStructureForEvent(action.getEvent.getId)
     if(department == null){
       error("No department found for Action[%s]".format(action.getId))
-    }else  {
+    } else {
       diag.setOrderDepartmentMisCode(String.valueOf(department.getId))
       diag.setOrderDepartmentName(department.getName)
     }

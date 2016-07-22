@@ -251,7 +251,7 @@ public interface DbActionBeanLocal {
      * Получить новейшее движение пациента для обращения action.eventId
      * @return
      */
-    Action getLatestMove(Event event);
+    Action getLatestMove(int event);
 
     List<Action> getAllActionsOfPatientThatHasActionProperty(int patientId, String actionPropertyCode);
 
