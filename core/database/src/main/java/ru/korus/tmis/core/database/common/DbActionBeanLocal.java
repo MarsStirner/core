@@ -256,4 +256,12 @@ public interface DbActionBeanLocal {
     List<Action> getAllActionsOfPatientThatHasActionProperty(int patientId, String actionPropertyCode);
 
     Action getById(int id);
+
+    /**
+     * Поиск новых действий
+     *
+     * @flatCode - код типа действия
+     * @return - список действий с типом, соответсвующим flatCode и статусом 0 - Начато
+     */
+     List<Action> getNewActionByFlatCode(final String flatCode);
 }

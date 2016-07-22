@@ -1,25 +1,12 @@
 package ru.korus.tmis.ws.transfusion.order;
 
-import java.util.Arrays;
-import java.util.Date;
-import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import ru.korus.tmis.core.database.dbutil.Database;
+import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.RbBloodType;
-import ru.korus.tmis.core.entity.model.RbTrfuBloodComponentType;
-import ru.korus.tmis.core.entity.model.TrfuOrderIssueResult;
-import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.ws.transfusion.IssueResult;
-import ru.korus.tmis.ws.transfusion.PropType;
-import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -43,7 +30,7 @@ public class RegOrderIssueResult {
      * Регистрация извещения о резульатах выполнения требования КК
      *
      * @return результат регистрации
-     */
+     *
     public IssueResult save(final Integer requestId, final Date factDate, final List<OrderIssueInfo> components, final String orderComment) {
 
         final IssueResult res = new IssueResult();
@@ -90,7 +77,7 @@ public class RegOrderIssueResult {
      *         false - если результат уже установлен
      * @throws CoreException
      *             - при кокой-либо ошибке во время работы с БД
-     */
+     *
     private boolean update(final Action action, final Date factDate, final List<OrderIssueInfo> components, final String orderComment)
             throws CoreException {
         final TrfuActionProp trfuActionProp =
@@ -102,8 +89,8 @@ public class RegOrderIssueResult {
         final boolean update = true;
         final EntityManager em = database.getEntityMgr();
 
-        trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_TIME, update);
-        trfuActionProp.setProp(factDate, actionId, PropType.ORDER_ISSUE_RES_DATE, update);
+        trfuActionProp.setProp(factDate, actionId, Constants.ORDER_ISSUE_RES_TIME, update);
+        trfuActionProp.setProp(factDate, actionId, Constants.ORDER_ISSUE_RES_DATE, update);
 
         String errMsg = "";
         for (final OrderIssueInfo orderIssue : components) {
@@ -128,16 +115,16 @@ public class RegOrderIssueResult {
             trfuOrderIssueResult.setStickerUrl(orderIssue.getStickerUrl());
             em.persist(trfuOrderIssueResult);
         }
-        final String res = trfuActionProp.getProp(actionId, PropType.ORDER_REQUEST_ID) + errMsg + "; Зарегистрирован результат от ТРФУ";
-        trfuActionProp.setProp(actionId, actionId, PropType.ORDER_ISSUE_BLOOD_COMP_PASPORT, true);
-        trfuActionProp.setProp(res, actionId, PropType.ORDER_REQUEST_ID, true);
+        final String res = trfuActionProp.getProp(actionId, Constants.ORDER_REQUEST_ID) + errMsg + "; Зарегистрирован результат от ТРФУ";
+        trfuActionProp.setProp(actionId, actionId, Constants.ORDER_ISSUE_BLOOD_COMP_PASPORT, true);
+        trfuActionProp.setProp(res, actionId, Constants.ORDER_REQUEST_ID, true);
         em.flush();
         return true;
     }
 
     public static boolean alreadySet(Integer actionId, TrfuActionProp trfuActionProp) {
         try {
-            return  trfuActionProp.getProp(actionId,  PropType.ORDER_ISSUE_RES_DATE, false) != null;
+            return  trfuActionProp.getProp(actionId,  Constants.ORDER_ISSUE_RES_DATE, false) != null;
         } catch (CoreException e) {
             return  false;
         }
@@ -170,5 +157,5 @@ public class RegOrderIssueResult {
                         .getResultList();
         return rbBloodComponentTypes.isEmpty() ? null : rbBloodComponentTypes.get(0);
     }
-
+      */
 }

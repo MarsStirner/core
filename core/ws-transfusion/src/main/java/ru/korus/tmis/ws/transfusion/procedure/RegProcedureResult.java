@@ -17,8 +17,8 @@ import ru.korus.tmis.core.entity.model.TrfuFinalVolume;
 import ru.korus.tmis.core.entity.model.TrfuLaboratoryMeasure;
 import ru.korus.tmis.core.exception.CoreException;
 import ru.korus.tmis.ws.transfusion.IssueResult;
-import ru.korus.tmis.ws.transfusion.PropType;
-import ru.korus.tmis.ws.transfusion.TrfuActionProp;
+import ru.korus.tmis.ws.transfusion.Constants;
+//import ru.korus.tmis.ws.transfusion.TrfuActionProp;
 import ru.korus.tmis.ws.transfusion.efive.PatientCredentials;
 import ru.korus.tmis.ws.transfusion.order.RegOrderIssueResult;
 import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
@@ -40,7 +40,7 @@ public class RegProcedureResult {
     private Database database;
 
     private static final Logger logger = LoggerFactory.getLogger(SendOrderBloodComponents.class);
-
+   /*
     public IssueResult save(final PatientCredentials patientCredentials, final ProcedureInfo procedureInfo, final EritrocyteMass eritrocyteMass,
             final List<LaboratoryMeasure> measures, final List<FinalVolume> finalVolume) {
         final IssueResult res = new IssueResult();
@@ -122,7 +122,7 @@ public class RegProcedureResult {
         }
         em.flush();
     }
-
+    /*
     private boolean updateProp(final Action action, final ProcedureInfo procedureInfo, final EritrocyteMass eritrocyteMass) throws CoreException {
         final TrfuActionProp trfuActionProp =
                 new TrfuActionProp(database, action.getActionType().getFlatCode(), Arrays.asList(SendProcedureRequest.propTypes));
@@ -133,92 +133,93 @@ public class RegProcedureResult {
             return false;
         }
 
-        trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, PropType.ORDER_ISSUE_RES_TIME, update);
+        trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, Constants.ORDER_ISSUE_RES_TIME, update);
 
-        trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, PropType.ORDER_ISSUE_RES_DATE, update);
+        trfuActionProp.setProp(procedureInfo.getFactDate(), actionId, Constants.ORDER_ISSUE_RES_DATE, update);
 
-        trfuActionProp.setProp(procedureInfo.getContraindication(), actionId, PropType.CONTRAINDICATION, update);
+        trfuActionProp.setProp(procedureInfo.getContraindication(), actionId, Constants.CONTRAINDICATION, update);
 
-        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsPulse(), actionId, PropType.BEFORE_HEMODYNAMICS_PULSE, update);
+        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsPulse(), actionId, Constants.BEFORE_HEMODYNAMICS_PULSE, update);
 
-        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsPulse(), actionId, PropType.AFTER_HEMODYNAMICS_PULSE, update);
+        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsPulse(), actionId, Constants.AFTER_HEMODYNAMICS_PULSE, update);
 
-        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsArterialPressure(), actionId, PropType.BEFORE_HEMODYNAMICS_ARTERIAL_PRESSURE, update);
+        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsArterialPressure(), actionId, Constants.BEFORE_HEMODYNAMICS_ARTERIAL_PRESSURE, update);
 
-        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsArterialPressure(), actionId, PropType.AFTER_HEMODYNAMICS_ARTERIAL_PRESSURE, update);
+        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsArterialPressure(), actionId, Constants.AFTER_HEMODYNAMICS_ARTERIAL_PRESSURE, update);
 
-        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsTemperature(), actionId, PropType.BEFORE_HEMODYNAMICS_TEMPERATURE, update);
+        trfuActionProp.setProp(procedureInfo.getBeforeHemodynamicsTemperature(), actionId, Constants.BEFORE_HEMODYNAMICS_TEMPERATURE, update);
 
-        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsTemperature(), actionId, PropType.AFTER_HEMODYNAMICS_TEMPERATURE, update);
+        trfuActionProp.setProp(procedureInfo.getAfterHemodynamicsTemperature(), actionId, Constants.AFTER_HEMODYNAMICS_TEMPERATURE, update);
 
-        trfuActionProp.setProp(procedureInfo.getComplications(), actionId, PropType.COMPLICATIONS, update);
+        trfuActionProp.setProp(procedureInfo.getComplications(), actionId, Constants.COMPLICATIONS, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialVolume(), actionId, PropType.INITIAL_VOLUME, update);
+        trfuActionProp.setProp(procedureInfo.getInitialVolume(), actionId, Constants.INITIAL_VOLUME, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeVolume(), actionId, PropType.CHANGE_VOLUME, update);
+        trfuActionProp.setProp(procedureInfo.getChangeVolume(), actionId, Constants.CHANGE_VOLUME, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialTbv(), actionId, PropType.INITIAL_TBV, update);
+        trfuActionProp.setProp(procedureInfo.getInitialTbv(), actionId, Constants.INITIAL_TBV, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeTbv(), actionId, PropType.CHANGE_TBV, update);
+        trfuActionProp.setProp(procedureInfo.getChangeTbv(), actionId, Constants.CHANGE_TBV, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialSpeed(), actionId, PropType.INITIAL_SPEED, update);
+        trfuActionProp.setProp(procedureInfo.getInitialSpeed(), actionId, Constants.INITIAL_SPEED, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeSpeed(), actionId, PropType.CHANGE_SPEED, update);
+        trfuActionProp.setProp(procedureInfo.getChangeSpeed(), actionId, Constants.CHANGE_SPEED, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialInletAcRatio(), actionId, PropType.INITIAL_INLETACRATIO, update);
+        trfuActionProp.setProp(procedureInfo.getInitialInletAcRatio(), actionId, Constants.INITIAL_INLETACRATIO, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeInletAcRatio(), actionId, PropType.CHANGE_INLETACRATIO, update);
+        trfuActionProp.setProp(procedureInfo.getChangeInletAcRatio(), actionId, Constants.CHANGE_INLETACRATIO, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialTime(), actionId, PropType.INITIAL_TIME, update);
+        trfuActionProp.setProp(procedureInfo.getInitialTime(), actionId, Constants.INITIAL_TIME, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeTime(), actionId, PropType.CHANGE_TIME, update);
+        trfuActionProp.setProp(procedureInfo.getChangeTime(), actionId, Constants.CHANGE_TIME, update);
 
-        trfuActionProp.setProp(procedureInfo.getInitialProductVolume(), actionId, PropType.INITIAL_PRODUCT_VOLUME, update);
+        trfuActionProp.setProp(procedureInfo.getInitialProductVolume(), actionId, Constants.INITIAL_PRODUCT_VOLUME, update);
 
-        trfuActionProp.setProp(procedureInfo.getChangeProductVolume(), actionId, PropType.CHANGE_PRODUCT_VOLUME, update);
+        trfuActionProp.setProp(procedureInfo.getChangeProductVolume(), actionId, Constants.CHANGE_PRODUCT_VOLUME, update);
 
-        trfuActionProp.setProp(procedureInfo.getAcdLoad(), actionId, PropType.ACD_LOAD, update);
+        trfuActionProp.setProp(procedureInfo.getAcdLoad(), actionId, Constants.ACD_LOAD, update);
 
-        trfuActionProp.setProp(procedureInfo.getNaClLoad(), actionId, PropType.NACL_LOAD, update);
+        trfuActionProp.setProp(procedureInfo.getNaClLoad(), actionId, Constants.NACL_LOAD, update);
 
-        trfuActionProp.setProp(procedureInfo.getCaLoad(), actionId, PropType.CA_LOAD, update);
+        trfuActionProp.setProp(procedureInfo.getCaLoad(), actionId, Constants.CA_LOAD, update);
 
-        trfuActionProp.setProp(procedureInfo.getOtherLoad(), actionId, PropType.OTHER_LOAD, update);
+        trfuActionProp.setProp(procedureInfo.getOtherLoad(), actionId, Constants.OTHER_LOAD, update);
 
-        trfuActionProp.setProp(procedureInfo.getTotalLoad(), actionId, PropType.TOTAL_LOAD, update);
+        trfuActionProp.setProp(procedureInfo.getTotalLoad(), actionId, Constants.TOTAL_LOAD, update);
 
-        trfuActionProp.setProp(procedureInfo.getPackRemove(), actionId, PropType.PACK_REMOVE, update);
+        trfuActionProp.setProp(procedureInfo.getPackRemove(), actionId, Constants.PACK_REMOVE, update);
 
-        trfuActionProp.setProp(procedureInfo.getOtherRemove(), actionId, PropType.OTHER_REMOVE, update);
+        trfuActionProp.setProp(procedureInfo.getOtherRemove(), actionId, Constants.OTHER_REMOVE, update);
 
-        trfuActionProp.setProp(procedureInfo.getTotalRemove(), actionId, PropType.TOTAL_REMOVE, update);
+        trfuActionProp.setProp(procedureInfo.getTotalRemove(), actionId, Constants.TOTAL_REMOVE, update);
 
-        trfuActionProp.setProp(procedureInfo.getBalance(), actionId, PropType.BALANCE, update);
+        trfuActionProp.setProp(procedureInfo.getBalance(), actionId, Constants.BALANCE, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getMaker(), actionId, PropType.MAKER, update);
+        trfuActionProp.setProp(eritrocyteMass.getMaker(), actionId, Constants.MAKER, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getNumber(), actionId, PropType.NUMBER, update);
+        trfuActionProp.setProp(eritrocyteMass.getNumber(), actionId, Constants.NUMBER, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getBloodGroupId(), actionId, PropType.BLOOD_GROUP_ID, update);
+        trfuActionProp.setProp(eritrocyteMass.getBloodGroupId(), actionId, Constants.BLOOD_GROUP_ID, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getRhesusFactorId(), actionId, PropType.RHESUS_FACTOR_ID, update);
+        trfuActionProp.setProp(eritrocyteMass.getRhesusFactorId(), actionId, Constants.RHESUS_FACTOR_ID, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getVolume(), actionId, PropType.VOLUME_PROC_RES, update);
+        trfuActionProp.setProp(eritrocyteMass.getVolume(), actionId, Constants.VOLUME_PROC_RES, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getProductionDate(), actionId, PropType.PRODUCTION_DATE, update);
+        trfuActionProp.setProp(eritrocyteMass.getProductionDate(), actionId, Constants.PRODUCTION_DATE, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getExpirationDate(), actionId, PropType.EXPIRATION_DATE, update);
+        trfuActionProp.setProp(eritrocyteMass.getExpirationDate(), actionId, Constants.EXPIRATION_DATE, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getHt(), actionId, PropType.HT, update);
+        trfuActionProp.setProp(eritrocyteMass.getHt(), actionId, Constants.HT, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getSalineVolume(), actionId, PropType.SALINE_VOLUME, update);
+        trfuActionProp.setProp(eritrocyteMass.getSalineVolume(), actionId, Constants.SALINE_VOLUME, update);
 
-        trfuActionProp.setProp(eritrocyteMass.getFinalHt(), actionId, PropType.FINAL_HT, update);
+        trfuActionProp.setProp(eritrocyteMass.getFinalHt(), actionId, Constants.FINAL_HT, update);
 
-        trfuActionProp.setProp(actionId, actionId, PropType.LAB_MEASURE, update);
+        trfuActionProp.setProp(actionId, actionId, Constants.LAB_MEASURE, update);
 
-        trfuActionProp.setProp(actionId, actionId, PropType.FINAL_VOLUME, update);
+        trfuActionProp.setProp(actionId, actionId, Constants.FINAL_VOLUME, update);
 
         return true;
     }
+    */
 }

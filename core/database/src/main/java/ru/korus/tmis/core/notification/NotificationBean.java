@@ -2,7 +2,6 @@ package ru.korus.tmis.core.notification;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.ActionType;
 import ru.korus.tmis.core.entity.model.NotificationAction;
 import ru.korus.tmis.core.exception.CoreException;
@@ -29,9 +28,9 @@ public class NotificationBean implements NotificationBeanLocal {
 
     private static final Logger logger = LoggerFactory.getLogger(NotificationBeanLocal.class);
 
-    private Map<String, Set<String>> flatCodeListeners = new HashMap<String, Set<String>>();
+    private Map<String, Set<String>> flatCodeListeners = new HashMap<>();
 
-    private Map<Integer, Set<String>> actionTypeIdListeners = new HashMap<Integer, Set<String>>();
+    private Map<Integer, Set<String>> actionTypeIdListeners = new HashMap<>();
 
     @Override
     public void addListener(String flatCode, String modulePath) {

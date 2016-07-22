@@ -807,4 +807,8 @@ class DbActionBean
   override def getById(id: Int): Action = {
     em.find(classOf[Action], id)
   }
+
+  override def getNewActionByFlatCode(flatCode: String): util.List[Action] = {
+      em.createNamedQuery("Action.findNewByFlatCode", classOf[Action]).setParameter("flatCode", flatCode).getResultList
+  }
 }

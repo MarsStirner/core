@@ -3,10 +3,8 @@ package ru.korus.tmis.ws.transfusion.efive;
 
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
 
 
 /**
@@ -33,149 +31,52 @@ import java.lang.StringBuilder;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "OrderResult", propOrder = {
-    "requestId",
-    "result",
-    "number",
-    "description",
-    "orderComment"
-})
+@XmlType(name = "OrderResult", propOrder = {"resultCode", "requestId", "resultInfo" } )
 public class OrderResult {
+    public static final int RESULT_CODE_SUCCESS = 0;
+    public static final int RESULT_CODE_ALREADY_PROCESSED = 1;
+    public static final int RESULT_CODE_WRONG_DATA = 2;
+    public static final int RESULT_CODE_INTERNAL_ERROR = 3;
 
-    protected Integer requestId;
-    protected Boolean result;
-    protected String number;
-    protected String description;
-    protected String orderComment;
 
-    /**
-     * Gets the value of the requestId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
-     */
+    @XmlElement(name = "requestId")
+    private Integer requestId;
+    @XmlElement(name = "resultCode")
+    private Integer resultCode;
+    @XmlElement(name = "resultInfo")
+    private String resultInfo;
+
+
     public Integer getRequestId() {
         return requestId;
     }
 
-    /**
-     * Sets the value of the requestId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
-     */
-    public void setRequestId(Integer value) {
-        this.requestId = value;
+    public void setRequestId(Integer requestId) {
+        this.requestId = requestId;
     }
 
-    /**
-     * Gets the value of the result property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Boolean }
-     *     
-     */
-    public Boolean isResult() {
-        return result;
+    public Integer getResultCode() {
+        return resultCode;
     }
 
-    /**
-     * Sets the value of the result property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Boolean }
-     *     
-     */
-    public void setResult(Boolean value) {
-        this.result = value;
+    public void setResultCode(final Integer resultCode) {
+        this.resultCode = resultCode;
     }
 
-    /**
-     * Gets the value of the number property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getNumber() {
-        return number;
+    public String getResultInfo() {
+        return resultInfo;
     }
 
-    /**
-     * Sets the value of the number property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setNumber(String value) {
-        this.number = value;
-    }
-
-    /**
-     * Gets the value of the description property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getDescription() {
-        return description;
-    }
-
-    /**
-     * Sets the value of the description property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setDescription(String value) {
-        this.description = value;
-    }
-
-    /**
-     * Gets the value of the orderComment property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
-     */
-    public String getOrderComment() {
-        return orderComment;
-    }
-
-    /**
-     * Sets the value of the orderComment property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
-     */
-    public void setOrderComment(String value) {
-        this.orderComment = value;
+    public void setResultInfo(final String resultInfo) {
+        this.resultInfo = resultInfo;
     }
 
     @Override
     public String toString() {
-        final StringBuilder sb = new StringBuilder();
-        sb.append("OrderResult");
-        sb.append("{requestId=").append(requestId);
-        sb.append(", result=").append(result);
-        sb.append(", number=").append(number);
-        sb.append(", description=").append(description);
+        final StringBuilder sb = new StringBuilder("OrderResult{");
+        sb.append("requestId=").append(requestId);
+        sb.append(", resultCode=").append(resultCode);
+        sb.append(", resultInfo='").append(resultInfo).append('\'');
         sb.append('}');
         return sb.toString();
     }

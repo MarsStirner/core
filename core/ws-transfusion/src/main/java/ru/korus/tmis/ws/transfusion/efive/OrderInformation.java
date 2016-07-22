@@ -1,4 +1,3 @@
-
 package ru.korus.tmis.ws.transfusion.efive;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -6,16 +5,13 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlSchemaType;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
-import java.lang.Override;
-import java.lang.String;
-import java.lang.StringBuilder;
 
 
 /**
  * <p>Java class for OrderInformation complex type.
- * 
+ * <p/>
  * <p>The following schema fragment specifies the expected content contained within this class.
- * 
+ * <p/>
  * <pre>
  * &lt;complexType name="OrderInformation">
  *   &lt;complexContent>
@@ -43,29 +39,10 @@ import java.lang.StringBuilder;
  *   &lt;/complexContent>
  * &lt;/complexType>
  * </pre>
- * 
- * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "OrderInformation", propOrder = {
-    "id",
-    "number",
-    "divisionId",
-    "ibNumber",
-    "diagnosis",
-    "componentTypeId",
-    "volume",
-    "doseCount",
-    "indication",
-    "transfusionType",
-    "planDate",
-    "registrationDate",
-    "attendingPhysicianId",
-    "attendingPhysicianLastName",
-    "attendingPhysicianFirstName",
-    "attendingPhysicianMiddleName",
-    "bloodGroupId",
-    "rhesusFactorId"
+@XmlType(name = "OrderInformation", propOrder = {"id", "number", "divisionId", "ibNumber", "diagnosis", "componentTypeId", "volume", "doseCount", "indication", "transfusionType", "planDate", "registrationDate", "attendingPhysicianId", "attendingPhysicianLastName", "attendingPhysicianFirstName", "attendingPhysicianMiddleName", "bloodGroupId", "rhesusFactorId", "lastModifyDateTime"
+
 })
 public class OrderInformation {
 
@@ -89,6 +66,8 @@ public class OrderInformation {
     protected String attendingPhysicianMiddleName;
     protected Integer bloodGroupId;
     protected Integer rhesusFactorId;
+    @XmlSchemaType(name = "dateTime")
+    protected XMLGregorianCalendar lastModifyDateTime;
 
     @Override
     public String toString() {
@@ -110,17 +89,16 @@ public class OrderInformation {
         sb.append(", attendingPhysicianLastName=").append(attendingPhysicianLastName);
         sb.append(", attendingPhysicianFirstName=").append(attendingPhysicianFirstName);
         sb.append(", attendingPhysicianMiddleName=").append(attendingPhysicianMiddleName);
+        sb.append(", lastModifyDateTime=").append(lastModifyDateTime);
         sb.append('}');
         return sb.toString();
     }
 
     /**
      * Gets the value of the id property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     *
+     * @return possible object is
+     * {@link Integer }
      */
     public Integer getId() {
         return id;
@@ -128,11 +106,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the id property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Integer }
      */
     public void setId(Integer value) {
         this.id = value;
@@ -140,11 +116,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the number property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getNumber() {
         return number;
@@ -152,11 +126,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the number property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setNumber(String value) {
         this.number = value;
@@ -164,11 +136,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the divisionId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     *
+     * @return possible object is
+     * {@link Integer }
      */
     public Integer getDivisionId() {
         return divisionId;
@@ -176,11 +146,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the divisionId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Integer }
      */
     public void setDivisionId(Integer value) {
         this.divisionId = value;
@@ -188,11 +156,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the ibNumber property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getIbNumber() {
         return ibNumber;
@@ -200,11 +166,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the ibNumber property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setIbNumber(String value) {
         this.ibNumber = value;
@@ -212,11 +176,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the diagnosis property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getDiagnosis() {
         return diagnosis;
@@ -224,11 +186,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the diagnosis property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setDiagnosis(String value) {
         this.diagnosis = value;
@@ -236,11 +196,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the componentTypeId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     *
+     * @return possible object is
+     * {@link Integer }
      */
     public Integer getComponentTypeId() {
         return componentTypeId;
@@ -248,11 +206,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the componentTypeId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Integer }
      */
     public void setComponentTypeId(Integer value) {
         this.componentTypeId = value;
@@ -260,11 +216,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the volume property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     *
+     * @return possible object is
+     * {@link Integer }
      */
     public Integer getVolume() {
         return volume;
@@ -272,11 +226,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the volume property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Integer }
      */
     public void setVolume(Integer value) {
         this.volume = value;
@@ -284,11 +236,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the doseCount property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Double }
-     *     
+     *
+     * @return possible object is
+     * {@link Double }
      */
     public Double getDoseCount() {
         return doseCount;
@@ -296,11 +246,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the doseCount property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Double }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Double }
      */
     public void setDoseCount(Double value) {
         this.doseCount = value;
@@ -308,11 +256,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the indication property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getIndication() {
         return indication;
@@ -320,11 +266,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the indication property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setIndication(String value) {
         this.indication = value;
@@ -332,11 +276,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the transfusionType property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     *
+     * @return possible object is
+     * {@link Integer }
      */
     public Integer getTransfusionType() {
         return transfusionType;
@@ -344,11 +286,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the transfusionType property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Integer }
      */
     public void setTransfusionType(Integer value) {
         this.transfusionType = value;
@@ -356,11 +296,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the planDate property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     *
+     * @return possible object is
+     * {@link XMLGregorianCalendar }
      */
     public XMLGregorianCalendar getPlanDate() {
         return planDate;
@@ -368,11 +306,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the planDate property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link XMLGregorianCalendar }
      */
     public void setPlanDate(XMLGregorianCalendar value) {
         this.planDate = value;
@@ -380,11 +316,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the registrationDate property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     *
+     * @return possible object is
+     * {@link XMLGregorianCalendar }
      */
     public XMLGregorianCalendar getRegistrationDate() {
         return registrationDate;
@@ -392,11 +326,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the registrationDate property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link XMLGregorianCalendar }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link XMLGregorianCalendar }
      */
     public void setRegistrationDate(XMLGregorianCalendar value) {
         this.registrationDate = value;
@@ -404,11 +336,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the attendingPhysicianId property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *     
+     *
+     * @return possible object is
+     * {@link Integer }
      */
     public Integer getAttendingPhysicianId() {
         return attendingPhysicianId;
@@ -416,11 +346,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the attendingPhysicianId property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link Integer }
      */
     public void setAttendingPhysicianId(Integer value) {
         this.attendingPhysicianId = value;
@@ -428,11 +356,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the attendingPhysicianLastName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getAttendingPhysicianLastName() {
         return attendingPhysicianLastName;
@@ -440,11 +366,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the attendingPhysicianLastName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setAttendingPhysicianLastName(String value) {
         this.attendingPhysicianLastName = value;
@@ -452,11 +376,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the attendingPhysicianFirstName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getAttendingPhysicianFirstName() {
         return attendingPhysicianFirstName;
@@ -464,11 +386,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the attendingPhysicianFirstName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setAttendingPhysicianFirstName(String value) {
         this.attendingPhysicianFirstName = value;
@@ -476,11 +396,9 @@ public class OrderInformation {
 
     /**
      * Gets the value of the attendingPhysicianMiddleName property.
-     * 
-     * @return
-     *     possible object is
-     *     {@link String }
-     *     
+     *
+     * @return possible object is
+     * {@link String }
      */
     public String getAttendingPhysicianMiddleName() {
         return attendingPhysicianMiddleName;
@@ -488,11 +406,9 @@ public class OrderInformation {
 
     /**
      * Sets the value of the attendingPhysicianMiddleName property.
-     * 
-     * @param value
-     *     allowed object is
-     *     {@link String }
-     *     
+     *
+     * @param value allowed object is
+     *              {@link String }
      */
     public void setAttendingPhysicianMiddleName(String value) {
         this.attendingPhysicianMiddleName = value;
@@ -501,10 +417,8 @@ public class OrderInformation {
     /**
      * Gets the value of the bloodGroupId property.
      *
-     * @return
-     *     possible object is
-     *     {@link Integer }
-     *
+     * @return possible object is
+     * {@link Integer }
      */
     public Integer getBloodGroupId() {
         return bloodGroupId;
@@ -513,10 +427,8 @@ public class OrderInformation {
     /**
      * Sets the value of the bloodGroupId property.
      *
-     * @param value
-     *     allowed object is
-     *     {@link Integer }
-     *
+     * @param value allowed object is
+     *              {@link Integer }
      */
     public void setBloodGroupId(Integer value) {
         this.bloodGroupId = value;
@@ -528,5 +440,13 @@ public class OrderInformation {
 
     public void setRhesusFactorId(Integer rhesusFactorId) {
         this.rhesusFactorId = rhesusFactorId;
+    }
+
+    public XMLGregorianCalendar getLastModifyDateTime() {
+        return lastModifyDateTime;
+    }
+
+    public void setLastModifyDateTime(final XMLGregorianCalendar lastModifyDateTime) {
+        this.lastModifyDateTime = lastModifyDateTime;
     }
 }

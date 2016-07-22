@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database.common
 
 
 import java.util
-import java.util.{Calendar, Date}
+import java.util.{Collections, Calendar, Date}
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
 
@@ -41,6 +41,9 @@ class DbEventBean
 
   @EJB
   private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
+
+  @EJB
+  private var dbCustomQuery: DbCustomQueryLocal = _
 
   def getCountRecordsOrPagesQuery(enterPosition: String): TypedQuery[Long] = {
 
@@ -317,6 +320,45 @@ class DbEventBean
     result.foreach(action => res.put(action.getActionType.getFlatCode, action))
     res
   }
+
+
+  val getLastOrgStructureForEventFromMovingsSQLQuery =
+    """
+      |SELECT os.*
+      |FROM Event e
+      |INNER JOIN Action a ON a.event_id = e.id
+      |INNER JOIN ActionType aty ON aty.id = a.actionType_id
+      |INNER JOIN ActionProperty ap ON ap.action_id = a.id
+      |INNER JOIN ActionPropertyType apt ON apt.id = ap.type_id
+      |INNER JOIN ActionProperty_OrgStructure ap_os ON ap_os.id = ap.id
+      |INNER JOIN OrgStructure os ON os.id = ap_os.value
+      |WHERE a.deleted = 0
+      |AND aty.flatCode = ?
+      |AND apt.code = ?
+      |AND e.id = ?
+      |ORDER BY a.begDate DESC
+    """.stripMargin
+
+  def getOrgStructureFromRecievedActionInEvent(eventId: Int): OrgStructure = {
+    null
+  }
+
+  override def getLastOrgStructureForEvent(eventId: Int): OrgStructure ={
+    val query = em.createNativeQuery(getLastOrgStructureForEventFromMovingsSQLQuery, classOf[OrgStructure])
+      .setParameter(1, i18n("db.action.movingFlatCode"))
+      .setParameter(2, i18n("db.apt.moving.codes.hospOrgStruct"))
+      .setParameter(3, eventId)
+    val departments = query.getResultList
+    if(!departments.isEmpty){
+      departments.head.asInstanceOf[OrgStructure]
+    } else {
+      getOrgStructureFromRecievedActionInEvent(eventId)
+    }
+  }
+
+
+
+
 
   val EventGetCountRecords =
     """

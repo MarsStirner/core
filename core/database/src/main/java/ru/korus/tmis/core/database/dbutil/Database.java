@@ -209,16 +209,7 @@ public class Database {
 
     }
 
-    /**
-     * Поиск новых действий
-     * 
-     * @flatCode - код типа действия
-     * @return - список действий с типом, соответсвующим flatCode и статусом 0 - Начато
-     */
-    public List<Action> getNewActionByFlatCode(final String flatCode) {
-        return em.createNamedQuery("Action.findNewByFlatCode", Action.class)
-                .setParameter("flatCode", flatCode).getResultList();
-    }
+
 
     public List<Action> getNewActionByFlatCodeAfterDate(final String flatCode, final Date afterDate) {
         return em.createQuery(
@@ -243,6 +234,27 @@ public class Database {
         final GregorianCalendar planedDateCalendar = new GregorianCalendar();
         planedDateCalendar.setTime(date);
         return DatatypeFactory.newInstance().newXMLGregorianCalendar(planedDateCalendar);
+    }
+
+    /**
+     * Преобразовать Date в XMLGregorianCalendar
+     *
+     * @param date
+     * @return XMLGregorianCalendar соответсвующий <code>date</code>
+     * @throws DatatypeConfigurationException
+     *             если не возможно создать экземпляр XMLGregorianCalendar (@see {@link DatatypeFactory#newInstance()})
+     */
+    public static XMLGregorianCalendar toXMLGregorianCalendar(final Date date) {
+        if (date == null) {
+            return null;
+        }
+        final GregorianCalendar planedDateCalendar = new GregorianCalendar();
+        planedDateCalendar.setTime(date);
+        try {
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(planedDateCalendar);
+        } catch (DatatypeConfigurationException e) {
+            return null;
+        }
     }
 
     /**

@@ -125,6 +125,9 @@ public class OrgStructure implements Serializable {
     private UUID uuid;
 
 
+    @Column(name="show")
+    private Integer show;
+
     public OrgStructure() {
     }
 
@@ -178,14 +181,6 @@ public class OrgStructure implements Serializable {
 
     public void setDeleted(boolean deleted) {
         this.deleted = deleted;
-    }
-
-    public Organisation getOrganization() {
-        return organisation;
-    }
-
-    public void setOrganization(Organisation organisation) {
-        this.organisation = organisation;
     }
 
     public String getCode() {
@@ -330,6 +325,46 @@ public class OrgStructure implements Serializable {
 
     public void setUuid(UUID uuid) {
         this.uuid = uuid;
+    }
+
+    public boolean isDeleted() {
+        return deleted;
+    }
+
+    public Organisation getOrganisation() {
+        return organisation;
+    }
+
+    public void setOrganisation(final Organisation organisation) {
+        this.organisation = organisation;
+    }
+
+    public boolean isHasHospitalBeds() {
+        return hasHospitalBeds;
+    }
+
+    public boolean isHasStocks() {
+        return hasStocks;
+    }
+
+    public boolean isInheritEventTypes() {
+        return inheritEventTypes;
+    }
+
+    public boolean isInheritActionTypes() {
+        return inheritActionTypes;
+    }
+
+    public boolean isInheritGaps() {
+        return inheritGaps;
+    }
+
+    public Integer getShow() {
+        return show;
+    }
+
+    public void setShow(final Integer show) {
+        this.show = show;
     }
 
     @Override

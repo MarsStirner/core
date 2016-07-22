@@ -834,16 +834,12 @@ with I18nable {
     }
     val comment: String = action.getNote
     diag.setOrderComment(comment)
-    var department: OrgStructure = getOrgStructureByEvent(action.getEvent)
+    val department: OrgStructure = dbEventBean.getLastOrgStructureForEvent(action.getEvent.getId)
     if(department == null){
-      warn("No department found for Action[%s] in moving's, search in RECEIVE Action".format(action.getId))
-      department = getOrgStructureFromRecievedActionInEvent(action.getEvent)
-    }
-    if (department != null) {
+      error("No department found for Action[%s]".format(action.getId))
+    }else  {
       diag.setOrderDepartmentMisCode(String.valueOf(department.getId))
       diag.setOrderDepartmentName(department.getName)
-    } else {
-       error("No department found for Action[%s]".format(action.getId))
     }
     val doctorLastname: String = action.getAssigner.getLastName
     val doctorFirstname: String = action.getAssigner.getFirstName
@@ -900,44 +896,5 @@ with I18nable {
     orderInfo
   }
 
-  private def getOrgStructureByEvent(e: Event): OrgStructure = {
-    val hospitalBeds: util.Map[Event, ActionProperty] = dbCustomQuery.getHospitalBedsByEvents(Collections.singletonList(e))
-    if (hospitalBeds == null) {
-      return null
-    }
-    for (event <- hospitalBeds.keySet) {
-      val actionProperty: ActionProperty = hospitalBeds.get(event)
-      val actionPropertyValue: util.List[APValue] = dbActionProperty.getActionPropertyValue(actionProperty)
-      for (apValue <- actionPropertyValue) {
-        apValue.getValue match {
-          case bed: OrgStructureHospitalBed =>
-            return bed.getMasterDepartment
-          case _ =>
-        }
-      }
-    }
-    null
-  }
 
-  def getOrgStructureFromRecievedActionInEvent(e: Event): OrgStructure = {
-    val orgStructureAP = dbCustomQuery.getOrgStructureByReceivedActionByEvents(Collections.singletonList(e))
-    orgStructureAP.get(e) match {
-      case null => {
-        warn("OrgStructure from received Action not found for " + e)
-      }
-      case ap: ActionProperty => {
-        val apvs = dbActionProperty.getActionPropertyValue(ap)
-        apvs.foreach(
-          (apv) => {
-            apv.getValue match {
-              case os: OrgStructure =>
-                return os
-              case _ =>
-            }
-          })
-      }
-    }
-
-    null
-  }
 }

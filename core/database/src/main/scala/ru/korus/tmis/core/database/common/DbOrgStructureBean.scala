@@ -122,7 +122,7 @@ class DbOrgStructureBean
     allEntitiesList.map((current: OrgStructure) => {
       if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL &&
         (current.getParentId == parentId || (!parentIdIsDefined && current.getParentId == null)) &&
-        (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))) {
+        (!infisCodeIsDefined || (current.getOrganisation != null && current.getOrganisation.getInfisCode == infisCode))) {
         result += current
         if (recursive.booleanValue()) parentIdsSet += current.getId
       }
@@ -137,7 +137,7 @@ class DbOrgStructureBean
         previousSize = parentIdsSet.size
         allEntitiesList.map((current: OrgStructure) => {
           if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL && parentIdsSet(current.getParentId)
-            && (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))
+            && (!infisCodeIsDefined || (current.getOrganisation != null && current.getOrganisation.getInfisCode == infisCode))
           ) {
             result += current
             parentIdsSet += current.getId
@@ -257,7 +257,7 @@ class DbOrgStructureBean
     allEntitiesList.map((current: OrgStructure) => {
       if (!current.getDeleted &&
         (current.getParentId == parentId || (!parentIdIsDefined && current.getParentId == null)) &&
-        (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))) {
+        (!infisCodeIsDefined || (current.getOrganisation != null && current.getOrganisation.getInfisCode == infisCode))) {
         result += current
         if (recursive.booleanValue()) parentIdsSet += current.getId
       }
@@ -272,7 +272,7 @@ class DbOrgStructureBean
         previousSize = parentIdsSet.size
         allEntitiesList.map((current: OrgStructure) => {
           if (!current.getDeleted  && parentIdsSet(current.getParentId)
-            && (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))
+            && (!infisCodeIsDefined || (current.getOrganisation != null && current.getOrganisation.getInfisCode == infisCode))
           ) {
             result += current
             parentIdsSet += current.getId

@@ -1,14 +1,14 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
 import javax.persistence.*;
+import java.io.Serializable;
 
 /**
  * The persistent class for the RbTrfuBloodComponentType database table.
- * 
  */
 @Entity
 @Table(name = "rbTrfuBloodComponentType")
+@NamedQueries({@NamedQuery(name = "rbTrfuBloodComponentType.findAll", query = "SELECT c FROM RbTrfuBloodComponentType c")})
 public class RbTrfuBloodComponentType implements Serializable {
     private static final long serialVersionUID = 1L;
 
@@ -69,26 +69,6 @@ public class RbTrfuBloodComponentType implements Serializable {
 
     public void setUnused(boolean unused) {
         this.unused = unused;
-    }   
-
-    /**
-     * @see java.lang.Object#toString()
-     */
-    @Override
-    public String toString() {
-        StringBuilder builder = new StringBuilder();
-        builder.append("RbTrfuBloodComponentType [id=");
-        builder.append(id);
-        builder.append(", code=");
-        builder.append(code);
-        builder.append(", name=");
-        builder.append(name);
-        builder.append(", trfuId=");
-        builder.append(trfuId);
-        builder.append(", unused=");
-        builder.append(unused);
-        builder.append("]");
-        return builder.toString();
     }
 
     /**
@@ -142,5 +122,25 @@ public class RbTrfuBloodComponentType implements Serializable {
             return false;
         }
         return true;
-    }  
+    }
+
+    /**
+     * @see java.lang.Object#toString()
+     */
+    @Override
+    public String toString() {
+        StringBuilder builder = new StringBuilder();
+        builder.append("RbTrfuBloodComponentType [id=");
+        builder.append(id);
+        builder.append(", code=");
+        builder.append(code);
+        builder.append(", name=");
+        builder.append(name);
+        builder.append(", trfuId=");
+        builder.append(trfuId);
+        builder.append(", unused=");
+        builder.append(unused);
+        builder.append("]");
+        return builder.toString();
+    }
 }

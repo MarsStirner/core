@@ -3,22 +3,10 @@ package ru.korus.tmis.ws.transfusion.procedure;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.util.EntityMgr;
-import ru.korus.tmis.ws.transfusion.PropType;
-import ru.korus.tmis.ws.transfusion.SenderUtils;
-import ru.korus.tmis.ws.transfusion.TrfuActionProp;
-import ru.korus.tmis.ws.transfusion.efive.*;
-import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
+import ru.korus.tmis.core.entity.model.Staff;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.xml.datatype.DatatypeConfigurationException;
-import java.util.*;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -42,7 +30,7 @@ public class SendProcedureRequest {
     private Database database;
 
     private Staff coreUser;
-
+    /*
     private SenderUtils senderUtils = new SenderUtils();
 
     /**
@@ -50,60 +38,60 @@ public class SendProcedureRequest {
      */
     private static final String TRFU_PROCEDURE_TRFU_ID_BASE = "trfuProcedure_trfu_id_";
     private static final Logger logger = LoggerFactory.getLogger(SendProcedureRequest.class);
-
-    public static final PropType[] propTypes = {
-            PropType.ORDER_REQUEST_ID,
-            PropType.DONOR_ID,
-            PropType.ORDER_ISSUE_RES_DATE,
-            PropType.ORDER_ISSUE_RES_TIME,
-            PropType.CONTRAINDICATION,
-            PropType.BEFORE_HEMODYNAMICS_PULSE,
-            PropType.AFTER_HEMODYNAMICS_PULSE,
-            PropType.BEFORE_HEMODYNAMICS_ARTERIAL_PRESSURE,
-            PropType.AFTER_HEMODYNAMICS_ARTERIAL_PRESSURE,
-            PropType.BEFORE_HEMODYNAMICS_TEMPERATURE,
-            PropType.AFTER_HEMODYNAMICS_TEMPERATURE,
-            PropType.COMPLICATIONS,
-            PropType.INITIAL_VOLUME,
-            PropType.CHANGE_VOLUME,
-            PropType.INITIAL_TBV,
-            PropType.CHANGE_TBV,
-            PropType.INITIAL_SPEED,
-            PropType.CHANGE_SPEED,
-            PropType.INITIAL_INLETACRATIO,
-            PropType.CHANGE_INLETACRATIO,
-            PropType.INITIAL_TIME,
-            PropType.CHANGE_TIME,
-            PropType.INITIAL_PRODUCT_VOLUME,
-            PropType.CHANGE_PRODUCT_VOLUME,
-            PropType.ACD_LOAD,
-            PropType.NACL_LOAD,
-            PropType.CA_LOAD,
-            PropType.OTHER_LOAD,
-            PropType.TOTAL_LOAD,
-            PropType.PACK_REMOVE,
-            PropType.OTHER_REMOVE,
-            PropType.TOTAL_REMOVE,
-            PropType.BALANCE,
-            PropType.MAKER,
-            PropType.NUMBER,
-            PropType.BLOOD_GROUP_ID,
-            PropType.RHESUS_FACTOR_ID,
-            PropType.VOLUME_PROC_RES,
-            PropType.PRODUCTION_DATE,
-            PropType.EXPIRATION_DATE,
-            PropType.HT,
-            PropType.SALINE_VOLUME,
-            PropType.FINAL_HT,
-            PropType.LAB_MEASURE,
-            PropType.FINAL_VOLUME,
+    /*
+    public static final Constants[] propTypes = {
+            Constants.ORDER_REQUEST_ID,
+            Constants.DONOR_ID,
+            Constants.ORDER_ISSUE_RES_DATE,
+            Constants.ORDER_ISSUE_RES_TIME,
+            Constants.CONTRAINDICATION,
+            Constants.BEFORE_HEMODYNAMICS_PULSE,
+            Constants.AFTER_HEMODYNAMICS_PULSE,
+            Constants.BEFORE_HEMODYNAMICS_ARTERIAL_PRESSURE,
+            Constants.AFTER_HEMODYNAMICS_ARTERIAL_PRESSURE,
+            Constants.BEFORE_HEMODYNAMICS_TEMPERATURE,
+            Constants.AFTER_HEMODYNAMICS_TEMPERATURE,
+            Constants.COMPLICATIONS,
+            Constants.INITIAL_VOLUME,
+            Constants.CHANGE_VOLUME,
+            Constants.INITIAL_TBV,
+            Constants.CHANGE_TBV,
+            Constants.INITIAL_SPEED,
+            Constants.CHANGE_SPEED,
+            Constants.INITIAL_INLETACRATIO,
+            Constants.CHANGE_INLETACRATIO,
+            Constants.INITIAL_TIME,
+            Constants.CHANGE_TIME,
+            Constants.INITIAL_PRODUCT_VOLUME,
+            Constants.CHANGE_PRODUCT_VOLUME,
+            Constants.ACD_LOAD,
+            Constants.NACL_LOAD,
+            Constants.CA_LOAD,
+            Constants.OTHER_LOAD,
+            Constants.TOTAL_LOAD,
+            Constants.PACK_REMOVE,
+            Constants.OTHER_REMOVE,
+            Constants.TOTAL_REMOVE,
+            Constants.BALANCE,
+            Constants.MAKER,
+            Constants.NUMBER,
+            Constants.BLOOD_GROUP_ID,
+            Constants.RHESUS_FACTOR_ID,
+            Constants.VOLUME_PROC_RES,
+            Constants.PRODUCTION_DATE,
+            Constants.EXPIRATION_DATE,
+            Constants.HT,
+            Constants.SALINE_VOLUME,
+            Constants.FINAL_HT,
+            Constants.LAB_MEASURE,
+            Constants.FINAL_VOLUME,
     };
 
     /*
      * (non-Javadoc)
      * 
      * @see ru.korus.tmis.ws.transfusion.order.Pullable#pullDB(ru.korus.tmis.ws.transfusion.efive.TransfusionMedicalService)
-     */
+     *
 
     @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
     public void pullDB(final TransfusionMedicalService trfuService) {
@@ -120,7 +108,7 @@ public class SendProcedureRequest {
 
     /**
      *
-     */
+     *
     private void initCoreUser() {
         coreUser = database.getCoreUser();
     }
@@ -132,7 +120,7 @@ public class SendProcedureRequest {
      * @param trfuService
      * @throws CoreException
      * @throws DatatypeConfigurationException
-     */
+     *
     private void sendNewProcedure(final TransfusionMedicalService trfuService) throws CoreException {
         final List<Action> actions = getNewActions(database.getEntityMgr());
         final Map<String, TrfuActionProp> actionProp = new HashMap<String, TrfuActionProp>();
@@ -217,12 +205,12 @@ public class SendProcedureRequest {
      * @param trfuActionProp
      * @return
      * @throws CoreException
-     */
+     *
     private DonorInfo getDonorInfo(final EntityManager em, final Action action, final TrfuActionProp trfuActionProp) {
         final DonorInfo res = new DonorInfo();
         Integer donorId;
         try {
-            donorId = trfuActionProp.getProp(action.getId(), PropType.DONOR_ID);
+            donorId = trfuActionProp.getProp(action.getId(), Constants.DONOR_ID);
             final Patient client = em.find(Patient.class, donorId);
             res.setId(donorId);
             if (client != null) {
@@ -240,7 +228,7 @@ public class SendProcedureRequest {
      * @param em
      * @return
      * @throws CoreException
-     */
+     *
     private List<Action> getNewActions(final EntityManager em) throws CoreException {
         final List<RbTrfuProcedureTypes> procedureTypesDb =
                 em.createQuery("SELECT p FROM RbTrfuProcedureTypes p WHERE p.unused = 0", RbTrfuProcedureTypes.class).getResultList();
@@ -253,7 +241,7 @@ public class SendProcedureRequest {
 
     /**
      * @param trfuService
-     */
+     *
     private void updateProcedureType(final TransfusionMedicalService trfuService) {
         final List<ProcedureType> procedureTypes = trfuService.getProcedureTypes();
         final EntityManager em = database.getEntityMgr();
@@ -279,7 +267,7 @@ public class SendProcedureRequest {
     /**
      * @param em
      * @param trfuService
-     */
+     *
     private void updateLaboratoryMeasure(final TransfusionMedicalService trfuService) {
         final EntityManager em = database.getEntityMgr();
         final List<LaboratoryMeasureType> measureTypes = trfuService.getLaboratoryMeasureTypes();
@@ -300,7 +288,7 @@ public class SendProcedureRequest {
     /**
      * @param measureTypes
      * @return
-     */
+     *
     private List<RbTrfuLaboratoryMeasureTypes> convertLabMeasuresToDb(final List<LaboratoryMeasureType> measureTypes) {
         final List<RbTrfuLaboratoryMeasureTypes> res = new LinkedList<RbTrfuLaboratoryMeasureTypes>();
         for (final LaboratoryMeasureType procedure : measureTypes) {
@@ -314,7 +302,7 @@ public class SendProcedureRequest {
 
     /**
      * @param procedure
-     */
+     *
     private void createActionType(final RbTrfuProcedureTypes procedure) {
         final EntityManager em = database.getEntityMgr();
         final String flatCode = getFlatCode(procedure);
@@ -367,7 +355,7 @@ public class SendProcedureRequest {
      * @param em
      * @param flatCode
      * @return
-     */
+     *
     private ActionType getActionTypeByFlatCode(final EntityManager em, final String flatCode) {
         final List<ActionType> actionTypes =
                 em.createQuery("SELECT at FROM ActionType at WHERE at.flatCode = :flatCode", ActionType.class).setParameter("flatCode", flatCode)
@@ -379,13 +367,14 @@ public class SendProcedureRequest {
         }
     }
 
+    */
     /**
      * @param em
      * @param at
-     */
+     *
     private void createProperties(final ActionType at) {
         for (int idx = 0; idx < propTypes.length; ++idx) {
-            final PropType curProp = propTypes[idx];
+            final Constants curProp = propTypes[idx];
             final ActionPropertyType apt = new ActionPropertyType();
             apt.setActionType(at);
             apt.setIdx(idx);
@@ -413,7 +402,7 @@ public class SendProcedureRequest {
      * @param em
      * @param unit
      * @return
-     */
+     *
     private RbUnit getRbUnit(final EntityManager em, final String unitCode) {
         if (unitCode != null) {
             final List<RbUnit> units =
@@ -426,7 +415,7 @@ public class SendProcedureRequest {
     /**
      * @param procedure
      * @return
-     */
+     *
     private String getFlatCode(final RbTrfuProcedureTypes procedure) {
         return TRFU_PROCEDURE_TRFU_ID_BASE + procedure.getTrfuId();
     }
@@ -451,5 +440,5 @@ public class SendProcedureRequest {
         }
         return res;
     }
-
+        */
 }

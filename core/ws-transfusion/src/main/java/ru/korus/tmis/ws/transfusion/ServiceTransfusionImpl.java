@@ -36,7 +36,7 @@ import ru.korus.tmis.ws.transfusion.procedure.RegProcedureResult;
  */
 @WebService(endpointInterface = "ru.korus.tmis.ws.transfusion.ServiceTransfusion", targetNamespace = "http://korus.ru/tmis/ws/transfusion",
         serviceName = "TransfusionServiceImpl", portName = "portTransfusion", name = "nameTransfusion")
-public class ServiceTransfusionImpl implements ServiceTransfusion {
+public abstract class ServiceTransfusionImpl implements ServiceTransfusion {
 
     @EJB
     private Database database;
@@ -51,7 +51,7 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
 
     /**
      * @see ru.korus.tmis.ws.transfusion.ServiceTransfusion#setOrderIssueResult(ru.korus.tmis.ws.transfusion.order.OrderIssueInfo)
-     */
+     *
     @Override
     public IssueResult setOrderIssueResult(@WebParam(name = "requestId", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final Integer requestId,
             @WebParam(name = "factDate", targetNamespace = "http://korus.ru/tmis/ws/transfusion") final Date factDate,
@@ -66,12 +66,12 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
             return res;
 
         }
-        return regOrderIssueResult.save(requestId, factDate, components, orderComment);
+        return null;// regOrderIssueResult.save(requestId, factDate, components, orderComment);
     }
 
     /**
      * @see ru.korus.tmis.ws.transfusion.ServiceTransfusion#getDivisions()
-     */
+     *
     @Override
     public List<DivisionInfo> getDivisions() {
         logger.info("Entered in transfusion service 'getDivisions()'");
@@ -82,7 +82,7 @@ public class ServiceTransfusionImpl implements ServiceTransfusion {
      * @see ru.korus.tmis.ws.transfusion.ServiceTransfusion#setProcedureResult(ru.korus.tmis.ws.transfusion.efive.PatientCredentials,
      *      ru.korus.tmis.ws.transfusion.procedure.ProcedureInfo, ru.korus.tmis.ws.transfusion.procedure.EritrocyteMass, java.util.List,
      *      ru.korus.tmis.ws.transfusion.procedure.FinalVolumeList)
-     */
+     *
     @Override
     @WebMethod
     public IssueResult
