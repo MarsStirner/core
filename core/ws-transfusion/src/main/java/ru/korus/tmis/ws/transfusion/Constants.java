@@ -18,11 +18,11 @@ import ru.korus.tmis.ws.transfusion.order.SendOrderBloodComponents;
 /**
  * Типы свойств действий ТРФУ
  */
-public enum PropType {
+public enum Constants {
     /**
      * Общие свойства ТРФУ
      */
-    ORDER_REQUEST_ID("trfuReqBloodCompResult", APValueString.class, "Результат передачи требования в систему ТРФУ"),
+    ORDER_RESULT("trfuReqBloodCompResult", APValueString.class, "Результат передачи требования в систему ТРФУ"),
 
     ORDER_ISSUE_RES_DATE("trfuReqBloodCompDate", APValueDate.class, "Дата"),
 
@@ -180,7 +180,7 @@ public enum PropType {
      */
     private final boolean mandatory;
 
-    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name) {
+    Constants(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name) {
         this(code, valueClass, name, null, null, null);
     }
 
@@ -198,28 +198,43 @@ public enum PropType {
         return mandatory;
     }
 
-    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory) {
+    Constants(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory) {
         this(code, valueClass, name, mandatory, null, null, null);
     }
 
-    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name,
-            final String unitCode) {
+    Constants(
+            final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, final String unitCode
+    ) {
         this(code, valueClass, name, unitCode, null, null);
     }
 
-    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory,
-            final String unitCode) {
+    Constants(
+            final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory, final String unitCode
+    ) {
         this(code, valueClass, name, mandatory, unitCode, null, null);
     }
 
-    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name,
-            final String unitCode, final String typeName, final String valueDomain) {
+    Constants(
+            final String code,
+            @SuppressWarnings("rawtypes") final Class valueClass,
+            final String name,
+            final String unitCode,
+            final String typeName,
+            final String valueDomain
+    ) {
         this(code, valueClass, name, false, unitCode, typeName, valueDomain);
         readOnly = true;
     }
 
-    PropType(final String code, @SuppressWarnings("rawtypes") final Class valueClass, final String name, boolean mandatory,
-            final String unitCode, final String typeName, final String valueDomain) {
+    Constants(
+            final String code,
+            @SuppressWarnings("rawtypes") final Class valueClass,
+            final String name,
+            boolean mandatory,
+            final String unitCode,
+            final String typeName,
+            final String valueDomain
+    ) {
         this.code = code;
         this.valueClass = valueClass;
         this.name = name;
