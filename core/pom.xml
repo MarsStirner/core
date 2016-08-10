@@ -42,6 +42,7 @@
 
         <module>server</module>
 
+
     </modules>
 
 
@@ -232,6 +233,18 @@
             <properties>
                 <!-- Имя ear, которое будет после package -->
                 <ear.name>tmis-server-${version.tmis.core}</ear.name>
+                <!-- Опиция для автосоздания таблиц/ключей на основе содержимого JPA-сущностей -->
+                <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
+            </properties>
+        </profile>
+
+        <profile>
+            <!-- Профиль для сборки модуля интеграции с PACS Multivox-->
+            <id>pacs_multivox</id>
+            <modules>
+                <module>pacs_multivox</module>
+            </modules>
+            <properties>
                 <!-- Опиция для автосоздания таблиц/ключей на основе содержимого JPA-сущностей -->
                 <eclipselink.ddl.generated>NONE</eclipselink.ddl.generated>
             </properties>

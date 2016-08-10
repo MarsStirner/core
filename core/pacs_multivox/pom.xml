@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <parent>
+        <groupId>ru.korus.tmis</groupId>
+        <artifactId>tmis-core</artifactId>
+        <version>2.6.1.6</version>
+        <relativePath>../</relativePath>
+    </parent>
+
+    <groupId>ru.bars.open</groupId>
+    <artifactId>pacs_multivox</artifactId>
+    <name>TMIS PACS integration module (multivox)</name>
+    <version>2.6.1.6</version>
+
+
+
+    <modelVersion>4.0.0</modelVersion>
+    <packaging>war</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-common</artifactId>
+            <version>2.6.1.6</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>ru.korus.tmis.config</groupId>
+            <artifactId>config</artifactId>
+            <version>2.6.1.6</version>
+            <type>jar</type>
+        </dependency>
+        <dependency>
+            <groupId>ru.korus.tmis.core</groupId>
+            <artifactId>tmis-core-database</artifactId>
+            <version>2.6.1.6</version>
+            <type>ejb</type>
+        </dependency>
+        <dependency>
+            <groupId>com.sun.jersey</groupId>
+            <artifactId>jersey-json</artifactId>
+            <version>1.18</version>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <finalName>pacs_multivox</finalName>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <archive>
+                        <manifest>
+                            <addClasspath>true</addClasspath>
+                            <classpathPrefix>lib/</classpathPrefix>
+                        </manifest>
+                    </archive>
+                    <failOnMissingWebXml>false</failOnMissingWebXml>
+                    <attachClasses>true</attachClasses>
+                    <classesClassifier>classes</classesClassifier>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/webapp</directory>
+                            <filtering>true</filtering>
+                            <includes>
+                                <include>**/web.xml</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+</project>

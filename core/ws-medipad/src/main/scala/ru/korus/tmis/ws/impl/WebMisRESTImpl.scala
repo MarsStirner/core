@@ -1381,7 +1381,7 @@ with CAPids {
 
   def checkCountOfConsultations(eventId: Int, pqt: Int, executorId: Int, data: Long) {
     val executor = dbStaff.getStaffById(executorId)
-    val actionsCount = actionBean.getActionForEventAndPacientInQueueType(eventId, data, pqt)
+    val actionsCount = actionBean.getActionForEventAndPatientInQueueType(eventId, data, pqt)
     if (pqt == 1) {
       if (executor.getMaxCito <= 0 || executor.getMaxCito <= actionsCount) {
         throw new CoreException(ConfigManager.Messages("error.citoLimit"))

@@ -37,13 +37,13 @@ class DbActionBean
   var dbActionType: DbActionTypeBeanLocal = _
 
   @EJB
-  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
+  var dbUUIDBeanLocal: DbUUIDBeanLocal = _
 
   @EJB
-  private var dbEventPerson: DbEventPersonBeanLocal = _
+  var dbEventPerson: DbEventPersonBeanLocal = _
 
   @EJB
-  private var dbSetting: DbSettingsBeanLocal = _
+  var dbSetting: DbSettingsBeanLocal = _
 
   def getCountRecordsOrPagesQuery(enterPosition: String, filterQuery: String): TypedQuery[Long] = {
 
@@ -313,13 +313,6 @@ class DbActionBean
      Для остальных осмотров ищется последний осмотр заданного типа в данном обращении
      Выполнено согласно "ТРЕБОВАНИЯМ К РАБОТЕ С МЕДИЦИНСКИМИ ДОКУМЕНТАМИ"
      */
-    //val subQuery = // if(actionTypeId == i18n("db.actionType.primary").toInt || actionTypeId == i18n("db.actionType.secondary").toInt)
-    //   "e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id)"
-    //else //"e.id = :id"
-    //        "e.createDatetime IN (SELECT DISTINCT MAX(e2.createDatetime) FROM Event e2 WHERE e2.patient.id IN" +
-    //          "(SELECT DISTINCT e3.patient.id FROM Event e3 WHERE e3.id = :id) AND e2.deleted = 0 AND e2.createDatetime < " +
-    //          "(SELECT DISTINCT e4.createDatetime FROM Event e4 WHERE e4.id = :id))"
-
     val typed = em.createQuery(ActionsIdFindQuery /*.format(subQuery)*/ , classOf[Int])
     val result = typed.setParameter("id", eventId)
       .setParameter("actionTypeId", actionTypeId)
@@ -351,15 +344,13 @@ class DbActionBean
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEvent29AndAction19ForAction(action: Action) = {
-    var typed = em.createQuery(GetEvent29AndAction19ForAction, classOf[Action])
-      //.setParameter("externalId", action.getEvent.getExternalId)
+    val typed = em.createQuery(GetEvent29AndAction19ForAction, classOf[Action])
       .setParameter("directionDate", action.getPlannedEndDate)
 
     val result = typed.getResultList
     result.size match {
       case 0 => null
       case size => {
-
         result(0)
       }
     }
@@ -369,7 +360,7 @@ class DbActionBean
   def getActionForDateAndPacientInQueueType(beginDate: Long, pacientInQueueType: Int) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val strDate = formatter.format(new Date(beginDate))
-    var typed = em.createQuery(GetActionForDateAndPacientInQueueType, classOf[Long])
+    val typed = em.createQuery(GetActionForDateAndPacientInQueueType, classOf[Long])
       .setParameter("beginDate", strDate)
       .setParameter("pacientInQueueType", pacientInQueueType)
 
@@ -377,13 +368,13 @@ class DbActionBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionForEventAndPacientInQueueType(eventId: Int, date: Long, pacientInQueueType: Int) = {
+  def getActionForEventAndPatientInQueueType(eventId: Int, date: Long, patientInQueueType: Int) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val strDate = formatter.format(new Date(date))
-    var typed = em.createQuery(GetActionForEventAndPacientInQueueType, classOf[Long])
+    val typed = em.createQuery(GetActionForEventAndPacientInQueueType, classOf[Long])
       .setParameter("eventId", eventId)
       .setParameter("date", strDate)
-      .setParameter("pacientInQueueType", pacientInQueueType)
+      .setParameter("patientInQueueType", patientInQueueType)
 
     typed.getSingleResult
   }
@@ -396,7 +387,7 @@ class DbActionBean
   WHERE
     a.event.id = :eventId
   AND
-    a.pacientInQueueType = :pacientInQueueType
+    a.pacientInQueueType = :patientInQueueType
   AND
     substring(a.plannedEndDate, 1, 10) = :date
   AND
@@ -453,20 +444,6 @@ class DbActionBean
     ORDER BY a.createDatetime DESC
     """
 
-  /*val ActionsIdFindQuery = """
-    SELECT a.id
-    FROM
-      Action a
-      JOIN a.event e
-      JOIN a.actionType at
-    WHERE
-      a.deleted = 0
-    AND
-      at.id = :actionTypeId
-    AND
-      e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id AND e2.deleted = 0)
-    ORDER BY a.createDatetime DESC
-                           """*/
   val ActionsIdFindQuery =
     """
     SELECT a.id
@@ -594,14 +571,6 @@ class DbActionBean
       at.deleted = 0
     """
 
-  def getActionTypeByCode(code: String): ActionType = {
-    val result = em.createQuery(ActionTypeByCodeQuery, classOf[ActionType]).setParameter("code", code)
-      .getResultList
-    val et = result(0)
-
-    et
-  }
-
 
   def createAction(queueActionType: ActionType, queueEvent: Event, doctor: Staff, paramsDateTime: Date, hospitalUidFrom: String, note: String): Action = {
     val queueActionParam = (new QueueActionParam).setHospitalUidFrom(hospitalUidFrom).setNote(note)
@@ -610,7 +579,7 @@ class DbActionBean
 
   def createAction(actionType: ActionType, event: Event, person: Staff, date: Date, queueActionParam: QueueActionParam): Action = {
     val now = new Date
-    var newAction = new Action()
+    val newAction = new Action()
     //Инициализируем структуру Event
     try {
       newAction.setCreateDatetime(now)
@@ -781,7 +750,11 @@ class DbActionBean
       .setParameter("flatCodes", flatCodeList)
       .setMaxResults(1)
       .getResultList
-    return if (actions.isEmpty) null else actions.get(0);
+    if (actions.isEmpty) {
+      null
+    } else {
+      actions.get(0)
+    }
   }
 
   override def getLastActionByActionTypesAndClientId(codeList: util.List[String], clientId: Integer): Action = {
@@ -790,7 +763,11 @@ class DbActionBean
       .setParameter("clientId", clientId)
       .setMaxResults(1)
       .getResultList
-    return if (actions.isEmpty) null else actions.get(0);
+    if (actions.isEmpty) {
+      null
+    } else {
+      actions.get(0)
+    }
   }
 
 
@@ -806,5 +783,19 @@ class DbActionBean
 
   override def getById(id: Int): Action = {
     em.find(classOf[Action], id)
+  }
+
+  override def getActionsByActionTypeCodeAndStatus(actionTypeCode: String, status: ActionStatus): util.List[Action] = {
+    val query =
+      """
+        |SELECT a
+        |FROM Action a
+        |INNER JOIN a.actionType aty
+        |WHERE a.deleted = 0
+        |AND a.status = :status
+        |AND aty.code = :code
+        |ORDER BY a.id DESC
+      """.stripMargin
+    em.createQuery(query, classOf[Action]).setParameter("status", status.getCode).setParameter("code", actionTypeCode).getResultList
   }
 }
