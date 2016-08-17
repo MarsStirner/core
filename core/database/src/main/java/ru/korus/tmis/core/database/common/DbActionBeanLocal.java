@@ -257,10 +257,10 @@ public interface DbActionBeanLocal {
     Action getById(int id);
 
     /**
-     * Получение списка экшенов по ActionType.code и Action.status
-     * @param actionTypeCode строковый код типа экшенов для фильтрации
+     * Получение списка экшенов по ActionType.mnem и Action.status
+     * @param actionTypeMnemonic строковая мнемоника типа экшенов для фильтрации
      * @param status статус экшена для фильтрации
-     * @return  список экшенов с заданным статусом и ActionType.code
+     * @return  список экшенов с заданным статусом и ActionType.mnem
      */
-    List<Action> getActionsByActionTypeCodeAndStatus(final String  actionTypeCode, ActionStatus status);
+    List<Action> getActionsByActionTypeMnemonicAndStatus(final String  actionTypeMnemonic, ActionStatus status);
 }

@@ -1,8 +1,6 @@
 package ru.korus.tmis.core.database.common;
 
 import com.google.common.collect.Multimap;
-import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.data.IdNameContainer;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function1;
@@ -44,7 +42,7 @@ public interface DbEventBeanLocal {
 
     Set<ActionType> getActionTypeFilter(int eventId) throws CoreException;
 
-    OrgStructure getOrgStructureForEvent(int eventId) throws CoreException;
+    OrgStructure getOrgStructureForEvent(int eventId);
 
     Event createEvent(int patientId, int appealTypeId, Date begDate, Date endDate, int contractId, RbResult result, RbAcheResult acheResult, Staff execPerson, Staff createPerson) throws CoreException;
 

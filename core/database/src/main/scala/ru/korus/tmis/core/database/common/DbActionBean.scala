@@ -785,7 +785,7 @@ class DbActionBean
     em.find(classOf[Action], id)
   }
 
-  override def getActionsByActionTypeCodeAndStatus(actionTypeCode: String, status: ActionStatus): util.List[Action] = {
+  override def getActionsByActionTypeMnemonicAndStatus(actionTypeMnemonic: String, status: ActionStatus): util.List[Action] = {
     val query =
       """
         |SELECT a
@@ -793,9 +793,9 @@ class DbActionBean
         |INNER JOIN a.actionType aty
         |WHERE a.deleted = 0
         |AND a.status = :status
-        |AND aty.code = :code
+        |AND aty.mnemonic = :mnemonic
         |ORDER BY a.id DESC
       """.stripMargin
-    em.createQuery(query, classOf[Action]).setParameter("status", status.getCode).setParameter("code", actionTypeCode).getResultList
+    em.createQuery(query, classOf[Action]).setParameter("status", status.getCode).setParameter("mnemonic", actionTypeMnemonic).getResultList
   }
 }

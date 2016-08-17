@@ -81,21 +81,28 @@ class DbEventBean
   }
 
   def getOrgStructureForEvent(eventId: Int) = {
-    val result = em.createQuery(AllOrgStructuresForEventQuery,
-      classOf[Array[AnyRef]])
-      .setParameter("eid", eventId)
-      .getResultList
-      .sortBy {
-        case (Array(org, date)) => date.asInstanceOf[Date].getTime
-      }
-      .lastOption.map {
-      _.head
-    }
-      .asInstanceOf[Option[OrgStructure]]
-
+    val result = em.createQuery(AllOrgStructuresForEventQuery, classOf[OrgStructure])
+      .setParameter("eventId", eventId)
+      .setParameter("actionTypeFlatCode", i18n("db.action.movingFlatCode"))
+      .setParameter("actionPropertyTypeCode", i18n("db.apt.moving.codes.hospOrgStruct"))
+      .getResultList.headOption
     result match {
       case Some(org) => org
-      case None => throw new CoreException("OrgStructure for Event id = " + eventId + " not found")
+      case None => getOrgStructureFromReceivedActionInEvent(eventId)
+    }
+  }
+
+
+
+  def getOrgStructureFromReceivedActionInEvent(eventId: Int): OrgStructure = {
+    val result = em.createQuery(AllOrgStructuresForEventQuery, classOf[OrgStructure])
+      .setParameter("eventId", eventId)
+      .setParameter("actionTypeFlatCode", i18n("db.action.admissionFlatCode"))
+      .setParameter("actionPropertyTypeCode", i18n("db.apt.admission.codes.hospOrgStruct"))
+      .getResultList.headOption
+    result match {
+      case Some(org) => org
+      case None => null
     }
   }
 
@@ -318,6 +325,27 @@ class DbEventBean
     res
   }
 
+
+  val getLastOrgStructureForEventFromMovingsSQLQuery =
+    """
+      |SELECT os.*
+      |FROM Event e
+      |INNER JOIN Action a ON a.event_id = e.id
+      |INNER JOIN ActionType aty ON aty.id = a.actionType_id
+      |INNER JOIN ActionProperty ap ON ap.action_id = a.id
+      |INNER JOIN ActionPropertyType apt ON apt.id = ap.type_id
+      |INNER JOIN ActionProperty_OrgStructure ap_os ON ap_os.id = ap.id
+      |INNER JOIN OrgStructure os ON os.id = ap_os.value
+      |WHERE a.deleted = 0
+      |AND aty.flatCode = ?
+      |AND apt.code = ?
+      |AND e.id = ?
+      |ORDER BY a.begDate DESC
+    """.stripMargin
+
+
+
+
   val EventGetCountRecords =
     """
   SELECT count(e)
@@ -479,26 +507,25 @@ class DbEventBean
     """
 
   val AllOrgStructuresForEventQuery =
-    """
-    SELECT org, a.begDate
-    FROM
-      Action a,
-      ActionProperty ap,
-      APValueOrgStructure apvos,
-      OrgStructure org
-    WHERE
-      a.event.id = :eid AND
-      a.id = ap.action.id AND
-      ap.id = apvos.id.id AND
-      apvos.value.id = org.id
-    AND
-      a.actionType.flatCode = '%s'
-    AND
-      ap.actionPropertyType.name = '%s'
-    AND
-      ap.deleted = 0 AND
-      a.deleted = 0
-    """.format(i18n("db.action.movingFlatCode"), i18n("db.apt.departmentName"))
+  """
+    | SELECT org
+    | FROM
+    | Action a,
+    | ActionProperty ap,
+    | APValueOrgStructure apvos,
+    | OrgStructure org
+    | WHERE
+    |  a.deleted = 0
+    |  AND ap.deleted = 0
+    |  AND a.id = ap.action.id
+    |  AND ap.id = apvos.id.id
+    |  AND apvos.value.id = org.id
+    |  AND a.actionType.flatCode = :actionTypeFlatCode
+    |  AND ap.actionPropertyType.code = :actionPropertyTypeCode
+    |  AND a.event.id = :eventId
+    | ORDER BY a.begDate DESC
+  """.stripMargin
+
 
 
   val ActionTypeFilterByEventIdQuery =
