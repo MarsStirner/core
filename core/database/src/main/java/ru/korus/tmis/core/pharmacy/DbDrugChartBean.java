@@ -3,18 +3,16 @@ package ru.korus.tmis.core.pharmacy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.database.DbQuotingBySpecialityBean;
-import ru.korus.tmis.core.database.common.DbUUIDBeanLocal;
 import ru.korus.tmis.core.entity.model.Action;
 import ru.korus.tmis.core.entity.model.Event;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 
-import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.persistence.TemporalType;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Author: Upatov Egor <br>
@@ -29,9 +27,6 @@ public class DbDrugChartBean implements DbDrugChartBeanLocal {
 
     @PersistenceContext(unitName = "s11r64")
     EntityManager em = null;
-
-    @EJB
-    DbUUIDBeanLocal dbUUIDBeanLocal;
 
     private static final String getPrescriptionIntervalsQuery = "SELECT drch FROM DrugChart drch " +
             "WHERE drch.action.id = :ACTIONID AND drch.master IS NULL";
@@ -72,7 +67,7 @@ public class DbDrugChartBean implements DbDrugChartBeanLocal {
         res.setStatus(status);
         res.setStatusDateTime(new Date());
         res.setNote(note);
-        res.setUuid(java.util.UUID.randomUUID().toString());
+        res.setUuid(UUID.randomUUID());
         em.persist(res);
         em.flush();
         if(masterId == null) {
@@ -84,7 +79,10 @@ public class DbDrugChartBean implements DbDrugChartBeanLocal {
 
     @Override
     public void updateStatus(List<Integer> data, Short status) {
-        em.createNamedQuery("DrugChart.updateStatus", DrugChart.class).setParameter("status", status).setParameter("intervalIds", data).executeUpdate();
+        em.createNamedQuery("DrugChart.updateStatus", DrugChart.class)
+                .setParameter("status", status)
+                .setParameter("intervalIds", data)
+                .executeUpdate();
     }
 
 }

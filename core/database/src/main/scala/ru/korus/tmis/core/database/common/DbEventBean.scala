@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database.common
 
 
 import java.util
-import java.util.{Calendar, Date}
+import java.util.{UUID, Calendar, Date}
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
 
@@ -39,9 +39,6 @@ class DbEventBean
   @EJB
   private var contractBean: DbContractBeanLocal = _
 
-  @EJB
-  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
-
   def getCountRecordsOrPagesQuery(enterPosition: String): TypedQuery[Long] = {
 
     val cntMacroStr = "count(e)"
@@ -56,7 +53,7 @@ class DbEventBean
     if (index > 0) {
       curentRequest = curentRequest.substring(0, index)
     }
-    em.createQuery(curentRequest.toString(), classOf[Long])
+    em.createQuery(curentRequest.toString, classOf[Long])
   }
 
 
@@ -148,7 +145,7 @@ class DbEventBean
       newEvent.setPayStatus(0)
       //val contract = contractBean.getContractForEventType(eventType)
       newEvent.setContract(contract)
-      newEvent.setUuid(dbUUIDBeanLocal.createUUID())
+      newEvent.setUuid(UUID.randomUUID())
       newEvent.setResult(result)
       newEvent.setAcheResult(acheResult)
       newEvent.setExecutor(execPerson)
@@ -157,10 +154,9 @@ class DbEventBean
     catch {
       case ex: Exception => {
       }
-      //em.refresh(newEvent)
     }
 
-    return newEvent
+    newEvent
   }
 
   /**
@@ -177,22 +173,22 @@ class DbEventBean
     var newEvent = new Event
     //Инициализируем структуру Event
     try {
-      newEvent.setIsPrimary(1);
-      newEvent.setCreateDatetime(now);
-      newEvent.setCreatePerson(null);
-      newEvent.setModifyPerson(null);
-      newEvent.setEventType(eventType);
-      newEvent.setPatient(patient);
-      newEvent.setSetDate(begDate);
-      newEvent.setExternalId("");
-      newEvent.setModifyDatetime(now);
-      newEvent.setNote("");
-      newEvent.setOrder(0);
-      newEvent.setDeleted(false);
-      newEvent.setPayStatus(0);
+      newEvent.setIsPrimary(1)
+      newEvent.setCreateDatetime(now)
+      newEvent.setCreatePerson(null)
+      newEvent.setModifyPerson(null)
+      newEvent.setEventType(eventType)
+      newEvent.setPatient(patient)
+      newEvent.setSetDate(begDate)
+      newEvent.setExternalId("")
+      newEvent.setModifyDatetime(now)
+      newEvent.setNote("")
+      newEvent.setOrder(0)
+      newEvent.setDeleted(false)
+      newEvent.setPayStatus(0)
       newEvent.setExecutor(person)
       newEvent.setAssigner(person)
-      newEvent.setUuid(dbUUIDBeanLocal.createUUID());
+      newEvent.setUuid(UUID.randomUUID())
       //1. Инсертим
       em.persist(newEvent);
     }
@@ -242,9 +238,10 @@ class DbEventBean
   }
 
   def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[EventTypesListRequestDataFilter])
-      filter.asInstanceOf[EventTypesListRequestDataFilter].toQueryStructure()
-    else new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case filter1: EventTypesListRequestDataFilter => filter1.toQueryStructure()
+      case _ => new QueryDataStructure()
+    }
 
     val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
 
@@ -255,7 +252,7 @@ class DbEventBean
       records(recC.getSingleResult)
     }
 
-    var typed = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
+    val typed = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
       .setMaxResults(limit)
       .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -266,11 +263,11 @@ class DbEventBean
 
   def getCountOfAppealsForReceivedPatientByPeriod(filter: Object) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[ReceivedRequestDataFilter]) {
-      filter.asInstanceOf[ReceivedRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case filter1: ReceivedRequestDataFilter =>
+        filter1.toQueryStructure()
+      case _ =>
+        new QueryDataStructure()
     }
 
     val typed = em.createQuery(AllAppealsWithFilterQuery.format("count(e)", i18n("db.flatDirectory.eventType.hospitalization"), queryStr.query, ""), classOf[Long])
@@ -283,11 +280,11 @@ class DbEventBean
 
   def getAllAppealsForReceivedPatientByPeriod(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[ReceivedRequestDataFilter]) {
-      filter.asInstanceOf[ReceivedRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case x: ReceivedRequestDataFilter =>
+        x.toQueryStructure()
+      case _ =>
+        new QueryDataStructure()
     }
 
     val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)

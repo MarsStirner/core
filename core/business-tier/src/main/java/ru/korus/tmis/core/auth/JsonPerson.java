@@ -1,12 +1,11 @@
 package ru.korus.tmis.core.auth;
 
-import java.util.LinkedList;
-import java.util.List;
-
-import javax.xml.bind.annotation.XmlRootElement;
-
 import ru.korus.tmis.core.entity.model.Role;
 import ru.korus.tmis.core.entity.model.Staff;
+
+import javax.xml.bind.annotation.XmlRootElement;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -75,7 +74,7 @@ public class JsonPerson {
             res.setCode(staff.getPost().getCode());
         }
         if (staff.getOrgStructure() != null) {
-            res.setSubdivision(staff.getOrgStructure().getUuid().getUuid());
+            res.setSubdivision(staff.getOrgStructure().getUuid().toString());
         }
         res.setLogin(staff.getLogin());
         List<String> roleCodes = new LinkedList<String>();

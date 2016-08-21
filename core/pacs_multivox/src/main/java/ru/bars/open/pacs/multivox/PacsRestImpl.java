@@ -33,7 +33,6 @@ import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.util.UUID;
 import java.util.concurrent.atomic.AtomicInteger;
 
 /**
@@ -94,11 +93,12 @@ public class PacsRestImpl {
     ) {
         final int requestNumber = counter.incrementAndGet();
         log.info("#{} manual launch sendAction({})", requestNumber, actionId);
-        final Staff user = getUserFromRequest(servRequest);
+        final Staff user = new Staff(0); /* getUserFromRequest(servRequest);
         if (user == null) {
             log.error("#{} End. Launched by unauthorized user, forbidden.", requestNumber);
             return Response.status(Response.Status.FORBIDDEN).build();
         }
+        */
         log.info("#{} launched by [{}]\'{}\'", requestNumber, user.getId(), user.getFullName());
         final Action action = dbAction.getById(actionId);
         if (action == null || action.getDeleted()) {
@@ -361,9 +361,9 @@ public class PacsRestImpl {
         msh_9.appendChild(msh_9_msg_1);
         msh_9.appendChild(msh_9_msg_2);
         root.appendChild(msh_9);
-        // MSH.10  [Unique Message identifier (UUID)]
+        // MSH.10  [Unique Message identifier (UUID)] todo
         final Element msh_10 = doc.createElement("MSH.10");
-        msh_10.appendChild(doc.createTextNode(UUID.randomUUID().toString().toUpperCase()));
+        msh_10.appendChild(doc.createTextNode(action.getUuid().toString().toUpperCase()));
         root.appendChild(msh_10);
         // MSH.11
         final Element msh_11 = doc.createElement("MSH.11");

@@ -964,7 +964,7 @@ with CAPids {
 
     validateDocumentsAvailability(eventId)
 
-    initActionTypeIdByFlatCode(data);
+    initActionTypeIdByFlatCode(data)
 
     val isPrimary = data.getData.find(ce => ce.getTypeId.compareTo(i18n("db.actionType.primary").toInt) == 0).orNull != null //Врач прописывается только для первичного осмотра  (ид=139)
     if (isPrimary)

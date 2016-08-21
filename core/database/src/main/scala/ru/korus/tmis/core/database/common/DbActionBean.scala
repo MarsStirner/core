@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database.common
 
 import java.text.SimpleDateFormat
 import java.util
-import java.util.Date
+import java.util.{UUID, Date}
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
 
@@ -35,9 +35,6 @@ class DbActionBean
 
   @EJB
   var dbActionType: DbActionTypeBeanLocal = _
-
-  @EJB
-  var dbUUIDBeanLocal: DbUUIDBeanLocal = _
 
   @EJB
   var dbEventPerson: DbEventPersonBeanLocal = _
@@ -160,7 +157,7 @@ class DbActionBean
     a.setAmount(at.getAmount)
 
     a.setStatus(ActionStatus.STARTED.getCode)
-    a.setUuid(dbUUIDBeanLocal.createUUID())
+    a.setUuid(UUID.randomUUID())
     em.persist(a)
     a
   }
@@ -603,7 +600,7 @@ class DbActionBean
       //не менять на person, иначе нельзя будет отличить запись на прием к врачу с портала и других ЛПУ
       newAction.setAssigner(null)
 
-      newAction.setUuid(dbUUIDBeanLocal.createUUID)
+      newAction.setUuid(UUID.randomUUID())
       newAction.setHospitalUidFrom(queueActionParam.getHospitalUidFrom)
       //1. Инсертим
       em.persist(newAction)

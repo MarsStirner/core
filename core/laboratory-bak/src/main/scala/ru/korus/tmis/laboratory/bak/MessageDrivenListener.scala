@@ -163,7 +163,7 @@ class MessageDrivenListener extends LISMessageReceiver {
     providerOrganization.setDeterminerCode("INSTANCE")
     val orgId: LpuIDInfo = new LpuIDInfo
     val organisation: Organisation = event.getOrganisation
-    orgId.setRoot(organisation.getUuid.getUuid)
+    orgId.setRoot(organisation.getUuid.toString)
     providerOrganization.setId(orgId)
     providerOrganization.setName(organisation.getTitle)
     patientRole.setProviderOrganization(providerOrganization)
@@ -198,7 +198,7 @@ class MessageDrivenListener extends LISMessageReceiver {
       throw new CoreException("Не указан автор назначения")
     }
     doctorId.setExtension(doctor.getId.toString)
-    doctorId.setRoot(if (doctor.getUuid != null) doctor.getUuid.getUuid else "")
+    doctorId.setRoot(if (doctor.getUuid != null) doctor.getUuid.toString else "")
     assignedAuthor.setId(doctorId)
     val assignedPerson: AssignedPersonInfo = new AssignedPersonInfo
     assignedPerson.setClassCode("PSN")
@@ -212,7 +212,7 @@ class MessageDrivenListener extends LISMessageReceiver {
     val representedOrganization: RepresentedOrganizationInfo = new RepresentedOrganizationInfo
     if (doctor.getOrgStructure != null && doctor.getOrgStructure.getUuid != null) {
       val reporgIDInfo: ReporgIDInfo = new ReporgIDInfo
-      reporgIDInfo.setRoot(doctor.getOrgStructure.getUuid.getUuid)
+      reporgIDInfo.setRoot(doctor.getOrgStructure.getUuid.toString)
       representedOrganization.setId(reporgIDInfo)
     }
     representedOrganization.setName(CUSTODIAN_NAME)
@@ -250,8 +250,8 @@ class MessageDrivenListener extends LISMessageReceiver {
     structuredBody.getContent.add(jaxbElement)
     val subComponentInfo2: SubComponentInfo = FACTORY_BAK.createSubComponentInfo
     val section: SectionInfo = new SectionInfo
-    section.getEntry.add(EntryFactory.createEntry(eventInfo.getOrganisation.getUuid.getUuid, "OBS", "RQO", requestInfo.getOrderDepartmentMisCode, requestInfo.getOrderDepartmentName))
-    section.getEntry.add(EntryFactory.createEntry(action.getUuid.getUuid, "OBS", "RQO", action.getIsUrgent + "", ""))
+    section.getEntry.add(EntryFactory.createEntry(eventInfo.getOrganisation.getUuid.toString, "OBS", "RQO", requestInfo.getOrderDepartmentMisCode, requestInfo.getOrderDepartmentName))
+    section.getEntry.add(EntryFactory.createEntry(action.getUuid.toString, "OBS", "RQO", action.getIsUrgent + "", ""))
     section.getEntry.add(EntryFactory.createEntry("", "OBS", "RQO", requestInfo.getOrderDiagCode, requestInfo.getOrderDiagText))
     section.getEntry.add(EntryFactory.createEntry(eventInfo.getEventType.getFinance.getName, "OBS", "RQO", orderInfo.getDiagnosticCode, orderInfo.getDiagnosticName))
     for (indicatorMetodic: IndicatorMetodic <- orderInfo.getIndicatorList.asScala) {

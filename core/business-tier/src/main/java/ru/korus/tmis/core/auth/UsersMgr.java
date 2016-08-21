@@ -17,7 +17,6 @@ import ru.korus.tmis.core.entity.model.RbPost;
 import ru.korus.tmis.core.entity.model.Role;
 import ru.korus.tmis.core.entity.model.Speciality;
 import ru.korus.tmis.core.entity.model.Staff;
-import ru.korus.tmis.core.entity.model.UUID;
 import ru.korus.tmis.scala.util.ConfigManager;
 /**
  * Author: Sergey A. Zagrebelny <br>
@@ -39,8 +38,8 @@ public class UsersMgr implements UsersMgrLocal {
     @EJB
     private Database database = null;
 
-    private static Map<String, Integer> connections = new HashMap<String, Integer>();
-    private static LinkedList<Pair> connectionsTime = new LinkedList<Pair>();
+    private static Map<String, Integer> connections = new HashMap<>();
+    private static LinkedList<Pair> connectionsTime = new LinkedList<>();
 
     private class Pair {
         private final String uuid;
@@ -54,8 +53,6 @@ public class UsersMgr implements UsersMgrLocal {
 
     @Override
     public String auth(final String login, final String password) {
-        String res = null;
-
         List<Staff> users =
                 database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.login  = :login", Staff.class).setParameter("login", login).getResultList();
 
@@ -70,13 +67,11 @@ public class UsersMgr implements UsersMgrLocal {
                         .getResultList();
         if (users != null && !users.isEmpty()) {
             final String uuid = addToConnectionList(users.get(0));
-            res = String.format("{\"OK\":\"True\", \"type\": \"Basic\", \"token\": \"%s\" }", uuid);
+            return String.format("{\"OK\":\"True\", \"type\": \"Basic\", \"token\": \"%s\" }", uuid);
         }
         else {
-            res = error("Username or password are incorrect");
+           return error("Username or password are incorrect");
         }
-
-        return res;
     }
 
     static public String errorUserNotFound() {
@@ -87,7 +82,7 @@ public class UsersMgr implements UsersMgrLocal {
     public List<JsonPerson> getAll() {
         List<Staff> users = database.getEntityMgr().createQuery("SELECT s FROM Staff s WHERE s.deleted = 0", Staff.class)
                 .getResultList();
-        List<JsonPerson> res = new LinkedList<JsonPerson>();
+        List<JsonPerson> res = new LinkedList<>();
         for (Staff staff : users) {
             res.add(JsonPerson.create(staff));
         }
@@ -96,12 +91,11 @@ public class UsersMgr implements UsersMgrLocal {
 
     @Override
     public JsonPerson getByUUID(String token) {
-        JsonPerson res = null;
         Staff user = getStaffByUUID(token);
         if (user != null) {
             return JsonPerson.create(user);
         }
-        return res;
+        return null;
     }
 
     @Override
@@ -114,11 +108,11 @@ public class UsersMgr implements UsersMgrLocal {
     }
 
     private String addToConnectionList(Staff user) {
-        final String uuid = user.getUuid().getUuid();
+        final String uuid = user.getUuid().toString();
         connections.put(uuid, user.getId());
         connectionsTime.add(new Pair(uuid, new DateTime()));
         DateTime now = new DateTime();
-        int days = Days.daysBetween(((Pair) connectionsTime.getFirst()).datetime, now).getDays();
+        int days = Days.daysBetween((connectionsTime.getFirst()).datetime, now).getDays();
         if (days > KEEPALIVE_DAYS || connectionsTime.size() > MAX_CONNECTIONS) {
             connections.remove(connectionsTime.getFirst().uuid);
             connectionsTime.pop();
@@ -128,7 +122,6 @@ public class UsersMgr implements UsersMgrLocal {
 
     @Override
     public String create(JsonPerson jsonNewPerson) {
-        String res = null;
         final boolean isUsed = isLoginUsed(jsonNewPerson.getLogin());
         if (isUsed) {
             return error("The user's login already exists");
@@ -173,11 +166,10 @@ public class UsersMgr implements UsersMgrLocal {
         newStaff.setLastAccessibleTimelineDate(null);
         newStaff.setTimelineAccessibleDays(0);
         newStaff.setTypeTimeLinePerson(0);
-        newStaff.setUuid(createNewUUID());
+        newStaff.setUuid(UUID.randomUUID());
         database.getEntityMgr().persist(newStaff);
         database.getEntityMgr().flush();
-        res = String.format("{\"OK\": \"True\", \"uuid\": \"%s\"}", newStaff.getUuid().getUuid());
-        return res;
+        return String.format("{\"OK\": \"True\", \"uuid\": \"%s\"}", newStaff.getUuid().toString());
     }
 
     /**
@@ -245,7 +237,7 @@ public class UsersMgr implements UsersMgrLocal {
             newStaff.setPassword(getMD5(jsonNewPerson.getPassword()).toLowerCase());
         }
         @SuppressWarnings("unchecked")
-        Set<Role> roles = getRoles(Arrays.asList(ROLE_GUEST));
+        Set<Role> roles = getRoles(Collections.singletonList(ROLE_GUEST));
         if (jsonNewPerson.getRoles() != null && !jsonNewPerson.getRoles().isEmpty()) {
             final Set<Role> requestRoles = getRoles(jsonNewPerson.getRoles());
             if (!requestRoles.isEmpty()) {
@@ -269,15 +261,8 @@ public class UsersMgr implements UsersMgrLocal {
         connections.remove(token);
     }
 
-    private UUID createNewUUID() {
-        UUID res = new UUID();
-        res.setUuid(java.util.UUID.randomUUID().toString());
-        database.getEntityMgr().persist(res);
-        return res;
-    }
-
     private Set<Role> getRoles(List<String> roleCodes) {
-        Set<Role> res = new HashSet<Role>();
+        Set<Role> res = new HashSet<>();
         for (String code : roleCodes) {
             final List<Role> roles = database.getEntityMgr().createQuery("SELECT r FROM Role r WHERE r.code = :code", Role.class)
                     .setParameter("code", code).getResultList();

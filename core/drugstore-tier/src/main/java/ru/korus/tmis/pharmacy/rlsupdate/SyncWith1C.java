@@ -561,7 +561,7 @@ public class SyncWith1C {
         if(mainOrganization != null && mainOrganization.getUuid() != null) {
             List<RbStorage> rbStoragesList = em.createNamedQuery("rbStorage.findAll", RbStorage.class).getResultList();
             for(RbStorage rbStorage : rbStoragesList) {
-                res += updateBalance(drugList, mainOrganization.getUuid().getUuid(), rbStorage);
+                res += updateBalance(drugList, mainOrganization.getUuid().toString(), rbStorage);
             }
         }
         return res;
@@ -584,7 +584,7 @@ public class SyncWith1C {
             if(uuids.isEmpty()) {
                 RbStorage storageDb = new RbStorage();
                 storageDb.setName(storage.getDescription());
-                storageDb.setUuid(storage.getRef());
+                storageDb.setUuid(UUID.fromString(storage.getRef()));
                 em.persist(storageDb);
                 uuids.add(storageDb);
             }
@@ -599,7 +599,7 @@ public class SyncWith1C {
         String res = htmlNewLine("update RLS balance for UUID '" + rbStorage.getUuid() + "'");
         MISExchangePortType servicePort = getMisExchangePortType();
         if(!drugList.getDrug().isEmpty() && rbStorage.getUuid() != null) {
-            BalanceOfGoods2 balanceOfGoods2 = servicePort.balanceOfGoods(drugList, organizationRef,  rbStorage.getUuid());
+            BalanceOfGoods2 balanceOfGoods2 = servicePort.balanceOfGoods(drugList, organizationRef,  rbStorage.getUuid().toString());
             if (balanceOfGoods2 != null) {
                 for( BalanceOfGoods2.Storage storages : balanceOfGoods2.getStorage()) {
                     for(BalanceOfGoods2.Storage.Balance balance: storages.getBalance()) {
@@ -610,7 +610,7 @@ public class SyncWith1C {
                             for(BalanceOfGoods2.Storage.Balance.Goods goods : goodsList) {
                                 try {
                                     Date bestBefore = dateFormat.parse(goods.getBestBefore());
-                                    RlsBalanceOfGood rlsBalanceOfGood = getRlsBalanceOfGood(drugRlsCode, rbStorage.getUuid(), bestBefore);
+                                    RlsBalanceOfGood rlsBalanceOfGood = getRlsBalanceOfGood(drugRlsCode, rbStorage.getUuid().toString(), bestBefore);
                                     rlsBalanceOfGood.setRlsNomen(rlsNomen);
                                     rlsBalanceOfGood.setRbStorage(rbStorage);
                                     rlsBalanceOfGood.setValue(Double.parseDouble(goods.getQty().getValue()));

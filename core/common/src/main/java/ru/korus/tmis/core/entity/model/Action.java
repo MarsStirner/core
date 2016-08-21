@@ -4,9 +4,8 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.*;
-
-import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 
 @Entity
 @Table(name = "Action")
@@ -195,15 +194,14 @@ public class Action
     @JoinTable(name = "ActionTissue",
             joinColumns = {@JoinColumn(name = "action_id")},
             inverseJoinColumns = {@JoinColumn(name = "tissue_id")})
-    private Set<Tissue> tissue = new LinkedHashSet<Tissue>();
+    private Set<Tissue> tissue = new LinkedHashSet<>();
 
     //@Basic(optional = false)
     //@Column(name = "toOrder")
     //private boolean toOrder = false;
 
-    @ManyToOne(cascade = CascadeType.ALL)
-    @JoinColumn(name = "uuid_id")
-    private UUID uuid;
+    @Column(name = "uuid", nullable = false, columnDefinition = "BINARY(16)")
+    private byte[] uuid;
 
     @Basic(optional = false)
     @Column(name = "parentAction_id")
@@ -213,10 +211,10 @@ public class Action
     ////////////////////////////////////////////////////////////////////////////
 
     @OneToMany(mappedBy = "action", cascade = CascadeType.ALL)
-    private List<ActionProperty> actionProperties = new LinkedList<ActionProperty>();
+    private List<ActionProperty> actionProperties = new LinkedList<>();
 
     public List<ActionProperty> getActionProperties() {
-        if (actionProperties == null) actionProperties = new LinkedList<ActionProperty>();
+        if (actionProperties == null) actionProperties = new LinkedList<>();
         return actionProperties;
     }
 
@@ -229,8 +227,7 @@ public class Action
 
     public Map<ActionPropertyType, ActionProperty> getActionPropertiesByTypes(
             final Set<ActionPropertyType> types) {
-        final Map<ActionPropertyType, ActionProperty> result =
-                new LinkedHashMap<ActionPropertyType, ActionProperty>();
+        final Map<ActionPropertyType, ActionProperty> result = new LinkedHashMap<>();
 
         for (ActionProperty ap : actionProperties) {
             if (types.contains(ap.getType())) {
@@ -244,7 +241,7 @@ public class Action
     ////////////////////////////////////////////////////////////////////////////
 
     @OneToMany(mappedBy = "action")
-    private Set<AssignmentHour> assignmentHours = new HashSet<AssignmentHour>();
+    private Set<AssignmentHour> assignmentHours = new HashSet<>();
 
     public void addAssignmentHour(final AssignmentHour ah) {
         this.assignmentHours.add(ah);
@@ -255,7 +252,7 @@ public class Action
 
     public Set<AssignmentHour> getAssignmentHours() {
         if (assignmentHours == null) {
-            assignmentHours = new HashSet<AssignmentHour>();
+            assignmentHours = new HashSet<>();
         }
         return assignmentHours;
     }
@@ -566,11 +563,17 @@ public class Action
     }
 
     public UUID getUuid() {
-        return uuid;
+        ByteBuffer bb = ByteBuffer.wrap(uuid);
+        long high = bb.getLong();
+        long low = bb.getLong();
+        return new UUID(high, low);
     }
 
     public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+        ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        this.uuid=  bb.array();
     }
 
     @Override
@@ -589,7 +592,7 @@ public class Action
     }
 
     public Set<Tissue> getTissue() {
-        if (tissue == null) tissue = new HashSet<Tissue>();
+        if (tissue == null) tissue = new HashSet<>();
         return tissue;
     }
 
@@ -638,12 +641,12 @@ public class Action
     public static Action clone(Action self) throws CloneNotSupportedException {
         Action newAction = (Action) self.clone();
 
-        newAction.actionProperties = new LinkedList<ActionProperty>();
+        newAction.actionProperties = new LinkedList<>();
         for (ActionProperty ap : self.getActionProperties()) {
             newAction.addProperty((ActionProperty) ap.clone());
         }
 
-        newAction.assignmentHours = new HashSet<AssignmentHour>();
+        newAction.assignmentHours = new HashSet<>();
         for (AssignmentHour ah : self.getAssignmentHours()) {
             newAction.addAssignmentHour((AssignmentHour) ah.clone());
         }
@@ -651,8 +654,7 @@ public class Action
         return newAction;
     }
 
-    private static Map<Integer, Action> dbEnumsById =
-            new HashMap<Integer, Action>();
+    private static Map<Integer, Action> dbEnumsById = new HashMap<>();
 
     public static Action getById(final Integer id) {
         return dbEnumsById.get(id);
@@ -660,10 +662,8 @@ public class Action
 
     @Override
     public void loadEnums(final Collection<Object> enums) {
-        Map<Integer, Action> newDbEnumsById =
-                new HashMap<Integer, Action>();
-        Map<String, Action> newDbEnumsByName =
-                new HashMap<String, Action>();
+        Map<Integer, Action> newDbEnumsById = new HashMap<>();
+        Map<String, Action> newDbEnumsByName = new HashMap<>();
         for (Object e : enums) {
             if (e instanceof Action) {
                 Action ras = (Action) e;

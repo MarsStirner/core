@@ -2,6 +2,8 @@ package ru.korus.tmis.core.entity.model.pharmacy;
 
 import javax.persistence.*;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.util.UUID;
 
 /**
  * Author:      Dmitriy E. Nosov <br>
@@ -37,7 +39,7 @@ public class Pharmacy implements Serializable {
 
     @Basic(optional = false)
     @Column(name = "uuid")
-    private String documentUUID;
+    private byte[] uuid;
 
     @Basic(optional = false)
     @Column(name = "result")
@@ -76,12 +78,18 @@ public class Pharmacy implements Serializable {
         return status;
     }
 
-    public String getDocumentUUID() {
-        return documentUUID;
+    public UUID getUuid() {
+        final ByteBuffer bb = ByteBuffer.wrap(uuid);
+        long high = bb.getLong();
+        long low = bb.getLong();
+        return new UUID(high, low);
     }
 
-    public void setDocumentUUID(String documentUUID) {
-        this.documentUUID = documentUUID;
+    public void setUuid(UUID uuid) {
+        final ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        this.uuid =  bb.array();
     }
 
     public void setActionId(int actionId) {
@@ -124,7 +132,7 @@ public class Pharmacy implements Serializable {
                 "actionId=" + actionId +
                 ", flatCode='" + flatCode + '\'' +
                 ", status=" + status +
-                ", documentUUID='" + documentUUID + '\'' +
+                ", uuid='" + getUuid().toString() + '\'' +
                 ", result='" + result + '\'' +
                 ", attempts=" + attempts +
                 ", errorString='" + errorString + '\'' +

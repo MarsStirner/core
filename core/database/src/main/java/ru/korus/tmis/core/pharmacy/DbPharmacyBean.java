@@ -115,7 +115,7 @@ public class DbPharmacyBean implements DbPharmacyBeanLocal {
         final Pharmacy findPharmacy = em.find(Pharmacy.class, pharmacy.getActionId());
         if (findPharmacy != null) {
             findPharmacy.setStatus(pharmacy.getStatus());
-            findPharmacy.setDocumentUUID(pharmacy.getDocumentUUID());
+            findPharmacy.setUuid(pharmacy.getUuid());
             findPharmacy.setResult(pharmacy.getResult());
             em.merge(findPharmacy);
             return findPharmacy;

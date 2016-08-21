@@ -4,7 +4,9 @@ import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
+import java.nio.ByteBuffer;
 import java.util.Date;
+import java.util.UUID;
 
 @Entity
 @Table(name = "OrgStructure")
@@ -120,9 +122,8 @@ public class OrgStructure implements Serializable {
     private boolean inheritGaps;
 
 
-    @ManyToOne
-    @JoinColumn(name = "uuid_id")
-    private UUID uuid;
+    @Column(name = "uuid", nullable = false, columnDefinition = "BINARY(16)")
+    private byte[] uuid;
 
 
     public OrgStructure() {
@@ -325,11 +326,17 @@ public class OrgStructure implements Serializable {
     }
 
     public UUID getUuid() {
-        return uuid;
+        final ByteBuffer bb = ByteBuffer.wrap(uuid);
+        long high = bb.getLong();
+        long low = bb.getLong();
+        return new UUID(high, low);
     }
 
     public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+        final ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        this.uuid =  bb.array();
     }
 
     @Override

@@ -165,7 +165,7 @@ public class PrescriptionInfo {
                             DbPrescriptionSendingResBeanLocal dbPrescriptionSendingResBeanLocal) throws CoreException {
         this.routeOfAdministration = routeOfAdministration;
         this.financeType = financeType;
-        this.uuidDocument = event.getUuid().getUuid();
+        this.uuidDocument = event.getUuid().toString();
         this.externalId = event.getExternalId();
         this.createDatetime = action.getCreateDatetime();
         this.intervalInfoList = initPrescriptionIntervals(intervalsWithDrugComp, dbPrescriptionSendingResBeanLocal);

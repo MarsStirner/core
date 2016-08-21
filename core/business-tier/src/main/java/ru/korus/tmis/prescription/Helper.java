@@ -6,12 +6,15 @@ import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.korus.tmis.prescription.thservice.*;
+import ru.korus.tmis.prescription.thservice.ActionData;
 import ru.korus.tmis.prescription.thservice.DrugComponent;
+import ru.korus.tmis.prescription.thservice.DrugInterval;
+import ru.korus.tmis.prescription.thservice.DrugIntervalExec;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 /**
  * Author: Upatov Egor <br>
@@ -48,7 +51,7 @@ public class Helper {
         newPrescriptionAction.setUet(0.0);
         newPrescriptionAction.setExpose(1);
         newPrescriptionAction.setCoordDate(now);
-        newPrescriptionAction.setUuid(new UUID(java.util.UUID.randomUUID().toString()));
+        newPrescriptionAction.setUuid(UUID.randomUUID());
         return newPrescriptionAction;
     }
 

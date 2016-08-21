@@ -54,9 +54,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
     private DbPharmacyBeanLocal dbPharmacy = null;
 
     @EJB
-    private DbUUIDBeanLocal dbUUIDBeanLocal = null;
-
-    @EJB
     private DbCustomQueryLocal dbCustomQueryLocal = null;
 
     @EJB
@@ -136,8 +133,6 @@ public class PharmacyBean implements PharmacyBeanLocal {
 
     /**
      * Повторная отправка сообщений, которые имеют статус отличный от COMPLETE
-     *
-     * @throws CoreException
      */
     private void resendMessages() {
         // resend old messages
@@ -179,7 +174,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                         result, HL7PacketBuilder.marshallMessage(result, "org.hl7.v3"));
 
                 for (MCCIMT000200UV01Acknowledgement ack : result.getAcknowledgement()) {
-                    pharmacy.setDocumentUUID(ack.getTargetMessage().getId().getRoot());
+                    pharmacy.setUuid(UUID.fromString(ack.getTargetMessage().getId().getRoot()));
                     pharmacy.setResult(ack.getTypeCode().value());
                     if (AcknowledgementType.AA.equals(ack.getTypeCode())) {
                         pharmacy.setStatus(PharmacyStatus.COMPLETE);
@@ -264,7 +259,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      *
      *
      * @param action событие на основе которого отправляется сообщение в 1С Аптеку
-     * @param status
+     * @param status статус
      * @return возвращает класс готовый к отправке в 1С Аптеку
      * @throws MessageProcessException проблемы при создании сообщения
      */
@@ -360,7 +355,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private OrgStructure getOrgStructureOut(final Action action) throws SkipMessageProcessException {
         try {
-            final Set<String> codes = new HashSet<String>();
+            final Set<String> codes = new HashSet<>();
             codes.add("orgStructReceived");
             final Map<ActionProperty, List<APValue>> names =
                     dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codes);
@@ -369,8 +364,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                 final List<APValue> apValues = names.get(property);
                 for (APValue apValue : apValues) {
                     if (apValue instanceof APValueOrgStructure) {
-                        final OrgStructure orgStructure = (OrgStructure) apValue.getValue();
-                        return orgStructure;
+                        return (OrgStructure) apValue.getValue();
                     }
                 }
             }
@@ -387,7 +381,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             if (action.getParentActionId() != null && action.getParentActionId() != 0) {
                 final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
                 if (parentAction != null) {
-                    final Set<String> codes = new HashSet<String>();
+                    final Set<String> codes = new HashSet<>();
                     codes.add("orgStructReceived");
 
                     final Map<ActionProperty, List<APValue>> names =
@@ -412,7 +406,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private OrgStructure getOrgStructureIn(final Action action) throws SkipMessageProcessException {
         try {
-            final Set<String> codes = new HashSet<String>();
+            final Set<String> codes = new HashSet<>();
             codes.add("orgStructStay");
             final Map<ActionProperty, List<APValue>> names
                     = dbActionPropertyBeanLocal.getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(action.getId(), codes);
@@ -438,7 +432,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             if (action.getParentActionId() != null && action.getParentActionId() != 0) {
                 final Action parentAction = dbAction.getActionByIdWithIgnoreDeleted(action.getParentActionId());
                 if (parentAction != null) {
-                    final Set<String> codes = new HashSet<String>();
+                    final Set<String> codes = new HashSet<>();
                     codes.add("orgStructStay");
 
                     final Map<ActionProperty, List<APValue>> names
@@ -464,7 +458,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
      */
     private OrgStructure getReceivedOrgStructure(final Action action) throws SkipMessageProcessException {
         try {
-            final Set<String> codesSet = new HashSet<String>();
+            final Set<String> codesSet = new HashSet<>();
             codesSet.add("orgStructStay");
 
             final Map<ActionProperty, List<APValue>> names
@@ -521,7 +515,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             }
             final Action action = drugChart.getAction();
             final Event event = action.getEvent();
-            logger.debug("Try to send Prescription: DrugChart[{}], Action[{}], Event[{}]", new Object[]{drugChart.getId(), action.getId(), event.getId()});
+            logger.debug("Try to send Prescription: DrugChart[{}], Action[{}], Event[{}]", drugChart.getId(), action.getId(), event.getId());
             // Организация, которой принадлежит документ
             final Organisation organisation;
             organisation = getCustodianOrgStructure(action);
@@ -546,7 +540,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
             Request request = null;
             final String financeType = getFinaceType(action);
             final Iterable<DrugChart> intervalsByEvent = this.dbDrugChartBeanLocal.getIntervalsByEvent(event);
-            final Map<DrugChart, List<DrugComponent>> intervalsWithDrugComp = new HashMap<DrugChart, List<DrugComponent>>();
+            final Map<DrugChart, List<DrugComponent>> intervalsWithDrugComp = new HashMap<>();
             for (DrugChart interval : intervalsByEvent) {
                 intervalsWithDrugComp.put(interval, dbPharmacy.getDrugComponent(interval.getAction()));
             }
@@ -598,7 +592,7 @@ public class PharmacyBean implements PharmacyBeanLocal {
                             }
 
                             if (isOk(result)) {
-                                prescriptionSendingRes.setUuid(prescriptionInfo.getPrescrUUID());
+                                prescriptionSendingRes.setUuid(UUID.fromString(prescriptionInfo.getPrescrUUID()));
                                 prescriptionSendingRes.setVersion(prescriptionSendingRes.getVersion() == null ? 1 : (prescriptionSendingRes.getVersion() + 1));
                                 res = true;
                             }

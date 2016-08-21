@@ -1,13 +1,12 @@
 package ru.korus.tmis.core.entity.model.pharmacy;
 
 import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.UUID;
 
 import javax.persistence.*;
+import java.nio.ByteBuffer;
 import java.util.Arrays;
 import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.UUID;
 
 /**
  * Author: Upatov Egor <br>
@@ -61,10 +60,8 @@ public class DrugChart {
     @Column(name = "note")
     private String note;
 
-
-    @Basic(optional = true)
-    @Column(name = "uuid")
-    private String uuid;
+    @Column(name = "uuid", nullable = false, columnDefinition = "BINARY(16)")
+    private byte[] uuid;
 
     public DrugChart() {
     }
@@ -166,11 +163,17 @@ public class DrugChart {
     }
 
 
-    public String getUuid() {
-        return uuid;
+    public UUID getUuid() {
+        final ByteBuffer bb = ByteBuffer.wrap(uuid);
+        long high = bb.getLong();
+        long low = bb.getLong();
+        return new UUID(high, low);
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setUuid(UUID uuid) {
+        final ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        this.uuid =  bb.array();
     }
 }
