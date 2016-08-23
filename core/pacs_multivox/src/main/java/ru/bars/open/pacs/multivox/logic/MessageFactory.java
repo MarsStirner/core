@@ -1,26 +1,11 @@
-package ru.bars.open.pacs.multivox;
+package ru.bars.open.pacs.multivox.logic;
 
-
-import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
-import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
-import ru.korus.tmis.core.database.DbStaffBeanLocal;
-import ru.korus.tmis.core.database.common.DbActionBeanLocal;
-import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.core.exception.CoreException;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -32,162 +17,53 @@ import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
-import java.util.List;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Author: Upatov Egor <br>
- * Date: 23.12.2015, 16:55 <br>
- * Company: Bars group <br>
- * Description: REST для ПАКС (отправка заявок во внешнюю систему при запросе с фронтенда <br>
+ * Date: 22.08.2016, 16:12 <br>
+ * Company: Bars Group [ www.bars.open.ru ]
+ * Description:
  */
-@Stateless
-@Path("/")
-public class PacsRestImpl {
+public class MessageFactory {
+
     private static final Logger log = LoggerFactory.getLogger("PACS");
-    private AtomicInteger counter = new AtomicInteger(0);
 
-    @EJB
-    private AuthStorageBeanLocal authBean;
-
-    @EJB
-    private DbStaffBeanLocal dbStaff;
-
-    @EJB
-    private DbEventBeanLocal dbEvent;
-
-    @EJB
-    private DbActionBeanLocal dbAction;
-
-    @GET
-    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML + ";charset=utf-8"})
-    public Response poll(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback) {
-        final int requestNumber = counter.incrementAndGet();
-        log.info("#{} manual launch polling", requestNumber);
-        final Staff user = getUserFromRequest(servRequest);
-        if (user == null) {
-            log.error("#{} End. Launched by unauthorized user, forbidden.", requestNumber);
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
-        log.info("#{} launched by [{}]\'{}\'", requestNumber, user.getId(), user.getFullName());
-        //TODO CONSTANTS FROM CCS
-        final List<Action> actions = dbAction.getActionsByActionTypeMnemonicAndStatus("multivox", ActionStatus.STARTED);
-        log.debug("#{} founded {} action to send", requestNumber, actions.size());
-        int sended = 0;
-        for (Action action : actions) {
-            if (StringUtils.isNotEmpty(sendAction(action, user, requestNumber))) {
-                sended++;
-            }
-        }
-        log.info("#{} sended {}/{} actions", requestNumber, sended, actions.size());
-        final String responseEnitity = String.format("{\"sended\": %d, \"total\": %d}", sended, actions.size());
-        log.info("#{} End.", requestNumber);
-        return Response.ok(responseEnitity).build();
-    }
-
-    @GET
-    @Path("{actionId}")
-    @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML + ";charset=utf-8"})
-    public Object sendAction(
-            @Context HttpServletRequest servRequest, @PathParam("actionId") int actionId, @QueryParam("callback") String callback
+    public static Document constructDocument(
+            final Action action,
+            final Event event,
+            final Patient client,
+            final Staff doctor,
+            final OrgStructure orgStructure,
+            final OrgStructure orgStructureDirection,
+            final Staff sender,
+            final boolean isStationaryEvent
     ) {
-        final int requestNumber = counter.incrementAndGet();
-        log.info("#{} manual launch sendAction({})", requestNumber, actionId);
-        final Staff user = new Staff(0); /* getUserFromRequest(servRequest);
-        if (user == null) {
-            log.error("#{} End. Launched by unauthorized user, forbidden.", requestNumber);
-            return Response.status(Response.Status.FORBIDDEN).build();
-        }
-        */
-        log.info("#{} launched by [{}]\'{}\'", requestNumber, user.getId(), user.getFullName());
-        final Action action = dbAction.getById(actionId);
-        if (action == null || action.getDeleted()) {
-            log.info("#{} End. Action is null or deleted", requestNumber);
-            return Response.status(Response.Status.NOT_FOUND).build();
-        }
-        String result = sendAction(action, user, requestNumber);
-        log.info("#{} End.", requestNumber);
-        return Response.ok(result).build();
-    }
 
-    private String sendAction(final Action action, final Staff user, final int requestNumber) {
-        final ActionType actionType = action.getActionType();
-        log.info("#{} Start sending Action[{}] - \'{}\'", requestNumber, action.getId(), actionType.getName());
-        final String logId = "#" + requestNumber + "-" + action.getId() + " ";  // "#{requestNumber}-{Action.id}"
-        /*
-        if (action.getDeleted()) {
-            log.warn("{} Skip. Cause action is deleted", logId);
-            return null;
-        } else if (actionType.getDeleted()) {
-            log.warn("{} Skip. Cause ActionType[{}] is deleted", logId, actionType.getId());
-            return null;
-        } else if (!"multivox".equalsIgnoreCase(actionType.getCode())) {
-            log.warn("{} Skip. Cause ActionType[{}] has non-send code", logId, actionType.getId());
-            return null;
-        }
-        */
-        final Document message = constructDocument(action, user, logId);
-        if (message == null) {
-            return "<MessageNotConstructed/>";
-        }
-
-        try {
-            final String messageAsString = getStringFromDocument(message);
-            log.info("{} Sent. \n {}", logId, messageAsString);
-            return messageAsString;
-        } catch (final TransformerException e) {
-            log.error("{} Error: while transformation from w3c.Document to String", logId, e);
-            return null;
-        }
-
-    }
-
-    private Document constructDocument(final Action action, final Staff user, final String logId) {
-        final Event event = action.getEvent();
-        if (event == null) {
-            log.error("{} Error. Action[{}] has no Event", logId, action.getId());
-            return null;
-        }
-        final Patient client = event.getPatient();
-        if (client == null) {
-            log.error("{} Error. Action[{}]->Event[{}] has no Client", logId, action.getId(), event.getId());
-            return null;
-        }
-        final Staff doctor = action.getAssigner();
-        if (doctor == null) {
-            log.error("{} Error. Action[{}] has no Assigner(setPerson_id)", logId, action.getId());
-            return null;
-        }
-        final OrgStructure orgStructure = dbEvent.getOrgStructureForEvent(event.getId());
-        if (orgStructure == null) {
-            log.error("{} Error. Action[{}] has no OrgStructure", logId, action.getId());
-            return null;
-        }
         final Document doc = createXMLDocument();
         if (doc == null) {
-            log.error("{} Cannot initialize XML Document from Factory", logId);
             return null;
         }
+        doc.setXmlStandalone(true);
         // ORM_O01 [root]
         final Element root = doc.createElement("ORM_O01");
         root.setAttribute("xmlns", "urn:hl7-org:v2xml");
-        doc.appendChild(root);
         //---- MSH
         final Element msh = doc.createElement("MSH");
         constructMSHSection(doc, msh, action);
         root.appendChild(msh);
         //---- ORM_O01.PATIENT
         final Element orm_patient = doc.createElement("ORM_O01.PATIENT");
-        constructPatientSection(doc, orm_patient, action, event, client, doctor);
+        constructPatientSection(doc, orm_patient, action, event, client, doctor, isStationaryEvent);
         root.appendChild(orm_patient);
         //---- ORM_O01.ORCOBRRQDRQ1ODSODTRXONTEDG1OBXNTECTIBLG
         final Element orm_abrakadabra = doc.createElement("ORM_O01.ORCOBRRQDRQ1ODSODTRXONTEDG1OBXNTECTIBLG");
-        constructAbracadabraSection(doc, orm_abrakadabra, action, event, client, doctor, orgStructure);
+        constructAbracadabraSection(doc, orm_abrakadabra, action, event, client, doctor, orgStructure, orgStructureDirection);
         root.appendChild(orm_abrakadabra);
+        doc.appendChild(root);
         return doc;
     }
 
-    private Document createXMLDocument() {
+    private static Document createXMLDocument() {
         try {
             return DocumentBuilderFactory.newInstance().newDocumentBuilder().newDocument();
         } catch (ParserConfigurationException e) {
@@ -196,21 +72,33 @@ public class PacsRestImpl {
         }
     }
 
-    private void constructPatientSection(
-            final Document doc, final Element root, final Action action, final Event event, final Patient client, final Staff doctor
+    private static void constructPatientSection(
+            final Document doc,
+            final Element root,
+            final Action action,
+            final Event event,
+            final Patient client,
+            final Staff doctor,
+            final boolean isStationaryEvent
     ) {
         // PID [Patient Identification Data]
         final Element pid = doc.createElement("PID");
-        constructPIDSection(doc, pid, action, event, client, doctor);
+        constructPIDSection(doc, pid, action, event, client, doctor, isStationaryEvent);
         root.appendChild(pid);
         // ORM_O01.PATIENT_VISIT
         final Element patient_visit = doc.createElement("ORM_O01.PATIENT_VISIT");
-        constructPatientVisitSection(doc, patient_visit, action, event, client, doctor);
+        constructPatientVisitSection(doc, patient_visit, action, event, client, doctor, isStationaryEvent);
         root.appendChild(patient_visit);
     }
 
-    private void constructPatientVisitSection(
-            final Document doc, final Element root, final Action action, final Event event, final Patient client, final Staff doctor
+    private static void constructPatientVisitSection(
+            final Document doc,
+            final Element root,
+            final Action action,
+            final Event event,
+            final Patient client,
+            final Staff doctor,
+            final boolean isStationaryEvent
     ) {
         // PV1.1 [Segment number]
         final Element pv1_1 = doc.createElement("PV1.1");
@@ -218,7 +106,7 @@ public class PacsRestImpl {
         root.appendChild(pv1_1);
         // PV1.2 [Patient class {"I" - for stationary, "O" - for ambulatory}]
         final Element pv1_2 = doc.createElement("PV1.2");
-        pv1_2.appendChild(doc.createTextNode(isStationaryEvent(event) ? "I" : "O"));
+        pv1_2.appendChild(doc.createTextNode(isStationaryEvent ? "I" : "O"));
         root.appendChild(pv1_2);
         // PV1.4 [Admission Type Should be A for accident, E for emergency, L for labor and delivery and R for routine]    //TODO
         final Element pv1_4 = doc.createElement("PV1.4");
@@ -248,8 +136,14 @@ public class PacsRestImpl {
         root.appendChild(pv1_8);
     }
 
-    private void constructPIDSection(
-            final Document doc, final Element root, final Action action, final Event event, final Patient client, final Staff doctor
+    private static void constructPIDSection(
+            final Document doc,
+            final Element root,
+            final Action action,
+            final Event event,
+            final Patient client,
+            final Staff doctor,
+            final boolean isStationaryEvent
     ) {
         // PID.1
         final Element pid_1 = doc.createElement("PID.1");
@@ -259,24 +153,26 @@ public class PacsRestImpl {
         final Element pid_2 = doc.createElement("PID.2");
         //---- CX.1 [Current patient card (year after slash)]
         final Element pid_2_cx_1 = doc.createElement("CX.1");
-        pid_2_cx_1.appendChild(doc.createTextNode(event.getExternalId()));
+        pid_2_cx_1.appendChild(doc.createTextNode(isStationaryEvent ? event.getExternalId() : String.valueOf(client.getId())));
         pid_2.appendChild(pid_2_cx_1);
-        //---- CX.5 [Card Type] TODO
+        //---- CX.5 [Card Type]
         final Element pid_2_cx_5 = doc.createElement("CX.5");
-        pid_2_cx_5.appendChild(doc.createTextNode("H05"));
+        pid_2_cx_5.appendChild(doc.createTextNode(isStationaryEvent ? "H05" : "PI"));
         pid_2.appendChild(pid_2_cx_5);
         root.appendChild(pid_2);
         // PID.3 [Another patient cards]
-        final Element pid_3 = doc.createElement("PID.3");
-        //---- CX.1 [Internal patient identifier]
-        final Element pid_3_cx_1 = doc.createElement("CX.1");
-        pid_3_cx_1.appendChild(doc.createTextNode(String.valueOf(client.getId())));
-        pid_3.appendChild(pid_3_cx_1);
-        //---- CX.5 [Card Type (PI = internal system identifier)]
-        final Element pid_3_cx_5 = doc.createElement("CX.5");
-        pid_3_cx_5.appendChild(doc.createTextNode("PI"));
-        pid_3.appendChild(pid_3_cx_5);
-        root.appendChild(pid_3);
+        if (isStationaryEvent) {
+            final Element pid_3 = doc.createElement("PID.3");
+            //---- CX.1 [Internal patient identifier]
+            final Element pid_3_cx_1 = doc.createElement("CX.1");
+            pid_3_cx_1.appendChild(doc.createTextNode(String.valueOf(client.getId())));
+            pid_3.appendChild(pid_3_cx_1);
+            //---- CX.5 [Card Type (PI = internal system identifier)]
+            final Element pid_3_cx_5 = doc.createElement("CX.5");
+            pid_3_cx_5.appendChild(doc.createTextNode("PI"));
+            pid_3.appendChild(pid_3_cx_5);
+            root.appendChild(pid_3);
+        }
         // PID.5 [Patient personal data]
         final Element pid_5 = doc.createElement("PID.5");
         //---- XPN.1 [LastName]
@@ -308,16 +204,9 @@ public class PacsRestImpl {
         root.appendChild(pid_8);
     }
 
-    private boolean isStationaryEvent(final Event event) {
-        try {
-            //TODO
-            return event.getEventType().getPurposeId() > 0;
-        } catch (NullPointerException e) {
-            return true;
-        }
-    }
 
-    private void constructMSHSection(final Document doc, final Element root, final Action action) {
+
+    private static void constructMSHSection(final Document doc, final Element root, final Action action) {
         // MSH.1
         final Element msh_1 = doc.createElement("MSH.1");
         msh_1.appendChild(doc.createTextNode("|"));
@@ -361,7 +250,7 @@ public class PacsRestImpl {
         msh_9.appendChild(msh_9_msg_1);
         msh_9.appendChild(msh_9_msg_2);
         root.appendChild(msh_9);
-        // MSH.10  [Unique Message identifier (UUID)] todo
+        // MSH.10  [Unique Message identifier (UUID)]
         final Element msh_10 = doc.createElement("MSH.10");
         msh_10.appendChild(doc.createTextNode(action.getUuid().toString().toUpperCase()));
         root.appendChild(msh_10);
@@ -395,18 +284,19 @@ public class PacsRestImpl {
         root.appendChild(msh_16);
     }
 
-    private void constructAbracadabraSection(
+    private static void constructAbracadabraSection(
             final Document doc,
             final Element root,
             final Action action,
             final Event event,
             final Patient client,
             final Staff doctor,
-            final OrgStructure orgStructure
+            final OrgStructure orgStructure,
+            final OrgStructure orgStructureDirection
     ) {
         // ORC
         final Element orc = doc.createElement("ORC");
-        constructORCSection(doc, orc, action, event, client, doctor, orgStructure);
+        constructORCSection(doc, orc, action, doctor, orgStructure);
         root.appendChild(orc);
         // ORM_O01.OBRRQDRQ1ODSODTRXONTEDG1OBXNTE
         final Element obr_with_long_abracadabra = doc.createElement("ORM_O01.OBRRQDRQ1ODSODTRXONTEDG1OBXNTE");
@@ -414,20 +304,17 @@ public class PacsRestImpl {
         final Element obr_with_abracadabra = doc.createElement("ORM_O01.OBRRQDRQ1ODSODTRXO");
         //---- ---- OBR
         final Element obr = doc.createElement("OBR");
-        constructOBRSection(doc, obr, action, event, client, doctor, orgStructure);
+        constructOBRSection(doc, obr, action, orgStructureDirection);
         obr_with_abracadabra.appendChild(obr);
         obr_with_long_abracadabra.appendChild(obr_with_abracadabra);
         root.appendChild(obr_with_long_abracadabra);
     }
 
-    private void constructOBRSection(
+    private static void constructOBRSection(
             final Document doc,
             final Element root,
             final Action action,
-            final Event event,
-            final Patient client,
-            final Staff doctor,
-            final OrgStructure orgStructure
+            final OrgStructure orgStructureDirection
     ) {
         final ActionType actionType = action.getActionType();
         // http://hl7.cgmpolska.pl/HL7/ch400024.htm
@@ -451,15 +338,15 @@ public class PacsRestImpl {
         orb_4.appendChild(orb_4_ce_4);
         //---- CE.5 [В поле альтернативного названия исследования передаем тип/категорию исследования] TODO
         final Element orb_4_ce_5 = doc.createElement("CE.5");
-        orb_4_ce_5.appendChild(doc.createTextNode(actionType.getMnemonic()));
+        orb_4_ce_5.appendChild(doc.createTextNode(DicomModality.getByCode(actionType.getMnemonic()).getValue()));
         orb_4.appendChild(orb_4_ce_5);
         root.appendChild(orb_4);
         // OBR.17 [Empty]
         final Element orb_17 = doc.createElement("ORB.17");
         root.appendChild(orb_17);
-        // OBR.18 [Номер протокола у заказчика] TODO
+        // OBR.18 [Номер протокола у заказчика]
         final Element orb_18 = doc.createElement("ORB.18");
-        orb_18.appendChild(doc.createTextNode("P1234-09"));
+        //TODO  orb_18.appendChild(doc.createTextNode("P1234-09"));
         root.appendChild(orb_18);
         // OBR.27 [Время и приоритет назначения]
         final Element orb_27 = doc.createElement("ORB.27");
@@ -467,29 +354,29 @@ public class PacsRestImpl {
         final Element orb_27_tq_4 = doc.createElement("TQ.4");
         //---- ---- TS.1 [Время назначения 'yyyyMMddHHmmss']
         final Element orb_27_tq_4_ts_1 = doc.createElement("TS.1");
-        orb_27_tq_4_ts_1.appendChild(doc.createTextNode(new SimpleDateFormat("yyyyMMddHHmmss").format(action.getBegDate())));
+        orb_27_tq_4_ts_1.appendChild(doc.createTextNode(new SimpleDateFormat("yyyyMMddHHmmss").format(action.getPlannedEndDate())));
         orb_27_tq_4.appendChild(orb_27_tq_4_ts_1);
         orb_27.appendChild(orb_27_tq_4);
-        //---- TQ.6 [Приоритет R - routine, S - HIGH, A - MED ?????] TODO
+        //---- TQ.6 [Приоритет R - routine, S - HIGH, A - MED ?????]
         final Element orb_27_tq_6 = doc.createElement("TQ.6");
-        orb_27_tq_6.appendChild(doc.createTextNode("R"));
+        orb_27_tq_6.appendChild(doc.createTextNode(action.getIsUrgent() ? "S" : "R"));
         orb_27.appendChild(orb_27_tq_6);
         root.appendChild(orb_27);
-        // OBR.34 [Место проведения исследования]   TODO
+        // OBR.34 [Место проведения исследования]
         final Element orb_34 = doc.createElement("ORB.34");
         //---- NDL.5 [Комната]
         final Element orb_34_ndl_5 = doc.createElement("NDL.5");
-        orb_34_ndl_5.appendChild(doc.createTextNode("123"));
+        orb_34_ndl_5.appendChild(doc.createTextNode(orgStructureDirection.getAddress()));
         orb_34.appendChild(orb_34_ndl_5);
         //---- NDL.7 [Отделение]
         final Element orb_34_ndl_7 = doc.createElement("NDL.7");
         //---- ---- HD.1
         final Element orb_34_ndl_7_hd_1 = doc.createElement("HD.1");
-        orb_34_ndl_7_hd_1.appendChild(doc.createTextNode(orgStructure.getCode()));
+        orb_34_ndl_7_hd_1.appendChild(doc.createTextNode(orgStructureDirection.getCode()));
         orb_34_ndl_7.appendChild(orb_34_ndl_7_hd_1);
         //---- ---- HD.2
         final Element orb_34_ndl_7_hd_2 = doc.createElement("HD.2");
-        orb_34_ndl_7_hd_2.appendChild(doc.createTextNode(orgStructure.getName()));
+        orb_34_ndl_7_hd_2.appendChild(doc.createTextNode(orgStructureDirection.getName()));
         orb_34_ndl_7.appendChild(orb_34_ndl_7_hd_2);
         orb_34.appendChild(orb_34_ndl_7);
         //---- NDL.10 [Корпус]
@@ -505,16 +392,15 @@ public class PacsRestImpl {
     }
 
 
-    private void constructORCSection(
+
+    private static void constructORCSection(
             final Document doc,
             final Element root,
             final Action action,
-            final Event event,
-            final Patient client,
             final Staff doctor,
             final OrgStructure orgStructure
     ) {
-        // ORC.1 [Order control: NW - new order; XO – change order, CA - canceled; SC - status changed]   TODO
+        // ORC.1 [Order control: NW - new order; XO – change order, CA - canceled; SC - status changed]
         final Element orc_1 = doc.createElement("ORC.1");
         orc_1.appendChild(doc.createTextNode("NW"));
         root.appendChild(orc_1);
@@ -570,11 +456,11 @@ public class PacsRestImpl {
         orc_13_pl_4.appendChild(orc_13_pl_4_hd_2);
         orc_13.appendChild(orc_13_pl_4);
         root.appendChild(orc_13);
-        // ORC.14 [Телефон для обратной связи с направившим врачом] TODO
+        // ORC.14 [Телефон для обратной связи с направившим врачом]
         final Element orc_14 = doc.createElement("ORC.14");
         //---- XTN.1
         final Element orc_14_xtn_1 = doc.createElement("XTN.1");
-        orc_14_xtn_1.appendChild(doc.createTextNode(doctor.getFullName()));
+        orc_14_xtn_1.appendChild(doc.createTextNode(doctor.getFederalCode()));
         orc_14.appendChild(orc_14_xtn_1);
         root.appendChild(orc_14);
     }
@@ -582,32 +468,71 @@ public class PacsRestImpl {
     /**
      * Сериализация w3c документа в строку
      *
-     * @param doc документ на вход
-     * @return строка
-     * @throws TransformerException когда нельзя спарсить в строку
+     * @param doc   документ на вход
+     * @param logId
+     * @return строка / null когда нельзя спарсить в строку
      */
-    public String getStringFromDocument(Document doc) throws TransformerException {
+    public static String getDocumentAsString(final Document doc, final String logId) {
+        if (doc == null || !doc.hasChildNodes()) {
+            log.warn("{} w3c.Document is null or empty", logId);
+            return null;
+        }
         //http://stackoverflow.com/questions/10356258/how-do-i-convert-a-org-w3c-dom-document-object-to-a-string
         final DOMSource domSource = new DOMSource(doc);
         final StringWriter writer = new StringWriter();
         final StreamResult result = new StreamResult(writer);
         final TransformerFactory tf = TransformerFactory.newInstance();
-        final Transformer transformer = tf.newTransformer();
-        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
-        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
-        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
-        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
-        transformer.transform(domSource, result);
-        return writer.toString();
-    }
-
-
-    private Staff getUserFromRequest(final @Context HttpServletRequest servRequest) {
         try {
-            final AuthData authData = authBean.checkTokenCookies(servRequest.getCookies());
-            return dbStaff.getStaffById(authData.getUserId());
-        } catch (CoreException e) {
+            final Transformer transformer = tf.newTransformer();
+            transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+            transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+            transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+            transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+            transformer.setOutputProperty("{http://xml.apache.org/xslt}indent-amount", "4");
+            transformer.transform(domSource, result);
+            return writer.toString();
+        } catch (TransformerException e) {
+            log.error("{} Error: while transformation from w3c.Document to String", logId, e);
             return null;
         }
     }
+
+
+    public enum DicomModality{
+        CT("CT","компьютерная томография"),
+        MR("MR", "магнитнорезонансная томография"),
+        US("US", "ультразвук"),
+        XA("XA", "ангиография"),
+        MG("MG", "мамография"),
+        ES("ES", "эндоскопия"),
+        CR("CR", "компьютерная радиография");
+
+        private final String code;
+        private final String value;
+
+        private DicomModality(String code , String value) {
+            this.code = code;
+            this.value = value;
+        }
+
+        public String getCode() {
+            return code;
+        }
+
+        public String getValue() {
+            return value;
+        }
+
+        public static DicomModality getByCode(String code){
+            for (DicomModality dicomModality : values()) {
+                if(code.equalsIgnoreCase(dicomModality.getCode())){
+                    return dicomModality;
+                }
+            }
+            return null;
+        }
+
+
+    }
+
 }

@@ -96,4 +96,29 @@ public interface DbEventBeanLocal {
      * @throws CoreException
      */
     long getCountOfAppealsForReceivedPatientByPeriod (Object filter) throws CoreException;
+
+
+    /**
+     * Возврашает флаг - является ли обращение стационарным
+     * @param event обращение для проверки
+     * @return  true - стационарное, false - амбулаторное
+     * @see #isStationaryEvent(EventType) - использует для определения флага Тип обращения
+     */
+    boolean isStationaryEvent(final Event event);
+
+    /**
+     * Возврашает флаг - является ли тип обращения стационарным
+     * @param eventType тип обращения для проверки
+     * @return  true - стационарное, false - амбулаторное
+     * @see #isStationaryEvent(RbRequestType) - использует для определения флага
+     */
+    boolean isStationaryEvent(final EventType eventType);
+
+    /**
+     * Возврашает флаг - является ли тип обращения стационарным
+     * @param requestType тип обращения для проверки
+     * @return  true - стационарное, false - амбулаторное
+     * @see #isStationaryEvent(Event) #isStationaryEvent(EventType) - используется эьтими методами для определения типа обращения
+     */
+    boolean isStationaryEvent(final RbRequestType requestType);
 }

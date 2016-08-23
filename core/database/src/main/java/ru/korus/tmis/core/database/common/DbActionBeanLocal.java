@@ -263,4 +263,18 @@ public interface DbActionBeanLocal {
      * @return  список экшенов с заданным статусом и ActionType.mnem
      */
     List<Action> getActionsByActionTypeMnemonicAndStatus(final String  actionTypeMnemonic, ActionStatus status);
+
+    /**
+     * Получение отделения направления из Action (по отделению врача, указанного как исполнитель [Action.person_id])
+     * @param action Action для которого нужно получить отделение направления
+     * @return Отделение, куда напрвлен Action \ null
+     */
+    OrgStructure getOrgStructureDirection(Action action);
+
+    /**
+     * Установка примечания и статуса для Экшена (em.merge)
+     * @param note прмиечание
+     * @param actionStatus статус экшена для установки
+     */
+    Action setActionNoteAndStatus(Action action, String note, ActionStatus actionStatus);
 }

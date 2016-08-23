@@ -795,4 +795,19 @@ class DbActionBean
       """.stripMargin
     em.createQuery(query, classOf[Action]).setParameter("status", status.getCode).setParameter("mnemonic", actionTypeMnemonic).getResultList
   }
+
+  override def getOrgStructureDirection(action: Action): OrgStructure = {
+    Option(action.getExecutor) match {
+      case Some(x) => x.getOrgStructure
+      case None => null
+    }
+  }
+
+  override def setActionNoteAndStatus(action:Action, note: String, actionStatus: ActionStatus): Action = {
+    action.setModifyDatetime(new Date())
+    action.setModifyPerson(null)
+    action.setNote(note)
+    action.setStatus(actionStatus.getCode)
+    em.merge(action)
+  }
 }

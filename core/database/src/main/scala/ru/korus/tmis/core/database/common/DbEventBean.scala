@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database.common
 
 
 import java.util
-import java.util.{UUID, Calendar, Date}
+import java.util.{Calendar, Date, UUID}
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
 
@@ -77,23 +77,35 @@ class DbEventBean
     new java.util.HashSet(result)
   }
 
-  def getOrgStructureForEvent(eventId: Int) = {
-    val result = em.createQuery(AllOrgStructuresForEventQuery, classOf[OrgStructure])
-      .setParameter("eventId", eventId)
-      .setParameter("actionTypeFlatCode", i18n("db.action.movingFlatCode"))
-      .setParameter("actionPropertyTypeCode", i18n("db.apt.moving.codes.hospOrgStruct"))
-      .getResultList.headOption
-    result match {
-      case Some(org) => org
-      case None => getOrgStructureFromReceivedActionInEvent(eventId)
+  override def getOrgStructureForEvent(eventId: Int): OrgStructure = {
+    Option(getEventById(eventId)) match {
+      case Some(x) => getOrgStructureForEvent(x)
+      case None => null
+    }
+  }
+
+  def getOrgStructureForEvent(event: Event) = {
+    if(isStationaryEvent(event)) {
+      // Если обращение стационарное - то ищем в движениях (если нет в движениях, то в поступлении)
+      val result = em.createQuery(AllOrgStructuresForEventQuery, classOf[OrgStructure])
+        .setParameter("eventId", event.getId)
+        .setParameter("actionTypeFlatCode", i18n("db.action.movingFlatCode"))
+        .setParameter("actionPropertyTypeCode", i18n("db.apt.moving.codes.hospOrgStruct"))
+        .getResultList.headOption
+      result match {
+        case Some(org) => org
+        case None => getOrgStructureFromReceivedActionInEvent(event)
+      }
+    } else {
+      //Если обращение амбулаторное - то из поля в обращении
+       event.getOrgStructure
     }
   }
 
 
-
-  def getOrgStructureFromReceivedActionInEvent(eventId: Int): OrgStructure = {
+  def getOrgStructureFromReceivedActionInEvent(event: Event): OrgStructure = {
     val result = em.createQuery(AllOrgStructuresForEventQuery, classOf[OrgStructure])
-      .setParameter("eventId", eventId)
+      .setParameter("eventId", event.getId)
       .setParameter("actionTypeFlatCode", i18n("db.action.admissionFlatCode"))
       .setParameter("actionPropertyTypeCode", i18n("db.apt.admission.codes.hospOrgStruct"))
       .getResultList.headOption
@@ -341,8 +353,6 @@ class DbEventBean
     """.stripMargin
 
 
-
-
   val EventGetCountRecords =
     """
   SELECT count(e)
@@ -504,25 +514,24 @@ class DbEventBean
     """
 
   val AllOrgStructuresForEventQuery =
-  """
-    | SELECT org
-    | FROM
-    | Action a,
-    | ActionProperty ap,
-    | APValueOrgStructure apvos,
-    | OrgStructure org
-    | WHERE
-    |  a.deleted = 0
-    |  AND ap.deleted = 0
-    |  AND a.id = ap.action.id
-    |  AND ap.id = apvos.id.id
-    |  AND apvos.value.id = org.id
-    |  AND a.actionType.flatCode = :actionTypeFlatCode
-    |  AND ap.actionPropertyType.code = :actionPropertyTypeCode
-    |  AND a.event.id = :eventId
-    | ORDER BY a.begDate DESC
-  """.stripMargin
-
+    """
+      | SELECT org
+      | FROM
+      | Action a,
+      | ActionProperty ap,
+      | APValueOrgStructure apvos,
+      | OrgStructure org
+      | WHERE
+      |  a.deleted = 0
+      |  AND ap.deleted = 0
+      |  AND a.id = ap.action.id
+      |  AND ap.id = apvos.id.id
+      |  AND apvos.value.id = org.id
+      |  AND a.actionType.flatCode = :actionTypeFlatCode
+      |  AND ap.actionPropertyType.code = :actionPropertyTypeCode
+      |  AND a.event.id = :eventId
+      | ORDER BY a.begDate DESC
+    """.stripMargin
 
 
   val ActionTypeFilterByEventIdQuery =
@@ -654,6 +663,21 @@ class DbEventBean
     %s
     %s
     """
+
+  override def isStationaryEvent(event: Event): Boolean = {
+    isStationaryEvent(event.getEventType)
+  }
+
+  override def isStationaryEvent(eventType: EventType): Boolean = {
+    isStationaryEvent(eventType.getRequestType)
+  }
+
+  override def isStationaryEvent(requestType: RbRequestType): Boolean = {
+    requestType.getCode match {
+      case "clinic" | "hospital" | "stationary" => true
+      case _ => false
+    }
+  }
 
 
 }

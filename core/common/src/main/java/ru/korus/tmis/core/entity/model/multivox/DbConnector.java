@@ -64,7 +64,7 @@ public class DbConnector {
      * Собственно сообщение
      */
     @Column(name = "Message", nullable = false)
-    private String message;
+    private byte[] message;
 
     /**
      * Время создания сообщения
@@ -153,11 +153,11 @@ public class DbConnector {
         ContentType = contentType;
     }
 
-    public String getMessage() {
+    public byte[] getMessage() {
         return message;
     }
 
-    public void setMessage(final String message) {
+    public void setMessage(final byte[] message) {
         this.message = message;
     }
 
