@@ -3,6 +3,9 @@ package ru.bars.open.tmis.lis.innova.logic;
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import ru.bars.open.tmis.lis.innova.config.Constants;
+import ru.bars.open.tmis.lis.innova.config.LisInnovaSettings;
+import ru.bars.open.tmis.lis.innova.ws.generated.*;
 import ru.korus.tmis.core.database.DbDiagnosticBeanLocal;
 import ru.korus.tmis.core.database.DbJobTicketBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
@@ -10,16 +13,11 @@ import ru.korus.tmis.core.database.common.DbCustomQueryLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
-import ru.bars.open.tmis.lis.innova.config.Constants;
-import ru.bars.open.tmis.lis.innova.config.LisInnovaSettings;
-import ru.bars.open.tmis.lis.innova.ws.generated.*;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -197,7 +195,7 @@ public class LisInnovaBean {
         // DepartmentCode (string) -- уникальный код подразделения (отделения)
         try {
             final OrgStructure department = e.getOrgStructure() != null ? e.getOrgStructure() : eventBean.getOrgStructureForEvent(e.getId());
-            result.setOrderDepartmentMisId(of.createDiagnosticRequestInfoOrderDepartmentMisId(department.getCode()));
+            result.setOrderDepartmentMisId(of.createDiagnosticRequestInfoOrderDepartmentMisId(String.valueOf(department.getId())));
             result.setOrderDepartmentName(of.createDiagnosticRequestInfoOrderDepartmentName(department.getName()));
         } catch (CoreException ex) {
             log.error("#{} Handled Exception while getting OrgStructure for Event[{}]: {}", logNumber, e.getId(), ex.getMessage());
