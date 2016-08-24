@@ -245,6 +245,9 @@
             <!-- Профиль для сборки модуля интеграции с PACS Multivox-->
             <id>pacs_multivox</id>
             <modules>
+                <module>common</module>
+                <module>database</module>
+                <module>config</module>
                 <module>pacs_multivox</module>
             </modules>
             <properties>

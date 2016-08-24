@@ -32,7 +32,8 @@ public class DbConnectorDaoImpl {
         }
         final DbConnector result = new DbConnector();
         result.setoID(UUID.randomUUID().toString());
-        result.setUID(uuid.toString());
+        //TODO
+        result.setUID(UUID.randomUUID().toString());
         result.setReplyUID(null);
         result.setSource(DbConnector.System.MIS);
         result.setDestination(DbConnector.System.RIS);

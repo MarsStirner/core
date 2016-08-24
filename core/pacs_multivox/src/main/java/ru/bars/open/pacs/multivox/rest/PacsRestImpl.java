@@ -11,18 +11,21 @@ import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.entity.model.multivox.DbConnector;
 import ru.korus.tmis.core.exception.CoreException;
 
-import javax.ejb.EJB;
-import javax.ejb.Stateless;
+import javax.ejb.*;
+import javax.ejb.Schedule;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -53,6 +56,26 @@ public class PacsRestImpl {
     @EJB
     private DbConnectorDaoImpl dbConnector;
 
+    @EJB
+    private DbActionPropertyBeanLocal dbActionProperty;
+
+    @Schedule(hour = "*", minute = "*/3", second = "57", persistent = false)
+    @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+    public void periodicalPoll() {
+        final int requestNumber = counter.incrementAndGet();
+        log.info("#{} periodical launch polling", requestNumber);
+        final List<Action> actions = dbAction.getActionsByActionTypFlatCodePrefixAndStatus("multivox_", ActionStatus.STARTED);
+        log.debug("#{} founded {} action to send", requestNumber, actions.size());
+        int sent = 0;
+        for (Action action : actions) {
+            if (sendAction(action, null, requestNumber)) {
+                sent++;
+            }
+        }
+        log.info("#{} sent {}/{} actions", requestNumber, sent, actions.size());
+    }
+
+
     @GET
     @Produces({MediaType.APPLICATION_JSON + ";charset=utf-8", MediaType.APPLICATION_XML + ";charset=utf-8"})
     public Response poll(@Context HttpServletRequest servRequest, @QueryParam("callback") String callback) {
@@ -65,7 +88,7 @@ public class PacsRestImpl {
         }
         log.info("#{} launched by [{}]\'{}\'", requestNumber, user.getId(), user.getFullName());
         //TODO CONSTANTS FROM CCS
-        final List<Action> actions = dbAction.getActionsByActionTypeMnemonicAndStatus("multivox", ActionStatus.STARTED);
+        final List<Action> actions = dbAction.getActionsByActionTypFlatCodePrefixAndStatus("multivox_", ActionStatus.STARTED);
         log.debug("#{} founded {} action to send", requestNumber, actions.size());
         int sent = 0;
         for (Action action : actions) {
@@ -103,13 +126,13 @@ public class PacsRestImpl {
         } else {
             final boolean result = sendAction(action, user, requestNumber);
             log.info("#{} End. Sent = {}. Message=\'{}\'", requestNumber, result, action.getNote());
-            return Response.ok("<result>"+action.getNote()+"</result>").build();
+            return Response.ok("<result>" + action.getNote() + "</result>").build();
         }
     }
 
     private boolean sendAction(final Action action, final Staff user, final int requestNumber) {
         // "#{requestNumber}-{Action.id}"
-        final String logId = String.format("#%d-%d",requestNumber , action.getId());
+        final String logId = String.format("#%d-%d", requestNumber, action.getId());
         final ActionType actionType = action.getActionType();
         if (actionType == null) {
             log.error("{} Action has not ActionType", logId);
@@ -119,17 +142,18 @@ public class PacsRestImpl {
             log.warn("{} ActionType[{}] is deleted", logId);
         }
         //TODO constants from CCS
-        if(actionType.getFlatCode().startsWith("multivox_")){
+        if (!actionType.getFlatCode().startsWith("multivox_")) {
             log.error("{} ActionType[{}] has wrong flatCode for multivox = \'{}\'", logId, actionType.getId(), actionType.getFlatCode());
-            dbAction.setActionNoteAndStatus(action, "ActionType has wrong flatCode for Multivox", ActionStatus.STARTED);
+            //dbAction.setActionNoteAndStatus(action, "ActionType has wrong flatCode for Multivox", ActionStatus.STARTED);
             return false;
         }
-        if(MessageFactory.DicomModality.getByCode(actionType.getMnemonic()) == null){
+        if (MessageFactory.DicomModality.getByCode(actionType.getMnemonic()) == null) {
             log.error("{} ActionType[{}] has wrong mnemonic for multivox = \'{}\'", logId, actionType.getId(), actionType.getMnemonic());
             dbAction.setActionNoteAndStatus(action, "ActionType has wrong mnemonic for Multivox", ActionStatus.STARTED);
             return false;
         }
-        if(action.getPlannedEndDate() == null){
+        if (action.getPlannedEndDate() == null) {
+            log.error("{} Action has empty plannedEndDate", logId);
             dbAction.setActionNoteAndStatus(action, "Action has empty plannedEndDate", ActionStatus.STARTED);
             return false;
         }
@@ -175,8 +199,22 @@ public class PacsRestImpl {
             dbAction.setActionNoteAndStatus(action, String.format("Action[%d] has no direction OrgStructure", action.getId()), ActionStatus.STARTED);
             return false;
         }
-        log.info("{} Action directed (by executor) to OrgStructure[{}] - \'{}\'", logId, orgStructureDirection.getId(), orgStructureDirection.getName());
-        final Document doc = MessageFactory.constructDocument(action, event, client, doctor, orgStructure, orgStructureDirection, user, isStationaryEvent);
+        log.info(
+                "{} Action directed (by executor) to OrgStructure[{}] - \'{}\'",
+                logId,
+                orgStructureDirection.getId(),
+                orgStructureDirection.getName()
+        );
+        final Document doc = MessageFactory.constructDocument(
+                action,
+                event,
+                client,
+                doctor,
+                orgStructure,
+                orgStructureDirection,
+                user,
+                isStationaryEvent
+        );
         final String messageAsString = MessageFactory.getDocumentAsString(doc, logId);
         if (StringUtils.isEmpty(messageAsString)) {
             log.error("{} Message is not constructed properly.", logId);
@@ -192,9 +230,40 @@ public class PacsRestImpl {
             return false;
         }
         dbConnector.persist(messageForRIS);
+        setActionSendProperties(action, new Date());
         log.info("{} Sent OID=\'{}\'", logId, messageForRIS.getoID());
-        dbAction.setActionNoteAndStatus(action, String.format("Message is in queue for RIS. OID=\'%s\'", messageForRIS.getoID()), ActionStatus.WAITING);
+        dbAction.setActionNoteAndStatus(
+                action,
+                String.format("Message is in queue for RIS. OID=\'%s\'", messageForRIS.getoID()),
+                ActionStatus.WAITING
+        );
         return true;
+    }
+
+    private void setActionSendProperties(final Action action, final Date date) {
+        boolean sendDatePropertyFounded = false;
+        boolean sendTimePropertyFounded = false;
+        try {
+            for (ActionProperty property : action.getActionProperties()) {
+                if (!sendDatePropertyFounded && "multivox_send_date".equalsIgnoreCase(property.getType().getCode())) {
+                    dbActionProperty.setValue(property, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date), 0);
+                    sendDatePropertyFounded = true;
+                    continue;
+
+                }
+                if (!sendTimePropertyFounded && "multivox_send_time".equalsIgnoreCase(property.getType().getCode())) {
+                    dbActionProperty.setValue(property, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date), 0);
+                    sendTimePropertyFounded = true;
+                    continue;
+                }
+                if (sendDatePropertyFounded && sendTimePropertyFounded) {
+                    break;
+                }
+            }
+        } catch (Exception e) {
+           log.error("Cannot set ActionProperties (send_date + send_time)", e);
+        }
+
     }
 
 

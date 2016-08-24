@@ -782,7 +782,7 @@ class DbActionBean
     em.find(classOf[Action], id)
   }
 
-  override def getActionsByActionTypeMnemonicAndStatus(actionTypeMnemonic: String, status: ActionStatus): util.List[Action] = {
+  override def getActionsByActionTypFlatCodePrefixAndStatus(flatCodePrefix: String, status: ActionStatus): util.List[Action] = {
     val query =
       """
         |SELECT a
@@ -790,10 +790,11 @@ class DbActionBean
         |INNER JOIN a.actionType aty
         |WHERE a.deleted = 0
         |AND a.status = :status
-        |AND aty.mnemonic = :mnemonic
+        |AND aty.flatCode LIKE :flatCode
+        |AND aty.mnemonic <> ''
         |ORDER BY a.id DESC
       """.stripMargin
-    em.createQuery(query, classOf[Action]).setParameter("status", status.getCode).setParameter("mnemonic", actionTypeMnemonic).getResultList
+    em.createQuery(query, classOf[Action]).setParameter("status", status.getCode).setParameter("flatCode", flatCodePrefix+"%").getResultList
   }
 
   override def getOrgStructureDirection(action: Action): OrgStructure = {

@@ -3,6 +3,7 @@ package ru.korus.tmis.core.database.common
 import java.text.SimpleDateFormat
 import javax.swing.text.TabableView
 
+import org.apache.commons.lang.StringUtils
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data.{TableCol, TableValue}
 import ru.korus.tmis.core.database.DbDiagnosticBeanLocal
@@ -166,6 +167,46 @@ class DbActionPropertyBean
     ap.setVersion(version)
     em.merge(ap)
     ap
+  }
+
+  override def setValue(ap: ActionProperty, value: String, index: Int): APValue = {
+    val apvs = getActionPropertyValue(ap)
+    val apt_typeName: String = ap.getType.getTypeName
+    apvs.size match {
+      case 0 => {
+        // Если не нашли значение, то создаем новое, если не флатДиректори
+        if (!"FlatDirectory".equals(apt_typeName) && !"FlatDictionary".equals(apt_typeName) && StringUtils.isNotEmpty(value)) {
+          val res = createActionPropertyValue(ap, value, index)
+          em.persist(res)
+          res
+        }
+        null
+      }
+      case _ => {
+        if (ap.getType.getIsVector || apvs.size <= index) {
+          val res = createActionPropertyValue(ap, value, index)
+          em.persist(res)
+           res
+        } else {
+          val res = apvs.get(index)
+          if (StringUtils.isNotEmpty(value)) {
+            if ("Reference".equals(apt_typeName) || "ReferenceRb".equals(apt_typeName)) {
+              if ("rbTrfuBloodComponentType".equals(ap.getType.getValueDomain.split(";")(0))) {
+                res.unwrap().setValue(toTrfuRefValue(ap, value))
+              } else
+              res.unwrap().setValue(toRefValue(ap, value))
+            } else {
+              res.unwrap.setValueFromString(value)
+            }
+            em.merge(res)
+            res
+          } else {
+            em.remove(res)
+            null
+          }
+        }
+      }
+    }
   }
 
   def setActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
@@ -909,5 +950,4 @@ class DbActionPropertyBean
     }
     s
   }
-
 }

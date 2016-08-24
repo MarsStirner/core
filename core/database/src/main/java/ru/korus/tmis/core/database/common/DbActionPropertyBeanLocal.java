@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.database.common;
 
-import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.TableCol;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
@@ -119,9 +118,20 @@ public interface DbActionPropertyBeanLocal {
      * @return объект ORM, содержащий новое значение свойства
      */
     APValue setActionPropertyValue(ActionProperty ap,
-                                   String value,
-                                   int index)
+            String value,
+            int index)
             throws CoreException;
+
+    /**
+     * Изменяет или создает свойство типа действия
+     *
+     * @param ap    ActionProperty
+     * @param value значение
+     * @return объект ORM, содержащий новое значение свойства
+     */
+    APValue setValue(ActionProperty ap,
+            String value,
+            int index);
 
     /**
      * Создает свойство типа действия

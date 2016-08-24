@@ -262,7 +262,7 @@ public interface DbActionBeanLocal {
      * @param status статус экшена для фильтрации
      * @return  список экшенов с заданным статусом и ActionType.mnem
      */
-    List<Action> getActionsByActionTypeMnemonicAndStatus(final String  actionTypeMnemonic, ActionStatus status);
+    List<Action> getActionsByActionTypFlatCodePrefixAndStatus(final String  actionTypeMnemonic, ActionStatus status);
 
     /**
      * Получение отделения направления из Action (по отделению врача, указанного как исполнитель [Action.person_id])
