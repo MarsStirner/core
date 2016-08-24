@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database.common
 
 
 import java.util
-import java.util.{Calendar, Date}
+import java.util.{Calendar, Date, UUID}
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
 
@@ -39,9 +39,6 @@ class DbEventBean
   @EJB
   private var contractBean: DbContractBeanLocal = _
 
-  @EJB
-  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
-
   def getCountRecordsOrPagesQuery(enterPosition: String): TypedQuery[Long] = {
 
     val cntMacroStr = "count(e)"
@@ -56,7 +53,7 @@ class DbEventBean
     if (index > 0) {
       curentRequest = curentRequest.substring(0, index)
     }
-    em.createQuery(curentRequest.toString(), classOf[Long])
+    em.createQuery(curentRequest.toString, classOf[Long])
   }
 
 
@@ -80,22 +77,41 @@ class DbEventBean
     new java.util.HashSet(result)
   }
 
-  def getOrgStructureForEvent(eventId: Int) = {
-    val result = em.createQuery(AllOrgStructuresForEventQuery,
-      classOf[Array[AnyRef]])
-      .setParameter("eid", eventId)
-      .getResultList
-      .sortBy {
-        case (Array(org, date)) => date.asInstanceOf[Date].getTime
-      }
-      .lastOption.map {
-      _.head
+  override def getOrgStructureForEvent(eventId: Int): OrgStructure = {
+    Option(getEventById(eventId)) match {
+      case Some(x) => getOrgStructureForEvent(x)
+      case None => null
     }
-      .asInstanceOf[Option[OrgStructure]]
+  }
 
+  def getOrgStructureForEvent(event: Event) = {
+    if(isStationaryEvent(event)) {
+      // Если обращение стационарное - то ищем в движениях (если нет в движениях, то в поступлении)
+      val result = em.createQuery(AllOrgStructuresForEventQuery, classOf[OrgStructure])
+        .setParameter("eventId", event.getId)
+        .setParameter("actionTypeFlatCode", i18n("db.action.movingFlatCode"))
+        .setParameter("actionPropertyTypeCode", i18n("db.apt.moving.codes.hospOrgStruct"))
+        .getResultList.headOption
+      result match {
+        case Some(org) => org
+        case None => getOrgStructureFromReceivedActionInEvent(event)
+      }
+    } else {
+      //Если обращение амбулаторное - то из поля в обращении
+       event.getOrgStructure
+    }
+  }
+
+
+  def getOrgStructureFromReceivedActionInEvent(event: Event): OrgStructure = {
+    val result = em.createQuery(AllOrgStructuresForEventQuery, classOf[OrgStructure])
+      .setParameter("eventId", event.getId)
+      .setParameter("actionTypeFlatCode", i18n("db.action.admissionFlatCode"))
+      .setParameter("actionPropertyTypeCode", i18n("db.apt.admission.codes.hospOrgStruct"))
+      .getResultList.headOption
     result match {
       case Some(org) => org
-      case None => throw new CoreException("OrgStructure for Event id = " + eventId + " not found")
+      case None => null
     }
   }
 
@@ -141,7 +157,7 @@ class DbEventBean
       newEvent.setPayStatus(0)
       //val contract = contractBean.getContractForEventType(eventType)
       newEvent.setContract(contract)
-      newEvent.setUuid(dbUUIDBeanLocal.createUUID())
+      newEvent.setUuid(UUID.randomUUID())
       newEvent.setResult(result)
       newEvent.setAcheResult(acheResult)
       newEvent.setExecutor(execPerson)
@@ -150,10 +166,9 @@ class DbEventBean
     catch {
       case ex: Exception => {
       }
-      //em.refresh(newEvent)
     }
 
-    return newEvent
+    newEvent
   }
 
   /**
@@ -170,22 +185,22 @@ class DbEventBean
     var newEvent = new Event
     //Инициализируем структуру Event
     try {
-      newEvent.setIsPrimary(1);
-      newEvent.setCreateDatetime(now);
-      newEvent.setCreatePerson(null);
-      newEvent.setModifyPerson(null);
-      newEvent.setEventType(eventType);
-      newEvent.setPatient(patient);
-      newEvent.setSetDate(begDate);
-      newEvent.setExternalId("");
-      newEvent.setModifyDatetime(now);
-      newEvent.setNote("");
-      newEvent.setOrder(0);
-      newEvent.setDeleted(false);
-      newEvent.setPayStatus(0);
+      newEvent.setIsPrimary(1)
+      newEvent.setCreateDatetime(now)
+      newEvent.setCreatePerson(null)
+      newEvent.setModifyPerson(null)
+      newEvent.setEventType(eventType)
+      newEvent.setPatient(patient)
+      newEvent.setSetDate(begDate)
+      newEvent.setExternalId("")
+      newEvent.setModifyDatetime(now)
+      newEvent.setNote("")
+      newEvent.setOrder(0)
+      newEvent.setDeleted(false)
+      newEvent.setPayStatus(0)
       newEvent.setExecutor(person)
       newEvent.setAssigner(person)
-      newEvent.setUuid(dbUUIDBeanLocal.createUUID());
+      newEvent.setUuid(UUID.randomUUID())
       //1. Инсертим
       em.persist(newEvent);
     }
@@ -235,9 +250,10 @@ class DbEventBean
   }
 
   def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[EventTypesListRequestDataFilter])
-      filter.asInstanceOf[EventTypesListRequestDataFilter].toQueryStructure()
-    else new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case filter1: EventTypesListRequestDataFilter => filter1.toQueryStructure()
+      case _ => new QueryDataStructure()
+    }
 
     val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
 
@@ -248,7 +264,7 @@ class DbEventBean
       records(recC.getSingleResult)
     }
 
-    var typed = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
+    val typed = em.createQuery(EventTypeIdByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
       .setMaxResults(limit)
       .setFirstResult(limit * page)
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -259,11 +275,11 @@ class DbEventBean
 
   def getCountOfAppealsForReceivedPatientByPeriod(filter: Object) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[ReceivedRequestDataFilter]) {
-      filter.asInstanceOf[ReceivedRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case filter1: ReceivedRequestDataFilter =>
+        filter1.toQueryStructure()
+      case _ =>
+        new QueryDataStructure()
     }
 
     val typed = em.createQuery(AllAppealsWithFilterQuery.format("count(e)", i18n("db.flatDirectory.eventType.hospitalization"), queryStr.query, ""), classOf[Long])
@@ -276,11 +292,11 @@ class DbEventBean
 
   def getAllAppealsForReceivedPatientByPeriod(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[ReceivedRequestDataFilter]) {
-      filter.asInstanceOf[ReceivedRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case x: ReceivedRequestDataFilter =>
+        x.toQueryStructure()
+      case _ =>
+        new QueryDataStructure()
     }
 
     val sorting = "ORDER BY %s %s".format(sortingField, sortingMethod)
@@ -317,6 +333,25 @@ class DbEventBean
     result.foreach(action => res.put(action.getActionType.getFlatCode, action))
     res
   }
+
+
+  val getLastOrgStructureForEventFromMovingsSQLQuery =
+    """
+      |SELECT os.*
+      |FROM Event e
+      |INNER JOIN Action a ON a.event_id = e.id
+      |INNER JOIN ActionType aty ON aty.id = a.actionType_id
+      |INNER JOIN ActionProperty ap ON ap.action_id = a.id
+      |INNER JOIN ActionPropertyType apt ON apt.id = ap.type_id
+      |INNER JOIN ActionProperty_OrgStructure ap_os ON ap_os.id = ap.id
+      |INNER JOIN OrgStructure os ON os.id = ap_os.value
+      |WHERE a.deleted = 0
+      |AND aty.flatCode = ?
+      |AND apt.code = ?
+      |AND e.id = ?
+      |ORDER BY a.begDate DESC
+    """.stripMargin
+
 
   val EventGetCountRecords =
     """
@@ -480,25 +515,23 @@ class DbEventBean
 
   val AllOrgStructuresForEventQuery =
     """
-    SELECT org, a.begDate
-    FROM
-      Action a,
-      ActionProperty ap,
-      APValueOrgStructure apvos,
-      OrgStructure org
-    WHERE
-      a.event.id = :eid AND
-      a.id = ap.action.id AND
-      ap.id = apvos.id.id AND
-      apvos.value.id = org.id
-    AND
-      a.actionType.flatCode = '%s'
-    AND
-      ap.actionPropertyType.name = '%s'
-    AND
-      ap.deleted = 0 AND
-      a.deleted = 0
-    """.format(i18n("db.action.movingFlatCode"), i18n("db.apt.departmentName"))
+      | SELECT org
+      | FROM
+      | Action a,
+      | ActionProperty ap,
+      | APValueOrgStructure apvos,
+      | OrgStructure org
+      | WHERE
+      |  a.deleted = 0
+      |  AND ap.deleted = 0
+      |  AND a.id = ap.action.id
+      |  AND ap.id = apvos.id.id
+      |  AND apvos.value.id = org.id
+      |  AND a.actionType.flatCode = :actionTypeFlatCode
+      |  AND ap.actionPropertyType.code = :actionPropertyTypeCode
+      |  AND a.event.id = :eventId
+      | ORDER BY a.begDate DESC
+    """.stripMargin
 
 
   val ActionTypeFilterByEventIdQuery =
@@ -596,7 +629,7 @@ class DbEventBean
     EventType et,
     FDFieldValue fdfv
   WHERE
-    fdfv.pk.fdRecord.id = '%s'
+    fdfv.record.id = '%s'
   AND
     et.code = fdfv.value
     """
@@ -625,11 +658,26 @@ class DbEventBean
         FROM
           FDFieldValue fdfv
         WHERE
-          fdfv.pk.fdRecord.flatDirectory.id = '%s'
+          fdfv.record.flatDirectory.id = '%s'
       )
     %s
     %s
     """
+
+  override def isStationaryEvent(event: Event): Boolean = {
+    isStationaryEvent(event.getEventType)
+  }
+
+  override def isStationaryEvent(eventType: EventType): Boolean = {
+    isStationaryEvent(eventType.getRequestType)
+  }
+
+  override def isStationaryEvent(requestType: RbRequestType): Boolean = {
+    requestType.getCode match {
+      case "clinic" | "hospital" | "stationary" => true
+      case _ => false
+    }
+  }
 
 
 }

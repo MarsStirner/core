@@ -67,11 +67,11 @@ public final class HL7PacketBuilder {
 
         final Event event = action.getEvent();
         final Patient client = event.getPatient();
-        final String uuidExternalId = event.getUuid().getUuid();
+        final String uuidExternalId = event.getUuid().toString();
         final String externalId = event.getExternalId();
         final String uuidDocument = UUID.randomUUID().toString();
-        final String uuidOrgStructure = orgStructure.getUuid().getUuid();
-        final String uuidClient = client.getUuid().getUuid();
+        final String uuidOrgStructure = orgStructure.getUuid().toString();
+        final String uuidClient = client.getUuid().toString();
 
         final Request request = FACTORY_MIS.createPRPAIN402001UV02();
 
@@ -156,11 +156,11 @@ public final class HL7PacketBuilder {
 
         final Event event = action.getEvent();
         final Patient client = event.getPatient();
-        final String uuidExternalId = event.getUuid().getUuid();
+        final String uuidExternalId = event.getUuid().toString();
         final String externalId = event.getExternalId();
         final String uuidDocument = UUID.randomUUID().toString();
-        final String uuidOrgStructure = orgStructure.getUuid().getUuid();
-        final String uuidClient = client.getUuid().getUuid();
+        final String uuidOrgStructure = orgStructure.getUuid().toString();
+        final String uuidClient = client.getUuid().toString();
 
         final Request request = FACTORY_MIS.createPRPAIN402002UV02();
 
@@ -260,9 +260,9 @@ public final class HL7PacketBuilder {
 
         final Event event = action.getEvent();
         final Patient client = event.getPatient();
-        final String uuidExternalId = event.getUuid().getUuid();
+        final String uuidExternalId = event.getUuid().toString();
         final String externalId = event.getExternalId();
-        final String uuidClient = client.getUuid().getUuid();
+        final String uuidClient = client.getUuid().toString();
         final String uuidDocument = UUID.randomUUID().toString();
 
         final Request request = FACTORY_MIS.createPRPAIN402006UV02();
@@ -325,8 +325,8 @@ public final class HL7PacketBuilder {
         final Event event = action.getEvent();
         final Patient client = event.getPatient();
         final String externalId = event.getExternalId();
-        final String externalUUID = event.getUuid().getUuid();
-        final String clientUUID = client.getUuid().getUuid();
+        final String externalUUID = event.getUuid().toString();
+        final String clientUUID = client.getUuid().toString();
         final String rootUUID = UUID.randomUUID().toString();
 
         final Request request = FACTORY_MIS.createPRPAIN402003UV02();
@@ -384,12 +384,12 @@ public final class HL7PacketBuilder {
         final Event event = action.getEvent();
         final Patient client = event.getPatient();
         final String externalId = event.getExternalId();
-        final String uuidExternal = event.getUuid().getUuid();
-        final String uuidClient = client.getUuid().getUuid();
+        final String uuidExternal = event.getUuid().toString();
+        final String uuidClient = client.getUuid().toString();
         // Если OrgStructure не содержит UUID, то генерируем случайный
-        final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+        final String uuidLocationOut = orgStructureOut.getUuid() != null ? orgStructureOut.getUuid().toString() : String.valueOf(UUID.randomUUID());
         // Если OrgStructure не содержит UUID, то генерируем случайный
-        final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+        final String uuidLocationIn = orgStructureIn.getUuid() != null ? orgStructureIn.getUuid().toString() : String.valueOf(UUID.randomUUID());
         final String uuidDocument = UUID.randomUUID().toString();
 
         final Request request = FACTORY_MIS.createPRPAIN302011UV02();
@@ -458,12 +458,12 @@ public final class HL7PacketBuilder {
         final Event event = action.getEvent();
         final Patient client = event.getPatient();
         final String externalId = event.getExternalId();
-        final String uuidExternal = event.getUuid().getUuid();
-        final String uuidClient = client.getUuid().getUuid();
+        final String uuidExternal = event.getUuid().toString();
+        final String uuidClient = client.getUuid().toString();
         // Если OrgStructure не содержит UUID, то генерируем случайный
-        final String uuidLocationOut = outStruct.getUuid() != null ? outStruct.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+        final String uuidLocationOut = outStruct.getUuid() != null ? outStruct.getUuid().toString() : String.valueOf(UUID.randomUUID());
         // Если OrgStructure не содержит UUID, то генерируем случайный
-        final String uuidLocationIn = inStruct.getUuid() != null ? inStruct.getUuid().getUuid() : String.valueOf(UUID.randomUUID());
+        final String uuidLocationIn = inStruct.getUuid() != null ? inStruct.getUuid().toString() : String.valueOf(UUID.randomUUID());
         final String uuidDocument = UUID.randomUUID().toString();
 
         final Request request = FACTORY_MIS.createPRPAIN302012UV02();
@@ -635,7 +635,7 @@ public final class HL7PacketBuilder {
         final POCDMT000040RecordTarget recordTarget = FACTORY_HL7.createPOCDMT000040RecordTarget();
         final POCDMT000040PatientRole patientRole = FACTORY_HL7.createPOCDMT000040PatientRole();
         // Номер амбулаторной карты пациента и UUID пациента
-        patientRole.getId().add(createII(client.getUuid().getUuid(), prescriptionInfo.getExternalId()));
+        patientRole.getId().add(createII(client.getUuid().toString(), prescriptionInfo.getExternalId()));
 
         //Пол пациента
         final POCDMT000040Patient patient = FACTORY_HL7.createPOCDMT000040Patient();
@@ -655,9 +655,9 @@ public final class HL7PacketBuilder {
         author.setTime(createTS(new Date(), DATE_FORMAT));
         final POCDMT000040AssignedAuthor assignedAuthor = FACTORY_HL7.createPOCDMT000040AssignedAuthor();
         // UUID автора медицинского документа
-        final ru.korus.tmis.core.entity.model.UUID uuidStaff = executorStaff == null ? null : executorStaff.getUuid();
+        final UUID uuidStaff = executorStaff == null ? null : executorStaff.getUuid();
         if (uuidStaff != null) {
-            assignedAuthor.getId().add(createII(uuidStaff.getUuid()));
+            assignedAuthor.getId().add(createII(uuidStaff.toString()));
         }
 
         final POCDMT000040Person assignedPerson = FACTORY_HL7.createPOCDMT000040Person();
@@ -674,9 +674,9 @@ public final class HL7PacketBuilder {
         final ON name = FACTORY_HL7.createON();
         name.getContent().add(organisation.getShortName());
         custodianOrganization.setName(name);
-        final ru.korus.tmis.core.entity.model.UUID uuidOrg = organisation.getUuid();
+        final UUID uuidOrg = organisation.getUuid();
 
-        custodianOrganization.getId().add(createII(uuidOrg.getUuid()));
+        custodianOrganization.getId().add(createII(uuidOrg.toString()));
         assignedCustodian.setRepresentedCustodianOrganization(custodianOrganization);
         custodian.setAssignedCustodian(assignedCustodian);
         clinicalDocument.setCustodian(custodian);

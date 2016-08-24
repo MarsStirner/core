@@ -1,15 +1,15 @@
 package ru.korus.tmis.pix.sda;
 
-import java.util.*;
+import com.google.common.collect.Multimap;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
+import ru.korus.tmis.core.database.dbutil.Database;
+import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import com.google.common.collect.Multimap;
-import ru.korus.tmis.core.database.dbutil.Database;
-import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
-import ru.korus.tmis.core.patient.HospitalBedBeanLocal;
+import java.util.Arrays;
+import java.util.UUID;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -86,8 +86,8 @@ public class EventInfo {
     private final String externalId;
 
     public EventInfo(Event event, Multimap<String, Action> actions, DbActionPropertyBeanLocal dbActionPropertyBeanLocal, HospitalBedBeanLocal hospitalBedBeanLocal) {
-        final ru.korus.tmis.core.entity.model.UUID uuid = event.getUuid();
-        this.eventUuid = uuid != null ? uuid.getUuid() : null;
+        final UUID uuid = event.getUuid();
+        this.eventUuid = uuid != null ? uuid.toString() : null;
         RbRequestType requestType = event.getEventType().getRequestType();
         this.requestType = requestType == null ? null : requestType.getCode();
         XMLGregorianCalendar begDate = null;

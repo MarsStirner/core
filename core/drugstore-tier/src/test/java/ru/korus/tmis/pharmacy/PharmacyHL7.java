@@ -2,7 +2,6 @@ package ru.korus.tmis.pharmacy;
 
 import misexchange.MISExchange;
 import misexchange.Request;
-import org.hl7.v3.MCCIIN000002UV01;
 import org.hl7.v3.MCCIIN000002UV012;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,11 +9,11 @@ import org.testng.annotations.BeforeSuite;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Test;
 import ru.korus.tmis.core.entity.model.*;
-import ru.korus.tmis.pharmacy.exception.SoapConnectionException;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.UUID;
 
 /**
  * Author Dmitriy E. Nosov <br>
@@ -60,23 +59,23 @@ public class PharmacyHL7 {
         SimpleDateFormat format = new SimpleDateFormat("dd.MM.yyyy");
 
         action.setCreateDatetime(new Date());
-        orgStructure.setUuid(new UUID(orgUUID));
+        orgStructure.setUuid(UUID.fromString(orgUUID));
         orgStructure.setName("ФНКЦ ДГОИ");
 
         organisation.setFullName("ФНКЦ ДГОИ");
-        organisation.setUuid(new UUID("4e6594a0-7d35-11e0-962e-001c23a58dfc"));
+        organisation.setUuid(UUID.fromString("4e6594a0-7d35-11e0-962e-001c23a58dfc"));
 
-        orgStructureIn.setUuid(new UUID(orgUUID2));
+        orgStructureIn.setUuid(UUID.fromString(orgUUID2));
 
         client.setBirthDate(format.parse("12.05.2005"));
         client.setFirstName("Данил");
         client.setPatrName("Матвеевич");
         client.setLastName("Агафонов");
         client.setSnils("1122-111-222");
-        client.setUuid(new UUID(clientUUID));
+        client.setUuid(UUID.fromString(clientUUID));
         event.setPatient(client);
 
-        event.setUuid(new UUID(externalUUID));
+        event.setUuid(UUID.fromString(externalUUID));
         event.setExternalId(externalId);
         action.setEvent(event);
 
@@ -87,7 +86,7 @@ public class PharmacyHL7 {
         doctor.setFirstName("Медсестра");
         doctor.setPatrName("Владимировна");
         doctor.setLastName("Регистраторова");
-        doctor.setUuid(new UUID("5555db7d-5555-43b8-9617-e2d2f229dac3"));
+        doctor.setUuid(UUID.fromString("5555db7d-5555-43b8-9617-e2d2f229dac3"));
         final Speciality speciality = new Speciality(1);
         speciality.setName("нейрохирург");
         doctor.setSpeciality(speciality);

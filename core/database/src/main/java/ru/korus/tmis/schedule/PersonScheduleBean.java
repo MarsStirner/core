@@ -187,11 +187,11 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
         res.ambulatoryDate = ambulatoryAction.getEvent().getSetDate();
         if (logger.isDebugEnabled()) {
             logger.info("PersonSchedule[{}] Action[{}] Doctor: {} {} {}",
-                    new Object[] {loggerDateFormat.format(res.ambulatoryDate),
-                    ambulatoryAction.getId(),
-                    res.doctor.getLastName(),
-                    res.doctor.getFirstName(),
-                    res.doctor.getPatrName()}
+                        loggerDateFormat.format(res.ambulatoryDate),
+                        ambulatoryAction.getId(),
+                        res.doctor.getLastName(),
+                        res.doctor.getFirstName(),
+                        res.doctor.getPatrName()
             );
         }
         return res;
@@ -253,9 +253,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
                 .getQuotingByTimeConstraints(personSchedule.doctor.getId(), personSchedule.ambulatoryDate, quotingType.getValue());
         if (logger.isDebugEnabled()) {
             for (QuotingByTime qbt : personSchedule.quotingByTimeConstraints) {
-                logger.info("QuotingByTime[{}]: START={}, END={}]",
-                        new Object[] {qbt.getId(), qbt.getQuotingTimeStart(), qbt.getQuotingTimeEnd()}
-                );
+                logger.info("QuotingByTime[{}]: START={}, END={}]", qbt.getId(), qbt.getQuotingTimeStart(), qbt.getQuotingTimeEnd());
             }
         }
     }
@@ -297,8 +295,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
                 //Вывод всех свойств со значениями в лог
                 if (logger.isDebugEnabled()) {
                     for (APValue apValue : apValueList) {
-                        logger.info("ID={} NAME={} VALUE={}",
-                                new Object[] {currentProperty.getId(), currentProperty.getType().getName(), apValue.getValue()});
+                        logger.info("ID={} NAME={} VALUE={}", currentProperty.getId(), currentProperty.getType().getName(), apValue.getValue());
                     }
                 }
             }
@@ -352,11 +349,11 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
      * и формирование талончиков из двух списков (times и queue)
      */
     public void formTickets(final PersonSchedule personSchedule) throws CoreException {
-        personSchedule.times = new ArrayList<APValueTime>();
-        personSchedule.queue = new ArrayList<APValueAction>();
+        personSchedule.times = new ArrayList<>();
+        personSchedule.queue = new ArrayList<>();
         getAmbulatoryProperties(personSchedule);
 
-        personSchedule.tickets = new ArrayList<Ticket>(personSchedule.times.size());
+        personSchedule.tickets = new ArrayList<>(personSchedule.times.size());
 
         short queueIndex = personSchedule.emergencyPatientCount;
         Date currentTime;
@@ -446,7 +443,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
                     break;
                 }
             }
-            logger.info("Quota={} quotedTickets={} unit={}", new Object[] {quota, quotedTickets, personSchedule.doctor.getQuoteUnit()});
+            logger.info("Quota={} quotedTickets={} unit={}", quota, quotedTickets, personSchedule.doctor.getQuoteUnit());
             if (personSchedule.doctor.getQuoteUnit() != null) {
                 if (personSchedule.doctor.getQuoteUnit() == 0) {
                     //%
@@ -484,7 +481,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             }
         }
         personSchedule.available = (quoteAvailable != 0);
-        logger.info("Quota={} quoteAvailable={} externalCount={}", new Object[] {quota, quoteAvailable, personSchedule.externalCount});
+        logger.info("Quota={} quoteAvailable={} externalCount={}", quota, quoteAvailable, personSchedule.externalCount);
         if (logger.isDebugEnabled()) {
             logger.info("After constraints:");
             for (Ticket currentTicket : personSchedule.tickets) {
@@ -576,21 +573,18 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
                                 patient, queueEventType, personSchedule.doctor,
                                 paramsDateTime, currentTicket.getEndTime()
                         );
-                        logger.info("Event is {} ID={} UUID={}",
-                                new Object[] {queueEvent, queueEvent.getId(), queueEvent.getUuid().getUuid()});
+                        logger.info("Event is {} ID={} UUID={}", queueEvent, queueEvent.getId(), queueEvent.getUuid().toString());
                         //2) Создаем действие (Action)
                         //2.a)Получаем тип    (ActionType)
                         final ActionType queueActionType = patientQueueBean.getQueueActionType();
-                        logger.info("ActionType is {} typeID={} typeName={}",
-                                new Object[] {queueActionType, queueActionType.getId(), queueActionType.getName()});
+                        logger.info("ActionType is {} typeID={} typeName={}", queueActionType, queueActionType.getId(), queueActionType.getName());
                         //2.b)Сохраняем действие  (Action)
 
                         final Action queueAction = actionBean.createAction(
                                 queueActionType, queueEvent, personSchedule.doctor,
                                 paramsDateTime, queueActionParam);
 
-                        logger.info("Action is {} ID={} UUID={}",
-                                new Object[] {queueAction, queueAction.getId(), queueAction.getUuid().getUuid()});
+                        logger.info("Action is {} ID={} UUID={}", queueAction, queueAction.getId(), queueAction.getUuid().toString());
                         // Заполняем ActionProperty_Action для 'queue' из Action='amb'
                         // Для каждого времени(times) из Action[приема врача]
                         // заполняем очередь(queue) null'ами если она не ссылается на другой Action,
@@ -741,7 +735,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             em.merge(personSchedule.queue.get(0));
         } else { //если запись в очередь на время или сверх очереди
             em.flush();
-            APValueAction newActionPropertyAction = null;
+            APValueAction newActionPropertyAction;
             if (pacientInQueueType.equals(PacientInQueueType.OVERQUEUE)) { //если запись сверх очереди, то добавляем в конец
                 ++personSchedule.overQueueCount;
                 newActionPropertyAction = new APValueAction(personSchedule.queueAP.getId(), personSchedule.queue.size());
@@ -752,9 +746,10 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             }
             newActionPropertyAction.setValue(queueAction);
             logger.info("NewActionProperty [{} {} {}]",
-                    new Object[] {newActionPropertyAction.getId().getId(),
-                    newActionPropertyAction.getId().getIndex(),
-                    newActionPropertyAction.getValue().getId()});
+                        newActionPropertyAction.getId().getId(),
+                        newActionPropertyAction.getId().getIndex(),
+                        newActionPropertyAction.getValue().getId()
+            );
             //managerBean.merge(newActionPropertyAction);
             em.merge(newActionPropertyAction);
             logger.info("All ActionProperty_Action's set successfully with index = {}", newActionPropertyAction.getId().getIndex());

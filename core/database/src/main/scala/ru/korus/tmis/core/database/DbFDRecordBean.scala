@@ -76,7 +76,7 @@ with I18nable {
     AND
       fdr.flatDirectory.id = :flatDirectoryId
     AND
-      fdfv.pk.fdRecord.id = fdr.id
+      fdfv.record.id = fdr.id
     AND
       et.name = fdfv.value
                                           """

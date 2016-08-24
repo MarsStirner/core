@@ -1,6 +1,8 @@
 package ru.korus.tmis.core.entity.model.pharmacy;
 
 import javax.persistence.*;
+import java.nio.ByteBuffer;
+import java.util.UUID;
 
 /**
  * Author:      Sergey A. Zagrebelny <br>
@@ -35,8 +37,8 @@ public class PrescriptionSendingRes {
     @JoinColumn(name = "interval_id", nullable = true)
     private DrugChart drugChart;
 
-    @Column(name = "uuid", columnDefinition = "VARCHAR(100) NULL DEFAULT NULL COMMENT 'идентификатор интервала 1С'")
-    private String uuid;
+    @Column(name = "uuid", columnDefinition = "binary(16)")
+    private byte[] uuid;
 
     @Column(name = "version", columnDefinition = "INT(11) NULL DEFAULT NULL COMMENT 'текущая версия'")
     private Integer version;
@@ -65,12 +67,18 @@ public class PrescriptionSendingRes {
         this.drugChart = drugChart;
     }
 
-    public String getUuid() {
-        return uuid;
+    public UUID getUuid() {
+        final ByteBuffer bb = ByteBuffer.wrap(uuid);
+        long high = bb.getLong();
+        long low = bb.getLong();
+        return new UUID(high, low);
     }
 
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
+    public void setUuid(UUID uuid) {
+        final ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        this.uuid =  bb.array();
     }
 
     public Integer getVersion() {

@@ -1,8 +1,6 @@
 package ru.korus.tmis.core.database.common;
 
 import com.google.common.collect.Multimap;
-import ru.korus.tmis.core.auth.AuthData;
-import ru.korus.tmis.core.data.IdNameContainer;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 import scala.Function1;
@@ -44,7 +42,7 @@ public interface DbEventBeanLocal {
 
     Set<ActionType> getActionTypeFilter(int eventId) throws CoreException;
 
-    OrgStructure getOrgStructureForEvent(int eventId) throws CoreException;
+    OrgStructure getOrgStructureForEvent(int eventId);
 
     Event createEvent(int patientId, int appealTypeId, Date begDate, Date endDate, int contractId, RbResult result, RbAcheResult acheResult, Staff execPerson, Staff createPerson) throws CoreException;
 
@@ -98,4 +96,29 @@ public interface DbEventBeanLocal {
      * @throws CoreException
      */
     long getCountOfAppealsForReceivedPatientByPeriod (Object filter) throws CoreException;
+
+
+    /**
+     * Возврашает флаг - является ли обращение стационарным
+     * @param event обращение для проверки
+     * @return  true - стационарное, false - амбулаторное
+     * @see #isStationaryEvent(EventType) - использует для определения флага Тип обращения
+     */
+    boolean isStationaryEvent(final Event event);
+
+    /**
+     * Возврашает флаг - является ли тип обращения стационарным
+     * @param eventType тип обращения для проверки
+     * @return  true - стационарное, false - амбулаторное
+     * @see #isStationaryEvent(RbRequestType) - использует для определения флага
+     */
+    boolean isStationaryEvent(final EventType eventType);
+
+    /**
+     * Возврашает флаг - является ли тип обращения стационарным
+     * @param requestType тип обращения для проверки
+     * @return  true - стационарное, false - амбулаторное
+     * @see #isStationaryEvent(Event) #isStationaryEvent(EventType) - используется эьтими методами для определения типа обращения
+     */
+    boolean isStationaryEvent(final RbRequestType requestType);
 }

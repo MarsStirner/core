@@ -41,7 +41,7 @@ public class DbPrescriptionSendingResBean implements DbPrescriptionSendingResBea
     @Override
     public String getIntervalUUID(DrugChart drugChart, DrugComponent drugComponent) {
         final PrescriptionSendingRes prescriptionSendingRes = getPrescriptionSendingRes(drugChart, drugComponent);
-        String res = null;
+        UUID res = null;
         if (prescriptionSendingRes.getUuid() != null) {
             res = prescriptionSendingRes.getUuid();
         } else if (drugChart.getMaster() != null) {
@@ -49,16 +49,16 @@ public class DbPrescriptionSendingResBean implements DbPrescriptionSendingResBea
             if (master != null) {
                 res = master.getUuid();
                 if(res == null) {
-                    master.setUuid(UUID.randomUUID().toString());
+                    master.setUuid(UUID.randomUUID());
                     em.flush();
                     res = master.getUuid();
                 }
             }
         } else {
-            res = UUID.randomUUID().toString();
+            res = UUID.randomUUID();
             prescriptionSendingRes.setUuid(res);
             em.flush();
         }
-        return res;
+        return res.toString();
     }
 }

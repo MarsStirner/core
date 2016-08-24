@@ -170,21 +170,20 @@ public interface DbActionBeanLocal {
      */
     int getLastActionByActionTypeIdAndEventId(int eventId, Set<Integer> actionTypeIds) throws CoreException;
 
-    ActionType getActionTypeByCode(String code) throws CoreException;
-
     Action createAction(ActionType actionType, Event event, Staff person, Date date, QueueActionParam queueActionParam);
 
     Action updateAction(Action action);
 
+    @Deprecated
     Action getEvent29AndAction19ForAction (Action action) throws CoreException;
 
     /**
      * Возвращает количество записей для указанного евента и типа PacientInQueueType (срочно и сверх сетки приема)
      * @param eventId идентификатор обращения
-     * @param pacientInQueueType какой-то типа акшена (срочно и сверх сетки приема)
+     * @param patientInQueueType какой-то типа акшена (срочно и сверх сетки приема)
      * @return количество записей как int
      */
-    long getActionForEventAndPacientInQueueType(int eventId, long date, int pacientInQueueType) throws CoreException;
+    long getActionForEventAndPatientInQueueType(int eventId, long date, int patientInQueueType) throws CoreException;
 
     long getActionForDateAndPacientInQueueType(long beginDate, int pacientInQueueType) throws CoreException;
 
@@ -225,7 +224,7 @@ public interface DbActionBeanLocal {
      * @param eventId - ID обращения
      * @return список услуг
      */
-    List<Action>  getServiceList(Integer eventId);
+    List<Action> getServiceList(Integer eventId);
 
     /**
      * Получить список действий в рамках одного обращения
@@ -256,4 +255,26 @@ public interface DbActionBeanLocal {
     List<Action> getAllActionsOfPatientThatHasActionProperty(int patientId, String actionPropertyCode);
 
     Action getById(int id);
+
+    /**
+     * Получение списка экшенов по ActionType.mnem и Action.status
+     * @param actionTypeMnemonic строковая мнемоника типа экшенов для фильтрации
+     * @param status статус экшена для фильтрации
+     * @return  список экшенов с заданным статусом и ActionType.mnem
+     */
+    List<Action> getActionsByActionTypFlatCodePrefixAndStatus(final String  actionTypeMnemonic, ActionStatus status);
+
+    /**
+     * Получение отделения направления из Action (по отделению врача, указанного как исполнитель [Action.person_id])
+     * @param action Action для которого нужно получить отделение направления
+     * @return Отделение, куда напрвлен Action \ null
+     */
+    OrgStructure getOrgStructureDirection(Action action);
+
+    /**
+     * Установка примечания и статуса для Экшена (em.merge)
+     * @param note прмиечание
+     * @param actionStatus статус экшена для установки
+     */
+    Action setActionNoteAndStatus(Action action, String note, ActionStatus actionStatus);
 }

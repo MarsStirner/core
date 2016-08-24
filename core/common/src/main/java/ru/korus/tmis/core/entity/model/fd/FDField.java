@@ -51,17 +51,6 @@ public class FDField implements Serializable, Cloneable {
     @Column(name = "order")
     private Integer order;
 
-    @OneToMany(fetch = FetchType.LAZY, mappedBy = "pk.fdField", cascade = CascadeType.ALL)
-    private java.util.List<FDFieldValue> fieldValues = new java.util.LinkedList<FDFieldValue>();
-
-    public java.util.List<FDFieldValue> getFieldValue() {
-        return this.fieldValues;
-    }
-
-    public void getFieldValue(java.util.List<FDFieldValue> fieldValues) {
-        this.fieldValues = fieldValues;
-    }
-
     public FDField() {
     }
 

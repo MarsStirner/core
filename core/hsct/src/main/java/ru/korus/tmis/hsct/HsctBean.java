@@ -40,7 +40,6 @@ import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -490,29 +489,7 @@ public class HsctBean {
     }
 
     private void processDepatment(final HsctExternalRequest result, final Event event) throws CoreException {
-        OrgStructure lastOrgStructure = null;
-        try {
-            lastOrgStructure = dbEvent.getOrgStructureForEvent(event.getId());
-        } catch (Exception e) {
-            LOGGER.warn("Cannot get OrgStructure from movings for Event[{}]", event.getId());
-        }
-        if (lastOrgStructure == null) {
-            final Map<Event, ActionProperty> mapAP = dbCustomQuery.getOrgStructureByReceivedActionByEvents(
-                    Collections.singletonList(
-                            event
-                    )
-            );
-            if (!mapAP.isEmpty() && mapAP.values().iterator().hasNext()) {
-                final ActionProperty ap = mapAP.values().iterator().next();
-                final List<APValue> apValues = dbActionProperty.getActionPropertyValue(ap);
-                if (apValues != null && !apValues.isEmpty()) {
-                    LOGGER.debug("Getting OrgStructure from received Action[{}]-{}", ap.getAction().getId(), ap.getId());
-                    final APValue value = apValues.iterator().next();
-                    lastOrgStructure = (OrgStructure) value.getValue();
-
-                }
-            }
-        }
+        final OrgStructure lastOrgStructure = dbEvent.getOrgStructureForEvent(event.getId());
         if (lastOrgStructure != null) {
             result.setDepartmentCode(lastOrgStructure.getCode());
         }

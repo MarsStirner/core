@@ -1275,7 +1275,7 @@ with CAPids {
     WHERE
       fdr.flatDirectory.id = :id
     AND
-      fdfv.pk.fdRecord.id = fdr.id
+      fdfv.record.id = fdr.id
     AND
       et.code = fdfv.value
     """

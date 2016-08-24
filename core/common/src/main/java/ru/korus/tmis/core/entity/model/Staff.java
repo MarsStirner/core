@@ -1,31 +1,16 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.Date;
-import java.util.LinkedHashSet;
-import java.util.Set;
-
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Transient;
+import javax.persistence.*;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
+import java.nio.ByteBuffer;
+import java.util.Date;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.UUID;
 
 @Entity
 @Table(name = "Person")
@@ -232,9 +217,8 @@ public class Staff implements Serializable {
     private Integer quoteUnit;
     //
 
-    @ManyToOne
-    @JoinColumn(name = "uuid_id")
-    private UUID uuid;
+    @Column(name = "uuid", nullable = false, columnDefinition = "BINARY(16)")
+    private byte[] uuid;
     // //////////////////////////////////////////////////////////////////////////
     // Custom mappings
     // //////////////////////////////////////////////////////////////////////////
@@ -696,12 +680,19 @@ public class Staff implements Serializable {
     }
 
     public UUID getUuid() {
-        return uuid;
+        final ByteBuffer bb = ByteBuffer.wrap(uuid);
+        long high = bb.getLong();
+        long low = bb.getLong();
+        return new UUID(high, low);
     }
 
     public void setUuid(UUID uuid) {
-        this.uuid = uuid;
+        final ByteBuffer bb = ByteBuffer.wrap(new byte[16]);
+        bb.putLong(uuid.getMostSignificantBits());
+        bb.putLong(uuid.getLeastSignificantBits());
+        this.uuid=  bb.array();
     }
+
 
     @Override
     public int hashCode() {

@@ -41,6 +41,7 @@ import javax.persistence.PersistenceContext;
 import java.io.File;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
@@ -71,9 +72,6 @@ public class PrescriptionTest extends Arquillian {
 
     @EJB
     PharmacyBeanLocal pharmacyBean;
-
-    @EJB
-    DbUUIDBeanLocal dbUUIDBeanLocal;
 
     final private Integer TEST_PATIENT_ID = 1;
 
@@ -173,7 +171,7 @@ public class PrescriptionTest extends Arquillian {
         Event event = eventList.iterator().next();
         final int actionTypeIdForPrescription = 123; //TODO: must be cretae by flatCode 'prescription'
         Action actionPrescription = dbActionBean.createAction(event.getId(), actionTypeIdForPrescription, null, null);
-        actionPrescription.setUuid(dbUUIDBeanLocal.createUUID());
+        actionPrescription.setUuid(UUID.randomUUID());
         final int executorId = 1;
         actionPrescription.setExecutor(em.find(Staff.class, executorId));
         em.merge(actionPrescription);

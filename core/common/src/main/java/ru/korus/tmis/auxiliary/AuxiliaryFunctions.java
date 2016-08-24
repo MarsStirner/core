@@ -4,14 +4,12 @@ package ru.korus.tmis.auxiliary;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ws.rs.core.MultivaluedMap;
-import java.util.List;
 import java.util.Set;
 
 public class AuxiliaryFunctions {
 
     //Конвертирование строковой коллекции в целочисленную
-    public static java.util.List<Integer>
-    convertStringListTo(java.util.List<String> strList) throws CoreException {
+    public static java.util.List<Integer> convertStringListTo(java.util.List<String> strList) throws CoreException {
 
         if (strList != null) {
             java.util.List<Integer> digList = new java.util.LinkedList<Integer>();
@@ -28,8 +26,9 @@ public class AuxiliaryFunctions {
     }
 
     //Сбор двумерного массива из url в мар
-    public static java.util.LinkedHashMap<Integer, Integer>
-    foldFilterValueToLinkedMapFromQuery(String fullQueryPath, String parseTitleBegin, String parseTitleEnd) {
+    public static java.util.LinkedHashMap<Integer, Integer> foldFilterValueToLinkedMapFromQuery(
+            String fullQueryPath, String parseTitleBegin, String parseTitleEnd
+    ) {
         if (fullQueryPath != null) {
             java.util.LinkedHashMap<Integer, Integer> map = new java.util.LinkedHashMap<Integer, Integer>();
 
@@ -55,13 +54,16 @@ public class AuxiliaryFunctions {
                         } else {
                             strValue = parsing;
                         }
-                        if (strValue.compareTo("desc") == 0)
+                        if (strValue.compareTo("desc") == 0) {
                             map.put(key, 1);
-                        else
+                        } else {
                             map.put(key, 0);
+                        }
 
                     }
-                } else break;
+                } else {
+                    break;
+                }
 
             }
             return map;
@@ -70,26 +72,21 @@ public class AuxiliaryFunctions {
     }
 
     //Сбор двумерного массива из url в мар
-    public static java.util.Map<Integer, java.util.List<String>>
-    foldFilterValueTo(MultivaluedMap<String, String> queryParams, String parseTitleBegin, String parseTitleEnd) {
+    public static java.util.Map<String, java.util.List<String>> foldFilterValueTo(
+            MultivaluedMap<String, String> queryParams, String parseTitleBegin, String parseTitleEnd
+    ) {
 
         if (queryParams != null) {
-            java.util.Map<Integer, java.util.List<String>> map = new java.util.HashMap<Integer, List<String>>();
+            java.util.Map<String, java.util.List<String>> map = new java.util.HashMap<>();
             Set<String> paramHandles = queryParams.keySet();
-            for (java.util.Iterator<String> it = paramHandles.iterator(); it.hasNext(); ) {
-                if (true) {
-                    int pos, end;
-                    String currentHandle = it.next();
-                    if ((pos = currentHandle.indexOf(parseTitleBegin)) >= 0) {
-                        pos = pos + parseTitleBegin.length();
-                        String cutCurrentHandle = currentHandle.substring(pos);
-                        if ((end = cutCurrentHandle.indexOf(parseTitleEnd)) >= 0) {
-                            String strKey = cutCurrentHandle.substring(0, end);
-                            int key;
-                            if ((key = Integer.parseInt(strKey)) > 0) {
-                                map.put(key, queryParams.get(currentHandle));
-                            }
-                        }
+            for (final String paramHandle : paramHandles) {
+                int pos, end;
+                if ((pos = paramHandle.indexOf(parseTitleBegin)) >= 0) {
+                    pos = pos + parseTitleBegin.length();
+                    String cutCurrentHandle = paramHandle.substring(pos);
+                    if ((end = cutCurrentHandle.indexOf(parseTitleEnd)) >= 0) {
+                        String strKey = cutCurrentHandle.substring(0, end);
+                        map.put(strKey, queryParams.get(paramHandle));
                     }
                 }
             }
@@ -105,8 +102,12 @@ public class AuxiliaryFunctions {
         r.setLength(s.length());
         int current = -1;
         for (int i = s.length() - 1; i >= 0; i--) {
-            if (s.charAt(i) != c && current < 0) current = i;
-            if (current >= 0) r.setCharAt(i, s.charAt(i));
+            if (s.charAt(i) != c && current < 0) {
+                current = i;
+            }
+            if (current >= 0) {
+                r.setCharAt(i, s.charAt(i));
+            }
         }
         return r.substring(0, current + 1);
     }

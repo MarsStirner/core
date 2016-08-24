@@ -9,7 +9,7 @@ import javax.ejb.{EJB, Stateless}
 import scala.collection.JavaConversions._
 import java.util
 import org.slf4j.{LoggerFactory, Logger}
-import util.{TimeZone, Date}
+import java.util.{UUID, TimeZone, Date}
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import ru.korus.tmis.core.database.common.DbRbBloodTypeBeanLocal
@@ -25,13 +25,10 @@ class DbPatientBean
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
-  private final val commlogger: Logger = LoggerFactory.getLogger("ru.korus.tmis.communication");
+  private final val commlogger: Logger = LoggerFactory.getLogger("ru.korus.tmis.communication")
 
   @EJB
   var dbRbBloodType: DbRbBloodTypeBeanLocal = _
-
-  @EJB
-  private var dbUUIDBeanLocal: DbUUIDBeanLocal = _
 
   val PatientFindQuery = """
       SELECT p
@@ -91,13 +88,13 @@ class DbPatientBean
       ORDER BY p.%s %s
                                            """
 
-  def getAllPatients(): Iterable[Patient] = {
+  def getAllPatients: Iterable[Patient] = {
     em.createNamedQuery("Patient.findAll", classOf[Patient]).getResultList
   }
 
   def getAllPatients(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val queryStr = filter.toQueryStructure()
+    val queryStr = filter.toQueryStructure
 
     val countTyped = em.createQuery(PatientFindAllActiveQuery.format("count(p)", queryStr.query, ""), classOf[Long])
     if (queryStr.data.size() > 0)
@@ -123,12 +120,8 @@ class DbPatientBean
       .getResultList
 
     result.size match {
-      case 0 => {
-        throw new NoSuchPatientException(
-          ConfigManager.ErrorCodes.PatientNotFound,
-          id,
-          i18n("error.patientNotFound"))
-      }
+      case 0 =>
+        throw new NoSuchPatientException(ConfigManager.ErrorCodes.PatientNotFound, id, i18n("error.patientNotFound"))
       case size => {
         val patient = result.iterator.next()
         patient
@@ -168,7 +161,7 @@ class DbPatientBean
       p = new Patient
       p.setCreatePerson(sessionUser)
       p.setCreateDatetime(now)
-      p.setUuid(dbUUIDBeanLocal.createUUID())
+      p.setUuid(UUID.randomUUID())
     }
 
     p.setBirthPlace("")
@@ -263,10 +256,10 @@ class DbPatientBean
       )
       AND identifier='%s'
         AND ClientIdentification.deleted=0
-      )""".format(params.get("identifierType"), params.get("identifier"));
+      )""".format(params.get("identifierType"), params.get("identifier"))
     }
 
-    val millisecondsCount: java.lang.Long = java.lang.Long.parseLong(params.get("birthDate"));
+    val millisecondsCount: java.lang.Long = java.lang.Long.parseLong(params.get("birthDate"))
     val resultQuery = em.createQuery(findPatientQuery, classOf[Patient])
       .setParameter("LASTNAME", params.get("lastName"))
       .setParameter("FIRSTNAME", params.get("firstName"))
@@ -274,7 +267,7 @@ class DbPatientBean
       .setParameter("SEX", java.lang.Short.parseShort(params.get("sex")))
       .setParameter("BIRTHDATE", new java.util.Date(
       millisecondsCount.longValue() - TimeZone.getDefault.getOffset(millisecondsCount.longValue())))
-      .setParameter("CLIENTID", clientId);
+      .setParameter("CLIENTID", clientId)
     commlogger.debug("SQL =" + resultQuery.toString)
     resultQuery.getResultList
   }
@@ -334,9 +327,9 @@ class DbPatientBean
       )
       AND identifier='%s'
         AND ClientIdentification.deleted=0
-      )""".format(params.get("identifierType"), params.get("identifier"));
+      )""".format(params.get("identifierType"), params.get("identifier"))
     }
-    val millisecondsCount: java.lang.Long = java.lang.Long.parseLong(params.get("birthDate"));
+    val millisecondsCount: java.lang.Long = java.lang.Long.parseLong(params.get("birthDate"))
 
     em.createQuery(findPatientQuery, classOf[Patient])
       .setParameter("LASTNAME", params.get("lastName"))
@@ -497,9 +490,8 @@ class DbPatientBean
       true
     }
     catch {
-      case e: Exception => {
+      case e: Exception =>
         throw new CoreException("Ошибка при удалении пациента с id=%d: %s".format(id, e.getMessage))
-      }
     }
   }
 

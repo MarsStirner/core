@@ -1,20 +1,16 @@
 package ru.korus.tmis.core.entity.model.fd;
 
-import ru.korus.tmis.core.entity.model.AssignmentHour;
-
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Set;
 
 @Entity
 @Table(name = "FlatDirectory")
-@NamedQueries(
-        {
-                @NamedQuery(name = "FlatDirectory.findAll", query = "SELECT fd FROM FlatDirectory fd")
-        })
+@NamedQueries({
+        @NamedQuery(name = "FlatDirectory.findAll", query = "SELECT fd FROM FlatDirectory fd"),
+        @NamedQuery(name = "FlatDirectory.byCode", query = "SELECT fd FROM FlatDirectory fd WHERE fd.code = :code")
+})
 @XmlType(name = "flatDirectory")
 @XmlRootElement(name = "flatDirectory")
 public class FlatDirectory implements Serializable, Cloneable {
@@ -30,6 +26,9 @@ public class FlatDirectory implements Serializable, Cloneable {
     @Basic(optional = false)
     @Column(name = "name")
     private String name = "";
+
+    @Column(name = "code", nullable = true)
+    private String code;
 
     @Basic(optional = false)
     @Column(name = "description")
@@ -109,6 +108,14 @@ public class FlatDirectory implements Serializable, Cloneable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(final String code) {
+        this.code = code;
     }
 
     @Override

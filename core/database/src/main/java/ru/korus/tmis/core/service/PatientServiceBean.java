@@ -4,17 +4,16 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import ru.korus.tmis.core.entity.model.Patient;
 
-import ru.korus.tmis.core.database.common.DbUUIDBeanLocal;
 import ru.korus.tmis.core.service.interfaces.PatientService;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * @author anosov
@@ -24,16 +23,13 @@ import java.util.List;
 public class PatientServiceBean implements PatientService {
     private static final Logger log = LoggerFactory.getLogger(PatientServiceBean.class);
 
-    @EJB
-    DbUUIDBeanLocal dbUUIDBeanLocal;
-
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em;
 
 
     @Override
     public Patient save(Patient patient) {
-        patient.setUuid(dbUUIDBeanLocal.createUUID());
+        patient.setUuid(UUID.randomUUID());
         patient.setDeleted(false);
         patient.setCreateDatetime(new Date());
         patient.setModifyDatetime(new Date());

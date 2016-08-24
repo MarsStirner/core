@@ -19,7 +19,7 @@ class FlatDirectoryData {
   @BeanProperty
   var requestData: FlatDirectoryRequestData = _
   @BeanProperty
-  var data: LinkedList[FlatDirectoryEntry] = new LinkedList[FlatDirectoryEntry]
+  var data: util.LinkedList[FlatDirectoryEntry] = new util.LinkedList[FlatDirectoryEntry]
 
   //All
   def this(directories: java.util.List[FlatDirectory], request: FlatDirectoryRequestData) {
@@ -106,7 +106,7 @@ class FlatDirectoryRequestDataListFilter {
   var includeFDRecord: Boolean = _
 
   @BeanProperty
-  var filterFields: java.util.Map[Int, java.util.List[String]] = _
+  var filterFields: java.util.Map[String, java.util.List[String]] = _
 
   @BeanProperty
   var filterValue: String = _
@@ -118,7 +118,7 @@ class FlatDirectoryRequestDataListFilter {
            includeMeta: String,
            includeRecordList: String,
            includeFDRecord: String,
-           filterFields: java.util.Map[java.lang.Integer, java.util.List[String]],
+           filterFields: java.util.Map[java.lang.String, java.util.List[String]],
            filterValue: String,
            filterRecordIds: java.util.List[java.lang.Integer]) {
     this()
@@ -134,7 +134,7 @@ class FlatDirectoryRequestDataListFilter {
     this.includeFDRecord = (includeFDRecord != null && includeFDRecord.isEmpty != true && includeFDRecord.compare("yes") == 0)
     this.filterFields =
       if(filterFields != null)
-        filterFields.collect{case (i: java.lang.Integer, l : java.util.List[String]) => (i.intValue(), l)}
+        filterFields.collect{case (i: java.lang.String, l : java.util.List[String]) => (i, l)}
       else
         null
     this.filterValue = filterValue
@@ -147,7 +147,7 @@ class FlatDirectoryRequestDataListFilter {
         null
   }
 
-  def toQueryStructure() = {
+  def toQueryStructure = {
     var qs = new QueryDataStructure()
     if (this.flatDictionaryIds != null && this.flatDictionaryIds.size > 0 && flatDictionaryIds.get(0) > 0) {
       //отсекаем случай -1 - вывод всех словарей
@@ -157,7 +157,7 @@ class FlatDirectoryRequestDataListFilter {
     qs
   }
 
-  def toQueryStructureForRecordsRequest() = {
+  def toQueryStructureForRecordsRequest = {
     var qs = new QueryDataStructure()
     qs.query = this.lexemsToQueryString(qs.query)
     qs.query += "fdr.deleted = 0 \n"
@@ -186,16 +186,23 @@ class FlatDirectoryRequestDataListFilter {
         var lexems2: String = ""
         var j = 0
         qs.query += lexems
-        qs.query += "fv.pk.fdField.id = :fieldId%d AND (".format(i)
+        qs.query += "fv.fdField.id = :fieldId%d".format(i)
         qs.add("fieldId%d".format(i), element._1.asInstanceOf[Integer])
-        element._2.foreach(element2 => {
-          qs.query += lexems2
-          qs.query += "fv.value = :value%d%d\n".format(i, j)
-          qs.add("value%d%d".format(i, j), element2)
-          lexems2 = " OR "
-          j = j + 1
-        })
-        qs.query += ")"
+        val hasValue = element._2.nonEmpty && element._2.mkString.nonEmpty
+        if(hasValue) {
+          qs.query += " AND ("
+          element._2.foreach(element2 => {
+            if (element2.nonEmpty) {
+
+              qs.query += lexems2
+              qs.query += "fv.value = :value%d%d\n".format(i, j)
+              qs.add("value%d%d".format(i, j), element2)
+              lexems2 = " OR "
+              j = j + 1
+            }
+          })
+          qs.query += ")"
+        }
         lexems = " OR "
         i = i + 1
       })
@@ -206,7 +213,7 @@ class FlatDirectoryRequestDataListFilter {
 
   private def lexemsToQueryString(qss: String) = {
     var query = qss
-    if (query.isEmpty()) {
+    if (query.isEmpty) {
       query += "WHERE "
     } else {
       query += "AND "
@@ -229,10 +236,10 @@ class FlatDirectoryEntry {
   var description: String = _
 
   @BeanProperty
-  var fieldDescriptionList: LinkedList[FieldDescriptionData] = new LinkedList[FieldDescriptionData]
+  var fieldDescriptionList: util.LinkedList[FieldDescriptionData] = new util.LinkedList[FieldDescriptionData]
 
   @BeanProperty
-  var recordList: LinkedList[RecordData] = new LinkedList[RecordData]
+  var recordList: util.LinkedList[RecordData] = new util.LinkedList[RecordData]
 
   def this(directory: FlatDirectory, request: FlatDirectoryRequestData) {
     this()
@@ -285,7 +292,7 @@ class FieldDescriptionData {
   def this(description: FDField) {
     this()
     this.id = description.getId.intValue()
-    this.name = description.getName()
+    this.name = description.getName
     this.description = description.getDescription
     this.order = if (description.getOrder != null) {
       description.getOrder.intValue()
@@ -327,7 +334,7 @@ class RecordData {
   var order: Int = _
 
   @BeanProperty
-  var fieldValueList: LinkedList[FieldValueData] = new LinkedList[FieldValueData]
+  var fieldValueList: util.LinkedList[FieldValueData] = new util.LinkedList[FieldValueData]
 
   def this(record: FDRecord, flagFDRecord: Boolean) {
     this()
@@ -367,12 +374,12 @@ class FieldValueData {
     this()
     if (flagFDRecord) {
       this.fieldDescription =
-        if(value!=null && value.getPk!=null && value.getPk.getFDField!=null)
-          new FieldDescriptionData(value.getPk.getFDField)
+        if(value!=null && value.getFDField!=null)
+          new FieldDescriptionData(value.getFDField)
         else
           new FieldDescriptionData()
     } else {
-      this.fieldDescription = new IdOrderFieldDescriptionData(value.getPk.getFDField)
+      this.fieldDescription = new IdOrderFieldDescriptionData(value.getFDField)
     }
     this.fieldValue = new FieldIdValueData(value.getId.intValue(), value.getValue)
   }

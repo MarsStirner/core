@@ -1,28 +1,32 @@
 package ru.korus.tmis.ws.webmis.rest;
 
 import com.sun.jersey.api.json.JSONWithPadding;
+import org.apache.commons.lang.StringUtils;
 import ru.korus.tmis.auxiliary.AuxiliaryFunctions;
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.*;
+import ru.korus.tmis.core.data.out.FDContainer;
+import ru.korus.tmis.core.data.out.OutputStructureObjectFactory;
+import ru.korus.tmis.core.database.DbFlatDirectoryBeanLocal;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.entity.model.RbPolicyType;
 import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.fd.FDField;
+import ru.korus.tmis.core.entity.model.fd.FDFieldValue;
+import ru.korus.tmis.core.entity.model.fd.FDRecord;
+import ru.korus.tmis.core.entity.model.fd.FlatDirectory;
 import ru.korus.tmis.core.exception.CoreException;
-
 import ru.korus.tmis.ws.impl.ReferenceBookBean;
+import ru.korus.tmis.ws.webmis.rest.helper.FlatDirectoryParameterTransformer;
 
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
-import javax.interceptor.Interceptors;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.*;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.GenericEntity;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriInfo;
-import java.util.Arrays;
+import javax.ws.rs.core.*;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Список REST-сервисов для получения данных из справочников
@@ -43,6 +47,9 @@ public class DirectoryInfoRESTImpl {
     @EJB
     private DbStaffBeanLocal dbStaffBeanLocal;
 
+    @EJB
+    private DbFlatDirectoryBeanLocal flatDirectoryBean;
+
     //__________________________________________________________________________________________________________________
     //***********************************   СПРАВОЧНИКИ   ***********************************
     //__________________________________________________________________________________________________________________
@@ -56,35 +63,35 @@ public class DirectoryInfoRESTImpl {
      * &#15; "code" - по коду тезауруса;</pre>
      *
      * @param dictName Обозначение справочника, в котором идет выборка.<pre>
-     *                 &#15; Возможные ключи:
-     *                 &#15; "bloodTypes"  - справочник групп крови;
-     *                 &#15; "relationships" - справочник типов родственных связей;
-     *                 &#15; "citizenships" | "citizenships2" - справочник гражданств;
-     *                 &#15; "socStatus"  - справочник социальных статусов;
-     *                 &#15; "TFOMS" - справочник ТФОМС;
-     *                 &#15; "clientDocument" - справочник типов документов, удостоверяющих личность;
-     *                 &#15; "insurance" - справочник страховых компаний;
-     *                 &#15; "policyTypes" - справочник видов полисов;
-     *                 &#15; "disabilityTypes" - справочник типов инвалидностей;
-     *                 &#15; "KLADR" - КЛАДР;
-     *                 &#15; "valueDomain" - список возможных значений для ActionProperty;
-     *                 &#15; "specialities" - справочник специальностей;
-     *                 &#15; "quotaStatus" - Справочник статусов квот;
-     *                 &#15; "quotaType" - Справочник типов квот;
-     *                 &#15; "contactTypes" - справочник типов контактов;
-     *                 &#15; "tissueTypes"  - справочник типов исследования;</pre>
+     *                                                                                                                                 &#15; Возможные ключи:
+     *                                                                                                                                 &#15; "bloodTypes"  - справочник групп крови;
+     *                                                                                                                                 &#15; "relationships" - справочник типов родственных связей;
+     *                                                                                                                                 &#15; "citizenships" | "citizenships2" - справочник гражданств;
+     *                                                                                                                                 &#15; "socStatus"  - справочник социальных статусов;
+     *                                                                                                                                 &#15; "TFOMS" - справочник ТФОМС;
+     *                                                                                                                                 &#15; "clientDocument" - справочник типов документов, удостоверяющих личность;
+     *                                                                                                                                 &#15; "insurance" - справочник страховых компаний;
+     *                                                                                                                                 &#15; "policyTypes" - справочник видов полисов;
+     *                                                                                                                                 &#15; "disabilityTypes" - справочник типов инвалидностей;
+     *                                                                                                                                 &#15; "KLADR" - КЛАДР;
+     *                                                                                                                                 &#15; "valueDomain" - список возможных значений для ActionProperty;
+     *                                                                                                                                 &#15; "specialities" - справочник специальностей;
+     *                                                                                                                                 &#15; "quotaStatus" - Справочник статусов квот;
+     *                                                                                                                                 &#15; "quotaType" - Справочник типов квот;
+     *                                                                                                                                 &#15; "contactTypes" - справочник типов контактов;
+     *                                                                                                                                 &#15; "tissueTypes"  - справочник типов исследования;</pre>
      * @param headId   Фильтр для справочника "insurance". Идентификатор родительской компании. (В url: filter[headId]=...)
      * @param groupId  Фильтр для справочника "clientDocument". Идентификатор группы типов документов. (В url: filter[groupId]=...)
      * @param name     Фильтр для справочника "policyTypes". Идентификатор обозначения полиса. (В url: filter[name]=...)
      * @param level    Фильтр для справочника "KLADR". Уровень кода по КЛАДР. (В url: filter[level]=...)<pre>
-     *                 &#15; Может принимать следующие значения:
-     *                 &#15; "republic" - код республики по КЛАДР;
-     *                 &#15; "district" - код района по КЛАДР;
-     *                 &#15; "city" - код города по КЛАДР;
-     *                 &#15; "locality" - код населенного пункта по КЛАДР;
-     *                 &#15; "street" - код улицы по КЛАДР;</pre>
+     *                                                                                                                                 &#15; Может принимать следующие значения:
+     *                                                                                                                                 &#15; "republic" - код республики по КЛАДР;
+     *                                                                                                                                 &#15; "district" - код района по КЛАДР;
+     *                                                                                                                                 &#15; "city" - код города по КЛАДР;
+     *                                                                                                                                 &#15; "locality" - код населенного пункта по КЛАДР;
+     *                                                                                                                                 &#15; "street" - код улицы по КЛАДР;</pre>
      * @param parent   Фильтр для справочника "KLADR". (В url: filter[parent]=...)<pre>
-     *                 &#15; КЛАДР-код элемента более высокого уровня, для которого происходит выборка дочерних элементов.</pre>
+     *                                                                                                                                 &#15; КЛАДР-код элемента более высокого уровня, для которого происходит выборка дочерних элементов.</pre>
      * @param type     Фильтр для справочника "valueDomain". Идентифиувтор типа действия (s11r64.ActionType.id). (В url: filter[typeIs]=...);
      * @param capId    Фильтр для справочника "valueDomain". Идентификатору записи в s11r64.rbCoreActionPropertyType. (В url: filter[capId]=...)
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
@@ -93,36 +100,44 @@ public class DirectoryInfoRESTImpl {
      */
     @GET
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getRecordsFromDictionary(@QueryParam("dictName") String dictName,
-                                           @QueryParam("sortingField") String sortingField,
-                                           @QueryParam("sortingMethod") String sortingMethod,
-                                           @QueryParam("limit") int limit,
-                                           @QueryParam("page") int page,
-                                           @QueryParam("filter[headId]") int headId,
-                                           @QueryParam("filter[groupId]") int groupId,
-                                           @QueryParam("filter[name]") String name,
-                                           @QueryParam("filter[level]") String level,      //KLADR
-                                           @QueryParam("filter[parent]") String parent,    //KLADR
-                                           @QueryParam("filter[typeIs]") String type,        //valueDomain
-                                           @QueryParam("filter[capId]") int capId,  //valueDomain
-                                           @QueryParam("callback") String callback,
-                                           @QueryParam("eventId") Integer eventId,
-                                           @Context HttpServletRequest servRequest
+    public Object getRecordsFromDictionary(
+            @QueryParam("dictName") String dictName,
+            @QueryParam("sortingField") String sortingField,
+            @QueryParam("sortingMethod") String sortingMethod,
+            @QueryParam("limit") int limit,
+            @QueryParam("page") int page,
+            @QueryParam("filter[headId]") int headId,
+            @QueryParam("filter[groupId]") int groupId,
+            @QueryParam("filter[name]") String name,
+            @QueryParam("filter[level]") String level,
+            //KLADR
+            @QueryParam("filter[parent]") String parent,
+            //KLADR
+            @QueryParam("filter[typeIs]") String type,
+            //valueDomain
+            @QueryParam("filter[capId]") int capId,
+            //valueDomain
+            @QueryParam("callback") String callback,
+            @QueryParam("eventId") Integer eventId,
+            @Context HttpServletRequest servRequest
     ) throws CoreException {
         DictionaryListRequestDataFilter filter = new DictionaryListRequestDataFilter(dictName, headId, groupId, name, level, parent, type, capId);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-        return new JSONWithPadding(wsImpl.getDictionary(request, dictName, eventId, mkAuth(servRequest )), callback);
+        return new JSONWithPadding(wsImpl.getDictionary(request, dictName, eventId, mkAuth(servRequest)), callback);
     }
 
 
     @GET
     @Path("/policyTypes")
     @Produces({"application/javascript", "application/x-javascript", "application/xml"})
-    public JSONWithPadding getPolicyTypes(@Context HttpServletRequest servRequest,
-                                          @QueryParam("callback") String callback) {
+    public JSONWithPadding getPolicyTypes(
+            @Context HttpServletRequest servRequest, @QueryParam("callback") String callback
+    ) {
         List<RbPolicyType> r = referenceBookBean.getPolicyTypes(mkAuth(servRequest));
-        return new JSONWithPadding(new GenericEntity<List<RbPolicyType>>(r) {
-        }, callback);
+        return new JSONWithPadding(
+                new GenericEntity<List<RbPolicyType>>(r) {
+                }, callback
+        );
     }
 
     /**
@@ -138,13 +153,15 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/persons")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getAllPersons(@QueryParam("sortingField") String sortingField,
-                                @QueryParam("sortingMethod") String sortingMethod,
-                                @QueryParam("limit") int limit,
-                                @QueryParam("page") int page,
-                                @QueryParam("filter[departmentId]") int departmentId,
-                                @QueryParam("filter[roleCode]") List<String> roleCodeList,
-                                @QueryParam("callback") String callback) throws CoreException {
+    public Object getAllPersons(
+            @QueryParam("sortingField") String sortingField,
+            @QueryParam("sortingMethod") String sortingMethod,
+            @QueryParam("limit") int limit,
+            @QueryParam("page") int page,
+            @QueryParam("filter[departmentId]") int departmentId,
+            @QueryParam("filter[roleCode]") List<String> roleCodeList,
+            @QueryParam("callback") String callback
+    ) throws CoreException {
         PersonsListDataFilter filter = new PersonsListDataFilter(departmentId, roleCodeList);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getAllPersons(request), callback);
@@ -167,16 +184,18 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/persons/free")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getFreePersons(@QueryParam("sortingField") String sortingField,
-                                 @QueryParam("sortingMethod") String sortingMethod,
-                                 @QueryParam("limit") int limit,
-                                 @QueryParam("page") int page,
-                                 @QueryParam("filter[actionType]") int actionType,
-                                 @QueryParam("filter[speciality]") int speciality,
-                                 @QueryParam("filter[doctorId]") int doctorId,
-                                 @QueryParam("filter[beginDate]") long beginDate,
-                                 @QueryParam("filter[endDate]") long endDate,
-                                 @QueryParam("callback") String callback) throws CoreException {
+    public Object getFreePersons(
+            @QueryParam("sortingField") String sortingField,
+            @QueryParam("sortingMethod") String sortingMethod,
+            @QueryParam("limit") int limit,
+            @QueryParam("page") int page,
+            @QueryParam("filter[actionType]") int actionType,
+            @QueryParam("filter[speciality]") int speciality,
+            @QueryParam("filter[doctorId]") int doctorId,
+            @QueryParam("filter[beginDate]") long beginDate,
+            @QueryParam("filter[endDate]") long endDate,
+            @QueryParam("callback") String callback
+    ) throws CoreException {
 
         FreePersonsListDataFilter filter = new FreePersonsListDataFilter(speciality, doctorId, actionType, beginDate, endDate);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
@@ -199,13 +218,15 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/departments")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getAllDepartments(@QueryParam("sortingField") String sortingField,
-                                    @QueryParam("sortingMethod") String sortingMethod,
-                                    @QueryParam("limit") int limit,
-                                    @QueryParam("page") int page,
-                                    @QueryParam("filter[hasBeds]") String hasBeds,
-                                    @QueryParam("withoutChildren") Boolean withoutChildren,
-                                    @QueryParam("callback") String callback) throws CoreException {
+    public Object getAllDepartments(
+            @QueryParam("sortingField") String sortingField,
+            @QueryParam("sortingMethod") String sortingMethod,
+            @QueryParam("limit") int limit,
+            @QueryParam("page") int page,
+            @QueryParam("filter[hasBeds]") String hasBeds,
+            @QueryParam("withoutChildren") Boolean withoutChildren,
+            @QueryParam("callback") String callback
+    ) throws CoreException {
         Boolean flgBeds = hasBeds != null && hasBeds.contains("true");
         boolean withoutChildrenFlg = withoutChildren != null ? withoutChildren : false;
         DepartmentsDataFilter filter = new DepartmentsDataFilter(flgBeds, false, withoutChildrenFlg);
@@ -230,13 +251,13 @@ public class DirectoryInfoRESTImpl {
      * @param code      Фильтр по коду диагноза по МКВ. (В url: filter[code]=...)
      * @param diagnosis Фильтр по обозначению диагноза по МКВ. (В url: filter[diagnosis]=...)
      * @param view      Уровень визуализации. (В url: filter[view]=...)<pre>
-     *                  &#15; Возможные значения:
-     *                  &#15; Если фильтр не задан или имеет недопустимое значение - вывод МКВ структуры в виде дерева;
-     *                  &#15; Иначе, если имеет следующие ключи:
-     *                  &#15; "class" - вывод плоской структуры уровня класса МКВ;
-     *                  &#15; "group" - вывод плоской структуры уровня блока МКВ;
-     *                  &#15; "subgroup" - вывод плоской структуры уровня подблока МКВ;
-     *                  &#15; "mkb" - вывод плоской структуры нижнего уровня МКВ;</pre>
+     *                                                                                                                                         &#15; Возможные значения:
+     *                                                                                                                                         &#15; Если фильтр не задан или имеет недопустимое значение - вывод МКВ структуры в виде дерева;
+     *                                                                                                                                         &#15; Иначе, если имеет следующие ключи:
+     *                                                                                                                                         &#15; "class" - вывод плоской структуры уровня класса МКВ;
+     *                                                                                                                                         &#15; "group" - вывод плоской структуры уровня блока МКВ;
+     *                                                                                                                                         &#15; "subgroup" - вывод плоской структуры уровня подблока МКВ;
+     *                                                                                                                                         &#15; "mkb" - вывод плоской структуры нижнего уровня МКВ;</pre>
      * @param display   Флаг указывающий отображать или нет свернутые фильтром ветки. Значения: true/false. (В url: filter[display]=...)
      * @param sex       Фильтр по половой принадлежности диагноза по МКВ. (В url: filter[sex]=...)
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
@@ -246,20 +267,22 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/mkbs")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getMkbs(@Context HttpServletRequest servRequest,
-                                        @QueryParam("sortingField") String sortingField,
-                                        @QueryParam("sortingMethod") String sortingMethod,
-                                        @QueryParam("limit") int limit,
-                                        @QueryParam("page") int page,
-                                        @QueryParam("filter[mkbId]") int mkbId,
-                                        @QueryParam("filter[classId]") String classId,
-                                        @QueryParam("filter[groupId]") String blockId,
-                                        @QueryParam("filter[code]") String code,
-                                        @QueryParam("filter[diagnosis]") String diagnosis,
-                                        @QueryParam("filter[view]") String view,
-                                        @QueryParam("filter[display]") String display,
-                                        @QueryParam("filter[sex]") int sex,
-                                        @QueryParam("callback") String callback) throws CoreException {
+    public Object getMkbs(
+            @Context HttpServletRequest servRequest,
+            @QueryParam("sortingField") String sortingField,
+            @QueryParam("sortingMethod") String sortingMethod,
+            @QueryParam("limit") int limit,
+            @QueryParam("page") int page,
+            @QueryParam("filter[mkbId]") int mkbId,
+            @QueryParam("filter[classId]") String classId,
+            @QueryParam("filter[groupId]") String blockId,
+            @QueryParam("filter[code]") String code,
+            @QueryParam("filter[diagnosis]") String diagnosis,
+            @QueryParam("filter[view]") String view,
+            @QueryParam("filter[display]") String display,
+            @QueryParam("filter[sex]") int sex,
+            @QueryParam("callback") String callback
+    ) throws CoreException {
 
         Boolean flgDisplay = display != null && display.contains("true");
         MKBListRequestDataFilter filter = new MKBListRequestDataFilter(mkbId, classId, blockId, code, diagnosis, view, flgDisplay, sex);
@@ -280,13 +303,13 @@ public class DirectoryInfoRESTImpl {
      * @param page              Номер выводимой страницы. (По умолчанию: page = 1).<br>
      *                          Page общий для всех справочников, но распространяется на каждый справочник отдельно.
      * @param info              Контекст информации о url-запросе.<pre>
-     *                          &#15; Анализируются следующие параметры:
-     *                          &#15; flatDirectoryId - Идентификатор справочника. Может быть несколько.
-     *                          &#15; Если параметр не указан, выдаются все справочники.
-     *                          &#15; filterRecordId - Идентификатор записи из таблицы FDRecord. Может быть несколько.
-     *                          &#15; filter[X]=Y - Фильтр для поиска (выдаются только те записи, у которых поле с типом X содержит Y).
-     *                          &#15; Таких параметров в одном запросе может быть несколько.
-     *                          &#15; sortingField[X] = Y - Сортировки по полям X с порядком сортировки Y. Может быть несколько.</pre>
+     *                                                                                                                                                                                                         &#15; Анализируются следующие параметры:
+     *                                                                                                                                                                                                         &#15; flatDirectoryId - Идентификатор справочника. Может быть несколько.
+     *                                                                                                                                                                                                         &#15; Если параметр не указан, выдаются все справочники.
+     *                                                                                                                                                                                                         &#15; filterRecordId - Идентификатор записи из таблицы FDRecord. Может быть несколько.
+     *                                                                                                                                                                                                         &#15; filter[X]=Y - Фильтр для поиска (выдаются только те записи, у которых поле с типом X содержит Y).
+     *                                                                                                                                                                                                         &#15; Таких параметров в одном запросе может быть несколько.
+     *                                                                                                                                                                                                         &#15; sortingField[X] = Y - Сортировки по полям X с порядком сортировки Y. Может быть несколько.</pre>
      * @return com.sun.jersey.api.json.JSONWithPadding как Object
      * @throws ru.korus.tmis.core.exception.CoreException
      * @link Подробное описание: https://docs.google.com/folder/d/0B-T1ZKDux1ZPYldTSU9BU2tSR0E/edit?pli=1&docId=1Eak6dN3AbSy1-JzYFD4SzLBpArV-44VqXOUpdqqVHnA
@@ -295,15 +318,17 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/flatDirectory")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getFlatDirectories(@Context HttpServletRequest servRequest,
-                                     @Context UriInfo info,
-                                     @QueryParam("includeMeta") String includeMeta,
-                                     @QueryParam("includeRecordList") String includeRecordList,
-                                     @QueryParam("includeFDRecord") String includeFDRecord,
-                                     @QueryParam("filterValue") String filterValue,
-                                     @QueryParam("limit") int limit,
-                                     @QueryParam("page") int page,
-                                     @QueryParam("callback") String callback) throws CoreException {
+    public Object getFlatDirectories(
+            @Context HttpServletRequest servRequest,
+            @Context UriInfo info,
+            @QueryParam("includeMeta") String includeMeta,
+            @QueryParam("includeRecordList") String includeRecordList,
+            @QueryParam("includeFDRecord") String includeFDRecord,
+            @QueryParam("filterValue") String filterValue,
+            @QueryParam("limit") int limit,
+            @QueryParam("page") int page,
+            @QueryParam("callback") String callback
+    ) throws CoreException {
 
         //hand-made url query params parsing
         MultivaluedMap<String, String> queryParams = info.getQueryParameters();
@@ -311,8 +336,10 @@ public class DirectoryInfoRESTImpl {
 
         java.util.List<Integer> flatDictionaryIds = AuxiliaryFunctions.convertStringListTo(queryParams.get("flatDirectoryId"));
         java.util.List<Integer> filterRecordIds = AuxiliaryFunctions.convertStringListTo(queryParams.get("filterRecordId"));
-        java.util.Map<Integer, java.util.List<String>> filterFields = AuxiliaryFunctions.foldFilterValueTo(queryParams, "filter[", "]");
-        java.util.LinkedHashMap<Integer, Integer> sortingFieldIds = AuxiliaryFunctions.foldFilterValueToLinkedMapFromQuery(fullQueryPath, "sortingField[", "]=");
+        java.util.Map<String, java.util.List<String>> filterFields = AuxiliaryFunctions.foldFilterValueTo(queryParams, "filter[", "]");
+        java.util.LinkedHashMap<Integer, Integer> sortingFieldIds = AuxiliaryFunctions.foldFilterValueToLinkedMapFromQuery(
+                fullQueryPath, "sortingField[", "]="
+        );
 
         boolean fields = ((filterFields != null) && filterFields.size() > 0);
         boolean values = ((filterValue != null) && (!filterValue.isEmpty()));
@@ -321,12 +348,80 @@ public class DirectoryInfoRESTImpl {
         if ((fields && values) || (fields && recordIds) || (recordIds && values)) {
             throw new CoreException("Одновременно в запросе может использоваться только один тип фильтра");
         }
-        FlatDirectoryRequestDataListFilter filter = new FlatDirectoryRequestDataListFilter(flatDictionaryIds,
-                includeMeta, includeRecordList, includeFDRecord,
-                filterFields, filterValue, filterRecordIds);
+        FlatDirectoryRequestDataListFilter filter = new FlatDirectoryRequestDataListFilter(
+                flatDictionaryIds, includeMeta, includeRecordList, includeFDRecord, filterFields, filterValue, filterRecordIds
+        );
         FlatDirectoryRequestData request = new FlatDirectoryRequestData(sortingFieldIds, limit, page, filter);
 
         return new JSONWithPadding(wsImpl.getFlatDirectories(request), callback);
+    }
+
+    @GET
+    @Path("/fd")
+    @Produces({"application/javascript", "application/x-javascript"})
+    public Object getFlatDirectory(
+            @Context HttpServletRequest request,
+            @Context UriInfo info,
+            @QueryParam("code") String flatDirectoryCode,
+            @QueryParam("fields") String fields,
+            @QueryParam("filterValue") String filterValue,
+            @QueryParam("callback") String callback
+    ) {
+        final FlatDirectory flatDirectory = flatDirectoryBean.getByCode(flatDirectoryCode);
+        if (flatDirectory == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    new JSONWithPadding(
+                            String.format(
+                                    "No such FlatDirectory with code=\'%s\' found", flatDirectoryCode
+                            ), callback
+                    )
+            ).build();
+        }
+        //Список полей спарвчоника
+        final List<FDField> fieldList = flatDirectory.getFdFields();
+        if (fieldList == null || fieldList.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    new JSONWithPadding(
+                            String.format(
+                                    "FlatDirectory[%s] has not fields", flatDirectoryCode
+                            ), callback
+                    )
+            ).build();
+        }
+        //Список запрашиваемых полей
+        final List<FDField> requestedFields = FlatDirectoryParameterTransformer.getRequestedFields(fieldList, fields);
+        if (requestedFields.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity(
+                    new JSONWithPadding(
+                            String.format(
+                                    "FlatDirectory[%s] has not no one of requested fields[%s]", flatDirectoryCode, fields
+                            ), callback
+                    )
+            ).build();
+        }
+
+        final FDContainer result = new FDContainer();
+        result.setId(flatDirectory.getId());
+        result.setCode(flatDirectory.getCode());
+        result.setName(flatDirectory.getName());
+        //TODO fieldList or requestedFields
+        result.setFields(OutputStructureObjectFactory.createFieldDescriptionDataList(fieldList));
+        final Map<FDRecord, List<FDFieldValue>> filteredRecordsWithValues;
+
+        if (StringUtils.isNotEmpty(filterValue)) {
+            filteredRecordsWithValues = flatDirectoryBean.getRecordsWithFilter(flatDirectory, requestedFields, filterValue);
+        } else {
+            //Список фильтруемых полей  (null если полей нет)
+            final Map<FDField, List<String>> filterFields = FlatDirectoryParameterTransformer.getFilterFields(fieldList, info.getQueryParameters());
+            if (filterFields != null) {
+                filteredRecordsWithValues = flatDirectoryBean.getRecordsWithFilter(flatDirectory, requestedFields, filterFields);
+            } else {
+                filteredRecordsWithValues = flatDirectoryBean.getRecordsWithFilter(flatDirectory, requestedFields);
+            }
+        }
+        result.setRecords(OutputStructureObjectFactory.createFdRecordList(filteredRecordsWithValues));
+        return new JSONWithPadding(result, callback);
+
     }
 
     /**
@@ -347,15 +442,17 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/thesaurus")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getThesaurus(@Context HttpServletRequest servRequest,
-                               @QueryParam("sortingField") String sortingField,
-                               @QueryParam("sortingMethod") String sortingMethod,
-                               @QueryParam("limit") int limit,
-                               @QueryParam("page") int page,
-                               @QueryParam("filter[id]") int thesaurusId,
-                               @QueryParam("filter[groupId]") String groupId,
-                               @QueryParam("filter[code]") String code,
-                               @QueryParam("callback") String callback) throws CoreException {
+    public Object getThesaurus(
+            @Context HttpServletRequest servRequest,
+            @QueryParam("sortingField") String sortingField,
+            @QueryParam("sortingMethod") String sortingMethod,
+            @QueryParam("limit") int limit,
+            @QueryParam("page") int page,
+            @QueryParam("filter[id]") int thesaurusId,
+            @QueryParam("filter[groupId]") String groupId,
+            @QueryParam("filter[code]") String code,
+            @QueryParam("callback") String callback
+    ) throws CoreException {
         ThesaurusListRequestDataFilter filter = new ThesaurusListRequestDataFilter(thesaurusId, groupId, code);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getThesaurusList(request, mkAuth(servRequest)), callback);
@@ -377,14 +474,16 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/eventTypes")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getEventTypes(@Context HttpServletRequest servRequest,
-                                @QueryParam("sortingField") String sortingField,
-                                @QueryParam("sortingMethod") String sortingMethod,
-                                @QueryParam("limit") int limit,
-                                @QueryParam("page") int page,
-                                @QueryParam("filter[requestType]") int requestType,
-                                @QueryParam("filter[finance]") int finance,
-                                @QueryParam("callback") String callback) throws CoreException {
+    public Object getEventTypes(
+            @Context HttpServletRequest servRequest,
+            @QueryParam("sortingField") String sortingField,
+            @QueryParam("sortingMethod") String sortingMethod,
+            @QueryParam("limit") int limit,
+            @QueryParam("page") int page,
+            @QueryParam("filter[requestType]") int requestType,
+            @QueryParam("filter[finance]") int finance,
+            @QueryParam("callback") String callback
+    ) throws CoreException {
         EventTypesListRequestDataFilter filter = new EventTypesListRequestDataFilter(finance, requestType);
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
         AuthData authData = mkAuth(servRequest);
@@ -408,7 +507,8 @@ public class DirectoryInfoRESTImpl {
             @QueryParam("eventTypeCode") String eventTypeCode,
             @DefaultValue("false") @QueryParam("showDeleted") boolean showDeleted,
             @DefaultValue("false") @QueryParam("showExpired") boolean showExpired,
-            @QueryParam("callback") String callback) {
+            @QueryParam("callback") String callback
+    ) {
         return new JSONWithPadding(wsImpl.getContracts(eventTypeId, eventTypeCode, showDeleted, showExpired), callback);
     }
 
@@ -417,11 +517,11 @@ public class DirectoryInfoRESTImpl {
      *
      * @param patientId Идентификатор пациента
      *                  <pre>
-     *                  &#15; Значения поля для сортировки:
-     *                  &#15; "id" - по идентификатору типа действия;
-     *                  &#15; "groupId" - по идентификатору группы типа действия;
-     *                  &#15; "code" - по коду типа действия;
-     *                  &#15; "name" - по обозначению типа действия;</pre>
+     *                                                                                                                                         &#15; Значения поля для сортировки:
+     *                                                                                                                                         &#15; "id" - по идентификатору типа действия;
+     *                                                                                                                                         &#15; "groupId" - по идентификатору группы типа действия;
+     *                                                                                                                                         &#15; "code" - по коду типа действия;
+     *                                                                                                                                         &#15; "name" - по обозначению типа действия;</pre>
      * @param groupId   Фильтр по идентификатору группы типа действия (s11r64.ActionType.group_id). (В url: filter[groupId]=...)
      * @param code      Фильтр по коду типа действия (s11r64.ActionType.code). (В url: filter[code]=...)
      * @param view      Фильтр по коду типа отображения информации. (В url: filter[view]=...)
@@ -435,31 +535,39 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/actionTypes")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getAllActionTypeNames(@Context HttpServletRequest servRequest,
-                                        @Context UriInfo info,
-                                        @QueryParam("sortingField") String sortingField,
-                                        @QueryParam("sortingMethod") String sortingMethod,
-                                        @QueryParam("limit") int limit,
-                                        @QueryParam("page") int page,
-                                        @QueryParam("patientId") int patientId,
-                                        @QueryParam("filter[groupId]") int groupId,
-                                        @QueryParam("filter[code]") String code,
-                                        @QueryParam("filter[view]") String view,
-                                        @QueryParam("showHidden") int showHidden,
-                                        @QueryParam("filter[orgStruct]") int orgStructFilterEnable,
-                                        @QueryParam("callback") String callback) throws CoreException {
+    public Object getAllActionTypeNames(
+            @Context HttpServletRequest servRequest,
+            @Context UriInfo info,
+            @QueryParam("sortingField") String sortingField,
+            @QueryParam("sortingMethod") String sortingMethod,
+            @QueryParam("limit") int limit,
+            @QueryParam("page") int page,
+            @QueryParam("patientId") int patientId,
+            @QueryParam("filter[groupId]") int groupId,
+            @QueryParam("filter[code]") String code,
+            @QueryParam("filter[view]") String view,
+            @QueryParam("showHidden") int showHidden,
+            @QueryParam("filter[orgStruct]") int orgStructFilterEnable,
+            @QueryParam("callback") String callback
+    ) throws CoreException {
 
-        if (patientId < 1 && (view == null || !view.equals("tree")))
-            throw new CoreException("GET-параметр patientId обязателен и не может быть меньше 1 если используется не filter[view]=tree");
+        if (patientId < 1 && (view == null || !view.equals("tree"))) {
+            throw new CoreException(
+                    "GET-параметр patientId обязателен и не может быть меньше 1 если используется не filter[view]=tree"
+            );
+        }
 
         java.util.List<String> mnems = info.getQueryParameters().get("filter[mnem]");
         java.util.List<String> flatCodes = info.getQueryParameters().get("filter[flatCode]");
 
         java.util.List<String> mnemonics = new LinkedList<String>();
 
-        if (mnems != null)
+        if (mnems != null) {
             for (String mnem : mnems)
-                if (mnem != null && !mnem.equals("")) mnemonics.add(mnem);
+                if (mnem != null && !mnem.equals("")) {
+                    mnemonics.add(mnem);
+                }
+        }
 
         AuthData auth = mkAuth(servRequest);
 
@@ -467,11 +575,14 @@ public class DirectoryInfoRESTImpl {
 
         Integer orgStructId = user == null || user.getOrgStructure() == null || orgStructFilterEnable == 0 ? null : user.getOrgStructure().getId();
 
-        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(code, groupId, flatCodes, mnemonics, view, showHidden == 1, orgStructId);
+        ActionTypesListRequestDataFilter filter = new ActionTypesListRequestDataFilter(
+                code, groupId, flatCodes, mnemonics, view, showHidden == 1, orgStructId
+        );
 
         ListDataRequest request = new ListDataRequest(sortingField, sortingMethod, limit, page, filter);
-        final Object res = (view != null && view.equals("tree")) ? wsImpl.getListOfActionTypes(request)
-                : wsImpl.getListOfActionTypeIdNames(request, patientId);
+        final Object res = (view != null && view.equals("tree")) ? wsImpl.getListOfActionTypes(request) : wsImpl.getListOfActionTypeIdNames(
+                request, patientId
+        );
         return new JSONWithPadding(res, callback);
     }
 
@@ -487,11 +598,13 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/actionTypes/{id}")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getStructOfPrimaryMedExam(@Context HttpServletRequest servRequest,
-                                            @PathParam("id") int actionTypeId,
-                                            @QueryParam("actionId") Integer actionId,
-                                            @QueryParam("eventId") int eventId,
-                                            @QueryParam("callback") String callback) throws CoreException {
+    public Object getStructOfPrimaryMedExam(
+            @Context HttpServletRequest servRequest,
+            @PathParam("id") int actionTypeId,
+            @QueryParam("actionId") Integer actionId,
+            @QueryParam("eventId") int eventId,
+            @QueryParam("callback") String callback
+    ) throws CoreException {
         return new JSONWithPadding(wsImpl.getStructOfPrimaryMedExam(actionTypeId, actionId, eventId, mkAuth(servRequest)), callback);
     }
 
@@ -513,26 +626,19 @@ public class DirectoryInfoRESTImpl {
     @GET
     @Path("/actionsByParams")
     @Produces({"application/javascript", "application/x-javascript"})
-    public Object getActionByParams(@Context HttpServletRequest servRequest,
-                                    @QueryParam("sortingField") String sortingField,
-                                    @QueryParam("sortingMethod") String sortingMethod,
-                                    @QueryParam("limit") int limit,
-                                    @QueryParam("page") int page,
-                                    @QueryParam("filter[mnem]") List<String> mnem,
-                                    @QueryParam("eventId") int eventId,
-                                    @QueryParam("callback") String callback) throws CoreException {
-        DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter(null,
-                eventId,
-                0,
-                null,
-                0,
-                0,
-                null,
-                0,
-                (short) -1,
-                null,
-                mnem,
-                (short) -1);
+    public Object getActionByParams(
+            @Context HttpServletRequest servRequest,
+            @QueryParam("sortingField") String sortingField,
+            @QueryParam("sortingMethod") String sortingMethod,
+            @QueryParam("limit") int limit,
+            @QueryParam("page") int page,
+            @QueryParam("filter[mnem]") List<String> mnem,
+            @QueryParam("eventId") int eventId,
+            @QueryParam("callback") String callback
+    ) throws CoreException {
+        DiagnosticsListRequestDataFilter filter = new DiagnosticsListRequestDataFilter(
+                null, eventId, 0, null, 0, 0, null, 0, (short) -1, null, mnem, (short) -1
+        );
 
         DiagnosticsListRequestData requestData = new DiagnosticsListRequestData(sortingField, sortingMethod, limit, page, filter);
         return new JSONWithPadding(wsImpl.getListOfDiagnosticsForPatientByEvent(requestData, mkAuth(servRequest)), callback);
@@ -542,6 +648,10 @@ public class DirectoryInfoRESTImpl {
     //__________________________________________________________________________________________________________________
     //***********************************   ВСПОМОГАТЕЛЬНЫЕ МЕТОДЫ   ***********************************
     //__________________________________________________________________________________________________________________
+
+    private AuthData mkAuth(HttpServletRequest servRequest) {
+        return wsImpl.checkTokenCookies(servRequest.getCookies());
+    }
 
     /**
      * Функциональность данного класса под сомнением, мнемоники должны быть оторваны от ядра
@@ -724,10 +834,6 @@ public class DirectoryInfoRESTImpl {
             }
         };
 
-        public abstract String getSubType();
-
-        public abstract String getMnemonic();
-
         private String typeValue;
 
         private ActionTypesSubType(String type) {
@@ -743,13 +849,14 @@ public class DirectoryInfoRESTImpl {
             throw new RuntimeException("Неизвестный тип для enum ActionTypesSubType");
         }
 
+        public abstract String getSubType();
+
+        public abstract String getMnemonic();
+
         public String getTypeValue() {
             return typeValue;
         }
     }
 
-    private AuthData mkAuth(HttpServletRequest servRequest) {
-        return wsImpl.checkTokenCookies(servRequest.getCookies());
-    }
 
 }

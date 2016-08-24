@@ -133,9 +133,9 @@ public class Contract implements Serializable, Cloneable {
     @Column(name = "exposeDiscipline")
     private boolean exposeDiscipline;
 
-    @Basic(optional = false)
-    @Column(name = "priceList_id")
-    private int priceListId;
+//    @Basic(optional = false)
+//    @Column(name = "priceList_id")
+//    private int priceListId;
 
     @Basic(optional = false)
     @Column(name = "coefficient")
@@ -345,13 +345,13 @@ public class Contract implements Serializable, Cloneable {
         this.exposeDiscipline = exposeDiscipline;
     }
 
-    public int getPriceListId() {
-        return priceListId;
-    }
-
-    public void setPriceListId(int priceListId) {
-        this.priceListId = priceListId;
-    }
+//    public int getPriceListId() {
+//        return priceListId;
+//    }
+//
+//    public void setPriceListId(int priceListId) {
+//        this.priceListId = priceListId;
+//    }
 
     public double getCoefficient() {
         return coefficient;
