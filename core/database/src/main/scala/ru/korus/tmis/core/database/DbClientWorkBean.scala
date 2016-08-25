@@ -1,20 +1,19 @@
 package ru.korus.tmis.core.database
 
-import javax.persistence.{PersistenceContext, EntityManager}
-import javax.ejb.{Stateless, EJB}
-import grizzled.slf4j.Logging
-import ru.korus.tmis.core.exception.NoSuchEntityException
 import java.util.Date
-import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientWork}
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext}
+
+import ru.korus.tmis.core.entity.model.{ClientWork, Patient, Staff}
+import ru.korus.tmis.core.exception.NoSuchEntityException
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.entity.model.fd.FDRecord
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
 @Stateless
 class DbClientWorkBean
   extends DbClientWorkBeanLocal
-  with Logging
   with I18nable {
 
 
@@ -38,18 +37,12 @@ class DbClientWorkBean
       classOf[ClientWork])
       .setParameter("id", id)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new NoSuchEntityException(
-          ConfigManager.ErrorCodes.ClientSocStatusNotFound,
-          id,
-          i18n("error.ClientSocStatusNotFound"))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 =>  throw new NoSuchEntityException(
+        ConfigManager.ErrorCodes.ClientSocStatusNotFound,
+        id,
+        i18n("error.ClientSocStatusNotFound"))
+      case size => result.iterator.next
     }
   }
 
@@ -65,7 +58,7 @@ class DbClientWorkBean
     var cw: ClientWork = null
     val now: Date = new Date
     if (id > 0) {
-      cw = getClientWorkById(id);
+      cw = getClientWorkById(id)
     } else {
       cw = new ClientWork()
       cw.setCreateDatetime(now)

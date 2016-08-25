@@ -4,7 +4,7 @@ import org.apache.commons.lang.StringUtils
 import ru.korus.tmis.core.entity.model.{Mkb, Nomenclature}
 
 
-import grizzled.slf4j.Logging
+
 import javax.ejb.Stateless
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -18,7 +18,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbMkbBean
   extends DbMkbBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

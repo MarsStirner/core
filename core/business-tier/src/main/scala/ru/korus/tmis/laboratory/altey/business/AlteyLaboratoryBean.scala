@@ -7,7 +7,7 @@ import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.laboratory.altey.accept2.{AnalysisResult => AResult1}
 import ru.korus.tmis.laboratory.altey.{ws => lab}
 
-import grizzled.slf4j.Logging
+
 import java.lang.String
 import javax.ejb.{Stateless, EJB}
 import javax.interceptor.Interceptors

@@ -4,7 +4,7 @@ import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database.{DbVersionBeanLocal, DbThesaurusBeanLocal}
 import ru.korus.tmis.core.entity.model.{Mkb, Thesaurus}
 
-import grizzled.slf4j.Logging
+
 import javax.ejb.{EJB, Stateless}
 import javax.interceptor.Interceptors
 
@@ -13,7 +13,7 @@ import scala.collection.JavaConversions._
 @Stateless
 class ThesaurusBean
   extends ThesaurusBeanLocal
-  with Logging {
+ {
 
   @EJB
   var dbThesaurusBean: DbThesaurusBeanLocal = _

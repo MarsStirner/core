@@ -1,20 +1,19 @@
 package ru.korus.tmis.core.entity.model
 
-import ru.korus.tmis.core.data.CommonAttribute
-
-import grizzled.slf4j.Logging
-import java.lang.Boolean
-import java.lang.Short
+import java.lang.{Boolean, Short}
 import java.text.ParseException
 import java.util.{Calendar, GregorianCalendar}
 
+import org.slf4j.{Logger, LoggerFactory}
+import ru.korus.tmis.core.data.CommonAttribute
+import ru.korus.tmis.scala.util.{ConfigManager, StringId}
+
 import scala.collection.JavaConversions._
-import ru.korus.tmis.scala.util.{StringId, ConfigManager}
-import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
 
-class ActionWrapper(a: Action)
-  extends Logging {
+class ActionWrapper(a: Action) {
+
+  val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   val AWI = ConfigManager.AWI.immutable
   val APWI = ConfigManager.APWI.immutable
@@ -24,74 +23,33 @@ class ActionWrapper(a: Action)
     val (getter, aType) = AWI(name)
 
     val maps = getter match {
-      case AWI.Id => {
-        List(
-          Map(APWI.Value.toString -> this.a.getId.toString)
-        )
+      case AWI.Id => List(Map(APWI.Value.toString -> this.a.getId.toString))
+      case AWI.Name => List(Map(APWI.Value.toString -> this.a.getActionType.getName))
+      case AWI.BeginDate => this.a.getBegDate match {
+        case null => List(Map(APWI.Value.toString -> ""))
+        case date => List(Map(APWI.Value.toString -> CMDF.format(date)))
       }
-      case AWI.Name => {
-        List(
-          Map(APWI.Value.toString -> this.a.getActionType.getName)
-        )
+      case AWI.EndDate => this.a.getEndDate match {
+        case null => List(Map(APWI.Value.toString -> ""))
+        case date => List(Map(APWI.Value.toString -> CMDF.format(date)))
       }
-
-      case AWI.BeginDate => {
-        this.a.getBegDate match {
-          case null => {
-            List(
-              Map(APWI.Value.toString -> "")
-            )
-          }
-          case date => {
-            List(
-              Map(APWI.Value.toString -> CMDF.format(date))
-            )
-          }
+      case AWI.Dates => this.a.getAssignmentHours.foldLeft(List[Map[String, String]]())(
+        (list, hour) => {
+          val fixedDatetime = new GregorianCalendar
+          fixedDatetime.setTime(hour.getId.getCreateDatetime)
+          fixedDatetime.add(Calendar.HOUR_OF_DAY, hour.getId.getHour)
+          Map(APWI.Value.toString -> CMDF.format(fixedDatetime.getTime),
+            APWI.Completed.toString -> hour.isComplete.toString) :: list
         }
+      )
+      case AWI.ExecutorLastName => if (this.a.getExecutor != null) {
+        List(Map(APWI.Value.toString -> this.a.getExecutor.getLastName))
+      } else if (this.a.getActionType.getDefaultExecutor != null) {
+        List(Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getLastName))
+      } else {
+        List(Map(APWI.Value.toString -> ""))
       }
-      case AWI.EndDate => {
-        this.a.getEndDate match {
-          case null => {
-            List(
-              Map(APWI.Value.toString -> "")
-            )
-          }
-          case date => {
-            List(
-              Map(APWI.Value.toString -> CMDF.format(date))
-            )
-          }
-        }
-      }
-
-      case AWI.Dates => {
-        this.a.getAssignmentHours.foldLeft(List[Map[String, String]]())(
-          (list, hour) => {
-            val fixedDatetime = new GregorianCalendar
-            fixedDatetime.setTime(hour.getId.getCreateDatetime)
-            fixedDatetime.add(Calendar.HOUR_OF_DAY, hour.getId.getHour)
-
-            Map(APWI.Value.toString -> CMDF.format(fixedDatetime.getTime),
-              APWI.Completed.toString -> hour.isComplete.toString) :: list
-          })
-      }
-
-      case AWI.ExecutorLastName => {
-        if (this.a.getExecutor != null) {
-          List(
-            Map(APWI.Value.toString -> this.a.getExecutor.getLastName)
-          )
-        } else if (this.a.getActionType.getDefaultExecutor != null) {
-          List(
-            Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getLastName)
-          )
-        } else {
-          List(
-            Map(APWI.Value.toString -> "")
-          )
-        }
-      }
-      case AWI.ExecutorFirstName => {
+      case AWI.ExecutorFirstName =>
         if (this.a.getExecutor != null) {
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getFirstName)
@@ -105,8 +63,7 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "")
           )
         }
-      }
-      case AWI.ExecutorMiddleName => {
+      case AWI.ExecutorMiddleName =>
         if (this.a.getExecutor != null) {
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getPatrName)
@@ -120,8 +77,7 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "")
           )
         }
-      }
-      case AWI.ExecutorSpecs => {
+      case AWI.ExecutorSpecs =>
         if (this.a.getExecutor != null && this.a.getExecutor.getSpeciality != null) {
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getSpeciality.getName)
@@ -135,30 +91,28 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "")
           )
         }
-      }
-      case AWI.ExecutorPost => {
+      case AWI.ExecutorPost =>
         if (this.a.getExecutor != null && this.a.getExecutor.getPost != null) {
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getPost.getName,
-                APWI.ValueId.toString -> this.a.getExecutor.getPost.getId.toString,
-                APWI.Code.toString -> this.a.getExecutor.getPost.getCode)
+              APWI.ValueId.toString -> this.a.getExecutor.getPost.getId.toString,
+              APWI.Code.toString -> this.a.getExecutor.getPost.getCode)
           )
         } else if (this.a.getActionType.getDefaultExecutor != null && this.a.getActionType.getDefaultExecutor.getPost != null) {
           List(
             Map(APWI.Value.toString -> this.a.getActionType.getDefaultExecutor.getPost.getName,
-                APWI.ValueId.toString -> this.a.getActionType.getDefaultExecutor.getPost.getId.toString,
-                APWI.Code.toString -> this.a.getActionType.getDefaultExecutor.getPost.getCode)
+              APWI.ValueId.toString -> this.a.getActionType.getDefaultExecutor.getPost.getId.toString,
+              APWI.Code.toString -> this.a.getActionType.getDefaultExecutor.getPost.getCode)
           )
         } else {
           List(
             Map(APWI.Value.toString -> "",
-                APWI.ValueId.toString -> "",
-                APWI.Code.toString -> "")
+              APWI.ValueId.toString -> "",
+              APWI.Code.toString -> "")
           )
         }
-      }
 
-      case AWI.AssignerLastName => {
+      case AWI.AssignerLastName =>
         if (this.a.getAssigner != null) {
           List(
             Map(APWI.Value.toString -> this.a.getAssigner.getLastName)
@@ -168,8 +122,7 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "")
           )
         }
-      }
-      case AWI.AssignerFirstName => {
+      case AWI.AssignerFirstName =>
         if (this.a.getAssigner != null) {
           List(
             Map(APWI.Value.toString -> this.a.getAssigner.getFirstName)
@@ -179,8 +132,7 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "")
           )
         }
-      }
-      case AWI.AssignerMiddleName => {
+      case AWI.AssignerMiddleName =>
         if (this.a.getAssigner != null) {
           List(
             Map(APWI.Value.toString -> this.a.getAssigner.getPatrName)
@@ -190,8 +142,7 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "")
           )
         }
-      }
-      case AWI.AssignerSpecs => {
+      case AWI.AssignerSpecs =>
         if (this.a.getAssigner != null && this.a.getAssigner.getSpeciality != null) {
           List(
             Map(APWI.Value.toString -> this.a.getAssigner.getSpeciality.getName)
@@ -201,8 +152,7 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "")
           )
         }
-      }
-      case AWI.AssignerPost => {
+      case AWI.AssignerPost =>
         if (this.a.getAssigner != null && this.a.getAssigner.getPost != null) {
           List(
             Map(APWI.Value.toString -> this.a.getAssigner.getPost.getName)
@@ -212,24 +162,20 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "")
           )
         }
-      }
 
-      case AWI.Status => {
+      case AWI.Status =>
         List(
           Map(APWI.Value.toString -> this.a.getStatus.toString)
         )
-      }
-      case AWI.Urgent => {
+      case AWI.Urgent =>
         List(
           Map(APWI.Value.toString -> this.a.getIsUrgent.toString)
         )
-      }
-      case AWI.PacientInQueueType => {
+      case AWI.PacientInQueueType =>
         List(
           Map(APWI.Value.toString -> this.a.getPacientInQueueType.toString)
         )
-      }
-      case AWI.Finance => {
+      case AWI.Finance =>
         if (this.a.getFinanceId != null) {
           List(
             Map(APWI.Value.toString -> this.a.getFinanceId.toString)
@@ -239,23 +185,19 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "")
           )
         }
-      }
 
-      case AWI.PlannedEndDate => {
+      case AWI.PlannedEndDate =>
         this.a.getPlannedEndDate match {
-          case null => {
+          case null =>
             List(
               Map(APWI.Value.toString -> "")
             )
-          }
-          case date => {
+          case date =>
             List(
               Map(APWI.Value.toString -> CMDF.format(date))
             )
-          }
         }
-      }
-      case AWI.AssignerId => {
+      case AWI.AssignerId =>
         if (this.a.getAssigner != null) {
           List(
             Map(APWI.Value.toString -> this.a.getAssigner.getId.toString)
@@ -265,8 +207,7 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "-1")
           )
         }
-      }
-      case AWI.ExecutorId => {
+      case AWI.ExecutorId =>
         if (this.a.getExecutor != null) {
           List(
             Map(APWI.Value.toString -> this.a.getExecutor.getId.toString)
@@ -281,17 +222,15 @@ class ActionWrapper(a: Action)
             Map(APWI.Value.toString -> "-1")
           )
         }
-      }
       /*case AWI.ToOrder => {
        List(
          Map(APWI.Value.toString -> this.a.getToOrder.toString)
        )
      } */
 
-      case _ => {
-        debug("Cannot get <" + name + ">")
+      case _ =>
+        logger.debug("Cannot get <" + name + ">")
         List()
-      }
     }
 
     maps.foldLeft(List[CommonAttribute]())(
@@ -311,17 +250,16 @@ class ActionWrapper(a: Action)
     val name = StringId(attribute.name)
 
     val value = attribute.getPropertiesMap.get(APWI.Value.toString) match {
-      case None | Some("") => {
-        error("Cannot set <" + name + "> to NONE")
+      case None | Some("") =>
+        logger.error("Cannot set <" + name + "> to NONE")
         return
-      }
       case Some(x) => x
     }
 
     val (getter, aType) = AWI(name)
 
     getter match {
-      case AWI.Dates => {
+      case AWI.Dates =>
         val completed = attribute.getPropertiesMap.get(APWI.Completed.toString) match {
           case None => "false"
           case Some(x) => x
@@ -339,61 +277,50 @@ class ActionWrapper(a: Action)
             case Some(eah) => eah.setComplete(ah.isComplete)
           }
         } catch {
-          case ex: ParseException => {
-            error("Cannot parse <" + value + "> as Date")
-          }
+          case ex: ParseException =>
+            logger.error("Cannot parse <" + value + "> as Date")
         }
-      }
 
-      case AWI.BeginDate => {
+      case AWI.BeginDate =>
         try {
           this.a.setBegDate(CMDF.parse(value))
         } catch {
-          case ex: NumberFormatException => {
-            error("Cannot parse <" + value + "> as Date")
-          }
+          case ex: NumberFormatException =>
+            logger.error("Cannot parse <" + value + "> as Date")
         }
-      }
 
-      case AWI.EndDate => {
+      case AWI.EndDate =>
         try {
           this.a.setEndDate(CMDF.parse(value))
         } catch {
-          case ex: NumberFormatException => {
-            error("Cannot parse <" + value + "> as Date")
-          }
+          case ex: NumberFormatException =>
+            logger.error("Cannot parse <" + value + "> as Date")
         }
-      }
 
-      case AWI.Status => {
+      case AWI.Status =>
         //Для геммотраснфузиологии - проставлять статус для пулинга БД и отправки в ТРФУ
         // при каждом изменении экшена до тех пор пока не получим из ТРФУ результат (статус = 2)
-        if("TransfusionTherapy".equals(a.getActionType.getFlatCode) && a.getStatus < 2 ){
+        if ("TransfusionTherapy".equals(a.getActionType.getFlatCode) && a.getStatus < 2) {
           a.setStatus(ActionStatus.STARTED.getCode)
         } else {
           try {
             this.a.setStatus(Short.parseShort(value))
           } catch {
-            case ex: NumberFormatException => {
-              error("Cannot parse <" + value + "> as short")
-            }
+            case ex: NumberFormatException =>
+              logger.error("Cannot parse <" + value + "> as short")
           }
         }
-      }
 
-      case AWI.Urgent => {
+      case AWI.Urgent =>
         try {
           this.a.setIsUrgent(Boolean.parseBoolean(value))
         } catch {
-          case ex: NumberFormatException => {
-            error("Cannot parse <" + value + "> as short")
-          }
+          case ex: NumberFormatException =>
+            logger.error("Cannot parse <" + value + "> as short")
         }
-      }
 
-      case _ => {
-        debug("AW: Cannot set <" + name + "> to <" + value + ">")
-      }
+      case _ =>
+        logger.debug("AW: Cannot set <" + name + "> to <" + value + ">")
     }
   }
 }

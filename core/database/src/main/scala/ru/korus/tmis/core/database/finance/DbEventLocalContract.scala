@@ -1,7 +1,7 @@
 package ru.korus.tmis.core.database.finance
 
 import javax.ejb.{EJB, Stateless}
-import grizzled.slf4j.Logging
+
 import ru.korus.tmis.core.data.{PaymentContractInfo, PayerInfo}
 import ru.korus.tmis.core.database.common.DbOrganizationBeanLocal
 import ru.korus.tmis.core.exception.CoreException
@@ -19,7 +19,6 @@ import ru.korus.tmis.core.database.{DbRbDocumentTypeBeanLocal, DbStaffBeanLocal}
  */
 @Stateless
 class DbEventLocalContract extends DbEventLocalContractLocal
-with Logging
 with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -46,13 +45,13 @@ with I18nable {
   }*/
 
   def getByContractNumber(numberOfContract: String): EventLocalContract = {
-    val resList = em.createNamedQuery("EventLocalContract.findByContractCode", classOf[EventLocalContract])
+    val result = em.createNamedQuery("EventLocalContract.findByContractCode", classOf[EventLocalContract])
       .setParameter("code", numberOfContract)
       .getResultList
-    if (resList.isEmpty)
-      return null
-    else
-      return resList.get(0)
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next
+    }
 
   }
 

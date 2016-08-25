@@ -5,7 +5,7 @@ import ru.korus.tmis.core.exception.NoSuchEntityException
 import javax.interceptor.Interceptors
 
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
+
 import scala.collection.JavaConversions._
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
@@ -22,7 +22,6 @@ import scala.language.reflectiveCalls
 
 @Stateless
 class DbRbSocStatusClassBean extends DbRbSocStatusClassBeanLocal
-with Logging
 with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -41,18 +40,12 @@ with I18nable {
       classOf[RbSocStatusClass])
       .setParameter("id", id)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new NoSuchEntityException(
-          ConfigManager.ErrorCodes.ClientSocStatusTypeNotFound,
-          id,
-          i18n("error.ClientSocStatusClassNotFound"))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 =>  throw new NoSuchEntityException(
+        ConfigManager.ErrorCodes.ClientSocStatusTypeNotFound,
+        id,
+        i18n("error.ClientSocStatusClassNotFound"))
+      case size => result.iterator.next
     }
   }
 

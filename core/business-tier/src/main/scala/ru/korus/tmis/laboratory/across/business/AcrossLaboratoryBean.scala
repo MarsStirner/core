@@ -7,7 +7,7 @@ import javax.ejb.{EJB, Stateless}
 import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 import javax.xml.namespace.QName
 
-import grizzled.slf4j.Logging
+
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._

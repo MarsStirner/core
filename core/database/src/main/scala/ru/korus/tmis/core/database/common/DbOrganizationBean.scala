@@ -3,10 +3,8 @@ package ru.korus.tmis.core.database.common
 
 
 import javax.ejb.Stateless
-import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 
-import grizzled.slf4j.Logging
 import ru.korus.tmis.core.entity.model.Organisation
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
@@ -16,8 +14,7 @@ import ru.korus.tmis.core.filter.ListDataFilter
 //
 @Stateless
 class DbOrganizationBean
-  extends DbOrganizationBeanLocal
-  with Logging {
+  extends DbOrganizationBeanLocal {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -77,7 +74,7 @@ class DbOrganizationBean
     else {
       new QueryDataStructure()
     }
-    queryStr.query += (if (filter.asInstanceOf[DictionaryListRequestDataFilter].getDictName().compare("TFOMS") == 0) {
+    queryStr.query += (if (filter.asInstanceOf[DictionaryListRequestDataFilter].getDictName.compare("TFOMS") == 0) {
       "AND r.headId IS NULL AND r.isHospital = 0"
     }
     else {
@@ -101,20 +98,20 @@ class DbOrganizationBean
 
   def getAllOrganizationWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): java.util.LinkedList[Object] = {
 
-    val queryStr = filter.toQueryStructure()
-    queryStr.query += (if (filter.asInstanceOf[DictionaryListRequestDataFilter].getDictName().compare("TFOMS") == 0) {
+    val queryStr = filter.toQueryStructure
+    queryStr.query += (if (filter.asInstanceOf[DictionaryListRequestDataFilter].getDictName.compare("TFOMS") == 0) {
       "AND r.headId IS NULL AND r.isHospital = 0"
     }
     else {
       "AND r.isInsurer = 1"
     })
-    if (queryStr.data.size() > 0 || queryStr.query.size > 0) {
+    if (queryStr.data.size() > 0 || queryStr.query.nonEmpty) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
 
-    val handle = if (filter.asInstanceOf[DictionaryListRequestDataFilter].getDictName().compare("insurance") == 0) {
+    val handle = if (filter.asInstanceOf[DictionaryListRequestDataFilter].getDictName.compare("insurance") == 0) {
       "r.id, r.fullName, COALESCE(r.headId, 0)"
     } else {
       "r.id, r.fullName"
@@ -127,7 +124,7 @@ class DbOrganizationBean
     }
     val result = typed.getResultList
     val list = new java.util.LinkedList[Object]
-    if (filter.asInstanceOf[DictionaryListRequestDataFilter].getDictName().compare("insurance") == 0) {
+    if (filter.asInstanceOf[DictionaryListRequestDataFilter].getDictName.compare("insurance") == 0) {
       result.foreach(f => {
         list.add((f(0).asInstanceOf[java.lang.Integer],
           f(1).asInstanceOf[java.lang.String],
@@ -142,7 +139,7 @@ class DbOrganizationBean
     list
   }
 
-  def getAllInsurenceOrganizationsData(): java.util.LinkedList[Object] = {
+  def getAllInsurenceOrganizationsData: java.util.LinkedList[Object] = {
     val types = em.createQuery(InsurenceDictionaryFindQuery, classOf[Array[AnyRef]]).getResultList
     val list = new java.util.LinkedList[Object]
     types.foreach(t => {
@@ -151,7 +148,7 @@ class DbOrganizationBean
     list
   }
 
-  def getAllTFOMSOrganizationsData(): java.util.LinkedList[Object] = {
+  def getAllTFOMSOrganizationsData: java.util.LinkedList[Object] = {
     val types = em.createQuery(TFOMSDictionaryFindQuery, classOf[Array[AnyRef]]).getResultList
     val list = new java.util.LinkedList[Object]
     types.foreach(t => {
@@ -187,13 +184,11 @@ class DbOrganizationBean
    * @return  Организация
    */
   def getOrganizationByInfisCode(infisCode: String): Organisation = {
-    val resultList = em.createQuery(OrganisationFindQueryByInfisCode, classOf[Organisation])
-      .setParameter("INFISCODE", infisCode).setMaxResults(20).getResultList;
-    if (resultList.size() != 0) {
-      return resultList.get(0);
-    }
-    else {
-      throw new CoreException("No organisation found by \"".concat(infisCode).concat("\" infisCode."));
+    val result = em.createQuery(OrganisationFindQueryByInfisCode, classOf[Organisation])
+      .setParameter("INFISCODE", infisCode).setMaxResults(20).getResultList
+    result.size match {
+      case 0 => throw new CoreException("No organisation found by \"".concat(infisCode).concat("\" infisCode."))
+      case size => result.iterator.next()
     }
   }
 }

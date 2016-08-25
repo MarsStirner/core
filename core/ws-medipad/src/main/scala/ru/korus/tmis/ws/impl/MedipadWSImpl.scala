@@ -7,7 +7,7 @@ import javax.inject.Named
 import javax.jws.{HandlerChain, WebService}
 import javax.xml.ws.WebServiceContext
 
-import grizzled.slf4j.Logging
+
 import org.apache.shiro.SecurityUtils
 import ru.korus.tmis.core.assessment.AssessmentBeanLocal
 import ru.korus.tmis.core.auth.AuthData
@@ -34,7 +34,7 @@ import scala.language.reflectiveCalls
 class MedipadWSImpl
   extends MedipadWebService
 
-  with Logging
+
   with I18nable {
 
   @Resource

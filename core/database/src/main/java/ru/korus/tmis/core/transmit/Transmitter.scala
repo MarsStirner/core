@@ -2,10 +2,10 @@ package ru.korus.tmis.core.transmit
 
 import java.sql.Timestamp
 import java.util.Date
-import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import scala.collection.JavaConversions._
 import javax.ejb.Stateless
+import org.slf4j.{LoggerFactory, Logger}
 import ru.korus.tmis.core.exception.CoreException
 
 /**
@@ -15,7 +15,8 @@ import ru.korus.tmis.core.exception.CoreException
  * Description:  <br>
  */
 @Stateless
-class Transmitter extends TransmitterLocal with Logging {
+class Transmitter extends TransmitterLocal {
+  val logger:Logger = LoggerFactory.getLogger(this.getClass)
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -41,7 +42,7 @@ class Transmitter extends TransmitterLocal with Logging {
       val errCount: Int = transmittable.getErrCount
       val step: Long = 89 * 1000
       transmittable.setErrCount(errCount + 1)
-      transmittable.setSendTime(new Timestamp((new Date).getTime + (errCount).asInstanceOf[Long] * step))
+      transmittable.setSendTime(new Timestamp((new Date).getTime + errCount.asInstanceOf[Long] * step))
       sender.sendEntity(transmittable)
       em.remove(transmittable)
       em.flush()
@@ -50,14 +51,14 @@ class Transmitter extends TransmitterLocal with Logging {
       case ex: CoreException => {
         val message: String = ex.getMessage.substring(0, Math.min(1024, ex.getMessage.length))
         transmittable.setInfo(message)
-        logger.error(ex)
-        em.flush
+        logger.error("", ex)
+        em.flush()
       }
       case ex: Exception => {
         val message: String = ex.getMessage.substring(0, Math.min(1024, ex.getMessage.length))
         transmittable.setInfo(message)
-        logger.error(ex)
-        em.flush
+        logger.error("", ex)
+        em.flush()
       }
     }
   }

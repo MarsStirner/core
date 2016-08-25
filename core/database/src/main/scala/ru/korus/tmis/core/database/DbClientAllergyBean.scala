@@ -1,12 +1,10 @@
 package ru.korus.tmis.core.database
 
-import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import javax.ejb.{Stateless}
+import javax.ejb.Stateless
 import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientAllergy}
 import java.util.Date
 import ru.korus.tmis.core.exception.NoSuchClientAllergyException
-import scala.collection.JavaConversions._
 import java.lang.Iterable
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
@@ -14,7 +12,6 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbClientAllergyBean
   extends DbClientAllergyBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -37,20 +34,9 @@ class DbClientAllergyBean
       classOf[ClientAllergy])
       .setParameter("id", id)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new NoSuchClientAllergyException(
-          ConfigManager.ErrorCodes.ClientAllergyNotFound,
-          id,
-          i18n("error.clientAllergyNotFound").format(id))
-      }
-      case size => {
-        result.foreach(rbType => {
-
-        })
-        result(0)
-      }
+      case 0 => throw new NoSuchClientAllergyException(ConfigManager.ErrorCodes.ClientAllergyNotFound, id,i18n("error.clientAllergyNotFound").format(id))
+      case _ => result.iterator().next()
     }
   }
 

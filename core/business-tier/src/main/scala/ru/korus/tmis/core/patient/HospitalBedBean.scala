@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.patient
 
-import grizzled.slf4j.Logging
+
 import javax.ejb.{EJB, Stateless}
 import javax.interceptor.Interceptors
 import javax.persistence.{PersistenceContext, EntityManager}

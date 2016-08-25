@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import grizzled.slf4j.Logging
+
 import javax.ejb.Stateless
 
 import javax.interceptor.Interceptors
@@ -19,7 +19,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbRbRelationTypeBean
   extends DbRbRelationTypeBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

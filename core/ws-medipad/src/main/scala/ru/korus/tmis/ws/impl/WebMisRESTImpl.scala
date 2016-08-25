@@ -8,7 +8,7 @@ import javax.persistence.{EntityManager, PersistenceContext}
 import javax.servlet.http.Cookie
 
 import com.google.common.collect.Lists
-import grizzled.slf4j.Logging
+
 import org.codehaus.jackson.map.ObjectMapper
 import org.joda.time.DateTime
 import ru.korus.tmis.core.auth.{AuthData, AuthStorageBeanLocal, AuthToken}

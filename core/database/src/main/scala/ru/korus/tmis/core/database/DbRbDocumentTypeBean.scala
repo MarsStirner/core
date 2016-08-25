@@ -4,7 +4,7 @@ import javax.interceptor.Interceptors
 
 import javax.ejb.Stateless
 import javax.persistence.{EntityManager, PersistenceContext}
-import grizzled.slf4j.Logging
+
 import java.lang.Iterable
 import ru.korus.tmis.core.exception.NoSuchRbDocumentTypeException
 import ru.korus.tmis.core.entity.model.{RbDocumentType}
@@ -18,7 +18,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbRbDocumentTypeBean
   extends DbRbDocumentTypeBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

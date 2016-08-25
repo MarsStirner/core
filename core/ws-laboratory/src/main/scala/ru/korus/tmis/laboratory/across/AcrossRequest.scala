@@ -1,7 +1,7 @@
 package ru.korus.tmis.laboratory.across
 
 import javax.jws.{HandlerChain, WebService}
-import grizzled.slf4j.Logging
+
 import javax.ejb.EJB
 
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal

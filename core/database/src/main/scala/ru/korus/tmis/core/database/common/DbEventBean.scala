@@ -7,7 +7,6 @@ import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
 
 import com.google.common.collect.{HashMultimap, Multimap}
-import grizzled.slf4j.Logging
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.entity.model.{ActionType, Event, OrgStructure, _}
@@ -21,8 +20,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbEventBean
   extends DbEventBeanLocal
-  with I18nable
-  with Logging {
+  with I18nable{
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -164,10 +162,8 @@ class DbEventBean
       //newEvent.setExecDate(endDate)
     }
     catch {
-      case ex: Exception => {
-      }
+      case ex: Exception =>  throw new CoreException("error while creating event ");
     }
-
     newEvent
   }
 
@@ -182,7 +178,7 @@ class DbEventBean
    */
   def createEvent(patient: Patient, eventType: EventType, person: Staff, begDate: Date, endDate: Date): Event = {
     val now = new Date
-    var newEvent = new Event
+    val newEvent = new Event
     //Инициализируем структуру Event
     try {
       newEvent.setIsPrimary(1)

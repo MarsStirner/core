@@ -9,7 +9,7 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import ConfigManager.APWI
 
-import grizzled.slf4j.Logging
+
 import javax.ejb.{EJB, Stateless}
 import javax.interceptor.Interceptors
 
@@ -19,7 +19,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DiagnosticBean
   extends DiagnosticBeanLocal
-  with Logging
+
   with I18nable {
 
   type CA = CommonAttribute

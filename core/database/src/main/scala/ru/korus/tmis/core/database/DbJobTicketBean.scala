@@ -1,21 +1,19 @@
 package ru.korus.tmis.core.database
 
-import common.DbManagerBeanLocal
-import javax.interceptor.Interceptors
-import org.joda.time._
-
-import javax.ejb.{EJB, Stateless}
-import grizzled.slf4j.Logging
-import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model._
-import scala.collection.JavaConversions._
-import ru.korus.tmis.core.data.{TakingOfBiomaterialRequesData, TakingOfBiomaterialRequesDataFilter}
-import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
-import ru.korus.tmis.core.exception.CoreException
-import java.util.Date
 import java.text.SimpleDateFormat
 import java.util
-import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
+import java.util.Date
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext}
+
+import org.joda.time._
+import ru.korus.tmis.core.data.{TakingOfBiomaterialRequesData, TakingOfBiomaterialRequesDataFilter}
+import ru.korus.tmis.core.database.common.DbManagerBeanLocal
+import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.scala.util.{CAPids, ConfigManager, I18nable}
+
+import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
 /**
@@ -25,7 +23,6 @@ import scala.language.reflectiveCalls
  */
 @Stateless
 class DbJobTicketBean extends DbJobTicketBeanLocal
-with Logging
 with I18nable
 with CAPids {
 

@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import javax.interceptor.Interceptors
@@ -18,7 +18,6 @@ import ru.korus.tmis.scala.util.I18nable
 
 @Stateless
 class DbRbTissueTypeBean extends DbRbTissueTypeBeanLocal
-with Logging
 with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -26,7 +25,7 @@ with I18nable {
 
   def getAllRbTissueTypeWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val queryStr = filter.toQueryStructure()
+    val queryStr = filter.toQueryStructure
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())

@@ -2,12 +2,12 @@ package ru.korus.tmis.core.database.common
 
 import java.text.SimpleDateFormat
 import java.util
-import java.util.{UUID, Date}
+import java.util.{Date, UUID}
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
 
-import grizzled.slf4j.Logging
 import org.joda.time.{DateTime, DateTimeConstants}
+import org.slf4j.{Logger, LoggerFactory}
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data.QueryDataStructure
 import ru.korus.tmis.core.database.DbActionTypeBeanLocal
@@ -24,8 +24,8 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbActionBean
   extends DbActionBeanLocal
-  with Logging
   with I18nable {
+  val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -67,51 +67,35 @@ class DbActionBean
 
 
   def getActionIdWithoutDetach(id: Int): Action = {
-    info("Requested action id[" + id + "]")
+    logger.info("Requested action id[" + id + "]")
     val result = em.createQuery(ActionFindQuery,
       classOf[Action])
       .setParameter("id", id)
       .getResultList
-
-    val res: Action = result.size match {
-      case 0 => {
-        throw new CoreException(
-          ConfigManager.ErrorCodes.ActionNotFound,
-          i18n("error.actionNotFound") + " id = " + id)
-      }
-      case size => {
-        result.iterator.next()
-      }
+    result.size match {
+      case 0 => throw new CoreException(ConfigManager.ErrorCodes.ActionNotFound, i18n("error.actionNotFound") + " id = " + id)
+      case size => result.iterator.next()
     }
-    res
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionByIdWithIgnoreDeleted(id: Int) = {
-    info("Requested action id[" + id + "]")
+    logger.info("Requested action id[" + id + "]")
     val result = em.createQuery(
       """
-                                  SELECT a
-                                  FROM
-                                    Action a
-                                  WHERE
-                                    a.id = :id
+      SELECT a
+      FROM
+        Action a
+      WHERE
+        a.id = :id
       """,
       classOf[Action])
       .setParameter("id", id)
       .getResultList
 
     result.size match {
-      case 0 => {
-        throw new CoreException(
-          ConfigManager.ErrorCodes.ActionNotFound,
-          i18n("error.actionNotFound"))
-      }
-      case size => {
-        val action = result.iterator.next()
-
-        action
-      }
+      case 0 => throw new CoreException(ConfigManager.ErrorCodes.ActionNotFound, i18n("error.actionNotFound") + " id = " + id)
+      case size => result.iterator.next()
     }
   }
 
@@ -206,14 +190,9 @@ class DbActionBean
       .setParameter("id", eventId)
       .setParameter("atId", atId)
       .getResultList
-
     result.size match {
-      case 0 => {
-        null
-      }
-      case size => {
-        result.iterator().next
-      }
+      case 0 => null
+      case size => result.iterator.next()
     }
   }
 
@@ -222,16 +201,9 @@ class DbActionBean
       classOf[Action])
       .setParameter("externalId", externalId)
       .getResultList
-
     result.size match {
-      case 0 => {
-        null
-      }
-      case size => {
-
-        val action = result.iterator().next
-        action
-      }
+      case 0 => null
+      case size => result.iterator.next()
     }
   }
 
@@ -240,8 +212,6 @@ class DbActionBean
       classOf[Action])
       .setParameter("actionType", actionType)
       .getResultList
-
-
     result.iterator().next()
   }
 
@@ -280,10 +250,7 @@ class DbActionBean
 
     result.size match {
       case 0 => null
-      case size => {
-
-        result
-      }
+      case size => result
     }
   }
 
@@ -293,13 +260,9 @@ class DbActionBean
       .setParameter("codes", asJavaCollection(codes))
       .setParameter("patientId", patient.getId)
       .getResultList
-
     result.size match {
       case 0 => null
-      case size => {
-
-        result
-      }
+      case size => result
     }
   }
 
@@ -317,9 +280,7 @@ class DbActionBean
 
     result.size match {
       case 0 => 0
-      case size => {
-        result(0)
-      }
+      case size => result(0)
     }
   }
 
@@ -333,9 +294,7 @@ class DbActionBean
 
     result.size match {
       case 0 => 0
-      case size => {
-        result(0)
-      }
+      case size => result(0)
     }
   }
 
@@ -347,9 +306,7 @@ class DbActionBean
     val result = typed.getResultList
     result.size match {
       case 0 => null
-      case size => {
-        result(0)
-      }
+      case size => result(0)
     }
   }
 
@@ -676,7 +633,6 @@ class DbActionBean
         logger.info("Skip closing documents in closed events. It's weekend! Go party!")
         return // Не следует запускать проверку в выходные дни
       }
-      case _ => {}
     }
 
     val closeIntervalInDays: Int = try {
@@ -735,35 +691,36 @@ class DbActionBean
   }
 
   def getLatestMove(event: Event): Action = {
-    val actions = em.createNamedQuery("Action.findLatestMove", classOf[Action])
+    val result = em.createNamedQuery("Action.findLatestMove", classOf[Action])
       .setParameter("eventId", event.getId)
       .setMaxResults(1).getResultList
-    return if (actions.isEmpty) null else actions.get(0);
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next()
+    }
   }
 
   override def getLastActionByEventAndActionTypes(eventId: Integer, flatCodeList: util.List[String]): Action = {
-    val actions = em.createNamedQuery("Action.findLastByFlatCodesAndEventId", classOf[Action])
+    val result = em.createNamedQuery("Action.findLastByFlatCodesAndEventId", classOf[Action])
       .setParameter("eventId", eventId)
       .setParameter("flatCodes", flatCodeList)
       .setMaxResults(1)
       .getResultList
-    if (actions.isEmpty) {
-      null
-    } else {
-      actions.get(0)
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next()
     }
   }
 
   override def getLastActionByActionTypesAndClientId(codeList: util.List[String], clientId: Integer): Action = {
-    val actions = em.createNamedQuery("Action.findLastByActionTypesAndClientId", classOf[Action])
+    val result = em.createNamedQuery("Action.findLastByActionTypesAndClientId", classOf[Action])
       .setParameter("codes", codeList)
       .setParameter("clientId", clientId)
       .setMaxResults(1)
       .getResultList
-    if (actions.isEmpty) {
-      null
-    } else {
-      actions.get(0)
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next()
     }
   }
 
@@ -794,7 +751,7 @@ class DbActionBean
         |AND aty.mnemonic <> ''
         |ORDER BY a.id DESC
       """.stripMargin
-    em.createQuery(query, classOf[Action]).setParameter("status", status.getCode).setParameter("flatCode", flatCodePrefix+"%").getResultList
+    em.createQuery(query, classOf[Action]).setParameter("status", status.getCode).setParameter("flatCode", flatCodePrefix + "%").getResultList
   }
 
   override def getOrgStructureDirection(action: Action): OrgStructure = {
@@ -804,7 +761,7 @@ class DbActionBean
     }
   }
 
-  override def setActionNoteAndStatus(action:Action, note: String, actionStatus: ActionStatus): Action = {
+  override def setActionNoteAndStatus(action: Action, note: String, actionStatus: ActionStatus): Action = {
     action.setModifyDatetime(new Date())
     action.setModifyPerson(null)
     action.setNote(note)

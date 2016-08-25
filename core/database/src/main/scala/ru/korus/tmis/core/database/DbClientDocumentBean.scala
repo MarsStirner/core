@@ -2,13 +2,11 @@ package ru.korus.tmis.core.database
 
 
 import javax.persistence.{EntityManager, PersistenceContext}
-import grizzled.slf4j.Logging
 import java.lang.Iterable
 import ru.korus.tmis.core.exception.NoSuchClientDocumentException
 import java.util.Date
 import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientDocument}
 import javax.ejb.{EJB, Stateless}
-import scala.collection.JavaConversions._
 import java.util
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
@@ -16,7 +14,6 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbClientDocumentBean
   extends DbClientDocumentBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -45,18 +42,8 @@ class DbClientDocumentBean
       .getResultList
 
     result.size match {
-      case 0 => {
-        throw new NoSuchClientDocumentException(
-          ConfigManager.ErrorCodes.ClientDocumentNotFound,
-          id,
-          i18n("error.clientDocumentNotFound"))
-      }
-      case size => {
-        result.foreach(rbType => {
-
-        })
-        result(0)
-      }
+      case 0 => throw new NoSuchClientDocumentException(ConfigManager.ErrorCodes.ClientDocumentNotFound, id,i18n("error.clientDocumentNotFound"))
+      case _ => result.iterator().next()
     }
   }
 
@@ -65,17 +52,7 @@ class DbClientDocumentBean
       classOf[ClientDocument])
       .setParameter("id", id)
       .getResultList
-    result.size match {
-      case 0 => {
-        false
-      }
-      case size => {
-        result.foreach(rbType => {
-
-        })
-        true
-      }
-    }
+    result.size == 0
   }
 
   def insertOrUpdateClientDocument(id: Int,

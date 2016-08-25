@@ -7,7 +7,7 @@ import javax.ejb.{EJB, Stateless}
 import javax.jms._
 import javax.persistence.{EntityManager, PersistenceContext}
 
-import grizzled.slf4j.Logging
+
 import org.apache.commons.collections.CollectionUtils
 import org.joda.time.DateTime
 import ru.korus.tmis.core.auth.AuthData

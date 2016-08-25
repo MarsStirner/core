@@ -4,7 +4,7 @@ import java.util
 
 
 
-import grizzled.slf4j.Logging
+
 import javax.ejb.Stateless
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -17,7 +17,7 @@ import ru.korus.tmis.core.exception.CoreException
 @Stateless
 class DbRlsBean
   extends DbRlsBeanLocal
-  with Logging {
+ {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _

@@ -4,7 +4,7 @@ package ru.korus.tmis.core.database
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
 import java.util
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbPolicyType
 import ru.korus.tmis.core.exception.NoSuchRbPolicyTypeException
@@ -18,7 +18,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbRbPolicyTypeBean
   extends DbRbPolicyTypeBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

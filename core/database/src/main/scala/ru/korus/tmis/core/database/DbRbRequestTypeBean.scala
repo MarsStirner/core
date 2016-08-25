@@ -4,7 +4,7 @@ import java.util
 import javax.interceptor.Interceptors
 
 import javax.ejb.{EJB, Stateless}
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import ru.korus.tmis.core.entity.model.OrgStructure
@@ -20,7 +20,7 @@ import ru.korus.tmis.scala.util.I18nable
 
 @Stateless
 class DbRbRequestTypeBean extends DbRbRequestTypeBeanLocal
-                          with Logging
+
                           with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

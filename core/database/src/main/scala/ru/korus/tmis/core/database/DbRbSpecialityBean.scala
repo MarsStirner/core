@@ -1,15 +1,13 @@
 package ru.korus.tmis.core.database
 
-import javax.interceptor.Interceptors
-
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.Speciality
-import scala.collection.JavaConversions._
+
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.I18nable
+
+import scala.collection.JavaConversions._
 
 /**
  * Created with IntelliJ IDEA.
@@ -21,7 +19,6 @@ import ru.korus.tmis.scala.util.I18nable
 
 @Stateless
 class DbRbSpecialityBean extends DbRbSpecialityBeanLocal
-with Logging
 with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -44,18 +41,16 @@ with I18nable {
                                        """
 
   def getCountOfBloodTypesWithFilter(filter: Object) = {
-    var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
-      filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case x: DictionaryListRequestDataFilter => x.toQueryStructure()
+      case _ => new QueryDataStructure()
     }
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
     }
-    var typed = em.createQuery(AllSpecialitiesWithFilterQuery.format(
+    val typed = em.createQuery(AllSpecialitiesWithFilterQuery.format(
       "count(r)",
       queryStr.query,
       ""),
@@ -68,7 +63,7 @@ with I18nable {
 
   def getAllSpecialitiesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): java.util.LinkedList[Object] = {
 
-    val queryStr = filter.toQueryStructure()
+    val queryStr = filter.toQueryStructure
     if (queryStr.data.size() > 0) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())

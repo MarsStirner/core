@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database.common
 
 
 import javax.interceptor.Interceptors
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbBloodType
 import ru.korus.tmis.core.exception.NoSuchRbBloodTypeException
@@ -18,7 +18,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbRbBloodTypeBean
   extends DbRbBloodTypeBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

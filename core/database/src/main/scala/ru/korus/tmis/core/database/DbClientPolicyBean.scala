@@ -1,14 +1,12 @@
 package ru.korus.tmis.core.database
 
 import common.DbOrganizationBeanLocal
-import javax.interceptor.Interceptors
 import java.lang.Iterable
-import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.ejb.{EJB, Stateless}
 import java.util.Date
 import ru.korus.tmis.core.entity.model.{RbPolicyType, Staff, Patient, ClientPolicy}
-import ru.korus.tmis.core.exception.{CoreException, NoSuchOrganisationException, NoSuchClientPolicyException}
+import ru.korus.tmis.core.exception.NoSuchClientPolicyException
 import scala.collection.JavaConversions._
 import java.util
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
@@ -17,7 +15,6 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbClientPolicyBean
   extends DbClientPolicyBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -53,22 +50,14 @@ class DbClientPolicyBean
   }
 
   def getClientPolicyById(id: Int): ClientPolicy = {
-    var result = em.createQuery(ClientPolicyFindQuery,
+    val result = em.createQuery(ClientPolicyFindQuery,
       classOf[ClientPolicy])
       .setParameter("id", id)
       .getResultList
 
     result.size match {
-      case 0 => {
-        throw new NoSuchClientPolicyException(
-          ConfigManager.ErrorCodes.ClientPolicyNotFound,
-          id,
-          i18n("error.clientPolicyNotFound"))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => throw new NoSuchClientPolicyException(ConfigManager.ErrorCodes.ClientPolicyNotFound, id, i18n("error.clientPolicyNotFound"))
+      case _ => result.iterator().next()
     }
   }
 
@@ -94,20 +83,12 @@ class DbClientPolicyBean
     }
 
     p.setPolicyType(rbPolicyTypeId match {
-      case 0 => {
-        null
-      }
-      case _ => {
-        dbRbPolicyType.getRbPolicyTypeById(rbPolicyTypeId)
-      }
+      case 0 => null
+      case _ => dbRbPolicyType.getRbPolicyTypeById(rbPolicyTypeId)
     })
     p.setInsurer(insurerId match {
-      case 0 => {
-        null
-      }
-      case _ => {
-        dbOrganisation.getOrganizationById(insurerId)
-      }
+      case 0 => null
+      case _ => dbOrganisation.getOrganizationById(insurerId)
     })
     p.setNumber(number)
     p.setSerial(serial)
@@ -134,23 +115,11 @@ class DbClientPolicyBean
   }
 
   def checkPolicyNumber(number: String, serial: String, typeId: Int) = {
-    var isNumberFree = false
-    var result = em.createQuery(ClientPolicyByNumberSerialAndTypeIdQuery, classOf[ClientPolicy])
+    em.createQuery(ClientPolicyByNumberSerialAndTypeIdQuery, classOf[ClientPolicy])
       .setParameter("number", number)
       .setParameter("serial", serial)
       .setParameter("typeId", typeId)
-      .getResultList
-    result.size match {
-      case 0 => {}
-      case size => {
-
-        result(0)
-      }
-    }
-    if (result == null || result.size() < 1) {
-      isNumberFree = true
-    }
-    isNumberFree
+      .getResultList.isEmpty
   }
 
 
@@ -160,15 +129,9 @@ class DbClientPolicyBean
       .setParameter("serial", serial)
       .setParameter("typeId", typeId)
       .getResultList
-
     result.size match {
-      case 0 => {
-        null
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => null
+      case _ => result.iterator().next()
     }
   }
 
@@ -219,15 +182,13 @@ class DbClientPolicyBean
       .setParameter("policyType", policyType)
       .getResultList
     result.size match {
-      case 0 => {
+      case 0 =>
         throw new NoSuchClientPolicyException(
           ConfigManager.ErrorCodes.ClientPolicyNotFound,
           patientId,
           i18n("error.clientPolicyNotFound"))
-      }
-      case size => {
+      case size =>
         result
-      }
     }
   }
 }

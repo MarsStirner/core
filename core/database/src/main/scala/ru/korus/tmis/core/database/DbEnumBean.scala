@@ -1,23 +1,24 @@
 package ru.korus.tmis.core.database
 
-import ru.korus.tmis.core.entity.model.{Nomenclature, RbAnalysisStatus, DbEnumerable}
-
-import javax.annotation.{Resource, PostConstruct}
+import javax.annotation.{PostConstruct, Resource}
 import javax.ejb._
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.transaction.UserTransaction
 
-import grizzled.slf4j.Logging
-import scala.collection.JavaConversions._
+import org.slf4j.{Logger, LoggerFactory}
+import ru.korus.tmis.core.entity.model.{DbEnumerable, RbAnalysisStatus}
 import ru.korus.tmis.scala.util.I18nable
+
+import scala.collection.JavaConversions._
 
 @Startup
 @Singleton
 @TransactionManagement(TransactionManagementType.BEAN)
 class DbEnumBean
   extends DbEnumBeanLocal
-  with Logging
   with I18nable {
+
+  val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   @PersistenceContext(unitName = "s11r64")
   var s11r64: EntityManager = _
@@ -49,15 +50,13 @@ class DbEnumBean
           val ee = e.asInstanceOf[Class[DbEnumerable]]
           emId match {
             case EmId => processEnums(em, ee)
-            case _ => {}
+            case _ =>
           }
         })
       }
       tx.commit()
     } catch {
-      case ex: Exception => {
-        tx.rollback()
-      }
+      case ex: Exception => tx.rollback()
     }
   }
 
@@ -67,7 +66,7 @@ class DbEnumBean
       .getResultList
       .map(_.asInstanceOf[DbEnumerable])
 
-    info("Reloading DB enums of " + e.getSimpleName)
+    logger.info("Reloading DB enums of " + e.getSimpleName)
     e.newInstance().loadEnums(enums)
   }
 }

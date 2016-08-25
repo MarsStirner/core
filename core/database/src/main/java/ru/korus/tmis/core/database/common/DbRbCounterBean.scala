@@ -2,8 +2,7 @@ package ru.korus.tmis.core.database.common
 
 import javax.ejb.Stateless
 
-import javax.interceptor.Interceptors
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbCounter
 import ru.korus.tmis.core.exception.NoSuchRbCounterIdException
@@ -15,7 +14,6 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbRbCounterBean
   extends DbRbCounterBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

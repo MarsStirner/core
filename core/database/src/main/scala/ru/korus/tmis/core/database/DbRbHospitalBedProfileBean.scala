@@ -2,7 +2,7 @@ package ru.korus.tmis.core.database
 
 import ru.korus.tmis.core.entity.model.RbHospitalBedProfile
 import javax.persistence.{PersistenceContext, EntityManager}
-import grizzled.slf4j.Logging
+
 import javax.ejb.Stateless
 
 import javax.interceptor.Interceptors
@@ -13,7 +13,7 @@ import ru.korus.tmis.scala.util.I18nable
 @Stateless
 class DbRbHospitalBedProfileBean
   extends DbRbHospitalBedProfileBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

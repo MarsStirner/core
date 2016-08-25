@@ -4,7 +4,7 @@ import java.util.Date
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
 
-import grizzled.slf4j.Logging
+
 import org.apache.commons.lang.ObjectUtils
 import ru.korus.tmis.core.data.DiagnosesListData
 import ru.korus.tmis.core.database.common.DbEventBeanLocal

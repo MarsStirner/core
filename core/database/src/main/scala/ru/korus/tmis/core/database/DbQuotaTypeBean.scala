@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database
 
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.QuotaType
 import ru.korus.tmis.core.exception.CoreException
@@ -23,7 +23,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbQuotaTypeBean
   extends DbQuotaTypeBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import javax.interceptor.Interceptors
 
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.{RbAcheResult, EventType, RbResult}
 import ru.korus.tmis.core.exception.CoreException
@@ -22,7 +22,7 @@ import scala.language.reflectiveCalls
 class DbRbResultBean
   extends DbRbResultBeanLocal
   with I18nable
-  with Logging  {
+  {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _

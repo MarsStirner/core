@@ -8,7 +8,7 @@ import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
 
 
-import grizzled.slf4j.Logging
+
 import javax.ejb.{Stateless, EJB}
 import javax.enterprise.event.Event
 import javax.enterprise.inject.Any
@@ -32,7 +32,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class CommonDataProcessorBean
   extends CommonDataProcessorBeanLocal
-  with Logging
+
   with I18nable {
 
   type CA = CommonAttribute

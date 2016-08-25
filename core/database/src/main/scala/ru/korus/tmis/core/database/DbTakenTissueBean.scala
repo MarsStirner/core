@@ -5,7 +5,7 @@ import scala.collection.JavaConversions._
 import javax.interceptor.Interceptors
 
 import javax.ejb.{EJB, Stateless}
-import grizzled.slf4j.Logging
+
 import javax.persistence.{FlushModeType, EntityManager, PersistenceContext}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.entity.model.{ActionTypeTissueType, Action, Event, TakenTissue}
@@ -24,7 +24,7 @@ import scala.language.reflectiveCalls
 
 @Stateless
 class DbTakenTissueBean extends DbTakenTissueBeanLocal
-                        with Logging
+
                         with I18nable
                         with CAPids {
 

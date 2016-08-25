@@ -2,7 +2,7 @@ package ru.korus.tmis.core.common
 
 import ru.korus.tmis.core.entity.model.ActionType
 
-import grizzled.slf4j.Logging
+
 import javax.ejb.{EJB, Stateless}
 import javax.interceptor.Interceptors
 
@@ -12,7 +12,7 @@ import ru.korus.tmis.core.database.common.{DbOrgStructureBeanLocal, DbEventBeanL
 @Stateless
 class TypeFilterBean
   extends TypeFilterBeanLocal
-  with Logging {
+ {
 
   @EJB
   var dbEvent: DbEventBeanLocal = _

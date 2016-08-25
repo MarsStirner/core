@@ -4,7 +4,7 @@ import ru.korus.tmis.core.auth.{TmisShiroRealm, TmisShiroToken, AuthToken, AuthS
 import ru.korus.tmis.core.database.DbStaffBeanLocal
 import ru.korus.tmis.core.exception.{FaultBean, AuthenticationException}
 
-import grizzled.slf4j.Logging
+
 import java.util.Date
 import javax.ejb.EJB
 import javax.xml.soap._
@@ -18,7 +18,7 @@ import scala.language.reflectiveCalls
 
 class AuthenticatingHandler
   extends SOAPHandler[SOAPMessageContext]
-  with Logging
+
   with I18nable {
 
   object StaticInitializer {

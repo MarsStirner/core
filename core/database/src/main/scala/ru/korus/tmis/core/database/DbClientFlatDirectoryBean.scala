@@ -1,9 +1,8 @@
 package ru.korus.tmis.core.database
 
 import javax.persistence.{PersistenceContext, EntityManager}
-import grizzled.slf4j.Logging
 import javax.ejb.Stateless
-import javax.interceptor.Interceptors
+import org.slf4j.{LoggerFactory, Logger}
 import ru.korus.tmis.core.entity.model.{Staff, Patient}
 import ru.korus.tmis.core.entity.model.fd.{FDRecord, ClientFDProperty, ClientFlatDirectory}
 import java.util.Date
@@ -13,8 +12,8 @@ import ru.korus.tmis.scala.util.I18nable
 @Stateless
 class DbClientFlatDirectoryBean
   extends DbClientFlatDirectoryBeanLocal
-  with Logging
   with I18nable {
+  val logger:Logger = LoggerFactory.getLogger(this.getClass)
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -50,10 +49,9 @@ class DbClientFlatDirectoryBean
       fdClient.setPatient(patient)
     }
     catch {
-      case e: Exception => {
-        error("insertOrUpdateClientFlatDirectory >> Ошибка при создании(редактировании) записи в ClientFlatDirectory: %s".format(e.getMessage))
+      case e: Exception =>
+        logger.error("insertOrUpdateClientFlatDirectory >> Ошибка при создании(редактировании) записи в ClientFlatDirectory: %s".format(e.getMessage))
         throw new CoreException("Не могу создать запись в таблице ClientFlatDirectory")
-      }
     }
     fdClient
   }
@@ -71,16 +69,9 @@ class DbClientFlatDirectoryBean
       classOf[ClientFlatDirectory])
       .setParameter("id", fdClientId)
       .getResultList
-
     result.size match {
-      case 0 => {
-        null
-      }
-      case size => {
-        val fdClient = result.iterator.next()
-
-        fdClient
-      }
+      case 0 => null
+      case _ => result.iterator().next()
     }
   }
 
@@ -89,17 +80,9 @@ class DbClientFlatDirectoryBean
       classOf[ClientFDProperty])
       .setParameter("id", fdPropertyId)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new CoreException("getClientFDPropertyById >> Не могу получить ClientFDProperty по id = %s".format(fdPropertyId))
-        null
-      }
-      case size => {
-        val сlientProperty = result.iterator.next()
-
-        сlientProperty
-      }
+      case 0 => throw new CoreException("getClientFDPropertyById >> Не могу получить ClientFDProperty по id = %s".format(fdPropertyId))
+      case _ => result.iterator().next()
     }
   }
 
@@ -108,17 +91,9 @@ class DbClientFlatDirectoryBean
       classOf[FDRecord])
       .setParameter("id", fdRecordId)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new CoreException("getFDRecordById >> Не могу получить FDRecord по id = %s".format(fdRecordId))
-        null
-      }
-      case size => {
-        val record = result.iterator.next()
-
-        record
-      }
+      case 0 => throw new CoreException("getFDRecordById >> Не могу получить FDRecord по id = %s".format(fdRecordId))
+      case _ => result.iterator().next()
     }
   }
 

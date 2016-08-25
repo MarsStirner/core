@@ -1,27 +1,23 @@
 package ru.korus.tmis.core.database.common
 
-import ru.korus.tmis.core.entity.model.{ActionPropertyType, ActionType}
-
-
-import grizzled.slf4j.Logging
+import java.util
 import javax.ejb.Stateless
-import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
 
-import scala.collection.JavaConversions._
-import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.data.{ActionTypesListRequestDataFilter, QueryDataStructure}
+import ru.korus.tmis.core.database.DbActionTypeBeanLocal
+import ru.korus.tmis.core.entity.model.{ActionPropertyType, ActionType}
+import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.I18nable
-import ru.korus.tmis.core.database.DbActionTypeBeanLocal
-import java.util
+
+import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
 //
 @Stateless
 class DbActionTypeBean
   extends DbActionTypeBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -121,44 +117,38 @@ class DbActionTypeBean
 
   def getCountAllActionTypeWithFilter(filter: Object) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[ActionTypesListRequestDataFilter]) {
-      filter.asInstanceOf[ActionTypesListRequestDataFilter].toQueryStructure()
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case x: ActionTypesListRequestDataFilter => x.toQueryStructure()
+      case _ => new QueryDataStructure()
     }
 
     var typed = em.createQuery(AllActionTypeWithFilterQuery.format("count(at)", queryStr.query, ""), classOf[Long])
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
-    val result = typed.getSingleResult()
-    result
+    typed.getSingleResult
   }
 
   def getAllActionTypeWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
 
-    val queryStr = filter.toQueryStructure()
+    val queryStr = filter.toQueryStructure
 
     val typed = em.createQuery(AllActionTypeWithFilterQuery.format("at", queryStr.query, sorting), classOf[ActionType])
-                  .setMaxResults(limit)
-                  .setFirstResult(limit * page)
+      .setMaxResults(limit)
+      .setFirstResult(limit * page)
 
     if (queryStr.data.size() > 0) {
       queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
     }
-
-    val result = typed.getResultList
-
-
-    result
+    typed.getResultList
   }
 
   def getActionTypeByCode(flatCodeList: util.List[String]): util.List[ActionType] = {
     em.createNamedQuery("ActionType.findByFlatCodes", classOf[ActionType]).setParameter("flatCodes", flatCodeList).getResultList
   }
 
-  val ActionTypeByFlatCodeQuery = """
+  val ActionTypeByFlatCodeQuery =
+    """
     SELECT at
     FROM
       ActionType at
@@ -166,17 +156,19 @@ class DbActionTypeBean
       at.flatCode = :flatCode
     AND
       at.deleted = 0
-                                  """
+    """
 
-  val ActionTypeByIdQuery = """
+  val ActionTypeByIdQuery =
+    """
     SELECT at
     FROM
       ActionType at
     WHERE
       at.id = :id
-                            """
+    """
 
-  val ActionTypePropertiesByIdQuery = """
+  val ActionTypePropertiesByIdQuery =
+    """
     SELECT apt
     FROM
       ActionPropertyType apt
@@ -186,9 +178,10 @@ class DbActionTypeBean
       apt.deleted = 0
     ORDER BY
       apt.idx ASC
-                                      """
+    """
 
-  val ActionTypesByClassQuery = """
+  val ActionTypesByClassQuery =
+    """
     SELECT at
     FROM
       ActionType at
@@ -196,7 +189,7 @@ class DbActionTypeBean
       at.clazz = %s
     AND
       at.deleted = 0
-                                """
+    """
 
   val AssessmentTypesQuery =
     ActionTypesByClassQuery.format(i18n("db.action.assessmentClass"))
@@ -207,7 +200,8 @@ class DbActionTypeBean
   val TreatmentTypesQuery =
     ActionTypesByClassQuery.format(i18n("db.action.treatmentClass"))
 
-  val ActionTypesByNameQuery = """
+  val ActionTypesByNameQuery =
+    """
     SELECT at
     FROM
       ActionType at
@@ -215,12 +209,13 @@ class DbActionTypeBean
       at.name = "%s"
     AND
       at.deleted = 0
-                               """
+    """
 
   val DrugTreatmentTypesQuery =
     ActionTypesByNameQuery.format(i18n("db.at.drugTreatmentName"))
 
-  val ActionTypeByCodeQuery = """
+  val ActionTypeByCodeQuery =
+    """
     SELECT at
     FROM
       ActionType at
@@ -228,9 +223,10 @@ class DbActionTypeBean
       at.code = :code
     AND
       at.deleted = 0
-                              """
+    """
 
-  val AllActionTypeWithFilterQuery = """
+  val AllActionTypeWithFilterQuery =
+    """
     SELECT %s
     FROM
       ActionType at
@@ -238,9 +234,10 @@ class DbActionTypeBean
       at.deleted = 0
     %s
     %s
-                                     """
+    """
 
-  val countOfChildrenForActionTypeList = """
+  val countOfChildrenForActionTypeList =
+    """
   SELECT
     at.groupId, count(at)
   FROM
@@ -250,6 +247,6 @@ class DbActionTypeBean
   AND
     at.deleted = 0
   GROUP BY at.groupId
-                                         """
+    """
 
 }

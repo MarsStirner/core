@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import javax.interceptor.Interceptors
 
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
+
 import ru.korus.tmis.core.exception.CoreException
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbDiseaseStage
@@ -22,7 +22,7 @@ import scala.language.reflectiveCalls
 
 @Stateless
 class DbRbDiseaseStageBean extends DbRbDiseaseStageBeanLocal
-                            with Logging
+
                             with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

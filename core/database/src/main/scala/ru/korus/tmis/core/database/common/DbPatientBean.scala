@@ -1,6 +1,5 @@
 package ru.korus.tmis.core.database.common
 
-import grizzled.slf4j.Logging
 import java.lang.Iterable
 import ru.korus.tmis.core.exception.{CoreException, NoSuchPatientException}
 import ru.korus.tmis.core.entity.model.{RbBloodPhenotype, BloodKell, Staff, Patient}
@@ -20,7 +19,6 @@ import ru.korus.tmis.schedule.DateConvertions
 @Stateless
 class DbPatientBean
   extends DbPatientBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -118,14 +116,9 @@ class DbPatientBean
       classOf[Patient])
       .setParameter("id", id)
       .getResultList
-
     result.size match {
-      case 0 =>
-        throw new NoSuchPatientException(ConfigManager.ErrorCodes.PatientNotFound, id, i18n("error.patientNotFound"))
-      case size => {
-        val patient = result.iterator.next()
-        patient
-      }
+      case 0 =>  throw new NoSuchPatientException(ConfigManager.ErrorCodes.PatientNotFound, id, i18n("error.patientNotFound"))
+      case size => result.iterator.next()
     }
   }
 

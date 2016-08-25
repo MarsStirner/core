@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import javax.interceptor.Interceptors
 
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.RbCoreActionProperty
 import scala.collection.JavaConversions._
@@ -12,7 +12,7 @@ import scala.collection.JavaConversions._
 @Stateless
 class DbRbCoreActionPropertyBean
   extends DbRbCoreActionPropertyBeanLocal
-  with Logging {
+ {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _

@@ -1,14 +1,15 @@
 package ru.korus.tmis.core.database.common
 
+import java.util
+import java.util.Date
 import javax.ejb.Stateless
 import javax.persistence.{EntityManager, PersistenceContext}
-import grizzled.slf4j.Logging
-import ru.korus.tmis.core.entity.model.{ContractSpecification, EventType, Contract}
+
+import ru.korus.tmis.core.entity.model.{Contract, ContractSpecification, EventType}
 import ru.korus.tmis.core.exception.NoSuchEntityException
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.collection.JavaConversions._
-import java.util.Date
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import java.util
 import scala.language.reflectiveCalls
 
 
@@ -24,29 +25,31 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbContractBean
   extends DbContractBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  val FindByIdQuery = """
+  val FindByIdQuery =
+    """
     SELECT c
     FROM
       Contract c
     WHERE
       c.id = :id
-                      """
+    """
 
-  val FindByNumberQuery = """
+  val FindByNumberQuery =
+    """
     SELECT c
     FROM
       Contract c
     WHERE
       c.number = :number
-                      """
+    """
 
-  val FindContractForEventQuery = """
+  val FindContractForEventQuery =
+    """
     SELECT c
     FROM
       Contract c
@@ -67,8 +70,7 @@ class DbContractBean
           cs.eventType.id = :eventTypeId
         AND
           cs.deleted = 0)
-                                  """
-
+    """
 
 
   def getContractById(id: Int) = {
@@ -78,15 +80,13 @@ class DbContractBean
       .getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         throw new NoSuchEntityException(
           ConfigManager.ErrorCodes.ContractNotFound,
           id,
           i18n("error.ContractNotFound"))
-      }
-      case size => {
+      case size =>
         result(0)
-      }
     }
   }
 
@@ -97,19 +97,10 @@ class DbContractBean
       .getResultList
 
     result.size match {
-      case 0 => {
-        throw new NoSuchEntityException(
-          ConfigManager.ErrorCodes.ContractNotFound,
-          0,
-          i18n("error.ContractNotFound"))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => throw new NoSuchEntityException(ConfigManager.ErrorCodes.ContractNotFound, 0, i18n("error.ContractNotFound"))
+      case size => result(0)
     }
   }
-
 
 
   /**
@@ -128,13 +119,11 @@ class DbContractBean
       .getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         null
-      }
-      case size => {
+      case size =>
 
         result(0)
-      }
     }
   }
 
@@ -160,32 +149,30 @@ class DbContractBean
       cb.equal(subRoot.get("eventType").get("id"), eventTypeId)
     )
 
-    if(!showDeleted) subQueryConditions :+= cb.equal(subRoot.get("deleted"), false)
+    if (!showDeleted) subQueryConditions :+= cb.equal(subRoot.get("deleted"), false)
 
-    sq.where(List(cb.and(subQueryConditions:_*)):_*)
+    sq.where(List(cb.and(subQueryConditions: _*)): _*)
 
     var queryConditions = List(
       cb.equal(root.get("finance").get("id"), financeId),
       cb.exists(sq)
     )
 
-    if(!showDeleted) queryConditions :+= cb.equal(root.get("deleted"), false)
-    if(!showExpired) queryConditions :+= cb.greaterThan(root.get("endDate"), new Date())
+    if (!showDeleted) queryConditions :+= cb.equal(root.get("deleted"), false)
+    if (!showExpired) queryConditions :+= cb.greaterThan(root.get("endDate"), new Date())
 
     q.
-      where(List(cb.and(queryConditions:_*)):_*)
+      where(List(cb.and(queryConditions: _*)): _*)
 
     val query = em.createQuery(q)
-    val result = query.getResultList()
+    val result = query.getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         null
-      }
-      case size => {
+      case size =>
 
         result
-      }
     }
   }
 

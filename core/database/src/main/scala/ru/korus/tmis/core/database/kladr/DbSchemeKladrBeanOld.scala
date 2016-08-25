@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database.kladr
 
-import grizzled.slf4j.Logging
+
 import javax.ejb.Stateless
 
 import javax.interceptor.Interceptors
@@ -15,7 +15,7 @@ import ru.korus.tmis.core.database.DbSchemeKladrBeanLocal
 
 class DbSchemeKladrBeanOld
   extends DbSchemeKladrBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "kladr")

@@ -4,7 +4,6 @@ import java.util
 import javax.ejb.Stateless
 import javax.persistence.{EntityManager, PersistenceContext}
 
-import grizzled.slf4j.Logging
 import ru.korus.tmis.auxiliary.FDSortingStruct
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data.{FlatDirectoryRequestData, FlatDirectoryRequestDataListFilter, QueryDataStructure}
@@ -15,7 +14,6 @@ import scala.collection.JavaConversions._
 
 @Stateless
 class DbFlatDirectoryBean extends DbFlatDirectoryBeanLocal
-with Logging
 with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -23,11 +21,9 @@ with I18nable {
 
   def getFlatDirectories(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, userData: AuthData) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[FlatDirectoryRequestDataListFilter]) {
-      filter.asInstanceOf[FlatDirectoryRequestDataListFilter].toQueryStructure
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case x: FlatDirectoryRequestDataListFilter => x.toQueryStructure
+      case _ => new QueryDataStructure()
     }
 
     val typed = em.createQuery(flatDirectoriesWithFilterQuery.format("fd", queryStr.query),
@@ -43,11 +39,9 @@ with I18nable {
 
   def getFlatDirectoriesWithFilterRecords(page: Int, limit: Int, sorting: java.util.LinkedHashMap[java.lang.Integer, java.lang.Integer], filter: Object, request: FlatDirectoryRequestData, userData: AuthData) = {
 
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[FlatDirectoryRequestDataListFilter]) {
-      filter.asInstanceOf[FlatDirectoryRequestDataListFilter].toQueryStructureForRecordsRequest
-    }
-    else {
-      new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case x: FlatDirectoryRequestDataListFilter => x.toQueryStructureForRecordsRequest
+      case _ =>new QueryDataStructure()
     }
 
     val query = flatDirectoryRecordsWithFilterQuery.format("fd, fdr, fv", queryStr.query)
@@ -57,7 +51,7 @@ with I18nable {
     }
     val res = typed.getResultList
 
-    var result = res.foldLeft(new java.util.LinkedHashMap[FlatDirectory, java.util.LinkedHashMap[FDRecord, java.util.LinkedList[FDFieldValue]]])(
+    val result = res.foldLeft(new java.util.LinkedHashMap[FlatDirectory, java.util.LinkedHashMap[FDRecord, java.util.LinkedList[FDFieldValue]]])(
       (map, a) => {
         if (!map.containsKey(a(0).asInstanceOf[FlatDirectory])) {
           val internalMap = new java.util.LinkedHashMap[FDRecord, java.util.LinkedList[FDFieldValue]]
@@ -89,7 +83,7 @@ with I18nable {
     var mainCount: Long = 0
     val begin: Int = (page - 1) * limit
     val end: Int = (page - 1) * limit + limit
-    var sortingResult = new java.util.LinkedHashMap[FlatDirectory, java.util.LinkedHashMap[FDRecord, java.util.LinkedList[FDFieldValue]]]
+    val sortingResult = new java.util.LinkedHashMap[FlatDirectory, java.util.LinkedHashMap[FDRecord, java.util.LinkedList[FDFieldValue]]]
 
     result.foreach(f => {
       mainCount += f._2.size()
@@ -104,7 +98,7 @@ with I18nable {
         } else {
           end
         }
-        var it: java.util.Iterator[FDRecord] = f._2.keySet().iterator()
+        val it: java.util.Iterator[FDRecord] = f._2.keySet().iterator()
         var pos = 0
 
         while (it.hasNext && pos < count) {

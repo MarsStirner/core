@@ -1,33 +1,32 @@
 package ru.korus.tmis.core.database
 
 import java.lang.Iterable
-import javax.interceptor.Interceptors
-import javax.ejb.Stateless
-import grizzled.slf4j.Logging
-import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.exception.NoSuchClientIntoleranceMedicamentException
 import java.util.Date
-import ru.korus.tmis.core.entity.model.{Staff, Patient, ClientIntoleranceMedicament}
-import scala.collection.JavaConversions._
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import javax.ejb.Stateless
+import javax.persistence.{EntityManager, PersistenceContext}
+
+import ru.korus.tmis.core.entity.model.{ClientIntoleranceMedicament, Patient, Staff}
+import ru.korus.tmis.core.exception.NoSuchClientIntoleranceMedicamentException
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.language.reflectiveCalls
 
 @Stateless
 class DbClientIntoleranceMedicamentBean
   extends DbClientIntoleranceMedicamentBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  val ClientIntoleranceMedicamentFindQuery = """
+  val ClientIntoleranceMedicamentFindQuery =
+    """
     SELECT d
     FROM
       ClientIntoleranceMedicament d
     WHERE
       d.id = :id
-                                             """
+    """
 
 
   def getAllClientIntoleranceMedicament(patientId: Int): Iterable[ClientIntoleranceMedicament] = {
@@ -41,18 +40,12 @@ class DbClientIntoleranceMedicamentBean
       .getResultList
 
     result.size match {
-      case 0 => {
-        throw new NoSuchClientIntoleranceMedicamentException(
-          ConfigManager.ErrorCodes.ClientIntoleranceMedicamentNotFound,
-          id,
-          i18n("error.ClientIntoleranceMedicamentNotFound").format(id))
-      }
-      case size => {
-        result.foreach(rbType => {
+      case 0 => throw new NoSuchClientIntoleranceMedicamentException(
+        ConfigManager.ErrorCodes.ClientIntoleranceMedicamentNotFound,
+        id,
+        i18n("error.ClientIntoleranceMedicamentNotFound").format(id))
 
-        })
-        result(0)
-      }
+      case _ => result.iterator().next()
     }
   }
 

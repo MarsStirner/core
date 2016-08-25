@@ -1,13 +1,11 @@
 package ru.korus.tmis.core.database;
 
-import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.TableCol;
 import ru.korus.tmis.core.entity.model.*;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
 import java.util.List;
-import java.util.Map;
 import java.util.Set;
 
 /**

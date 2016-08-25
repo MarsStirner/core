@@ -7,7 +7,7 @@ import common._
 import ru.korus.tmis.core.entity.model.RbPolicyType.InsuranceType
 import ru.korus.tmis.core.entity.model._
 
-import grizzled.slf4j.Logging
+
 import java.lang.{Double => JDouble}
 import javax.ejb.{EJB, Stateless}
 import javax.interceptor.Interceptors
@@ -28,7 +28,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class PatientBean
   extends PatientBeanLocal
-  with Logging
+
   with I18nable {
 
   type CA = CommonAttribute

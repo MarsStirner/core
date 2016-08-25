@@ -7,12 +7,12 @@ import javax.xml.soap.SOAPMessage
 import javax.xml.ws.handler.MessageContext
 import javax.xml.ws.handler.soap.{SOAPHandler, SOAPMessageContext}
 
-import grizzled.slf4j.Logging
+
 import ru.korus.tmis.scala.util.I18nable
 
 class ExceptionLoggingHandler
   extends SOAPHandler[SOAPMessageContext]
-  with Logging
+
   with I18nable {
 
   var msg: SOAPMessage = _

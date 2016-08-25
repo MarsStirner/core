@@ -1,7 +1,7 @@
 package ru.korus.tmis.laboratory.altey
 
 import javax.jws.{HandlerChain, WebService}
-import grizzled.slf4j.Logging
+
 import ru.korus.tmis.util.{CompileTimeConfigManager}
 import javax.ejb.EJB
 import ru.korus.tmis.laboratory.altey.business.AlteyBusinessBeanLocal

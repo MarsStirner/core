@@ -1,12 +1,10 @@
 package ru.korus.tmis.core.database.common
 
-import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model.{Event, Staff, EventPerson}
 import ru.korus.tmis.core.exception.CoreException
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.data.{QuotaTypesListRequestDataFilter, DictionaryListRequestDataFilter, QueryDataStructure}
-import javax.interceptor.Interceptors
+
 
 import javax.ejb.{EJB, Stateless}
 import java.util.Date
@@ -24,7 +22,6 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbEventPersonBean
   extends DbEventPersonBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -66,15 +63,8 @@ class DbEventPersonBean
 
     val result = query.getResultList
     result.size match {
-      case 0 => {  null
-      //  throw new CoreException(
-      //    ConfigManager.ErrorCodes.EventPersonNotFound,
-      //    i18n("error.eventPersonNotFound").format(eventId))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => null
+      case size => result.iterator.next()
     }
   }
 

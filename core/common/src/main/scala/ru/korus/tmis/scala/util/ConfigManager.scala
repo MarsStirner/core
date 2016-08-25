@@ -5,14 +5,14 @@ import java.text.SimpleDateFormat
 import java.util.ResourceBundle
 import javax.xml.bind.DatatypeConverter
 import javax.xml.namespace.QName
-import grizzled.slf4j.Logging
+import org.slf4j.{LoggerFactory, Logger}
 import ru.korus.tmis.util.reflect.Configuration
 import ru.korus.tmis.util.{Utf8ResourceBundleControl, CompileTimeConfigManager}
 import java.util
 
 
 object ConfigManager extends Configuration {
-
+  val logger:Logger = LoggerFactory.getLogger(this.getClass)
   /**
    * Формат даты по умолчанию
    */
@@ -474,7 +474,7 @@ object ConfigManager extends Configuration {
     )
   }
 
-  val Messages = new Logging {
+  val Messages = new Configuration {
     val bundle = ResourceBundle.getBundle("messages",
       Utf8ResourceBundleControl.Singleton)
 
@@ -488,14 +488,14 @@ object ConfigManager extends Configuration {
           else try {
             result.format(params: _*)
           } catch {
-            case e: Throwable => error("Could not format pattern " + msg + ". Using it as-is."); msg
+            case e: Throwable => logger.error("Could not format pattern " + msg + ". Using it as-is."); msg
           }
         }
       }
     }
   }
 
-  val RbCAPIds = new Logging {
+  val RbCAPIds = new Configuration {
     val bundle = ResourceBundle.getBundle("rbcap",
       Utf8ResourceBundleControl.Singleton)
 
@@ -506,7 +506,7 @@ object ConfigManager extends Configuration {
         else try {
           result.format(params: _*)
         } catch {
-          case e: Throwable => error("Could not format pattern " + msg + ". Using it as-is."); msg
+          case e: Throwable => logger.error("Could not format pattern " + msg + ". Using it as-is."); msg
         }
       }
     }

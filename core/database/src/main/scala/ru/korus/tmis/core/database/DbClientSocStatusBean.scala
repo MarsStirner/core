@@ -1,25 +1,21 @@
 package ru.korus.tmis.core.database
 
-import javax.interceptor.Interceptors
-import javax.ejb.Stateless
-import grizzled.slf4j.Logging
-import javax.persistence.PersistenceContext
-import javax.persistence.EntityManager
-import java.lang.Iterable
 import java.util.Date
-import javax.ejb.EJB
-import ru.korus.tmis.core.exception.NoSuchEntityException
-import ru.korus.tmis.core.entity.model._
-import fd.ClientSocStatus
-import scala.collection.JavaConversions._
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext}
+
 import ru.korus.tmis.core.data.DocumentContainer
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.entity.model.fd.ClientSocStatus
+import ru.korus.tmis.core.exception.NoSuchEntityException
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
+import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
 @Stateless
 class DbClientSocStatusBean
   extends DbClientSocStatusBeanLocal
-  with Logging
   with I18nable {
 
 
@@ -51,18 +47,12 @@ class DbClientSocStatusBean
       classOf[ClientSocStatus])
       .setParameter("id", id)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new NoSuchEntityException(
-          ConfigManager.ErrorCodes.ClientSocStatusNotFound,
-          id,
-          i18n("error.ClientSocStatusNotFound"))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => throw new NoSuchEntityException(
+        ConfigManager.ErrorCodes.ClientSocStatusNotFound,
+        id,
+        i18n("error.ClientSocStatusNotFound"))
+      case size => result.iterator.next
     }
   }
 
@@ -81,7 +71,7 @@ class DbClientSocStatusBean
     var cs: ClientSocStatus = null
     val now: Date = new Date
     if (id > 0) {
-      cs = getClientSocStatusById(id);
+      cs = getClientSocStatusById(id)
     } else {
       cs = new ClientSocStatus
       cs.setCreateDatetime(now)
@@ -106,7 +96,7 @@ class DbClientSocStatusBean
       cs.setEndDate(endDate)
     //}
 
-    if (document != null && document.getId() > 0) {
+    if (document != null && document.getId > 0) {
       var currentDocument = cs.getDocument
       //cs.setDocument(dbClientDocument.getClientDocumentById(documentId))
       currentDocument = dbClientDocument.insertOrUpdateClientDocument(
@@ -115,11 +105,11 @@ class DbClientSocStatusBean
         } else {
           0
         },
-        document.getId(), //тип документа (documentTypeId)
-        document.getComment(), //clientIdCard.getIssued(),
-        document.getNumber(), //clientIdCard.getNumber(),
-        document.getSeries(), //clientIdCard.getSeries(),
-        document.getDate(),
+        document.getId, //тип документа (documentTypeId)
+        document.getComment, //clientIdCard.getIssued(),
+        document.getNumber, //clientIdCard.getNumber(),
+        document.getSeries, //clientIdCard.getSeries(),
+        document.getDate,
         null,//endDate,
         patient,
         sessUser

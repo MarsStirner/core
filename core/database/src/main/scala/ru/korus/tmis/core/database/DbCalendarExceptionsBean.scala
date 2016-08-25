@@ -1,10 +1,7 @@
 package ru.korus.tmis.core.database
 
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import javax.interceptor.Interceptors
-import ru.korus.tmis.core.exception.CoreException
 import java.util.{Calendar, Date}
 import ru.korus.tmis.core.entity.model.CalendarExceptions
 import scala.collection.JavaConversions._
@@ -21,7 +18,6 @@ import ru.korus.tmis.scala.util.{CAPids, I18nable}
 
 @Stateless
 class DbCalendarExceptionsBean extends DbCalendarExceptionsBeanLocal
-    with Logging
     with CAPids
     with I18nable {
 
@@ -58,17 +54,9 @@ class DbCalendarExceptionsBean extends DbCalendarExceptionsBeanLocal
       .setParameter("year", year)
       .setParameter("formatDateWithoutYear", formatDateWithoutYear)
       .getResultList
-
     result.size match {
-      case 0 => {
-        //throw new CoreException(ConfigManager.ErrorCodes.DiagnosticNotFound,
-        //  i18n("error.diagnosticNotFound").format(id))
-        null
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => null
+      case size => result.iterator().next()
     }
   }
 
@@ -79,17 +67,9 @@ class DbCalendarExceptionsBean extends DbCalendarExceptionsBeanLocal
     val result =  em.createQuery(PerenosByDateQuery, classOf[CalendarExceptions])
       .setParameter("date", date)
       .getResultList
-
     result.size match {
-      case 0 => {
-        //throw new CoreException(ConfigManager.ErrorCodes.DiagnosticNotFound,
-        //  i18n("error.diagnosticNotFound").format(id))
-        null
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => null
+      case size => result.iterator().next()
     }
   }
 

@@ -1,6 +1,6 @@
 package ru.korus.tmis.laboratory.altey
 
-import grizzled.slf4j.Logging
+
 
 import javax.ejb.EJB
 import ru.korus.tmis.laboratory.altey.accept._

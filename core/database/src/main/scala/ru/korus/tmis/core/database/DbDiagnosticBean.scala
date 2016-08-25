@@ -1,19 +1,18 @@
 package ru.korus.tmis.core.database
 
 import java.lang.Boolean
-
-import common.{DbEventPersonBeanLocal, DbEventBeanLocal}
-
-import javax.ejb.{EJB, Stateless}
-import grizzled.slf4j.Logging
-import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.data.{DoctorContainer, IdNameContainer, TableValue, TableCol}
-import ru.korus.tmis.core.entity.model._
-import scala.collection.JavaConversions._
-import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
 import java.util.Date
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext}
+
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal
+import ru.korus.tmis.core.data.{DoctorContainer, IdNameContainer, TableCol, TableValue}
+import ru.korus.tmis.core.database.common.{DbEventBeanLocal, DbEventPersonBeanLocal}
+import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
+import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
 /**
@@ -22,7 +21,6 @@ import scala.language.reflectiveCalls
  */
 @Stateless
 class DbDiagnosticBean  extends DbDiagnosticBeanLocal
-                        with Logging
                         with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -57,16 +55,10 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     val result =  em.createQuery(DiagnosticByIdQuery, classOf[Diagnostic])
                     .setParameter("id", id)
                     .getResultList
-
     result.size match {
-      case 0 => {
-        throw new CoreException(ConfigManager.ErrorCodes.DiagnosticNotFound,
-          i18n("error.diagnosticNotFound").format(id))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 =>  throw new CoreException(ConfigManager.ErrorCodes.DiagnosticNotFound,
+        i18n("error.diagnosticNotFound").format(id))
+      case size => result.iterator.next
     }
   }
 
@@ -126,7 +118,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
         diagnostic.setStage(dbRbDiseaseStageBean.getDiseaseStageById(diseaseStageId))
       }
       val speciality: Speciality = if (staff.getSpeciality == null) {
-        em.find(classOf[Speciality], 1);
+        em.find(classOf[Speciality], 1)
       } else {
         staff.getSpeciality
       }
@@ -246,7 +238,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       col.values.add(new TableValue(if (d.getAcheResult == null) null else new IdNameContainer(d.getAcheResult.getId, d.getAcheResult.getCode, d.getAcheResult.getName),
         "rbAcheResult"))
       col.values.add(new TableValue(if (diagnosis.getPerson == null) null else new DoctorContainer(diagnosis.getPerson)))
-      col.values.add(new TableValue((d.getNotes)))
+      col.values.add(new TableValue(d.getNotes))
       return col
     }
     null
@@ -254,7 +246,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
 
   override def insertOrUpdateDiagnostic(ap: ActionProperty, tableCol: TableCol, staff: Staff): Diagnostic = {
     val now = new Date()
-    while(tableCol.getValues.size() < 7) tableCol.getValues.add(new TableValue(null, ""));
+    while(tableCol.getValues.size() < 7) tableCol.getValues.add(new TableValue(null, ""))
     val (diagnostic: Diagnostic, save) = if(tableCol.getId == null) {
       (initDiagnostic(staff, now, new Diagnostic(dbDiagnosisBean.createDiagnosis(ap, tableCol, staff))), saveNewDiagnostic(_))
     } else {
@@ -305,7 +297,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     diagnostic.setCharacter(character)
     diagnostic.setStage(stage)
     val speciality: Speciality = if (staff.getSpeciality == null) {
-      em.find(classOf[Speciality], 1);
+      em.find(classOf[Speciality], 1)
     } else {
       staff.getSpeciality
     }

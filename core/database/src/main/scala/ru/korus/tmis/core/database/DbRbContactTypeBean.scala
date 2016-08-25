@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import javax.ejb.Stateless
 
 import javax.interceptor.Interceptors
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.exception.NoSuchRbContactTypeException
 import ru.korus.tmis.core.entity.model.{ClientContact, RbContactType}
@@ -18,7 +18,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbRbContactTypeBean
   extends DbRbContactTypeBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

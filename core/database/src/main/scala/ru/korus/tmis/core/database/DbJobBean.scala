@@ -1,17 +1,15 @@
 package ru.korus.tmis.core.database
 
-import scala.collection.JavaConversions._
-import javax.interceptor.Interceptors
-
+import java.util.Date
 import javax.ejb.{EJB, Stateless}
-import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.exception.CoreException
-import ru.korus.tmis.core.entity.model.{JobTicket, OrgStructure, Action, Job}
-import java.util.{Calendar, Date}
-import java.text.SimpleDateFormat
-import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
+
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
+import ru.korus.tmis.core.entity.model.{Action, Job, OrgStructure}
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.scala.util.{CAPids, ConfigManager, I18nable}
+
+import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
 /**
@@ -21,7 +19,6 @@ import scala.language.reflectiveCalls
  */
 @Stateless
 class DbJobBean extends DbJobBeanLocal
-                with Logging
                 with I18nable
                 with CAPids {
 
@@ -61,17 +58,11 @@ class DbJobBean extends DbJobBeanLocal
     val result = em.createQuery(JobByIdQuery, classOf[Job])
       .setParameter("id", id)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new CoreException(
-          ConfigManager.ErrorCodes.JobNotFound,
-          i18n("error.jobNotFound").format(id))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => throw new CoreException(
+        ConfigManager.ErrorCodes.JobNotFound,
+        i18n("error.jobNotFound").format(id))
+      case size => result.iterator.next
     }
   }
 

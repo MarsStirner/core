@@ -193,13 +193,10 @@ public class LisInnovaBean {
         }
         // DepartmentName (string) -- название подразделения - отделение
         // DepartmentCode (string) -- уникальный код подразделения (отделения)
-        try {
-            final OrgStructure department = e.getOrgStructure() != null ? e.getOrgStructure() : eventBean.getOrgStructureForEvent(e.getId());
-            result.setOrderDepartmentMisId(of.createDiagnosticRequestInfoOrderDepartmentMisId(String.valueOf(department.getId())));
-            result.setOrderDepartmentName(of.createDiagnosticRequestInfoOrderDepartmentName(department.getName()));
-        } catch (CoreException ex) {
-            log.error("#{} Handled Exception while getting OrgStructure for Event[{}]: {}", logNumber, e.getId(), ex.getMessage());
-        }
+        final OrgStructure department = eventBean.getOrgStructureForEvent(e);
+        result.setOrderDepartmentMisId(of.createDiagnosticRequestInfoOrderDepartmentMisId(String.valueOf(department.getId())));
+        result.setOrderDepartmentName(of.createDiagnosticRequestInfoOrderDepartmentName(department.getName()));
+
         // Comment (string) (необязательно) – произвольный текстовый комментарий к направлению
         result.setOrderComment(of.createDiagnosticRequestInfoOrderComment(ttj.getNote()));
         // TODO Врач необходимо будет согласовать перенос этого внутрь OrderInfo, т.к. должно браться из Action.assgner

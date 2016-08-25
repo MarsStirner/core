@@ -2,20 +2,20 @@ package ru.korus.tmis.core.entity.model
 
 import ru.korus.tmis.core.data.{TableCol, CommonAttribute}
 
-import grizzled.slf4j.Logging
 import java.lang.Boolean
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.{StringId, ConfigManager}
 import scala.language.reflectiveCalls
 import scala.collection.JavaConversions._
+import org.slf4j.{LoggerFactory, Logger}
 
 class ActionPropertyWrapper(ap: ActionProperty,
                             apValueConverter: (ActionPropertyType, java.util.List[APValue]) => java.util.List[TableCol],
                             apScopeConverter: ActionPropertyType => String,
                             apColTypeConverter: ActionPropertyType => java.util.List[String])
-  extends Logging {
+  {
 
-
+  val logger:Logger = LoggerFactory.getLogger(this.getClass)
   val APWI = ConfigManager.APWI.immutable
 
   def get(apvs: List[APValue], names: List[StringId]) = {
@@ -81,7 +81,7 @@ class ActionPropertyWrapper(ap: ActionProperty,
     val scope = apScopeConverter(apt)
     val tableColTypes = apColTypeConverter(apt)
     val tableValue: java.util.List[TableCol] =
-      if (("Table".equals(typeName) || "Diagnosis".equals(typeName))) {
+      if ("Table".equals(typeName) || "Diagnosis".equals(typeName)) {
         apValueConverter(apt, apvs)
       } else {
         null
@@ -110,13 +110,13 @@ class ActionPropertyWrapper(ap: ActionProperty,
             this.ap.setIsAssigned(Boolean.parseBoolean(value))
           } catch {
             case ex: NumberFormatException => {
-              error("Cannot parse <" + value + "> as boolean")
+              logger.error("Cannot parse <" + value + "> as boolean")
             }
           }
         }
         case APWI.Value => {}
         case _ => {
-          debug("APW: Cannot set <" + name + "> to <" + value + ">")
+          logger.debug("APW: Cannot set <" + name + "> to <" + value + ">")
         }
       }
     })

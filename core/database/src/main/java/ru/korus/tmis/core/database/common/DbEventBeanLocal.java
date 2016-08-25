@@ -44,6 +44,8 @@ public interface DbEventBeanLocal {
 
     OrgStructure getOrgStructureForEvent(int eventId);
 
+    OrgStructure getOrgStructureForEvent(Event event);
+
     Event createEvent(int patientId, int appealTypeId, Date begDate, Date endDate, int contractId, RbResult result, RbAcheResult acheResult, Staff execPerson, Staff createPerson) throws CoreException;
 
     Event createEvent(Patient patient, EventType eventType, Staff person, Date begDate, Date endDate) throws CoreException;

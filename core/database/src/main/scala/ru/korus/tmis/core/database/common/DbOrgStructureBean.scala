@@ -1,8 +1,8 @@
 package ru.korus.tmis.core.database.common
 
+import org.slf4j.{LoggerFactory, Logger}
 import ru.korus.tmis.core.entity.model.{OrgStructureAddress, Staff, OrgStructure, ActionType}
 
-import grizzled.slf4j.Logging
 import javax.ejb.Stateless
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -18,8 +18,9 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbOrgStructureBean
   extends DbOrgStructureBeanLocal
-  with Logging
   with I18nable {
+
+  val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -39,21 +40,13 @@ class DbOrgStructureBean
       classOf[OrgStructure])
       .setParameter("id", id)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new CoreException(
-          ConfigManager.ErrorCodes.ClientQuotingNotFound,
-          i18n("error.orgStructureNotFound").format(id))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => throw new CoreException(ConfigManager.ErrorCodes.ClientQuotingNotFound, i18n("error.orgStructureNotFound").format(id))
+      case size => result.iterator.next
     }
   }
 
-  def getAllOrgStructures() = {
+  def getAllOrgStructures = {
     em.createNamedQuery("OrgStructure.findAll", classOf[OrgStructure]).getResultList
   }
 
@@ -68,9 +61,10 @@ class DbOrgStructureBean
   }
 
   def getCountAllOrgStructuresWithFilter(filter: Object) = {
-    val queryStr: QueryDataStructure = if (filter.isInstanceOf[DepartmentsDataFilter]) {
-      filter.asInstanceOf[DepartmentsDataFilter].toQueryStructure()
-    } else new QueryDataStructure()
+    val queryStr: QueryDataStructure = filter match {
+      case x: DepartmentsDataFilter => x.toQueryStructure()
+      case _ => new QueryDataStructure()
+    }
 
     val typed = em.createQuery(OrgStructuresAndCountRecordsWithFilterQuery.format(
       "count(os)",
@@ -84,7 +78,7 @@ class DbOrgStructureBean
 
   def getAllOrgStructuresByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter) = {
 
-    val queryStr: QueryDataStructure = filter.toQueryStructure()
+    val queryStr: QueryDataStructure = filter.toQueryStructure
 
     val typed = em.createQuery(OrgStructuresAndCountRecordsWithFilterQuery.format("os", queryStr.query, sorting), classOf[OrgStructure])
                   .setMaxResults(limit)
@@ -119,7 +113,7 @@ class DbOrgStructureBean
     val infisCodeIsDefined: Boolean = infisCode.length > 0
     val parentIdIsDefined: Boolean = parentId.intValue() > 0
 
-    allEntitiesList.map((current: OrgStructure) => {
+    allEntitiesList.foreach((current: OrgStructure) => {
       if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL &&
         (current.getParentId == parentId || (!parentIdIsDefined && current.getParentId == null)) &&
         (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))) {
@@ -135,7 +129,7 @@ class DbOrgStructureBean
       while (parentIdsSet.size > previousSize && currentDeep < MAX_DEEP) {
         //Get childrens from parentIdsSet
         previousSize = parentIdsSet.size
-        allEntitiesList.map((current: OrgStructure) => {
+        allEntitiesList.foreach((current: OrgStructure) => {
           if (!current.getDeleted && current.getAvailableForExternal == AVAILABLE_FOR_EXTERNAL && parentIdsSet(current.getParentId)
             && (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))
           ) {
@@ -146,8 +140,8 @@ class DbOrgStructureBean
         currentDeep += 1
       }
     }
-    if (result.size == 0) {
-      throw new CoreException("Not Found OrgStructures");
+    if (result.isEmpty) {
+      throw new CoreException("Not Found OrgStructures")
     }
     result.toList
   }
@@ -180,12 +174,9 @@ class DbOrgStructureBean
         organisationIDList.add(current.getId)
       })
     } catch {
-      case coreExc: CoreException => {
-        logger.warn("Recursive search is not found any children for parentId=" + orgStructureId);
-      }
+      case coreExc: CoreException => logger.warn("Recursive search is not found any children for parentId=" + orgStructureId)
     }
-    em.createQuery(OrgStructureGetPersonnel, classOf[Staff]).setParameter("ORGSTRUCTUREIDLIST", organisationIDList)
-      .getResultList
+    em.createQuery(OrgStructureGetPersonnel, classOf[Staff]).setParameter("ORGSTRUCTUREIDLIST", organisationIDList).getResultList
   }
 
   val OrgStructureGetPersonnel = """
@@ -254,7 +245,7 @@ class DbOrgStructureBean
     val infisCodeIsDefined: Boolean = infisCode.length > 0
     val parentIdIsDefined: Boolean = parentId.intValue() > 0
 
-    allEntitiesList.map((current: OrgStructure) => {
+    allEntitiesList.foreach((current: OrgStructure) => {
       if (!current.getDeleted &&
         (current.getParentId == parentId || (!parentIdIsDefined && current.getParentId == null)) &&
         (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))) {
@@ -270,7 +261,7 @@ class DbOrgStructureBean
       while (parentIdsSet.size > previousSize && currentDeep < MAX_DEEP) {
         //Get childrens from parentIdsSet
         previousSize = parentIdsSet.size
-        allEntitiesList.map((current: OrgStructure) => {
+        allEntitiesList.foreach((current: OrgStructure) => {
           if (!current.getDeleted  && parentIdsSet(current.getParentId)
             && (!infisCodeIsDefined || (current.getOrganization != null && current.getOrganization.getInfisCode == infisCode))
           ) {
@@ -281,8 +272,8 @@ class DbOrgStructureBean
         currentDeep += 1
       }
     }
-    if (result.size == 0) {
-      throw new CoreException("Not Found OrgStructures");
+    if (result.isEmpty) {
+      throw new CoreException("Not Found OrgStructures")
     }
     result.toList
   }

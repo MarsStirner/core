@@ -4,7 +4,7 @@ import java.{util, lang}
 import javax.interceptor.Interceptors
 
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import scala.collection.JavaConversions._
@@ -21,7 +21,7 @@ import ru.korus.tmis.core.entity.model.{OrgStructure, Event}
 
 @Stateless
 class DbRbFinanceBean   extends DbRbFinanceBeanLocal
-                        with Logging
+
                         with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

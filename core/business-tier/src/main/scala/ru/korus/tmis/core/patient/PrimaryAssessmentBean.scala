@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.patient
 
-import grizzled.slf4j.Logging
+
 import javax.interceptor.Interceptors
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
@@ -18,7 +18,7 @@ import scala.collection.JavaConverters._
 @Stateless
 class PrimaryAssessmentBean
   extends PrimaryAssessmentBeanLocal
-  with Logging
+
   with I18nable {
 
   val AWI = ConfigManager.AWI

@@ -1,21 +1,18 @@
 package ru.korus.tmis.core.database
 
-import common.{DbRbBloodTypeBeanLocal, DbPatientBeanLocal}
-import javax.interceptor.Interceptors
-import javax.ejb.{EJB, Stateless}
-import grizzled.slf4j.Logging
-import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.entity.model.{Staff, BloodHistory}
-import scala.collection.JavaConversions._
-import ru.korus.tmis.core.auth.AuthData
-import ru.korus.tmis.core.exception.CoreException
 import java.util.Date
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext}
+
+import ru.korus.tmis.core.database.common.{DbPatientBeanLocal, DbRbBloodTypeBeanLocal}
+import ru.korus.tmis.core.entity.model.{BloodHistory, Staff}
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.language.reflectiveCalls
 
 @Stateless
 class DbBloodHistoryBean extends DbBloodHistoryBeanLocal
-                            with Logging
                             with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -73,9 +70,7 @@ class DbBloodHistoryBean extends DbBloodHistoryBeanLocal
                                      "Не задан пациент, которому назначается группа крови."))
        }
      }  catch {
-       case e: Exception => {
-         throw new CoreException(-1, e.getMessage())
-       }
+       case e: Exception => throw new CoreException(-1, e.getMessage)
      }
   }
 }

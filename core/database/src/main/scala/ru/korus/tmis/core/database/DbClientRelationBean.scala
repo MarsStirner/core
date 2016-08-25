@@ -1,24 +1,23 @@
 package ru.korus.tmis.core.database
 
-import common.DbPatientBeanLocal
-import grizzled.slf4j.Logging
-import javax.interceptor.Interceptors
-import javax.persistence.{EntityManager, PersistenceContext}
-import javax.ejb.{EJB, Stateless}
 import java.lang.Iterable
 import java.util.Date
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext}
+
+import ru.korus.tmis.core.data.ClientContactContainer
+import ru.korus.tmis.core.database.common.DbPatientBeanLocal
+import ru.korus.tmis.core.entity.model.{BloodKell, ClientRelation, Patient, Staff}
 import ru.korus.tmis.core.exception.NoSuchClientRelationException
-import ru.korus.tmis.core.data.{RelationEntryContainer, ClientContactContainer}
-import ru.korus.tmis.core.entity.model.{BloodKell, Staff, Patient, ClientRelation}
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.collection.JavaConversions._
-import scala.util.control.Breaks._
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
+import scala.util.control.Breaks._
 
 @Stateless
 class DbClientRelationBean
   extends DbClientRelationBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -33,21 +32,23 @@ class DbClientRelationBean
   @EJB
   var dbClientContact: DbClientContactBeanLocal = _
 
-  val ClientRelationFindQuery = """
+  val ClientRelationFindQuery =
+    """
     SELECT d
     FROM
       ClientRelation d
     WHERE
       d.id = :id
-                                """
+    """
 
-  val ClientRelationFindByRelativeQuery = """
+  val ClientRelationFindByRelativeQuery =
+    """
     SELECT d
     FROM
       ClientRelation d
     WHERE
       d.relative.id = :id
-                                          """
+    """
 
 
   def getAllClientRelations(patientId: Int): java.util.List[ClientRelation] = {
@@ -59,18 +60,9 @@ class DbClientRelationBean
       classOf[ClientRelation])
       .setParameter("id", id)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new NoSuchClientRelationException(
-          ConfigManager.ErrorCodes.ClientRelationNotFound,
-          id,
-          i18n("error.clientRelationNotFound").format(id))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => throw new NoSuchClientRelationException(ConfigManager.ErrorCodes.ClientRelationNotFound, id, i18n("error.clientRelationNotFound").format(id))
+      case size => result.iterator.next
     }
   }
 
@@ -79,18 +71,9 @@ class DbClientRelationBean
       classOf[ClientRelation])
       .setParameter("id", id)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new NoSuchClientRelationException(
-          ConfigManager.ErrorCodes.ClientRelationNotFound,
-          id,
-          i18n("error.clientRelationNotFound").format(id))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => throw new NoSuchClientRelationException(ConfigManager.ErrorCodes.ClientRelationNotFound, id, i18n("error.clientRelationNotFound").format(id))
+      case size => result.iterator.next
     }
   }
 
@@ -121,7 +104,7 @@ class DbClientRelationBean
       if (id < 1) {
         -1
       } else {
-        d.getRelative().getId().intValue()
+        d.getRelative.getId.intValue()
       },
       firstName,
       middleName,
@@ -144,26 +127,26 @@ class DbClientRelationBean
     //2. обновляем контакты родственника
     var set = Set.empty[Int]
     val clientContacts = contacts
-    val patientContacts = relative.getActiveClientContacts() //relativeContacts
+    val patientContacts = relative.getActiveClientContacts //relativeContacts
     patientContacts.foreach(
       (serverContact) => {
         val result = clientContacts.find {
-          element => element.getId() == serverContact.getId().intValue()
+          element => element.getId == serverContact.getId.intValue()
         }
-        val clientContact = result.getOrElse(null)
+        val clientContact = result.orNull
         if (clientContact != null) {
-          set = set + clientContact.getId()
+          set = set + clientContact.getId
           var tempServContact = serverContact
           tempServContact = dbClientContact.insertOrUpdateClientContact(
-            clientContact.getId(),
-            clientContact.getTypeId(),
-            clientContact.getNumber(),
-            clientContact.getComment(),
+            clientContact.getId,
+            clientContact.getTypeId,
+            clientContact.getNumber,
+            clientContact.getComment,
             relative,
             null
           )
         } else {
-          dbClientContact.deleteClientContact(serverContact.getId().intValue(), null)
+          dbClientContact.deleteClientContact(serverContact.getId.intValue(), null)
         }
       }
     )
@@ -171,18 +154,18 @@ class DbClientRelationBean
       var j = 0
       breakable {
         set.foreach(i => {
-          if (i == clientContact.getId()) {
+          if (i == clientContact.getId) {
             j = j + 1
-            break
+            break()
           }
         })
       }
       if (j == 0) {
         dbClientContact.insertOrUpdateClientContact(
-          clientContact.getId(),
-          clientContact.getTypeId(),
-          clientContact.getNumber(),
-          clientContact.getComment(),
+          clientContact.getId,
+          clientContact.getTypeId,
+          clientContact.getNumber,
+          clientContact.getComment,
           relative,
           null
         )
@@ -198,7 +181,7 @@ class DbClientRelationBean
       //(d.getRelative() == null) {
       d.setRelative(relative)
     }
-    if (d.getPatient() == null) {
+    if (d.getPatient == null) {
       d.setPatient(patient)
     }
 
@@ -228,7 +211,7 @@ class DbClientRelationBean
       d.setRelative(relative)
     }
 
-    if (d.getPatient() == null) {
+    if (d.getPatient == null) {
       d.setPatient(patient)
     }
 

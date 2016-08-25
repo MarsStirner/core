@@ -2,8 +2,6 @@ package ru.korus.tmis.core.database
 
 
 import java.util
-
-import grizzled.slf4j.Logging
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.ejb.{EJB, Stateless}
 import ru.korus.tmis.core.exception.NoSuchClientContactException
@@ -12,12 +10,10 @@ import java.util.Date
 import java.lang.Iterable
 
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import scala.language.reflectiveCalls
 
 @Stateless
 class DbClientContactBean
   extends DbClientContactBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

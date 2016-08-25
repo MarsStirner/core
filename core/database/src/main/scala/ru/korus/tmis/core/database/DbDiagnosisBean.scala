@@ -4,7 +4,6 @@ import java.util.Date
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
 
-import grizzled.slf4j.Logging
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import ru.korus.tmis.core.data.TableCol
 import ru.korus.tmis.core.database.common.{DbEventPersonBeanLocal, DbPatientBeanLocal}
@@ -20,7 +19,6 @@ import scala.language.reflectiveCalls
  */
 @Stateless
 class DbDiagnosisBean extends DbDiagnosisBeanLocal
-with Logging
 with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

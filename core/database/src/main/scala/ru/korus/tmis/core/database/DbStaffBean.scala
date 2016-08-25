@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import ru.korus.tmis.core.exception.{CoreException, NoSuchUserException}
 
 
-import grizzled.slf4j.Logging
+
 import javax.ejb.Stateless
 import scala.collection.JavaConversions._
 import java.util.Date
@@ -21,7 +21,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbStaffBean
   extends DbStaffBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

@@ -1,6 +1,6 @@
 package ru.korus.tmis.core.database.finance
 
-import grizzled.slf4j.Logging
+
 import ru.korus.tmis.scala.util.I18nable
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.entity.model._
@@ -15,7 +15,6 @@ import javax.ejb.Stateless
  */
 @Stateless
 class DbEventPayment extends DbEventPaymentLocal
-with Logging
 with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

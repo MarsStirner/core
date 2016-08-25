@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import javax.interceptor.Interceptors
 
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
+
 import javax.persistence.{EntityManager, PersistenceContext}
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import scala.collection.JavaConversions._
@@ -24,7 +24,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbRbQuotaStatusBean
   extends DbRbQuotaStatusBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

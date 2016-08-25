@@ -1,18 +1,18 @@
 package ru.korus.tmis.core.database.common
 
 
+import java.util
+
 import ru.korus.tmis.core.entity.model.ActionPropertyType
 
-import grizzled.slf4j.Logging
+
 import java.util.{Collections, HashSet}
 import javax.ejb.Stateless
-import javax.interceptor.Interceptors
 import javax.persistence.{TypedQuery, PersistenceContext, EntityManager}
 
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.{ActionType, ActionPropertyType}
-import ru.korus.tmis.core.data.{QueryDataStructure, DictionaryListRequestDataFilter}
-import ru.korus.tmis.auxiliary.AuxiliaryQuickSort
+
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.I18nable
 import scala.language.reflectiveCalls
@@ -21,7 +21,6 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbActionPropertyTypeBean
   extends DbActionPropertyTypeBeanLocal
-  with Logging
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -42,34 +41,34 @@ class DbActionPropertyTypeBean
     apt
   }
 
-  def getDepartmentAPT() = {
+  def getDepartmentAPT = {
     getAptByName(i18n("db.apt.departmentName"))
   }
 
-  def getHospitalBedAPT() = {
+  def getHospitalBedAPT = {
     getAptByName(i18n("db.apt.hospitalBedName"))
   }
 
-  def getAnamnesisAPT() = {
+  def getAnamnesisAPT = {
     getAptByNameAndDename(i18n("db.apt.anamnesisName"),
       i18n("db.apt.anamnesisDename"),
       i18n("db.apt.allergoanamnesisName"))
   }
 
-  def getAllergoanamnesisAPT() = {
+  def getAllergoanamnesisAPT = {
     getAptByName(i18n("db.apt.allergoanamnesisName"))
   }
 
-  def getDiagnosisAPT() = {
+  def getDiagnosisAPT = {
     getAptByNameAndName(i18n("db.apt.diagnosisName01"),
       i18n("db.apt.diagnosisName02"))
   }
 
-  def getDrugNomenAPT() = {
+  def getDrugNomenAPT = {
     getAptByName(i18n("db.apt.drugName"))
   }
 
-  def getDosageAPT() = {
+  def getDosageAPT = {
     getAptByName(i18n("db.apt.dosageName"))
   }
 
@@ -104,7 +103,7 @@ class DbActionPropertyTypeBean
 
     result.size match {
       case 0 => Collections.emptySet[ActionPropertyType]
-      case size => new HashSet[ActionPropertyType](result)
+      case size => new util.HashSet[ActionPropertyType](result)
     }
   }
 
@@ -139,8 +138,8 @@ class DbActionPropertyTypeBean
 
   def getActionPropertyTypeValueDomainsWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
 
-    val queryStr = filter.toQueryStructure()
-    if (queryStr.data.size() > 0 || queryStr.query.size > 0) {
+    val queryStr = filter.toQueryStructure
+    if (queryStr.data.size() > 0 || queryStr.query.nonEmpty) {
       if (queryStr.query.indexOf("AND ") == 0) {
         queryStr.query = "WHERE " + queryStr.query.substring("AND ".length())
       }
@@ -155,9 +154,7 @@ class DbActionPropertyTypeBean
     val result = typed.getResultList
 
     result.size match {
-      case 0 => {
-        null
-      }
+      case 0 => null
       case size => {
         val list = new java.util.LinkedList[Object]
         var str = result.iterator().next()
@@ -165,7 +162,7 @@ class DbActionPropertyTypeBean
         var flgBegin = false
         var pos = -1
 
-        while (str.size > 0 && str.indexOf("'") >= 0) {
+        while (str.nonEmpty && str.indexOf("'") >= 0) {
           pos = str.indexOf("'")
           if (!flgBegin) {
             flgBegin = true
@@ -273,19 +270,15 @@ class DbActionPropertyTypeBean
                                                       actionTypeId: Int,
                                                       code: String,
                                                       deleted: Boolean): ActionPropertyType = {
-    val resultList = em.createQuery(getActionPropertyTypeByActionTypeIdAndTypeCodeQuery, classOf[ActionPropertyType])
+    val result = em.createQuery(getActionPropertyTypeByActionTypeIdAndTypeCodeQuery, classOf[ActionPropertyType])
       .setParameter("ACTIONTYPEID", actionTypeId)
       .setParameter("CODE", code)
       .setParameter("DELETED", deleted)
       .setMaxResults(1)
       .getResultList
-    resultList.size match {
-      case 0 => {
-        null
-      }
-      case size => {
-        resultList.get(0)
-      }
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next
     }
   }
 }

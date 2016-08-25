@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import javax.ejb.Stateless
 import javax.persistence.{EntityManager, PersistenceContext}
 
-import grizzled.slf4j.Logging
+
 import ru.korus.tmis.core.entity.model.RbDiagnosisType
 import ru.korus.tmis.core.exception.NoSuchRbDiagnosisTypeException
 import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
@@ -18,7 +18,6 @@ import scala.language.reflectiveCalls
 
 @Stateless
 class DbRbDiagnosisTypeBean extends DbRbDiagnosisTypeBeanLocal
-with Logging
 with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -39,17 +38,11 @@ with I18nable {
     val result = em.createNamedQuery("RbDiagnosisType.findByFlatCode", classOf[RbDiagnosisType])
       .setParameter("flatCode", flatCode)
       .getResultList
-
     result.size match {
-      case 0 => {
-        throw new NoSuchRbDiagnosisTypeException(ConfigManager.ErrorCodes.RbDiagnosisTypeNotFound,
-          flatCode,
-          i18n("error.rbDiagnosisTypeNotFound").format("flatCode: %s".format(flatCode)))
-      }
-      case size => {
-
-        result(0)
-      }
+      case 0 => throw new NoSuchRbDiagnosisTypeException(ConfigManager.ErrorCodes.RbDiagnosisTypeNotFound,
+        flatCode,
+        i18n("error.rbDiagnosisTypeNotFound").format("flatCode: %s".format(flatCode)))
+      case size => result.iterator.next
     }
   }
 

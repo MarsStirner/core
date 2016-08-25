@@ -3,7 +3,7 @@ package ru.korus.tmis.core.database
 import ru.korus.tmis.core.entity.model.RbTempInvalidDocument
 import javax.interceptor.Interceptors
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
+
 
 import javax.persistence.PersistenceContext
 import javax.persistence.EntityManager
@@ -16,7 +16,7 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbRbTempInvalidDocumentBean
   extends DbRbTempInvalidDocumentBeanLocal
-  with Logging
+
   with I18nable {
 
   @PersistenceContext(unitName = "s11r64")

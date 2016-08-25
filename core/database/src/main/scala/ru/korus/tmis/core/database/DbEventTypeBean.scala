@@ -1,21 +1,20 @@
 package ru.korus.tmis.core.database
 
-import javax.persistence.{PersistenceContext, EntityManager}
 import javax.ejb.Stateless
-import grizzled.slf4j.Logging
-import ru.korus.tmis.core.data.{EventTypesListRequestDataFilter, QueryDataStructure}
-import ru.korus.tmis.core.entity.model.{OrgStructure, EventType}
-import scala.collection.JavaConversions._
+import javax.persistence.{EntityManager, PersistenceContext}
+
+import ru.korus.tmis.core.entity.model.{EventType, OrgStructure}
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.ListDataFilter
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
+import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
 @Stateless
 class DbEventTypeBean
   extends DbEventTypeBeanLocal
-  with I18nable
-  with Logging {
+  with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -52,7 +51,7 @@ class DbEventTypeBean
 
   def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
 
-    val queryStr = filter.toQueryStructure()
+    val queryStr = filter.toQueryStructure
 
     val typed = em.createQuery(EventTypesByRequestTypeIdAndFinanceIdQuery.format("et", queryStr.query, sorting), classOf[EventType])
     if (queryStr.data.size() > 0) queryStr.data.foreach(qdp => typed.setParameter(qdp.name, qdp.value))
@@ -60,7 +59,7 @@ class DbEventTypeBean
 
 
     //Перепишем общее количество записей для запроса
-    if (records!=null) records(result.size)
+    if (records!=null) records(result.size.toLong)
 
     //проведем  разбиение на страницы вручную (необходимо чтобы не использовать отдельный запрос на recordcounts)
     if (page>=0 && limit>0) {

@@ -1,18 +1,16 @@
 package ru.korus.tmis.core.database
 
-import javax.persistence.{PersistenceContext, EntityManager}
-import grizzled.slf4j.Logging
+import javax.ejb.Stateless
+import javax.persistence.{EntityManager, PersistenceContext}
 
-import javax.interceptor.Interceptors
 import ru.korus.tmis.core.entity.model.fd.FDRecord
-import scala.collection.JavaConversions._
-import javax.ejb.{TransactionAttributeType, TransactionAttribute, Stateless}
 import ru.korus.tmis.scala.util.I18nable
+
+import scala.collection.JavaConversions._
 
 
 @Stateless
 class DbFDRecordBean extends DbFDRecordBeanLocal
-with Logging
 with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
@@ -22,15 +20,9 @@ with I18nable {
     val result = em.createQuery(fdRecordByIdQuery, classOf[FDRecord])
       .setParameter("id", recordId)
       .getResultList
-
-    result.size() match {
-      case 0 => {
-        null
-      }
-      case size => {
-        result.foreach(fdr => fdr)
-        result.get(0)
-      }
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next
     }
   }
 
@@ -38,15 +30,9 @@ with I18nable {
     val result = em.createQuery(fdRecordByIdQuery, classOf[FDRecord])
       .setParameter("id", recordId)
       .getResultList
-
-    result.size() match {
-      case 0 => {
-        null
-      }
-      case size => {
-
-        result.get(0)
-      }
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next
     }
   }
 
@@ -79,15 +65,5 @@ with I18nable {
       fdfv.record.id = fdr.id
     AND
       et.name = fdfv.value
-                                          """
-  /*
-    SELECT Max(et.id)
-  FROM
-    EventType et,
-    FDFieldValue fdfv
-  WHERE
-    fdfv.pk.fdRecord.id = '%s'
-  AND
-    et.code = fdfv.value
-   */
+  """
 }

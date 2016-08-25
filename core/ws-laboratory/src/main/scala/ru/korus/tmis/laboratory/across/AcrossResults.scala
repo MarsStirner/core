@@ -1,6 +1,6 @@
 package ru.korus.tmis.laboratory.across
 
-import grizzled.slf4j.Logging
+
 import ru.korus.tmis.util.{CompileTimeConfigManager}
 import ru.korus.tmis.scala.util.{Types, General, I18nable}
 import Types.{JList, JLinked, JString, JBoolean, JInteger}

@@ -1,12 +1,10 @@
 package ru.korus.tmis.core.database.common
 
 import java.lang.{Double => JDouble}
-import java.util.{Date, List}
-import java.{util => ju}
+import java.util.Date
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TemporalType}
 
-import grizzled.slf4j.Logging
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database.bak.BakDiagnosis
 import ru.korus.tmis.core.entity.model._
@@ -26,7 +24,6 @@ import scala.language.reflectiveCalls
 //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 class DbCustomQueryBean
   extends DbCustomQueryLocal
-  with Logging
   with I18nable
   with CAPids {
 
@@ -94,7 +91,7 @@ class DbCustomQueryBean
         i18n("db.apt.moving.codes.hospOrgStruct"),
         sorting)
 
-    val typedLastMoves = em.createQuery(queryLastMovesByEvents, classOf[List[Integer]])
+    val typedLastMoves = em.createQuery(queryLastMovesByEvents, classOf[java.util.List[Integer]])
     typedLastMoves.setParameter("flatCodes", asJavaCollection(Set(i18n("db.action.admissionFlatCode"),
       i18n("db.action.movingFlatCode"))))
     if (queryStr.data.size() > 0) {
@@ -125,24 +122,24 @@ class DbCustomQueryBean
 
     var result = if (lastMovedsId.isEmpty) new java.util.LinkedList[ActionProperty] else typed.getResultList
 
-    var actions = result.foldLeft(mutable.LinkedHashMap.empty[Action, ju.Map[ActionProperty, ju.List[APValue]]])(
+    var actions = result.foldLeft(mutable.LinkedHashMap.empty[Action, java.util.Map[ActionProperty, java.util.List[APValue]]])(
       (map, e) => {
-        var entryMap = Map.empty[ActionProperty, ju.List[APValue]]
+        var entryMap = Map.empty[ActionProperty, java.util.List[APValue]]
         entryMap += (e -> dbActionPropertyBean.getActionPropertyValue(e))
         map += (e.getAction -> entryMap)
 
         map
       })
     //Перепишем общее количество записей для запроса
-    if (actions != null) records(actions.size)
+    if (actions != null) records(actions.size.toLong)
 
     if (sortingField.compareTo("bed") == 0) {
       //предобработка
       val sorted = actions.toList.sortWith((a, b) => getSortingConditionByMethod(sortingField, sortingMethod, a._2, b._2))
-      actions = sorted.foldLeft(mutable.LinkedHashMap.empty[Action, ju.Map[ActionProperty, ju.List[APValue]]])((map, e) => map += (e._1 -> e._2))
+      actions = sorted.foldLeft(mutable.LinkedHashMap.empty[Action, java.util.Map[ActionProperty, java.util.List[APValue]]])((map, e) => map += (e._1 -> e._2))
     } else if (sortingField.compareTo("number") == 0) {
       val sorted = actions.toList.sortWith((a, b) => getSortingConditionByMethod(sortingField, sortingMethod, a._1.getEvent, b._1.getEvent))
-      actions = sorted.foldLeft(mutable.LinkedHashMap.empty[Action, ju.Map[ActionProperty, ju.List[APValue]]])((map, e) => map += (e._1 -> e._2))
+      actions = sorted.foldLeft(mutable.LinkedHashMap.empty[Action, java.util.Map[ActionProperty, java.util.List[APValue]]])((map, e) => map += (e._1 -> e._2))
     }
     //проведем  разбиение на страницы вручную (необходимо чтобы не использовать отдельный запрос на recordcounts)
     if ((actions.size - limit * (page + 1)) > 0) {
@@ -208,7 +205,7 @@ class DbCustomQueryBean
     getAllActionsByQueryAndEventId(AllAssessmentsByEventIdQuery, eventId)
   }
 
-  def getLastAssessmentByEvents(events: ju.List[Event]) = {
+  def getLastAssessmentByEvents(events: java.util.List[Event]) = {
     getEntitiesByEvents[Action](events, LastAssessmentByEventIdsQuery)
   }
 
@@ -403,13 +400,13 @@ class DbCustomQueryBean
       flgDepartmentSort = true
     if (sortingField.contains("%s")) sorting = "ORDER BY %s".format(sortingField.format(sortingMethod, sortingMethod, sortingMethod)) //костыль для докторв
 
-    val allOrgStructures: List[OrgStructure] = orgStructure.getAllOrgStructures
+    val allOrgStructures: java.util.List[OrgStructure] = orgStructure.getAllOrgStructures
     val default_org: OrgStructure = allOrgStructures.filter(element => element.getType == 4).toList.get(0) //Приемное отделение
     val default_org_poly = allOrgStructures.find(s => s.getId.equals(ConfigManager.Common.defaultPoliclinicOrgStructureId))
         .getOrElse(default_org)
 
     val queryStr: QueryDataStructure = filter match {
-      case f: AppealSimplifiedRequestDataFilter => {
+      case f: AppealSimplifiedRequestDataFilter =>
         if (f.diagnosis != null && !f.diagnosis.isEmpty) {
           diagnostic_filter = "AND upper(mkb.diagID) LIKE upper(:diagnosis)\n"
           ap_string_filter = "AND upper(apv.value) LIKE upper(:diagnosis)\n"
@@ -422,7 +419,6 @@ class DbCustomQueryBean
           flgDepartmentSwitched = true
         }
         f.toQueryStructure
-      }
       case _ => new QueryDataStructure()
     }
 
@@ -441,7 +437,7 @@ class DbCustomQueryBean
       res.foreach(e => ids.add(e.getId))
 
       //Получение отделения из последнего экшена движения
-      val depArrayTypedMoves = em.createQuery(OrgStructureSubQueryMoves, classOf[List[Integer]])
+      val depArrayTypedMoves = em.createQuery(OrgStructureSubQueryMoves, classOf[java.util.List[Integer]])
         .setParameter("ids", asJavaCollection(ids))
         .setParameter("flatCode", setAsJavaSet(Set(i18n("db.action.movingFlatCode"), i18n("db.action.admissionFlatCode"))))
       val lastMovesIds = depArrayTypedMoves.getResultList
@@ -552,9 +548,8 @@ class DbCustomQueryBean
         else //asc
           ListMap(ret_value_sorted.toList.sortBy(m => (m._1.getExternalId.substring(0, 4).toInt, m._1.getExternalId.split("[^\\d]+").last.toInt)): _*)
       } catch {
-        case e: StringIndexOutOfBoundsException => {
+        case e: StringIndexOutOfBoundsException =>
           ListMap(ret_value_sorted.toList: _*)
-        }
       }
     } else {
       ListMap(ret_value_sorted.toList: _*)
@@ -565,7 +560,7 @@ class DbCustomQueryBean
     else ret_value_sorted2.drop(page * limit)
 
 
-    if (records != null) records(ret_value_sorted.size) //Перепишем количество записей для структуры
+    if (records != null) records(ret_value_sorted.size.toLong) //Перепишем количество записей для структуры
 
     ret_value.clear()
     ret_value_sorted.clear()
@@ -573,9 +568,9 @@ class DbCustomQueryBean
   }
 
   def getDiagnosisForMainDiagInAppeal(appealId: Int): Mkb = {
-    var diagnostic_filter: String = ""
-    var ap_string_filter: String = ""
-    var ap_mkb_filter: String = ""
+    val diagnostic_filter: String = ""
+    val ap_string_filter: String = ""
+    val ap_mkb_filter: String = ""
 
     val ids = new java.util.HashSet[java.lang.Integer]
     ids.add(appealId)
@@ -674,39 +669,34 @@ class DbCustomQueryBean
         var value: AnyRef = null
         queryStr.data.foreach(qdp => {
           qdp.name match {
-            case "code" => {
+            case "code" =>
               if (pos < 3) {
                 pos = 3
                 value = qdp.value
               }
-            }
-            case "blockId" => {
+            case "blockId" =>
               if (pos < 2) {
                 pos = 2
                 value = qdp.value
               }
-            }
-            case "classId" => {
+            case "classId" =>
               if (pos < 1) {
                 pos = 1
                 value = qdp.value
               }
-            }
-            case _ => {
+            case _ =>
               if (pos < 0) pos = 0
-            }
           }
         })
 
         pos match {
-          case 1 => {
+          case 1 =>
             this.putValueToMap("class",
               "SELECT DISTINCT(mkb.classID), mkb FROM Mkb mkb ORDER BY mkb.classID ASC",
               null,
               null,
               retValue)
-          }
-          case 2 => {
+          case 2 =>
             this.putValueToMap("class",
               "SELECT DISTINCT(mkb.classID), mkb FROM Mkb mkb ORDER BY mkb.classID ASC",
               null,
@@ -719,8 +709,7 @@ class DbCustomQueryBean
               "blockId",
               value,
               retValue)
-          }
-          case 3 => {
+          case 3 =>
             this.putValueToMap("class",
               "SELECT DISTINCT(mkb.classID), mkb FROM Mkb mkb ORDER BY mkb.classID ASC",
               null,
@@ -741,8 +730,7 @@ class DbCustomQueryBean
               "diagID",
               value,
               retValue)
-          }
-          case _ => {}
+          case _ =>
         }
       }
     }
@@ -840,13 +828,11 @@ class DbCustomQueryBean
       .getResultList
 
     result.size match {
-      case 0 => {
+      case 0 =>
         null
-      }
-      case _ => {
+      case _ =>
 
         result.iterator().next()
-      }
     }
   }
 
@@ -854,7 +840,6 @@ class DbCustomQueryBean
    * Получить код источника финансирования
    * @param e - карточка пациента
    * @return - код источника финансирования
-   * @throws CoreException
    */
   def getFinanceId(e: Event) = {
     val result = em.createQuery( """
@@ -906,7 +891,7 @@ class DbCustomQueryBean
   private def getSortingConditionByMethod(field: String, method: String, a: AnyRef, b: AnyRef) = {
 
     field match {
-      case "bed" => {
+      case "bed" =>
         val aVal = getBedValueForSortingCondition(a)
         val bVal = getBedValueForSortingCondition(b)
 
@@ -920,30 +905,27 @@ class DbCustomQueryBean
               bVal > aVal
           }
         }
-      }
-      case "number" => {
+      case "number" =>
         if (method.compareTo("desc") == 0)
           (a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt > b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt) ||
             (a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt == b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt && a.asInstanceOf[Event].getExternalId.split("[^\\d]+").last.toInt > b.asInstanceOf[Event].getExternalId.split("[^\\d]+").last.toInt)
         else
           (b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt > a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt) ||
             (b.asInstanceOf[Event].getExternalId.substring(0, 4).toInt == a.asInstanceOf[Event].getExternalId.substring(0, 4).toInt && b.asInstanceOf[Event].getExternalId.split("[^\\d]+").last.toInt > a.asInstanceOf[Event].getExternalId.split("[^\\d]+").last.toInt)
-      }
       case _ => false
     }
   }
 
   private def getBedValueForSortingCondition(a: AnyRef) = {
     a match {
-      case b: MapWrapper[ActionProperty, List[APValue]] => {
-        val apvs = a.asInstanceOf[MapWrapper[ActionProperty, List[APValue]]]
-        if (apvs != null && apvs.size > 0) {
+      case b: MapWrapper[ActionProperty, java.util.List[APValue]] =>
+        val apvs = a.asInstanceOf[MapWrapper[ActionProperty, java.util.List[APValue]]]
+        if (apvs != null && apvs.nonEmpty) {
           val values = apvs.iterator.next()._2
           if (values != null && values.size() > 0 && values.get(0).isInstanceOf[APValueHospitalBed])
             values.get(0).asInstanceOf[APValueHospitalBed].getValue.getId.intValue()
           else 0
         } else 0
-      }
       case _ => 0
     }
   }
@@ -1790,7 +1772,6 @@ AND ap.deleted = 0
 
   /**
    * @see
-   * @param action
    */
   def getBakDiagnosis(action: Action): BakDiagnosis = {
     val res = em.createNativeQuery(

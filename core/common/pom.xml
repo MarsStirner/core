@@ -4,7 +4,7 @@
 
     <modelVersion>4.0.0</modelVersion>
     <groupId>ru.korus.tmis.core</groupId>
-    <artifactId>tmis-core-common</artifactId>
+    <artifactId>common</artifactId>
     <version>2.6.1.6</version>
     <packaging>jar</packaging>
     <name>TMIS Core Common API JAR</name>

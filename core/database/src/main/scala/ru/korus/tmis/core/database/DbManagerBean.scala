@@ -1,18 +1,15 @@
 package ru.korus.tmis.core.database.common
 
+import java.util
+import javax.ejb.Stateless
+
+import org.slf4j.{LoggerFactory, Logger}
 import ru.korus.tmis.core.exception.CoreException
 
-
-import grizzled.slf4j.Logging
-import java.util.Collection
-import javax.ejb.{TransactionAttributeType, Stateless, TransactionAttribute}
-import javax.interceptor.Interceptors
 import javax.persistence._
 
 import scala.collection.JavaConversions._
 import org.eclipse.persistence.jpa.JpaEntityManager
-import javax.ejb.{SessionContext, TransactionAttributeType, Stateless, TransactionAttribute}
-import javax.annotation.Resource
 import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
@@ -20,8 +17,9 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbManagerBean
   extends DbManagerBeanLocal
-  with Logging
   with I18nable {
+
+  val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -33,19 +31,17 @@ class DbManagerBean
     //##      vendorJpaEm = em.unwrap(classOf[JpaEntityManager])
     //##    }
     vendorJpaEm = em.unwrap(classOf[JpaEntityManager])
-    vendorJpaEm.getServerSession().getId(entity)
+    vendorJpaEm.getServerSession.getId(entity)
   }
 
   def mergeOrPersisRoutine[T](e: T): T = {
     var id = getEntityId(e)
     var ci = e.asInstanceOf[AnyRef].getClass.asInstanceOf[Class[T]]
     var existingEntity = id match {
-      case null => {
+      case null =>
         null
-      }
-      case _ => {
+      case _ =>
         em.find(ci, id)
-      }
     }
     if (existingEntity == null) {
       //persts only when entry not exists         	trace("!!!Persisted " + e)
@@ -68,27 +64,25 @@ class DbManagerBean
     try {
       em.persist(entity)
       em.flush()
-      trace("Persisted " + entity)
+      logger.trace("Persisted " + entity)
     } catch {
-      case entity: OptimisticLockException => {
+      case entity: OptimisticLockException =>
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
           i18n("error.entryIsChanged"))
-      }
     }
   }
 
 
-  def persistAll[T](entities: Collection[T]) = {
+  def persistAll[T](entities: util.Collection[T]) = {
     try {
       entities.foreach(e => if(e != null) em.persist(e))
       em.flush()
     } catch {
-      case e: OptimisticLockException => {
+      case e: OptimisticLockException =>
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
           i18n("error.entryIsChanged"))
-      }
     }
   }
 
@@ -98,21 +92,20 @@ class DbManagerBean
     result
   }
 
-  def persistOrMergeAll[T](entities: Collection[T]) = {
+  def persistOrMergeAll[T](entities: util.Collection[T]) = {
     try {
       val result =
         entities.map(e => {
           mergeOrPersisRoutine(e)
         })
       em.flush()
-      entities.foreach(e => trace("Persisted " + e))
+      entities.foreach(e => logger.trace("Persisted " + e))
       asJavaCollection(result)
     } catch {
-      case e: OptimisticLockException => {
+      case e: OptimisticLockException =>
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
           i18n("error.entryIsChanged"), e)
-      }
     }
   }
 
@@ -120,44 +113,41 @@ class DbManagerBean
     try {
       val result = em.merge(entity)
       em.flush()
-      trace("Merged " + entity)
+      logger.trace("Merged " + entity)
       result
     } catch {
-      case e: OptimisticLockException => {
+      case e: OptimisticLockException =>
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
           i18n("error.entryIsChanged"), e)
-      }
     }
   }
 
-  def mergeAll[T](entities: Collection[T]) = {
+  def mergeAll[T](entities: util.Collection[T]) = {
     try {
       val result = entities.map(e => em.merge(e))
       em.flush()
-      result.foreach(e => trace("Merged " + e))
+      result.foreach(e => logger.trace("Merged " + e))
       asJavaCollection(result)
     } catch {
-      case e: OptimisticLockException => {
+      case e: OptimisticLockException =>
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
           i18n("error.entryIsChanged"), e)
-      }
     }
   }
 
-  def removeAll[T](entities: Collection[T]) = {
+  def removeAll[T](entities: util.Collection[T]) = {
     try {
       val merged = entities.map(e => em.merge(e))
       merged.foreach(e => em.remove(e))
       em.flush()
-      merged.foreach(e => trace("Removed " + e))
+      merged.foreach(e => logger.trace("Removed " + e))
     } catch {
-      case e: OptimisticLockException => {
+      case e: OptimisticLockException =>
         throw new CoreException(
           ConfigManager.ErrorCodes.RecordChanged,
           i18n("error.entryIsChanged"))
-      }
     }
   }
 
