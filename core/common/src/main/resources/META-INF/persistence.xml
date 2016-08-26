@@ -20,23 +20,6 @@
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
             <property name="javax.persistence.validation.mode" value="NONE" />
-            <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="rls" transaction-type="JTA">
-        <jta-data-source>rls</jta-data-source>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        <shared-cache-mode>NONE</shared-cache-mode>
-        <properties>
-            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
-
-            <property name="eclipselink.cache.shared.default" value="false"/>
-            <property name="eclipselink.cache.size.default" value="0"/>
-            <property name="eclipselink.cache.type.default" value="none"/>
-            <property name="eclipselink.query-results-cache" value="false"/>
-            <property name="javax.persistence.validation.mode" value="NONE" />
-            <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
         </properties>
     </persistence-unit>
 
@@ -46,13 +29,11 @@
         <shared-cache-mode>NONE</shared-cache-mode>
         <properties>
             <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
-
             <property name="eclipselink.cache.shared.default" value="false"/>
             <property name="eclipselink.cache.size.default" value="0"/>
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
             <property name="javax.persistence.validation.mode" value="NONE" />
-            <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
         </properties>
     </persistence-unit>
 
@@ -68,17 +49,6 @@
             <property name="eclipselink.cache.type.default" value="none"/>
             <property name="eclipselink.query-results-cache" value="false"/>
             <property name="javax.persistence.validation.mode" value="NONE" />
-            <property name="eclipselink.logging.logger" value="ru.korus.tmis.core.logging.slf4j.eclipselink.Logger"/>
-        </properties>
-    </persistence-unit>
-
-    <persistence-unit name="kladr" transaction-type="JTA">
-        <jta-data-source>s11r64</jta-data-source>
-        <exclude-unlisted-classes>false</exclude-unlisted-classes>
-        <shared-cache-mode>NONE</shared-cache-mode>
-        <properties>
-            <property name="eclipselink.logging.level" value="${eclipselink.logging.level}"/>
-            <property name="eclipselink.cache.shared.default" value="false"/>
         </properties>
     </persistence-unit>
 
