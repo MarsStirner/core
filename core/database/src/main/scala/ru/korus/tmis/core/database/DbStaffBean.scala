@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database
 
+import org.slf4j.{Logger, LoggerFactory}
 import ru.korus.tmis.core.exception.{CoreException, NoSuchUserException}
 
 
@@ -21,8 +22,8 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbStaffBean
   extends DbStaffBeanLocal
-
   with I18nable {
+  val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -33,7 +34,7 @@ class DbStaffBean
       .setParameter("login", login)
       .getResultList
     if (staffs.size() == 0) {
-      error("Staff not found: " + login)
+      logger.error("Staff not found: " + login)
       throw new NoSuchUserException(
         ConfigManager.TmisAuth.ErrorCodes.LoginIncorrect,
         login,
@@ -85,7 +86,7 @@ class DbStaffBean
       .getResultList
     val personsFilter: PersonsListDataFilter = filter.asInstanceOf[PersonsListDataFilter]
     if(!personsFilter.getRoleCodeList.isEmpty) {
-     result.filter(res => !res.getRoles.filter(role => personsFilter.getRoleCodeList.contains( role.getCode)).isEmpty)
+     result.filter(res => res.getRoles.exists(role => personsFilter.getRoleCodeList.contains(role.getCode)))
     } else {
       result
     }
@@ -326,7 +327,7 @@ class DbStaffBean
         return resultList.get(0)
       }
     }
-    throw new CoreException("Not found any actual actions");
+    throw new CoreException("Not found any actual actions")
   }
 
 
@@ -404,7 +405,7 @@ class DbStaffBean
         .getResultList
       return if (coreUsers.isEmpty) null else coreUsers.get(0)
     }
-    return null
+    null
   }
 }
 

@@ -1,5 +1,7 @@
 package ru.korus.tmis.core.database.common
 
+import java.nio.ByteBuffer
+import java.sql.Types
 import java.text.SimpleDateFormat
 import java.util
 import java.util.{Date, UUID}
@@ -726,13 +728,10 @@ class DbActionBean
 
 
   def getAllActionsOfPatientThatHasActionProperty(patientId: Int, actionPropertyCode: String): util.List[Action] = {
-
-    val r = em.createNamedQuery("Action.AllActionsOfPatientThatHasActionProperty", classOf[Action])
+    em.createNamedQuery("Action.AllActionsOfPatientThatHasActionProperty", classOf[Action])
       .setParameter("patientId", patientId)
       .setParameter("code", actionPropertyCode)
       .getResultList
-
-    r
   }
 
   override def getById(id: Int): Action = {
@@ -767,5 +766,19 @@ class DbActionBean
     action.setNote(note)
     action.setStatus(actionStatus.getCode)
     em.merge(action)
+  }
+
+  override def getByUUID(uid: String): Action = {
+    val uuid :UUID = UUID.fromString(uid)
+    val bb: ByteBuffer = ByteBuffer.wrap(new Array[Byte](16))
+    bb.putLong(uuid.getMostSignificantBits)
+    bb.putLong(uuid.getLeastSignificantBits)
+    val result = em.createQuery("SELECT a FROM Action a WHERE a.uuid = :uuid", classOf[Action])
+      .setParameter("uuid", bb.array)
+      .getResultList
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next()
+    }
   }
 }

@@ -277,4 +277,6 @@ public interface DbActionBeanLocal {
      * @param actionStatus статус экшена для установки
      */
     Action setActionNoteAndStatus(Action action, String note, ActionStatus actionStatus);
+
+    Action getByUUID(String uid);
 }
