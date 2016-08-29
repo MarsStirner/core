@@ -702,7 +702,7 @@ class DbActionBean
     logger.info("Запущена задача закрытия документов в закрытых историях болезни")
 
     val defaultDaysValue = 2
-    val docMnemonics = Seq("EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH")
+    val docMnemonics = Seq("EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH", "DIAG")
 
     val now = new DateTime()
     now.getDayOfWeek match {
