@@ -6,8 +6,6 @@ import javax.xml.bind.annotation.XmlType;
 import java.io.Serializable;
 import java.util.*;
 
-import ru.korus.tmis.core.entity.model.pharmacy.DrugChart;
-
 @Entity
 @Table(name = "Action")
 @NamedQueries(
@@ -179,8 +177,8 @@ public class Action
     private String hospitalUidFrom = "";
 
     @Basic(optional = true)
-    @Column(name = "pacientInQueueType")
-    private Short pacientInQueueType = 0;
+    @Column(name = "pacientInQueueType")   //TODO database column name typo
+    private Short patientInQueueType = 0;
 
     @Basic(optional = true)
     @Column(name = "appointmentType")
@@ -549,12 +547,12 @@ public class Action
         this.hospitalUidFrom = hospitalUidFrom;
     }
 
-    public Short getPacientInQueueType() {
-        return pacientInQueueType == null ? 0 : pacientInQueueType;
+    public Short getPatientInQueueType() {
+        return patientInQueueType == null ? 0 : patientInQueueType;
     }
 
-    public void setPacientInQueueType(Short pacientInQueueType) {
-        this.pacientInQueueType = pacientInQueueType;
+    public void setPatientInQueueType(Short pacientInQueueType) {
+        this.patientInQueueType = pacientInQueueType;
     }
 
     public AppointmentType getAppointmentType() {

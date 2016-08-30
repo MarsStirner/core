@@ -184,9 +184,9 @@ public interface DbActionBeanLocal {
      * @param pacientInQueueType какой-то типа акшена (срочно и сверх сетки приема)
      * @return количество записей как int
      */
-    long getActionForEventAndPacientInQueueType(int eventId, long date, int pacientInQueueType) throws CoreException;
+    long getActionForEventAndPatientInQueueType(int eventId, long date, int pacientInQueueType) throws CoreException;
 
-    long getActionForDateAndPacientInQueueType(long beginDate, int pacientInQueueType) throws CoreException;
+    long getActionForDateAndPatientInQueueType(long beginDate, int pacientInQueueType) throws CoreException;
 
     /**
      * Возвращает список действий относящихся к заданному обращению и типу действия(по flatCode)

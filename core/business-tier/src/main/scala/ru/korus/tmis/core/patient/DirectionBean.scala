@@ -562,7 +562,7 @@ with I18nable {
             if (action19 != null) {
               //val actionId = action19.getId.intValue()
               var apv = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
-              if (a.getPacientInQueueType.intValue() == 0) {
+              if (a.getPatientInQueueType.intValue() == 0) {
                 if (apv != null) {
                   apv.setValueFromString(null)
                   em.merge(apv)
@@ -574,7 +574,7 @@ with I18nable {
                   apv = em.merge(apv)
                   em.remove(apv)
                 }
-                if (a.getPacientInQueueType.intValue() == 1) {
+                if (a.getPatientInQueueType.intValue() == 1) {
                   //сдвинуть все индексы
                   val ap18values = actionPropertyBean.getActionPropertyValue(ap)
                   ap18values.sortWith(_.asInstanceOf[APValueAction].getId.getIndex < _.asInstanceOf[APValueAction].getId.getIndex)

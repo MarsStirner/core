@@ -216,18 +216,20 @@ public class ActionType implements Serializable {
     @JoinColumn(name = "jobType_id")
     private RbJobType jobType;
 
+    @Basic(optional = false)
+    @Column(name = "autoclose_on_event_close", nullable = false)
+    private boolean autocloseOnEventClose = true;
+
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
 
     @OneToMany(mappedBy = "actionType", cascade = CascadeType.ALL)
-    private List<ActionPropertyType> actionPropertyTypes =
-            new LinkedList<ActionPropertyType>();
+    private List<ActionPropertyType> actionPropertyTypes = new LinkedList<>();
 
 
     public List<ActionPropertyType> getActionPropertyTypes() {
-        List<ActionPropertyType> nonDeletedActionPropertyTypes =
-                new LinkedList<ActionPropertyType>();
+        List<ActionPropertyType> nonDeletedActionPropertyTypes = new LinkedList<>();
         for (ActionPropertyType apt : actionPropertyTypes) {
             if (!apt.getDeleted()) {
                 nonDeletedActionPropertyTypes.add(apt);
@@ -239,13 +241,6 @@ public class ActionType implements Serializable {
 
     @OneToOne(mappedBy="actionType")
     private ActionTypeTissueType actionTypeTissueType;
-
-    ////////////////////////////////////////////////////////////////////////////
-
-    @PostLoad
-    private void onPostLoad() {
-
-    }
 
     ////////////////////////////////////////////////////////////////////////////
     // End of custom mappings
@@ -600,6 +595,14 @@ public class ActionType implements Serializable {
 
     public void setHidden(boolean hidden) {
         this.hidden = hidden;
+    }
+
+    public boolean isAutocloseOnEventClose() {
+        return autocloseOnEventClose;
+    }
+
+    public void setAutocloseOnEventClose(final boolean autocloseOnEventClose) {
+        this.autocloseOnEventClose = autocloseOnEventClose;
     }
 
     @Override

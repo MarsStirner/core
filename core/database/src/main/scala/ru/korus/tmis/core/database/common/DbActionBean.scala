@@ -6,8 +6,10 @@ import java.util.Date
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
 
-import grizzled.slf4j.Logging
+import com.google.common.collect.ImmutableList
+
 import org.joda.time.{DateTime, DateTimeConstants}
+import org.slf4j.{Logger, LoggerFactory}
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.data.QueryDataStructure
 import ru.korus.tmis.core.database.DbActionTypeBeanLocal
@@ -24,8 +26,8 @@ import scala.language.reflectiveCalls
 @Stateless
 class DbActionBean
   extends DbActionBeanLocal
-  with Logging
   with I18nable {
+  val logger: Logger = LoggerFactory.getLogger(this.getClass)
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -70,51 +72,35 @@ class DbActionBean
 
 
   def getActionIdWithoutDetach(id: Int): Action = {
-    info("Requested action id[" + id + "]")
+    logger.info("Requested action id[{}]", id)
     val result = em.createQuery(ActionFindQuery,
       classOf[Action])
       .setParameter("id", id)
       .getResultList
-
-    val res: Action = result.size match {
-      case 0 => {
-        throw new CoreException(
-          ConfigManager.ErrorCodes.ActionNotFound,
-          i18n("error.actionNotFound") + " id = " + id)
-      }
-      case size => {
-        result.iterator.next()
-      }
+    result.size match {
+      case 0 => throw new CoreException(ConfigManager.ErrorCodes.ActionNotFound, i18n("error.actionNotFound") + " id = " + id)
+      case size => result.iterator.next()
     }
-    res
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionByIdWithIgnoreDeleted(id: Int) = {
-    info("Requested action id[" + id + "]")
+    logger.info("Requested action id[{}]", id)
     val result = em.createQuery(
       """
-                                  SELECT a
-                                  FROM
-                                    Action a
-                                  WHERE
-                                    a.id = :id
+      SELECT a
+      FROM
+        Action a
+      WHERE
+        a.id = :id
       """,
       classOf[Action])
       .setParameter("id", id)
       .getResultList
 
     result.size match {
-      case 0 => {
-        throw new CoreException(
-          ConfigManager.ErrorCodes.ActionNotFound,
-          i18n("error.actionNotFound"))
-      }
-      case size => {
-        val action = result.iterator.next()
-
-        action
-      }
+      case 0 => throw new CoreException(ConfigManager.ErrorCodes.ActionNotFound, i18n("error.actionNotFound") + " id = " + id)
+      case size => result.iterator.next()
     }
   }
 
@@ -209,14 +195,9 @@ class DbActionBean
       .setParameter("id", eventId)
       .setParameter("atId", atId)
       .getResultList
-
     result.size match {
-      case 0 => {
-        null
-      }
-      case size => {
-        result.iterator().next
-      }
+      case 0 => null
+      case size => result.iterator.next
     }
   }
 
@@ -225,16 +206,9 @@ class DbActionBean
       classOf[Action])
       .setParameter("externalId", externalId)
       .getResultList
-
     result.size match {
-      case 0 => {
-        null
-      }
-      case size => {
-
-        val action = result.iterator().next
-        action
-      }
+      case 0 => null
+      case size => result.iterator.next
     }
   }
 
@@ -243,9 +217,10 @@ class DbActionBean
       classOf[Action])
       .setParameter("actionType", actionType)
       .getResultList
-
-
-    result.iterator().next()
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next
+    }
   }
 
   def getActionsWithFilter(limit: Int,
@@ -280,13 +255,9 @@ class DbActionBean
       .setParameter("codes", asJavaCollection(codes))
       .setParameter("id", eventId)
       .getResultList
-
     result.size match {
       case 0 => null
-      case size => {
-
-        result
-      }
+      case size => result
     }
   }
 
@@ -296,13 +267,9 @@ class DbActionBean
       .setParameter("codes", asJavaCollection(codes))
       .setParameter("patientId", patient.getId)
       .getResultList
-
     result.size match {
       case 0 => null
-      case size => {
-
-        result
-      }
+      case size => result
     }
   }
 
@@ -313,23 +280,13 @@ class DbActionBean
      Для остальных осмотров ищется последний осмотр заданного типа в данном обращении
      Выполнено согласно "ТРЕБОВАНИЯМ К РАБОТЕ С МЕДИЦИНСКИМИ ДОКУМЕНТАМИ"
      */
-    //val subQuery = // if(actionTypeId == i18n("db.actionType.primary").toInt || actionTypeId == i18n("db.actionType.secondary").toInt)
-    //   "e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id)"
-    //else //"e.id = :id"
-    //        "e.createDatetime IN (SELECT DISTINCT MAX(e2.createDatetime) FROM Event e2 WHERE e2.patient.id IN" +
-    //          "(SELECT DISTINCT e3.patient.id FROM Event e3 WHERE e3.id = :id) AND e2.deleted = 0 AND e2.createDatetime < " +
-    //          "(SELECT DISTINCT e4.createDatetime FROM Event e4 WHERE e4.id = :id))"
-
     val typed = em.createQuery(ActionsIdFindQuery /*.format(subQuery)*/ , classOf[Int])
     val result = typed.setParameter("id", eventId)
       .setParameter("actionTypeId", actionTypeId)
       .getResultList
-
     result.size match {
       case 0 => 0
-      case size => {
-        result(0)
-      }
+      case size => result.iterator.next
     }
   }
 
@@ -339,56 +296,47 @@ class DbActionBean
       .setParameter("atIds", asJavaCollection(actionTypeIds))
       .setMaxResults(1)
       .getResultList
-
-
     result.size match {
       case 0 => 0
-      case size => {
-        result(0)
-      }
+      case size => result.iterator.next
     }
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getEvent29AndAction19ForAction(action: Action) = {
-    var typed = em.createQuery(GetEvent29AndAction19ForAction, classOf[Action])
-      //.setParameter("externalId", action.getEvent.getExternalId)
+    val typed = em.createQuery(GetEvent29AndAction19ForAction, classOf[Action])
       .setParameter("directionDate", action.getPlannedEndDate)
-
     val result = typed.getResultList
     result.size match {
       case 0 => null
-      case size => {
-
-        result(0)
-      }
+      case size => result.iterator.next
     }
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionForDateAndPacientInQueueType(beginDate: Long, pacientInQueueType: Int) = {
+  def getActionForDateAndPatientInQueueType(beginDate: Long, patientInQueueType: Int) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val strDate = formatter.format(new Date(beginDate))
-    var typed = em.createQuery(GetActionForDateAndPacientInQueueType, classOf[Long])
+    val typed = em.createQuery(GetActionForDateAndPatientInQueueType, classOf[Long])
       .setParameter("beginDate", strDate)
-      .setParameter("pacientInQueueType", pacientInQueueType)
+      .setParameter("patientInQueueType", patientInQueueType)
 
     typed.getSingleResult
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionForEventAndPacientInQueueType(eventId: Int, date: Long, pacientInQueueType: Int) = {
+  def getActionForEventAndPatientInQueueType(eventId: Int, date: Long, patientInQueueType: Int) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val strDate = formatter.format(new Date(date))
-    var typed = em.createQuery(GetActionForEventAndPacientInQueueType, classOf[Long])
+    val typed = em.createQuery(GetActionForEventAndPatientInQueueType, classOf[Long])
       .setParameter("eventId", eventId)
       .setParameter("date", strDate)
-      .setParameter("pacientInQueueType", pacientInQueueType)
+      .setParameter("patientInQueueType", patientInQueueType)
 
     typed.getSingleResult
   }
 
-  val GetActionForEventAndPacientInQueueType =
+  val GetActionForEventAndPatientInQueueType =
     """
   SELECT COUNT(a)
   FROM
@@ -396,7 +344,7 @@ class DbActionBean
   WHERE
     a.event.id = :eventId
   AND
-    a.pacientInQueueType = :pacientInQueueType
+    a.pacientInQueueType = :patientInQueueType
   AND
     substring(a.plannedEndDate, 1, 10) = :date
   AND
@@ -405,7 +353,7 @@ class DbActionBean
     a.deleted = '0'
     """
 
-  val GetActionForDateAndPacientInQueueType =
+  val GetActionForDateAndPatientInQueueType =
     """
   SELECT COUNT(a)
   FROM
@@ -413,7 +361,7 @@ class DbActionBean
   WHERE
     substring(a.plannedEndDate, 1, 10) = :beginDate
   AND
-    a.pacientInQueueType = :pacientInQueueType
+    a.pacientInQueueType = :patientInQueueType
   AND
     a.event.deleted = 0
   AND
@@ -453,20 +401,6 @@ class DbActionBean
     ORDER BY a.createDatetime DESC
     """
 
-  /*val ActionsIdFindQuery = """
-    SELECT a.id
-    FROM
-      Action a
-      JOIN a.event e
-      JOIN a.actionType at
-    WHERE
-      a.deleted = 0
-    AND
-      at.id = :actionTypeId
-    AND
-      e.patient.id IN (SELECT DISTINCT e2.patient.id FROM Event e2 WHERE e2.id = :id AND e2.deleted = 0)
-    ORDER BY a.createDatetime DESC
-                           """*/
   val ActionsIdFindQuery =
     """
     SELECT a.id
@@ -610,7 +544,7 @@ class DbActionBean
 
   def createAction(actionType: ActionType, event: Event, person: Staff, date: Date, queueActionParam: QueueActionParam): Action = {
     val now = new Date
-    var newAction = new Action()
+    val newAction = new Action()
     //Инициализируем структуру Event
     try {
       newAction.setCreateDatetime(now)
@@ -628,7 +562,7 @@ class DbActionBean
       newAction.setDeleted(false)
       newAction.setPayStatus(0)
       newAction.setExecutor(person)
-      newAction.setPacientInQueueType(queueActionParam.getPacientInQueueType.getValue)
+      newAction.setPatientInQueueType(queueActionParam.getPacientInQueueType.getValue)
       newAction.setAppointmentType(queueActionParam.getAppointmentType)
 
       //не менять на person, иначе нельзя будет отличить запись на прием к врачу с портала и других ЛПУ
@@ -700,26 +634,19 @@ class DbActionBean
 
   def closeAppealsDocs() {
     logger.info("Запущена задача закрытия документов в закрытых историях болезни")
-
-    val defaultDaysValue = 2
-    val docMnemonics = Seq("EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH", "DIAG")
-
+    //Текущая дата
     val now = new DateTime()
     now.getDayOfWeek match {
-      case DateTimeConstants.SUNDAY | DateTimeConstants.SATURDAY => {
-        logger.info("Skip closing documents in closed events. It's weekend! Go party!")
-        return // Не следует запускать проверку в выходные дни
-      }
-      case _ => {}
+      // Не следует запускать проверку в выходные дни
+      case DateTimeConstants.SUNDAY | DateTimeConstants.SATURDAY =>  logger.info("Skip closing documents in closed events. It's weekend! Go party!")
+        return
     }
-
+    //Количество дней из настроек, которые надо отнять
     val closeIntervalInDays: Int = try {
       ConfigManager.Common.eventEditableDays
     } catch {
-      case e: Throwable => {
-        logger.warn("Cannot receive value of " + i18n("settings.path.eventBlockTime") + " setting. Set as 2 days.")
-        defaultDaysValue
-      }
+      case e: Exception => logger.warn("Cannot receive value of " + i18n("settings.path.eventBlockTime") + " setting. Set as 2 days.")
+        2
     }
 
     var i = closeIntervalInDays
@@ -728,23 +655,23 @@ class DbActionBean
     while (i != 0) {
       date = date.minusDays(1)
       date.getDayOfWeek match {
-        case d if d != DateTimeConstants.SUNDAY | d != DateTimeConstants.SATURDAY => i -= 1
+        case DateTimeConstants.SUNDAY | DateTimeConstants.SATURDAY => i -= 1
       }
     }
 
-    em.createQuery("SELECT a FROM Action a WHERE a.event.execDate < :date AND a.endDate IS NULL AND a.actionType.mnemonic IN :docMnemonics", classOf[Action])
+    val actions = em.createQuery("SELECT a FROM Action a WHERE a.event.execDate < :date AND a.endDate IS NULL AND a.actionType.autocloseOnEventClose = TRUE AND a.status IN :actionStatusList", classOf[Action])
       .setParameter("date", date.toDate)
-      .setParameter("docMnemonics", asJavaCollection(docMnemonics))
+      .setParameter("actionStatusList", ImmutableList.of(ActionStatus.STARTED.getCode, ActionStatus.WAITING.getCode))
       .getResultList
 
-      // Закрываем документы датой закрытия истории болезни
-      .foreach(a => {
+    // Закрываем документы датой закрытия истории болезни
+    actions.foreach(a => {
       a setEndDate a.getEvent.getExecDate
       a setStatus ActionStatus.FINISHED.getCode
       a setModifyDatetime now.toDate
     })
     em.flush()
-
+    logger.info("Закончена задача закрытия документов в закрытых историях болезни. Закрыты следующие экшены: {}", actions.map(_.getId) )
   }
 
   def getServiceList(eventId: Integer): util.List[Action] = {
@@ -769,39 +696,45 @@ class DbActionBean
   }
 
   def getLatestMove(event: Event): Action = {
-    val actions = em.createNamedQuery("Action.findLatestMove", classOf[Action])
+    val result = em.createNamedQuery("Action.findLatestMove", classOf[Action])
       .setParameter("eventId", event.getId)
       .setMaxResults(1).getResultList
-    return if (actions.isEmpty) null else actions.get(0);
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next()
+    }
   }
 
   override def getLastActionByEventAndActionTypes(eventId: Integer, flatCodeList: util.List[String]): Action = {
-    val actions = em.createNamedQuery("Action.findLastByFlatCodesAndEventId", classOf[Action])
+    val result = em.createNamedQuery("Action.findLastByFlatCodesAndEventId", classOf[Action])
       .setParameter("eventId", eventId)
       .setParameter("flatCodes", flatCodeList)
       .setMaxResults(1)
       .getResultList
-    return if (actions.isEmpty) null else actions.get(0);
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next()
+    }
   }
 
   override def getLastActionByActionTypesAndClientId(codeList: util.List[String], clientId: Integer): Action = {
-    val actions = em.createNamedQuery("Action.findLastByActionTypesAndClientId", classOf[Action])
+    val result = em.createNamedQuery("Action.findLastByActionTypesAndClientId", classOf[Action])
       .setParameter("codes", codeList)
       .setParameter("clientId", clientId)
       .setMaxResults(1)
       .getResultList
-    return if (actions.isEmpty) null else actions.get(0);
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next()
+    }
   }
 
 
   def getAllActionsOfPatientThatHasActionProperty(patientId: Int, actionPropertyCode: String): util.List[Action] = {
-
-    val r = em.createNamedQuery("Action.AllActionsOfPatientThatHasActionProperty", classOf[Action])
+    em.createNamedQuery("Action.AllActionsOfPatientThatHasActionProperty", classOf[Action])
       .setParameter("patientId", patientId)
       .setParameter("code", actionPropertyCode)
       .getResultList
-
-    r
   }
 
   override def getById(id: Int): Action = {

@@ -330,7 +330,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             if (checkAction != null) {
                 Action chechActionValue = checkAction.getValue();
                 if (chechActionValue != null) {
-                    Short pacientInQueueType = chechActionValue.getPacientInQueueType();
+                    Short pacientInQueueType = chechActionValue.getPatientInQueueType();
                     if (pacientInQueueType != null) {
                         if (pacientInQueueType == (short) 1) {
                             personSchedule.emergencyPatientCount++;
@@ -629,7 +629,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             //Получение ActionProperty_Action соответствующего записи пациента к врачу (queue)
             APValueAction ambActionPropertyAction = actionPropertyBean.getActionProperty_ActionByValue(queueAction);
             logger.debug("Founded AP_A: {}", ambActionPropertyAction);
-            switch (queueAction.getPacientInQueueType()) {
+            switch (queueAction.getPatientInQueueType()) {
                 //Обыкновенная запись на прием к врачу
                 case 0: {
                     //Обнуление поля = отмена очереди
@@ -704,7 +704,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
      */
     private void addActionToQueuePropertyValue(final PersonSchedule personSchedule, final int index, final Action queueAction) throws CoreException {
 
-        final PacientInQueueType pacientInQueueType = PacientInQueueType.newInstance(queueAction.getPacientInQueueType());
+        final PacientInQueueType pacientInQueueType = PacientInQueueType.newInstance(queueAction.getPatientInQueueType());
         if (personSchedule.queueAP == null) {
             logger.warn("Our enqueue is first to this doctor. Because queueActionProperty for doctorAction is null" +
                     " queueAMB.size()={}", personSchedule.queue.size());

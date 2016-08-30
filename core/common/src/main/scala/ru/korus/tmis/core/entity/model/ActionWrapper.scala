@@ -226,7 +226,7 @@ class ActionWrapper(a: Action)
       }
       case AWI.PacientInQueueType => {
         List(
-          Map(APWI.Value.toString -> this.a.getPacientInQueueType.toString)
+          Map(APWI.Value.toString -> this.a.getPatientInQueueType.toString)
         )
       }
       case AWI.Finance => {
