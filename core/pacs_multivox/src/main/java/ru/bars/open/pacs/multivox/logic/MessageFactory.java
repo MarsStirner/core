@@ -157,22 +157,20 @@ public class MessageFactory {
         pid_2.appendChild(pid_2_cx_1);
         //---- CX.5 [Card Type]
         final Element pid_2_cx_5 = doc.createElement("CX.5");
-        pid_2_cx_5.appendChild(doc.createTextNode(isStationaryEvent ? "H05" : "PI"));
+        pid_2_cx_5.appendChild(doc.createTextNode(isStationaryEvent ? "H" : "A"));
         pid_2.appendChild(pid_2_cx_5);
         root.appendChild(pid_2);
         // PID.3 [Another patient cards]
-        if (isStationaryEvent) {
-            final Element pid_3 = doc.createElement("PID.3");
-            //---- CX.1 [Internal patient identifier]
-            final Element pid_3_cx_1 = doc.createElement("CX.1");
-            pid_3_cx_1.appendChild(doc.createTextNode(String.valueOf(client.getId())));
-            pid_3.appendChild(pid_3_cx_1);
-            //---- CX.5 [Card Type (PI = internal system identifier)]
-            final Element pid_3_cx_5 = doc.createElement("CX.5");
-            pid_3_cx_5.appendChild(doc.createTextNode("PI"));
-            pid_3.appendChild(pid_3_cx_5);
-            root.appendChild(pid_3);
-        }
+        final Element pid_3 = doc.createElement("PID.3");
+        //---- CX.1 [Internal patient identifier]
+        final Element pid_3_cx_1 = doc.createElement("CX.1");
+        pid_3_cx_1.appendChild(doc.createTextNode(String.valueOf(client.getId())));
+        pid_3.appendChild(pid_3_cx_1);
+        //---- CX.5 [Card Type (PI = internal system identifier)]
+        final Element pid_3_cx_5 = doc.createElement("CX.5");
+        pid_3_cx_5.appendChild(doc.createTextNode("PI"));
+        pid_3.appendChild(pid_3_cx_5);
+        root.appendChild(pid_3);
         // PID.5 [Patient personal data]
         final Element pid_5 = doc.createElement("PID.5");
         //---- XPN.1 [LastName]
@@ -510,7 +508,7 @@ public class MessageFactory {
         private final String code;
         private final String value;
 
-        private DicomModality(String code , String value) {
+        DicomModality(String code , String value) {
             this.code = code;
             this.value = value;
         }
