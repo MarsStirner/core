@@ -316,76 +316,76 @@ public class MessageFactory {
     ) {
         final ActionType actionType = action.getActionType();
         // http://hl7.cgmpolska.pl/HL7/ch400024.htm
-        // ORB.1 [Номер сегмента]
-        final Element orb_1 = doc.createElement("ORB.1");
-        orb_1.appendChild(doc.createTextNode("1"));
-        root.appendChild(orb_1);
+        // OBR.1 [Номер сегмента]
+        final Element obr_1 = doc.createElement("OBR.1");
+        obr_1.appendChild(doc.createTextNode("1"));
+        root.appendChild(obr_1);
         // ORB.4 [Описание исследования]
-        final Element orb_4 = doc.createElement("ORB.4");
+        final Element obr_4 = doc.createElement("OBR.4");
         //---- CE.1 [Код исследования по справочникам МИС]
-        final Element orb_4_ce_1 = doc.createElement("CE.1");
-        orb_4_ce_1.appendChild(doc.createTextNode(actionType.getCode()));
-        orb_4.appendChild(orb_4_ce_1);
+        final Element obr_4_ce_1 = doc.createElement("CE.1");
+        obr_4_ce_1.appendChild(doc.createTextNode(actionType.getCode()));
+        obr_4.appendChild(obr_4_ce_1);
         //---- CE.2 [Название исследования/услуги]
-        final Element orb_4_ce_2 = doc.createElement("CE.2");
-        orb_4_ce_2.appendChild(doc.createTextNode(actionType.getName()));
-        orb_4.appendChild(orb_4_ce_2);
+        final Element obr_4_ce_2 = doc.createElement("CE.2");
+        obr_4_ce_2.appendChild(doc.createTextNode(actionType.getName()));
+        obr_4.appendChild(obr_4_ce_2);
         //---- CE.4 [В поле альтернативного кода исследования передаем модальность.] TODO
-        final Element orb_4_ce_4 = doc.createElement("CE.4");
-        orb_4_ce_4.appendChild(doc.createTextNode(actionType.getMnemonic()));
-        orb_4.appendChild(orb_4_ce_4);
+        final Element obr_4_ce_4 = doc.createElement("CE.4");
+        obr_4_ce_4.appendChild(doc.createTextNode(actionType.getMnemonic()));
+        obr_4.appendChild(obr_4_ce_4);
         //---- CE.5 [В поле альтернативного названия исследования передаем тип/категорию исследования] TODO
-        final Element orb_4_ce_5 = doc.createElement("CE.5");
-        orb_4_ce_5.appendChild(doc.createTextNode(DicomModality.getByCode(actionType.getMnemonic()).getValue()));
-        orb_4.appendChild(orb_4_ce_5);
-        root.appendChild(orb_4);
+        final Element obr_4_ce_5 = doc.createElement("CE.5");
+        obr_4_ce_5.appendChild(doc.createTextNode(DicomModality.getByCode(actionType.getMnemonic()).getValue()));
+        obr_4.appendChild(obr_4_ce_5);
+        root.appendChild(obr_4);
         // OBR.17 [Empty]
-        final Element orb_17 = doc.createElement("ORB.17");
-        root.appendChild(orb_17);
+        final Element obr_17 = doc.createElement("OBR.17");
+        root.appendChild(obr_17);
         // OBR.18 [Номер протокола у заказчика]
-        final Element orb_18 = doc.createElement("ORB.18");
-        //TODO  orb_18.appendChild(doc.createTextNode("P1234-09"));
-        root.appendChild(orb_18);
+        final Element obr_18 = doc.createElement("OBR.18");
+        //TODO  OBR_18.appendChild(doc.createTextNode("P1234-09"));
+        root.appendChild(obr_18);
         // OBR.27 [Время и приоритет назначения]
-        final Element orb_27 = doc.createElement("ORB.27");
+        final Element obr_27 = doc.createElement("OBR.27");
         //---- TQ.4 [Время назначения]
-        final Element orb_27_tq_4 = doc.createElement("TQ.4");
+        final Element obr_27_tq_4 = doc.createElement("TQ.4");
         //---- ---- TS.1 [Время назначения 'yyyyMMddHHmmss']
-        final Element orb_27_tq_4_ts_1 = doc.createElement("TS.1");
-        orb_27_tq_4_ts_1.appendChild(doc.createTextNode(new SimpleDateFormat("yyyyMMddHHmmss").format(action.getPlannedEndDate())));
-        orb_27_tq_4.appendChild(orb_27_tq_4_ts_1);
-        orb_27.appendChild(orb_27_tq_4);
+        final Element obr_27_tq_4_ts_1 = doc.createElement("TS.1");
+        obr_27_tq_4_ts_1.appendChild(doc.createTextNode(new SimpleDateFormat("yyyyMMddHHmmss").format(action.getPlannedEndDate())));
+        obr_27_tq_4.appendChild(obr_27_tq_4_ts_1);
+        obr_27.appendChild(obr_27_tq_4);
         //---- TQ.6 [Приоритет R - routine, S - HIGH, A - MED ?????]
-        final Element orb_27_tq_6 = doc.createElement("TQ.6");
-        orb_27_tq_6.appendChild(doc.createTextNode(action.getIsUrgent() ? "S" : "R"));
-        orb_27.appendChild(orb_27_tq_6);
-        root.appendChild(orb_27);
+        final Element obr_27_tq_6 = doc.createElement("TQ.6");
+        obr_27_tq_6.appendChild(doc.createTextNode(action.getIsUrgent() ? "S" : "R"));
+        obr_27.appendChild(obr_27_tq_6);
+        root.appendChild(obr_27);
         // OBR.34 [Место проведения исследования]
-        final Element orb_34 = doc.createElement("ORB.34");
+        final Element obr_34 = doc.createElement("OBR.34");
         //---- NDL.5 [Комната]
-        final Element orb_34_ndl_5 = doc.createElement("NDL.5");
-        orb_34_ndl_5.appendChild(doc.createTextNode(orgStructureDirection.getAddress()));
-        orb_34.appendChild(orb_34_ndl_5);
+        final Element obr_34_ndl_5 = doc.createElement("NDL.5");
+        obr_34_ndl_5.appendChild(doc.createTextNode(orgStructureDirection.getAddress()));
+        obr_34.appendChild(obr_34_ndl_5);
         //---- NDL.7 [Отделение]
-        final Element orb_34_ndl_7 = doc.createElement("NDL.7");
+        final Element obr_34_ndl_7 = doc.createElement("NDL.7");
         //---- ---- HD.1
-        final Element orb_34_ndl_7_hd_1 = doc.createElement("HD.1");
-        orb_34_ndl_7_hd_1.appendChild(doc.createTextNode(orgStructureDirection.getCode()));
-        orb_34_ndl_7.appendChild(orb_34_ndl_7_hd_1);
+        final Element obr_34_ndl_7_hd_1 = doc.createElement("HD.1");
+        obr_34_ndl_7_hd_1.appendChild(doc.createTextNode(orgStructureDirection.getCode()));
+        obr_34_ndl_7.appendChild(obr_34_ndl_7_hd_1);
         //---- ---- HD.2
-        final Element orb_34_ndl_7_hd_2 = doc.createElement("HD.2");
-        orb_34_ndl_7_hd_2.appendChild(doc.createTextNode(orgStructureDirection.getName()));
-        orb_34_ndl_7.appendChild(orb_34_ndl_7_hd_2);
-        orb_34.appendChild(orb_34_ndl_7);
+        final Element obr_34_ndl_7_hd_2 = doc.createElement("HD.2");
+        obr_34_ndl_7_hd_2.appendChild(doc.createTextNode(orgStructureDirection.getName()));
+        obr_34_ndl_7.appendChild(obr_34_ndl_7_hd_2);
+        obr_34.appendChild(obr_34_ndl_7);
         //---- NDL.10 [Корпус]
-        final Element orb_34_ndl_10 = doc.createElement("NDL.10");
-        orb_34_ndl_10.appendChild(doc.createTextNode("1"));
-        orb_34.appendChild(orb_34_ndl_10);
+        final Element obr_34_ndl_10 = doc.createElement("NDL.10");
+        obr_34_ndl_10.appendChild(doc.createTextNode("1"));
+        obr_34.appendChild(obr_34_ndl_10);
         //---- NDL.11 [Этаж]
-        final Element orb_34_ndl_11 = doc.createElement("NDL.11");
-        orb_34_ndl_11.appendChild(doc.createTextNode("1"));
-        orb_34.appendChild(orb_34_ndl_11);
-        root.appendChild(orb_34);
+        final Element obr_34_ndl_11 = doc.createElement("NDL.11");
+        obr_34_ndl_11.appendChild(doc.createTextNode("1"));
+        obr_34.appendChild(obr_34_ndl_11);
+        root.appendChild(obr_34);
 
     }
 
