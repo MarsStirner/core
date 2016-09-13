@@ -61,21 +61,13 @@ public class DbConnectorDaoImpl {
     }
 
     public List<DbConnector> getUnprocessedMessagesByDestination(final DbConnector.System system) {
-        return em.createQuery("SELECT a FROM DbConnector a " +
-                                      "WHERE a.destination = :destination " +
-                                      "AND a.procTime IS NULL " +
-                                      "AND EXISTS (" +
-                                      "SELECT b FROM DbConnector b WHERE b.replyUID = a.UID) ", DbConnector.class)
-                .setParameter("destination",system).getResultList();
+        return em.createQuery("SELECT a FROM DbConnector a WHERE a.destination = :destination AND a.procTime IS NULL", DbConnector.class)
+                .setParameter("destination", system).getResultList();
     }
 
-    public List<DbConnector> findByReplyUID(final String uid) {
-        return em.createQuery("SELECT a FROM DbConnector a WHERE a.replyUID = :uid", DbConnector.class).setParameter("uid", uid).getResultList();
-    }
-
-    public DbConnector setProcessed(final DbConnector message) {
+    public DbConnector setProcessed(final DbConnector message, final String errorText) {
         message.setProcTime(new Date());
-        message.setErrorText(null);
+        message.setErrorText(errorText);
         return em.merge(message);
     }
 }

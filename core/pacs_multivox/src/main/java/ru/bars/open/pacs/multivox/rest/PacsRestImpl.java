@@ -67,7 +67,7 @@ public class PacsRestImpl {
             return Response.status(Response.Status.FORBIDDEN).build();
         }
         log.info("#{} launched by [{}]\'{}\'", requestNumber, user.getId(), user.getFullName());
-        final Map<Integer, String> result = pacsIntegration.poll(requestNumber, user);
+        final Map<Integer, String> result = pacsIntegration.pollSend(requestNumber, user);
         final JSONObject jsonResult = new JSONObject(result);
         log.info("#{} End.", requestNumber);
         return Response.ok(jsonResult).build();

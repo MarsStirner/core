@@ -4,6 +4,7 @@ import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 import ru.bars.open.pacs.multivox.dao.DbConnectorDaoImpl;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
@@ -14,6 +15,10 @@ import ru.korus.tmis.core.entity.model.multivox.DbConnector;
 
 import javax.ejb.*;
 import javax.ejb.Schedule;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -51,14 +56,19 @@ public class PacsIntegrationBean {
     @Schedule(hour = "*", minute = "*/3", second = "57", persistent = false)
     @TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
     public void periodicalPoll() {
-        final int requestNumber = counter.incrementAndGet();
-        log.info("#{} periodical launch polling for send", requestNumber);
-        poll(requestNumber, null);
-        log.info("#{} End. Successfuly ", requestNumber);
+        final int requestNumberForSend = counter.incrementAndGet();
+        log.info("#{} periodical launch polling for send", requestNumberForSend);
+        pollSend(requestNumberForSend, null);
+        log.info("#{} End. Successfuly ", requestNumberForSend);
+
+        final int requestNumberForReceive = counter.incrementAndGet();
+        log.info("#{} periodical launch polling for receive", requestNumberForReceive);
+        pollReceive(requestNumberForReceive, null);
+        log.info("#{} End. Successfuly ", requestNumberForReceive);
 
     }
 
-    public Map<Integer, String> poll(final int requestNumber, final Staff sender) {
+    public Map<Integer, String> pollSend(final int requestNumber, final Staff sender) {
         final List<Action> actions = dbAction.getActionsByActionTypFlatCodePrefixAndStatus("multivox_", ActionStatus.STARTED);
         log.debug("#{} founded {} action to send", requestNumber, actions.size());
         final Map<Integer, String> result = new HashMap<>(actions.size());
@@ -79,7 +89,7 @@ public class PacsIntegrationBean {
             dbAction.setActionNoteAndStatus(action, "Action has not ActionType", ActionStatus.STARTED);
             return false;
         } else if (actionType.getDeleted()) {
-            log.warn("{} ActionType[{}] is deleted", logId);
+            log.warn("{} ActionType[{}] is deleted", logId, actionType.getId());
         }
         //TODO constants from CCS
         if (!actionType.getFlatCode().startsWith("multivox_")) {
@@ -162,9 +172,7 @@ public class PacsIntegrationBean {
         dbConnector.persist(messageForRIS);
         setActionSendProperties(action, new Date());
         log.info("{} Sent OID=\'{}\'", logId, messageForRIS.getoID());
-        dbAction.setActionNoteAndStatus(
-                action, String.format("Message is in queue for RIS. OID=\'%s\'", messageForRIS.getoID()), ActionStatus.WAITING
-        );
+        dbAction.setActionNoteAndStatus(action, action.getNote(), ActionStatus.WAITING);
         return true;
     }
 
@@ -193,15 +201,26 @@ public class PacsIntegrationBean {
     }
 
     private void setActionResultProperties(final Action action, final String result) {
+        boolean weblinkFounded = false;
+        boolean applinkFounded = false;
         try {
             for (ActionProperty property : action.getActionProperties()) {
-                if ("multivox_result".equalsIgnoreCase(property.getType().getCode())) {
-                    dbActionProperty.setValue(property, result, 0);
+                if (!weblinkFounded && "multivox_result".equalsIgnoreCase(property.getType().getCode())) {
+                    dbActionProperty.setValue(property, "http://10.1.0.124/webpacs/#/images?StudyExternalID=M"+result, 0);
+                    weblinkFounded = true;
+                    continue;
+                }
+                if (!applinkFounded && "multivox_app_link".equalsIgnoreCase(property.getType().getCode())) {
+                    dbActionProperty.setValue(property, "mvox: -cmd:Load -StudyExternalID:M"+result, 0);
+                    applinkFounded = true;
+                    continue;
+                }
+                if (weblinkFounded && applinkFounded) {
                     break;
                 }
             }
         } catch (Exception e) {
-            log.error("Cannot set ActionProperty (multivox_result)", e);
+            log.error("Cannot set ActionProperty (multivox_result + multivox_app_link )", e);
         }
     }
 
@@ -209,43 +228,80 @@ public class PacsIntegrationBean {
         final List<DbConnector> unprocessedMessages = dbConnector.getUnprocessedMessagesByDestination(DbConnector.System.MIS);
         log.info("#{} For MIS there {} unprocessed messages", requestNumber, unprocessedMessages.size());
         final Map<String, String> result = new HashMap<>(unprocessedMessages.size());
-        int i = 0;
+        int i = 1;
         for (DbConnector message : unprocessedMessages) {
-            i++;
-            result.put(message.getoID(), processMessage(message, "#" + requestNumber + "-" + i));
+            String logId = "#" + requestNumber + "-" + i++;
+            String messageProcessResult;
+            try {
+                messageProcessResult = processMessage(message, logId);
+            } catch (Exception e) {
+                log.error("{} Error. Cause ", logId, e);
+                messageProcessResult = "Error. Cause= " + e.getMessage();
+            }
+            result.put(message.getoID(), messageProcessResult);
         }
         return result;
     }
 
-    private String processMessage(final DbConnector message, final String logId) {
+    private String processMessage(final DbConnector message, final String logId) throws XPathExpressionException {
         log.info("{} Start processing message \'{}\'", logId, message.getUID());
-        final List<DbConnector> sourceMessages = dbConnector.findByReplyUID(message.getUID());
-        if (sourceMessages.isEmpty()) {
-            log.error("{} End processing [{}]. No SourceMessage found!", logId, message.getUID());
-            return "Not found source message";
+        final Document doc = MessageFactory.getDocumentFromBytes(message.getMessage(), "CP1251");
+        final String messageAsString = MessageFactory.getDocumentAsString(doc, logId);
+        if (doc == null || StringUtils.isEmpty(messageAsString)) {
+            log.error("{} Cannot parse message from byte array", logId);
+            dbConnector.setProcessed(message, "Cannot parse message from byte array");
+            return "Cannot parse message from byte array";
+        } else {
+            log.info("{} Result XML message:\n{}", logId, messageAsString);
         }
-        for (DbConnector sourceMessage : sourceMessages) {
-            final Action action = dbAction.getByUUID(sourceMessage.getUID());
-            if (action != null) {
-                final ActionType actionType = action.getActionType();
-                log.info(
-                        "{} By SourceMessage[{}] found Action[{}] - [{}] '{}'",
-                        logId,
-                        sourceMessage.getUID(),
-                        action.getId(),
-                        actionType.getId(),
-                        actionType.getName()
-                );
-                setActionResultProperties(action, " http://ris/webpacs/#/images?StudyExternalID=".concat(String.valueOf(action.getId())));
-                dbAction.setActionNoteAndStatus(action, "ПАКС отдал ответ.", ActionStatus.FINISHED);
-            } else {
-                log.warn("{} By SourceMessage[{}] no Action found!", logId, sourceMessage.getUID());
+        XPath xPath = XPathFactory.newInstance().newXPath();
+        final String xpathExpression = "/ORM_O01/ORM_O01.ORCOBRRQDRQ1ODSODTRXONTEDG1OBXNTECTIBLG/ORC/ORC.2/EI.1";
+        final Node item = (Node) xPath.compile(xpathExpression).evaluate(doc, XPathConstants.NODE);
+        log.info("XPath[\'{}\'] : nodeName=\'{}\', txtContent=\'{}\'", xpathExpression, item.getNodeName(), item.getTextContent());
+        final String actionIdStr = item.getTextContent();
+        Integer actionId = null;
+        if(StringUtils.isNotEmpty(actionIdStr)) {
+            try {
+                actionId = Integer.parseInt(actionIdStr);
+            } catch (NumberFormatException e) {
+                log.error("{} Cannot parse \'{}\' to Integer", logId, actionIdStr);
+                actionId = null;
             }
         }
-        dbConnector.setProcessed(message);
+        if(actionId == null){
+            dbConnector.setProcessed(message, "Cannot parse MIS ID from String to Integer");
+            return "Cannot parse MIS ID from String to Integer";
+        }
+        final Action action = dbAction.getById(actionId);
+        if(action == null){
+            dbConnector.setProcessed(message, "Cannot find Action by MIS ID from message");
+            return "Cannot find Action by MIS ID from message";
+        }
+        log.info("{} message is for Action[{}]", logId, action.getId());
+        final ActionType actionType = action.getActionType();
+        if (actionType == null) {
+            log.error("{} Action has not ActionType", logId);
+            dbConnector.setProcessed(message, "Action has not ActionType");
+            return "Action has not ActionType";
+        } else if (actionType.getDeleted()) {
+            log.warn("{} ActionType[{}] is deleted", logId, actionType.getId());
+        }
+        //TODO constants from CCS
+        if (!actionType.getFlatCode().startsWith("multivox_")) {
+            log.error("{} ActionType[{}] has wrong flatCode for multivox = \'{}\'", logId, actionType.getId(), actionType.getFlatCode());
+            dbConnector.setProcessed(message, "ActionType has wrong flatCode for multivox");
+            return "ActionType has wrong flatCode for multivox";
+        }
+        if (MessageFactory.DicomModality.getByCode(actionType.getMnemonic()) == null) {
+            log.error("{} ActionType[{}] has wrong mnemonic for multivox = \'{}\'", logId, actionType.getId(), actionType.getMnemonic());
+            dbConnector.setProcessed(message, "ActionType has wrong mnemonic for Multivox");
+            return "ActionType has wrong mnemonic for Multivox";
+        }
+        //TODO constants from CCS
+        setActionResultProperties(action, String.valueOf(action.getId()));
+        dbAction.setActionNoteAndStatus(action, action.getNote(), ActionStatus.FINISHED);
+        dbConnector.setProcessed(message, null);
         log.info("{} End processing message \'{}\'.", logId, message.getUID());
         return "PROCESSED";
     }
-
-
 }

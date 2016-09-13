@@ -4,8 +4,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 import ru.korus.tmis.core.entity.model.*;
 
+import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -14,6 +17,8 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
 import java.io.StringWriter;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -203,7 +208,6 @@ public class MessageFactory {
     }
 
 
-
     private static void constructMSHSection(final Document doc, final Element root, final Action action) {
         // MSH.1
         final Element msh_1 = doc.createElement("MSH.1");
@@ -309,10 +313,7 @@ public class MessageFactory {
     }
 
     private static void constructOBRSection(
-            final Document doc,
-            final Element root,
-            final Action action,
-            final OrgStructure orgStructureDirection
+            final Document doc, final Element root, final Action action, final OrgStructure orgStructureDirection
     ) {
         final ActionType actionType = action.getActionType();
         // http://hl7.cgmpolska.pl/HL7/ch400024.htm
@@ -390,13 +391,8 @@ public class MessageFactory {
     }
 
 
-
     private static void constructORCSection(
-            final Document doc,
-            final Element root,
-            final Action action,
-            final Staff doctor,
-            final OrgStructure orgStructure
+            final Document doc, final Element root, final Action action, final Staff doctor, final OrgStructure orgStructure
     ) {
         // ORC.1 [Order control: NW - new order; XO – change order, CA - canceled; SC - status changed]
         final Element orc_1 = doc.createElement("ORC.1");
@@ -495,9 +491,26 @@ public class MessageFactory {
         }
     }
 
+    public static Document getDocumentFromBytes(byte[] content, String encoding) {
+        try {
+            final DocumentBuilder db = DocumentBuilderFactory.newInstance().newDocumentBuilder();
+            final InputSource is = new InputSource();
+            is.setByteStream(new ByteArrayInputStream(content));
+            is.setEncoding(encoding);
+            return db.parse(is);
+        } catch (ParserConfigurationException e) {
+            log.error("Cannot initialize XML DocumentBuilder from Factory", e);
+        } catch (SAXException e) {
+            log.error("Parse message Exception (SAX)", e);
+        } catch (IOException e) {
+            log.error("Parse message Exception (IO)", e);
+        }
+        return null;
+    }
 
-    public enum DicomModality{
-        CT("CT","компьютерная томография"),
+
+    public enum DicomModality {
+        CT("CT", "компьютерная томография"),
         MR("MR", "магнитнорезонансная томография"),
         US("US", "ультразвук"),
         XA("XA", "ангиография"),
@@ -508,9 +521,18 @@ public class MessageFactory {
         private final String code;
         private final String value;
 
-        DicomModality(String code , String value) {
+        DicomModality(String code, String value) {
             this.code = code;
             this.value = value;
+        }
+
+        public static DicomModality getByCode(String code) {
+            for (DicomModality dicomModality : values()) {
+                if (code.equalsIgnoreCase(dicomModality.getCode())) {
+                    return dicomModality;
+                }
+            }
+            return null;
         }
 
         public String getCode() {
@@ -519,15 +541,6 @@ public class MessageFactory {
 
         public String getValue() {
             return value;
-        }
-
-        public static DicomModality getByCode(String code){
-            for (DicomModality dicomModality : values()) {
-                if(code.equalsIgnoreCase(dicomModality.getCode())){
-                    return dicomModality;
-                }
-            }
-            return null;
         }
 
 
