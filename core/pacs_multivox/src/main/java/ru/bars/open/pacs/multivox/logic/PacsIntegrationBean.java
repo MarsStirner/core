@@ -5,6 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
+import ru.bars.open.pacs.multivox.config.PacsSettings;
 import ru.bars.open.pacs.multivox.dao.DbConnectorDaoImpl;
 import ru.korus.tmis.core.database.DbStaffBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
@@ -69,7 +70,10 @@ public class PacsIntegrationBean {
     }
 
     public Map<Integer, String> pollSend(final int requestNumber, final Staff sender) {
-        final List<Action> actions = dbAction.getActionsByActionTypFlatCodePrefixAndStatus("multivox_", ActionStatus.STARTED);
+        final List<Action> actions = dbAction.getActionsByActionTypFlatCodePrefixAndStatus(
+                PacsSettings.getAT_FLAT_CODE_PREFIX(),
+                ActionStatus.STARTED
+        );
         log.debug("#{} founded {} action to send", requestNumber, actions.size());
         final Map<Integer, String> result = new HashMap<>(actions.size());
         for (Action action : actions) {
@@ -91,8 +95,7 @@ public class PacsIntegrationBean {
         } else if (actionType.getDeleted()) {
             log.warn("{} ActionType[{}] is deleted", logId, actionType.getId());
         }
-        //TODO constants from CCS
-        if (!actionType.getFlatCode().startsWith("multivox_")) {
+        if (!actionType.getFlatCode().startsWith(PacsSettings.getAT_FLAT_CODE_PREFIX())) {
             log.error("{} ActionType[{}] has wrong flatCode for multivox = \'{}\'", logId, actionType.getId(), actionType.getFlatCode());
             //dbAction.setActionNoteAndStatus(action, "ActionType has wrong flatCode for Multivox", ActionStatus.STARTED);
             return false;
@@ -181,12 +184,12 @@ public class PacsIntegrationBean {
         boolean sendTimePropertyFounded = false;
         try {
             for (ActionProperty property : action.getActionProperties()) {
-                if (!sendDatePropertyFounded && "multivox_send_date".equalsIgnoreCase(property.getType().getCode())) {
+                if (!sendDatePropertyFounded && PacsSettings.getAPT_CODE_SEND_DATE().equalsIgnoreCase(property.getType().getCode())) {
                     dbActionProperty.setValue(property, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date), 0);
                     sendDatePropertyFounded = true;
                     continue;
                 }
-                if (!sendTimePropertyFounded && "multivox_send_time".equalsIgnoreCase(property.getType().getCode())) {
+                if (!sendTimePropertyFounded && PacsSettings.getAPT_CODE_SEND_TIME().equalsIgnoreCase(property.getType().getCode())) {
                     dbActionProperty.setValue(property, new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(date), 0);
                     sendTimePropertyFounded = true;
                     continue;
@@ -205,13 +208,13 @@ public class PacsIntegrationBean {
         boolean applinkFounded = false;
         try {
             for (ActionProperty property : action.getActionProperties()) {
-                if (!weblinkFounded && "multivox_result".equalsIgnoreCase(property.getType().getCode())) {
-                    dbActionProperty.setValue(property, "http://10.1.0.124/webpacs/#/images?StudyExternalID=M"+result, 0);
+                if (!weblinkFounded && PacsSettings.getAPT_CODE_RESULT().equalsIgnoreCase(property.getType().getCode())) {
+                    dbActionProperty.setValue(property, PacsSettings.getAPV_RESULT()+result, 0);
                     weblinkFounded = true;
                     continue;
                 }
-                if (!applinkFounded && "multivox_app_link".equalsIgnoreCase(property.getType().getCode())) {
-                    dbActionProperty.setValue(property, "mvox: -cmd:Load -StudyExternalID:M"+result, 0);
+                if (!applinkFounded && PacsSettings.getAPT_CODE_APP_LINK().equalsIgnoreCase(property.getType().getCode())) {
+                    dbActionProperty.setValue(property, PacsSettings.getAPV_APP_LINK()+result, 0);
                     applinkFounded = true;
                     continue;
                 }
@@ -286,8 +289,7 @@ public class PacsIntegrationBean {
         } else if (actionType.getDeleted()) {
             log.warn("{} ActionType[{}] is deleted", logId, actionType.getId());
         }
-        //TODO constants from CCS
-        if (!actionType.getFlatCode().startsWith("multivox_")) {
+        if (!actionType.getFlatCode().startsWith(PacsSettings.getAT_FLAT_CODE_PREFIX())) {
             log.error("{} ActionType[{}] has wrong flatCode for multivox = \'{}\'", logId, actionType.getId(), actionType.getFlatCode());
             dbConnector.setProcessed(message, "ActionType has wrong flatCode for multivox");
             return "ActionType has wrong flatCode for multivox";
@@ -297,7 +299,6 @@ public class PacsIntegrationBean {
             dbConnector.setProcessed(message, "ActionType has wrong mnemonic for Multivox");
             return "ActionType has wrong mnemonic for Multivox";
         }
-        //TODO constants from CCS
         setActionResultProperties(action, String.valueOf(action.getId()));
         dbAction.setActionNoteAndStatus(action, action.getNote(), ActionStatus.FINISHED);
         dbConnector.setProcessed(message, null);
