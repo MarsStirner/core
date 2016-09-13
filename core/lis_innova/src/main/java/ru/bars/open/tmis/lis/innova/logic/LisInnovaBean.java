@@ -68,9 +68,18 @@ public class LisInnovaBean {
             log.info("#{} Action[{}] - \'{}\'", logNumber, action.getId(), action.getActionType().getName());
         }
         final Event event = getEventByActionList(actionList, logNumber);
+        final EventType eventType = event.getEventType();
         final Patient patient = ttj.getPatient();
-        final Staff doctor = actionList.get(0).getAssigner();
-        log.info("#{} Event[{}]", logNumber, event.getId());
+        final Staff doctor = getDoctorForLis(event, actionList);
+        log.info(
+                "#{} Event[{}]-\'[{}] {}\', Doctor[{}]-\'{}\'",
+                logNumber,
+                event.getId(),
+                eventType.getId(),
+                eventType.getName(),
+                doctor.getId(),
+                doctor.getFullName()
+        );
         final PatientInfo patientInfo = getPatientInfo(patient);
         final DiagnosticRequestInfo diagnosticRequestInfo = getDiagnosticRequestInfo(ttj, event, doctor, logNumber);
         final BiomaterialInfo biomaterialInfo = getBiomaterialInfo(ttj);
@@ -82,11 +91,11 @@ public class LisInnovaBean {
             final Integer result = service.queryAnalysis(patientInfo, diagnosticRequestInfo, biomaterialInfo, arrayOfOrderInfo);
             if (result == 0) {
                 for (Action action : actionList) {
-                    if(action.getStatus() == 0) {
+                    if (action.getStatus() == 0) {
                         actionBean.updateActionStatusWithFlush(action.getId(), (short) 1);
                     }
                 }
-                ttj.setNote("Sended successfully at "+new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
+                ttj.setNote("Sended successfully at " + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()));
                 ttj.setStatus(3);
                 em.merge(ttj);
                 return "SENDED";
@@ -94,13 +103,28 @@ public class LisInnovaBean {
             return "ERROR";
 
         } catch (Exception e) {
-            log.error("#{} End process TTJ[{}], Exception ",logNumber, ttj.getId(), e);
-            ttj.setNote("Error: "+e.getMessage());
+            log.error("#{} End process TTJ[{}], Exception ", logNumber, ttj.getId(), e);
+            ttj.setNote("Error: " + e.getMessage());
             ttj.setStatus(4);
             em.merge(ttj);
             return e.getMessage();
         }
 
+    }
+
+    private Staff getDoctorForLis(final Event event, final List<Action> actionList) {
+        //https://jira.bars-open.ru/browse/TMIS-1286
+        /* 1. Передавать в ЛИС id и ФИО, подразделение фактически назначившего исследование врача только в случае,
+               если тип финансирования у текущего обращения "Административное разрешение";
+           2. Во всех случаях, за исключением пункта 1 передавать в ЛИС id и ФИО, подразделение лечащего врача,
+                указанного в обращении (Event.execPerson_id).  */
+        Staff result = null;
+        final EventType eventType = event.getEventType();
+        if (eventType.getFinance() != null
+                && LisInnovaSettings.getAdministrativePermissionRbFinanceCode().equals(eventType.getFinance().getCode())) {
+            result = actionList.get(0).getAssigner();
+        }
+        return result != null ? result : event.getExecutor();
     }
 
     private ArrayOfOrderInfo getArrayOfOrderInfo(final List<Action> actionList, final long logNumber) {
@@ -130,7 +154,7 @@ public class LisInnovaBean {
         final ArrayOfTindicator arrayOfTindicator = of.createArrayOfTindicator();
         for (ActionProperty property : action.getActionProperties()) {
             // Проверка что свойство назначено в исследовании - экшене
-            if(!property.getDeleted() && property.getIsAssigned()) {
+            if (!property.getDeleted() && property.getIsAssigned()) {
                 final RbTest test = property.getType().getTest();
                 if (test != null) {
                     final Tindicator tindicator = of.createTindicator();
@@ -174,7 +198,7 @@ public class LisInnovaBean {
         return result;
     }
 
-    private DiagnosticRequestInfo getDiagnosticRequestInfo(TakenTissue ttj, Event e, Staff doctor, long logNumber) {
+    private DiagnosticRequestInfo getDiagnosticRequestInfo(final TakenTissue ttj, final Event e, final Staff doctor, final long logNumber) {
         final ObjectFactory of = new ObjectFactory();
         final DiagnosticRequestInfo result = of.createDiagnosticRequestInfo();
         result.setOrderMisId(ttj.getId());
@@ -182,7 +206,7 @@ public class LisInnovaBean {
         result.setOrderCaseId(of.createDiagnosticRequestInfoOrderCaseId(e.getExternalId()));
         // код финансирования
         result.setOrderFinanceId(dbCustomQuery.getFinanceId(e));
-        // CreateDate (datetime) -- дата создания направления врачом (Action.createDatetime)
+        // CreateDate (datetime) -- дата создания направления врачом (TTJ.datetimeTaken)
         result.setOrderMisDate(date2xmlGC(ttj.getDatetimeTaken()));
         // PregnancyDurationWeeks (int) -- срок беременности пациентки (в неделях)
         result.setOrderPregnat(e.getPregnancyWeek() * 7);

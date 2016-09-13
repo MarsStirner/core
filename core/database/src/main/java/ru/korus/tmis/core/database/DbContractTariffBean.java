@@ -1,7 +1,6 @@
 package ru.korus.tmis.core.database;
 
 import org.apache.commons.lang.NotImplementedException;
-import org.joda.time.DateMidnight;
 import ru.korus.tmis.core.entity.model.ContractTariff;
 
 import javax.ejb.Stateless;

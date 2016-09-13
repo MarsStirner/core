@@ -131,6 +131,7 @@ public class ActionProperty
         valueTypeMap.put("Person", APValuePerson.class);
         valueTypeMap.put("String", APValueString.class);
         valueTypeMap.put("Text", APValueString.class);
+        valueTypeMap.put("URL", APValueString.class);
         valueTypeMap.put("Time", APValueTime.class);
         valueTypeMap.put("RLS", APValueRLS.class);
         valueTypeMap.put(MKB, APValueMKB.class);

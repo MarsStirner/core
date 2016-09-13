@@ -14,6 +14,7 @@ import java.net.URL;
  */
 public class LisInnovaSettings {
 
+    private static String ADMINISTRATIVE_PERMISSION_RB_FINANCE_CODE; //"8"
     private static String LAB_CODE; // = "0101";
     private static URL serviceURL; // = "http://10.1.0.109:9510/lis_service/";
 
@@ -21,6 +22,7 @@ public class LisInnovaSettings {
     public LisInnovaSettings(final Settings settings) throws MalformedURLException {
         LAB_CODE = settings.getLAB_CODE();
         serviceURL = new URL(settings.getSERVICE_URL());
+        ADMINISTRATIVE_PERMISSION_RB_FINANCE_CODE = settings.getADMINISTRATIVE_PERMISSION_RB_FINANCE_CODE();
     }
 
     public static String getLabCode() {
@@ -31,4 +33,8 @@ public class LisInnovaSettings {
         return serviceURL;
     }
 
+    public static String getAdministrativePermissionRbFinanceCode() {
+        return ADMINISTRATIVE_PERMISSION_RB_FINANCE_CODE;
+
+    }
 }

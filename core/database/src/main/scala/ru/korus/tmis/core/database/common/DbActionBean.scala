@@ -8,6 +8,7 @@ import java.util.{Date, UUID}
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TypedQuery}
 
+import org.apache.commons.lang.StringUtils
 import org.joda.time.{DateTime, DateTimeConstants}
 import org.slf4j.{Logger, LoggerFactory}
 import ru.korus.tmis.core.auth.AuthData
@@ -763,7 +764,7 @@ class DbActionBean
   override def setActionNoteAndStatus(action: Action, note: String, actionStatus: ActionStatus): Action = {
     action.setModifyDatetime(new Date())
     action.setModifyPerson(null)
-    action.setNote(note)
+    action.setNote(StringUtils.defaultString(note))
     action.setStatus(actionStatus.getCode)
     em.merge(action)
   }
