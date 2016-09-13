@@ -70,7 +70,7 @@ class DbActionBean
 
 
   def getActionIdWithoutDetach(id: Int): Action = {
-    logger.info("Requested action id[" + id + "]")
+    logger.info("Requested action id[{}]", id)
     val result = em.createQuery(ActionFindQuery,
       classOf[Action])
       .setParameter("id", id)
@@ -83,7 +83,7 @@ class DbActionBean
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
   def getActionByIdWithIgnoreDeleted(id: Int) = {
-    logger.info("Requested action id[" + id + "]")
+    logger.info("Requested action id[{}]", id)
     val result = em.createQuery(
       """
       SELECT a
@@ -195,7 +195,7 @@ class DbActionBean
       .getResultList
     result.size match {
       case 0 => null
-      case size => result.iterator.next()
+      case size => result.iterator.next
     }
   }
 
@@ -206,7 +206,7 @@ class DbActionBean
       .getResultList
     result.size match {
       case 0 => null
-      case size => result.iterator.next()
+      case size => result.iterator.next
     }
   }
 
@@ -215,7 +215,10 @@ class DbActionBean
       classOf[Action])
       .setParameter("actionType", actionType)
       .getResultList
-    result.iterator().next()
+    result.size match {
+      case 0 => null
+      case size => result.iterator.next
+    }
   }
 
   def getActionsWithFilter(limit: Int,
@@ -250,7 +253,6 @@ class DbActionBean
       .setParameter("codes", asJavaCollection(codes))
       .setParameter("id", eventId)
       .getResultList
-
     result.size match {
       case 0 => null
       case size => result
@@ -280,10 +282,9 @@ class DbActionBean
     val result = typed.setParameter("id", eventId)
       .setParameter("actionTypeId", actionTypeId)
       .getResultList
-
     result.size match {
       case 0 => 0
-      case size => result(0)
+      case size => result.iterator.next
     }
   }
 
@@ -293,11 +294,9 @@ class DbActionBean
       .setParameter("atIds", asJavaCollection(actionTypeIds))
       .setMaxResults(1)
       .getResultList
-
-
     result.size match {
       case 0 => 0
-      case size => result(0)
+      case size => result.iterator.next
     }
   }
 
@@ -305,11 +304,10 @@ class DbActionBean
   def getEvent29AndAction19ForAction(action: Action) = {
     val typed = em.createQuery(GetEvent29AndAction19ForAction, classOf[Action])
       .setParameter("directionDate", action.getPlannedEndDate)
-
     val result = typed.getResultList
     result.size match {
       case 0 => null
-      case size => result(0)
+      case size => result.iterator.next
     }
   }
 
@@ -626,25 +624,21 @@ class DbActionBean
 
   def closeAppealsDocs() {
     logger.info("Запущена задача закрытия документов в закрытых историях болезни")
-
-    val defaultDaysValue = 2
     val docMnemonics = Seq("EXAM", "EPI", "JOUR", "ORD", "NOT", "OTH")
 
     val now = new DateTime()
     now.getDayOfWeek match {
-      case DateTimeConstants.SUNDAY | DateTimeConstants.SATURDAY => {
-        logger.info("Skip closing documents in closed events. It's weekend! Go party!")
-        return // Не следует запускать проверку в выходные дни
-      }
+      // Не следует запускать проверку в выходные дни
+      case DateTimeConstants.SUNDAY | DateTimeConstants.SATURDAY =>  logger.info("Skip closing documents in closed events. It's weekend! Go party!")
+        return
+      case _ =>
     }
-
+    //Количество дней из настроек, которые надо отнять
     val closeIntervalInDays: Int = try {
       ConfigManager.Common.eventEditableDays
     } catch {
-      case e: Throwable => {
-        logger.warn("Cannot receive value of " + i18n("settings.path.eventBlockTime") + " setting. Set as 2 days.")
-        defaultDaysValue
-      }
+      case e: Exception => logger.warn("Cannot receive value of " + i18n("settings.path.eventBlockTime") + " setting. Set as 2 days.")
+        2
     }
 
     var i = closeIntervalInDays
@@ -653,23 +647,24 @@ class DbActionBean
     while (i != 0) {
       date = date.minusDays(1)
       date.getDayOfWeek match {
-        case d if d != DateTimeConstants.SUNDAY | d != DateTimeConstants.SATURDAY => i -= 1
+        case DateTimeConstants.SUNDAY | DateTimeConstants.SATURDAY =>
+        case _ =>  i -= 1
       }
     }
 
-    em.createQuery("SELECT a FROM Action a WHERE a.event.execDate < :date AND a.endDate IS NULL AND a.actionType.mnemonic IN :docMnemonics", classOf[Action])
+    val actions = em.createQuery("SELECT a FROM Action a WHERE a.event.execDate < :date AND a.endDate IS NULL AND a.actionType.mnemonic IN :docMnemonics", classOf[Action])
       .setParameter("date", date.toDate)
       .setParameter("docMnemonics", asJavaCollection(docMnemonics))
       .getResultList
 
-      // Закрываем документы датой закрытия истории болезни
-      .foreach(a => {
+    // Закрываем документы датой закрытия истории болезни
+    actions.foreach(a => {
       a setEndDate a.getEvent.getExecDate
       a setStatus ActionStatus.FINISHED.getCode
       a setModifyDatetime now.toDate
     })
     em.flush()
-
+    logger.info("Закончена задача закрытия документов в закрытых историях болезни. Закрыты следующие экшены: {}", actions.map(_.getId) )
   }
 
   def getServiceList(eventId: Integer): util.List[Action] = {
