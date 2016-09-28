@@ -734,6 +734,7 @@ class DbActionBean
     em.find(classOf[Action], id)
   }
 
+  //TODO может поставить условие, где экшенны больше 20027000  БЛЯТЬ БЛЯТЬ, импортируют они экшены, которые не надо отправлять
   override def getActionsByActionTypFlatCodePrefixAndStatus(flatCodePrefix: String, status: ActionStatus): util.List[Action] = {
     val query =
       """
@@ -744,6 +745,7 @@ class DbActionBean
         |AND a.status = :status
         |AND aty.flatCode LIKE :flatCode
         |AND aty.mnemonic <> ''
+        |AND a.id > 20027000
         |ORDER BY a.id DESC
       """.stripMargin
     em.createQuery(query, classOf[Action]).setParameter("status", status.getCode).setParameter("flatCode", flatCodePrefix + "%").getResultList
