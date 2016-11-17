@@ -1,5 +1,6 @@
 package ru.bars.open.pacs.multivox.logic;
 
+import org.joda.time.DateTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -158,7 +159,18 @@ public class MessageFactory {
         final Element pid_2 = doc.createElement("PID.2");
         //---- CX.1 [Current patient card (year after slash)]
         final Element pid_2_cx_1 = doc.createElement("CX.1");
-        pid_2_cx_1.appendChild(doc.createTextNode(isStationaryEvent ? event.getExternalId() : String.valueOf(client.getId())));
+        final StringBuilder pid_2_cx_1_value= new StringBuilder();
+        if(isStationaryEvent){
+            pid_2_cx_1_value.append(event.getExternalId());
+            if(!event.getExternalId().contains("/")){
+                //TODO https://jira.bars-open.ru/browse/TMIS-1348
+                //Вероятно будет лучше юзать какую-нибудь дату из ИБ
+              pid_2_cx_1_value.append("/").append(new DateTime().getYear());
+            }
+        } else {
+            pid_2_cx_1_value.append(client.getId());
+        }
+        pid_2_cx_1.appendChild(doc.createTextNode(pid_2_cx_1_value.toString()));
         pid_2.appendChild(pid_2_cx_1);
         //---- CX.5 [Card Type]
         final Element pid_2_cx_5 = doc.createElement("CX.5");
