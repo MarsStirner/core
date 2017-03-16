@@ -69,7 +69,7 @@ public class LisInnovaBean {
         }
         final Event event = getEventByActionList(actionList, logNumber);
         final EventType eventType = event.getEventType();
-        final Patient patient = ttj.getPatient();
+        final Patient patient = event.getPatient();
         final Staff doctor = getDoctorForLis(event, actionList);
         log.info(
                 "#{} Event[{}]-\'[{}] {}\', Doctor[{}]-\'{}\'",

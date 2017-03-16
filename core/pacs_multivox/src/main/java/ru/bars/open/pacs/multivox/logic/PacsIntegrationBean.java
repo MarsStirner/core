@@ -112,7 +112,7 @@ public class PacsIntegrationBean {
             }
             if (action.getPlannedEndDate() == null) {
                 log.error("{} Action has empty plannedEndDate", logId);
-                dbAction.setActionNoteAndStatus(action, "Action has empty plannedEndDate", ActionStatus.STARTED);
+                dbAction.setActionNoteAndStatus(action, "Не указана плановая дата исследования", ActionStatus.STARTED);
                 return false;
             }
             log.info("{} Start sending Action - [{}] \'{}\'", logId, actionType.getId(), actionType.getName());

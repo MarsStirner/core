@@ -1,8 +1,8 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
+import java.io.Serializable;
 
 @Embeddable
 public class IndexedId implements Serializable {
