@@ -12,9 +12,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import javax.ejb.Singleton;
 import javax.ejb.Startup;
-import javax.naming.ConfigurationException;
 import javax.ws.rs.core.Application;
-import java.net.MalformedURLException;
 
 /**
  * Author: Upatov Egor <br>
@@ -33,7 +31,7 @@ public class ApplicationConfig extends Application {
     public static final String DEFAULT_VALUE_CONFIGURATION_SERVICE_CONFIG_NAME = "PACS";
 
     @PostConstruct
-    public void init() throws ConfigurationException, MalformedURLException {
+    public void init() {
         logger.info("Start application");
         final String configurationServiceUrl = System.getProperty(SYS_PROP_NAME_CONFIGURATION_SERVICE_URL, DEFAULT_VALUE_CONFIGURATION_SERVICE_URL);
         final String configurationName = System.getProperty(
@@ -59,15 +57,15 @@ public class ApplicationConfig extends Application {
                     logger.info("After processing config is: {}", result);
                 } else {
                     logger.error("Settings is not parsed correctly.");
-                    throw new ConfigurationException("Incorrect settings format");
+                    throw new IllegalStateException("Incorrect settings format");
                 }
             } else {
                 logger.error("CRITICAL_ERROR: Cannot initialize settings from URL: \'{}\'. Meta is not 200 : {}", fullUrl, meta);
-                throw new ConfigurationException("Incorrect settings");
+                throw new IllegalStateException("Incorrect settings");
             }
         } else {
             logger.error("CRITICAL_ERROR: Cannot initialize settings from URL: \'{}\'. Null response", fullUrl);
-            throw new ConfigurationException("Null response");
+            throw new IllegalStateException("Null response");
         }
     }
 

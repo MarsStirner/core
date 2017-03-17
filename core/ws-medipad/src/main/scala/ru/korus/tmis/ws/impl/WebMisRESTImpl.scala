@@ -203,9 +203,6 @@ with CAPids {
   var dbRbLaboratory: DbRbLaboratory = _
 
   @EJB
-  var dbFdRecordBean: DbFDFieldBeanLocal = _
-
-  @EJB
   var monitoringBeanLocal: MonitoringBeanLocal = _
 
   @EJB

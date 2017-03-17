@@ -8,6 +8,7 @@ import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 import javax.xml.namespace.QName
 
 import grizzled.slf4j.Logging
+import org.apache.commons.lang.StringUtils
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
@@ -566,14 +567,14 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
           })
         })
     }
-
-    // Сохраняем дефекты биоматериала в комментарий к действию
-    a.setNote(biomaterialDefects)
     // Изменяем статус действия на "Закончено"
-    if (finished) {
+    if (finished && StringUtils.isEmpty(biomaterialDefects)) {
       a.setStatus(ActionStatus.FINISHED.getCode)
+    } else {
+      // Сохраняем дефекты биоматериала в комментарий к действию
+      a.setNote(biomaterialDefects)
+      a.setStatus(ActionStatus.CANCELLED.getCode)
     }
-
     // Сохраняем изменившиеся сущности в БД
     dbManager.mergeAll(entities)
 
