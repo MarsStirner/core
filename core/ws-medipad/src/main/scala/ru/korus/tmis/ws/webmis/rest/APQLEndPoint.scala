@@ -26,7 +26,7 @@ class APQLEndPoint {
   @POST
   def runQuery(@Context servRequest: HttpServletRequest,
                @QueryParam("callback") callback: String,
-               query: String) = {
+               query: String): JSONWithPadding = {
     try {
       val p = new APQLParser
       val parseResult = p.parse(query)
@@ -48,7 +48,7 @@ class APQLEndPoint {
              @QueryParam("callback") callback: String,
              @QueryParam("eventId") eventId: Int,
              @QueryParam("actionTypeId") actionTypeId: Int,
-             @QueryParam("actionPropertyTypeId") actionPropertyTypeId: Int) = {
+             @QueryParam("actionPropertyTypeId") actionPropertyTypeId: Int): JSONWithPadding = {
     new JSONWithPadding(wsImpl.calculateActionPropertyValue(eventId, actionTypeId, actionPropertyTypeId), callback)
   }
 

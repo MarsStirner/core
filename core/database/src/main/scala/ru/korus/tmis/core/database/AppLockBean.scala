@@ -23,7 +23,7 @@ class AppLockBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def prepare() = {
+  def prepare(): Int = {
     em.createNativeQuery(getAppLockPrepareCall)
       .executeUpdate()
   }
@@ -77,14 +77,14 @@ class AppLockBean
     }
   }
 
-  def releaseAppLock(lockId: Int) = {
+  def releaseAppLock(lockId: Int): Boolean = {
     em.createNativeQuery(releaseAppLockCall)
       .setParameter(1, lockId)
       .executeUpdate()
     true
   }
 
-  def prolongAppLock(lockId: Int) = {
+  def prolongAppLock(lockId: Int): Boolean = {
     em.createNativeQuery(prolongAppLockCall)
       .setParameter(1, lockId)
       .executeUpdate()

@@ -60,9 +60,9 @@ class DbRbTempInvalidDocumentBean
     val result = em.createNamedQuery("RbTempInvalidDocument.findByCode",
       classOf[RbTempInvalidDocument]).setParameter("code", code).getResultList
     if (result.isEmpty) {
-      return null
+      null
     } else {
-      return result.iterator.next
+      result.iterator.next
     }
   }
 }

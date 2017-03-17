@@ -31,33 +31,33 @@ object ActionWrapperInfo extends Configuration {
   var PlannedEndDate = StringId("plannedEndDate")
   var AssignerId = StringId("assignerId")
   var ExecutorId = StringId("executorId")
-  var PacientInQueueType = StringId("pacientInQueueType")
+  var PatientInQueueType = StringId("patientInQueueType")
   //var ToOrder = StringId("toOrder")
 
   // Typed internal Ids
-  def TypedId = (Id, Types.Integer)
-  def TypedName = (Name, Types.String)
-  def TypedBeginDate = (BeginDate, Types.Datetime)
-  def TypedEndDate = (EndDate, Types.Datetime)
-  def TypedDates = (Dates, Types.Datetime)
-  def TypedExecutorLastName = (ExecutorLastName, Types.String)
-  def TypedExecutorFirstName = (ExecutorFirstName, Types.String)
-  def TypedExecutorMiddleName = (ExecutorMiddleName, Types.String)
-  def TypedExecutorSpecs = (ExecutorSpecs, Types.String)
-  def TypedExecutorPost = (ExecutorPost, Types.String)
-  def TypedAssignerLastName = (AssignerLastName, Types.String)
-  def TypedAssignerFirstName = (AssignerFirstName, Types.String)
-  def TypedAssignerMiddleName = (AssignerMiddleName, Types.String)
-  def TypedAssignerSpecs = (AssignerSpecs, Types.String)
-  def TypedAssignerPost = (AssignerPost, Types.String)
-  def TypedStatus = (Status, Types.Integer)
-  def TypedUrgent = (Urgent, Types.Boolean)
-  def TypedFinance = (Finance, Types.String)
-  def TypedPlannedEndDate = (PlannedEndDate, Types.Datetime)
-  def TypedPacientInQueueType = (PacientInQueueType, Types.Integer)
+  def TypedId: (StringId, String) = (Id, Types.Integer)
+  def TypedName: (StringId, String) = (Name, Types.String)
+  def TypedBeginDate: (StringId, String) = (BeginDate, Types.Datetime)
+  def TypedEndDate: (StringId, String) = (EndDate, Types.Datetime)
+  def TypedDates: (StringId, String) = (Dates, Types.Datetime)
+  def TypedExecutorLastName: (StringId, String) = (ExecutorLastName, Types.String)
+  def TypedExecutorFirstName: (StringId, String) = (ExecutorFirstName, Types.String)
+  def TypedExecutorMiddleName: (StringId, String) = (ExecutorMiddleName, Types.String)
+  def TypedExecutorSpecs: (StringId, String) = (ExecutorSpecs, Types.String)
+  def TypedExecutorPost: (StringId, String) = (ExecutorPost, Types.String)
+  def TypedAssignerLastName: (StringId, String) = (AssignerLastName, Types.String)
+  def TypedAssignerFirstName: (StringId, String) = (AssignerFirstName, Types.String)
+  def TypedAssignerMiddleName: (StringId, String) = (AssignerMiddleName, Types.String)
+  def TypedAssignerSpecs: (StringId, String) = (AssignerSpecs, Types.String)
+  def TypedAssignerPost: (StringId, String) = (AssignerPost, Types.String)
+  def TypedStatus: (StringId, String) = (Status, Types.Integer)
+  def TypedUrgent: (StringId, String) = (Urgent, Types.Boolean)
+  def TypedFinance: (StringId, String) = (Finance, Types.String)
+  def TypedPlannedEndDate: (StringId, String) = (PlannedEndDate, Types.Datetime)
+  def TypedPacientInQueueType: (StringId, String) = (PatientInQueueType, Types.Integer)
   //def TypedToOrder = (ToOrder, Types.Boolean)
-  def TypedAssignerId = (AssignerId, Types.Integer)
-  def TypedExecutorId = (ExecutorId, Types.Integer)
+  def TypedAssignerId: (StringId, String) = (AssignerId, Types.Integer)
+  def TypedExecutorId: (StringId, String) = (ExecutorId, Types.Integer)
 
   // External Ids
   var assessmentId = StringId("assessmentId")
@@ -91,7 +91,7 @@ object ActionWrapperInfo extends Configuration {
   var plannedEndDate = StringId("plannedEndDate")
   var assignerId = StringId("assignerId")
   var executorId = StringId("executorId")
-  private var pacientInQueueType = StringId("pacientInQueueType")
+  private var pacientInQueueType = StringId("patientInQueueType")
   //////////////////////////////////////////////////////////////////////////////
 
   def map = Map(
@@ -144,11 +144,11 @@ object ActionWrapperInfo extends Configuration {
     //toOrder -> TypedToOrder
   )
 
-  def apply(key: StringId) = {
+  def apply(key: StringId): (StringId, String) = {
     map(key)
   }
 
-  def isSupported(key: String) = {
+  def isSupported(key: String): Boolean = {
     map.keySet(StringId(key))
   }
 
@@ -174,9 +174,9 @@ object ActionWrapperInfo extends Configuration {
     val PlannedEndDate = awi.PlannedEndDate
     val AssignerId = awi.AssignerId
     val ExecutorId = awi.ExecutorId
-    val PacientInQueueType = awi.PacientInQueueType
+    val PatientInQueueType = awi.PatientInQueueType
 
 
-    def apply(key: StringId) = awi(key)
+    def apply(key: StringId): (StringId, String) = awi(key)
   }
 }

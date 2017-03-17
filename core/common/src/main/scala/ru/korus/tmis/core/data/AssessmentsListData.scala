@@ -70,7 +70,7 @@ class AssessmentsListRequestData {
     this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 
-  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+  def rewriteRecordsCount(recordsCount: java.lang.Long): Boolean = {
     this.recordsCount = recordsCount.longValue()
     true
   }
@@ -135,7 +135,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
     this.flatCodes = flatCodes.filter(p=> p != null && !p.isEmpty )
   }
 
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure()
     if(this.eventId>0) {
       qs.query += "AND a.event.id = :eventId\n"
@@ -209,7 +209,7 @@ class AssessmentsListRequestDataFilter extends AbstractListDataFilter{
    * @return Строка сортировки
    */
   @Override
-  def toSortingString (sortingField: String, sortingMethod: String) = {
+  def toSortingString (sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "assessmentDate" | "start" | "createDatetime" => {"a.createDatetime %s".format(sortingMethod)}
       case "assessmentName" | "name" => {"a.actionType.name %s".format(sortingMethod)}

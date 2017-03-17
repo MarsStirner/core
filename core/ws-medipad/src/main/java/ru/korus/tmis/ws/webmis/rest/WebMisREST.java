@@ -304,7 +304,7 @@ public interface WebMisREST extends Serializable {
      * @return true/false
      * @throws CoreException
      */
-    Boolean deletePatientInfo(int id) throws CoreException;
+    boolean deletePatientInfo(int id) throws CoreException;
 
     /**
      * Сервис на получение списка диагнозов внутри госпитализации
@@ -360,7 +360,7 @@ public interface WebMisREST extends Serializable {
      * @return true - назначен, false - не назначен
      * @throws CoreException
      */
-    Boolean setExecPersonForAppeal(int eventId, int personId, AuthData authData) throws CoreException;
+    boolean setExecPersonForAppeal(int eventId, int personId, AuthData authData) throws CoreException;
 
     LayoutAttributeListData getLayoutAttributes() throws CoreException;
 

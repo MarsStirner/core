@@ -66,7 +66,7 @@ class AppealBeanTest {
   final val TAction_id = 1
 
   private class IndexOf[T] (seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
+    def unapply(pos: T): Option[Int] = seq find (pos == _) map (seq indexOf _)
   }
 
   @Before
@@ -205,10 +205,9 @@ class AppealBeanTest {
       logger.warn("Successful end of getAppealById test")
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.error("getAppealById test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
         Assert.fail()
-      }
     }
   }
 
@@ -242,11 +241,10 @@ class AppealBeanTest {
       logger.info("The method has been successfully completed. Result is: {}", mapper.writeValueAsString(result))
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.info("The method has been completed with named error: {}", ex.getMessage + " " + ex.getStackTrace)
         if(ex.getMessage.compareTo(error.getMessage)!=0)
           Assert.fail("Not under test error")
-      }
     }
   }
 
@@ -326,10 +324,9 @@ class AppealBeanTest {
       logger.warn("Successful end of getAllAppealsByPatient test")
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.error("getAllAppealsByPatient test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
         Assert.fail()
-      }
     }
   }
 
@@ -350,10 +347,9 @@ class AppealBeanTest {
       logger.warn("Successful end of checkAppealNumber test")
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.error("checkAppealNumber test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
         Assert.fail()
-      }
     }
   }
 
@@ -372,10 +368,9 @@ class AppealBeanTest {
       logger.warn("Successful end of checkAppealNumber test")
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.error("checkAppealNumber test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
         Assert.fail()
-      }
     }
   }
 
@@ -425,10 +420,9 @@ class AppealBeanTest {
       logger.warn("Successful end of getPatientsHospitalizedStatus test")
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.error("getPatientsHospitalizedStatus test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
         Assert.fail()
-      }
     }
   }
 
@@ -471,10 +465,9 @@ class AppealBeanTest {
       logger.warn("Successful end of getDiagnosisListByAppealId test")
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.error("getDiagnosisListByAppealId test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
         Assert.fail()
-      }
     }
   }
 }

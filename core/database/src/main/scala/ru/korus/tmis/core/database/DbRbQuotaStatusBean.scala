@@ -1,16 +1,18 @@
 package ru.korus.tmis.core.database
 
+import java.util
 import javax.interceptor.Interceptors
-
 import javax.ejb.Stateless
-
 import javax.persistence.{EntityManager, PersistenceContext}
+
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
+
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.entity.model.RbQuotaStatus
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.core.filter.ListDataFilter
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.language.reflectiveCalls
 
 /**
@@ -50,7 +52,7 @@ class DbRbQuotaStatusBean
     }
   }
 
-  def getAllRbQuotaStatusWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
+  def getAllRbQuotaStatusWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean): util.LinkedList[Object] = {
 
     val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {

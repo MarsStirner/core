@@ -28,7 +28,7 @@ class DbRbDiseaseCharacterBean extends DbRbDiseaseCharacterBeanLocal
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getDiseaseCharacterById (id: Int) = {
+  def getDiseaseCharacterById (id: Int): RbDiseaseCharacter = {
     val result =  em.createQuery(DiseaseCharacterByIdQuery, classOf[RbDiseaseCharacter])
       .setParameter("id", id)
       .getResultList

@@ -9,7 +9,7 @@ import scala.language.reflectiveCalls
 class GeneralTest {
 
   case class TestClass(next: TestClass) {
-    def getNext = next
+    def getNext: TestClass = next
   }
 
   @Test

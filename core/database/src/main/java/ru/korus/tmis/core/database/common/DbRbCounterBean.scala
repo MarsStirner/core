@@ -53,7 +53,7 @@ class DbRbCounterBean
     }
   }
 
-  def setRbCounterValue(rbCounter: RbCounter, value: Int) = {
+  def setRbCounterValue(rbCounter: RbCounter, value: Int): RbCounter = {
     rbCounter.setValue(value)
     rbCounter
   }

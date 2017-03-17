@@ -1,13 +1,13 @@
 package ru.korus.tmis.core.common
 
+import java.util
+
 import ru.korus.tmis.core.entity.model.ActionType
-
-
 import javax.ejb.{EJB, Stateless}
 import javax.interceptor.Interceptors
 
 import scala.collection.JavaConversions._
-import ru.korus.tmis.core.database.common.{DbOrgStructureBeanLocal, DbEventBeanLocal}
+import ru.korus.tmis.core.database.common.{DbEventBeanLocal, DbOrgStructureBeanLocal}
 
 @Stateless
 class TypeFilterBean
@@ -22,7 +22,7 @@ class TypeFilterBean
 
   def filterActionTypes(actionTypes: java.util.Set[ActionType],
                         departmentId: Int,
-                        eventId: Int) = {
+                        eventId: Int): util.HashSet[ActionType] = {
     val filter =
       dbOrgStructure.getActionTypeFilter(departmentId) &
         dbEvent.getActionTypeFilter(eventId)

@@ -72,7 +72,7 @@ class DbClientAllergyBean
   }
 
   def deleteClientAllergy(id: Int,
-                          sessionUser: Staff) = {
+                          sessionUser: Staff): Unit = {
     val d = getClientAllergyById(id)
     val now = new Date()
     d.setDeleted(true)

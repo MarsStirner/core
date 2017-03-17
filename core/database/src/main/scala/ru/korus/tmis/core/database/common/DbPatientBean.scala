@@ -1,21 +1,21 @@
 package ru.korus.tmis.core.database.common
 
 import java.lang.Iterable
-import ru.korus.tmis.core.exception.{CoreException, NoSuchPatientException}
-import ru.korus.tmis.core.entity.model.{RbBloodPhenotype, BloodKell, Staff, Patient}
-import javax.persistence.{TemporalType, TypedQuery, EntityManager, PersistenceContext}
-import javax.ejb.{EJB, Stateless}
-import scala.collection.JavaConversions._
 import java.util
-import org.slf4j.{LoggerFactory, Logger}
-import java.util.{UUID, TimeZone, Date}
+import java.util.{Date, TimeZone, UUID}
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext, TemporalType, TypedQuery}
+
+import org.slf4j.{Logger, LoggerFactory}
+import ru.korus.tmis.core.entity.model.{BloodKell, Patient, RbBloodPhenotype, Staff}
+import ru.korus.tmis.core.exception.{CoreException, NoSuchPatientException}
 import ru.korus.tmis.core.filter.ListDataFilter
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import ru.korus.tmis.core.database.common.DbRbBloodTypeBeanLocal
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 import ru.korus.tmis.schedule.DateConvertions
 
+import scala.collection.JavaConversions._
 
-//@Interceptors(Array(classOf[LoggingInterceptor]))
+
 @Stateless
 class DbPatientBean
   extends DbPatientBeanLocal
@@ -90,7 +90,7 @@ class DbPatientBean
     em.createNamedQuery("Patient.findAll", classOf[Patient]).getResultList
   }
 
-  def getAllPatients(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
+  def getAllPatients(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean): util.List[Patient] = {
 
     val queryStr = filter.toQueryStructure
 
@@ -203,7 +203,7 @@ class DbPatientBean
     p
   }
 
-  def checkSNILSNumber(number: String) = {
+  def checkSNILSNumber(number: String): Boolean = {
     var isNumberFree = false
     val result = em.createQuery(PatientBySNILSQuery, classOf[Patient])
       .setParameter("snils", number)
@@ -474,7 +474,7 @@ class DbPatientBean
     typedQuery.getResultList
   }
 
-  def deletePatient(id: Int) = {
+  def deletePatient(id: Int): Boolean = {
     try {
       val patient = this.getPatientById(id)
       val merged = em.merge(patient)

@@ -58,7 +58,7 @@ class AuthData() {
    */
   @JsonIgnore
   @XmlTransient
-  def getUserRole = {
+  def getUserRole: Role = {
     userRole
   }
 
@@ -66,7 +66,7 @@ class AuthData() {
    * Установить роль пользователю
    * @param userRole  Роль пользователя как Role
    */
-  def setUserRole(userRole: Role) = {
+  def setUserRole(userRole: Role): Unit = {
     this.userRole = userRole
   }
 

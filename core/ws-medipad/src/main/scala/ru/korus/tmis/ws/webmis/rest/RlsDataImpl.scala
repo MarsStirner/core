@@ -18,12 +18,12 @@ class RlsDataImpl {
   @GET
   @Path("/{id}")
   def getRlsNomenById(@QueryParam("callback") callback: String,
-                      @PathParam("id") id: Int) = {
+                      @PathParam("id") id: Int): JSONWithPadding = {
     new JSONWithPadding(wsImpl.getRlsById(id), callback)
   }
 
   @GET
-  def getRlsNomensByText(@QueryParam("text") text: String) = {
+  def getRlsNomensByText(@QueryParam("text") text: String): JSONWithPadding = {
     new JSONWithPadding(wsImpl.getRlsByText(text))
   }
 

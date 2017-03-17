@@ -1,18 +1,18 @@
 package ru.korus.tmis.laboratory.across
 
 
-import ru.korus.tmis.util.{CompileTimeConfigManager}
-import ru.korus.tmis.scala.util.{Types, General, I18nable}
-import Types.{JList, JLinked, JString, JBoolean, JInteger}
+import ru.korus.tmis.util.CompileTimeConfigManager
+import ru.korus.tmis.scala.util.{General, I18nable, Types}
+import Types.{JBoolean, JInteger, JLinked, JList, JString}
 import javax.ejb.EJB
+
 import scala.language.reflectiveCalls
-
-
 import ru.korus.tmis.scala.util.{General, I18nable}
 import General.catchy
 import javax.jws.{HandlerChain, WebService}
 
 import General.nullity_implicits
+import grizzled.slf4j.Logging
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
 import ru.korus.tmis.laboratory.across.accept2.AnalysisResult
 
@@ -26,7 +26,7 @@ import ru.korus.tmis.laboratory.across.accept2.AnalysisResult
   portName = "service-across-results",
   name = "service-across-results")
 @HandlerChain(file = "tmis-ws-lab-logging-handlers.xml")
-class AcrossResults extends AcrossResultsService with Logging with I18nable {
+class AcrossResults extends AcrossResultsService with I18nable {
 
   @EJB
   var labBean: AcrossBusinessBeanLocal = _
@@ -37,7 +37,7 @@ class AcrossResults extends AcrossResultsService with Logging with I18nable {
                          referralIsFinished: JBoolean,
                          results: JList[AnalysisResult],
                          biomaterialDefects: JString,
-                         doctorId: JInteger) = {
+                         doctorId: JInteger): Int = {
 
     import General.NumberImplicits._
 

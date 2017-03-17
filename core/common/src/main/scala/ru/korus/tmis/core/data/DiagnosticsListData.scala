@@ -230,7 +230,7 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
+  def toQueryStructure(): QueryDataStructure = {
     var qs = new QueryDataStructure()
     if (this.code != null && !this.code.isEmpty) {
       qs.query += "AND a.actionType.code LIKE :code\n"
@@ -289,7 +289,7 @@ class DiagnosticsListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString (sortingField: String, sortingMethod: String) = {
+  def toSortingString (sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "plannedEndDate" => {"a.plannedEndDate %s".format(sortingMethod)}
       case "diagnosticName" => {"a.actionType.name %s".format(sortingMethod)}

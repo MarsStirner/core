@@ -16,7 +16,7 @@ with I18nable {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getFDRecordByIdWithOutDetach(recordId: Int) = {
+  def getFDRecordByIdWithOutDetach(recordId: Int): FDRecord = {
     val result = em.createQuery(fdRecordByIdQuery, classOf[FDRecord])
       .setParameter("id", recordId)
       .getResultList
@@ -26,7 +26,7 @@ with I18nable {
     }
   }
 
-  def getFDRecordById(recordId: Int) = {
+  def getFDRecordById(recordId: Int): FDRecord = {
     val result = em.createQuery(fdRecordByIdQuery, classOf[FDRecord])
       .setParameter("id", recordId)
       .getResultList
@@ -36,7 +36,7 @@ with I18nable {
     }
   }
 
-  def getIdValueFDRecordByEventTypeId(flatDirectoryId: Int, eventTypeId: Int) = {
+  def getIdValueFDRecordByEventTypeId(flatDirectoryId: Int, eventTypeId: Int): (Integer, String) = {
     val result = em.createQuery(IdValueFDRecordByEventTypeIdQuery, classOf[Array[AnyRef]])
       .setParameter("eventTypeId", eventTypeId)
       .setParameter("flatDirectoryId", flatDirectoryId)

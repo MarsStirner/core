@@ -4,7 +4,7 @@ import ru.korus.tmis.laboratory.altey.{accept2 => lab}
 import scala.language.implicitConversions
 
 final object ImageValue {
-  implicit def fromLab1(v: ru.korus.tmis.laboratory.altey.accept2.ImageValue) = {
+  implicit def fromLab1(v: ru.korus.tmis.laboratory.altey.accept2.ImageValue): ImageValue = {
     ImageValue(Option(v.getDescription), Option(v.getImageData))
   }
 }

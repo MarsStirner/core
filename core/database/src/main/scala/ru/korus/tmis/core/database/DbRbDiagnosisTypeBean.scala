@@ -23,7 +23,7 @@ with I18nable {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getRbDiagnosisTypeById(id: Int) = {
+  def getRbDiagnosisTypeById(id: Int): RbDiagnosisType = {
     val result = em.find(classOf[RbDiagnosisType], id)
     if (result != null) {
       result
@@ -34,7 +34,7 @@ with I18nable {
     }
   }
 
-  def getRbDiagnosisTypeByFlatCode(flatCode: String) = {
+  def getRbDiagnosisTypeByFlatCode(flatCode: String): RbDiagnosisType = {
     val result = em.createNamedQuery("RbDiagnosisType.findByFlatCode", classOf[RbDiagnosisType])
       .setParameter("flatCode", flatCode)
       .getResultList

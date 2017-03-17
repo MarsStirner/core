@@ -92,7 +92,7 @@ class AuthStorageBean
   }
 
   @Lock(LockType.READ)
-  def getRoles(login: String, password: String) = {
+  def getRoles(login: String, password: String): util.Set[Role] = {
     timeoutHandler()
     // Пытаемся получить сотрудника по логину
     if (!casBeanLocal.createToken(login, password).success) {
@@ -115,7 +115,7 @@ class AuthStorageBean
   }
 
   @Lock(LockType.READ)
-  def getAuthData(token: AuthToken) = {
+  def getAuthData(token: AuthToken): AuthData = {
     authMap.get(token) match {
       case null => null
       case pair => pair._1
@@ -123,7 +123,7 @@ class AuthStorageBean
   }
 
   @Lock(LockType.READ)
-  def getAuthDateTime(token: AuthToken) = {
+  def getAuthDateTime(token: AuthToken): Date = {
     authMap.get(token) match {
       case null => null
       case pair => pair._2
@@ -132,7 +132,7 @@ class AuthStorageBean
 
 
   @Lock(LockType.WRITE)
-  def timeoutHandler() = {
+  def timeoutHandler(): Unit = {
     val now = new Date()
     logger.info("Handler called at: " + now)
 

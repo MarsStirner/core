@@ -50,7 +50,7 @@ class PrimaryAssessmentBean
   @EJB
   private var dbActionProperty: DbActionPropertyBeanLocal = _
 
-  def summary(assessment: Action) = {
+  def summary(assessment: Action): CommonGroup = {
     val group = new CommonGroup(0, "Summary")
 
     val attributes = List(
@@ -76,7 +76,7 @@ class PrimaryAssessmentBean
       attributes)
   }
 
-  def details(assessment: Action) = {
+  def details(assessment: Action): CommonGroup = {
     val propertiesMap =
       actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
 
@@ -95,7 +95,7 @@ class PrimaryAssessmentBean
     group
   }
 
-  def detailsWithLayouts(assessment: Action) = {
+  def detailsWithLayouts(assessment: Action): CommonGroup = {
     val propertiesMap =
       actionPropertyBean.getActionPropertiesByActionId(assessment.getId.intValue)
 
@@ -120,7 +120,7 @@ class PrimaryAssessmentBean
                         listForConverter: java.util.List[String],
                         listForSummary: java.util.List[StringId],
                         postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
-                        patient: Patient) = {
+                        patient: Patient): JSONCommonData = {
 
     var json_data = new JSONCommonData()
     val cd = commonDataProcessor.fromActionTypesForWebClient(actionTypeBean.getActionTypeById(atId),
@@ -148,7 +148,7 @@ class PrimaryAssessmentBean
                                         staff: Staff,
                                         baseUri: java.net.URI,
                                         notify: (java.util.List[Action], java.net.URI) =>  java.lang.Boolean,
-                                        postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+                                        postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData): JSONCommonData = {
 
     var json_data = assessment
 
@@ -178,7 +178,7 @@ class PrimaryAssessmentBean
   def getPrimaryAssessmentById(assessmentId: Int,
                                title: String,
                                postProcessing: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
-                               reId: java.lang.Boolean) = {
+                               reId: java.lang.Boolean): JSONCommonData = {
     val action = actionBean.getActionById(assessmentId)
     var actions: java.util.List[Action] = new LinkedList[Action]
     actions.add(action)
@@ -196,7 +196,7 @@ class PrimaryAssessmentBean
     json_data
   }
 
-  def updateStatusById(eventId: Int, actionId: Int, status: Short) = {
+  def updateStatusById(eventId: Int, actionId: Int, status: Short): Boolean = {
     commonDataProcessor.changeActionStatus(eventId, actionId, status)
   }
 

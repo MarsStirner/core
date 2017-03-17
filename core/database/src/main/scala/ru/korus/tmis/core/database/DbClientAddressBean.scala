@@ -159,7 +159,7 @@ class DbClientAddressBean
   }
 
   def deleteClientAddress(id: Int,
-                          sessionUser: Staff) = {
+                          sessionUser: Staff): Unit = {
     val now = new Date
 
     val d = getClientAddressById(id)

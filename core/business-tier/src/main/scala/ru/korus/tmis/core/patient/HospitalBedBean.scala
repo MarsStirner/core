@@ -1,24 +1,25 @@
 package ru.korus.tmis.core.patient
 
 
-import javax.ejb.{EJB, Stateless}
-import javax.interceptor.Interceptors
-import javax.persistence.{PersistenceContext, EntityManager}
-import ru.korus.tmis.core.data.{HospitalBedDataListFilter, HospitalBedData}
-import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
-import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.database._
-import common._
-import ru.korus.tmis.core.exception.CoreException
-import scala.collection.JavaConversions._
-import java.text.{SimpleDateFormat, DateFormat}
-import javax.inject.Inject
-import javax.enterprise.event.Event
-import javax.enterprise.inject.Any
-import collection.JavaConversions
-import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
+import java.lang.Boolean
+import java.text.{DateFormat, SimpleDateFormat}
+import java.util
 import java.util.Date
-import ru.korus.tmis.scala.util.{CAPids, I18nable, ConfigManager}
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext}
+
+import grizzled.slf4j.Logging
+import ru.korus.tmis.core.auth.{AuthData, AuthStorageBeanLocal}
+import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
+import ru.korus.tmis.core.data.{HospitalBedData, HospitalBedDataListFilter}
+import ru.korus.tmis.core.database._
+import ru.korus.tmis.core.database.common._
+import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.scala.util.{CAPids, ConfigManager, I18nable}
+
+import scala.collection.JavaConversions
+import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
 @Stateless
@@ -64,7 +65,7 @@ with CAPids {
   var dbOrgStructureHospitalBed: DbOrgStructureHospitalBedBeanLocal = _
 
   private class IndexOf[T](seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
+    def unapply(pos: T): Option[Int] = seq find (pos == _) map (seq indexOf _)
   }
 
   private val list = List(iCapIds("db.rbCAP.moving.id.movedFrom").toInt,
@@ -239,22 +240,20 @@ with CAPids {
           val cap = dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionPropertyTypeId(ap.getType.getId.intValue())
 
           cap.getId.intValue() match {
-            case listNdx(0) => {
+            case listNdx(0) =>
               //Переведен из отделения
               if (hbData.data.bedRegistration.movedFromUnitId > 0) {
                 val apv = actionPropertyBean.setActionPropertyValue(ap, hbData.data.bedRegistration.movedFromUnitId.toString, 0)
                 entities = entities + apv.unwrap
               }
-            }
-            case listNdx(1) => {
+            case listNdx(1) =>
               //Время поступления
               val formatter: DateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss")
               if (hbData.data.bedRegistration.moveDatetime != null) {
                 val apv = actionPropertyBean.setActionPropertyValue(ap, formatter.format(hbData.data.bedRegistration.moveDatetime), 0)
                 entities = entities + apv.unwrap
               }
-            }
-            case listNdx(2) => {
+            case listNdx(2) =>
               //Отделение пребывания
               if (hbData.data.bedRegistration.bedId > 0) {
                 // достанем из профиля койки
@@ -264,31 +263,27 @@ with CAPids {
                   entities = entities + apv.unwrap
                 }
               }
-            }
-            case listNdx(3) => {
+            case listNdx(3) =>
               //койка
               if (hbData.data.bedRegistration.bedId > 0) {
                 val apv = actionPropertyBean.setActionPropertyValue(ap, hbData.data.bedRegistration.bedId.toString, 0)
                 entities = entities + apv.unwrap
               }
-            }
-            case listNdx(4) => {
+            case listNdx(4) =>
               //Патронаж
               if (hbData.data.bedRegistration.patronage != null) {
                 val apv = actionPropertyBean.setActionPropertyValue(ap, hbData.data.bedRegistration.patronage.toString, 0)
                 entities = entities + apv.unwrap
               }
-            }
-            case _ => {
+            case _ =>
               null
-            }
           }
         })
       }
       result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
 
 
-      return result.get(0)
+      result.get(0)
     }
     finally {
       appLock.releaseLock(lockId)
@@ -320,7 +315,6 @@ with CAPids {
 
       if (flgOption == this.unknownOperation) {
         throw new CoreException("Невозможно направить/перевести пациента в отделение. \nДля госпитализации с id=%s не найден осмотр при госпитализации".format(eventId.toString))
-        return null
       }
 
       val codes = flgOption match {
@@ -381,7 +375,7 @@ with CAPids {
         }
         result = dbManager.mergeAll(entities).filter(result.contains(_)).map(_.asInstanceOf[Action]).toList
 
-        return result.get(0)
+        result.get(0)
       }
       finally {
         appLock.releaseLock(lockId)
@@ -393,7 +387,7 @@ with CAPids {
   }
 
   //Запрос на занятые койки в отделении
-  def getCaseHospitalBedsByDepartmentId(departmentId: Int) = {
+  def getCaseHospitalBedsByDepartmentId(departmentId: Int): util.LinkedHashMap[OrgStructureHospitalBed, Boolean] = {
 
     val allBeds = dbOrgStructureHospitalBed.getHospitalBedByDepartmentId(departmentId)
 
@@ -412,14 +406,14 @@ with CAPids {
     map
   }
 
-  def getRegistryOriginalForm(action: Action) = {
+  def getRegistryOriginalForm(action: Action): HospitalBedData = {
     new HospitalBedData(action,
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
       null,
       null)
   }
 
-  def getRegistryFormWithChamberList(action: Action) = {
+  def getRegistryFormWithChamberList(action: Action): HospitalBedData = {
     new HospitalBedData(action,
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
       this.getCaseHospitalBedsByDepartmentId _,
@@ -428,7 +422,7 @@ with CAPids {
 
   def getMovingListByEventIdAndFilter(filter: HospitalBedDataListFilter): HospitalBedData = {
     val actions = actionBean.getActionsWithFilter(0, 0, filter.toSortingString("createDatetime", "asc"), filter.unwrap, null)
-    return new HospitalBedData(actions,
+    new HospitalBedData(actions,
       actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes _,
       null)
   }
@@ -507,7 +501,7 @@ with CAPids {
       val oldLastValues = actionPropertyBean.getActionPropertiesByActionIdAndActionPropertyTypeCodes(oldLastAction.getId.intValue,
         listMovAP)
       if (oldLastValues != null) {
-        val result = oldLastValues.find(p => p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospitalBed")) == 0).getOrElse(null)
+        val result = oldLastValues.find(p => p._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospitalBed")) == 0).orNull
         if (result != null && result._2 != null && result._2.size() > 0) {
           bed = result._2.get(0).getValue.asInstanceOf[OrgStructureHospitalBed]
           val result2 = dbOrgStructureHospitalBed.getBusyHospitalBedByIds(asJavaCollection(asJavaCollection(Set(bed.getId))))
@@ -536,7 +530,7 @@ with CAPids {
               //Обновим APVs
               if (ap_val._2 != null && ap_val._2.size() > 0) {
                 flgEdit match {
-                  case 1 => {
+                  case 1 =>
                     //Редактируем значения "Переведен в" и "Время выбытия"
                     if (ap_val._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer")) == 0) {
                       val apv = actionPropertyBean.setActionPropertyValue(ap_val._1, bed.getMasterDepartment.getId.toString, 0)
@@ -550,13 +544,11 @@ with CAPids {
                       action.setEndDate(now)
                     }
                     //apvs_merged = ap_values._2.toList ::: apvs_merged
-                  }
-                  case 2 => {
+                  case 2 =>
                     //Затираем значения "Переведен в" и "Время выбытия"
                     action.setEndDate(null)
                     apvs_removed = ap_val._2.toList ::: apvs_removed
-                  }
-                  case _ => {}
+                  case _ =>
                 }
               }
             })
@@ -572,7 +564,7 @@ with CAPids {
 
 
     }
-    return true
+    true
   }
 
   /////////Внутренние методы/////////
@@ -582,12 +574,10 @@ with CAPids {
 
     if (hbData == null) {
       throw new CoreException("Некорректные данные в HospitalBedData")
-      return false
     }
     if (flgParent == 0) {
       if (eventBean.getEventById(eventId) == null) {
         throw new CoreException("В таблице Event БД нету записи с заданным в запросе id")
-        return false
       }
     } else if (flgParent == 1) {
       val action = actionBean.getActionById(actionId)
@@ -596,7 +586,7 @@ with CAPids {
       }
     }
 
-    return true
+    true
   }
 
   private def createActionPropertyWithValue(action: Action, aptId: Int, value: AnyRef, staff: Staff): APValue = {
@@ -611,38 +601,37 @@ with CAPids {
         error("createActionPropertyWithValue >> Ошибка при создании новой записи в ActionProperty: %s".format(e.getMessage))
         throw new CoreException("Ошибка при создании записи в ActionProperty", e)
       }
-        dbManager.removeAll(Set(ap))
     }
 
-    if (value == null || (value.isInstanceOf[java.lang.Integer] && value.asInstanceOf[java.lang.Integer].intValue() <= 0)) {
+    if (value == null || value.isInstanceOf[java.lang.Integer] && value.asInstanceOf[java.lang.Integer].intValue() <= 0) {
       return null
     }
 
-    var valueStr: String = if (value.isInstanceOf[String]) {
-      value.asInstanceOf[String]
-    } else {
-      value.toString
+    var valueStr: String = value match {
+      case s: String =>
+        s
+      case _ =>
+        value.toString
     }
     try {
       if (ap != null && valueStr != null) {
         var n_ap = actionPropertyBean.setActionPropertyValue(ap, valueStr, 0) //тип таблицы анализируется внутри
-        return n_ap.asInstanceOf[APValue]
+        return n_ap
       }
     }
     catch {
-      case e: Exception => {
+      case e: Exception =>
         error("createActionPropertyWithValue >> Ошибка при записи значения ActionPropertyValue: %s".format(e.getMessage))
         throw new CoreException("Ошибка при записи значения ActionPropertyValue", e)
-      }
     }
     null
   }
 
-  def getLastCloseMovingActionForEventId(eventId: Int) = {
+  def getLastCloseMovingActionForEventId(eventId: Int): Action = {
     this.getLastMovingActionByCondition(eventId, "AND a.endDate IS NOT NULL ORDER BY a.endDate desc, a.id desc")
   }
 
-  def getLastMovingActionForEventId(eventId: Int) = {
+  def getLastMovingActionForEventId(eventId: Int): Action = {
     this.getLastMovingActionByCondition(eventId, "ORDER BY a.createDatetime desc")
   }
 
@@ -654,7 +643,7 @@ with CAPids {
    * @param eventId Идентификатор госпитализации
    * @return Экземпляр класса, описывающего организационную структуру в БД
    */
-  def getCurrentDepartmentForAppeal(eventId: Int) = {
+  def getCurrentDepartmentForAppeal(eventId: Int): OrgStructure = {
     var department: OrgStructure = getCurrentDepartment(eventId)
     //Добавлено для совместимости с предыдущим поведением, когда если не было движений - возвращалось приемное отделение
     //Рекомендую убрать, когда точно будет ясно, что
@@ -710,10 +699,9 @@ with CAPids {
 
     result.size() match {
       case 0 => null
-      case _ => {
+      case _ =>
 
         result.iterator().next
-      }
     }
   }
 

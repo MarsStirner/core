@@ -1,9 +1,13 @@
 package ru.korus.tmis.core.data
 
-import ru.korus.tmis.core.entity.model.{ActionPropertyRelationValueRefType, ActionPropertyRelationValue, ActionPropertyRelation}
+import java.util
+
+import ru.korus.tmis.core.entity.model._
+
 import scala.collection.JavaConverters._
 import ru.korus.tmis.core.exception.CoreException
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
+
 import scala.beans.BeanProperty
 
 /**
@@ -16,16 +20,16 @@ import scala.beans.BeanProperty
 class ActionPropertyRelationWrapper(relation: ActionPropertyRelation) {
 
   @BeanProperty
-  val subject = relation.subjectType.getId
+  val subject: Integer = relation.subjectType.getId
 
   @BeanProperty
-  val relationType = relation.getRelationType
+  val relationType: ActionPropertyRelationType = relation.getRelationType
 
   @BeanProperty
-  val relationState = relation.getRelationState
+  val relationState: ActionPropertyRelationState = relation.getRelationState
 
   @BeanProperty
-  val value = (for(y <- relation.getValues.asScala) yield new ActionPropertyRelationValueWrapper(y)).asJava
+  val value: util.Set[ActionPropertyRelationValueWrapper] = (for(y <- relation.getValues.asScala) yield new ActionPropertyRelationValueWrapper(y)).asJava
 
 }
 

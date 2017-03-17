@@ -19,7 +19,7 @@ class ActionWrapper(a: Action) {
   val APWI = ConfigManager.APWI.immutable
   val CMDF = ConfigManager.DateFormatter
 
-  def get(name: StringId) = {
+  def get(name: StringId): List[CommonAttribute] = {
     val (getter, aType) = AWI(name)
 
     val maps = getter match {
@@ -171,9 +171,9 @@ class ActionWrapper(a: Action) {
         List(
           Map(APWI.Value.toString -> this.a.getIsUrgent.toString)
         )
-      case AWI.PacientInQueueType =>
+      case AWI.PatientInQueueType =>
         List(
-          Map(APWI.Value.toString -> this.a.getPacientInQueueType.toString)
+          Map(APWI.Value.toString -> this.a.getPatientInQueueType.toString)
         )
       case AWI.Finance =>
         if (this.a.getFinanceId != null) {

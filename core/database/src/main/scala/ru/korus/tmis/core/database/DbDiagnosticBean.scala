@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database
 
 import java.lang.Boolean
+import java.util
 import java.util.Date
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -51,7 +52,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
   var dbStaff: DbStaffBeanLocal = _
 
 
-  def getDiagnosticById (id: Int) = {
+  def getDiagnosticById (id: Int): Diagnostic = {
     val result =  em.createQuery(DiagnosticByIdQuery, classOf[Diagnostic])
                     .setParameter("id", id)
                     .getResultList
@@ -62,7 +63,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     }
   }
 
-  def getDiagnosticsByEventId (eventId: Int) = {
+  def getDiagnosticsByEventId (eventId: Int): util.List[Diagnostic] = {
     val result =  em.createQuery(DiagnosticsByEventIdQuery, classOf[Diagnostic])
                     .setParameter("eventId", eventId)
                     .getResultList
@@ -80,7 +81,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
                                diseaseStageId: Int,
                                note: String,
                                staff: Staff,
-                               isNewDiag: Boolean) = {
+                               isNewDiag: Boolean): Diagnostic = {
     val now = new Date()
     var diagnostic: Diagnostic = null
     var oldDiagnostic: Diagnostic = null
@@ -134,7 +135,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     save(diagnostic)
   }
 
-  def getDiagnosticsByEventIdAndTypes(eventId: Int, diagnosisTypeFlatCodes: java.util.Set[String]) = {
+  def getDiagnosticsByEventIdAndTypes(eventId: Int, diagnosisTypeFlatCodes: java.util.Set[String]): util.List[Diagnostic] = {
     val result =  em.createQuery(DiagnosticsByEventIdAndTypesQuery, classOf[Diagnostic])
                     .setParameter("eventId", eventId)
                     .setParameter("flatCodes", asJavaCollection(diagnosisTypeFlatCodes))
@@ -144,7 +145,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
     result
   }
 
-  def getLastDiagnosticByEventIdAndType(eventId: Int, diagnosisTypeFlatCode: String) = {
+  def getLastDiagnosticByEventIdAndType(eventId: Int, diagnosisTypeFlatCode: String): Diagnostic = {
     val result =  em.createQuery(LastDiagnosticByEventIdAndTypesQuery, classOf[Diagnostic])
       .setParameter("eventId", eventId)
       .setParameter("flatCode", diagnosisTypeFlatCode)
@@ -272,7 +273,7 @@ class DbDiagnosticBean  extends DbDiagnosticBeanLocal
       now)
 
     save(diagnostic)
-    return diagnostic
+    diagnostic
   }
 
   def saveNewDiagnostic(d: Diagnostic) : Unit = {

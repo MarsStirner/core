@@ -1,11 +1,12 @@
 package ru.korus.tmis.core.database
 
+import java.util
 import javax.interceptor.Interceptors
-
 import javax.ejb.Stateless
-
 import javax.persistence.{EntityManager, PersistenceContext}
+
 import ru.korus.tmis.core.entity.model.RbCoreActionProperty
+
 import scala.collection.JavaConversions._
 
 
@@ -17,7 +18,7 @@ class DbRbCoreActionPropertyBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getRbCoreActionPropertyByActionTypeIdAndCorePropertyName(actionTypeId: Int, cpName: String) = {
+  def getRbCoreActionPropertyByActionTypeIdAndCorePropertyName(actionTypeId: Int, cpName: String): RbCoreActionProperty = {
 
     val result = em.createQuery(RbCoreActionPropertiesByActionTypeIdQuery.format(AndActionTypeId + AndCorePropertyName),
       classOf[RbCoreActionProperty])
@@ -34,7 +35,7 @@ class DbRbCoreActionPropertyBean
     }
   }
 
-  def getRbCoreActionPropertyByActionTypeIdAndActionPropertyTypeId(actionTypeId: Int, actionPropertyTypeId: Int) = {
+  def getRbCoreActionPropertyByActionTypeIdAndActionPropertyTypeId(actionTypeId: Int, actionPropertyTypeId: Int): RbCoreActionProperty = {
 
     val result = em.createQuery(RbCoreActionPropertiesByActionTypeIdQuery.format(AndActionTypeId + AndActionPropertyTypeId),
       classOf[RbCoreActionProperty])
@@ -51,7 +52,7 @@ class DbRbCoreActionPropertyBean
     }
   }
 
-  def getRbCoreActionPropertiesByActionTypeId(actionTypeId: Int) = {
+  def getRbCoreActionPropertiesByActionTypeId(actionTypeId: Int): util.List[RbCoreActionProperty] = {
     val result = em.createQuery(RbCoreActionPropertiesByActionTypeIdQuery.format(AndActionTypeId),
       classOf[RbCoreActionProperty])
       .setParameter("actionTypeId", actionTypeId)
@@ -66,7 +67,7 @@ class DbRbCoreActionPropertyBean
     }
   }
 
-  def getRbCoreActionPropertiesByIds(capIds: java.util.List[java.lang.Integer]) = {
+  def getRbCoreActionPropertiesByIds(capIds: java.util.List[java.lang.Integer]): util.List[RbCoreActionProperty] = {
     val result = em.createQuery(RbCoreActionPropertiesByActionTypeIdQuery.format(AndCapIds),
       classOf[RbCoreActionProperty])
       .setParameter("ids", asJavaCollection(capIds))
@@ -81,7 +82,7 @@ class DbRbCoreActionPropertyBean
     }
   }
 
-  def getRbCoreActionPropertiesByActionPropertyTypeId(actionPropertyTypeId: Int) = {
+  def getRbCoreActionPropertiesByActionPropertyTypeId(actionPropertyTypeId: Int): RbCoreActionProperty = {
     val result = em.createQuery(RbCoreActionPropertiesByActionTypeIdQuery.format(ActionPropertyTypeId),
       classOf[RbCoreActionProperty])
       .setParameter("actionPropertyTypeId", actionPropertyTypeId)
@@ -95,7 +96,7 @@ class DbRbCoreActionPropertyBean
     }
   }
 
-  def getRbCoreActionPropertiesById(id: Int) = {
+  def getRbCoreActionPropertiesById(id: Int): RbCoreActionProperty = {
     val result = em.createQuery(RbCoreActionPropertiesByActionTypeIdQuery.format(CoreId),
       classOf[RbCoreActionProperty])
       .setParameter("id", id)

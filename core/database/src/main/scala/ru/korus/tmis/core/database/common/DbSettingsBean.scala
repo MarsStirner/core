@@ -26,11 +26,11 @@ with I18nable {
 
 
   @PostConstruct
-  def init() = {
+  def init(): Unit = {
     load_settings()
   }
 
-  def load_settings() = {
+  def load_settings(): Unit = {
     import ConfigManager._
     import collection.JavaConversions._
     val settings: mutable.Buffer[Setting] = tmis_core.createNamedQuery[Setting]("Setting.findAll", classOf[Setting]).getResultList.toBuffer

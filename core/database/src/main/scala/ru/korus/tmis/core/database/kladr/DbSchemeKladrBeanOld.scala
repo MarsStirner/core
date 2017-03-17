@@ -47,7 +47,7 @@ class DbSchemeKladrBeanOld
      WHERE kl.code = :code
                          """
 
-  def getKladrByCode(code: String) = {
+  def getKladrByCode(code: String): Nothing = {
 //    val result = em.createQuery(kladrByCodeQuery, classOf[Kladr])
 //      .setParameter("code", code)
 //      .getResultList
@@ -64,7 +64,7 @@ class DbSchemeKladrBeanOld
     throw new UnsupportedOperationException()
   }
 
-  def getStreetByCode(code: String) = {
+  def getStreetByCode(code: String): Nothing = {
     throw new UnsupportedOperationException()
 //    val result = em.createQuery(StreetByFilterQuery.format("str", "WHERE str.code = :code", ""), classOf[Street])
 //      .setParameter("code", code)
@@ -81,7 +81,7 @@ class DbSchemeKladrBeanOld
 //    }
   }
 
-  def getCountOfKladrRecordsWithFilter(filter: Object) = {
+  def getCountOfKladrRecordsWithFilter(filter: Object): Nothing = {
     throw new UnsupportedOperationException()
 //    var optional = false
 //    var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {

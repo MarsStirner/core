@@ -62,7 +62,7 @@ class DbActionBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionById(id: Int) = {
+  def getActionById(id: Int): Action = {
     val res: Action = getActionIdWithoutDetach(id)
 
     res
@@ -82,7 +82,7 @@ class DbActionBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionByIdWithIgnoreDeleted(id: Int) = {
+  def getActionByIdWithIgnoreDeleted(id: Int): Action = {
     logger.info("Requested action id[{}]", id)
     val result = em.createQuery(
       """
@@ -102,7 +102,7 @@ class DbActionBean
     }
   }
 
-  def createAction(eventId: Int, actionTypeId: Int, userData: AuthData, staff: Staff) = {
+  def createAction(eventId: Int, actionTypeId: Int, userData: AuthData, staff: Staff): Action = {
     val e = dbEvent.getEventById(eventId)
     val at = dbActionType.getActionTypeById(actionTypeId)
 
@@ -149,7 +149,7 @@ class DbActionBean
     a
   }
 
-  def updateAction(id: Int, version: Int, authData: AuthData, staff: Staff) = {
+  def updateAction(id: Int, version: Int, authData: AuthData, staff: Staff): Action = {
     val a = getActionById(id)
     val now = new Date
 
@@ -172,13 +172,13 @@ class DbActionBean
     a
   }
 
-  def updateActionStatus(id: Int, status: Short) = {
+  def updateActionStatus(id: Int, status: Short): Action = {
     val a = getActionById(id)
     a.setStatus(status)
     a
   }
 
-  def updateActionStatusWithFlush(id: Int, status: Short) = {
+  def updateActionStatusWithFlush(id: Int, status: Short): Unit = {
     em.createQuery("UPDATE Action a SET a.status = :status WHERE a.id = :id")
       .setParameter("status", status)
       .setParameter("id", id)
@@ -186,7 +186,7 @@ class DbActionBean
     em.flush()
   }
 
-  def getAppealActionByEventId(eventId: Int, atId: Int) = {
+  def getAppealActionByEventId(eventId: Int, atId: Int): Action = {
 
     val result = em.createQuery(ActionByEventIdAndActionTypeQuery,
       classOf[Action])
@@ -199,7 +199,7 @@ class DbActionBean
     }
   }
 
-  def getActionByEventExternalId(externalId: String) = {
+  def getActionByEventExternalId(externalId: String): Action = {
     val result = em.createQuery(ActionByEventExternalIdQuery,
       classOf[Action])
       .setParameter("externalId", externalId)
@@ -210,7 +210,7 @@ class DbActionBean
     }
   }
 
-  def getLastActionWithTypeId(actionType: ActionType) = {
+  def getLastActionWithTypeId(actionType: ActionType): Action = {
     val result = em.createQuery(ActionLastByTypeId,
       classOf[Action])
       .setParameter("actionType", actionType)
@@ -225,7 +225,7 @@ class DbActionBean
                            page: Int,
                            sorting: String,
                            filter: ListDataFilter,
-                           records: (java.lang.Long) => java.lang.Boolean) = {
+                           records: (java.lang.Long) => java.lang.Boolean): util.List[Action] = {
 
     val queryStr: QueryDataStructure = filter.toQueryStructure
 
@@ -247,7 +247,7 @@ class DbActionBean
   }
 
 
-  def getActionsByTypeCodeAndEventId(codes: java.util.Set[String], eventId: Int, sort: String) = {
+  def getActionsByTypeCodeAndEventId(codes: java.util.Set[String], eventId: Int, sort: String): util.List[Action] = {
     val result = em.createQuery(ActionsByCodeAndEventQuery.format(sort),
       classOf[Action])
       .setParameter("codes", asJavaCollection(codes))
@@ -259,7 +259,7 @@ class DbActionBean
     }
   }
 
-  def getActionsByTypeCodeAndPatientOrderByDate(codes: java.util.Set[String], patient: Patient) = {
+  def getActionsByTypeCodeAndPatientOrderByDate(codes: java.util.Set[String], patient: Patient): util.List[Action] = {
     val result = em.createNamedQuery("Action.actionByTypeCodeAndPatientOrderByDate",
       classOf[Action])
       .setParameter("codes", asJavaCollection(codes))
@@ -272,7 +272,7 @@ class DbActionBean
   }
 
 
-  def getActionIdWithCopyByEventId(eventId: Int, actionTypeId: Int) = {
+  def getActionIdWithCopyByEventId(eventId: Int, actionTypeId: Int): Int = {
     /*
      Для первичного осмотра ищется последний осмотр заданного типа во всех предыдущих обращениях
      Для остальных осмотров ищется последний осмотр заданного типа в данном обращении
@@ -288,7 +288,7 @@ class DbActionBean
     }
   }
 
-  def getLastActionByActionTypeIdAndEventId(eventId: Int, actionTypeIds: java.util.Set[java.lang.Integer]) = {
+  def getLastActionByActionTypeIdAndEventId(eventId: Int, actionTypeIds: java.util.Set[java.lang.Integer]): Int = {
     val result = em.createQuery(ActionsByATypeIdAndEventId, classOf[Int])
       .setParameter("id", eventId)
       .setParameter("atIds", asJavaCollection(actionTypeIds))
@@ -301,7 +301,7 @@ class DbActionBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getEvent29AndAction19ForAction(action: Action) = {
+  def getEvent29AndAction19ForAction(action: Action): Action = {
     val typed = em.createQuery(GetEvent29AndAction19ForAction, classOf[Action])
       .setParameter("directionDate", action.getPlannedEndDate)
     val result = typed.getResultList
@@ -312,7 +312,7 @@ class DbActionBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionForDateAndPacientInQueueType(beginDate: Long, pacientInQueueType: Int) = {
+  def getActionForDateAndPacientInQueueType(beginDate: Long, pacientInQueueType: Int): Long = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val strDate = formatter.format(new Date(beginDate))
     val typed = em.createQuery(GetActionForDateAndPacientInQueueType, classOf[Long])
@@ -323,7 +323,7 @@ class DbActionBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionForEventAndPatientInQueueType(eventId: Int, date: Long, patientInQueueType: Int) = {
+  def getActionForEventAndPatientInQueueType(eventId: Int, date: Long, patientInQueueType: Int): Long = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     val strDate = formatter.format(new Date(date))
     val typed = em.createQuery(GetActionForEventAndPacientInQueueType, classOf[Long])
@@ -552,7 +552,7 @@ class DbActionBean
       newAction.setDeleted(false)
       newAction.setPayStatus(0)
       newAction.setExecutor(person)
-      newAction.setPacientInQueueType(queueActionParam.getPacientInQueueType.getValue)
+      newAction.setPatientInQueueType(queueActionParam.getPatientInQueueType.getValue)
       newAction.setAppointmentType(queueActionParam.getAppointmentType)
 
       //не менять на person, иначе нельзя будет отличить запись на прием к врачу с портала и других ЛПУ
@@ -576,7 +576,7 @@ class DbActionBean
     getActionById(action.getId)
   }
 
-  def getActionsByTypeCode(code: String) = {
+  def getActionsByTypeCode(code: String): util.List[Action] = {
     val result = em.createQuery(ActionsByCodeQuery,
       classOf[Action])
       .setParameter("code", code)

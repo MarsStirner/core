@@ -67,7 +67,7 @@ class DbOrganizationBean
   WHERE org.infisCode =                 :INFISCODE
                                          """
 
-  def getCountOfOrganizationWithFilter(filter: Object) = {
+  def getCountOfOrganizationWithFilter(filter: Object): Long = {
     var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
       filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
     }

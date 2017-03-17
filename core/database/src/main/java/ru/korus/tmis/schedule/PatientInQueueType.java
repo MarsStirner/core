@@ -10,16 +10,16 @@ import ru.korus.tmis.core.exception.CoreException;
  * Company:     Korus Consulting IT<br>
  * Description:  <br>
  */
-public enum PacientInQueueType {
+public enum PatientInQueueType {
     QUEUE((short) 0),
     URGENT((short) 1),
     OVERQUEUE((short) 2);
 
     private final Short value;
 
-    private static final Logger logger = LoggerFactory.getLogger(PacientInQueueType.class);
+    private static final Logger logger = LoggerFactory.getLogger(PatientInQueueType.class);
 
-    PacientInQueueType(Short value) {
+    PatientInQueueType(Short value) {
         this.value = value;
     }
 
@@ -27,9 +27,9 @@ public enum PacientInQueueType {
         return value;
     }
 
-    public static PacientInQueueType newInstance(Short pacientInQueueType) throws CoreException {
-        for (PacientInQueueType p : QUEUE.getDeclaringClass().getEnumConstants()) {
-            if (p.getValue().equals(pacientInQueueType)) {
+    public static PatientInQueueType newInstance(Short patientInQueueType) throws CoreException {
+        for (PatientInQueueType p : QUEUE.getDeclaringClass().getEnumConstants()) {
+            if (p.getValue().equals(patientInQueueType)) {
                 return p;
             }
         }

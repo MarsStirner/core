@@ -52,7 +52,7 @@ class AssessmentBean
   var typeFilter: TypeFilterBeanLocal = _
 
   def getAssessmentTypes(eventId: Int,
-                         userData: Staff) = {
+                         userData: Staff): CommonData = {
     var types = dbActionType.getAssessmentTypes
 
     if (ConfigManager.Filter.isOn) {
@@ -67,13 +67,13 @@ class AssessmentBean
       converter)
   }
 
-  def getAllAssessmentTypes = {
+  def getAllAssessmentTypes: CommonData = {
     commonDataProcessor.fromActionTypes(dbActionType.getAssessmentTypes,
       "AssessmentType",
       converter)
   }
 
-  def converter(apt: ActionPropertyType) = {
+  def converter(apt: ActionPropertyType): CA = {
     val unit = apt.getUnit match {
       case null => ""
       case u: RbUnit => u.getName
@@ -87,21 +87,21 @@ class AssessmentBean
     )
   }
 
-  def getAllAssessmentsByEventId(eventId: Int) = {
+  def getAllAssessmentsByEventId(eventId: Int): CommonData = {
     commonDataProcessor.fromActions(
       customQuery.getAllAssessmentsByEventId(eventId),
       "Assessment",
       List(summary _, details _))
   }
 
-  def getAssessmentById(assessmentId: Int) = {
+  def getAssessmentById(assessmentId: Int): CommonData = {
     commonDataProcessor.fromActions(
       List(dbAction.getActionById(assessmentId)),
       "Assessment",
       List(summary _, details _))
   }
 
-  def summary(assessment: Action) = {
+  def summary(assessment: Action): CommonGroup = {
     val group = new CommonGroup(0, "Summary")
 
     val attributes = List(
@@ -120,7 +120,7 @@ class AssessmentBean
       attributes)
   }
 
-  def details(assessment: Action) = {
+  def details(assessment: Action): CommonGroup = {
     val propertiesMap =
       dbActionProperty.getActionPropertiesByActionId(assessment.getId.intValue)
 
@@ -137,7 +137,7 @@ class AssessmentBean
     group
   }
 
-  def getIndicators(eventId: Int, beginDate: Date, endDate: Date) = {
+  def getIndicators(eventId: Int, beginDate: Date, endDate: Date): CommonData = {
     val cd = new CommonData
     val e = new CommonEntity(eventId, null, "Индикаторы", "EventIndicators", null, null, null)
     cd.add(e)
@@ -249,7 +249,7 @@ class AssessmentBean
   def createAssessmentForEventId(eventId: Int,
                                  assessment: CommonData,
                                  userData: AuthData,
-                                 staff: Staff) = {
+                                 staff: Staff): CommonData = {
     val createdActions =
       commonDataProcessor.createActionForEventFromCommonData(
         eventId,
@@ -266,7 +266,7 @@ class AssessmentBean
   def modifyAssessmentById(assessmentId: Int,
                            assessment: CommonData,
                            userData: AuthData,
-                           staff: Staff) = {
+                           staff: Staff): CommonData = {
     val modifiedActions = commonDataProcessor.modifyActionFromCommonData(
       assessmentId,
       assessment,

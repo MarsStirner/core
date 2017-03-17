@@ -1,11 +1,12 @@
 package ru.korus.tmis.core.database
 
+import java.util
 import javax.interceptor.Interceptors
-
 import javax.ejb.Stateless
-
 import javax.persistence.{EntityManager, PersistenceContext}
+
 import ru.korus.tmis.core.filter.ListDataFilter
+
 import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.I18nable
 
@@ -27,7 +28,7 @@ class DbRbOperationTypeBean extends DbRbOperationTypeBeanLocal
                                    limit: Int,
                                    sorting: String,
                                    filter: ListDataFilter,
-                                   records: (java.lang.Long) => java.lang.Boolean) = {
+                                   records: (java.lang.Long) => java.lang.Boolean): util.LinkedList[Object] = {
 
     val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {

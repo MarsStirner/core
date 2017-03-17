@@ -5,7 +5,7 @@ import scala.language.implicitConversions
 
 final object AntibioticSensitivity {
 
-  implicit def fromLab2(v: lab2.AntibioticSensitivity) = {
+  implicit def fromLab2(v: lab2.AntibioticSensitivity): AntibioticSensitivity = {
     AntibioticSensitivity(Option(v.getCode), Option(v.getName), Option(v.getValue), Option(v.getMic))
   }
 }

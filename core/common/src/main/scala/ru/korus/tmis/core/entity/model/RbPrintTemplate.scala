@@ -61,7 +61,7 @@ class RbPrintTemplate extends Serializable {
   var hasPopApp: java.lang.Boolean = _
 
   @PostLoad
-  def constructHasPopApp() = {
+  def constructHasPopApp(): Unit = {
       // Ищем в тексте шаблона определенные конструкции
       val popApp = default.matches("(.*dialogs\\.dial.*)|(.*SpecialVar_.*)|(.*SpecialVariable.*)")
       if (popApp) {

@@ -35,7 +35,7 @@ object AnalysisResult {
     }
   }
 
-  implicit def fromLab1(v: ru.korus.tmis.laboratory.altey.accept2.AnalysisResult) = {
+  implicit def fromLab1(v: ru.korus.tmis.laboratory.altey.accept2.AnalysisResult): AnalysisResult = {
     AnalysisResult(
       Option(v.getCode),
       Option(v.getName),

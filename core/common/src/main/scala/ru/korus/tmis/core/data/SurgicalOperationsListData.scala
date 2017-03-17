@@ -63,7 +63,7 @@ class SurgicalOperationsListData {
   }
 
   private def getAPValueByComparedCode(record: util.ArrayList[(String, APValue)], code: String): APValue = {
-    val finded = record.find(f=>f._1.compareTo(code)==0).getOrElse(null)
+    val finded = record.find(f => f._1.compareTo(code) == 0).orNull
     if (finded!=null)
       finded._2
     else null

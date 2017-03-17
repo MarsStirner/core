@@ -30,10 +30,10 @@ class DbRbRequestTypeBean extends DbRbRequestTypeBeanLocal
     val requestTypeIdByOrgList = em.createNamedQuery("OrgStructureEventType.findRequestTypeIdByOrgId", classOf[Integer])
       .setParameter("orgId", orgStructure.getId)
       .getResultList
-    return arrays.filter(a => { a.length > 0 && requestTypeIdByOrgList.contains(a(0))})
+    arrays.filter(a => { a.length > 0 && requestTypeIdByOrgList.contains(a(0))})
   }
 
-  def getAllRbRequestTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean,  orgStructure: OrgStructure) = {
+  def getAllRbRequestTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean,  orgStructure: OrgStructure): util.LinkedList[Object] = {
 
     val queryStr = filter.toQueryStructure()
     if (queryStr.data.size() > 0) {

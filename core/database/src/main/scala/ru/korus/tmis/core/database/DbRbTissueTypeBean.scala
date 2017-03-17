@@ -1,11 +1,13 @@
 package ru.korus.tmis.core.database
 
 
+import java.util
 import javax.persistence.{EntityManager, PersistenceContext}
+
 import ru.korus.tmis.core.data.{DictionaryListRequestDataFilter, QueryDataStructure}
 import javax.interceptor.Interceptors
-
 import javax.ejb.Stateless
+
 import scala.collection.JavaConversions._
 import ru.korus.tmis.core.filter.ListDataFilter
 import ru.korus.tmis.scala.util.I18nable
@@ -23,7 +25,7 @@ with I18nable {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getAllRbTissueTypeWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
+  def getAllRbTissueTypeWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean): util.LinkedList[Object] = {
 
     val queryStr = filter.toQueryStructure
     if (queryStr.data.size() > 0) {

@@ -17,7 +17,7 @@ class TmisShiroRealm
 
   setAuthenticationTokenClass(classOf[TmisShiroToken])
 
-  def doGetAuthenticationInfo(p1: AuthenticationToken) = {
+  def doGetAuthenticationInfo(p1: AuthenticationToken): SimpleAuthenticationInfo = {
     val (login, role) = p1.getPrincipal.asInstanceOf[Tuple2[String, Role]]
     val password = p1.getCredentials.asInstanceOf[String]
 
@@ -28,7 +28,7 @@ class TmisShiroRealm
     )
   }
 
-  def doGetAuthorizationInfo(p1: PrincipalCollection) = {
+  def doGetAuthorizationInfo(p1: PrincipalCollection): SimpleAuthorizationInfo = {
     val (login, role) = p1.getPrimaryPrincipal.asInstanceOf[Tuple2[String, Role]]
 
     val permissions = new SimpleAuthorizationInfo()

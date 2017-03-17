@@ -55,7 +55,7 @@ class DbEventPersonBean
     ep
   }
 
-  def getLastEventPersonForEventId(eventId: Int) = {
+  def getLastEventPersonForEventId(eventId: Int): EventPerson = {
     val query = em.createQuery(LastEventPersonByEventIdFindQuery,
       classOf[EventPerson])
       .setParameter("eventId", eventId)
@@ -68,7 +68,7 @@ class DbEventPersonBean
     }
   }
 
-  def getEventPersonById(id: Int) = {
+  def getEventPersonById(id: Int): EventPerson = {
     em.find(classOf[EventPerson], id)
   }
 

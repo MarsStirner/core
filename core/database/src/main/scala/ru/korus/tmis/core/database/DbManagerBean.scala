@@ -25,7 +25,7 @@ class DbManagerBean
   var em: EntityManager = _
   var vendorJpaEm: JpaEntityManager = _
 
-  def getEntityId[T](entity: T) = {
+  def getEntityId[T](entity: T): AnyRef = {
     //## TODO: работает строго через раз: каждый второй раз vendorJpaEm.getServerSession() == null
     //##    if (vendorJpaEm == null) {
     //##      vendorJpaEm = em.unwrap(classOf[JpaEntityManager])
@@ -60,7 +60,7 @@ class DbManagerBean
     }
   }
 
-  def persist[T](entity: T) = {
+  def persist[T](entity: T): Unit = {
     try {
       em.persist(entity)
       em.flush()
@@ -74,7 +74,7 @@ class DbManagerBean
   }
 
 
-  def persistAll[T](entities: util.Collection[T]) = {
+  def persistAll[T](entities: util.Collection[T]): Unit = {
     try {
       entities.foreach(e => if(e != null) em.persist(e))
       em.flush()
@@ -86,13 +86,13 @@ class DbManagerBean
     }
   }
 
-  def persistOrMerge[T](entity: T) = {
+  def persistOrMerge[T](entity: T): T = {
     var result = mergeOrPersisRoutine(entity)
     em.flush()
     result
   }
 
-  def persistOrMergeAll[T](entities: util.Collection[T]) = {
+  def persistOrMergeAll[T](entities: util.Collection[T]): util.Collection[T] = {
     try {
       val result =
         entities.map(e => {
@@ -109,7 +109,7 @@ class DbManagerBean
     }
   }
 
-  def merge[T](entity: T) = {
+  def merge[T](entity: T): T = {
     try {
       val result = em.merge(entity)
       em.flush()
@@ -123,7 +123,7 @@ class DbManagerBean
     }
   }
 
-  def mergeAll[T](entities: util.Collection[T]) = {
+  def mergeAll[T](entities: util.Collection[T]): util.Collection[T] = {
     try {
       val result = entities.map(e => em.merge(e))
       em.flush()
@@ -137,7 +137,7 @@ class DbManagerBean
     }
   }
 
-  def removeAll[T](entities: util.Collection[T]) = {
+  def removeAll[T](entities: util.Collection[T]): Unit = {
     try {
       val merged = entities.map(e => em.merge(e))
       merged.foreach(e => em.remove(e))

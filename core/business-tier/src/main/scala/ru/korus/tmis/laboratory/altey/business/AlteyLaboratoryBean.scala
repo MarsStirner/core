@@ -1,42 +1,32 @@
 package ru.korus.tmis.laboratory.altey.business
 
+import java.net.{Authenticator, PasswordAuthentication}
+import java.text.SimpleDateFormat
+import java.util
+import java.util.{Collections, GregorianCalendar}
+import javax.ejb.{EJB, Stateless}
+import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
+import javax.xml.namespace.QName
+import javax.xml.ws.BindingProvider
+import javax.xml.ws.handler.{Handler, MessageContext}
+
+import grizzled.slf4j.Logging
+import org.apache.axis.client.{Stub => AxisStub}
+import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import ru.korus.tmis.core.database._
-import common._
+import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.laboratory.altey.accept.AnalysisResult
 import ru.korus.tmis.laboratory.altey.accept2.{AnalysisResult => AResult1}
+import ru.korus.tmis.laboratory.altey.request._
 import ru.korus.tmis.laboratory.altey.{ws => lab}
-
-
-import java.lang.String
-import javax.ejb.{Stateless, EJB}
-import javax.interceptor.Interceptors
-import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
+import ru.korus.tmis.scala.util.Types.{JList, JSet}
+import ru.korus.tmis.scala.util.{ConfigManager, General, I18nable, Types}
+import ru.korus.tmis.util.CompileTimeConfigManager
 
 import scala.collection.JavaConversions._
-import java.text.SimpleDateFormat
-import javax.xml.ws.BindingProvider
-import scala.Some
-import ru.korus.tmis.scala.util.{Types, General, I18nable, ConfigManager}
-import Types.{JList, JSet}
-import java.util.{ArrayList, GregorianCalendar, Collections}
-import javax.xml.ws.handler.{MessageContext, Handler}
-import ru.korus.tmis.core.logging.slf4j.soap.LoggingHandler
-import ru.korus.tmis.util.{CompileTimeConfigManager}
-import javax.xml.namespace.QName
-import java.net.{PasswordAuthentication, Authenticator}
-import java.util.{LinkedList, Date}
-import ru.korus.tmis.laboratory.altey.request._
-import ru.korus.tmis.laboratory.altey.accept.AnalysisResult
-
-import javax.xml.rpc.Stub
-
-import org.apache.axis.client.{Stub => AxisStub}
-
 import scala.collection.mutable
-import ru.korus.tmis.scala.util.{General, I18nable, ConfigManager}
-import scala.Some
-import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import scala.language.reflectiveCalls
 
 @Stateless
@@ -75,7 +65,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
         Authenticator.setDefault(new Authenticator() {
           override def getPasswordAuthentication(): PasswordAuthentication = {
             info("Authentication requested")
-            return new PasswordAuthentication(Laboratory.User, Laboratory.Password.toCharArray);
+            new PasswordAuthentication(Laboratory.User, Laboratory.Password.toCharArray);
           }
         });
       }
@@ -94,41 +84,39 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
       val ws = service.getIntegrationCorusSoap
 
       ws match {
-        case bp: BindingProvider => {
+        case bp: BindingProvider =>
 
           Option(Laboratory.ServiceUrl).foreach {
             url =>
-              bp.getRequestContext().put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, url.toString)
+              bp.getRequestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, url.toString)
           }
 
           Option(Laboratory.User).foreach {
             value =>
-              bp.getRequestContext().put(BindingProvider.USERNAME_PROPERTY, value)
+              bp.getRequestContext.put(BindingProvider.USERNAME_PROPERTY, value)
           }
 
           Option(Laboratory.Password).foreach {
             value =>
-              bp.getRequestContext().put(BindingProvider.PASSWORD_PROPERTY, value)
+              bp.getRequestContext.put(BindingProvider.PASSWORD_PROPERTY, value)
           }
 
 
-          val binding = bp.getBinding()
+          val binding = bp.getBinding
 
-          val handlerChain = Option(binding.getHandlerChain).getOrElse(new LinkedList[Handler[_ <: MessageContext]]())
+          val handlerChain = Option(binding.getHandlerChain).getOrElse(new util.LinkedList[Handler[_ <: MessageContext]]())
 
-          if (!handlerChain.contains(LoggingHandler)) handlerChain.add(LoggingHandler)
+         // if (!handlerChain.contains(LoggingHandler)) handlerChain.add(LoggingHandler)
 
           binding.setHandlerChain(handlerChain)
           ws
-        }
         case _ => error("Cannot set up port as binding provider"); ws
       }
 
     } catch {
-      case e: Throwable => {
+      case e: Throwable =>
         error("Error while creating LIS service endpoint", e)
         throw e
-      }
     }
   }
 
@@ -137,7 +125,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
   // get bio from Tissue (LIS)
   def getBiomaterialInfo(action: Action, tissues: JSet[Tissue]): BiomaterialInfo = {
     action.getTissue.headOption match {
-      case Some(t) => {
+      case Some(t) =>
         info("Biomaterial:BarCode=" + t.getBarcode)
         info("Biomaterial:SamplingDate=" + t.getDate)
         val tt = t.getTissueType
@@ -152,7 +140,6 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
           Option(t.getDate),
           Option("")
         )
-      }
       case None => throw new CoreException(i18n("error.tissueForActionNotFound", action.getId))
     }
   }
@@ -162,7 +149,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
   def getBiomaterialInfo(action: Action, takenTissue: TakenTissue): BiomaterialInfo = {
 
     Option(action.getTakenTissue) match {
-      case Some(t) => {
+      case Some(t) =>
         info("Biomaterial:BarCode=" + t.getId)
         info("Biomaterial:SamplingDate=" + t.getDatetimeTaken)
         val tt = t.getType
@@ -177,7 +164,6 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
           Option(t.getDatetimeTaken),
           Option(t.getNote)
         )
-      }
       case None => throw new CoreException(i18n("error.tissueForActionNotFound", action.getId))
     }
   }
@@ -202,7 +188,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     res.isEmpty match {
       // Если для данного исследования не определены показатели из rbTest, то не нужно отправлять анализ в ЛИС
       case true => throw new CoreException(i18n("error.noTestsForAction", a.getId))
-      case false => {}
+      case false =>
     }
 
     val aptsSet = apts.toSet // для правильной работы JavaConversion
@@ -275,17 +261,15 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     // Diagnosis
     val diagnosis = getDiagnosis(a.getEvent)
     val (diagCode, diagName) = diagnosis match {
-      case null => {
+      case null =>
         warn("Request: no diagnosis found for event #" + a.getEvent.getId)
         ("", "")
-      }
-      case _ => {
+      case _ =>
         // Diagnosis (string) -- диагноз (текст из МКБ) (последний из обоснования; если нет, то из первичного осмотра)
         info("Request:Diagnosis=" + diagnosis)
         // МКБ (string) -- диагноз (код из МКБ) (последний из обоснования; если нет, то из первичного осмотра)
         info("Request:mkbCode=" + diagnosis._1)
         diagnosis
-      }
     }
 
     // Comment (string) (необязательно) – произвольный текстовый комментарий к направлению
@@ -296,26 +280,22 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     // DepartmentName (string) -- название подразделения - отделение
     // DepartmentCode (string) -- уникальный код подразделения (отделения)
     val (depName, depCode) = department match {
-      case null => {
+      case null =>
         info("Request:DepartmentName=<empty>")
         info("Request:DepartmentCode=<empty>")
         ("", "")
-      }
-      case _ => {
+      case _ =>
         info("Request:DepartmentName=" + department.getName)
         //todo изменено 03.10 hack
         info("Request:DepartmentCode=" + department.getId)
         (department.getName, "" + department.getId)
-      }
     }
 
     val (drLastName, drFirstName, drMiddleName, drCode) = a.getAssigner match {
-      case null => {
+      case null =>
         ("", "", "", null)
-      }
-      case _ => {
+      case _ =>
         (a.getAssigner.getLastName, a.getAssigner.getFirstName, a.getAssigner.getPatrName, a.getAssigner.getId)
-      }
     }
     // DoctorLastName, DoctorFirstName, DoctorMiddleName (string) -- ФИО врача
     info("Request.DoctorLastName=" + drLastName)
@@ -371,10 +351,9 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     val hospitalBeds = dbCustomQuery.getHospitalBedsByEvents(
       Collections.singletonList(e))
     hospitalBeds.get(e) match {
-      case null => {
+      case null =>
         warn("Hospital bed not found for " + e)
-      }
-      case hospitalBed: ActionProperty => {
+      case hospitalBed: ActionProperty =>
         val apvs = dbActionProperty.getActionPropertyValue(hospitalBed)
         apvs.foreach(
           (apv) => {
@@ -383,7 +362,6 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
               return bed.getMasterDepartment
             }
           })
-      }
     }
 
     null
@@ -401,10 +379,9 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     // Выбираем диагнозы
     val diagMap = dbCustomQuery.getDiagnosisSubstantiationByEvents(Collections.singletonList(e))
     val a = diagMap.get(e) match {
-      case null => {
+      case null =>
         warn("Diagnosis not found")
         return null
-      }
       case d: Action => d
     }
 
@@ -419,7 +396,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
 
     apvals.size match {
       case 0 => null
-      case x: Int => {
+      case x: Int =>
         val pair = apvals.get(0)
         var res = pair.getValueAsString.replaceAll("<(.)+?>", "")
         res = res.replaceAll("<(\n)+?>", "")
@@ -428,7 +405,6 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
           res = res.take(147) + "..."
         }
         ("", res)
-      }
     }
 
     /*
@@ -444,7 +420,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     */
   }
 
-  def setAnalysisResults(a: Action, results: List[AnalysisResult], finished: Boolean, biomaterialDefects: String) = {
+  def setAnalysisResults(a: Action, results: List[AnalysisResult], finished: Boolean, biomaterialDefects: String): Int = {
     // Сохраняем результаты анализов
     val entities = scala.collection.mutable.Buffer[AnyRef](a)
     import General.typedEquality
@@ -522,7 +498,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
 
         // Изображения
         r.value.get1.getOrElse(Nil) match {
-          case List(image) => {
+          case List(image) =>
             // Получаем actionProperty по названию
             val aps = a.getActionProperties.filter(ap => {
               ap.getType match {
@@ -541,9 +517,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
                 entities += _
               }
             })
-
-          }
-          case _ => {}
+          case _ =>
         }
 
         val microOrganismResults = r.value.get2.getOrElse(Nil)
@@ -600,7 +574,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
   def setLisAnalysisResults(requestId: Int,
                             finished: Boolean,
                             results: JList[AResult1],
-                            biomaterialDefects: String) = {
+                            biomaterialDefects: String): Int = {
     // Получаем действие направления
     info("SetAnalysisResults requested with id = " + requestId)
 
@@ -655,7 +629,7 @@ class AlteyLaboratoryBean extends AlteyBusinessBeanLocal with Logging with I18na
     (patientInfo, requestInfo, biomaterialInfo, orderInfo)
   }
 
-  def sendLisAnalysisRequest(actionId: Int) = {
+  def sendLisAnalysisRequest(actionId: Int): Unit = {
     val (patientInfo, requestInfo, biomaterialInfo, orderInfo) = getAnalysisRequest(actionId)
 
     info {

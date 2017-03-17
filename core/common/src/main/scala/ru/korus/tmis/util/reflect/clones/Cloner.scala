@@ -20,25 +20,25 @@ object Cloner {
   cloner.dontCloneInstanceOf(classOf[scala.Immutable])
 
   def deepCloner[T] = new StaticCloner[T] {
-    def clone(v: T) = cloner.deepClone(v)
+    def clone(v: T): T = cloner.deepClone(v)
 
-    def cloneExcluding(v: T, excluding: AnyRef*) = cloner.deepCloneDontCloneInstances(v, excluding: _*)
+    def cloneExcluding(v: T, excluding: AnyRef*): T = cloner.deepCloneDontCloneInstances(v, excluding: _*)
   }
 
   def deepClone[T](v: T)(implicit cloningRes: StaticCloner[T] = deepCloner[T]): T = cloningRes.clone(v)
 
-  def deepCloneExcluding[T](v: T, excluding: AnyRef*)(implicit cloningRes: StaticCloner[T] = deepCloner[T]) =
+  def deepCloneExcluding[T](v: T, excluding: AnyRef*)(implicit cloningRes: StaticCloner[T] = deepCloner[T]): T =
     cloningRes.cloneExcluding(v, excluding: _*)
 
   object Java {
     def deepClone[T](v: T): T = Cloner.deepClone(v)(deepCloner)
 
-    def deepCloneExcluding[T](v: T, excluding: AnyRef*) = Cloner.deepCloneExcluding(v, excluding: _*)
+    def deepCloneExcluding[T](v: T, excluding: AnyRef*): T = Cloner.deepCloneExcluding(v, excluding: _*)
   }
 
-  def deepCloneJ[T](v: T) = Java.deepClone(v)
+  def deepCloneJ[T](v: T): T = Java.deepClone(v)
 
-  def deepCloneExcludingJ[T](v: T, excluding: AnyRef*) = Java.deepCloneExcluding(v, excluding: _*)
+  def deepCloneExcludingJ[T](v: T, excluding: AnyRef*): T = Java.deepCloneExcluding(v, excluding: _*)
 
   //
 

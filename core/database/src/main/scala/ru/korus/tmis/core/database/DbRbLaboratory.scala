@@ -27,7 +27,7 @@ class DbRbLaboratory {
     if(intIds.isEmpty || (intIds.size() == 1 && 0 == intIds.get(0))){
       return getAllLabs
     }
-    return em.createNamedQuery("RbLaboratory.findAllByIds", classOf[RbLaboratory]).setParameter("ids", intIds).getResultList
+    em.createNamedQuery("RbLaboratory.findAllByIds", classOf[RbLaboratory]).setParameter("ids", intIds).getResultList
   }
 
 

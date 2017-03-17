@@ -1,35 +1,31 @@
 package ru.korus.tmis.core.patient
 
-import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
+import java.lang.{Boolean, Iterable, Double => JDouble}
+import java.util
+import java.util.{Calendar, Date}
+import javax.ejb.{EJB, Stateless}
+
+import grizzled.slf4j.Logging
+import org.codehaus.jackson.map.ObjectMapper
+import ru.korus.tmis.core.auth.{AuthData, AuthStorageBeanLocal}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
-import common._
+import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model.RbPolicyType.InsuranceType
 import ru.korus.tmis.core.entity.model._
-
-
-import java.lang.{Double => JDouble}
-import javax.ejb.{EJB, Stateless}
-import javax.interceptor.Interceptors
+import ru.korus.tmis.core.entity.model.kladr.{Kladr, Street}
+import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.scala.util.{ConfigManager, General, I18nable}
 
 import scala.collection.JavaConversions._
-import java.util.{Calendar, LinkedList, Date}
-import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.core.exception.CoreException
-import org.codehaus.jackson.map.ObjectMapper
-import javax.ejb._
-import scala.util.control.Breaks._
-import java.util
-import util.Calendar
-import ru.korus.tmis.scala.util.{General, I18nable, ConfigManager}
-import ru.korus.tmis.core.entity.model.kladr.{Street, Kladr}
 import scala.language.reflectiveCalls
+import scala.util.control.Breaks._
 
 @Stateless
 class PatientBean
   extends PatientBeanLocal
-
-  with I18nable {
+    with Logging
+    with I18nable {
 
   type CA = CommonAttribute
 
@@ -106,11 +102,11 @@ class PatientBean
   var dbBloodHistoryBean: DbBloodHistoryBeanLocal = _
   //////////////////////////////////////////////////////////////////////////////
 
-  def getCurrentPatientsForDoctor(userData: AuthData) = {
+  def getCurrentPatientsForDoctor(userData: AuthData): CommonData = {
     buildCommonData(customQuery.getActiveEventsForDoctor(userData.doctor.id))
   }
 
-  def getCurrentPatientsForDepartment(userData: Staff) = {
+  def getCurrentPatientsForDepartment(userData: Staff): CommonData = {
     import General.nullity_implicits
 
     val id = userData.getOrgStructure ?!! {
@@ -122,11 +118,11 @@ class PatientBean
     buildCommonData(customQuery.getActiveEventsForDepartment(id))
   }
 
-  def getCurrentPatientsByDepartmentId(id: Int) = {
+  def getCurrentPatientsByDepartmentId(id: Int): CommonData = {
     buildCommonData(customQuery.getActiveEventsForDepartment(id))
   }
 
-  def buildCommonData(events: java.util.List[Event]) = {
+  def buildCommonData(events: java.util.List[Event]): CommonData = {
     val admissions = customQuery.getAdmissionsByEvents(events)
     val hospitalBeds = customQuery.getHospitalBedsByEvents(events)
     val anamneses = customQuery.getAnamnesesByEvents(events)
@@ -148,7 +144,7 @@ class PatientBean
         "patientCaseHistoryId",
         ConfigManager.Types.Integer,
         null,
-        event.getExternalId.toString)
+        event.getExternalId)
 
 
       val patient = event.getPatient
@@ -172,15 +168,15 @@ class PatientBean
       val weight = Option(customQuery.getWeightForPatient(patient))
 
       val BSA = for (h <- height; w <- weight)
-      yield scala.math.sqrt(h.doubleValue() * w.doubleValue() / 3600.0).toString
+        yield scala.math.sqrt(h.doubleValue() * w.doubleValue() / 3600.0).toString
 
       val SBSA = BSA.getOrElse("")
       val sheight = height.map {
         _.toString
-      }.getOrElse(patient.getHeight.toString)
+      }.getOrElse(patient.getHeight)
       val sweight = weight.map {
         _.toString
-      }.getOrElse(patient.getWeight.toString)
+      }.getOrElse(patient.getWeight)
 
       info("height=" + sheight)
       info("weight=" + sweight)
@@ -287,45 +283,44 @@ class PatientBean
         Nil
 
       admissions.get(event) match {
-        case null => {}
-        case admission: Action => {
+        case null =>
+        case admission: Action =>
           group add new CA(admission.getId,
             admission.getVersion.intValue,
             "patientAdmissionDate",
             ConfigManager.Types.Datetime,
             null,
             admission.getCreateDatetime)
-        }
       }
 
       hospitalBeds.get(event) match {
-        case null => {}
-        case hospitalBed: ActionProperty => {
+        case null =>
+        case hospitalBed: ActionProperty =>
           val apvs = dbActionProperty.getActionPropertyValue(hospitalBed)
           apvs.foreach(
             (apv) => {
-              if (apv.getValue.isInstanceOf[OrgStructureHospitalBed]) {
-                val bed = apv.getValue.asInstanceOf[OrgStructureHospitalBed]
-                group add new CA(bed.getId,
-                  hospitalBed.getVersion.intValue,
-                  "patientCurrentBed",
-                  ConfigManager.Types.String,
-                  null,
-                  bed.getName)
-                group add new CA(bed.getId,
-                  hospitalBed.getVersion.intValue,
-                  "patientCurrentDepartment",
-                  ConfigManager.Types.String,
-                  null,
-                  bed.getMasterDepartment.getName)
+              apv.getValue match {
+                case bed: OrgStructureHospitalBed =>
+                  group add new CA(bed.getId,
+                    hospitalBed.getVersion.intValue,
+                    "patientCurrentBed",
+                    ConfigManager.Types.String,
+                    null,
+                    bed.getName)
+                  group add new CA(bed.getId,
+                    hospitalBed.getVersion.intValue,
+                    "patientCurrentDepartment",
+                    ConfigManager.Types.String,
+                    null,
+                    bed.getMasterDepartment.getName)
+                case _ =>
               }
             })
-        }
       }
 
       anamneses.get(event) match {
-        case null => {}
-        case anamnesis: ActionProperty => {
+        case null =>
+        case anamnesis: ActionProperty =>
           val apvs = dbActionProperty.getActionPropertyValue(anamnesis)
           apvs.foreach(
             (apv) => {
@@ -336,12 +331,11 @@ class PatientBean
                 null,
                 apv.getValueAsString)
             })
-        }
       }
 
       allergoAnamneses.get(event) match {
-        case null => {}
-        case allergoAnamnesis: ActionProperty => {
+        case null =>
+        case allergoAnamnesis: ActionProperty =>
           val apvs = dbActionProperty.getActionPropertyValue(allergoAnamnesis)
           apvs.foreach(
             (apv) => {
@@ -352,12 +346,11 @@ class PatientBean
                 null,
                 apv.getValueAsString)
             })
-        }
       }
 
       diagnoses.get(event) match {
-        case null => {}
-        case diagnosis: ActionProperty => {
+        case null =>
+        case diagnosis: ActionProperty =>
           val apvs = dbActionProperty.getActionPropertyValue(diagnosis)
           apvs.foreach(
             (apv) => {
@@ -368,7 +361,6 @@ class PatientBean
                 null,
                 apv.getValueAsString)
             })
-        }
       }
 
       data add (entity add group)
@@ -376,7 +368,7 @@ class PatientBean
   }
 
   //https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=0
-  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, authData: AuthData) = {
+  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, authData: AuthData): String = {
 
     val role = requestData.filter.roleId
     val mapper: ObjectMapper = new ObjectMapper()
@@ -408,16 +400,16 @@ class PatientBean
       dbDiagnocticsBean.getDiagnosticsByEventId _))
   }
 
-  def getPatientById(id: Int) = {
+  def getPatientById(id: Int): Patient = {
     dbPatient.getPatientById(id)
   }
 
-  def getAllPatients(requestData: PatientRequestData) = {
+  def getAllPatients(requestData: PatientRequestData): Iterable[Patient] = {
     dbPatient.getAllPatients(requestData.page - 1,
       requestData.limit,
       requestData.sortingFieldInternal,
       requestData.filter.unwrap(),
-      requestData.rewriteRecordsCount _)
+      requestData.rewriteRecordsCount)
   }
 
   def savePatient(id: Int, patientEntry: PatientEntry, userData: Staff): PatientEntry = {
@@ -436,18 +428,16 @@ class PatientBean
     var bloodKell: BloodKell = BloodKell.NOT_DEFINED
 
     medInfo match {
-      case null => {}
-      case _ => {
+      case null =>
+      case _ =>
         medInfo.getBlood() match {
-          case null => {}
-          case blood: BloodInfoContainer => {
+          case null =>
+          case blood: BloodInfoContainer =>
             bloodDate = blood.getCheckingDate()
             bloodType = blood.getId()
             bloodPhenotypeId = if (blood.getBloodPhenotype == null) null else blood.getBloodPhenotype.getId
             bloodKell = if (blood.getBloodKell == null || blood.getBloodKell.isEmpty) BloodKell.NOT_DEFINED else BloodKell.valueOf(blood.getBloodKell)
-          }
         }
-      }
     }
 
 
@@ -476,15 +466,15 @@ class PatientBean
 
 
     //create or update document data
-    var docStartDate = new Date();
-    var docEndDate = new Date();
+    var docStartDate = new Date()
+    var docEndDate = new Date()
     var set = Set.empty[Int]
     val clientIdCards = patientEntry.getIdCards()
-    val serverIdCards = patient.getActiveClientDocuments()
+    val serverIdCards = patient.getActiveClientDocuments
     serverIdCards.foreach(
       (serverIdCard) => {
-        val result = clientIdCards.find { element => element.getId() == serverIdCard.getId().intValue()}
-        val clientIdCard = result.getOrElse(null)
+        val result = clientIdCards.find { element => element.getId() == serverIdCard.getId.intValue() }
+        val clientIdCard = result.orNull
         if (clientIdCard != null) {
           set = set + clientIdCard.getId()
           if (clientIdCard.getRangeDocumentDate() != null) {
@@ -507,7 +497,7 @@ class PatientBean
             )
           }
         } else {
-          dbClientDocument.deleteClientDocument(serverIdCard.getId().intValue(), userData)
+          dbClientDocument.deleteClientDocument(serverIdCard.getId.intValue(), userData)
         }
       }
     )
@@ -577,17 +567,15 @@ class PatientBean
     val serverPolicies = patient.getActiveClientPolicies
     serverPolicies.foreach(
       (serverPolicy) => {
-        val result = clientPolicies.find { element => element.getId() == serverPolicy.getId().intValue()}
-        val clientPolicy = result.getOrElse(null)
+        val result = clientPolicies.find { element => element.getId() == serverPolicy.getId.intValue() }
+        val clientPolicy = result.orNull
         if (clientPolicy != null) {
           set = set + clientPolicy.getId()
           var policyTypeId = clientPolicy.getPolicyType() match {
-            case null => {
+            case null =>
               0
-            }
-            case policyType: IdNameContainer => {
+            case policyType: IdNameContainer =>
               policyType.getId()
-            }
           }
           var policyDate = clientPolicy.getRangePolicyDate()
           if (policyTypeId > 0 && policyDate != null && policyDate.getStart() != null) {
@@ -595,12 +583,10 @@ class PatientBean
               clientPolicy.getId(),
               policyTypeId,
               clientPolicy.getSmo() match {
-                case null => {
+                case null =>
                   0
-                }
-                case smo: IdNameContainer => {
+                case smo: IdNameContainer =>
                   smo.getId()
-                }
               },
               clientPolicy.getNumber(),
               clientPolicy.getSeries(),
@@ -613,7 +599,7 @@ class PatientBean
             )
           }
         } else {
-          dbClientPolicy.deleteClientPolicy(serverPolicy.getId().intValue(), null)
+          dbClientPolicy.deleteClientPolicy(serverPolicy.getId.intValue(), null)
         }
       }
     )
@@ -629,12 +615,10 @@ class PatientBean
       }
       if (j == 0) {
         var policyTypeId = clientPolicy.getPolicyType() match {
-          case null => {
+          case null =>
             0
-          }
-          case policyType: IdNameContainer => {
+          case policyType: IdNameContainer =>
             policyType.getId()
-          }
         }
         var policyDate = clientPolicy.getRangePolicyDate()
         if (policyTypeId > 0 && policyDate != null && policyDate.getStart() != null) {
@@ -642,12 +626,10 @@ class PatientBean
             clientPolicy.getId(),
             policyTypeId,
             clientPolicy.getSmo() match {
-              case null => {
+              case null =>
                 0
-              }
-              case smo: IdNameContainer => {
+              case smo: IdNameContainer =>
                 smo.getId()
-              }
             },
             clientPolicy.getNumber(),
             clientPolicy.getSeries(),
@@ -666,11 +648,11 @@ class PatientBean
     //create or update Contact data
     set = Set.empty[Int]
     val clientContacts = patientEntry.getPhones()
-    val patientContacts = patient.getActiveClientContacts()
+    val patientContacts = patient.getActiveClientContacts
     patientContacts.foreach(
       (serverContact) => {
-        val result = clientContacts.find { element => element.getId() == serverContact.getId().intValue()}
-        val clientContact = result.getOrElse(null)
+        val result = clientContacts.find { element => element.getId() == serverContact.getId.intValue() }
+        val clientContact = result.orNull
         if (clientContact != null) {
           set = set + clientContact.getId()
           var tempServContact = serverContact
@@ -683,7 +665,7 @@ class PatientBean
             userData
           )
         } else {
-          dbClientContact.deleteClientContact(serverContact.getId().intValue(), userData)
+          dbClientContact.deleteClientContact(serverContact.getId.intValue(), userData)
         }
       }
     )
@@ -712,54 +694,50 @@ class PatientBean
 
     //create or update Address data
     val clientAddresses = patientEntry.getAddress()
-    val serverAddresses = patient.getActiveClientAddresses()
-    var result = serverAddresses.find { element => element.getAddressType == 0}
-    var registeredAddres = result.getOrElse(null)
-    result = serverAddresses.find { element => element.getAddressType == 1}
-    var residentialAddres = result.getOrElse(null)
+    val serverAddresses = patient.getActiveClientAddresses
+    var result = serverAddresses.find { element => element.getAddressType == 0 }
+    var registeredAddres = result.orNull
+    result = serverAddresses.find { element => element.getAddressType == 1 }
+    var residentialAddres = result.orNull
     clientAddresses.getRegistered() match {
-      case null => {
+      case null =>
         if (registeredAddres != null) {
-          dbClientAddress.deleteClientAddress(registeredAddres.getId().intValue(), userData)
+          dbClientAddress.deleteClientAddress(registeredAddres.getId.intValue(), userData)
         }
-      }
-      case addressEntry: AddressEntryContainer => {
+      case addressEntry: AddressEntryContainer =>
         registeredAddres = dbClientAddress.insertClientAddress(
           0, //TODO: вынести в настройки идентификатор типа адреса
           addressEntry,
           patient,
           userData
         )
-      }
     }
     clientAddresses.getResidential() match {
-      case null => {
+      case null =>
         if (residentialAddres != null) {
-          dbClientAddress.deleteClientAddress(residentialAddres.getId().intValue(), userData)
+          dbClientAddress.deleteClientAddress(residentialAddres.getId.intValue(), userData)
         }
-      }
-      case addressEntry: AddressEntryContainer => {
+      case addressEntry: AddressEntryContainer =>
         residentialAddres = dbClientAddress.insertClientAddress(
           1, //TODO: вынести в настройки идентификатор типа адреса
           addressEntry,
           patient,
           userData
         )
-      }
     }
     //
 
     //create or update ClientAllergy data
     set = Set.empty[Int]
-    var clientAllergies: LinkedList[AllergyInfoContainer] = null
+    var clientAllergies: util.LinkedList[AllergyInfoContainer] = null
     if (medInfo != null) {
       clientAllergies = medInfo.getAllergies()
     }
-    val serverAllergies = patient.getActiveClientAllergies()
+    val serverAllergies = patient.getActiveClientAllergies
     serverAllergies.foreach(
       (serverAllergy) => {
-        val result = clientAllergies.find { element => element.getId() == serverAllergy.getId().intValue()}
-        val clientAllergy = result.getOrElse(null)
+        val result = clientAllergies.find { element => element.getId() == serverAllergy.getId.intValue() }
+        val clientAllergy = result.orNull
         if (clientAllergy != null) {
           set = set + clientAllergy.getId().intValue()
           var tempServerAllergy = serverAllergy
@@ -773,7 +751,7 @@ class PatientBean
             userData
           )
         } else {
-          dbClientAllergy.deleteClientAllergy(serverAllergy.getId().intValue(), userData)
+          dbClientAllergy.deleteClientAllergy(serverAllergy.getId.intValue(), userData)
         }
 
       }
@@ -795,15 +773,15 @@ class PatientBean
 
     //Непереносимости
     set = Set.empty[Int]
-    var clientDrugIntolerances: LinkedList[AllergyInfoContainer] = null
+    var clientDrugIntolerances: util.LinkedList[AllergyInfoContainer] = null
     if (medInfo != null) {
       clientDrugIntolerances = medInfo.getDrugIntolerances()
     }
-    val patientIntolerances = patient.getActiveClientIntoleranceMedicaments()
+    val patientIntolerances = patient.getActiveClientIntoleranceMedicaments
     patientIntolerances.foreach(
       (serverIntolerance) => {
-        val result = clientDrugIntolerances.find { element => element.getId() == serverIntolerance.getId().intValue()}
-        val clientDrugIntolerance = result.getOrElse(null)
+        val result = clientDrugIntolerances.find { element => element.getId() == serverIntolerance.getId.intValue() }
+        val clientDrugIntolerance = result.orNull
         if (clientDrugIntolerance != null) {
           set = set + clientDrugIntolerance.getId().intValue()
           var tempServerIntolerance = serverIntolerance
@@ -817,7 +795,7 @@ class PatientBean
             userData
           )
         } else {
-          dbClientIntoleranceMedicament.deleteClientIntoleranceMedicament(serverIntolerance.getId().intValue(), userData)
+          dbClientIntoleranceMedicament.deleteClientIntoleranceMedicament(serverIntolerance.getId.intValue(), userData)
         }
       }
     )
@@ -848,11 +826,11 @@ class PatientBean
     //create or update ClientRelation data
     set = Set.empty[Int]
     val clientRelations = patientEntry.getRelations()
-    val serverRelations = patient.getActiveClientRelatives()
+    val serverRelations = patient.getActiveClientRelatives
     serverRelations.foreach(
       (serverRelation) => {
-        val result = clientRelations.find { element => element.getId() == serverRelation.getId().intValue()}
-        val clientRelation = result.getOrElse(null)
+        val result = clientRelations.find { element => element.getId() == serverRelation.getId.intValue() }
+        val clientRelation = result.orNull
         if (clientRelation != null) {
           set = set + clientRelation.getId().intValue()
           var tempServerRelation = serverRelation
@@ -867,7 +845,7 @@ class PatientBean
             userData
           )
         } else {
-          dbClientRelation.deleteClientRelation(serverRelation.getId().intValue(), userData)
+          dbClientRelation.deleteClientRelation(serverRelation.getId.intValue(), userData)
         }
       }
     )
@@ -970,7 +948,7 @@ class PatientBean
         //Удаление
         serverWorks.filter(sw => {
           val result = clientWorks.find(cw => cw.getId.compareTo(sw.getId) == 0)
-          if (result == None) true else false
+          if (result.isEmpty) true else false
         }).foreach(f => dbClientWorks.deleteClientWork(f.getId.intValue(), userData))
       }
     })
@@ -996,13 +974,11 @@ class PatientBean
 
     //---Удаление---
     serverSocScatuses.filter(sw => {
-      val result = clientDisabilities.find(cw => cw.getId.compareTo(sw.getId) == 0)
-      if (result == None) true else false
+      !clientDisabilities.exists(cw => cw.getId.compareTo(sw.getId) == 0)
     }).foreach(f => dbSocStatus.deleteClientSocStatus(f.getId.intValue(), userData))
 
     serverSocScatuses.filter(sw => {
-      val result = clientOccupations.find(cw => cw.getId.compareTo(sw.getId) == 0)
-      if (result == None) true else false
+     !clientOccupations.exists(cw => cw.getId.compareTo(sw.getId) == 0)
     }).foreach(f => {
       dbSocStatus.deleteClientSocStatus(f.getId.intValue(), userData)
       val serverWorks = patient.getActiveClientWorks
@@ -1064,14 +1040,14 @@ class PatientBean
         }
       }
     }
-    new PatientEntry(patient, this.getKLADRAddressMapForPatient(patient), this.getKLADRStreetForPatient(patient));
+    new PatientEntry(patient, this.getKLADRAddressMapForPatient(patient), this.getKLADRStreetForPatient(patient))
 
   }
 
-  def getKLADRAddressMapForPatient(patient: Patient) = {
+  def getKLADRAddressMapForPatient(patient: Patient): util.LinkedHashMap[Integer, util.LinkedList[Kladr]] = {
 
     val map = new java.util.LinkedHashMap[java.lang.Integer, java.util.LinkedList[Kladr]]()
-    patient.getActiveClientAddresses().foreach(a => {
+    patient.getActiveClientAddresses.foreach(a => {
       if (a.getAddress != null && a.getAddress.getHouse != null && !a.getAddress.getHouse.getKLADRCode.isEmpty) {
 
         val list = new java.util.LinkedList[Kladr]
@@ -1083,7 +1059,7 @@ class PatientBean
           list.add(kladr)
           var parent = kladr.getParent
           if (!parent.isEmpty) {
-            while (parent.size < 13) {
+            while (parent.length < 13) {
               parent = parent + "0"
             }
             kladr = dbSchemeKladrBean.getKladrByCode(parent)
@@ -1098,11 +1074,11 @@ class PatientBean
     map
   }
 
-  def getKLADRStreetForPatient(patient: Patient) = {
+  def getKLADRStreetForPatient(patient: Patient): util.LinkedHashMap[Integer, Street] = {
 
     val map = new java.util.LinkedHashMap[java.lang.Integer, Street]()
-    val addresses = patient.getClientAddresses.filter(p => p.isDeleted == false)
-    if (addresses != null && addresses.size > 0) {
+    val addresses = patient.getClientAddresses.filter(!_.isDeleted)
+    if (addresses != null && addresses.nonEmpty) {
       addresses.foreach(f => {
         val address = f.getAddress
         if (address != null) {
@@ -1120,19 +1096,19 @@ class PatientBean
     map
   }
 
-  def checkSNILSNumber(number: String) = {
+  def checkSNILSNumber(number: String): Boolean = {
     dbPatient.checkSNILSNumber(number)
   }
 
-  def checkPolicyNumber(number: String, serial: String, typeId: Int) = {
+  def checkPolicyNumber(number: String, serial: String, typeId: Int): Boolean = {
     dbClientPolicy.checkPolicyNumber(number: String, serial: String, typeId: Int)
   }
 
-  def deletePatientInfo(id: Int) = dbPatient.deletePatient(id)
+  def deletePatientInfo(id: Int): Boolean = dbPatient.deletePatient(id)
 
   def getBloodHistory(id: Int) = new BloodHistoryListData(dbBloodHistoryBean.getBloodHistoryByPatient(id))
 
-  def insertBloodTypeForPatient(id: Int, data: BloodHistoryData, staff: Staff) = {
+  def insertBloodTypeForPatient(id: Int, data: BloodHistoryData, staff: Staff): BloodHistoryData = {
 
     var bloodTypeId: Int = -1
     val now = new Date()
@@ -1153,7 +1129,7 @@ class PatientBean
 
     val patient = this.getPatientById(id)
 
-    version = patient.getVersion()
+    version = patient.getVersion
     oldPatient = Patient.clone(patient)
     patient.setVersion(version)
     patient.setModifyPerson(staff)

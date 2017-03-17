@@ -8,13 +8,13 @@ import Manifests.canAssign
 
 trait Reflective { target =>
   lazy val methods = new Map[String, CMethod] {
-    override def get(name: String) = target.getClass.getDeclaredMethods.find{ _.getName == name }
-    override def iterator = target.getClass.getDeclaredMethods.collect{ case it => (it.getName, it) }.iterator
-    override def +[B >: CMethod] (kv: (String, B)) = sys.error("Reflective.fields.+: operation unsupported")
-    override def - (k: String) = sys.error("Reflective.fields.-: operation unsupported")
+    override def get(name: String): Option[CMethod] = target.getClass.getDeclaredMethods.find{ _.getName == name }
+    override def iterator: Iterator[(String, CMethod)] = target.getClass.getDeclaredMethods.collect{ case it => (it.getName, it) }.iterator
+    override def +[B >: CMethod] (kv: (String, B)): Nothing = sys.error("Reflective.fields.+: operation unsupported")
+    override def - (k: String): Nothing = sys.error("Reflective.fields.-: operation unsupported")
   }
 
-  lazy val fieldNames = target.
+  lazy val fieldNames: List[String] = target.
     getClass.
     getDeclaredFields.
     map{ _.getName }.
@@ -22,7 +22,7 @@ trait Reflective { target =>
     filterNot{ it => it == "methods" || it == "fieldNames"  }.
     toList
 
-  def setField(name: String, value: Any) = {
+  def setField(name: String, value: Any): Boolean = {
     lazy val setter = methods.get(name + "_$eq")
 
 
@@ -37,7 +37,7 @@ trait Reflective { target =>
     }
   }
 
-  def getField[T: Manifest](name: String) = invokeMethod[T](name)
+  def getField[T: Manifest](name: String): Option[T] = invokeMethod[T](name)
 
 
 

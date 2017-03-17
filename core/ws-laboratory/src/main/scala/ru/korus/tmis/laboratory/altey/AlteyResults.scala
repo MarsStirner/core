@@ -28,7 +28,7 @@ import scala.language.reflectiveCalls
   portName = "service-altey-results",
   name = "service-altey-results")
 @HandlerChain(file = "tmis-ws-lab-logging-handlers.xml")
-class AlteyResults extends AlteyResultsService with Logging with I18nable {
+class AlteyResults extends AlteyResultsService with I18nable {
 
   @EJB
   var labBean: AlteyBusinessBeanLocal = _
@@ -36,7 +36,7 @@ class AlteyResults extends AlteyResultsService with Logging with I18nable {
   def setAnalysisResults(orderMisId: String,
                          referralIsFinished: Boolean,
                          results: JList[ru.korus.tmis.laboratory.altey.accept2.AnalysisResult],
-                         biomaterialDefects: JString) = {
+                         biomaterialDefects: JString): Int = {
     val intOrder: Int = catchy {
       orderMisId.toInt
     }.getOrElse {

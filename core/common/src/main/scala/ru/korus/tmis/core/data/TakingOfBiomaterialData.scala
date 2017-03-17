@@ -76,7 +76,7 @@ class TakingOfBiomaterialRequesData {
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
   }
 
-  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+  def rewriteRecordsCount(recordsCount: java.lang.Long): Boolean = {
     this.recordsCount = recordsCount.longValue()
     true
   }

@@ -1,13 +1,15 @@
 package ru.korus.tmis.core.database
 
+import java.util
 import javax.interceptor.Interceptors
-
 import javax.ejb.Stateless
-
 import javax.persistence.{EntityManager, PersistenceContext}
+
 import ru.korus.tmis.core.entity.model.OrgStructureHospitalBed
+
 import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.I18nable
+
 import scala.language.reflectiveCalls
 
 /**
@@ -24,7 +26,7 @@ class DbOrgStructureHospitalBedBean extends DbOrgStructureHospitalBedBeanLocal
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getHospitalBedByDepartmentId(departmentId: Int) = {
+  def getHospitalBedByDepartmentId(departmentId: Int): util.List[OrgStructureHospitalBed] = {
     val result = em.createQuery(AllHospitalBedsByDepartmentIdQuery, classOf[OrgStructureHospitalBed])
                   .setParameter("departmentId", departmentId)
                   .getResultList
@@ -32,7 +34,7 @@ class DbOrgStructureHospitalBedBean extends DbOrgStructureHospitalBedBeanLocal
     result
   }
 
-  def getBusyHospitalBedByIds(ids: java.util.Collection[java.lang.Integer]) = {
+  def getBusyHospitalBedByIds(ids: java.util.Collection[java.lang.Integer]): util.List[OrgStructureHospitalBed] = {
     val result = em.createQuery(BusyHospitalBedsByDepartmentIdQuery.format(i18n("db.action.movingFlatCode"),
                                                                            i18n("db.apt.moving.codes.hospitalBed")),
                                 classOf[OrgStructureHospitalBed])

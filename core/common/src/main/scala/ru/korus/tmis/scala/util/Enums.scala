@@ -3,11 +3,11 @@ package ru.korus.tmis.scala.util
 import scala.language.implicitConversions
 
 sealed case class StringId(id: String) {
-  override def toString = {
+  override def toString: String = {
     id
   }
 
-  implicit def wrapString(str: String) = {
+  implicit def wrapString(str: String): StringId = {
     StringId(str)
   }
 }

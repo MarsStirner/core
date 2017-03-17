@@ -16,12 +16,12 @@ class DateAdapter extends XmlAdapter[String, Date] {
 private val dateFormat = new SimpleDateFormat("yyyy-MM-dd") // ISO 8601 date
 
   @throws(classOf[Exception])
-  override def marshal(v: Date) = {
+  override def marshal(v: Date): String = {
     dateFormat.format(v)
   }
 
   @throws(classOf[Exception])
-  override def unmarshal(v: String) = {
+  override def unmarshal(v: String): Date = {
     dateFormat.parse(v)
   }
 
@@ -32,12 +32,12 @@ class DateTimeAdapter extends XmlAdapter[String, Date] {
    val dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss") // ISO 8601 local datetime
 
   @throws(classOf[Exception])
-  override def marshal(v: Date) = {
+  override def marshal(v: Date): String = {
     dateFormat.format(v)
   }
 
   @throws(classOf[Exception])
-  override def unmarshal(v: String) = {
+  override def unmarshal(v: String): Date = {
     dateFormat.parse(v)
   }
 
@@ -45,8 +45,8 @@ class DateTimeAdapter extends XmlAdapter[String, Date] {
 
 @XmlJavaTypeAdapter(classOf[DateAdapter])
 class ISODate(d: Date) extends Date(d.getTime)
-object ISODate { def apply(d: Date) = if(d != null) new ISODate(d) else null }
+object ISODate { def apply(d: Date): ISODate = if(d != null) new ISODate(d) else null }
 
 @XmlJavaTypeAdapter(classOf[DateTimeAdapter])
 class ISODateTime(d: Date) extends Date(d.getTime)
-object ISODateTime { def apply(d: Date) = if(d != null) new ISODate(d) else null }
+object ISODateTime { def apply(d: Date): ISODate = if(d != null) new ISODate(d) else null }

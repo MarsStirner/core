@@ -11,7 +11,7 @@ class ClonerTest {
 
   // this test is intended only to check if our understanding of what google.cloning does reflects what it really does
   @Test
-  def testClone() = {
+  def testClone(): Unit = {
     import Cloner.Java._
 
     val ap1 = new ActionProperty(26)
@@ -63,7 +63,7 @@ class ClonerTest {
 
   // showing off that with scala classes (most notably, case classes) not everything works as expected
   @Test
-  def testCloneA() = {
+  def testCloneA(): Unit = {
     import Cloner._
 
     val a = A(List(1, 2, 3, 4))

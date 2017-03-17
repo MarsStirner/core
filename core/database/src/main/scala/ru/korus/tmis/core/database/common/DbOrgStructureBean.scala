@@ -46,11 +46,11 @@ class DbOrgStructureBean
     }
   }
 
-  def getAllOrgStructures = {
+  def getAllOrgStructures: util.List[OrgStructure] = {
     em.createNamedQuery("OrgStructure.findAll", classOf[OrgStructure]).getResultList
   }
 
-  def getActionTypeFilter(departmentId: Int) = {
+  def getActionTypeFilter(departmentId: Int): util.HashSet[ActionType] = {
     val result = em.createQuery(ActionTypeFilterByDepartmentIdQuery,
       classOf[ActionType])
       .setParameter("id", departmentId)
@@ -60,7 +60,7 @@ class DbOrgStructureBean
     new java.util.HashSet(result)
   }
 
-  def getCountAllOrgStructuresWithFilter(filter: Object) = {
+  def getCountAllOrgStructuresWithFilter(filter: Object): Long = {
     val queryStr: QueryDataStructure = filter match {
       case x: DepartmentsDataFilter => x.toQueryStructure()
       case _ => new QueryDataStructure()
@@ -76,7 +76,7 @@ class DbOrgStructureBean
     typed.getSingleResult
   }
 
-  def getAllOrgStructuresByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter) = {
+  def getAllOrgStructuresByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter): util.List[OrgStructure] = {
 
     val queryStr: QueryDataStructure = filter.toQueryStructure
 
@@ -89,7 +89,7 @@ class DbOrgStructureBean
     typed.getResultList
   }
 
-  def getOrgStructureByHospitalBedId(bedId: Int) = {
+  def getOrgStructureByHospitalBedId(bedId: Int): OrgStructure = {
     val result = em.createQuery("SELECT org FROM OrgStructure org, OrgStructureHospitalBed bed WHERE bed.masterDepartment.id = org.id AND bed.id = :bedId", classOf[OrgStructure])
       .setParameter("bedId", bedId)
       .getSingleResult

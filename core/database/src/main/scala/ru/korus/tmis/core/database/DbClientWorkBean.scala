@@ -32,7 +32,7 @@ class DbClientWorkBean
       t.id = :id
                       """
 
-  def getClientWorkById(id: Int) = {
+  def getClientWorkById(id: Int): ClientWork = {
     val result = em.createQuery(FindByIdQuery,
       classOf[ClientWork])
       .setParameter("id", id)
@@ -53,7 +53,7 @@ class DbClientWorkBean
                                 post: String,
                                 rankId: Int,
                                 armId: Int,
-                                sessUser: Staff) = {
+                                sessUser: Staff): ClientWork = {
 
     var cw: ClientWork = null
     val now: Date = new Date
@@ -97,7 +97,7 @@ class DbClientWorkBean
     cw
   }
 
-  def deleteClientWork(id: Int, sessionUser: Staff) = {
+  def deleteClientWork(id: Int, sessionUser: Staff): Unit = {
     val d = getClientWorkById(id)
     val now = new Date
     d.setDeleted(true)

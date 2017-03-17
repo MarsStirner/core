@@ -58,7 +58,7 @@ class ActionsListDataFilter  extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
+  def toQueryStructure(): QueryDataStructure = {
     val qs = new QueryDataStructure()
     if(this.eventId>0){
       qs.query += "AND a.event.id = :eventId\n"
@@ -86,7 +86,7 @@ class ActionsListDataFilter  extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString (sortingField: String, sortingMethod: String) = {
+  def toSortingString (sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "date" => {"a.createDatetime %s"}
       case _ => {"a.id %s"}

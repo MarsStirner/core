@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.database.common
 
 import java.lang.{Double => JDouble}
+import java.util
 import java.util.Date
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext, TemporalType}
@@ -39,7 +40,7 @@ class DbCustomQueryBean
   @EJB
   private var dbActionPropertyBean: DbActionPropertyBeanLocal = _
 
-  def getTakenTissueByBarcode(id: Int, period: Int) = {
+  def getTakenTissueByBarcode(id: Int, period: Int): TakenTissue = {
     val result = em.createQuery(takenTissueByBarcodeQuery, classOf[TakenTissue])
       .setParameter("barcode", id)
       .setParameter("period", period)
@@ -49,7 +50,7 @@ class DbCustomQueryBean
     }.orNull
   }
 
-  def getActiveEventsForDoctor(id: Int) = {
+  def getActiveEventsForDoctor(id: Int): util.List[Event] = {
     val result = em.createQuery(ActiveEventsByDoctorIdQuery,
       classOf[Event])
       .setParameter("doctorId", id)
@@ -59,7 +60,7 @@ class DbCustomQueryBean
     result
   }
 
-  def getActiveEventsForDepartment(id: Int) = {
+  def getActiveEventsForDepartment(id: Int): util.List[Event] = {
     val result = em.createQuery(ActiveEventsByDepartmentIdQuery,
       classOf[Array[AnyRef]])
       .setParameter("departmentId", id)
@@ -75,7 +76,7 @@ class DbCustomQueryBean
                                             sortingField: String,
                                             sortingMethod: String,
                                             filter: Object,
-                                            records: (java.lang.Long) => java.lang.Boolean) = {
+                                            records: (java.lang.Long) => java.lang.Boolean): util.Map[Action, util.Map[ActionProperty, util.List[APValue]]] = {
 
     val sorting = if (sortingField.compareTo("bed") == 0 || sortingField.compareTo("number") == 0) ""
     else filter.asInstanceOf[PatientsListRequestDataFilter].toSortingString(sortingField, sortingMethod)
@@ -149,31 +150,31 @@ class DbCustomQueryBean
       actions.drop(page * limit)
   }
 
-  def getAdmissionsByEvents(events: java.util.List[Event]) = {
+  def getAdmissionsByEvents(events: java.util.List[Event]): util.Map[Event, Action] = {
     getEntitiesByEvents[Action](events, AdmissionsByEventIdsQuery)
   }
 
-  def getHospitalBedsByEvents(events: java.util.List[Event]) = {
+  def getHospitalBedsByEvents(events: java.util.List[Event]): util.Map[Event, ActionProperty] = {
     getEntitiesByEvents[ActionProperty](events, HospitalBedsByEventIdsQuery)
   }
 
-  def getOrgStructureByReceivedActionByEvents(events: java.util.List[Event]) = {
+  def getOrgStructureByReceivedActionByEvents(events: java.util.List[Event]): util.Map[Event, ActionProperty] = {
     getEntitiesByEvents[ActionProperty](events, OrgStructureFromReceivedByEventIdsQuery)
   }
 
-  def getAnamnesesByEvents(events: java.util.List[Event]) = {
+  def getAnamnesesByEvents(events: java.util.List[Event]): util.Map[Event, ActionProperty] = {
     getEntitiesByEvents[ActionProperty](events, AnamnesesByEventIdsQuery)
   }
 
-  def getAllergoAnamnesesByEvents(events: java.util.List[Event]) = {
+  def getAllergoAnamnesesByEvents(events: java.util.List[Event]): util.Map[Event, ActionProperty] = {
     getEntitiesByEvents[ActionProperty](events, AllergoAnamnesesByEventIdsQuery)
   }
 
-  def getDiagnosesByEvents(events: java.util.List[Event]) = {
+  def getDiagnosesByEvents(events: java.util.List[Event]): util.Map[Event, ActionProperty] = {
     getEntitiesByEvents[ActionProperty](events, DiagnosesByEventIdsQuery)
   }
 
-  def getDiagnosisSubstantiationByEvents(events: java.util.List[Event]) = {
+  def getDiagnosisSubstantiationByEvents(events: java.util.List[Event]): util.Map[Event, Action] = {
     getEntitiesByEvents[Action](events, DiagnosisSubstantiationByEventIdsQuery)
   }
 
@@ -201,22 +202,22 @@ class DbCustomQueryBean
     )
   }
 
-  def getAllAssessmentsByEventId(eventId: Int) = {
+  def getAllAssessmentsByEventId(eventId: Int): util.List[Action] = {
     getAllActionsByQueryAndEventId(AllAssessmentsByEventIdQuery, eventId)
   }
 
-  def getLastAssessmentByEvents(events: java.util.List[Event]) = {
+  def getLastAssessmentByEvents(events: java.util.List[Event]): util.Map[Event, Action] = {
     getEntitiesByEvents[Action](events, LastAssessmentByEventIdsQuery)
   }
 
-  def getAllDiagnosticsByEventId(eventId: Int) = {
+  def getAllDiagnosticsByEventId(eventId: Int): util.List[Action] = {
     getAllActionsByQueryAndEventId(AllDiagnosticsByEventIdQuery.format(
       "a",
       i18n("db.action.diagnosticClass")),
       eventId)
   }
 
-  def getAllDiagnosticsWithFilter(page: Int, limit: Int, sorting: String, filter: Object) = {
+  def getAllDiagnosticsWithFilter(page: Int, limit: Int, sorting: String, filter: Object): util.List[Action] = {
 
     val queryStr: QueryDataStructure = filter match {
       case f: DiagnosticsListRequestDataFilter => f.toQueryStructure()
@@ -238,7 +239,7 @@ class DbCustomQueryBean
     result
   }
 
-  def getCountDiagnosticsWithFilter(filter: Object) = {
+  def getCountDiagnosticsWithFilter(filter: Object): Long = {
 
     val queryStr: QueryDataStructure = filter match {
       case f: DiagnosticsListRequestDataFilter => f.toQueryStructure()
@@ -256,7 +257,7 @@ class DbCustomQueryBean
   }
 
   def getAllActionsByQueryAndEventId(query: String,
-                                     eventId: Int) = {
+                                     eventId: Int): util.List[Action] = {
     val result = em.createQuery(query, classOf[Action])
       .setParameter("eventId", eventId)
       .getResultList
@@ -268,7 +269,7 @@ class DbCustomQueryBean
   def getIndicatorsByEventIdAndIndicatorNameAndDates(eventId: Int,
                                                      indicatorName: String,
                                                      beginDate: Date,
-                                                     endDate: Date) = {
+                                                     endDate: Date): util.List[IndicatorValue[JDouble]] = {
     val result = em.createQuery(IndicatorByEventIdAndIndicatorNameQuery,
       classOf[Array[AnyRef]])
       .setParameter("eventId", eventId)
@@ -295,7 +296,7 @@ class DbCustomQueryBean
   def getTreatmentInfo(eventId: Int,
                        actionTypeId: Int,
                        beginDate: Date,
-                       endDate: Date) = {
+                       endDate: Date): util.List[Action] = {
     val ts = if (beginDate != null && endDate != null) {
       em.createQuery(TreatmentActionsByEventId +
         filterActionTypeId +
@@ -318,7 +319,7 @@ class DbCustomQueryBean
     ts
   }
 
-  def getTreatmentInfo(eventId: Int, beginDate: Date, endDate: Date) = {
+  def getTreatmentInfo(eventId: Int, beginDate: Date, endDate: Date): util.List[Action] = {
     val ts = if (beginDate != null && endDate != null) {
       em.createQuery(TreatmentActionsByEventId + filterTimePeriod,
         classOf[Action])
@@ -337,7 +338,7 @@ class DbCustomQueryBean
   }
 
 
-  def getUnitByCode(code: String) = {
+  def getUnitByCode(code: String): RbUnit = {
     em.createNamedQuery[RbUnit]("RbUnit.findByCode", classOf[RbUnit])
       .setParameter("code", code)
       .getResultList
@@ -365,7 +366,7 @@ class DbCustomQueryBean
     //.getOrElse{ throw new CoreException(i18n("error.noHeightForPatientFound").format(p.getId)) }
   }
 
-  def getCountOfAppealsWithFilter(filter: Object) = {
+  def getCountOfAppealsWithFilter(filter: Object): Long = {
 
     val queryStr: QueryDataStructure = filter match {
       case f: AppealSimplifiedRequestDataFilter => f.toQueryStructure
@@ -381,7 +382,7 @@ class DbCustomQueryBean
     typed.getSingleResult
   }
 
-  def getAllAppealsWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
+  def getAllAppealsWithFilter(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean): util.Map[Event, Object] = {
 
     var diagnostic_filter: String = ""
     var ap_string_filter: String = ""
@@ -659,7 +660,7 @@ class DbCustomQueryBean
     //.getOrElse{ throw new CoreException(i18n("error.noWeightForPatientFound").format(p.getId)) }
   }
 
-  def getDistinctMkbsWithFilter(sorting: String, filter: ListDataFilter) = {
+  def getDistinctMkbsWithFilter(sorting: String, filter: ListDataFilter): util.HashMap[String, util.Map[String, Mkb]] = {
 
     val retValue = new java.util.HashMap[String, java.util.Map[String, Mkb]]
     if (filter.asInstanceOf[MKBListRequestDataFilter].display) {
@@ -737,7 +738,7 @@ class DbCustomQueryBean
     retValue
   }
 
-  def getAllMkbsWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
+  def getAllMkbsWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): util.List[Mkb] = {
 
     val queryStr = filter.toQueryStructure
 
@@ -760,7 +761,7 @@ class DbCustomQueryBean
     result
   }
 
-  def getCountOfMkbsWithFilter(filter: Object) = {
+  def getCountOfMkbsWithFilter(filter: Object): Long = {
 
     val queryStr: QueryDataStructure = filter match {
       case f: MKBListRequestDataFilter => f.toQueryStructure
@@ -782,7 +783,7 @@ class DbCustomQueryBean
     typed.getSingleResult
   }
 
-  def getCountOfThesaurusWithFilter(filter: Object) = {
+  def getCountOfThesaurusWithFilter(filter: Object): Long = {
     val queryStr: QueryDataStructure = filter match {
       case f: ThesaurusListRequestDataFilter => f.toQueryStructure()
       case _ => new QueryDataStructure()
@@ -800,7 +801,7 @@ class DbCustomQueryBean
   }
 
 
-  def getAllThesaurusWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
+  def getAllThesaurusWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): util.List[Thesaurus] = {
 
     val queryStr = filter.toQueryStructure
     if (queryStr.data.size() > 0) {
@@ -819,7 +820,7 @@ class DbCustomQueryBean
     result
   }
 
-  def getLastActionByTypeCodeAndAPTypeName(eventId: Int, code: String, aptName: String) = {
+  def getLastActionByTypeCodeAndAPTypeName(eventId: Int, code: String, aptName: String): Action = {
 
     val result = em.createQuery(LastActionByTypeCodeAndAPTypeNameQuery, classOf[Action])
       .setParameter("id", eventId)
@@ -841,7 +842,7 @@ class DbCustomQueryBean
    * @param e - карточка пациента
    * @return - код источника финансирования
    */
-  def getFinanceId(e: Event) = {
+  def getFinanceId(e: Event): Integer = {
     val result = em.createQuery( """
      SELECT et.finance
      FROM   EventType et,
@@ -999,13 +1000,13 @@ class DbCustomQueryBean
       e.deleted = 0
     """
 
-  val ActiveEventsByDoctorIdQuery = ActiveEventsQuery +
+  val ActiveEventsByDoctorIdQuery: String = ActiveEventsQuery +
     """
     AND
       e.executor.id = :doctorId
     """
 
-  val ActiveEventsByDepartmentIdQuery =
+  val ActiveEventsByDepartmentIdQuery: String =
     """
     SELECT e, MAX(a.createDatetime)
     FROM
@@ -1254,12 +1255,12 @@ AND ap.deleted = 0
       a.createDatetime %s
     """
 
-  val AdmissionsByEventIdsQuery =
+  val AdmissionsByEventIdsQuery: String =
     ActionsByEventIdsAndFlatCodeQuery.format(
       i18n("db.action.admissionFlatCode"),
       "DESC")
 
-  val HospitalBedsByEventIdsQuery =
+  val HospitalBedsByEventIdsQuery: String =
     """
     SELECT e, ap
     FROM
@@ -1287,7 +1288,7 @@ AND ap.deleted = 0
       i18n("db.action.movingFlatCode"),
       i18n("db.apt.hospitalBedName"))
 
-  val OrgStructureFromReceivedByEventIdsQuery =
+  val OrgStructureFromReceivedByEventIdsQuery: String =
     """
     SELECT e, ap
     FROM
@@ -1315,7 +1316,7 @@ AND ap.deleted = 0
       i18n("db.action.admissionFlatCode"),
       "Отделение поступления")
 
-  val AnamnesesByEventIdsQuery =
+  val AnamnesesByEventIdsQuery: String =
     """
     SELECT e, ap
     FROM
@@ -1353,7 +1354,7 @@ AND ap.deleted = 0
       i18n("db.apt.anamnesisDename"),
       i18n("db.apt.allergoanamnesisName"))
 
-  val AllergoAnamnesesByEventIdsQuery =
+  val AllergoAnamnesesByEventIdsQuery: String =
     """
     SELECT e, ap
     FROM
@@ -1414,7 +1415,7 @@ AND ap.deleted = 0
      group by e
  """.format(i18n("db.action.assessmentClass")) */
 
-  val LastAssessmentByEventIdsQuery =
+  val LastAssessmentByEventIdsQuery: String =
     """
     SELECT e, a
     FROM
@@ -1440,7 +1441,7 @@ AND ap.deleted = 0
       )
     """.format(i18n("db.action.assessmentClass"), i18n("db.action.assessmentClass"))
 
-  val DiagnosesByEventIdsQuery =
+  val DiagnosesByEventIdsQuery: String =
     """
     SELECT e, ap
     FROM
@@ -1477,7 +1478,7 @@ AND ap.deleted = 0
       i18n("db.apt.diagnosisName01"),
       i18n("db.apt.diagnosisName02"))
 
-  val DiagnosisSubstantiationByEventIdsQuery =
+  val DiagnosisSubstantiationByEventIdsQuery: String =
     """
     SELECT e, a
     FROM
@@ -1504,7 +1505,7 @@ AND ap.deleted = 0
     """.format(i18n("db.action.preAssessmentGroupName"),
       i18n("db.action.diagnosisSubstantiation"))
 
-  val AllAssessmentsByEventIdQuery =
+  val AllAssessmentsByEventIdQuery: String =
     """
     SELECT a
     FROM
@@ -1517,7 +1518,7 @@ AND ap.deleted = 0
     AND a.actionType.deleted = 0
     """.format(i18n("db.action.assessmentClass"))
 
-  val AllDiagnosticsByEventIdQuery =
+  val AllDiagnosticsByEventIdQuery: String =
     """
     SELECT a
     FROM
@@ -1563,7 +1564,7 @@ AND ap.deleted = 0
       apt.deleted = 0
     """
 
-  val TreatmentActionsByEventId =
+  val TreatmentActionsByEventId: String =
     """
     SELECT a FROM
       Event e,

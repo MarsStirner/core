@@ -1,29 +1,31 @@
 package ru.korus.tmis.ws.handlers
 
-import ru.korus.tmis.core.auth.{TmisShiroRealm, TmisShiroToken, AuthToken, AuthStorageBeanLocal}
+import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthToken, TmisShiroRealm, TmisShiroToken}
 import ru.korus.tmis.core.database.DbStaffBeanLocal
-import ru.korus.tmis.core.exception.{FaultBean, AuthenticationException}
-
-
+import ru.korus.tmis.core.exception.{AuthenticationException, FaultBean}
 import java.util.Date
 import javax.ejb.EJB
 import javax.xml.soap._
 import javax.xml.ws.handler.MessageContext
-import javax.xml.ws.handler.soap.{SOAPMessageContext, SOAPHandler}
+import javax.xml.ws.handler.soap.{SOAPHandler, SOAPMessageContext}
 import javax.xml.ws.soap.SOAPFaultException
+
+import grizzled.slf4j.Logging
 import org.apache.shiro.SecurityUtils
 import org.apache.shiro.mgt.DefaultSecurityManager
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+import org.apache.shiro.subject.Subject
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.language.reflectiveCalls
 
 class AuthenticatingHandler
   extends SOAPHandler[SOAPMessageContext]
-
+  with Logging
   with I18nable {
 
   object StaticInitializer {
     SecurityUtils.setSecurityManager(
-      new DefaultSecurityManager(new TmisShiroRealm()));
+      new DefaultSecurityManager(new TmisShiroRealm()))
   }
 
   StaticInitializer
@@ -34,9 +36,9 @@ class AuthenticatingHandler
   @EJB
   var dbStaff: DbStaffBeanLocal = _
 
-  var currentUser = SecurityUtils.getSubject()
+  var currentUser: Subject = SecurityUtils.getSubject
 
-  def getHeaders() = {
+  def getHeaders(): Null = {
     null
   }
 
@@ -48,7 +50,7 @@ class AuthenticatingHandler
    * c полем Fault, содержащим детальную информацию об исключении
    * (ID и текстовое сообщение)
    */
-  def handleMessage(context: SOAPMessageContext) = {
+  def handleMessage(context: SOAPMessageContext): Boolean = {
     val incoming =
       !context.get(MessageContext.MESSAGE_OUTBOUND_PROPERTY).asInstanceOf[Boolean]
 
@@ -79,7 +81,7 @@ class AuthenticatingHandler
     true
   }
 
-  def checkToken(token: String, context: SOAPMessageContext) = {
+  def checkToken(token: String, context: SOAPMessageContext): Unit = {
     info("Received token: " + token)
     val authToken = new AuthToken(token)
 
@@ -120,11 +122,11 @@ class AuthenticatingHandler
     currentUser.login(new TmisShiroToken(authData, dbStaff.getStaffById(authData.getUserId)))
   }
 
-  def handleFault(context: SOAPMessageContext) = {
+  def handleFault(context: SOAPMessageContext): Boolean = {
     true
   }
 
-  def close(context: MessageContext) = {
+  def close(context: MessageContext): Unit = {
     currentUser.logout()
   }
 
@@ -132,9 +134,9 @@ class AuthenticatingHandler
     val tmisAuthTokenHdr =
       hdr.getChildElements(ConfigManager.TmisAuth.QName)
     if (tmisAuthTokenHdr.hasNext) {
-      return Some(tmisAuthTokenHdr.next().asInstanceOf[SOAPElement].getValue)
+      Some(tmisAuthTokenHdr.next().asInstanceOf[SOAPElement].getValue)
     } else {
-      return None
+      None
     }
   }
 
@@ -158,6 +160,6 @@ class AuthenticatingHandler
     detail.addChildElement(
       factory.createName("description")).addTextNode(message)
 
-    return fault
+    fault
   }
 }

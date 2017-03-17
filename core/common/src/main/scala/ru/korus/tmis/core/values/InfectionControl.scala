@@ -43,7 +43,7 @@ object InfectionControl {
     "infectProphylaxisName_7", "infectProphylaxisBeginDate_7", "infectProphylaxisEndDate_7",
     "infectProphylaxisName_8", "infectProphylaxisBeginDate_8", "infectProphylaxisEndDate_8"
   )
-  val drugTherapyProperties = EmpiricTherapyProperties ++ TelicTherapyProperties ++ ProphylaxisTherapyProperties
+  val drugTherapyProperties: Set[String] = EmpiricTherapyProperties ++ TelicTherapyProperties ++ ProphylaxisTherapyProperties
 
   val infectDrugNamePrefix = "infectDrugName"
   val infectDrugBeginDatePrefix = "infectDrugBeginDate"
@@ -78,7 +78,7 @@ object InfectionControl {
   val localInfectionChecker = "infectLocal"
 
   // Префиксы всех инфекций
-  val allInfectPrefixes = infectPrefixes ++ localInfectPrefixes
+  val allInfectPrefixes: Set[String] = infectPrefixes ++ localInfectPrefixes
 
   // Основные постфиксы
   val beginDatePostfix = "BeginDate"
@@ -89,7 +89,7 @@ object InfectionControl {
   val separator = '-'
 
   def isInfectTherapyProperties(actionPropCode: String): Boolean = {
-    return actionPropCode != null && (
+    actionPropCode != null && (
       actionPropCode.startsWith("infectProphylaxisName") ||
       actionPropCode.startsWith("infectEmpiricName") ||
       actionPropCode.startsWith("infectTelicName") )

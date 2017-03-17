@@ -180,10 +180,10 @@ public interface DbActionBeanLocal {
     /**
      * Возвращает количество записей для указанного евента и типа PacientInQueueType (срочно и сверх сетки приема)
      * @param eventId идентификатор обращения
-     * @param patientInQueueType какой-то типа акшена (срочно и сверх сетки приема)
+     * @param pacientInQueueType какой-то типа акшена (срочно и сверх сетки приема)
      * @return количество записей как int
      */
-    long getActionForEventAndPatientInQueueType(int eventId, long date, int patientInQueueType) throws CoreException;
+    long getActionForEventAndPatientInQueueType(int eventId, long date, int pacientInQueueType) throws CoreException;
 
     long getActionForDateAndPacientInQueueType(long beginDate, int pacientInQueueType) throws CoreException;
 

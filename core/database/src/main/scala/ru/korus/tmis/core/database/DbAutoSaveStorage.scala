@@ -21,7 +21,7 @@ class DbAutoSaveStorage extends  DbAutoSaveStorageLocal {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def save(id: String, userId: Int, text: String) = {
+  def save(id: String, userId: Int, text: String): Unit = {
     try {
       if (id.length > 40)
         throw new IllegalArgumentException("Идентификатор записи не может быть больше 40 символов")

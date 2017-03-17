@@ -19,7 +19,7 @@ with I18nable {
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getFlatDirectories(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, userData: AuthData) = {
+  def getFlatDirectories(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, userData: AuthData): util.List[FlatDirectory] = {
 
     val queryStr: QueryDataStructure = filter match {
       case x: FlatDirectoryRequestDataListFilter => x.toQueryStructure
@@ -37,7 +37,7 @@ with I18nable {
     result
   }
 
-  def getFlatDirectoriesWithFilterRecords(page: Int, limit: Int, sorting: java.util.LinkedHashMap[java.lang.Integer, java.lang.Integer], filter: Object, request: FlatDirectoryRequestData, userData: AuthData) = {
+  def getFlatDirectoriesWithFilterRecords(page: Int, limit: Int, sorting: java.util.LinkedHashMap[java.lang.Integer, java.lang.Integer], filter: Object, request: FlatDirectoryRequestData, userData: AuthData): util.LinkedHashMap[FlatDirectory, util.LinkedHashMap[FDRecord, util.LinkedList[FDFieldValue]]] = {
 
     val queryStr: QueryDataStructure = filter match {
       case x: FlatDirectoryRequestDataListFilter => x.toQueryStructureForRecordsRequest

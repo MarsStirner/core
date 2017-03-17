@@ -4,7 +4,7 @@ import ru.korus.tmis.laboratory.altey.{accept2 => lab}
 import scala.language.implicitConversions
 
 final object MicroOrganismResult {
-  implicit def fromLab1(v: ru.korus.tmis.laboratory.altey.accept2.MicroOrganismResult) = {
+  implicit def fromLab1(v: ru.korus.tmis.laboratory.altey.accept2.MicroOrganismResult): MicroOrganismResult = {
     MicroOrganismResult(Option(v.getOrganismCode), Option(v.getOrganismName), Option(v.getOrganismConcentration))
   }
 }

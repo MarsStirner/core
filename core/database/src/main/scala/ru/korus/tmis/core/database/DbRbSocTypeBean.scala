@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database
 
+import java.util
 import javax.ejb.Stateless
 import javax.persistence.{EntityManager, PersistenceContext}
 
@@ -43,7 +44,7 @@ with I18nable {
     %s
                                          """
 
-  def getCountOfSocStatusTypesWithFilter(filter: Object) = {
+  def getCountOfSocStatusTypesWithFilter(filter: Object): Long = {
     val queryStr: QueryDataStructure = filter match {
       case x: DictionaryListRequestDataFilter => x.toQueryStructure()
       case _ => new QueryDataStructure()
@@ -60,7 +61,7 @@ with I18nable {
     typed.getSingleResult
   }
 
-  def getAllSocStatusTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
+  def getAllSocStatusTypesWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): util.LinkedList[Object] = {
 
     val queryStr = filter.toQueryStructure
     val typed = em.createQuery(SocStatusTypeDictionaryFindQuery.format("sst.id, sst.name", queryStr.query, sorting), classOf[Array[AnyRef]])

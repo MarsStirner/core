@@ -1,15 +1,19 @@
 package ru.korus.tmis.core.patient
 
 
-import javax.persistence.{EntityManager, PersistenceContext}
-import scala.collection.JavaConversions._
-import javax.ejb.{EJB, Stateless}
 import java.text.SimpleDateFormat
-import java.util.{TimeZone, Calendar, Date, List}
-import ru.korus.tmis.core.data.{SeventhFormRequestData, FormOfAccountingMovementOfPatientsData}
-import scala.collection.JavaConverters._
-import ru.korus.tmis.scala.util.{CAPids, I18nable}
+import java.util
+import java.util.{Calendar, Date}
+import javax.ejb.{EJB, Stateless}
+import javax.persistence.{EntityManager, PersistenceContext}
+
+import grizzled.slf4j.Logging
+import ru.korus.tmis.core.data.{FormOfAccountingMovementOfPatientsData, SeventhFormRequestData}
 import ru.korus.tmis.core.database.common.DbOrgStructureBeanLocal
+import ru.korus.tmis.scala.util.{CAPids, I18nable}
+
+import scala.collection.JavaConversions._
+import scala.collection.JavaConverters._
 
 
 /**
@@ -40,7 +44,7 @@ with CAPids {
 
 
 
-  def getForm007LinearView(departmentId: Int, beginDate: Long, endDate: Long, profileBeds: java.util.List[Integer]) = {
+  def getForm007LinearView(departmentId: Int, beginDate: Long, endDate: Long, profileBeds: java.util.List[Integer]): FormOfAccountingMovementOfPatientsData = {
 
     var linearLongMap = Map.empty[String, scala.collection.mutable.Map[Form007QueryStatuses, Long]]
     var linearListString = Map.empty[Form007QueryStatuses, scala.collection.immutable.List[String]]
@@ -55,7 +59,7 @@ with CAPids {
     }
     else if (beginDate <= 0) {
       if (endDate <= 0) {
-        eDate = this.getDefaultEndDate()
+        eDate = this.getDefaultEndDate
       } else {
         eDate = new Date(endDate)
       }
@@ -70,15 +74,15 @@ with CAPids {
     val department = dbOrgStructureBean.getOrgStructureById(departmentId)
     //Преобразование профеля коек в строку
     var profileBedsStr = Array(profileBeds).mkString(",")
-    profileBedsStr = profileBedsStr.substring(1, profileBedsStr.length - 1);
+    profileBedsStr = profileBedsStr.substring(1, profileBedsStr.length - 1)
 
     val endDateStr = "'" + new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date(endDate)) + "'"
     //Получение данных
     //Получение информации о кол-ве (лицевая сторона формы 007)
     val query: String = "CALL form007front(\"%s\", \"%d\", \"%s\")".format(endDateStr, departmentId, profileBedsStr)
-    logger.info("form 007 front SQL query: " + query);
+    logger.info("form 007 front SQL query: " + query)
     val res = em.createNativeQuery(query).getResultList
-    val resList: List[Array[Object]] = res.asInstanceOf[List[Array[Object]]]
+    val resList: util.List[Array[Object]] = res.asInstanceOf[util.List[Array[Object]]]
     resList.foreach(resSql => {
       linearLongMap += resSql(0).asInstanceOf[String] -> scala.collection.mutable.Map.empty[Form007QueryStatuses, Long]
       ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => this.addDataToLinearMapByCellNumber(resSql, status, resSql(0).asInstanceOf[String], linearLongMap))
@@ -87,7 +91,7 @@ with CAPids {
     ru.korus.tmis.core.data.Form007QueryStatuses.values.foreach(status => {
       if (status.toString != null && !status.toString.startsWith("count")) {
         val resFIOinput = em.createNativeQuery("CALL  %s(\"%s\", \"%d\", \"%s\")".format(status.toString, endDateStr, departmentId, profileBedsStr)).getResultList
-        val resListFIOinput: List[String] = resFIOinput.asInstanceOf[List[String]]
+        val resListFIOinput: util.List[String] = resFIOinput.asInstanceOf[util.List[String]]
         linearListString += status -> resListFIOinput.asScala.toList
       }
     })
@@ -99,7 +103,7 @@ with CAPids {
   /**
    * Дата конца текущих мед. суток (Сегодня 7:59)
    */
-  private def getDefaultEndDate() = {
+  private def getDefaultEndDate = {
 
     val today = Calendar.getInstance()
     today.setTime(formatter.parse(formatter.format(new Date())))
@@ -119,7 +123,7 @@ with CAPids {
    * Дата начала предыдущих мед. суток (Вчера 8:00)
    * @return Дата начала периода выборки как Date
    */
-  private def getDefaultBeginDate() = new Date(this.getDefaultEndDate.getTime - msecInDay.longValue()) //предыдущие мед сутки
+  private def getDefaultBeginDate = new Date(this.getDefaultEndDate.getTime - msecInDay.longValue()) //предыдущие мед сутки
 
   /**
    * Дата начала предыдущих мед. суток (endDate минус сутки)

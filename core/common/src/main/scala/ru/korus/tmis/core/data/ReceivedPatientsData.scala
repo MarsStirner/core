@@ -229,7 +229,7 @@ class ReceivedRequestDataFilter {
    * @return Структурированный поисковый запрос в виде QueryDataStructure
    * @see QueryDataStructure
    */
-  def toQueryStructure() = {
+  def toQueryStructure(): QueryDataStructure = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd")
     var qs = new QueryDataStructure()
     if(this.eventId>0){
@@ -278,7 +278,7 @@ class ReceivedRequestDataFilter {
    * @param sortingField Наименование поля сортировки
    * @return
    */
-  def toSortingString (sortingField: String) = {
+  def toSortingString (sortingField: String): String = {
     sortingField match {
       case "createDatetime" => {"e.setDate"}
       case "number" => {"e.externalId"}
@@ -376,8 +376,12 @@ class ReceivedPatientsEntry extends I18nable  {
             if (moveProps!=null && moveProps.size>0) {
               val filtred = moveProps.get(event.getId.intValue()).filter(element=>element._2.size>0)
               if (filtred.size>0){
-                var res = filtred.find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirection"))==0}).getOrElse(null)
-                var res2 = filtred.find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer"))==0}).getOrElse(null)
+                var res = filtred.find(f => {
+                  f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirection")) == 0
+                }).orNull
+                var res2 = filtred.find(f => {
+                  f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer")) == 0
+                }).orNull
                 if (res2 != null) {
                   this.moving = new MovingContainer(res2._2.get(0).getValue.asInstanceOf[OrgStructure])
                 } else {
@@ -395,8 +399,12 @@ class ReceivedPatientsEntry extends I18nable  {
             if (moveProps!=null && moveProps.size>0) {
               val filtred = moveProps.get(event.getId.intValue()).filter(element=>element._2.size>0)
               if (filtred.size>0){
-                var res = filtred.find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospitalBed"))==0}).getOrElse(null)
-                var res2 = filtred.find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0}).getOrElse(null)
+                var res = filtred.find(f => {
+                  f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospitalBed")) == 0
+                }).orNull
+                var res2 = filtred.find(f => {
+                  f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct")) == 0
+                }).orNull
                 val department = if(res2!=null)res2._2.get(0).getValue.asInstanceOf[OrgStructure] else null
                 val bed = if(res!=null)res._2.get(0).getValueAsString else null
                 this.moving = new MovingContainer(department, bed)

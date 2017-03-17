@@ -1,14 +1,15 @@
 package ru.korus.tmis.laboratory.altey.request
 
 import ru.korus.tmis.laboratory.altey.{ws => lab}
-
-
 import DataConverter._
 import java.util.Date
+
 import ru.korus.tmis.core.entity.model.Sex
 import ru.korus.tmis.scala.util.Defaultible
 import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.laboratory.altey.ws.PatientInfo
+
 import scala.language.implicitConversions
 
 sealed case class PatientInfo(

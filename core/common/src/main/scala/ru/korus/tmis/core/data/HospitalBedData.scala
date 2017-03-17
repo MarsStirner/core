@@ -99,7 +99,7 @@ class HospitalBedDataRequest {
     this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 
-  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+  def rewriteRecordsCount(recordsCount: java.lang.Long): Boolean = {
     this.recordsCount = recordsCount.longValue()
     true
   }
@@ -121,7 +121,7 @@ class HospitalBedDataListFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure() = {
+  def toQueryStructure(): QueryDataStructure = {
     var qs = new QueryDataStructure()
     if(this.eventId>0){
       qs.query += "AND a.event.id = :eventId\n"
@@ -134,7 +134,7 @@ class HospitalBedDataListFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString (sortingField: String, sortingMethod: String) = {
+  def toSortingString (sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "assessmentDate" | "start" | "createDatetime" => {"a.createDatetime %s".format(sortingMethod)}
       case _ => {"a.id %s".format(sortingMethod)}
@@ -451,7 +451,7 @@ class MovesListHospitalBedContainer {
 
   // исправлен подсчет количества дней https://korusconsulting.atlassian.net/browse/WEBMIS-972
   // https://docs.google.com/spreadsheet/ccc?key=0AgE0ILPv06JcdEE0ajBZdmk1a29ncjlteUp3VUI2MEE#gid=3
-  def calculate(eventRequestCode: String) = {
+  def calculate(eventRequestCode: String): Unit = {
     if (this.admission!=null) {
       val secInDay: Int = 1000 * 60 * 60 * 24
       this.days = (if (this.leave == null) new Date() else this.leave).getTime/ secInDay - this.admission.getTime/ secInDay

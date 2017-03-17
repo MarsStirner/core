@@ -1,27 +1,27 @@
 package ru.korus.tmis.core.patient
 
 
+import java.util
+import java.util.Date
 import javax.ejb.{EJB, Stateless}
-import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
-import ru.korus.tmis.core.auth.{AuthStorageBeanLocal, AuthData}
+
+import grizzled.slf4j.Logging
+import ru.korus.tmis.core.auth.{AuthData, AuthStorageBeanLocal}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
-import common.{DbActionPropertyTypeBeanLocal, DbActionPropertyBeanLocal, DbManagerBeanLocal, DbActionBeanLocal}
-import javax.inject.Inject
-import java.util.{LinkedList, Date}
+import ru.korus.tmis.core.database.common.{DbActionBeanLocal, DbActionPropertyBeanLocal, DbActionPropertyTypeBeanLocal, DbManagerBeanLocal}
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.collection.JavaConversions._
-import collection.mutable
-import javax.enterprise.inject.Any
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
 import scala.language.reflectiveCalls
 
 @Stateless
 class AssignmentBean extends AssignmentBeanLocal
-with Logging
-with I18nable {
+  with Logging
+  with I18nable {
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -45,7 +45,7 @@ with I18nable {
   private var dbManager: DbManagerBeanLocal = _
 
   private class IndexOf[T](seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
+    def unapply(pos: T): Option[Int] = seq find (pos == _) map (seq indexOf _)
   }
 
   final val list = List(ConfigManager.Messages("db.actionPropertyType.assignment.name.injectionMethod").toInt,
@@ -71,7 +71,7 @@ with I18nable {
     ConfigManager.Messages("db.actionPropertyType.assignment.name.departmentHead").toInt,
     ConfigManager.Messages("db.actionPropertyType.assignment.name.note").toInt)
 
-  def insertAssignmentForPatient(assignmentData: AssignmentData, eventId: Int, authData: AuthData, staff: Staff) = {
+  def insertAssignmentForPatient(assignmentData: AssignmentData, eventId: Int, authData: AuthData, staff: Staff): Action = {
 
     //var entities = Set.empty[AnyRef]
     //val now = new Date()
@@ -101,7 +101,7 @@ with I18nable {
         action = actionBean.createAction(eventId,
           assignmentData.data.assignmentType.getId.intValue(),
           authData,
-         staff)
+          staff)
         em.persist(action)
         //dbManager.persist(action)
         list = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(assignmentData.data.assignmentType.getId.intValue()).toList
@@ -140,7 +140,7 @@ with I18nable {
 
         val values = this.getValueByCase(ap.getType.getId.intValue(), assignmentData, authData)
         values.size match {
-          case 0 => {
+          case 0 =>
             if (flgCreate) {
               //В случае, если на приходит значение для ActionProperty, то записываем значение по умолчанию.
               val defValue = ap.getType.getDefaultValue
@@ -150,14 +150,13 @@ with I18nable {
                   em.merge(apv.unwrap) //entities = entities + apv.unwrap
               }
             } else null //Если не пришло новое значее, старое не трогаем
-          }
-          case _ => {
+          case _ =>
             if (ap.getType.getIsVector) {
               //Если вектор, то сперва зачищаем старый список
               val apvs = actionPropertyBean.getActionPropertyValue(ap)
               if (apvs != null && apvs.size() > values.size) {
                 //dbManager.removeAll(apvs)
-                for (i <- values.size to apvs.size - 1) {
+                for (i <- values.size until apvs.size) {
                   //если новых значений меньше тем старых, то хвост зачистим
                   var apv = apvs(i).unwrap()
                   apv = em.merge(apv)
@@ -172,7 +171,6 @@ with I18nable {
                 em.merge(apv.unwrap) //entities = entities + apv.unwrap
               it = it + 1
             })
-          }
         }
       })
       em.flush()
@@ -185,13 +183,13 @@ with I18nable {
     action
   }
 
-  def getAssignmentById(actionId: Int) = {
+  def getAssignmentById(actionId: Int): AssignmentData = {
 
     val action = actionBean.getActionById(actionId)
     var values = actionPropertyBean.getActionPropertiesByActionId(actionId)
     //Таблица соответствия id
     val corrMap = new java.util.HashMap[String, java.util.List[RbCoreActionProperty]]()
-    corrMap.put(i18n("db.actionType.assignment").toString, dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.assignment").toInt))
+    corrMap.put(i18n("db.actionType.assignment"), dbRbCoreActionPropertyBean.getRbCoreActionPropertiesByActionTypeId(i18n("db.actionType.assignment").toInt))
 
     new AssignmentData(action, values, corrMap, null)
   }
@@ -200,35 +198,37 @@ with I18nable {
     if (that == null)
       return Set.empty[String]
 
-    if (that.isInstanceOf[java.util.LinkedList[_]]) {
-      var set = Set.empty[String]
-      that.asInstanceOf[java.util.LinkedList[_]].foreach(e => {
-        if (e.isInstanceOf[Date])
-          set = set + ConfigManager.DateFormatter.format(e)
-        else
-          set = set + e.toString
-      })
-      return set
-    }
-    else if (that.isInstanceOf[FlatDirectoryContainer]) {
-      return Set(that.asInstanceOf[FlatDirectoryContainer].getId().toString)
-    }
-    else if (that.isInstanceOf[RlsContainer]) {
-      return Set(that.asInstanceOf[RlsContainer].getId().toString)
-    }
-    else if (that.isInstanceOf[PersonIdNameContainer]) {
-      return Set(that.asInstanceOf[PersonIdNameContainer].getId().toString)
-    }
-    else if (that.isInstanceOf[Date]) {
-      return Set(ConfigManager.DateFormatter.format(that))
-    }
-    else {
-      try {
-        return Set(that.toString)
-      }
-      catch {
-        case e: Exception => {
-          throw new CoreException("Не могу преобразовать данные типа: %s в строковый массив".format(that.getClass.getName))
+    that match {
+      case value: util.LinkedList[_] =>
+        var set = Set.empty[String]
+        value.foreach(e => {
+          if (e.isInstanceOf[Date])
+            set = set + ConfigManager.DateFormatter.format(e)
+          else
+            set = set + e.toString
+        })
+        set
+      case _ => that match {
+        case container2: FlatDirectoryContainer =>
+          Set(container2.getId().toString)
+        case _ => that match {
+          case container1: RlsContainer =>
+            Set(container1.getId().toString)
+          case _ => that match {
+            case container: PersonIdNameContainer =>
+              Set(container.getId().toString)
+            case _: Date =>
+              Set(ConfigManager.DateFormatter.format(that))
+            case _ =>
+              try {
+                Set(that.toString)
+              }
+              catch {
+                case e: Exception =>
+                  throw new CoreException("Не могу преобразовать данные типа: %s в строковый массив".format(that.getClass.getName))
+
+              }
+          }
         }
       }
     }

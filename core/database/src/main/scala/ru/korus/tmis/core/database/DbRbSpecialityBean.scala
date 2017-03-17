@@ -40,7 +40,7 @@ with I18nable {
   %s
                                        """
 
-  def getCountOfBloodTypesWithFilter(filter: Object) = {
+  def getCountOfBloodTypesWithFilter(filter: Object): Long = {
     val queryStr: QueryDataStructure = filter match {
       case x: DictionaryListRequestDataFilter => x.toQueryStructure()
       case _ => new QueryDataStructure()

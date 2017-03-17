@@ -120,7 +120,7 @@ class PatientRequestData {
     this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 
-  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+  def rewriteRecordsCount(recordsCount: java.lang.Long): Boolean = {
     this.recordsCount = recordsCount.longValue()
     true
   }
@@ -162,7 +162,7 @@ class RequestDataFilter extends AbstractListDataFilter {
   }
 
 
-  override def toQueryStructure = {
+  override def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure()
 
     if(this.patientCode>0){
@@ -192,7 +192,7 @@ class RequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString (sortingField: String, sortingMethod: String) = {
+  def toSortingString (sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField.toLowerCase match {
       case "fio" | "fullname"=> "p.lastName %s, p.firstName %s, p.patrName %s".format(sortingMethod,sortingMethod,sortingMethod)
       case "lastname" => "p.lastName %s".format(sortingMethod)
@@ -739,7 +739,7 @@ class PersonNameContainer {
     this.raw = fullName
   }
 
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     val map = new java.util.HashMap[String, Object]
     map.put("first", this.first)
     map.put("last", this.last)
@@ -1057,7 +1057,7 @@ class QuotaRequestData {
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
   }
 
-  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+  def rewriteRecordsCount(recordsCount: java.lang.Long): Boolean = {
     this.recordsCount = recordsCount.longValue()
     true
   }
@@ -1079,7 +1079,7 @@ class QuotaRequestData {
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
   }
 
-  def toSortingString (sortingField: String) = {
+  def toSortingString (sortingField: String): String = {
     sortingField match {
       case "quotaTicket" => "cq.quotaTicket"
       case "request" => "cq.request"

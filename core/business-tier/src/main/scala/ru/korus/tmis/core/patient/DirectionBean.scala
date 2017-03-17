@@ -7,14 +7,14 @@ import javax.ejb.{EJB, Stateless}
 import javax.jms._
 import javax.persistence.{EntityManager, PersistenceContext}
 
-
+import grizzled.slf4j.Logging
 import org.apache.commons.collections.CollectionUtils
 import org.joda.time.DateTime
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
-import ru.korus.tmis.core.database.bak.{DbBakCustomQueryBeanLocal, BakDiagnosis}
+import ru.korus.tmis.core.database.bak.{BakDiagnosis, DbBakCustomQueryBeanLocal}
 import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.CoreException
@@ -25,7 +25,7 @@ import ru.korus.tmis.lis.data.jms.LISMessageReceiver
 import ru.korus.tmis.scala.util.ConfigManager._
 import ru.korus.tmis.scala.util.{CAPids, ConfigManager, I18nable}
 import ru.korus.tmis.schedule.PersonScheduleBean.PersonSchedule
-import ru.korus.tmis.schedule.{PacientInQueueType, PersonScheduleBeanLocal, QueueActionParam}
+import ru.korus.tmis.schedule.{PatientInQueueType, PersonScheduleBeanLocal, QueueActionParam}
 
 import scala.collection.JavaConversions._
 import scala.collection.mutable.ListBuffer
@@ -95,7 +95,7 @@ with I18nable {
   var lisAcross: AcrossBusinessBeanLocal = _
 
 
-  def summary(direction: Action) = {
+  def summary(direction: Action): CommonGroup = {
     val group = new CommonGroup(0, "Summary")
 
     val attributes = List(
@@ -117,12 +117,12 @@ with I18nable {
       AWI.PlannedEndDate,
       AWI.ExecutorId,
       AWI.AssignerId,
-      AWI.PacientInQueueType
+      AWI.PatientInQueueType
     )
     commonDataProcessor.addAttributes(group, new ActionWrapper(direction), attributes)
   }
 
-  def detailsWithAge(direction: Action) = {
+  def detailsWithAge(direction: Action): CommonGroup = {
     var attributes = List(APWI.Value,
       APWI.ValueId,
       APWI.Unit,
@@ -150,7 +150,7 @@ with I18nable {
   def getDirectionById(directionId: Int,
                        title: String,
                        postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData,
-                       staff: Staff) = {
+                       staff: Staff): JSONCommonData = {
 
     val action = actionBean.getActionById(directionId)
     val actions: java.util.List[Action] = new util.LinkedList[Action]
@@ -311,7 +311,7 @@ with I18nable {
           actionBean.updateActionStatusWithFlush(p._1.getId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
         }
         catch {
-          case e: Exception => {
+          case e: Exception =>
             val jt = dbJobTicketBean.getJobTicketById(p._2)
             val oldNote = jt.getNote match {
               case null => ""
@@ -321,7 +321,6 @@ with I18nable {
             jt.setLabel("##Ошибка отправки в ЛИС##")
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
-          }
         }
       } else if (labCode != null) {
         // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
@@ -330,7 +329,7 @@ with I18nable {
           dbJobTicketBean.modifyJobTicketStatus(p._2, JobTicket.STATUS_SENDING)
         }
         catch {
-          case e: Exception => {
+          case e: Exception =>
             val jt = dbJobTicketBean.getJobTicketById(p._2)
             val oldNote = jt.getNote match {
               case null => ""
@@ -340,7 +339,6 @@ with I18nable {
             jt.setLabel("##Ошибка отправки в ЛИС## ")
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
-          }
         }
       }
     })
@@ -355,7 +353,7 @@ with I18nable {
                                                mnem: String,
                                                userData: AuthData,
                                                staff: Staff,
-                                               postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+                                               postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData): JSONCommonData = {
     var actions: java.util.List[Action] = commonDataProcessor.createActionForEventFromCommonData(eventId, directions, userData, staff)
     //Для лабораторных исследований отработаем с JobTicket
     if (mnem.toUpperCase.equals("LAB") || mnem.toUpperCase.equals("BAK_LAB")) {
@@ -364,7 +362,7 @@ with I18nable {
       } catch {
         // Если произошла ошибка в процессе проставления JobTickets -
         // то помечаем действие лабораторного исследования как удаленное
-        case e: Exception => {
+        case e: Exception =>
           actions.foreach(a => {
             val act = em.find(classOf[Action], a.getId)
             if (act != null) {
@@ -373,7 +371,6 @@ with I18nable {
             }
           })
           throw e
-        }
       }
     }
 
@@ -393,7 +390,7 @@ with I18nable {
                                                mnem: String,
                                                userData: AuthData,
                                                staff: Staff,
-                                               postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData) = {
+                                               postProcessingForDiagnosis: (JSONCommonData, java.lang.Boolean) => JSONCommonData): JSONCommonData = {
     var actions: java.util.List[Action] = null
     val userId = staff.getId
     val flgLab = mnem.toUpperCase.equals("LAB") || mnem.toUpperCase.equals("BAK_LAB")
@@ -505,7 +502,7 @@ with I18nable {
     action
   }
 
-  def createConsultation(request: ConsultationRequestData, userData: AuthData, staff: Staff) = {
+  def createConsultation(request: ConsultationRequestData, userData: AuthData, staff: Staff): Int = {
 
     val plannedDate = if (request.plannedTime != null && request.plannedTime.getTime != null) {
       new Date(request.plannedEndDate.getTime + request.plannedTime.getTime.getTime)
@@ -520,14 +517,14 @@ with I18nable {
 
     val personSchedule: PersonSchedule = personScheduleBean.newInstanceOfPersonSchedule(personAction)
     personScheduleBean.formTickets(personSchedule)
-    val pacientInQueueType = if (request.getUrgent) {
-      PacientInQueueType.URGENT
+    val patientInQueueType = if (request.getUrgent) {
+      PatientInQueueType.URGENT
     } else if (request.getOverQueue) {
-      PacientInQueueType.OVERQUEUE
+      PatientInQueueType.OVERQUEUE
     } else {
-      PacientInQueueType.QUEUE
+      PatientInQueueType.QUEUE
     }
-    val queueActionParam: QueueActionParam = new QueueActionParam().setAppointmentType(AppointmentType.HOSPITAL).setPacientInQueueType(pacientInQueueType)
+    val queueActionParam: QueueActionParam = new QueueActionParam().setAppointmentType(AppointmentType.HOSPITAL).setPatientInQueueType(patientInQueueType)
     val res = personScheduleBean.enqueuePatientToTime(personSchedule, plannedDate, patientBean.getPatientById(request.getPatientId), queueActionParam)
     if (!res.isSuccess) {
       throw new CoreException(res.getMessage)
@@ -535,7 +532,7 @@ with I18nable {
     action.getId.intValue()
   }
 
-  def removeDirections(directions: AssignmentsToRemoveDataList, directionType: String, userData: Staff) = {
+  def removeDirections(directions: AssignmentsToRemoveDataList, directionType: String, userData: Staff): Boolean = {
     val userId = userData.getId
 
     directions.getData.foreach((f) => {
@@ -547,7 +544,7 @@ with I18nable {
           (a.getExecutor!=null && a.getExecutor.getId.compareTo(userId)==0) ||
           userRole.compareTo("strHead")==0*/ ) {
         directionType match {
-          case "laboratory" => {
+          case "laboratory" =>
             val res = dbJobTicketBean.getJobTicketAndTakenTissueForAction(a.getEvent.getId.intValue(),
               a.getActionType.getId.intValue(),
               a.getPlannedEndDate,
@@ -564,13 +561,12 @@ with I18nable {
               job.setQuantity(job.getQuantity - 1)
               em.merge(job)
             }
-          }
-          case "consultations" => {
+          case "consultations" =>
             val action19 = actionBean.getEvent29AndAction19ForAction(a)
             if (action19 != null) {
               //val actionId = action19.getId.intValue()
               var apv = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
-              if (a.getPacientInQueueType.intValue() == 0) {
+              if (a.getPatientInQueueType.intValue() == 0) {
                 if (apv != null) {
                   apv.setValueFromString(null)
                   em.merge(apv)
@@ -582,7 +578,7 @@ with I18nable {
                   apv = em.merge(apv)
                   em.remove(apv)
                 }
-                if (a.getPacientInQueueType.intValue() == 1) {
+                if (a.getPatientInQueueType.intValue() == 1) {
                   //сдвинуть все индексы
                   val ap18values = actionPropertyBean.getActionPropertyValue(ap)
                   ap18values.sortWith(_.asInstanceOf[APValueAction].getId.getIndex < _.asInstanceOf[APValueAction].getId.getIndex)
@@ -609,10 +605,7 @@ with I18nable {
 
               em.merge(action19)
             }
-          }
-          case _ => {
-
-          }
+          case _ =>
         }
         a.setDeleted(true)
 
@@ -626,7 +619,7 @@ with I18nable {
     true
   }
 
-  def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: Staff) = {
+  def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: Staff): Boolean = {
     var isSuccess: Boolean = true
     data.getData.foreach(f => {
       if (f.getStatus == 1) {
@@ -646,7 +639,7 @@ with I18nable {
     isSuccess
   }
 
-  def sendActionsToLaboratory(data: SendActionsToLaboratoryDataList, authData: Staff) = {
+  def sendActionsToLaboratory(data: SendActionsToLaboratoryDataList, authData: Staff): Boolean = {
     var isSuccess: Boolean = true
     data.getData.foreach(f => {
       val allActions: util.List[Action] = dbJobTicketBean.getActionsForJobTicket(f.getId)
@@ -684,7 +677,7 @@ with I18nable {
             dbJobTicketBean.modifyJobTicketStatus(f.getId, JobTicket.STATUS_SENDING)
           }
           catch {
-            case e: Exception => {
+            case e: Exception =>
               val jt = dbJobTicketBean.getJobTicketById(f.getId)
               val oldNote = jt.getNote match {
                 case null => ""
@@ -694,7 +687,6 @@ with I18nable {
               jt.setLabel("##Ошибка отправки в ЛИС##")
               isAllActionSent = false
               em.merge(jt)
-            }
           }
         }
       })
@@ -732,11 +724,10 @@ with I18nable {
         // Устанавливаем статус "Ожидание" на Action, если была произведена отправка в лабораторию
         actionBean.updateActionStatusWithFlush(actionId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
       }   catch {
-        case e: Exception => {
+        case e: Exception =>
           action.setNote("Отправка в ЛИС-БАК не удалась: " + e.getMessage)
           em.merge(action)
           return false
-        }
       }
     }
     em.flush()
@@ -761,14 +752,13 @@ with I18nable {
           actionBean.updateActionStatusWithFlush(actionId, ru.korus.tmis.core.entity.model.ActionStatus.WAITING.getCode)
         }
         catch {
-          case e: Exception => {
+          case e: Exception =>
             val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
             jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + actionId + "'." + e.getMessage + "\n")
             jt.setLabel("##Ошибка отправки в ЛИС##")
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
             em.flush()
-          }
         }
       } else if (labCode != null) {
         // Отправка назначения в Bak CGM или любую другую лабораторию-модуль
@@ -777,20 +767,19 @@ with I18nable {
           dbJobTicketBean.modifyJobTicketStatus(actionId, JobTicket.STATUS_SENDING)
         }
         catch {
-          case e: Exception => {
+          case e: Exception =>
             val oldNote = jt.getNote match {case null => "" case _ => jt.getNote}
             jt.setNote(oldNote + "Невозможно передать данные об исследовании '" + actionId + "'." + e.getMessage + "\n")
             jt.setLabel("##Ошибка отправки в ЛИС## ")
             jt.setStatus(JobTicket.STATUS_IN_PROGRESS)
             em.merge(jt)
             em.flush()
-          }
         }
       }
     }
   }
 
-  def sendJMSLabRequest(actionId: Int) = {
+  def sendJMSLabRequest(actionId: Int): Unit = {
     sendJMSLabRequest(actionId, dbJobTicketBean.getLaboratoryCodeForActionId(actionId))
   }
 
@@ -970,10 +959,9 @@ with I18nable {
   def getOrgStructureFromRecievedActionInEvent(e: Event): OrgStructure = {
     val orgStructureAP = dbCustomQuery.getOrgStructureByReceivedActionByEvents(Collections.singletonList(e))
     orgStructureAP.get(e) match {
-      case null => {
+      case null =>
         warn("OrgStructure from received Action not found for " + e)
-      }
-      case ap: ActionProperty => {
+      case ap: ActionProperty =>
         val apvs = dbActionProperty.getActionPropertyValue(ap)
         apvs.foreach(
           (apv) => {
@@ -983,7 +971,6 @@ with I18nable {
               case _ =>
             }
           })
-      }
     }
 
     null

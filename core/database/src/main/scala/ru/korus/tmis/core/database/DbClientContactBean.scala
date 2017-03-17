@@ -66,7 +66,7 @@ class DbClientContactBean
     c
   }
 
-  def deleteClientContact(id: Int, sessionUser: Staff) = {
+  def deleteClientContact(id: Int, sessionUser: Staff): Unit = {
     val c = getClientContactById(id)
     val now = new Date
     c.setDeleted(true)

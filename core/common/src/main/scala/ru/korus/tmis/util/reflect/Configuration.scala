@@ -1,9 +1,10 @@
 package ru.korus.tmis.util.reflect
 
+import java.lang.reflect.Method
 import java.net.URL
 import java.text.SimpleDateFormat
-import reflect.Manifest
 
+import reflect.Manifest
 import Manifests.manifestFromClass
 import ru.korus.tmis.scala.util.StringId
 
@@ -24,13 +25,13 @@ trait Configuration extends Reflective {
     }
   }
 
-  lazy val children =
+  lazy val children: Map[String, Configuration] =
     this.
     methods.
     filter {case (_, field) => classOf[Configuration].isAssignableFrom(field.getReturnType)}.
     collect {case (name, field) => (name, field.invoke(this).asInstanceOf[Configuration])}
 
-  lazy val fields =
+  lazy val fields: Map[String, Method] =
     this.
     methods.
     filter {case (_, field) => !classOf[Configuration].isAssignableFrom(field.getReturnType)}.

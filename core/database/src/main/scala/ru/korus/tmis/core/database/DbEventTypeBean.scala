@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database
 
+import java.util
 import javax.ejb.Stateless
 import javax.persistence.{EntityManager, PersistenceContext}
 
@@ -19,7 +20,7 @@ class DbEventTypeBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getEventTypeById(id: Int) = {
+  def getEventTypeById(id: Int): EventType = {
     val result = em.createQuery(EventTypeByIdQuery, classOf[EventType])
                    .setParameter("id", id)
                    .getResultList
@@ -33,7 +34,7 @@ class DbEventTypeBean
     }
   }
 
-  def getEventTypeByCode(code: String) = {
+  def getEventTypeByCode(code: String): EventType = {
     val result = em.createQuery(EventTypeByCodeQuery, classOf[EventType])
       .setParameter("code", code)
       .getResultList
@@ -49,7 +50,7 @@ class DbEventTypeBean
   }
 
 
-  def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
+  def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean): util.List[EventType] = {
 
     val queryStr = filter.toQueryStructure
 

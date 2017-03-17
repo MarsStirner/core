@@ -36,15 +36,15 @@ object AppealPropertyWrapperInfo extends Configuration {
     ConfigManager.Messages("appeal.db.actionPropertyType.name.doctor") -> Doctor
   )
 
-  def apply(key: StringId) = {
+  def apply(key: StringId): StringId = {
     map(key)
   }
 
-  def isSupported(key: StringId) = {
+  def isSupported(key: StringId): Boolean = {
     map.keySet(key)
   }
 
-  def apply_property(key: String) = {
+  def apply_property(key: String): StringId = {
     if (map_property.keySet(key) == true) {
       map_property(key)
     }
@@ -62,8 +62,8 @@ object AppealPropertyWrapperInfo extends Configuration {
     val Directed = apwi.Directed
     val Doctor = apwi.Doctor
 
-    def apply(key: StringId) = apwi(key)
+    def apply(key: StringId): StringId = apwi(key)
 
-    def apply_property(key: String) = apwi.apply_property(key)
+    def apply_property(key: String): StringId = apwi.apply_property(key)
   }
 }

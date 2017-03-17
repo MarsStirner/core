@@ -15,19 +15,19 @@ import ru.korus.tmis.ws.webmis.rest.interceptors.ExceptionJSONMessage
 @SerialVersionUID(42l)
 class MainExceptionHandler extends HttpServlet {
 
-  override def doGet(p1: Request, p2: Response) = processError(p1, p2)
+  override def doGet(p1: Request, p2: Response): Unit = processError(p1, p2)
 
-  override def doPost(p1: Request, p2: Response) = processError(p1, p2)
+  override def doPost(p1: Request, p2: Response): Unit = processError(p1, p2)
 
-  override def doPut(p1: Request, p2: Response) = processError(p1, p2)
+  override def doPut(p1: Request, p2: Response): Unit = processError(p1, p2)
 
-  override def doDelete(p1: Request, p2: Response) = processError(p1, p2)
+  override def doDelete(p1: Request, p2: Response): Unit = processError(p1, p2)
 
-  override def doHead(p1: Request, p2: Response) = processError(p1, p2)
+  override def doHead(p1: Request, p2: Response): Unit = processError(p1, p2)
 
-  override def doOptions(p1: Request, p2: Response) = processError(p1, p2)
+  override def doOptions(p1: Request, p2: Response): Unit = processError(p1, p2)
 
-  override def doTrace(p1: Request, p2: Response) = processError(p1, p2)
+  override def doTrace(p1: Request, p2: Response): Unit = processError(p1, p2)
 
   private def processError(p1: Request, p2: Response) = {
     val  throwable = p1.getAttribute("javax.servlet.error.exception").asInstanceOf[Throwable]

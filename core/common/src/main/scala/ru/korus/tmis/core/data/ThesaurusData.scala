@@ -1,8 +1,11 @@
 package ru.korus.tmis.core.data
 
+import java.util
+
 import scala.beans.BeanProperty
 import java.util.LinkedList
-import javax.xml.bind.annotation.{XmlType, XmlRootElement, XmlAttribute}
+import javax.xml.bind.annotation.{XmlAttribute, XmlRootElement, XmlType}
+
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import ru.korus.tmis.core.entity.model.Thesaurus
 
@@ -13,11 +16,11 @@ class ThesaurusData {
   var version: String = _
 
   @XmlAttribute
-  def getVersion() = {
+  def getVersion(): String = {
     version
   }
 
-  def setVersion(version: String) = {
+  def setVersion(version: String): Unit = {
     this.version = version
   }
 
@@ -89,7 +92,7 @@ class ThesaurusContainer {
     this.container = thesaurus.isContainer
   }
 
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     var map = new java.util.HashMap[String, Object]
     map.put("id", this.id)
     map.put("name", this.name)

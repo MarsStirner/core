@@ -44,7 +44,7 @@ object Manifests {
     }
   }
 
-  def runtimeManifestForValue(v: Any) = manifestFromClass(classForValue(v))
+  def runtimeManifestForValue(v: Any): Manifest[_] = manifestFromClass(classForValue(v))
   
   def box(v: Any): AnyRef = {
     v match {

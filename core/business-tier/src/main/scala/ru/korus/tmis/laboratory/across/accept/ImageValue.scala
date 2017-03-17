@@ -5,7 +5,7 @@ import scala.language.implicitConversions
 
 final object ImageValue {
 
-  implicit def fromLab2(v: lab2.ImageValue) = {
+  implicit def fromLab2(v: lab2.ImageValue): ImageValue = {
     ImageValue(Option(v.getDescription), Option(v.getImageData))
   }
 }

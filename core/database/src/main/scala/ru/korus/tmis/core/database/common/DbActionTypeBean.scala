@@ -23,7 +23,7 @@ class DbActionTypeBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getActionTypeById(id: Int) = {
+  def getActionTypeById(id: Int): ActionType = {
     val result = em.createQuery(ActionTypeByIdQuery,
       classOf[ActionType])
       .setParameter("id", id)
@@ -35,7 +35,7 @@ class DbActionTypeBean
     at
   }
 
-  def getAssessmentTypes = {
+  def getAssessmentTypes: util.HashSet[ActionType] = {
     val result = em.createQuery(AssessmentTypesQuery,
       classOf[ActionType])
       .getResultList
@@ -43,7 +43,7 @@ class DbActionTypeBean
     new java.util.HashSet(result)
   }
 
-  def getDiagnosticTypes = {
+  def getDiagnosticTypes: util.HashSet[ActionType] = {
     val result = em.createQuery(DiagnosticTypesQuery,
       classOf[ActionType])
       .getResultList
@@ -51,7 +51,7 @@ class DbActionTypeBean
     new java.util.HashSet(result)
   }
 
-  def getTreatmentTypes = {
+  def getTreatmentTypes: util.HashSet[ActionType] = {
     val result = em.createQuery(TreatmentTypesQuery,
       classOf[ActionType])
       .getResultList
@@ -59,7 +59,7 @@ class DbActionTypeBean
     new java.util.HashSet(result)
   }
 
-  def getDrugTreatmentTypes = {
+  def getDrugTreatmentTypes: util.HashSet[ActionType] = {
     val result = em.createQuery(DrugTreatmentTypesQuery,
       classOf[ActionType])
       .getResultList
@@ -67,7 +67,7 @@ class DbActionTypeBean
     new java.util.HashSet(result)
   }
 
-  def getActionTypePropertiesById(actionTypeId: Int) = {
+  def getActionTypePropertiesById(actionTypeId: Int): util.List[ActionPropertyType] = {
     val result = em.createQuery(ActionTypePropertiesByIdQuery,
       classOf[ActionPropertyType])
       .setParameter("actionTypeId", actionTypeId)
@@ -77,7 +77,7 @@ class DbActionTypeBean
   }
 
   //Вернем ActionType по значению code
-  def getActionTypeByCode(code: String) = {
+  def getActionTypeByCode(code: String): ActionType = {
     val result = em.createQuery(ActionTypeByCodeQuery, classOf[ActionType])
       .setParameter("code", code)
       .getResultList
@@ -92,7 +92,7 @@ class DbActionTypeBean
   }
 
   //Вернем ActionType по значению flatCode
-  def getActionTypeByFlatCode(code: String) = {
+  def getActionTypeByFlatCode(code: String): ActionType = {
     val result = em.createQuery(ActionTypeByFlatCodeQuery, classOf[ActionType])
       .setParameter("flatCode", code)
       .getResultList
@@ -106,7 +106,7 @@ class DbActionTypeBean
     }
   }
 
-  def getActionTypesByCode(code: String) = {
+  def getActionTypesByCode(code: String): util.HashSet[ActionType] = {
     val result = em.createQuery(ActionTypeByCodeQuery, classOf[ActionType])
       .setParameter("code", code)
       .getResultList
@@ -115,7 +115,7 @@ class DbActionTypeBean
     new java.util.HashSet(result)
   }
 
-  def getCountAllActionTypeWithFilter(filter: Object) = {
+  def getCountAllActionTypeWithFilter(filter: Object): Long = {
 
     val queryStr: QueryDataStructure = filter match {
       case x: ActionTypesListRequestDataFilter => x.toQueryStructure()
@@ -129,7 +129,7 @@ class DbActionTypeBean
     typed.getSingleResult
   }
 
-  def getAllActionTypeWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
+  def getAllActionTypeWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): util.List[ActionType] = {
 
     val queryStr = filter.toQueryStructure
 
@@ -191,13 +191,13 @@ class DbActionTypeBean
       at.deleted = 0
     """
 
-  val AssessmentTypesQuery =
+  val AssessmentTypesQuery: String =
     ActionTypesByClassQuery.format(i18n("db.action.assessmentClass"))
 
-  val DiagnosticTypesQuery =
+  val DiagnosticTypesQuery: String =
     ActionTypesByClassQuery.format(i18n("db.action.diagnosticClass"))
 
-  val TreatmentTypesQuery =
+  val TreatmentTypesQuery: String =
     ActionTypesByClassQuery.format(i18n("db.action.treatmentClass"))
 
   val ActionTypesByNameQuery =
@@ -211,7 +211,7 @@ class DbActionTypeBean
       at.deleted = 0
     """
 
-  val DrugTreatmentTypesQuery =
+  val DrugTreatmentTypesQuery: String =
     ActionTypesByNameQuery.format(i18n("db.at.drugTreatmentName"))
 
   val ActionTypeByCodeQuery =

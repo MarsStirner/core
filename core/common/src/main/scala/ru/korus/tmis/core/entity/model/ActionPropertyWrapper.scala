@@ -18,7 +18,7 @@ class ActionPropertyWrapper(ap: ActionProperty,
   val logger:Logger = LoggerFactory.getLogger(this.getClass)
   val APWI = ConfigManager.APWI.immutable
 
-  def get(apvs: List[APValue], names: List[StringId]) = {
+  def get(apvs: List[APValue], names: List[StringId]): CommonAttribute = {
     val apt = ap.getType
     val map = (if(apvs.isEmpty) List(null) else apvs).foldLeft(Map[String, String]())((map, apv) => names.foldLeft(map)(
       (map, name) => {
@@ -32,7 +32,7 @@ class ActionPropertyWrapper(ap: ActionProperty,
                 if (apt.getTypeName.compareTo("Html") == 0 || apt.getTypeName.compareTo("Text") == 0 || apt.getTypeName.compareTo("Constructor") == 0) {
                   map + (xmlName -> apv.getValue.toString)
                 } else if ("Reference".equals(apt.getTypeName) || "ReferenceRb".equals(apt.getTypeName)) {
-                  map + (xmlName -> apValueConverter(apt, apvs).get(0).values.get(0).getValue.asInstanceOf[String])
+                  map + (xmlName -> apValueConverter(apt, apvs).get(0).values.get(0).getValue)
                 } else {
                   map + (xmlName -> apv.getValueAsString)
                 }
@@ -101,7 +101,7 @@ class ActionPropertyWrapper(ap: ActionProperty,
     res
   }
 
-  def set(value: CommonAttribute) = {
+  def set(value: CommonAttribute): Unit = {
     value.getPropertiesMap.foreach(p => {
       val (name, value) = p
       StringId(name) match {

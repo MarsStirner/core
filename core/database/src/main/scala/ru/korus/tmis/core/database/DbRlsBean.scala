@@ -22,7 +22,7 @@ class DbRlsBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getRlsById(id: Int) = {
+  def getRlsById(id: Int): Nomenclature = {
     try {
       if(id < 1)
         throw new IllegalArgumentException("Invalid id value id=" + id)
@@ -35,7 +35,7 @@ class DbRlsBean
     }
   }
 
-  def getRlsByText(text: String) = {
+  def getRlsByText(text: String): util.List[Nomenclature] = {
     try {
       if(text == null || text.isEmpty)
         throw new IllegalArgumentException("Find request cannot be empty")

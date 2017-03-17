@@ -50,9 +50,7 @@ class PatientsListData {
       var toDep : OrgStructure = null
 
       val value: Object = if (e._2!=null && e._2.size()>0) {
-        val apvs = if (e._2.size() > 1) {
-          e._2.find(f => f._1.getType.getCode.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer")) == 0).getOrElse(null)
-        } else {
+        val apvs = if (e._2.size() > 1) e._2.find(f => f._1.getType.getCode.compareTo(ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer")) == 0).orNull else {
           e._2.iterator.next()
         }
         if (apvs._2!=null && apvs._2.size()>0){
@@ -152,7 +150,7 @@ class PatientsListData {
    * @tparam T  Тип искомых данных
    */
   private class IndexOf[T] (seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
+    def unapply(pos: T): Option[Int] = seq find (pos == _) map (seq indexOf _)
   }
 
   /**
@@ -169,7 +167,7 @@ class PatientsListData {
       var tDate = Calendar.getInstance()
       tDate.setTime(actionDate)
 
-      val result = values.find(element => element._1.getType.getId.intValue() == aptId).getOrElse(null)
+      val result = values.find(element => element._1.getType.getId.intValue() == aptId).orNull
       if(result!=null && result._2!=null &&  result._2.size()>0){
         val time = result._2.get(0).asInstanceOf[APValueTime].getValue
         if (time!=null){
@@ -234,7 +232,7 @@ class PatientsListRequestData {
     this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 
-  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+  def rewriteRecordsCount(recordsCount: java.lang.Long): Boolean = {
     this.recordsCount = recordsCount.longValue()
     true
   }
@@ -264,7 +262,7 @@ class PatientsListRequestDataFilter {
     this.endDate =  if(endDate==0) new Date() else new Date(endDate)
   }
 
-  def toQueryStructure() = {
+  def toQueryStructure(): QueryDataStructure = {
     var qs = new QueryDataStructure()
     if(this.departmentId>0){
       qs.add("departmentId", this.departmentId:java.lang.Integer)
@@ -279,7 +277,7 @@ class PatientsListRequestDataFilter {
     qs
   }
   @Override
-  def toSortingString (sortingField: String, sortingMethod: String) = {
+  def toSortingString (sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField.toLowerCase match {
       case "createDatetime"| "start" | "begDate" => {"ap.action.begDate %s".format(sortingMethod)}
       case "end" | "endDate" => {"ap.action.event.execDate %s".format(sortingMethod)}

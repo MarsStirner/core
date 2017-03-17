@@ -32,15 +32,15 @@ class DbEnumBean
     )
 
   @PostConstruct
-  def init() = {
+  def init(): Unit = {
     syncEnums_s11r64()
   }
 
-  def syncEnums_s11r64() = {
+  def syncEnums_s11r64(): Unit = {
     syncEnums(s11r64, "s11r64")
   }
 
-  def syncEnums(em: EntityManager, EmId: String) = {
+  def syncEnums(em: EntityManager, EmId: String): Unit = {
     tx.begin()
     try {
       enums.synchronized {
@@ -60,7 +60,7 @@ class DbEnumBean
     }
   }
 
-  def processEnums(em: EntityManager, e: Class[DbEnumerable]) = {
+  def processEnums(em: EntityManager, e: Class[DbEnumerable]): Unit = {
     val enums = em
       .createNamedQuery(e.getSimpleName + ".findAll")
       .getResultList

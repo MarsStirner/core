@@ -157,7 +157,7 @@ class AssignmentEntry {
   //Комментарий
 
   private class IndexOf[T](seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
+    def unapply(pos: T): Option[Int] = seq find (pos == _) map (seq indexOf _)
   }
 
   final val list = List(ConfigManager.Messages("db.actionPropertyType.assignment.name.injectionMethod").toInt,
@@ -265,7 +265,7 @@ class AssignmentEntry {
     val result = values.find {
       element => element._1.getType.getId.intValue() == aptId
     }
-    val res = result.getOrElse(null)
+    val res = result.orNull
     if (res != null && res._2 != null) {
       res._2.toList
     } else {

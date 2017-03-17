@@ -46,7 +46,7 @@ with I18nable {
   var dbStaff: DbStaffBeanLocal = _
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getDiagnosisById(id: Int) = {
+  def getDiagnosisById(id: Int): Diagnosis = {
     val result = em.find(classOf[Diagnosis], id)
     if (result != null) {
       result
@@ -61,7 +61,7 @@ with I18nable {
                               diagnosisTypeFlatCode: String,
                               diseaseCharacterId: Int,
                               mkbId: Int,
-                              staff: Staff) = {
+                              staff: Staff): Diagnosis = {
 
     val now = new Date()
     var diagnosis: Diagnosis = null

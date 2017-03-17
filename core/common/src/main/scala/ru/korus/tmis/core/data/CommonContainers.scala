@@ -1,12 +1,14 @@
 package ru.korus.tmis.core.data
 
+import java.util
 import javax.xml.bind.annotation.{XmlRootElement, XmlType}
+
 import scala.beans.BeanProperty
 import java.util.Date
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties
 import org.codehaus.jackson.annotate.JsonIgnoreProperties._
-import ru.korus.tmis.core.entity.model.{Staff, OrgStructure}
+import ru.korus.tmis.core.entity.model.{OrgStructure, Staff}
 import ru.korus.tmis.scala.util.ConfigManager
 
 @XmlType(name = "idNameContainer")
@@ -33,7 +35,7 @@ class IdNameContainer {
     this.code = code;
   }
 
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     var map = new java.util.HashMap[String, Object]
     map.put("id", this.id.toString)
     map.put("name", this.name)
@@ -71,7 +73,7 @@ class IdValueContainer {
     this.id = idValue
   }
 
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     var map = new java.util.HashMap[String, Object]
     map.put("id", this.id)
 
@@ -94,7 +96,7 @@ class DatePeriodContainer {
     this.end = end
   }
 
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     var map = new java.util.HashMap[String, Object]
 
     map.put("start", this.DateToString(this.start))
@@ -131,7 +133,7 @@ class RangeLeftRightContainer {
     this.right = new HandPreassureContainer(rightDiast, rightSyst)
   }
 
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     var map = new java.util.HashMap[String, Object]
     map.put("left", this.left)
     map.put("right", this.right)

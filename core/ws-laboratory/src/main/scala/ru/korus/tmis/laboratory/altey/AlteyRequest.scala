@@ -2,8 +2,10 @@ package ru.korus.tmis.laboratory.altey
 
 import javax.jws.{HandlerChain, WebService}
 
-import ru.korus.tmis.util.{CompileTimeConfigManager}
+import ru.korus.tmis.util.CompileTimeConfigManager
 import javax.ejb.EJB
+
+import grizzled.slf4j.Logging
 import ru.korus.tmis.laboratory.altey.business.AlteyBusinessBeanLocal
 import ru.korus.tmis.scala.util.I18nable
 
@@ -28,7 +30,7 @@ class AlteyRequest extends AlteyRequestService with Logging with I18nable {
       labBean.sendLisAnalysisRequest(actionId)
     }
     catch {
-      case e: Throwable => ()
+      case e: Throwable => error(e)
     }
   }
 }

@@ -14,7 +14,7 @@ public class QueueActionParam {
 
     private String note = "";
 
-    private PacientInQueueType pacientInQueueType = PacientInQueueType.QUEUE;
+    private PatientInQueueType patientInQueueType = PatientInQueueType.QUEUE;
 
     private AppointmentType appointmentType = AppointmentType.NONE;
 
@@ -26,8 +26,8 @@ public class QueueActionParam {
         return note;
     }
 
-    public PacientInQueueType getPacientInQueueType() {
-        return pacientInQueueType;
+    public PatientInQueueType getPatientInQueueType() {
+        return patientInQueueType;
     }
 
     public AppointmentType getAppointmentType() {
@@ -44,8 +44,8 @@ public class QueueActionParam {
         return this;
     }
 
-    public QueueActionParam setPacientInQueueType(PacientInQueueType pacientInQueueType) {
-        this.pacientInQueueType = pacientInQueueType;
+    public QueueActionParam setPatientInQueueType(PatientInQueueType patientInQueueType) {
+        this.patientInQueueType = patientInQueueType;
         return this;
     }
 

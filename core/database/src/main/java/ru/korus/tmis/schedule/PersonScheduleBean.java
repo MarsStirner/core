@@ -327,12 +327,12 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             if (checkAction != null) {
                 Action chechActionValue = checkAction.getValue();
                 if (chechActionValue != null) {
-                    Short pacientInQueueType = chechActionValue.getPacientInQueueType();
-                    if (pacientInQueueType != null) {
-                        if (pacientInQueueType == (short) 1) {
+                    Short patientInQueueType = chechActionValue.getPatientInQueueType();
+                    if (patientInQueueType != null) {
+                        if (patientInQueueType == (short) 1) {
                             personSchedule.emergencyPatientCount++;
                         } else {
-                            if (pacientInQueueType == (short) 2) {
+                            if (patientInQueueType == (short) 2) {
                                 personSchedule.overQueueCount++;
                             }
                         }
@@ -521,8 +521,8 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
         final Date paramsDate = new LocalDate(paramsDateTime).toDate();
         logger.info("paramsDate is {}", paramsDate);
         logger.info("paramsTime is {}, millis={}", paramsTime, paramsTime.getTime());
-        final boolean isUrgent = queueActionParam.getPacientInQueueType().equals(PacientInQueueType.URGENT);
-        final boolean isOverQueue = queueActionParam.getPacientInQueueType().equals(PacientInQueueType.OVERQUEUE);
+        final boolean isUrgent = queueActionParam.getPatientInQueueType().equals(PatientInQueueType.URGENT);
+        final boolean isOverQueue = queueActionParam.getPatientInQueueType().equals(PatientInQueueType.OVERQUEUE);
 
         if (isUrgent && checkMaxCito(personSchedule)) { //если срочная запись и достигнут лимит срочный приемов у врача
             logger.info("No more urgent ticket. Current numder of urgent ticket is {}.", personSchedule.emergencyPatientCount);
@@ -623,11 +623,11 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             //Получение ActionProperty_Action соответствующего записи пациента к врачу (queue)
             APValueAction ambActionPropertyAction = actionPropertyBean.getActionProperty_ActionByValue(queueAction);
             logger.debug("Founded AP_A: {}", ambActionPropertyAction);
-            switch (queueAction.getPacientInQueueType()) {
+            switch (queueAction.getPatientInQueueType()) {
                 //Обыкновенная запись на прием к врачу
                 case 0: {
                     //Обнуление поля = отмена очереди
-                    logger.debug("Action.pacientInQueueType = 0");
+                    logger.debug("Action.patientInQueueType = 0");
                     ambActionPropertyAction.setValue(null);
                     em.merge(ambActionPropertyAction);
                     logger.debug("AP_A.value set to NULL");
@@ -698,7 +698,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
      */
     private void addActionToQueuePropertyValue(final PersonSchedule personSchedule, final int index, final Action queueAction) throws CoreException {
 
-        final PacientInQueueType pacientInQueueType = PacientInQueueType.newInstance(queueAction.getPacientInQueueType());
+        final PatientInQueueType patientInQueueType = PatientInQueueType.newInstance(queueAction.getPatientInQueueType());
         if (personSchedule.queueAP == null) {
             logger.warn("Our enqueue is first to this doctor. Because queueActionProperty for doctorAction is null" +
                     " queueAMB.size()={}", personSchedule.queue.size());
@@ -712,7 +712,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
         logger.info("Queue ActionProperty = {}", personSchedule.queueAP.getId());
         for (int j = personSchedule.queue.size(); j < personSchedule.getPlan(); j++) {
             APValueAction newActionPropertyAction = new APValueAction(personSchedule.queueAP.getId(), j);
-            if (pacientInQueueType.equals(PacientInQueueType.QUEUE) && (index == j)) {
+            if (patientInQueueType.equals(PatientInQueueType.QUEUE) && (index == j)) {
                 newActionPropertyAction.setValue(queueAction);
             } else {
                 newActionPropertyAction.setValue(null);
@@ -722,7 +722,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
             personSchedule.queue.add(newActionPropertyAction);
         }
 
-        if (pacientInQueueType.equals(PacientInQueueType.URGENT)) { //если запись срочная, то добавляем в начало и сдвигаем очередь на один
+        if (patientInQueueType.equals(PatientInQueueType.URGENT)) { //если запись срочная, то добавляем в начало и сдвигаем очередь на один
             ++personSchedule.emergencyPatientCount;
             APValueAction newActionPropertyAction = new APValueAction(personSchedule.queueAP.getId(), personSchedule.queue.size());
             em.persist(newActionPropertyAction);
@@ -736,7 +736,7 @@ public class PersonScheduleBean implements PersonScheduleBeanLocal {
         } else { //если запись в очередь на время или сверх очереди
             em.flush();
             APValueAction newActionPropertyAction;
-            if (pacientInQueueType.equals(PacientInQueueType.OVERQUEUE)) { //если запись сверх очереди, то добавляем в конец
+            if (patientInQueueType.equals(PatientInQueueType.OVERQUEUE)) { //если запись сверх очереди, то добавляем в конец
                 ++personSchedule.overQueueCount;
                 newActionPropertyAction = new APValueAction(personSchedule.queueAP.getId(), personSchedule.queue.size());
                 personSchedule.queue.add(newActionPropertyAction);

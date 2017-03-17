@@ -41,7 +41,7 @@ object General {
   //   cos of stupid scala creators =>
   //        http://scala-programming-language.1934581.n4.nabble.com/scala-Structural-types-with-generic-type-question-td1992248.html#a1992249
   sealed case class TypedEquality[A](v: A) {
-    def =!=(v1: A) = v == v1
+    def =!=(v1: A): Boolean = v == v1
   }
 
   implicit def typedEquality[A](v: A) = TypedEquality(v)
@@ -76,7 +76,7 @@ object General {
     // usage:
     // rewrite the code: if(a != null) a else b
     // to: a ?: b
-    def ?:[B >: A](pred: B) = if (pred == null) nullity else pred
+    def ?:[B >: A](pred: B): B = if (pred == null) nullity else pred
   }
 
   implicit def flow_implicits[A](v: A) = new {
@@ -96,7 +96,7 @@ object General {
       v
     }
 
-    def whether(f: (A => Boolean)) = {
+    def whether(f: (A => Boolean)): Option[A] = {
       if (f(v)) Some(v) else None
     }
 
@@ -118,11 +118,11 @@ object General {
 }
 
 object StringUtils {
-  val nmap = Map.empty[Char, Char] +
+  val nmap: Map[Char, Char] = Map.empty[Char, Char] +
     ('«' -> '\"') +
     ('»' -> '\"')
 
-  def normalize(s: String) = {
+  def normalize(s: String): String = {
     (s /: nmap)((a, e) => a.replace(e._1, e._2))
   }
 }

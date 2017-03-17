@@ -29,7 +29,7 @@ class DbStaffBean
   var em: EntityManager = _
 
 
-  def getStaffByLogin(login: String) = {
+  def getStaffByLogin(login: String): Staff = {
     val staffs = em.createNamedQuery("Staff.findByLogin", classOf[Staff])
       .setParameter("login", login)
       .getResultList
@@ -44,15 +44,15 @@ class DbStaffBean
     staffs(0)
   }
 
-  def getStaffById(id: Int) = {
+  def getStaffById(id: Int): Staff = {
     em.find(classOf[Staff], id)
   }
 
-  def getAllPersons = {
+  def getAllPersons: util.List[Staff] = {
     em.createNamedQuery("Staff.findAll", classOf[Staff]).getResultList
   }
 
-  def getCountAllPersonsWithFilter(filter: Object) = {
+  def getCountAllPersonsWithFilter(filter: Object): Long = {
     val queryStr: QueryDataStructure = filter match {
       case x: FreePersonsListDataFilter =>
         x.toQueryStructure()
@@ -68,7 +68,7 @@ class DbStaffBean
   }
 
 
-  def getAllPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean) = {
+  def getAllPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, records: (java.lang.Long) => java.lang.Boolean): util.List[Staff] = {
 
     val queryStr = filter.toQueryStructure
     if (records != null) {
@@ -92,7 +92,7 @@ class DbStaffBean
     }
   }
 
-  def getEmptyPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, citoActionsCount: Int) = {
+  def getEmptyPersonsByRequest(limit: Int, page: Int, sorting: String, filter: ListDataFilter, citoActionsCount: Int): util.HashMap[Staff, util.List[APValueTime]] = {
 
     //TODO: как то надо подрубить пэйджинг, сортировки и общее кол-во
     val queryStr = filter.toQueryStructure
@@ -141,7 +141,7 @@ class DbStaffBean
     retMap
   }
 
-  def getActionPropertyForPersonByRequest(filter: ListDataFilter) = {
+  def getActionPropertyForPersonByRequest(filter: ListDataFilter): ActionProperty = {
     //TODO: как то надо подрубить пэйджинг, сортировки и общее кол-во
     val queryStr = filter.toQueryStructure
 

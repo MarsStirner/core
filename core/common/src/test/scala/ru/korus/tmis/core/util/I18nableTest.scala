@@ -8,7 +8,7 @@ import scala.language.reflectiveCalls
 class I18nableTest {
 
   object Tester extends I18nable {
-    def tissueNotFoundMessage = i18n("error.takenTissueNotFound", 18)
+    def tissueNotFoundMessage: String = i18n("error.takenTissueNotFound", 18)
   }
 
   @Test

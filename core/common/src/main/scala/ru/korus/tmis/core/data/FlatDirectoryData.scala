@@ -147,7 +147,7 @@ class FlatDirectoryRequestDataListFilter {
         null
   }
 
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     var qs = new QueryDataStructure()
     if (this.flatDictionaryIds != null && this.flatDictionaryIds.size > 0 && flatDictionaryIds.get(0) > 0) {
       //отсекаем случай -1 - вывод всех словарей
@@ -157,7 +157,7 @@ class FlatDirectoryRequestDataListFilter {
     qs
   }
 
-  def toQueryStructureForRecordsRequest = {
+  def toQueryStructureForRecordsRequest: QueryDataStructure = {
     var qs = new QueryDataStructure()
     qs.query = this.lexemsToQueryString(qs.query)
     qs.query += "fdr.deleted = 0 \n"

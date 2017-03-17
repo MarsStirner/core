@@ -7,7 +7,7 @@ import javax.ejb.{EJB, Stateless}
 import javax.xml.datatype.{DatatypeFactory, XMLGregorianCalendar}
 import javax.xml.namespace.QName
 
-
+import grizzled.slf4j.Logging
 import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.database.common._
@@ -115,10 +115,9 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
       service
     } catch {
-      case e: Throwable => {
+      case e: Throwable =>
         error("Error while creating LIS2 service endpoint", e)
         throw e
-      }
     }
   }
 
@@ -126,7 +125,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   def getBiomaterialInfo(action: Action, takenTissue: TakenTissue): BiomaterialInfo = {
 
     Option(action.getTakenTissue) match {
-      case Some(t) => {
+      case Some(t) =>
         info("Biomaterial:BarCode=" + t.getId)
         info("Biomaterial:SamplingDate=" + t.getDatetimeTaken)
         val tt = t.getType
@@ -141,7 +140,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         res.setOrderProbeDate(DataConverter.date2xmlGC(t.getDatetimeTaken))
         res.setOrderBiomaterialComment(of.createBiomaterialInfoOrderBiomaterialComment(t.getNote))
         res
-      }
       case None => throw new CoreException(i18n("error.tissueForActionNotFound", action.getId))
     }
   }
@@ -167,10 +165,8 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     val res = apts.find(apt => {
       apt.getTest != null
     })
-    res.isEmpty match {
-      // Если для данного исследования не определены показатели из rbTest, то не нужно отправлять анализ в ЛИС
-      case true => throw new CoreException(i18n("error.noTestsForAction", a.getId))
-      case false => {}
+    if (res.isEmpty) {
+      throw new CoreException(i18n("error.noTestsForAction", a.getId))
     }
 
     val aptsSet = apts.toSet // для правильной работы JavaConversion
@@ -252,17 +248,15 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     // Diagnosis
     val diagnosis = getDiagnosis(a.getEvent)
     val (diagCode, diagName) = diagnosis match {
-      case null => {
+      case null =>
         warn("Request: no diagnosis found for event #" + a.getEvent.getId)
         ("", "")
-      }
-      case _ => {
+      case _ =>
         // Diagnosis (string) -- диагноз (текст из МКБ) (последний из обоснования; если нет, то из первичного осмотра)
         info("Request:Diagnosis=" + diagnosis)
         // МКБ (string) -- диагноз (код из МКБ) (последний из обоснования; если нет, то из первичного осмотра)
         info("Request:mkbCode=" + diagnosis._1)
         diagnosis
-      }
     }
     result.setOrderDiagCode(of.createDiagnosticRequestInfoOrderDiagCode(diagCode))
     result.setOrderDiagText(of.createDiagnosticRequestInfoOrderDiagText(diagName))
@@ -287,27 +281,23 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     // DepartmentName (string) -- название подразделения - отделение
     // DepartmentCode (string) -- уникальный код подразделения (отделения)
     val (depName, depCode) = department match {
-      case null => {
+      case null =>
         info("Request:DepartmentName=<empty>")
         info("Request:DepartmentCode=<empty>")
         ("", "")
-      }
-      case _ => {
+      case _ =>
         info("Request:DepartmentName=" + department.getName)
         //todo изменено 03.10 hack
         info("Request:DepartmentCode=" + department.getId)
         (department.getName, "" + department.getId)
-      }
     }
     result.setOrderDepartmentMisId(of.createDiagnosticRequestInfoOrderDepartmentMisId(depCode))
     result.setOrderDepartmentName(of.createDiagnosticRequestInfoOrderDepartmentName(depName))
     val (drLastName, drFirstName, drMiddleName, drCode) = a.getAssigner match {
-      case null => {
+      case null =>
         ("", "", "", null)
-      }
-      case _ => {
+      case _ =>
         (a.getAssigner.getLastName, a.getAssigner.getFirstName, a.getAssigner.getPatrName, a.getAssigner.getId)
-      }
     }
     // DoctorLastName, DoctorFirstName, DoctorMiddleName (string) -- ФИО врача
     info("Request.DoctorLastName=" + drLastName)
@@ -347,10 +337,9 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   def getOrgStructureFromRecievedActionInEvent(e: Event): OrgStructure = {
     val orgStructureAP = dbCustomQuery.getOrgStructureByReceivedActionByEvents(Collections.singletonList(e))
     orgStructureAP.get(e) match {
-      case null => {
+      case null =>
         warn("OrgStructure from received Action not found for " + e)
-      }
-      case ap: ActionProperty => {
+      case ap: ActionProperty =>
         val apvs = dbActionProperty.getActionPropertyValue(ap)
         apvs.foreach(
           (apv) => {
@@ -360,7 +349,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
               case _ =>
             }
           })
-      }
     }
 
     null
@@ -370,10 +358,9 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     val hospitalBeds = dbCustomQuery.getHospitalBedsByEvents(
       Collections.singletonList(e))
     hospitalBeds.get(e) match {
-      case null => {
+      case null =>
         warn("Hospital bed not found for " + e)
-      }
-      case hospitalBed: ActionProperty => {
+      case hospitalBed: ActionProperty =>
         val apvs = dbActionProperty.getActionPropertyValue(hospitalBed)
         apvs.foreach(
           (apv) => {
@@ -383,7 +370,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
               case _ =>
             }
           })
-      }
     }
 
     null
@@ -401,10 +387,9 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     // Выбираем диагнозы
     val diagMap = dbCustomQuery.getDiagnosisSubstantiationByEvents(Collections.singletonList(e))
     val a = diagMap.get(e) match {
-      case null => {
+      case null =>
         warn("Diagnosis not found")
         return null
-      }
       case d: Action => d
     }
 
@@ -419,7 +404,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
     apvals.size match {
       case 0 => null
-      case x: Int => {
+      case x: Int =>
         val pair = apvals.get(0)
         var res = pair.getValueAsString.replaceAll("<(.)+?>", "")
         res = res.replaceAll("<(\n)+?>", "")
@@ -428,7 +413,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
           res = res.take(997) + "..."
         }
         ("", res)
-      }
     }
 
     /*
@@ -444,7 +428,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     */
   }
 
-  def setAnalysisResults(a: Action, results: List[AnalysisResultAcross], finished: Boolean, biomaterialDefects: String) = {
+  def setAnalysisResults(a: Action, results: List[AnalysisResultAcross], finished: Boolean, biomaterialDefects: String): Int = {
     // Сохраняем результаты анализов
     val entities = scala.collection.mutable.Buffer[AnyRef](a)
 
@@ -521,7 +505,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
 
         // Изображения
         r.value.get1.getOrElse(Nil) match {
-          case List(image) => {
+          case List(image) =>
             // Получаем actionProperty по названию
             val aps = a.getActionProperties.filter(ap => {
               ap.getType match {
@@ -540,9 +524,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
                 entities += _
               }
             })
-
-          }
-          case _ => {}
+          case _ =>
         }
 
         val microOrganismResults = r.value.get2.getOrElse(Nil)
@@ -599,7 +581,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   }
 
   def setLis2AnalysisResults(requestId: Int, barCode: Int, period: Int, lastPiece: Boolean, lis_results: JList[AResult2],
-                             biomaterialDefects: String) = {
+                             biomaterialDefects: String): Int = {
     info("Acquired requestId = " + requestId)
     info("Acquired barCode = " + barCode)
     info("Acquired lastPiece = " + lastPiece)
@@ -637,7 +619,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
   }
 
 
-  def getAnalysisRequest(actionId: Int) = {
+  def getAnalysisRequest(actionId: Int): (PatientInfo, DiagnosticRequestInfo, BiomaterialInfo, OrderInfo) = {
     val a = dbActionBean.getActionById(actionId)
 
     val at = a.getActionType

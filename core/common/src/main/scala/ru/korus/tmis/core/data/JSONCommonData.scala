@@ -164,7 +164,7 @@ class ConsultationRequestData {
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
   }
 
-  def rewriteDefault(request: ConsultationRequestData) = {
+  def rewriteDefault(request: ConsultationRequestData): ConsultationRequestData = {
     request.coreVersion = ConfigManager.Messages("misCore.assembly.version")
     request
   }

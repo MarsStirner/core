@@ -18,7 +18,7 @@ class AppealSimplifiedDataList {
   @BeanProperty
   var data: LinkedList[AppealSimplifiedData] = new LinkedList[AppealSimplifiedData]
 
-  def add(that: AppealSimplifiedData) = {
+  def add(that: AppealSimplifiedData): AppealSimplifiedDataList = {
     this.data.add(that)
     this
   }
@@ -82,7 +82,7 @@ class AppealSimplifiedRequestData {
     this.coreVersion = ConfigManager.Messages("misCore.assembly.version")
   }
 
-  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+  def rewriteRecordsCount(recordsCount: java.lang.Long): Boolean = {
     this.recordsCount = recordsCount.longValue()
     true
   }
@@ -134,7 +134,7 @@ class AppealSimplifiedRequestDataFilter {
     this.code = code
   }
 
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     var qs = new QueryDataStructure()
     if(this.patientId>0){
       qs.query += "AND e.patient.id = :patientId\n"
@@ -170,7 +170,7 @@ class AppealSimplifiedRequestDataFilter {
     }
     qs
   }
-  def toSortingString (sortingField: String) = {
+  def toSortingString (sortingField: String): String = {
     sortingField match {
       case "start" | "begDate" => {"e.setDate"}
       case "end" | "endDate" => {"e.execDate"}

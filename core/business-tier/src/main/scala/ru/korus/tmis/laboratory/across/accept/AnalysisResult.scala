@@ -34,7 +34,7 @@ object AnalysisResultAcross {
     }
   }
 
-  implicit def fromLab2(v: lab2.AnalysisResult) = {
+  implicit def fromLab2(v: lab2.AnalysisResult): AnalysisResultAcross = {
     import General.NumberImplicits.optFloat
 
     AnalysisResultAcross(

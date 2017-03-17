@@ -19,7 +19,7 @@ class DbRbHospitalBedProfileBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getRbHospitalBedProfileById(id: Int) = {
+  def getRbHospitalBedProfileById(id: Int): RbHospitalBedProfile = {
     val result = em.createQuery(RbHospitalBedProfileByIdQuery,
       classOf[RbHospitalBedProfile])
       .setParameter("id", id)
@@ -37,7 +37,7 @@ class DbRbHospitalBedProfileBean
     }
   }
 
-  def getRbHospitalBedProfileByName(name: String) = {
+  def getRbHospitalBedProfileByName(name: String): RbHospitalBedProfile = {
     val result = em.createQuery(RbHospitalBedProfileByNameQuery,
       classOf[RbHospitalBedProfile])
       .setParameter("name", "%" + name + "%")

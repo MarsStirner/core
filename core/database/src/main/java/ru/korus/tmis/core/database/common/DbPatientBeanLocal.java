@@ -43,7 +43,7 @@ public interface DbPatientBeanLocal {
                                   int version)
             throws CoreException;
 
-    Boolean checkSNILSNumber(String number) throws CoreException;
+    boolean checkSNILSNumber(String number) throws CoreException;
 
     List<Patient> findPatient(Map<String, String> params, int clientId) throws CoreException;
 

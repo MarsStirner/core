@@ -282,10 +282,9 @@ class CommonDataProcessorBean
         }
 
       } catch {
-        case e: Exception => {
+        case e: Exception =>
           dbManager.removeAll(entities)
           throw e
-        }
       }
     })
 
@@ -304,7 +303,7 @@ class CommonDataProcessorBean
   def toActionPropertyValue(entry: (ActionProperty, CommonAttribute), list: List[APValue]): List[APValue] = {
     val (ap, attribute) = entry
     (attribute.getPropertiesMap.get("valueId"), attribute.getPropertiesMap.get("value")) match {
-      case (None | Some(null) | Some(""), None | Some(null) | Some("")) => {
+      case (None | Some(null) | Some(""), None | Some(null) | Some("")) =>
         if (ap.getType.getTypeName.compareTo("FlatDirectory") != 0 &&
           ap.getType.getTypeName.compareTo("FlatDictionary") != 0 &&
           !ap.getType.getTypeName.equals("Table") &&
@@ -320,8 +319,7 @@ class CommonDataProcessorBean
               list
           } else list
         } else list
-      }
-      case (None | Some(null) | Some(""), Some(value)) => {
+      case (None | Some(null) | Some(""), Some(value)) =>
         if (ap.getType.getTypeName.equals("Date") && attribute.getPropertiesMap.get("value").getOrElse("").equals("0000-00-00 00:00:00"))
           list
         else {
@@ -331,14 +329,12 @@ class CommonDataProcessorBean
             0)
           apv :: list
         }
-      }
-      case (Some(valueId), _) => {
+      case (Some(valueId), _) =>
         val apv = dbActionProperty.setActionPropertyValue(
           ap,
           valueId,
           0)
         apv :: list
-      }
     }
   }
 
@@ -450,7 +446,7 @@ class CommonDataProcessorBean
           } else {
             (attribute.getPropertiesMap.get("valueId"), attribute.getPropertiesMap.get("value")) match {
 
-              case (None | Some(null) | Some(""), None | Some("") | Some(null)) => {
+              case (None | Some(null) | Some(""), None | Some("") | Some(null)) =>
                 val ap = dbActionProperty.getActionPropertyById(
                   id.intValue)
                 new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType).set(attribute)
@@ -459,9 +455,8 @@ class CommonDataProcessorBean
                 dbManager.removeAll(dbActionProperty.getActionPropertyValue(ap))
 
                 entities = entities + ap
-              }
 
-              case (None | Some(null) | Some(""), Some(value)) => {
+              case (None | Some(null) | Some(""), Some(value)) =>
                 val ap = dbActionProperty.updateActionProperty(
                   id.intValue,
                   attribute.version.intValue,
@@ -483,9 +478,8 @@ class CommonDataProcessorBean
                 } else {
                   entities = entities + ap
                 }
-              }
 
-              case (Some(valueId), _) => {
+              case (Some(valueId), _) =>
                 val ap = dbActionProperty.updateActionProperty(
                   id.intValue,
                   attribute.version.intValue,
@@ -496,7 +490,6 @@ class CommonDataProcessorBean
                   0)
                 new ActionPropertyWrapper(ap, dbActionProperty.convertValue, dbActionProperty.convertScope, dbActionProperty.convertColType).set(attribute)
                 entities = entities + ap + apv.unwrap
-              }
 
             }
           }
@@ -617,31 +610,28 @@ class CommonDataProcessorBean
 
   def changeActionStatus(eventId: Int,
                          actionId: Int,
-                         status: Short) = {
+                         status: Short): Boolean = {
     val action = dbAction.updateActionStatus(actionId, status)
     dbManager.mergeAll[Action](List(action))
 
     val ActionStatus = ConfigManager.ActionStatus.immutable
 
     status match {
-      case ActionStatus.Canceled => {
+      case ActionStatus.Canceled =>
         /*
         r.foreach(a => {
           val values = dbActionProperty.getActionPropertiesByActionId(a.getId.intValue)
           actionEvent.fire(new CancelActionNotification(a, values))
         })
         */
-      }
-      case _ => {
-
-      }
+      case _ =>
     }
     true
   }
 
   def fromActionTypes(types: java.util.Set[ActionType],
                       typeName: String,
-                      converter: (ActionPropertyType) => CommonAttribute) = {
+                      converter: (ActionPropertyType) => CommonAttribute): CommonData = {
     types.foldLeft(
       new CommonData(0, dbVersion.getGlobalVersion)
     )((data, at) => {
@@ -664,7 +654,7 @@ class CommonDataProcessorBean
   }
 
 
-  def converterFromList(list: java.util.List[String], apt: ActionPropertyType) = {
+  def converterFromList(list: java.util.List[String], apt: ActionPropertyType): CommonAttributeWithLayout = {
 
     val map = list.foldLeft(Map.empty[String, String])(
       (str_key, el) => {
@@ -716,7 +706,7 @@ class CommonDataProcessorBean
                                   typeName: String,
                                   listForSummary: java.util.List[StringId],
                                   listForConverter: java.util.List[String],
-                                  patient: Patient) = {
+                                  patient: Patient): CommonData = {
     val data = new CommonData(0, dbVersion.getGlobalVersion)
     val entity = new CommonEntity(actionType.getId.intValue(),
       0,
@@ -764,18 +754,16 @@ class CommonDataProcessorBean
     date.setTime(new Date())
 
     actionType.getDefaultPlannedEndDate match {
-      case 0 => {
+      case 0 =>
         a.setPlannedEndDate(null)
-      }
-      case 1 => {
+      case 1 =>
         date.add(Calendar.DAY_OF_YEAR, 1)
         date.set(Calendar.HOUR_OF_DAY, 7)
         date.set(Calendar.MINUTE, 0)
         date.set(Calendar.SECOND, 0)
         date.set(Calendar.MILLISECOND, 0)
         a.setPlannedEndDate(date.getTime)
-      }
-      case 2 => {
+      case 2 =>
         date.set(Calendar.HOUR_OF_DAY, 7)
         date.set(Calendar.MINUTE, 0)
         date.set(Calendar.SECOND, 0)
@@ -791,8 +779,7 @@ class CommonDataProcessorBean
           }
         }
         a.setPlannedEndDate(date.getTime)
-      }
-      case 3 => {
+      case 3 =>
         if (date.get(Calendar.HOUR) != 23) {
           //if (date.get(Calendar.MINUTE) != 0) {
           date.add(Calendar.HOUR_OF_DAY, 1)
@@ -806,13 +793,12 @@ class CommonDataProcessorBean
           date.set(Calendar.MILLISECOND, 0)
         }
         a.setPlannedEndDate(date.getTime)
-      }
     }
   }
 
   def fromActions(actions: java.util.List[Action],
                   actionName: String,
-                  converters: java.util.List[(Action) => CommonGroup]) = {
+                  converters: java.util.List[(Action) => CommonGroup]): CommonData = {
     actions.foldLeft(
       new CommonData
     )((data, action) => {
@@ -833,7 +819,7 @@ class CommonDataProcessorBean
 
   def addAttributes(group: CommonGroup,
                     wrapper: ActionWrapper,
-                    attributeNames: java.util.List[StringId]) = {
+                    attributeNames: java.util.List[StringId]): CommonGroup = {
     attributeNames.foldLeft(group)(
       (group, attributeName) => group add wrapper.get(attributeName)
     )

@@ -23,7 +23,7 @@ class JobImpl {
   @Produces(Array("application/javascript", "application/x-javascript", MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON))
   def load(@Context servRequest: HttpServletRequest,
            @QueryParam("callback") callback: String,
-           @PathParam("id") id: Int) = {
+           @PathParam("id") id: Int): JSONWithPadding = {
     new JSONWithPadding(new JobTicketContainer(
       wsImpl.getJobTicketById(id, this.wsImpl.checkTokenCookies(servRequest.getCookies))), callback)
   }

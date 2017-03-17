@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database
 
+import java.util
 import java.util.Date
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -23,7 +24,7 @@ class DbBloodHistoryBean extends DbBloodHistoryBeanLocal
   @EJB
   var dbRbBloodTypeBean: DbRbBloodTypeBeanLocal = _
 
-  def getBloodHistoryByPatient(patientId: Int) = {
+  def getBloodHistoryByPatient(patientId: Int): util.List[BloodHistory] = {
     val result = em.createNamedQuery("BloodHistory.findByPatientId", classOf[BloodHistory])
                    .setParameter("patientId", patientId)
                    .getResultList
@@ -31,7 +32,7 @@ class DbBloodHistoryBean extends DbBloodHistoryBeanLocal
     result
   }
 
-  def createBloodHistoryRecord(patientId: Int, bloodTypeId: Int, bloodDate: Date, staff: Staff) = {
+  def createBloodHistoryRecord(patientId: Int, bloodTypeId: Int, bloodDate: Date, staff: Staff): BloodHistory = {
      try {
        if(patientId>0){
          if (bloodTypeId>0){

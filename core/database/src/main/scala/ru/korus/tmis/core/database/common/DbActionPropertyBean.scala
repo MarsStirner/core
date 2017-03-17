@@ -45,7 +45,7 @@ class DbActionPropertyBean
   private val FILTER_TYPENAME = 3
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertyById(id: Int) = {
+  def getActionPropertyById(id: Int): ActionProperty = {
     val result = em.createQuery(ActionPropertyFindQuery,
       classOf[ActionProperty])
       .setParameter("id", id)
@@ -64,7 +64,7 @@ class DbActionPropertyBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByActionId(actionId: Int) = {
+  def getActionPropertiesByActionId(actionId: Int): util.Map[ActionProperty, util.List[APValue]] = {
     val result = em.createQuery(ActionPropertiesByActionIdQuery,
       classOf[ActionProperty])
       .setParameter("actionId", actionId)
@@ -79,7 +79,7 @@ class DbActionPropertyBean
     )
   }
 
-  def getActionPropertyValue(actionProperty: ActionProperty) = {
+  def getActionPropertyValue(actionProperty: ActionProperty): util.List[APValue] = {
     val APValueRLSType = classOf[APValueRLS]
     actionProperty.getValueClass match {
       case null =>
@@ -106,7 +106,7 @@ class DbActionPropertyBean
     }
   }
 
-  def createActionProperty(a: Action, aptId: Int, staff: Staff) = {
+  def createActionProperty(a: Action, aptId: Int, staff: Staff): ActionProperty = {
     val apt = dbActionPropertyType.getActionPropertyTypeById(aptId)
     val now = new Date()
     val ap = new ActionProperty
@@ -150,7 +150,7 @@ class DbActionPropertyBean
     ap
   }
 
-  def updateActionProperty(id: Int, version: Int, staff: Staff) = {
+  def updateActionProperty(id: Int, version: Int, staff: Staff): ActionProperty = {
     val ap = getActionPropertyById(id)
 
     ap.setModifyPerson(staff)
@@ -198,7 +198,7 @@ class DbActionPropertyBean
     }
   }
 
-  def setActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
+  def setActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0): APValue = {
     if (ap.getId == null) {
       em.flush()
     }
@@ -321,7 +321,7 @@ class DbActionPropertyBean
     res
   }
 
-  def convertScope(propertyType: ActionPropertyType) = {
+  def convertScope(propertyType: ActionPropertyType): String = {
     propertyType.getTypeName match {
       case "Reference" => getScopeForReference(propertyType)
       case "ReferenceRb" => getScopeForReference(propertyType)
@@ -331,7 +331,7 @@ class DbActionPropertyBean
     }
   }
 
-  def convertColType(propertyType: ActionPropertyType) = {
+  def convertColType(propertyType: ActionPropertyType): util.LinkedList[String] = {
     propertyType.getTypeName match {
       case "Table" =>
         val rbAPTableFieldList = getTableFields(propertyType)
@@ -352,7 +352,7 @@ class DbActionPropertyBean
     }
   }
 
-  def getScopeForReference(propertyType: ActionPropertyType) = {
+  def getScopeForReference(propertyType: ActionPropertyType): String = {
     val rbData = em.createNativeQuery("SELECT `code`, `name` FROM %s".format(propertyType.getValueDomain.split(";")(0))).getResultList
     val resList: java.util.List[Array[Object]] = rbData.asInstanceOf[java.util.List[Array[Object]]]
     //преобразуем результат SQL запроса в CSV формат вида "<code> - <name>, <code> - <name>, ..." и при наличии в названии ',' заменяем на "(....)"
@@ -362,7 +362,7 @@ class DbActionPropertyBean
     })
   }
 
-  def getScopeForTable(propertyType: ActionPropertyType) = {
+  def getScopeForTable(propertyType: ActionPropertyType): String = {
     val rbAPTableFieldList = getTableFields(propertyType)
     //преобразуем результат SQL запроса в CSV формат вида "<code> - <name>, <code> - <name>, ..." и при наличии в названии ',' заменяем на "(....)"
     rbAPTableFieldList.foldLeft("")((b, a) => {
@@ -374,7 +374,7 @@ class DbActionPropertyBean
     em.createNamedQuery("RbAPTableField.findByCode", classOf[RbAPTableField]).setParameter("code", propertyType.getValueDomain).getResultList
   }
 
-  def getScopeForDiagnosis(propertyType: ActionPropertyType) = {
+  def getScopeForDiagnosis(propertyType: ActionPropertyType): String = {
     val diagTableHeader = Array(
       "Дата начала", "Дата окончания", "МКБ", "Тип", "Характер", "Результат", "Исход", "Врач", "Примечание"
     )
@@ -411,7 +411,7 @@ class DbActionPropertyBean
   }
 
 
-  def createActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0) = {
+  def createActionPropertyValue(ap: ActionProperty, value: String, index: Int = 0): APValue = {
     val cls = ap.getValueClass
     if (cls == null)
       throw new CoreException(i18n("error.actionPropertyTypeClassNotFound").format(ap.getId))
@@ -438,7 +438,7 @@ class DbActionPropertyBean
    * Получить APValue в простом случае по id и имени entity-класса
    */
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getPropertyValues(id: Int, entityName: String) = {
+  def getPropertyValues(id: Int, entityName: String): util.List[_] = {
     val query = APValueQuery.format(entityName)
     val apvs = em.createQuery(query)
       .setParameter("id", id)
@@ -459,22 +459,22 @@ class DbActionPropertyBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByActionIdAndTypeNames(actionId: Int, names: java.util.List[String]) = {
+  def getActionPropertiesByActionIdAndTypeNames(actionId: Int, names: java.util.List[String]): util.Map[ActionProperty, util.List[APValue]] = {
     this.getActionPropertiesByActionIdAndCustomParameters(actionId, names, FILTER_NAME)
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByActionIdAndTypeCodes(actionId: Int, codes: java.util.List[String]) = {
+  def getActionPropertiesByActionIdAndTypeCodes(actionId: Int, codes: java.util.List[String]): util.Map[ActionProperty, util.List[APValue]] = {
     this.getActionPropertiesByActionIdAndCustomParameters(actionId, codes, FILTER_CODE)
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByActionIdAndTypeTypeNames(actionId: Int, codes: java.util.List[String]) = {
+  def getActionPropertiesByActionIdAndTypeTypeNames(actionId: Int, codes: java.util.List[String]): util.Map[ActionProperty, util.List[APValue]] = {
     this.getActionPropertiesByActionIdAndCustomParameters(actionId, codes, FILTER_TYPENAME)
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByActionIdAndTypeId(actionId: Int, typeId: Int) = {
+  def getActionPropertiesByActionIdAndTypeId(actionId: Int, typeId: Int): util.List[ActionProperty] = {
     val result = em.createQuery(ActionPropertiesByActionIdAndTypeIdQuery,
       classOf[ActionProperty])
       .setParameter("actionId", actionId)
@@ -486,7 +486,7 @@ class DbActionPropertyBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByActionIdAndRbCoreActionPropertyIds(actionId: Int, ids: java.util.List[java.lang.Integer]) = {
+  def getActionPropertiesByActionIdAndRbCoreActionPropertyIds(actionId: Int, ids: java.util.List[java.lang.Integer]): util.Map[ActionProperty, util.List[APValue]] = {
     val result = em.createQuery(ActionPropertiesByActionIdAndRbCoreActionPropertyIds, classOf[ActionProperty])
       .setParameter("actionId", actionId)
       .setParameter("ids", asJavaCollection(ids))
@@ -502,7 +502,7 @@ class DbActionPropertyBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByActionIdAndActionPropertyTypeCodes(actionId: Int, codes: java.util.Set[String]) = {
+  def getActionPropertiesByActionIdAndActionPropertyTypeCodes(actionId: Int, codes: java.util.Set[String]): util.Map[ActionProperty, util.List[APValue]] = {
     val result = em.createQuery(ActionPropertiesByActionIdAndTypeCodesQuery, classOf[ActionProperty])
       .setParameter("actionId", actionId)
       .setParameter("codes", asJavaCollection(codes))
@@ -518,7 +518,7 @@ class DbActionPropertyBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(actionId: Int, codes: java.util.Set[String]) = {
+  def getActionPropertiesByActionIdAndActionPropertyTypeCodesWithoutDel(actionId: Int, codes: java.util.Set[String]): util.Map[ActionProperty, util.List[APValue]] = {
     val result = em.createQuery(ActionPropertiesByActionIdAndTypeCodesQuery2, classOf[ActionProperty])
       .setParameter("actionId", actionId)
       .setParameter("codes", asJavaCollection(codes))
@@ -534,7 +534,7 @@ class DbActionPropertyBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesForEventByActionTypes(eventId: Int, atIds: java.util.Set[java.lang.Integer], coreIds: java.util.Set[java.lang.Integer]) = {
+  def getActionPropertiesForEventByActionTypes(eventId: Int, atIds: java.util.Set[java.lang.Integer], coreIds: java.util.Set[java.lang.Integer]): util.Map[ActionProperty, util.List[APValue]] = {
     val result = em.createQuery(ActionPropertiesForEventByActionTypesQuery, classOf[Array[AnyRef]])
       .setParameter("eventId", eventId)
       .setParameter("atIds", asJavaCollection(atIds))
@@ -551,7 +551,7 @@ class DbActionPropertyBean
   }
 
   //@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-  def getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventIds: java.util.List[java.lang.Integer], codes: java.util.Set[String], cntRead: Int, needStatus: Boolean) = {
+  def getActionPropertiesByEventIdsAndActionPropertyTypeCodes(eventIds: java.util.List[java.lang.Integer], codes: java.util.Set[String], cntRead: Int, needStatus: Boolean): util.LinkedHashMap[Integer, util.LinkedHashMap[ActionProperty, util.List[APValue]]] = {
 
     val sqlCodes = convertCollectionToSqlString(asJavaCollection(codes))
     val sqlEventIds = convertCollectionToSqlString(asJavaCollection(eventIds))
@@ -910,7 +910,7 @@ class DbActionPropertyBean
     res*/
   }
 
-  def checkAutoValue(ap: ActionProperty, value: Int) = {
+  def checkAutoValue(ap: ActionProperty, value: Int): Unit = {
     val apvList = prevValueList(ap)
     apvList.foreach( v => if (v == value) {
       //Номер операции 533 уже используется

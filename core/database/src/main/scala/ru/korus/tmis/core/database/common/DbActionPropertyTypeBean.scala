@@ -26,7 +26,7 @@ class DbActionPropertyTypeBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getActionPropertyTypeById(id: Int) = {
+  def getActionPropertyTypeById(id: Int): ActionPropertyType = {
     val result = em.createQuery(AptByIdQuery,
       classOf[ActionPropertyType])
       .setParameter("id", id)
@@ -41,47 +41,47 @@ class DbActionPropertyTypeBean
     apt
   }
 
-  def getDepartmentAPT = {
+  def getDepartmentAPT: util.Set[ActionPropertyType] = {
     getAptByName(i18n("db.apt.departmentName"))
   }
 
-  def getHospitalBedAPT = {
+  def getHospitalBedAPT: util.Set[ActionPropertyType] = {
     getAptByName(i18n("db.apt.hospitalBedName"))
   }
 
-  def getAnamnesisAPT = {
+  def getAnamnesisAPT: util.Set[ActionPropertyType] = {
     getAptByNameAndDename(i18n("db.apt.anamnesisName"),
       i18n("db.apt.anamnesisDename"),
       i18n("db.apt.allergoanamnesisName"))
   }
 
-  def getAllergoanamnesisAPT = {
+  def getAllergoanamnesisAPT: util.Set[ActionPropertyType] = {
     getAptByName(i18n("db.apt.allergoanamnesisName"))
   }
 
-  def getDiagnosisAPT = {
+  def getDiagnosisAPT: util.Set[ActionPropertyType] = {
     getAptByNameAndName(i18n("db.apt.diagnosisName01"),
       i18n("db.apt.diagnosisName02"))
   }
 
-  def getDrugNomenAPT = {
+  def getDrugNomenAPT: util.Set[ActionPropertyType] = {
     getAptByName(i18n("db.apt.drugName"))
   }
 
-  def getDosageAPT = {
+  def getDosageAPT: util.Set[ActionPropertyType] = {
     getAptByName(i18n("db.apt.dosageName"))
   }
 
   //////////////////////////////////////////////////////////////////////////////
 
-  def getAptByName(name: String) = {
+  def getAptByName(name: String): util.Set[ActionPropertyType] = {
     getAptByQuery(em.createQuery(AptByNameQuery,
       classOf[ActionPropertyType])
       .setParameter("aptName", name))
   }
 
   def getAptByNameAndName(name01: String,
-                          name02: String) = {
+                          name02: String): util.Set[ActionPropertyType] = {
     getAptByQuery(em.createQuery(AptByNameAndNameQuery,
       classOf[ActionPropertyType])
       .setParameter("aptName01", name01)
@@ -90,7 +90,7 @@ class DbActionPropertyTypeBean
 
   def getAptByNameAndDename(name: String,
                             dename01: String,
-                            dename02: String) = {
+                            dename02: String): util.Set[ActionPropertyType] = {
     getAptByQuery(em.createQuery(AptByNameAndDenameQuery,
       classOf[ActionPropertyType])
       .setParameter("aptName", name)
@@ -98,7 +98,7 @@ class DbActionPropertyTypeBean
       .setParameter("aptDename02", dename02))
   }
 
-  def getAptByQuery(query: TypedQuery[ActionPropertyType]) = {
+  def getAptByQuery(query: TypedQuery[ActionPropertyType]): util.Set[ActionPropertyType] = {
     val result = query.getResultList
 
     result.size match {
@@ -107,7 +107,7 @@ class DbActionPropertyTypeBean
     }
   }
 
-  def getActionPropertyTypeByActionTypeIdWithCode(code: String) = {
+  def getActionPropertyTypeByActionTypeIdWithCode(code: String): util.List[ActionPropertyType] = {
     val rolesId = em.createQuery(ActionTypeByCode, classOf[ActionType])
       .setParameter("code", code)
       .getResultList
@@ -121,7 +121,7 @@ class DbActionPropertyTypeBean
     result
   }
 
-  def getActionPropertyTypesByActionTypeId(actionTypeId: Int) = {
+  def getActionPropertyTypesByActionTypeId(actionTypeId: Int): util.List[ActionPropertyType] = {
     val result = em.createQuery(ActionPropertyTypeByActionTypeIdWithCodeQuery,
       classOf[ActionPropertyType])
       .setParameter("rolesId", actionTypeId)
@@ -129,14 +129,14 @@ class DbActionPropertyTypeBean
     result
   }
 
-  def getActionPropertyTypesByFlatCodes(codes: java.util.Set[String]) = {
+  def getActionPropertyTypesByFlatCodes(codes: java.util.Set[String]): util.List[ActionPropertyType] = {
     val result = em.createQuery(ActionPropertyTypesByFlatCodesQuery, classOf[ActionPropertyType])
       .setParameter("codes", asJavaCollection(codes))
       .getResultList
     result
   }
 
-  def getActionPropertyTypeValueDomainsWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter) = {
+  def getActionPropertyTypeValueDomainsWithFilter(page: Int, limit: Int, sorting: String, filter: ListDataFilter): util.LinkedList[Object] = {
 
     val queryStr = filter.toQueryStructure
     if (queryStr.data.size() > 0 || queryStr.query.nonEmpty) {

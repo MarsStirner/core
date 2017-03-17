@@ -27,11 +27,11 @@ object ActionPropertyWrapperInfo extends Configuration {
     IsAssigned -> IsAssigned
   )
 
-  def apply(key: StringId) = {
+  def apply(key: StringId): StringId = {
     map(key)
   }
 
-  def isSupported(key: StringId) = {
+  def isSupported(key: StringId): Boolean = {
     map.keySet(key)
   }
 
@@ -45,6 +45,6 @@ object ActionPropertyWrapperInfo extends Configuration {
     val IsAssigned = apwi.IsAssigned
     val Completed = apwi.Completed
 
-    def apply(key: StringId) = apwi(key)
+    def apply(key: StringId): StringId = apwi(key)
   }
 }

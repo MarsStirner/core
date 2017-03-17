@@ -56,9 +56,9 @@ class CommonAttribute {
   @BeanProperty var properties: java.util.List[PropertyPair] = new java.util.LinkedList[PropertyPair]
 
   @XmlTransient
-  def getPropertiesMap = properties.asScala.map((p) => p.name -> p.value).toMap
+  def getPropertiesMap: Map[String, String] = properties.asScala.map((p) => p.name -> p.value).toMap
 
-  def addProperty(key: String, value: String) = if (value != null) properties.add(new PropertyPair(key, value))
+  def addProperty(key: String, value: String): AnyVal = if (value != null) properties.add(new PropertyPair(key, value))
 
   private def this(id: Integer,
                    name: String,

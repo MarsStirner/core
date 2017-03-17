@@ -6,7 +6,7 @@ import org.testng.annotations.Test
 
 class CommonDataTest {
   @Test
-  def testJAXB() = {
+  def testJAXB(): Unit = {
     val cd = new CommonData add
       (new CommonEntity(2, 42, "Нейм", "Тайп", 28, 17, "Кодовый код") add
         (new CommonGroup(3, "Нейм оф групп") add

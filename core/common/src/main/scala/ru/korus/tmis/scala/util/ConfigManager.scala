@@ -28,7 +28,7 @@ object ConfigManager extends Configuration {
     var OrgId = 3479 // индекс организации в табл Organization (по умолчанию id ФНКЦ для БД ФНКЦ)
     var DebugTestMode = "off"
 
-    def isDebugTestMode = "on".equals(DebugTestMode)
+    def isDebugTestMode: Boolean = "on".equals(DebugTestMode)
 
     var lockTimeoutSec = 60 // время таймаута в секундах, после которого снимется лок документа
 
@@ -38,7 +38,7 @@ object ConfigManager extends Configuration {
 
     var notificationActive = "on"
 
-    def isNotificationActive = "on".equals(notificationActive)
+    def isNotificationActive: Boolean = "on".equals(notificationActive)
 
     def version = ConfigManager.Messages("misCore.assembly.version")
 
@@ -65,7 +65,7 @@ object ConfigManager extends Configuration {
      */
     var DebugDemoMode = "off"
 
-    def isDebugDemoMode = "on".equals(DebugDemoMode)
+    def isDebugDemoMode: Boolean = "on".equals(DebugDemoMode)
 
   }
 
@@ -86,7 +86,7 @@ object ConfigManager extends Configuration {
      */
     var Active = "off"
 
-    def isActive = "on".equals(Active)
+    def isActive: Boolean = "on".equals(Active)
 
     /**
      * URL сервиса 1C
@@ -108,7 +108,7 @@ object ConfigManager extends Configuration {
      */
     var UpdateRLS = "off"
 
-    def isUpdateRLS = "on".equals(UpdateRLS)
+    def isUpdateRLS: Boolean = "on".equals(UpdateRLS)
 
 
     // Legacy area
@@ -128,7 +128,7 @@ object ConfigManager extends Configuration {
     var GetDepList_SoapOperation = "GetDepartmentList"
     var GetDepList_RequestRootElement = "OrganizationRef"
 
-    def HttpAuthToken = DatatypeConverter.printBase64Binary(
+    def HttpAuthToken: String = DatatypeConverter.printBase64Binary(
       (User + ":" + Password).getBytes)
   }
 
@@ -156,7 +156,7 @@ object ConfigManager extends Configuration {
      */
     var ReferenceBookActive = "off"
 
-    def isHealthShareReferenceBook = "on".equals(HealthShare.ReferenceBookActive)
+    def isHealthShareReferenceBook: Boolean = "on".equals(HealthShare.ReferenceBookActive)
 
     /**
      * URL сервиса со справочниками HS
@@ -193,7 +193,7 @@ object ConfigManager extends Configuration {
      */
     var SdaActive = "off"
 
-    def isSdaActive = "on".equals(SdaActive)
+    def isSdaActive: Boolean = "on".equals(SdaActive)
   }
 
 
@@ -231,7 +231,7 @@ object ConfigManager extends Configuration {
      */
     var FinanceActive = "off"
 
-    def isFinanceActive = "on".equals(FinanceActive)
+    def isFinanceActive: Boolean = "on".equals(FinanceActive)
   }
 
   /**
@@ -281,7 +281,7 @@ object ConfigManager extends Configuration {
      */
     var Active = "off"
 
-    def isActive = "on".equals(Active)
+    def isActive: Boolean = "on".equals(Active)
 
     /**
      * URL сервиса
@@ -363,7 +363,7 @@ object ConfigManager extends Configuration {
     // WSDL url is a:
     // - RuntimeWSDLUrl if it's defined
     // - compile-time-defined (local WSDL from resources) otherwise
-    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
+    def WSDLUrl: URL = Option(RuntimeWSDLUrl).orNull
   }
 
   /**
@@ -389,7 +389,7 @@ object ConfigManager extends Configuration {
      */
     var RuntimeWSDLUrl: URL = null
 
-    def WSDLUrl: URL = Option(RuntimeWSDLUrl).getOrElse(null)
+    def WSDLUrl: URL = Option(RuntimeWSDLUrl).orNull
   }
 
 
@@ -451,7 +451,7 @@ object ConfigManager extends Configuration {
     }
 
     // Время действия токена в мс
-    var AuthTokenPeriod = 5 * 60 * 1000 // 30 * 60 * 1000 = 30 мин
+    var AuthTokenPeriod: Int = 5 * 60 * 1000 // 30 * 60 * 1000 = 30 мин
 
     var AuthDataPropertyName = "ru.korus.tmis.authData"
 
@@ -475,10 +475,10 @@ object ConfigManager extends Configuration {
   }
 
   val Messages = new Configuration {
-    val bundle = ResourceBundle.getBundle("messages",
+    val bundle: ResourceBundle = ResourceBundle.getBundle("messages",
       Utf8ResourceBundleControl.Singleton)
 
-    def apply(msg: String, params: Any*) = {
+    def apply(msg: String, params: Any*): String = {
       if ("misCore.assembly.version".equals(msg) && ConfigManager.Common.isDebugTestMode) {
         "1.0.0-TEST"
       } else {
@@ -496,10 +496,10 @@ object ConfigManager extends Configuration {
   }
 
   val RbCAPIds = new Configuration {
-    val bundle = ResourceBundle.getBundle("rbcap",
+    val bundle: ResourceBundle = ResourceBundle.getBundle("rbcap",
       Utf8ResourceBundleControl.Singleton)
 
-    def apply(msg: String, params: Any*) = {
+    def apply(msg: String, params: Any*): String = {
       bundle.getString(msg) match {
         case null => "<EMPTY>"
         case result => if (params.isEmpty) result
@@ -641,7 +641,7 @@ object ConfigManager extends Configuration {
   val codes = new Codes
 
   class Codes extends Configuration {
-    val bundle = ResourceBundle.getBundle("codes", Utf8ResourceBundleControl.Singleton)
+    val bundle: ResourceBundle = ResourceBundle.getBundle("codes", Utf8ResourceBundleControl.Singleton)
 
     def getValue(key : String) : java.lang.String = {
       bundle.getString(key)
@@ -667,7 +667,7 @@ object ConfigManager extends Configuration {
      */
     var SendActive = "on"
 
-    def isSendActive = "on".equals(SendActive)
+    def isSendActive: Boolean = "on".equals(SendActive)
 
     /**
      * Включен ли сервис
@@ -676,7 +676,7 @@ object ConfigManager extends Configuration {
      */
     var ReceiveActive = "on"
 
-    def isReceiveActive = "on".equals(ReceiveActive)
+    def isReceiveActive: Boolean = "on".equals(ReceiveActive)
 
     /**
      * URL сервиса

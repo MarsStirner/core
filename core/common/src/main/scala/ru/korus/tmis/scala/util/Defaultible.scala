@@ -13,9 +13,9 @@ object Defaultible {
   // instances are expected to be implemented like this:
   // implicit def stringDefaultible = setDefault[String]("")
   def setDefault[D](v: D) = new Defaultible[D] {
-    override val default = v
+    override val default: D = v
   }
 
-  def defaultValue[D: Defaultible] = implicitly[Defaultible[D]].default
+  def defaultValue[D: Defaultible]: D = implicitly[Defaultible[D]].default
 }
 

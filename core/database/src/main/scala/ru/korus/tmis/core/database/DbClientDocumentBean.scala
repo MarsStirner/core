@@ -95,7 +95,7 @@ class DbClientDocumentBean
   }
 
   def deleteClientDocument(id: Int,
-                           sessionUser: Staff) = {
+                           sessionUser: Staff): Unit = {
     val d = getClientDocumentById(id)
     val now = new Date
     d.setDeleted(true)

@@ -18,7 +18,7 @@ class DbClientFlatDirectoryBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def insertOrUpdateClientFlatDirectory(fdClientId: Int, fdPropertyId: Int, fdRecordId: Int, patient: Patient, sessionUser: Staff) = {
+  def insertOrUpdateClientFlatDirectory(fdClientId: Int, fdPropertyId: Int, fdRecordId: Int, patient: Patient, sessionUser: Staff): ClientFlatDirectory = {
 
     var fdClient: ClientFlatDirectory = null
 
@@ -64,7 +64,7 @@ class DbClientFlatDirectoryBean
     fdClient.setModifyDatetime(new Date)
   }
 
-  def getClientFlatDirectoryById(fdClientId: Int) = {
+  def getClientFlatDirectoryById(fdClientId: Int): ClientFlatDirectory = {
     val result = em.createQuery(ClientFlatDirectoryByIdQuery,
       classOf[ClientFlatDirectory])
       .setParameter("id", fdClientId)
@@ -75,7 +75,7 @@ class DbClientFlatDirectoryBean
     }
   }
 
-  def getClientFDPropertyById(fdPropertyId: Int) = {
+  def getClientFDPropertyById(fdPropertyId: Int): ClientFDProperty = {
     val result = em.createQuery(ClientFDPropertyByIdQuery,
       classOf[ClientFDProperty])
       .setParameter("id", fdPropertyId)
@@ -86,7 +86,7 @@ class DbClientFlatDirectoryBean
     }
   }
 
-  def getFDRecordById(fdRecordId: Int) = {
+  def getFDRecordById(fdRecordId: Int): FDRecord = {
     val result = em.createQuery(FDRecordByIdQuery,
       classOf[FDRecord])
       .setParameter("id", fdRecordId)

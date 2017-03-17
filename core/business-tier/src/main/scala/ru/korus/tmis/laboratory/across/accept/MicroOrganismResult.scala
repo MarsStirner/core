@@ -5,7 +5,7 @@ import scala.language.implicitConversions
 
 final object MicroOrganismResult {
 
-  implicit def fromLab2(v: lab2.MicroOrganismResult) = {
+  implicit def fromLab2(v: lab2.MicroOrganismResult): MicroOrganismResult = {
     MicroOrganismResult(Option(v.getOrganismCode), Option(v.getOrganismName), Option(v.getOrganismConcentration))
   }
 }

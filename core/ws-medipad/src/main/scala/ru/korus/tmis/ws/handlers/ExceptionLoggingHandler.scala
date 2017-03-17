@@ -17,11 +17,11 @@ class ExceptionLoggingHandler
 
   var msg: SOAPMessage = _
 
-  def getHeaders() = {
+  def getHeaders(): Null = {
     null
   }
 
-  def handleMessage(context: SOAPMessageContext) = {
+  def handleMessage(context: SOAPMessageContext): Boolean = {
     val isOutbound = context
       .get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)
       .asInstanceOf[Boolean]
@@ -33,7 +33,7 @@ class ExceptionLoggingHandler
     true
   }
 
-  def handleFault(context: SOAPMessageContext) = {
+  def handleFault(context: SOAPMessageContext): Boolean = {
     val isOutbound = context
       .get(MessageContext.MESSAGE_OUTBOUND_PROPERTY)
       .asInstanceOf[Boolean]

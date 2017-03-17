@@ -62,7 +62,7 @@ class ListDataRequest {
     this.sortingFieldInternal = this.filter.toSortingString(this.sortingField, this.sortingMethod)
   }
 
-  def rewriteRecordsCount(recordsCount: java.lang.Long) = {
+  def rewriteRecordsCount(recordsCount: java.lang.Long): Boolean = {
     this.recordsCount = recordsCount.longValue()
     true
   }
@@ -200,7 +200,7 @@ class FreePersonsListDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure
     if (this.speciality > 0) {
       qs.query += "AND s.speciality.id = :speciality\n"
@@ -221,7 +221,7 @@ class FreePersonsListDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString(sortingField: String, sortingMethod: String) = {
+  def toSortingString(sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "fio" | "fullname" => "s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)
       case "lastname" => "s.lastName %s".format(sortingMethod)
@@ -250,7 +250,7 @@ class PersonsListDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure
     if (this.department > 0) {
       qs.query += "AND s.orgStructure.id = :department\n"
@@ -260,7 +260,7 @@ class PersonsListDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString(sortingField: String, sortingMethod: String) = {
+  def toSortingString(sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "fio" | "fullname" => "s.lastName %s, s.firstName %s, s.patrName %s".format(sortingMethod, sortingMethod, sortingMethod)
       case "lastname" => "s.lastName %s".format(sortingMethod)
@@ -291,7 +291,7 @@ class AllDepartmentsListData extends AbstractDefaultData {
     }
   }
 
-  override def dataToString = {
+  override def dataToString: String = {
     val mapper = new ObjectMapper()
     try {
       mapper.writeValueAsString(this)
@@ -379,7 +379,7 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure()
     if (this.groupId > 0) {
       qs.query += "AND at.groupId = :groupId\n"
@@ -408,7 +408,7 @@ class ActionTypesListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString(sortingField: String, sortingMethod: String) = {
+  def toSortingString(sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "groupId" => "at.groupId %s"
       case "code" => "at.code %s"
@@ -701,7 +701,7 @@ class MKBListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure
     if (this.mkbId > 0) {
       qs.query += "AND mkb.id = :id\n"
@@ -736,7 +736,7 @@ class MKBListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString(sortingField: String, sortingMethod: String) = {
+  def toSortingString(sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "classId" => "mkb.classID %s"
       case "blockId" => "mkb.blockID %s"
@@ -779,7 +779,7 @@ abstract class AbstractMKBContainer extends IMKBContainer {
   def getLEVEL = 0
 
   @Override
-  def unwrap = this
+  def unwrap: AbstractMKBContainer = this
 }
 
 
@@ -1020,7 +1020,7 @@ class ThesaurusListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure
     if (this.id > 0) {
       qs.query += "AND r.id = :id\n"
@@ -1040,7 +1040,7 @@ class ThesaurusListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString(sortingField: String, sortingMethod: String) = {
+  def toSortingString(sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "groupId" => "r.groupID %s"
       case "code" => "r.code %s"
@@ -1235,7 +1235,7 @@ class DictionaryContainer {
     this.index = index
   }
 
-  def toSortingString(sortingField: String) = {
+  def toSortingString(sortingField: String): String = {
     val sortingFieldInternal = sortingField match {
       case "value" => "r.value"
       case _ =>  "r.id"
@@ -1292,7 +1292,7 @@ class DictionaryListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure
     if (this.headId > 0 && dictName.compare("insurance") == 0) {
       qs.query += "AND r.headId = :headId\n"
@@ -1358,7 +1358,7 @@ class DictionaryListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString(sortingField: String, sortingMethod: String) = {
+  def toSortingString(sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "name" => {
         if (dictName.compare("disabilityTypes") == 0 ||
@@ -1436,7 +1436,7 @@ class DepartmentsDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure()
 
     if (hasBeds) {
@@ -1504,7 +1504,7 @@ class DepartmentsDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString(sortingField: String, sortingMethod: String) = {
+  def toSortingString(sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "name" => "os.name %s"
       case _ => "os.id %s"
@@ -1548,7 +1548,7 @@ class EventTypesListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure
     if (this.financeId > 0) {
       qs.query += "AND et.finance.id = :financeId\n"
@@ -1562,7 +1562,7 @@ class EventTypesListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString(sortingField: String, sortingMethod: String) = {
+  def toSortingString(sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "name" => "et.name %s"
       case _ => "et.id %s"
@@ -1707,7 +1707,7 @@ class QuotaTypesListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toQueryStructure = {
+  def toQueryStructure: QueryDataStructure = {
     val qs = new QueryDataStructure()
     qs.query += "WHERE r.deleted = 0\n"
 
@@ -1727,7 +1727,7 @@ class QuotaTypesListRequestDataFilter extends AbstractListDataFilter {
   }
 
   @Override
-  def toSortingString(sortingField: String, sortingMethod: String) = {
+  def toSortingString(sortingField: String, sortingMethod: String): String = {
     var sorting = sortingField match {
       case "code" => "r.code %s"
       case _ => "r.id %s"

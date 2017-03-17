@@ -15,11 +15,11 @@ class AuthToken() {
     this.id = id
   }
 
-  override def toString = {
+  override def toString: String = {
     id
   }
 
-  override def equals(obj: Any) = {
+  override def equals(obj: Any): Boolean = {
     obj match {
       case other: AuthToken => {
         other.getClass() == getClass() && other.id == id
@@ -28,7 +28,7 @@ class AuthToken() {
     }
   }
 
-  override def hashCode = {
+  override def hashCode: Int = {
     id.hashCode
   }
 }

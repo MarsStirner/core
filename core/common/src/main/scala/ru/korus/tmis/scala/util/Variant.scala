@@ -45,49 +45,49 @@ object Variant {
 
   sealed trait MaxArity10[+A, +B, +C, +D, +E, +F, +G, +H, +I, +J]
     extends MaxArity9[A, B, C, D, E, F, G, H, I, J] {
-    override def get9 = super.get9
+    override def get9: Option[J] = super.get9
   }
 
   sealed trait MaxArity9[+A, +B, +C, +D, +E, +F, +G, +H, +I, +J]
     extends MaxArity8[A, B, C, D, E, F, G, H, I, J] {
-    override def get8 = super.get8
+    override def get8: Option[I] = super.get8
   }
 
   sealed trait MaxArity8[+A, +B, +C, +D, +E, +F, +G, +H, +I, +J]
     extends MaxArity7[A, B, C, D, E, F, G, H, I, J] {
-    override def get7 = super.get7
+    override def get7: Option[H] = super.get7
   }
 
   sealed trait MaxArity7[+A, +B, +C, +D, +E, +F, +G, +H, +I, +J]
     extends MaxArity6[A, B, C, D, E, F, G, H, I, J] {
-    override def get6 = super.get6
+    override def get6: Option[G] = super.get6
   }
 
   sealed trait MaxArity6[+A, +B, +C, +D, +E, +F, +G, +H, +I, +J]
     extends MaxArity5[A, B, C, D, E, F, G, H, I, J] {
-    override def get5 = super.get5
+    override def get5: Option[F] = super.get5
   }
 
   sealed trait MaxArity5[+A, +B, +C, +D, +E, +F, +G, +H, +I, +J]
     extends MaxArity4[A, B, C, D, E, F, G, H, I, J] {
-    override def get4 = super.get4
+    override def get4: Option[E] = super.get4
   }
 
   sealed trait MaxArity4[+A, +B, +C, +D, +E, +F, +G, +H, +I, +J]
     extends MaxArity3[A, B, C, D, E, F, G, H, I, J] {
-    override def get3 = super.get3
+    override def get3: Option[D] = super.get3
   }
 
   sealed trait MaxArity3[+A, +B, +C, +D, +E, +F, +G, +H, +I, +J]
     extends MaxArity2[A, B, C, D, E, F, G, H, I, J] {
-    override def get2 = super.get2
+    override def get2: Option[C] = super.get2
   }
 
   sealed trait MaxArity2[+A, +B, +C, +D, +E, +F, +G, +H, +I, +J]
     extends Variant[A, B, C, D, E, F, G, H, I, J] {
-    override def get1 = super.get1
+    override def get1: Option[B] = super.get1
 
-    override def get0 = super.get0
+    override def get0: Option[A] = super.get0
   }
 
 

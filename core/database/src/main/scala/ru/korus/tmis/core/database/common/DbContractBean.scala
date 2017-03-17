@@ -73,7 +73,7 @@ class DbContractBean
     """
 
 
-  def getContractById(id: Int) = {
+  def getContractById(id: Int): Contract = {
     val result = em.createQuery(FindByIdQuery,
       classOf[Contract])
       .setParameter("id", id)
@@ -90,7 +90,7 @@ class DbContractBean
     }
   }
 
-  def getContractByNumber(number: String) = {
+  def getContractByNumber(number: String): Contract = {
     val result = em.createQuery(FindByNumberQuery,
       classOf[Contract])
       .setParameter("number", number)
@@ -110,7 +110,7 @@ class DbContractBean
    * @return Первый контракт из списка или null, если таковых не нашлось
    */
   @Deprecated
-  def getContractForEventType(eventType: EventType) = {
+  def getContractForEventType(eventType: EventType): Contract = {
     val result = em.createQuery(FindContractForEventQuery,
       classOf[Contract])
       .setParameter("date", new Date)
@@ -135,7 +135,7 @@ class DbContractBean
    * @param showExpired Если задан как true - то не проверяется дата окончания договора относительно текущего момента
    * @return Список доступных договоров или null, если таких не имеется
    */
-  def getContractsByEventTypeId(eventTypeId: Int, financeId: Int, showDeleted: Boolean, showExpired: Boolean) = {
+  def getContractsByEventTypeId(eventTypeId: Int, financeId: Int, showDeleted: Boolean, showExpired: Boolean): util.List[Contract] = {
     val cb = em.getCriteriaBuilder
 
     val q = cb.createQuery(classOf[Contract])

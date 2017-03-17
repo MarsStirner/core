@@ -100,7 +100,7 @@ class DbTempInvalidBean
                                 closed: Short,
                                 patient: Patient,
                                 sessionUser: Staff
-                                 ) = {
+                                 ): TempInvalid = {
 
     var tempInvalid: TempInvalid = if (tempInvalidIn == null) new TempInvalid() else tempInvalidIn
     val now: Date = new Date
@@ -151,7 +151,7 @@ class DbTempInvalidBean
   }
 
 
-  def deleteTempInvalid(id: Int, sessionUser: Staff) = {
+  def deleteTempInvalid(id: Int, sessionUser: Staff): Unit = {
     var tempInvalid: TempInvalid = getTempInvalidById(id)
     val now: Date = new Date
     tempInvalid.setModifyPerson(sessionUser)

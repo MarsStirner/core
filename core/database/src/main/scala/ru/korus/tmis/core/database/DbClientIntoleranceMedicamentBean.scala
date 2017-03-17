@@ -81,7 +81,7 @@ class DbClientIntoleranceMedicamentBean
   }
 
   def deleteClientIntoleranceMedicament(id: Int,
-                                        sessionUser: Staff) = {
+                                        sessionUser: Staff): Unit = {
     val d = getClientIntoleranceMedicamentById(id)
     val now = new Date()
     d.setDeleted(true)

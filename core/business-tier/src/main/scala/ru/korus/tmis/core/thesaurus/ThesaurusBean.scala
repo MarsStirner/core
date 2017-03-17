@@ -21,19 +21,19 @@ class ThesaurusBean
   @EJB
   var dbVersion: DbVersionBeanLocal = _
 
-  def getThesaurusByCode(code: Int) = {
+  def getThesaurusByCode(code: Int): ThesaurusData = {
     buildThesaurusData(dbThesaurusBean.getThesaurusByCode(code))
   }
 
-  def getThesaurus() = {
+  def getThesaurus(): ThesaurusData = {
     buildThesaurusData(dbThesaurusBean.getThesaurus)
   }
 
-  def getMkb() = {
+  def getMkb(): ThesaurusData = {
     buildMkbData(dbThesaurusBean.getMkb)
   }
 
-  def buildThesaurusData(ts: java.util.List[Thesaurus]) = {
+  def buildThesaurusData(ts: java.util.List[Thesaurus]): ThesaurusData = {
     ts.foldLeft(new ThesaurusData(dbVersion.getGlobalVersion))(
       (data, t) => {
         val groupId = t.getGroupId match {
@@ -52,7 +52,7 @@ class ThesaurusBean
       })
   }
 
-  def buildMkbData(mkbs: java.util.List[Mkb]) = {
+  def buildMkbData(mkbs: java.util.List[Mkb]): ThesaurusData = {
     mkbs.foldLeft(new ThesaurusData(dbVersion.getGlobalVersion))(
       (data, mkb) => {
         data add new ThesaurusEntry(mkb.getId.intValue,

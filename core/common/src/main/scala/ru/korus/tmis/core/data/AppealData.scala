@@ -530,7 +530,7 @@ class AppealEntry extends I18nable {
           i18n("appeal.diagnosis.diagnosisKind.aftereffectMkb"),
           i18n("appeal.diagnosis.diagnosisKind.attendantMkb")).foreach( diaType => {
         val allByType = diagnostics.filter(p=>p.getDiagnosisType.getFlatCode.compareTo(diaType)==0)  //Все диагностики данного типа
-        val diaByLastDate = allByType.find(p=> p.getCreateDatetime.getTime==allByType.map(_.getCreateDatetime.getTime).foldLeft(Long.MinValue)((i,m)=>m.max(i))).getOrElse(null) //Диагностика последняя по дате создания
+        val diaByLastDate = allByType.find(p => p.getCreateDatetime.getTime == allByType.map(_.getCreateDatetime.getTime).foldLeft(Long.MinValue)((i, m) => m.max(i))).orNull //Диагностика последняя по дате создания
         if (diaByLastDate!=null){
           this.diagnoses += new DiagnosisContainer(diaByLastDate)
         }
@@ -550,23 +550,35 @@ class AppealEntry extends I18nable {
       eventIds.add(event.getId.intValue())
       val moveProps = mMovingProperties(eventIds, setATCodes, 1, true)
       if (moveProps!=null && moveProps.size>0) {
-        var res = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer"))==0}).getOrElse(null)
+        var res = moveProps.get(event.getId.intValue()).find(f => {
+          f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.orgStructTransfer")) == 0
+        }).orNull
         if (res==null) {
-          res = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirection"))==0}).getOrElse(null)
+          res = moveProps.get(event.getId.intValue()).find(f => {
+            f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirection")) == 0
+          }).orNull
         }
-        var labProp = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.RW"))==0}).getOrElse(null)
+        var labProp = moveProps.get(event.getId.intValue()).find(f => {
+          f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.RW")) == 0
+        }).orNull
         if (labProp != null) {
           this.laboratory = new LaboratoryPropertiesContainer(labProp._2.get(0).getValueAsString)
         }
-        val orgStructStay = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct"))==0}).getOrElse(null)
+        val orgStructStay = moveProps.get(event.getId.intValue()).find(f => {
+          f._1.getType.getCode.compareTo(i18n("db.apt.moving.codes.hospOrgStruct")) == 0
+        }).orNull
         if(orgStructStay != null) {
           this.orgStructStay = orgStructStay._2.get(0).getValueAsId.toInt
         }
-        val orgStructDirectedFrom = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirectedFrom"))==0}).getOrElse(null)
+        val orgStructDirectedFrom = moveProps.get(event.getId.intValue()).find(f => {
+          f._1.getType.getCode.compareTo(i18n("db.apt.received.codes.orgStructDirectedFrom")) == 0
+        }).orNull
         if(orgStructDirectedFrom != null) {
           this.orgStructDirectedFrom = orgStructDirectedFrom._2.get(0).getValueAsId.toInt
         }
-        val preHospitalDefects = moveProps.get(event.getId.intValue()).find(f => {f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.preHospitalDefects"))==0}).getOrElse(null)
+        val preHospitalDefects = moveProps.get(event.getId.intValue()).find(f => {
+          f._1.getType.getCode.compareTo(i18n("db.apt.documents.codes.preHospitalDefects")) == 0
+        }).orNull
         if (labProp != null) {
           this.preHospitalDefects = preHospitalDefects._2.get(0).asInstanceOf[String]
         }
@@ -763,7 +775,7 @@ class DiagnosisContainer {
    * Метод представляет контейнер в виде Map
    * @return Возвращает список свойств контейнера  как Map[String, Object]
    */
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     var map = new java.util.HashMap[String, Object]
     map.put("diagnosisKind", this.diagnosisKind)
     map.put("description", this.description)
@@ -820,7 +832,7 @@ class PhysicalParametersContainer {
    * Метод представляет контейнер в виде Map
    * @return Возвращает список свойств контейнера  как Map[String, Object]
    */
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     var map = new java.util.HashMap[String, Object]
     map.put("height", this.height.toString)
     map.put("weight", this.weight.toString)
@@ -888,7 +900,7 @@ class AppealAssignmentContainer {
    * Метод представляет контейнер в виде Map
    * @return Возвращает список свойств контейнера  как Map[String, Object]
    */
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     var map = new java.util.HashMap[String, Object]
     map.put("assignmentDate", this.assignmentDate)
     map.put("number", this.number)
@@ -937,7 +949,7 @@ class DoctorContainer {
    * Метод представляет контейнер в виде Map
    * @return Возвращает список свойств контейнера  как Map[String, Object]
    */
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     var map = new java.util.HashMap[String, Object]
     map.put("id", this.id.toString)
     map.put("name", this.name.toMap)
@@ -987,7 +999,7 @@ class MKBContainer {
    * Метод представляет контейнер в виде Map
    * @return Возвращает список свойств контейнера  как Map[String, Object]
    */
-  def toMap = {
+  def toMap: util.HashMap[String, Object] = {
     var map = new java.util.HashMap[String, Object]
     //map.put("id", this.id)
     map.put("code", this.code)

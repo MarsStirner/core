@@ -26,7 +26,7 @@ class AutoSaveStorageREST {
   @Produces(Array("application/javascript", "application/x-javascript"))
   def save(@Context servRequest: HttpServletRequest,
            @QueryParam("callback") callback: String,
-           data: AutoSaveInputDataContainer) = {
+           data: AutoSaveInputDataContainer): JSONWithPadding = {
     new JSONWithPadding(wsImpl.saveAutoSaveField(data.id, data.text, mkAuth(servRequest)), callback)
   }
 
@@ -34,7 +34,7 @@ class AutoSaveStorageREST {
   @Path("/{id}")
   @Produces(Array("application/javascript", "application/x-javascript", MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON))
   def load(@Context servRequest: HttpServletRequest,
-           @PathParam("id") id: String) = {
+           @PathParam("id") id: String): JSONWithPadding = {
     new JSONWithPadding(wsImpl.loadAutoSaveField(id, mkAuth(servRequest)))
   }
 

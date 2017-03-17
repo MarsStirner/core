@@ -25,7 +25,7 @@ class DbMkbBean
   var em: EntityManager = _
 
 
-  def getMkbById(id: Int) = {
+  def getMkbById(id: Int): Mkb = {
     val result = em.createQuery(MkbByIdQuery, classOf[Mkb])
       .setParameter("id", id)
       .getResultList
@@ -41,7 +41,7 @@ class DbMkbBean
     }
   }
 
-  def getMkbByCode(code: String) = {
+  def getMkbByCode(code: String): Mkb = {
     val result = em.createQuery(MkbByCodeQuery, classOf[Mkb])
       .setParameter("code", code)
       .getResultList

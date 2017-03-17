@@ -179,7 +179,7 @@ public class Action
 
     @Basic(optional = true)
     @Column(name = "pacientInQueueType")
-    private Short pacientInQueueType = 0;
+    private Short patientInQueueType = 0;
 
     @Basic(optional = true)
     @Column(name = "appointmentType")
@@ -546,12 +546,12 @@ public class Action
         this.hospitalUidFrom = hospitalUidFrom;
     }
 
-    public Short getPacientInQueueType() {
-        return pacientInQueueType == null ? 0 : pacientInQueueType;
+    public Short getPatientInQueueType() {
+        return patientInQueueType == null ? 0 : patientInQueueType;
     }
 
-    public void setPacientInQueueType(Short pacientInQueueType) {
-        this.pacientInQueueType = pacientInQueueType;
+    public void setPatientInQueueType(Short patientInQueueType) {
+        this.patientInQueueType = patientInQueueType;
     }
 
     public AppointmentType getAppointmentType() {

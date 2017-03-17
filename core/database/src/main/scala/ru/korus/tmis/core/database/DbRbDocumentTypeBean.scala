@@ -66,7 +66,7 @@ class DbRbDocumentTypeBean
                                         """
 
 
-  def getCountOfDocumentTypesWithFilter(filter: Object) = {
+  def getCountOfDocumentTypesWithFilter(filter: Object): Long = {
     var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
       filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
     }

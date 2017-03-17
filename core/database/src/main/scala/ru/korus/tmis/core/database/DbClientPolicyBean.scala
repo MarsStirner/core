@@ -1,15 +1,19 @@
 package ru.korus.tmis.core.database
 
 import common.DbOrganizationBeanLocal
-import java.lang.Iterable
+import java.lang.{Boolean, Iterable}
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.ejb.{EJB, Stateless}
 import java.util.Date
-import ru.korus.tmis.core.entity.model.{RbPolicyType, Staff, Patient, ClientPolicy}
+
+import ru.korus.tmis.core.entity.model.{ClientPolicy, Patient, RbPolicyType, Staff}
 import ru.korus.tmis.core.exception.NoSuchClientPolicyException
+
 import scala.collection.JavaConversions._
 import java.util
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
+
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
+
 import scala.language.reflectiveCalls
 
 @Stateless
@@ -106,7 +110,7 @@ class DbClientPolicyBean
   }
 
   def deleteClientPolicy(id: Int,
-                         sessionUser: Staff) = {
+                         sessionUser: Staff): Unit = {
     val p = getClientPolicyById(id)
     val now = new Date
     p.setDeleted(true)
@@ -114,7 +118,7 @@ class DbClientPolicyBean
     p.setModifyDatetime(now)
   }
 
-  def checkPolicyNumber(number: String, serial: String, typeId: Int) = {
+  def checkPolicyNumber(number: String, serial: String, typeId: Int): Boolean = {
     em.createQuery(ClientPolicyByNumberSerialAndTypeIdQuery, classOf[ClientPolicy])
       .setParameter("number", number)
       .setParameter("serial", serial)

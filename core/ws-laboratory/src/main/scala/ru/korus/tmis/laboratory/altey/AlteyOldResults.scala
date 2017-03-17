@@ -29,7 +29,7 @@ import ru.korus.tmis.laboratory.altey.business.AlteyBusinessBeanLocal
   portName = "tmis",
   name = "tmis")
 @HandlerChain(file = "tmis-ws-lab-logging-handlers.xml")
-class AlteyOldResults extends AlteyResultsService with Logging with I18nable {
+class AlteyOldResults extends AlteyResultsService with I18nable {
 
   @EJB
   var labBean: AlteyBusinessBeanLocal = _
@@ -37,7 +37,7 @@ class AlteyOldResults extends AlteyResultsService with Logging with I18nable {
   def setAnalysisResults(orderMisId: String,
                          referralIsFinished: Boolean,
                          results: JList[ru.korus.tmis.laboratory.altey.accept2.AnalysisResult],
-                         biomaterialDefects: JString) = {
+                         biomaterialDefects: JString): Int = {
     val intOrder: Int = catchy {
       orderMisId.toInt
     }.getOrElse {

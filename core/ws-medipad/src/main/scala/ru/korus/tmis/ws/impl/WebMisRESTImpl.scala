@@ -1,14 +1,15 @@
 package ru.korus.tmis.ws.impl
 
+import java.lang.Iterable
 import java.net.URI
 import java.util.Date
-import java.{util => ju}
-import javax.ejb.{TransactionAttribute, TransactionAttributeType, EJB, Stateless}
+import java.util
+import javax.ejb.{EJB, Stateless, TransactionAttribute, TransactionAttributeType}
 import javax.persistence.{EntityManager, PersistenceContext}
 import javax.servlet.http.Cookie
 
 import com.google.common.collect.Lists
-
+import grizzled.slf4j.Logging
 import org.codehaus.jackson.map.ObjectMapper
 import org.joda.time.DateTime
 import ru.korus.tmis.core.auth.{AuthData, AuthStorageBeanLocal, AuthToken}
@@ -230,7 +231,7 @@ with CAPids {
     )
   }
 
-  def getPatientById(id: Int, auth: AuthData) = {
+  def getPatientById(id: Int, auth: AuthData): PatientCardData = {
     if (auth != null) {
       val patient =  patientBean.getPatientById(id)
       val map = patientBean.getKLADRAddressMapForPatient(patient)
@@ -276,7 +277,7 @@ with CAPids {
     )
   }
 
-  def checkExistanceNumber(name: String, typeId: Int, number: String, serial: String) = {
+  def checkExistanceNumber(name: String, typeId: Int, number: String, serial: String): TrueFalseContainer = {
     if (name.compareTo("appealNumber") == 0) {
       new TrueFalseContainer(appealBean.checkAppealNumber(number))
     } else if (name.compareTo("SNILS") == 0) {
@@ -290,12 +291,12 @@ with CAPids {
 
   //Insert or modify appeal
   @TransactionAttribute(value = TransactionAttributeType.REQUIRES_NEW)
-  def insertAppealForPatient(appealData: AppealData, patientId: Int, auth: AuthData) = {
+  def insertAppealForPatient(appealData: AppealData, patientId: Int, auth: AuthData): AppealData = {
     val ide = appealBean.insertAppealForPatient(appealData, patientId, auth, dbStaff.getStaffById(auth.getUserId))
     constructAppealData(ide)
   }
 
-  def updateAppeal(appealData: AppealData, eventId: Int, auth: AuthData) = {
+  def updateAppeal(appealData: AppealData, eventId: Int, auth: AuthData): AppealData = {
     val ide = appealBean.updateAppeal(appealData, eventId, auth, dbStaff.getStaffById(auth.getUserId))
     constructAppealData(ide)
   }
@@ -341,7 +342,7 @@ with CAPids {
     }
   }
 
-  def getAppealById(id: Int, auth: AuthData) = {
+  def getAppealById(id: Int, auth: AuthData): AppealData = {
 
     val result = appealBean.getAppealById(id)
 
@@ -379,7 +380,7 @@ with CAPids {
     )
   }
 
-  def getAppealPrintFormById(id: Int, auth: AuthData) = {
+  def getAppealPrintFormById(id: Int, auth: AuthData): String = {
     val result = appealBean.getAppealById(id)
     val positionE = result.iterator.next()
     val positionA = positionE._2.iterator.next()
@@ -423,11 +424,11 @@ with CAPids {
   }
 
   def getAllAppealsByPatient(requestData: AppealSimplifiedRequestData, auth: AuthData): AppealSimplifiedDataList = {
-    val set = appealBean.getSupportedAppealTypeCodes //справочник госпитализаций requestData.filter.code = set.asInstanceOf[ju.Collection[String]]
+    val set = appealBean.getSupportedAppealTypeCodes //справочник госпитализаций requestData.filter.code = set.asInstanceOf[util.Collection[String]]
     appealBean.getAllAppealsByPatient(requestData, auth)
   }
 
-  def getAllAppealsForReceivedPatientByPeriod(requestData: ReceivedRequestData, authData: AuthData) = {
+  def getAllAppealsForReceivedPatientByPeriod(requestData: ReceivedRequestData, authData: AuthData): String = {
 
     /*var authData = auth;
     if (auth == null) {
@@ -485,13 +486,13 @@ with CAPids {
       d.setStatus(null)
       d.setVersion(null)
     })
-    val commonGroup = getDetails(data);
-    val commonGroupEmpty = getDetails(emptyDoc);
+    val commonGroup = getDetails(data)
+    val commonGroupEmpty = getDetails(emptyDoc)
     commonGroup.getAttribute.foreach(ca => {
       ca.setTypeId(commonGroupEmpty.getAttribute.find(_.getName == ca.getName).getOrElse(new CommonAttribute()).getTypeId)
     })
 
-    return data
+    data
   }
 
   def getDetails(data: JSONCommonData): CommonGroup = {
@@ -535,7 +536,7 @@ with CAPids {
         case Some(commonGroup) => {
           commonGroup.getAttribute.find(_.getName == paramName.toString) match {
             case Some(commonAttribute) => commonAttribute.properties.find(_.getName == ActionPropertyWrapperInfo.Value.toString) match {
-              case Some(propertyPair) => return propertyPair.getValue()
+              case Some(propertyPair) => return propertyPair.getValue
               case _ =>
             }
             case _ =>
@@ -627,7 +628,7 @@ with CAPids {
   }
 
   //запрос на структуру первичного мед. осмотра с копированием данных из предыдущего осмотра
-  def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int) = {
+  def getStructOfPrimaryMedExamWithCopy(actionTypeId: Int, authData: AuthData, eventId: Int): JSONCommonData = {
     val lastActionId = actionBean.getActionIdWithCopyByEventId(eventId, actionTypeId)
     try {
       primaryAssessmentBean.getPrimaryAssessmentById(lastActionId, "Document", postProcessing(), false) //postProcessingWithCopy _, true)
@@ -651,7 +652,7 @@ with CAPids {
       case e: Throwable => null
     }
     if (at != null) {
-      val aptList = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(at.getId);
+      val aptList = actionPropertyTypeBean.getActionPropertyTypesByActionTypeId(at.getId)
       // Последний дневниковый осмотр из всех историй болезни
       val IC = InfectionControl
       val lastAction = if (event == null) null else actionBean.getLastActionByActionTypesAndClientId(IC.documents.toList, event.getPatient.getId)
@@ -912,19 +913,19 @@ with CAPids {
           if (event == null) null else getPropertyCustom1(IC.documents, therapySet, event)
         else if (IC.allInfectPrefixes.exists(p => apt.getCode != null && (apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)))) {
           // или для полей инфекционного контроля
-          return getPropertyCustom2(IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, lastAction)
+          getPropertyCustom2(IC.allInfectPrefixes.find(p => apt.getCode.startsWith(p + IC.separator) || apt.getCode.equals(p)).get, lastAction)
         }
         else if (apt.getCode != null && apt.getCode.equals(IC.localInfectionChecker)) {
-          return getPropertyCustom4(lastAction)
+          getPropertyCustom4(lastAction)
         }
         else if (IC.EmpiricTherapyProperties.contains(apt.getCode)) {
-          return getPropertyCustom3("Empiric", lastAction)
+          getPropertyCustom3("Empiric", lastAction)
         }
         else if (IC.TelicTherapyProperties.contains(apt.getCode)) {
-          return getPropertyCustom3("Telic", lastAction)
+          getPropertyCustom3("Telic", lastAction)
         }
         else if (IC.ProphylaxisTherapyProperties.contains(apt.getCode)) {
-          return getPropertyCustom3("Prophylaxis", lastAction)
+          getPropertyCustom3("Prophylaxis", lastAction)
         }
         else
           null
@@ -933,7 +934,7 @@ with CAPids {
 
   }
 
-  def calculateActionPropertyValue(eventId: Int, actionTypeId: Int, actionPropertyId: Int) = {
+  def calculateActionPropertyValue(eventId: Int, actionTypeId: Int, actionPropertyId: Int): APValue = {
     val IC = InfectionControl
     val event: Event = dbEventBean.getEventById(eventId)
     calculateActionPropertyValue(
@@ -951,7 +952,7 @@ with CAPids {
   def initActionTypeIdByFlatCode(data: JSONCommonData) {
     data.getData.foreach(d => {
       if (d.getFlatCode != null && !d.getFlatCode.isEmpty) {
-        val at = actionTypeBean.getActionTypeByFlatCode(d.getFlatCode())
+        val at = actionTypeBean.getActionTypeByFlatCode(d.getFlatCode)
         if (d.getTypeId == null && at != null)
           d.setTypeId(at.getId)
       }
@@ -960,7 +961,7 @@ with CAPids {
   }
 
   //создание первичного мед. осмотра
-  def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI) = {
+  def insertPrimaryMedExamForPatient(eventId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI): JSONCommonData = {
 
     validateDocumentsAvailability(eventId)
 
@@ -984,7 +985,7 @@ with CAPids {
   }
 
   //редактирование первичного мед. осмотра
-  def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI) = {
+  def modifyPrimaryMedExamForPatient(actionId: Int, data: JSONCommonData, authData: AuthData, baseUri: URI): JSONCommonData = {
 
 
     validateDocumentsAvailability(actionBean.getActionById(actionId).getEvent.getId)
@@ -1030,7 +1031,7 @@ with CAPids {
   }
 
 
-  def getPrimaryAssessmentById(assessmentId: Int, authData: AuthData) = {
+  def getPrimaryAssessmentById(assessmentId: Int, authData: AuthData): JSONCommonData = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //val authData:AuthData = null
@@ -1050,7 +1051,7 @@ with CAPids {
     json_data
   }
 
-  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, auth: AuthData) = {
+  def getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData: PatientsListRequestData, auth: AuthData): String = {
     patientBean.getAllPatientsForDepartmentIdAndDoctorIdByPeriod(requestData, auth)
   }
 
@@ -1061,7 +1062,7 @@ with CAPids {
   }
 
   //Возвращает список осмотров по пациенту и обращению с фильтрацией по типу действия
-  def getListOfAssessmentsForPatientByEvent(requestData: AssessmentsListRequestData, auth: AuthData) = {
+  def getListOfAssessmentsForPatientByEvent(requestData: AssessmentsListRequestData, auth: AuthData): AssessmentsListData = {
     val action_list = actionBean.getActionsWithFilter(requestData.limit,
       requestData.page - 1,
       requestData.sortingFieldInternal,
@@ -1075,7 +1076,7 @@ with CAPids {
 
   //<= Hospital Bed =>
   //Данные об регистрации на койке
-  def getPatientToHospitalBedById(actionId: Int, authData: AuthData) = {
+  def getPatientToHospitalBedById(actionId: Int, authData: AuthData): String = {
 
     val action = actionBean.getActionById(actionId)
 
@@ -1087,7 +1088,7 @@ with CAPids {
     mapper.writeValueAsString(hospitalBedBean.getRegistryFormWithChamberList(action))
   }
 
-  def getMovingListForEvent(filter: HospitalBedDataListFilter, authData: AuthData) = {
+  def getMovingListForEvent(filter: HospitalBedDataListFilter, authData: AuthData): String = {
 
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MovesListView]))
@@ -1095,7 +1096,7 @@ with CAPids {
   }
 
   //Регистрирует пациента на койке
-  def registryPatientToHospitalBed(eventId: Int, data: HospitalBedData, authData: AuthData, staff: Staff) = {
+  def registryPatientToHospitalBed(eventId: Int, data: HospitalBedData, authData: AuthData, staff: Staff): String = {
     val action = hospitalBedBean.registryPatientToHospitalBed(eventId, data, authData, staff)
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationView]))
@@ -1103,7 +1104,7 @@ with CAPids {
   }
 
   //Редактирует регистрацию пациента на койке
-  def modifyPatientToHospitalBed(actionId: Int, data: HospitalBedData, authData: AuthData, staff: Staff) = {
+  def modifyPatientToHospitalBed(actionId: Int, data: HospitalBedData, authData: AuthData, staff: Staff): String = {
     val action = hospitalBedBean.modifyPatientToHospitalBed(actionId, data, authData, staff)
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.RegistrationView]))
@@ -1111,17 +1112,17 @@ with CAPids {
   }
 
   //Снятие пациента с койки
-  def callOffHospitalBedForPatient(actionId: Int, authData: AuthData) = {
+  def callOffHospitalBedForPatient(actionId: Int, authData: AuthData): Boolean = {
     hospitalBedBean.callOffHospitalBedForPatient(actionId, authData, dbStaff.getStaffById(authData.getUserId))
   }
 
   //Список коек
-  def getVacantHospitalBeds(departmentId: Int, authData: AuthData) = {
+  def getVacantHospitalBeds(departmentId: Int, authData: AuthData): BedDataListContainer = {
     new BedDataListContainer(hospitalBedBean.getCaseHospitalBedsByDepartmentId(departmentId), departmentId)
   }
 
   //Профиль койки по идентификатору
-  def getBedProfileById(profileId: Int, authData: AuthData) = {
+  def getBedProfileById(profileId: Int, authData: AuthData): HospitalBedProfileContainer = {
     hospitalBedProfileBean.getRbHospitalBedProfileById(profileId) match {
       case null =>
         throw new CoreException("В базе данных не найден профиль койки с идентификатором " + profileId);
@@ -1130,28 +1131,28 @@ with CAPids {
   }
 
   //Полный список профилей коек в системе
-  def getAllAvailableBedProfiles(authData: AuthData) = {
+  def getAllAvailableBedProfiles(authData: AuthData): HospitalBedProfilesListContainer = {
     new HospitalBedProfilesListContainer(hospitalBedProfileBean.getAllRbHospitalBedProfiles)
   }
 
-  def getAllAvailableBedProfiles = hospitalBedProfileBean.getAllRbHospitalBedProfiles
+  def getAllAvailableBedProfiles: Iterable[RbHospitalBedProfile] = hospitalBedProfileBean.getAllRbHospitalBedProfiles
 
   //форма 007
   def getForm007(departmentId: Int,
                  beginDate: Long,
                  endDate: Long,
                  profileBeds: java.util.List[Integer],
-                 authData: AuthData) = seventhFormBean.getForm007LinearView(departmentId, beginDate, endDate, profileBeds)
+                 authData: AuthData): FormOfAccountingMovementOfPatientsData = seventhFormBean.getForm007LinearView(departmentId, beginDate, endDate, profileBeds)
 
 
-  def movingPatientToDepartment(eventId: Int, data: HospitalBedData, authData: AuthData) = {
+  def movingPatientToDepartment(eventId: Int, data: HospitalBedData, authData: AuthData): String = {
     val action = hospitalBedBean.movingPatientToDepartment(eventId, data, authData, dbStaff.getStaffById(authData.getUserId))
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[HospitalBedViews.MoveView]))
     mapper.writeValueAsString(hospitalBedBean.getRegistryOriginalForm(action))
   }
 
-  def closeLastMovingOfAppeal(eventId: Int, authData: AuthData, date: Date) = {
+  def closeLastMovingOfAppeal(eventId: Int, authData: AuthData, date: Date): String = {
     val actionTypes = new java.util.HashSet[Integer]
     actionTypes.add(i18n("db.actionType.moving").toInt)
     val lastAction = actionBean.getLastActionByActionTypeIdAndEventId(eventId, actionTypes)
@@ -1168,7 +1169,7 @@ with CAPids {
     mapper.writeValueAsString(new ActionDataContainer(action))
   }
 
-  def getAllPersons(requestData: ListDataRequest) = {
+  def getAllPersons(requestData: ListDataRequest): AllPersonsListData = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     new AllPersonsListData(dbStaff.getAllPersonsByRequest(requestData.limit,
@@ -1179,7 +1180,7 @@ with CAPids {
       requestData)
   }
 
-  def getAllDepartments(requestData: ListDataRequest) = {
+  def getAllDepartments(requestData: ListDataRequest): AllDepartmentsListData = {
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbOrgStructureBean.getCountAllOrgStructuresWithFilter(requestData.filter))
     val list = new AllDepartmentsListData(dbOrgStructureBean.getAllOrgStructuresByRequest(requestData.limit,
@@ -1191,7 +1192,7 @@ with CAPids {
     list
   }
 
-  def getAllDepartmentsByHasBeds(hasBeds: String, hasPatients: String) = {
+  def getAllDepartmentsByHasBeds(hasBeds: String, hasPatients: String): AllDepartmentsListDataMP = {
     //Для медипада
     val flgBeds = hasBeds.toLowerCase.compareTo("true") == 0 || hasBeds.toLowerCase.compareTo("yes") == 0
     val flgPatients = hasPatients.toLowerCase.compareTo("true") == 0 || hasPatients.toLowerCase.compareTo("yes") == 0
@@ -1200,7 +1201,7 @@ with CAPids {
   }
 
 
-  def getListOfDiagnosticsForPatientByEvent(requestData: DiagnosticsListRequestData, authData: AuthData) = {
+  def getListOfDiagnosticsForPatientByEvent(requestData: DiagnosticsListRequestData, authData: AuthData): DiagnosticsListData = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     requestData.setRecordsCount(dbCustomQueryBean.getCountDiagnosticsWithFilter(requestData.filter))
@@ -1211,7 +1212,7 @@ with CAPids {
         requestData.sortingFieldInternal,
         requestData.filter.unwrap())
     }
-    val ajtList = new ju.LinkedList[(Action, JobTicket)]()
+    val ajtList = new util.LinkedList[(Action, JobTicket)]()
     if (actions != null && actions.size() > 0) {
       actions.foreach(a => {
         ajtList.add((a, dbJobTicketBean.getJobTicketForAction(a.getId.intValue())))
@@ -1221,11 +1222,11 @@ with CAPids {
     list
   }
 
-  def getInfoAboutDiagnosticsForPatientByEvent(actionId: Int, authData: AuthData) = {
+  def getInfoAboutDiagnosticsForPatientByEvent(actionId: Int, authData: AuthData): JSONCommonData = {
     directionBean.getDirectionById(actionId, "Diagnostic", null, dbStaff.getStaffById(authData.getUserId))
   }
 
-  def getFreePersons(requestData: ListDataRequest, beginDate: Long) = {
+  def getFreePersons(requestData: ListDataRequest, beginDate: Long): FreePersonsListData = {
 
     //<= Изменить запрос (ждем отклик)
     //requestData.setRecordsCount(dbStaff.getCountAllPersonsWithFilter(requestData.filter))
@@ -1244,7 +1245,7 @@ with CAPids {
     list
   }
 
-  def getListOfActionTypeIdNames(request: ListDataRequest, patientId: Int) = {
+  def getListOfActionTypeIdNames(request: ListDataRequest, patientId: Int): Object = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     val count = actionTypeBean.getCountAllActionTypeWithFilter(request.filter)
@@ -1322,7 +1323,7 @@ with CAPids {
     result
   }
 
-  def getListOfActionTypes(request: ListDataRequest) = {
+  def getListOfActionTypes(request: ListDataRequest): String = {
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[ActionTypesListDataViews.DefaultView])) //дерево
     // Данный параметр использовался в прошлой реализации, в текущей он не требуется
@@ -1331,7 +1332,7 @@ with CAPids {
   }
 
   //********* Диагнозтические исследования **********
-  def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+  def insertLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData): JSONCommonData = {
     val json = directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB",
       auth,
       dbStaff.getStaffById(auth.getUserId),
@@ -1346,36 +1347,36 @@ with CAPids {
     //primaryAssessmentBean.createAssessmentsForEventIdFromCommonData(eventId, data, "Diagnostic", null, auth,  postProcessingForDiagnosis _)// postProcessingForDiagnosis
   }
 
-  def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+  def modifyLaboratoryStudies(eventId: Int, data: CommonData, auth: AuthData): JSONCommonData = {
     directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "LAB",
       auth,  dbStaff.getStaffById(auth.getUserId), postProcessingForDiagnosis) // postProcessingForDiagnosis
   }
 
-  def insertInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+  def insertInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData): JSONCommonData = {
     directionBean.createDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG",
       auth,  dbStaff.getStaffById(auth.getUserId), postProcessingForDiagnosis) // postProcessingForDiagnosis
   }
 
-  def modifyInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData) = {
+  def modifyInstrumentalStudies(eventId: Int, data: CommonData, auth: AuthData): JSONCommonData = {
     directionBean.modifyDirectionsForEventIdFromCommonData(eventId, data, "Diagnostic", null, "DIAG",
       auth,   dbStaff.getStaffById(auth.getUserId), postProcessingForDiagnosis) // postProcessingForDiagnosis
   }
 
-  def insertConsultation(request: ConsultationRequestData, authData: AuthData) = {
+  def insertConsultation(request: ConsultationRequestData, authData: AuthData): JSONCommonData = {
     val actionId = directionBean.createConsultation(request, authData, dbStaff.getStaffById(authData.getUserId))
     val json = directionBean.getDirectionById(actionId, "Consultation", null, dbStaff.getStaffById(authData.getUserId))
     json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
     json
   }
 
-  def modifyConsultation(request: ConsultationRequestData, authData: AuthData) = {
+  def modifyConsultation(request: ConsultationRequestData, authData: AuthData): JSONCommonData = {
     val actionId = directionBean.createConsultation(request, authData,  dbStaff.getStaffById(authData.getUserId))
     val json = directionBean.getDirectionById(actionId, "Consultation", null, dbStaff.getStaffById(authData.getUserId))
     json.setRequestData(request) //по идее эта штука должна быть в конструкторе вызываемая в методе гет
     json
   }
 
-  def removeDirection(data: AssignmentsToRemoveDataList, directionType: String, auth: AuthData) = {
+  def removeDirection(data: AssignmentsToRemoveDataList, directionType: String, auth: AuthData): Boolean = {
     directionBean.removeDirections(data, directionType,   dbStaff.getStaffById(auth.getUserId))
   }
 
@@ -1393,7 +1394,7 @@ with CAPids {
     }
   }
 
-  def getPlannedTime(actionId: Int) = {
+  def getPlannedTime(actionId: Int): ScheduleContainer = {
     val a = actionBean.getActionById(actionId)
     val action19 = actionBean.getEvent29AndAction19ForAction(a)
     val apva = actionPropertyBean.getActionPropertyValue_ActionByValue(action19)
@@ -1414,7 +1415,7 @@ with CAPids {
 
   //*********  **********
 
-  def getFlatDirectories(request: FlatDirectoryRequestData) = {
+  def getFlatDirectories(request: FlatDirectoryRequestData): FlatDirectoryData = {
     val sorting = request.sortingFields.foldLeft(new java.util.LinkedHashMap[java.lang.Integer, java.lang.Integer])(
       (a, b) => {
         a.put(Integer.valueOf(b._1), Integer.valueOf(b._2))
@@ -1430,7 +1431,7 @@ with CAPids {
     new FlatDirectoryData(flatRecords, request)
   }
 
-  def getAllMkbs(request: ListDataRequest, auth: AuthData) = {
+  def getAllMkbs(request: ListDataRequest, auth: AuthData): String = {
     request.setRecordsCount(dbCustomQueryBean.getCountOfMkbsWithFilter(request.filter))
     val mkbs = dbCustomQueryBean.getAllMkbsWithFilter(request.page,
       request.limit,
@@ -1455,7 +1456,7 @@ with CAPids {
     mapper.writeValueAsString(new AllMKBListData(mkbs, mkbs_display, request))
   }
 
-  def getThesaurusList(request: ListDataRequest, auth: AuthData) = {
+  def getThesaurusList(request: ListDataRequest, auth: AuthData): ThesaurusListData = {
     request.setRecordsCount(dbCustomQueryBean.getCountOfThesaurusWithFilter(request.filter))
     val thesaurus = dbCustomQueryBean.getAllThesaurusWithFilter(request.page,
       request.limit,
@@ -1467,7 +1468,7 @@ with CAPids {
     new ThesaurusListData(thesaurus, request)
   }
 
-  def getDictionary(request: ListDataRequest, dictName: String, eventId: Integer, auth: AuthData) = {
+  def getDictionary(request: ListDataRequest, dictName: String, eventId: Integer, auth: AuthData): String = {
 
     val mapper: ObjectMapper = new ObjectMapper()
 
@@ -1632,7 +1633,7 @@ with CAPids {
     mapper.writeValueAsString(new DictionaryListData(list, request))
   }
 
-  def getQuotaTypes(request: ListDataRequest) = {
+  def getQuotaTypes(request: ListDataRequest): GroupTypesListData = {
     val quotaTypes = dbQuotaTypeBean.getAllQuotaTypesWithFilter(request.page - 1,
       request.limit,
       request.sortingFieldInternal,
@@ -1642,16 +1643,16 @@ with CAPids {
   }
 
   //Сервисы по назначениям
-  def insertAssignment(assignmentData: AssignmentData, eventId: Int, auth: AuthData) = {
+  def insertAssignment(assignmentData: AssignmentData, eventId: Int, auth: AuthData): AssignmentData = {
 
     val action = assignmentBean.insertAssignmentForPatient(assignmentData, eventId, auth,   dbStaff.getStaffById(auth.getUserId))
     assignmentBean.getAssignmentById(action.getId.intValue())
   }
 
-  def getAssignmentById(actionId: Int, auth: AuthData) = assignmentBean.getAssignmentById(actionId)
+  def getAssignmentById(actionId: Int, auth: AuthData): AssignmentData = assignmentBean.getAssignmentById(actionId)
 
 
-  def getEventTypes(request: ListDataRequest, staff: Staff) = {
+  def getEventTypes(request: ListDataRequest, staff: Staff): String = {
     val mapper: ObjectMapper = new ObjectMapper()
     mapper.setSerializationConfig(mapper.getSerializationConfig.withView(classOf[DictionaryDataViews.DefaultView]))
 
@@ -1665,25 +1666,25 @@ with CAPids {
     mapper.writeValueAsString(new EventTypesListData(list, request))
   }
 
-  def getContracts(eventTypeId: Int, eventTypeCode: String, showDeleted: Boolean, showExpired: Boolean) = {
-    val e = if (eventTypeCode != null && !eventTypeCode.isEmpty()) dbEventTypeBean.getEventTypeByCode(eventTypeCode) else dbEventTypeBean.getEventTypeById(eventTypeId)
+  def getContracts(eventTypeId: Int, eventTypeCode: String, showDeleted: Boolean, showExpired: Boolean): util.List[ContractContainer] = {
+    val e = if (eventTypeCode != null && !eventTypeCode.isEmpty) dbEventTypeBean.getEventTypeByCode(eventTypeCode) else dbEventTypeBean.getEventTypeById(eventTypeId)
     val result = dbContractBean.getContractsByEventTypeId(eventTypeId, e.getFinance.getId, showDeleted, showExpired)
     if (result == null)
-      new ju.ArrayList[ContractContainer]()
+      new util.ArrayList[ContractContainer]()
     else
       result.map(x => new ContractContainer(x)).asJava
   }
 
-  def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int) = {
+  def getPatientsFromOpenAppealsWhatHasBedsByDepartmentId(departmentId: Int): CommonData = {
     patientBean.getCurrentPatientsByDepartmentId(departmentId)
   }
 
-  def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData) = {
+  def getTakingOfBiomaterial(request: TakingOfBiomaterialRequesData, authData: AuthData): TakingOfBiomaterialData = {
 
     val res = dbJobTicketBean.getDirectionsWithJobTicketsBetweenDate(request, request.filter)
     //пересоберем мапу и сгруппируем по жобТикету
     var actions = new java.util.LinkedList[(Action, ActionTypeTissueType)]()
-    var map = new mutable.LinkedHashMap[JobTicket, ju.LinkedList[(Action, ActionTypeTissueType)]]
+    var map = new mutable.LinkedHashMap[JobTicket, util.LinkedList[(Action, ActionTypeTissueType)]]
     if (!res.isEmpty) {
       request.rewriteRecordsCount(res.size().toLong)
       var firstJobTicket = res.iterator.next()._3
@@ -1700,7 +1701,7 @@ with CAPids {
       //добавляем последний жобТикет, если
       // actions.size() > 0 --- остались акшен не добавленные в мапу.
       // map.size == 0 --- если нашли только один жоб тикет, так как мапа пустая и все акшены остались в actions
-      if (actions.size() > 0 || map.size == 0) map += (firstJobTicket -> actions)
+      if (actions.size() > 0 || map.isEmpty) map += (firstJobTicket -> actions)
     }
     new TakingOfBiomaterialData(map,
       hospitalBedBean.getLastMovingActionForEventId,
@@ -1713,11 +1714,11 @@ with CAPids {
     dbJobTicketBean getJobTicketById id
   }
 
-  def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData) = {
+  def updateJobTicketsStatuses(data: JobTicketStatusDataList, authData: AuthData): Boolean = {
     directionBean.updateJobTicketsStatuses(data, dbStaff.getStaffById(authData.getUserId))
   }
 
-  def sendActionsToLaboratory(data: SendActionsToLaboratoryDataList, authData: AuthData) = {
+  def sendActionsToLaboratory(data: SendActionsToLaboratoryDataList, authData: AuthData): Boolean = {
     directionBean.sendActionsToLaboratory(data, dbStaff.getStaffById(authData.getUserId))
   }
 
@@ -1727,24 +1728,24 @@ with CAPids {
     }
   }
 
-  def deletePatientInfo(id: Int) = patientBean.deletePatientInfo(id)
+  def deletePatientInfo(id: Int): Boolean = patientBean.deletePatientInfo(id)
 
-  def getDiagnosesByAppeal(appealId: Int, authData: AuthData) = diagnosisBean.getDiagnosesByAppeal(appealId)
+  def getDiagnosesByAppeal(appealId: Int, authData: AuthData): DiagnosesListData = diagnosisBean.getDiagnosesByAppeal(appealId)
 
-  def getBloodTypesHistory(patientId: Int, authData: AuthData) = patientBean.getBloodHistory(patientId)
+  def getBloodTypesHistory(patientId: Int, authData: AuthData): BloodHistoryListData = patientBean.getBloodHistory(patientId)
 
-  def insertBloodTypeForPatient(patientId: Int, data: BloodHistoryData, authData: AuthData) = {
+  def insertBloodTypeForPatient(patientId: Int, data: BloodHistoryData, authData: AuthData): BloodHistoryData = {
     patientBean.insertBloodTypeForPatient(patientId,
       data,
       dbStaff.getStaffById(authData.getUserId))
   }
 
-  def getMonitoringInfoByAppeal(eventId: Int, condition: Int, authData: AuthData) = {
+  def getMonitoringInfoByAppeal(eventId: Int, condition: Int, authData: AuthData): MonitoringInfoListData = {
     appealBean.getMonitoringInfo(eventId, condition, authData)
   }
 
 
-  def getInfectionMonitoring(eventId: Int, authData: AuthData) = {
+  def getInfectionMonitoring(eventId: Int, authData: AuthData): util.ArrayList[util.List[AnyRef]] = {
     val outList = new java.util.ArrayList[java.util.List[AnyRef]]()
     appealBean.getInfectionMonitoring(dbEventBean.getEventById(eventId).getPatient)
       .foreach(p => outList.add(List[AnyRef](p._1, ISODate(p._2), ISODate(p._3), p._4)))
@@ -1760,22 +1761,22 @@ with CAPids {
     resList
   }
 
-  def getInfectionDrugMonitoring(eventId: Int, authData: AuthData) = {
+  def getInfectionDrugMonitoring(eventId: Int, authData: AuthData): util.ArrayList[util.List[AnyRef]] = {
     val outList = new java.util.ArrayList[java.util.List[AnyRef]]()
     appealBean.getInfectionDrugMonitoring(dbEventBean.getEventById(eventId).getPatient)
       .foreach(p => outList.add(List[AnyRef](p._1, ISODate(p._2), ISODate(p._3), p._4, p._5).asJava))
     outList
   }
 
-  def getInfectionDrugMonitoringList(eventId: Int) = {
+  def getInfectionDrugMonitoringList(eventId: Int): util.List[InfectionDrugMonitoring] = {
     monitoringBeanLocal.getInfectionDrugMonitoring(dbEventBean.getEventById(eventId))
   }
 
-  def getSurgicalOperationsByAppeal(eventId: Int, authData: AuthData) = {
+  def getSurgicalOperationsByAppeal(eventId: Int, authData: AuthData): SurgicalOperationsListData = {
     appealBean.getSurgicalOperations(eventId, authData)
   }
 
-  def setExecPersonForAppeal(eventId: Int, personId: Int, authData: AuthData) = {
+  def setExecPersonForAppeal(eventId: Int, personId: Int, authData: AuthData): Boolean = {
     appealBean.setExecPersonForAppeal(eventId, personId, dbStaff.getStaffById(authData.getUserId), ExecPersonSetType.EP_SET_IN_LPU)
   }
 
@@ -1798,11 +1799,11 @@ with CAPids {
     i18n("build.jenkins.number").format()
   }
 
-  def getRbPrintTemplatesByIds(ids: ju.List[Integer], authData: AuthData): ju.List[RbPrintTemplate] = {
+  def getRbPrintTemplatesByIds(ids: util.List[Integer], authData: AuthData): util.List[RbPrintTemplate] = {
     dbRBPrintTemplateBan getRbPrintTemplateByIds ids.asScala.toArray.map(_.toInt)
   }
 
-  def getRbPrintTemplatesByContexts(contexts: ju.List[String], authData: AuthData, fields: Array[String], fRender: Integer): ju.List[RbPrintTemplate] = {
+  def getRbPrintTemplatesByContexts(contexts: util.List[String], authData: AuthData, fields: Array[String], fRender: Integer): util.List[RbPrintTemplate] = {
     var templates = dbRBPrintTemplateBan getRbPrintTemplatesByContexts contexts.asScala.toArray
 
     // Проводим фильтрацию по заданным значениям
@@ -1844,11 +1845,11 @@ with CAPids {
   //***************  AUTHDATA  *******************
   //__________________________________________________________________________________________________
 
-  def checkTokenCookies(cookies: Array[Cookie]) = {
+  def checkTokenCookies(cookies: Array[Cookie]): AuthData = {
     authStorage.checkTokenCookies(cookies)
   }
 
-  def getStorageAuthData(token: AuthToken) = {
+  def getStorageAuthData(token: AuthToken): AuthData = {
     authStorage.getAuthData(token)
   }
 
@@ -1857,12 +1858,12 @@ with CAPids {
     dbDiagnosticBean.deleteDiagnostic(actionId)
   }
 
-  def saveAutoSaveField(id: String, text: String, auth: AuthData) = {
+  def saveAutoSaveField(id: String, text: String, auth: AuthData): String = {
     dbAutoSaveStorageLocal.save(id, auth.getUserId, text)
     ""
   }
 
-  def loadAutoSaveField(id: String, auth: AuthData) = {
+  def loadAutoSaveField(id: String, auth: AuthData): AutoSaveOutputDataContainer = {
     dbAutoSaveStorageLocal.load(id, auth.getUserId)
   }
 
@@ -1875,12 +1876,12 @@ with CAPids {
     new DrugData(n, dbRlsBean.getRlsBalanceOfGood(n))
   }
 
-  override def getRlsByText(text: String): ju.List[DrugData] = {
-    val res = new ju.LinkedList[DrugData]();
+  override def getRlsByText(text: String): util.List[DrugData] = {
+    val res = new util.LinkedList[DrugData]()
     dbRlsBean.getRlsByText(text).foreach(n => {
       res.add(new DrugData(n, dbRlsBean.getRlsBalanceOfGood(n)))
     })
-    return res
+    res
   }
 
   def getLabs: java.util.List[RbLaboratory] = dbRbLaboratory.getAllLabs
@@ -1889,14 +1890,14 @@ with CAPids {
    * @param patientId Идентификатор пациента
    * @return Данные о терапии в пределах всех историй болезни
    */
-  def getTherapiesInfo(patientId: Int): ju.List[TherapyContainer] = {
+  def getTherapiesInfo(patientId: Int): util.List[TherapyContainer] = {
     //TODO переписать, возможно с изменением структуры БД
     val allTherapies = actionBean.getAllActionsOfPatientThatHasActionProperty(patientId, "therapyTitle")
     if(allTherapies.isEmpty){
-      return new  ju.ArrayList[TherapyContainer](0);
+      return new  util.ArrayList[TherapyContainer](0)
     }
 
-    val actions = new  ju.ArrayList[Action](1)
+    val actions = new  util.ArrayList[Action](1)
     actions.add(allTherapies.get(0))
     // TODO
     val l = actions.flatMap(a => {
@@ -2067,7 +2068,7 @@ with CAPids {
    * @param patientId Идентификатор пациента
    * @return Данные о терапии в пределах всех историй болезни
    */
-  def getAllTherapiesInfo(patientId: Int): ju.List[TherapyContainer] = {
+  def getAllTherapiesInfo(patientId: Int): util.List[TherapyContainer] = {
     //TODO переписать, возможно с изменением структуры БД
     val actions = actionBean.getAllActionsOfPatientThatHasActionProperty(patientId, "therapyTitle")
     val l = actions.flatMap(a => {

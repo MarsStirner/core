@@ -48,7 +48,7 @@ class MISMessageReceiver extends MessageListener {
   @Resource(lookup = "QueueConnectionFactory")
   var qcf: QueueConnectionFactory = _
 
-  override def onMessage(message: Message) = {
+  override def onMessage(message: Message): Unit = {
     // Creating response
     val c = qcf.createQueueConnection()
     val s = c.createQueueSession(false, Session.AUTO_ACKNOWLEDGE)

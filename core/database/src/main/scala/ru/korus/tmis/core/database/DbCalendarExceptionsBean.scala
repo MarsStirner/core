@@ -24,7 +24,7 @@ class DbCalendarExceptionsBean extends DbCalendarExceptionsBeanLocal
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getCalendarExceptionById (id: Int) = {
+  def getCalendarExceptionById (id: Int): CalendarExceptions = {
     val result =  em.createQuery(CalendarExceptionByIdQuery, classOf[CalendarExceptions])
       .setParameter("id", id)
       .getResultList
@@ -42,7 +42,7 @@ class DbCalendarExceptionsBean extends DbCalendarExceptionsBeanLocal
     }
   }
 
-  def getHolideyByDate (datef: Date) = {
+  def getHolideyByDate (datef: Date): CalendarExceptions = {
     val date = Calendar.getInstance()
     date.setTime(datef)
     val year = date.get(Calendar.YEAR)
@@ -60,7 +60,7 @@ class DbCalendarExceptionsBean extends DbCalendarExceptionsBeanLocal
     }
   }
 
-  def getPerenosByDate (datef: Date) = {
+  def getPerenosByDate (datef: Date): CalendarExceptions = {
     val formatter1 = new SimpleDateFormat("yyyy-MM-dd")
     val date = formatter1.parse(formatter1.format(datef))
 

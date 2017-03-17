@@ -1,9 +1,8 @@
 package ru.korus.tmis.core.database
 
+import java.util
+
 import ru.korus.tmis.core.entity.model.{Mkb, Thesaurus}
-
-
-
 import javax.ejb.Stateless
 import javax.interceptor.Interceptors
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -12,7 +11,7 @@ import scala.collection.JavaConversions._
 import scala.collection.mutable.HashMap
 import scala.collection.mutable.Map
 import scala.collection.mutable.Set
-import ru.korus.tmis.core.entity.model.{Thesaurus, Mkb}
+import ru.korus.tmis.core.entity.model.{Mkb, Thesaurus}
 
 
 @Stateless
@@ -23,13 +22,13 @@ class DbThesaurusBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getMkb = {
+  def getMkb: util.List[Mkb] = {
     em.createNamedQuery("Mkb.findAll",
       classOf[Mkb])
       .getResultList
   }
 
-  def getThesaurus = {
+  def getThesaurus: util.List[Thesaurus] = {
     em.createNamedQuery("Thesaurus.findAll",
       classOf[Thesaurus])
       .getResultList

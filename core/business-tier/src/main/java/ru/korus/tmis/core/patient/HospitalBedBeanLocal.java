@@ -99,7 +99,7 @@ public interface HospitalBedBeanLocal {
      * @return
      * @throws CoreException
      */
-    boolean callOffHospitalBedForPatient(int actionId, AuthData authData, Staff staff) throws CoreException;
+    Boolean callOffHospitalBedForPatient(int actionId, AuthData authData, Staff staff) throws CoreException;
 
     /**
      * Запрос на последнее по ивенту действие типа Движение

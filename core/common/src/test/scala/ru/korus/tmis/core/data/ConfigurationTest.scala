@@ -23,7 +23,7 @@ class ConfigurationTest {
     }
   }
 
-  def manifestOf[M](v: M)(implicit man: Manifest[M]) = man
+  def manifestOf[M](v: M)(implicit man: Manifest[M]): Manifest[M] = man
 
   def id[A](v: A): A = v
 

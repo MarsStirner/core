@@ -40,20 +40,20 @@ class IdNameContainerMP {
   var name : String = _
 
   @XmlAttribute(name = "id")
-  def getId() = {
+  def getId(): Int = {
     id
   }
 
-  def setId(id: Int) = {
+  def setId(id: Int): Unit = {
     this.id = id
   }
 
   @XmlAttribute(name = "name")
-  def getName() = {
+  def getName(): String = {
     name
   }
 
-  def setName(name: String) = {
+  def setName(name: String): Unit = {
     this.name = name
   }
 

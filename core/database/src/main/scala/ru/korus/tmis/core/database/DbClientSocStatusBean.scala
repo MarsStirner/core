@@ -127,7 +127,7 @@ class DbClientSocStatusBean
     cs
   }
 
-  def deleteClientSocStatus(id: Int, sessionUser: Staff) = {
+  def deleteClientSocStatus(id: Int, sessionUser: Staff): Unit = {
     val c = getClientSocStatusById(id)
     val now = new Date
     c.setDeleted(true)

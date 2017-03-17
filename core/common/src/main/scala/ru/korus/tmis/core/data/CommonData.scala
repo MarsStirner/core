@@ -34,7 +34,7 @@ class CommonData {
     this.version = version
   }
 
-  def add(that: CommonEntity) = {
+  def add(that: CommonEntity): CommonData = {
     entity.add(that)
     this
   }
@@ -130,7 +130,7 @@ class CommonEntity {
     this.context = context
   }
 
-  def add(that: CommonGroup) = {
+  def add(that: CommonGroup): CommonEntity = {
     group.add(that)
     this
   }

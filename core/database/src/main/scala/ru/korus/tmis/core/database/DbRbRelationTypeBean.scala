@@ -48,7 +48,7 @@ class DbRbRelationTypeBean
                                     """
 
 
-  def getCountOfRelationsWithFilter(filter: Object) = {
+  def getCountOfRelationsWithFilter(filter: Object): Long = {
     var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
       filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
     }

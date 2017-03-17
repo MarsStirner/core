@@ -1,10 +1,12 @@
 package ru.korus.tmis.core.patient
 
+import java.lang.Boolean
+import java.util
 import java.util.Date
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
 
-
+import grizzled.slf4j.Logging
 import org.apache.commons.lang.ObjectUtils
 import ru.korus.tmis.core.data.DiagnosesListData
 import ru.korus.tmis.core.database.common.DbEventBeanLocal
@@ -15,13 +17,14 @@ import ru.korus.tmis.scala.util.I18nable
 import scala.collection.JavaConversions._
 
 /**
- * Методы для работы с диагнозами
- * @author idmitriev Systema-Soft
- */
+  * Методы для работы с диагнозами
+  *
+  * @author idmitriev Systema-Soft
+  */
 @Stateless
 class DiagnosisBean extends DiagnosisBeanLocal
-with Logging
-with I18nable {
+  with Logging
+  with I18nable {
 
   private val ID_CREATE = 0
   private val ID_MODIFY = 1
@@ -42,10 +45,11 @@ with I18nable {
   var dbDiagnosisBean: DbDiagnosisBeanLocal = _
 
   /**
-   * Получить диагностику по ее идентифкатору
-   * @param id  идентифкатор диагностики
-   * @return сущность \ null если не найдено
-   */
+    * Получить диагностику по ее идентифкатору
+    *
+    * @param id идентифкатор диагностики
+    * @return сущность \ null если не найдено
+    */
   override def getDiagnostic(id: Int): Diagnostic = {
     if (id > 0) em.find(classOf[Diagnostic], id) else null
   }
@@ -59,7 +63,7 @@ with I18nable {
                       description: String,
                       mkbId: Int,
                       diseaseStageId: Int,
-                      userData: Staff) = {
+                      userData: Staff): (Diagnostic, Diagnosis) = {
     logger.info("Insert diagnosis :: %d, %s, %s, %d, %s, %d, %d".format(eventId, action, diaTypeFlatCode, diseaseCharacterId, description, mkbId, diseaseStageId))
     val event = dbEventBean.getEventById(eventId)
     val patient = event.getPatient
@@ -98,7 +102,7 @@ with I18nable {
         ID_MODIFY
       }
     option match {
-      case ID_CREATE => {
+      case ID_CREATE =>
         this.deleteDiagnosis(eventId, diaTypeFlatCode)
         diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(0,
           patient.getId.intValue(),
@@ -118,8 +122,7 @@ with I18nable {
             userData,
             true)
         }
-      }
-      case ID_MODIFY => {
+      case ID_MODIFY =>
         diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(oldDiagnostic.getDiagnosis.getId,
           patient.getId.intValue(),
           diaTypeFlatCode,
@@ -136,8 +139,7 @@ with I18nable {
           description,
           userData,
           isNewDiag)
-      }
-      case ID_MODIFY_WITH_CREATE_DIAGNOSIS => {
+      case ID_MODIFY_WITH_CREATE_DIAGNOSIS =>
         diagnosis = dbDiagnosisBean.insertOrUpdateDiagnosis(0,
           patient.getId.intValue(),
           diaTypeFlatCode,
@@ -154,13 +156,12 @@ with I18nable {
           description,
           userData,
           isNewDiag)
-      }
-      case _ => {}
+      case _ =>
     }
     (diagnostic, diagnosis)
   }
 
-  def insertDiagnoses(eventId: Int, action: Action, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: Staff) = {
+  def insertDiagnoses(eventId: Int, action: Action, mkbs: java.util.Map[String, java.util.Set[AnyRef]], userData: Staff): util.List[AnyRef] = {
 
     var entities = List.empty[AnyRef]
     mkbs.foreach(f => {
@@ -191,7 +192,7 @@ with I18nable {
   }
 
   //Спецификация: https://docs.google.com/spreadsheet/ccc?key=0Amfvj7P4xELWdFRJRnR1LVhTdG5BSFZKRnZnNWNlNHc#gid=1
-  def getDiagnosesByAppeal(eventId: Int) = {
+  def getDiagnosesByAppeal(eventId: Int): DiagnosesListData = {
     val diagnostics = dbDiagnosticBean.getDiagnosticsByEventId(eventId)
     if (diagnostics != null && diagnostics.size() > 0) {
       //(Возможно понадобится)
@@ -223,7 +224,7 @@ with I18nable {
   }
 
   def deleteDiagnosis(eventId: Int,
-                      diaTypeFlatCode: String) = {
+                      diaTypeFlatCode: String): Boolean = {
     val lastDiag = dbDiagnosticBean.getLastDiagnosticByEventIdAndType(eventId, diaTypeFlatCode)
     if (lastDiag != null) {
       lastDiag.setDeleted(true)
@@ -238,14 +239,15 @@ with I18nable {
   }
 
   /**
-   * Запись нового диагноза
-   * @param staff Пользователь, создающий диагноз
-   * @param client Пациент, которому ставиться новый диагноз
-   * @param diagnosisType Тип диагноза
-   * @param character Характер заболевания
-   * @param mkb Запись из справочника МКБ
-   * @return созданный диагноз  (after persist)
-   */
+    * Запись нового диагноза
+    *
+    * @param staff         Пользователь, создающий диагноз
+    * @param client        Пациент, которому ставиться новый диагноз
+    * @param diagnosisType Тип диагноза
+    * @param character     Характер заболевания
+    * @param mkb           Запись из справочника МКБ
+    * @return созданный диагноз  (after persist)
+    */
   override def insertDiagnosis(staff: Staff, client: Patient, diagnosisType: RbDiagnosisType, character: RbDiseaseCharacter, mkb: Mkb): Diagnosis = {
     val result: Diagnosis = new Diagnosis
     val now: Date = new Date
@@ -308,16 +310,17 @@ with I18nable {
   }
 
   /**
-   * Запись новой дианостики
-   * @param staff Пользователь, создающий дианостику
-   * @param event Обращение, в рамках которого создается диагностика
-   * @param action Действие, в рамках которого создается диагностика
-   * @param diagnosis Диагноз на который должна ссылаться диагностика
-   * @param diagnosisType Тип диагноза
-   * @param character Характер заболевания
-   * @param description Описание диагностики
-   * @return созданный диагностика (after persist)
-   */
+    * Запись новой дианостики
+    *
+    * @param staff         Пользователь, создающий дианостику
+    * @param event         Обращение, в рамках которого создается диагностика
+    * @param action        Действие, в рамках которого создается диагностика
+    * @param diagnosis     Диагноз на который должна ссылаться диагностика
+    * @param diagnosisType Тип диагноза
+    * @param character     Характер заболевания
+    * @param description   Описание диагностики
+    * @return созданный диагностика (after persist)
+    */
   override def insertDiagnostic(staff: Staff, event: Event, action: Action, diagnosis: Diagnosis, diagnosisType: RbDiagnosisType, character: RbDiseaseCharacter, description: String): Diagnostic = {
     val now: Date = new Date
     val result: Diagnostic = new Diagnostic
@@ -379,7 +382,7 @@ with I18nable {
       if (!ObjectUtils.equals(oldVersion.getPerson, staff)) {
         changed = true
         oldVersion.setPerson(staff)
-        oldVersion.setSpeciality(if (staff != null ) staff.getSpeciality else null)
+        oldVersion.setSpeciality(if (staff != null) staff.getSpeciality else null)
       }
       if (!ObjectUtils.equals(oldVersion.getCharacter, character)) {
         changed = true
@@ -405,16 +408,16 @@ with I18nable {
   }
 
   override def deleteDiagnosis(event: Event, diagnosticId: Int): Diagnostic = {
-     val diagnostic = if(diagnosticId > 0) em.find(classOf[Diagnostic], diagnosticId) else null
-    if(diagnostic == null) {
+    val diagnostic = if (diagnosticId > 0) em.find(classOf[Diagnostic], diagnosticId) else null
+    if (diagnostic == null) {
       null
     } else {
-      if(event == null || event.equals(diagnostic.getEvent) || !diagnostic.isDeleted){
+      if (event == null || event.equals(diagnostic.getEvent) || !diagnostic.isDeleted) {
         // небольшая проверка на то что удаляемая диагностика относится к нашему обращению или обращение не задано, или у диагностики уже стоит флаг удаления
         diagnostic.setDeleted(true)
         em.merge(diagnostic)
         val diagnosis = diagnostic.getDiagnosis
-        if(!diagnosis.getDeleted) {
+        if (!diagnosis.getDeleted) {
           diagnosis.setDeleted(true)
           em.merge(diagnosis)
         }

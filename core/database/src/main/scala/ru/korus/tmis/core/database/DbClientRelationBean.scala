@@ -225,7 +225,7 @@ class DbClientRelationBean
   }
 
   def deleteClientRelation(id: Int,
-                           sessionUser: Staff) = {
+                           sessionUser: Staff): Unit = {
     val d = getClientRelationById(id)
     val now = new Date
     d.setDeleted(true)

@@ -158,7 +158,7 @@ with CAPids {
     }
   }
 
-  def modifyJobTicketStatus(id: Int, status: Int) = {
+  def modifyJobTicketStatus(id: Int, status: Int): Boolean = {
     if (id > 0) {
       val jobTicket = this.getJobTicketById(id)
       jobTicket.setStatus(status)
@@ -167,7 +167,7 @@ with CAPids {
     true
   }
 
-  def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date, departmentId: Int, urgent: Boolean) = {
+  def getJobTicketAndTakenTissueForAction(eventId: Int, atId: Int, datef: Date, departmentId: Int, urgent: Boolean): (JobTicket, TakenTissue) = {
     val formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm")
     val strDate = formatter.format(datef)
     val date = formatter.parse(strDate)
@@ -203,7 +203,7 @@ with CAPids {
     }
   }
 
-  def getActionTypeTissueTypeForActionType(actionTypeId: Int) = {
+  def getActionTypeTissueTypeForActionType(actionTypeId: Int): ActionTypeTissueType = {
     val query = em.createQuery(ActionTypeTissueTypeByActionTypeIdQuery, classOf[ActionTypeTissueType])
       .setParameter(":actionTypeId", actionTypeId)
 
@@ -230,7 +230,7 @@ with CAPids {
         attp.actionType.id = :actionTypeId
     """
 
-  def getJobTicketForAction(actionId: Int) = {
+  def getJobTicketForAction(actionId: Int): JobTicket = {
     val query = em.createQuery(JobTicketForActionQuery, classOf[JobTicket])
       .setParameter("actionId", actionId)
 
@@ -248,7 +248,7 @@ with CAPids {
     }
   }
 
-  def getActionsForJobTicket(jobTicketId: Int) = {
+  def getActionsForJobTicket(jobTicketId: Int): util.List[Action] = {
     val query = em.createQuery(ActionsForJobTicketQuery, classOf[Action])
       .setParameter("jobTicketId", jobTicketId)
 
@@ -269,7 +269,7 @@ with CAPids {
     }
   }
 
-  def getLaboratoryCodeForActionId(actionId: Int) = {
+  def getLaboratoryCodeForActionId(actionId: Int): String = {
     val query = em.createQuery(LaboratoryCodeByActionIdQuery, classOf[String])
       .setParameter("actionId", actionId)
 

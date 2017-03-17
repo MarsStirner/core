@@ -20,7 +20,7 @@ class DbVersionBean
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
 
-  def getGlobalVersion = {
+  def getGlobalVersion: String = {
     em
       .createNamedQuery("DbVersions.findAll", classOf[DbVersions])
       .getResultList

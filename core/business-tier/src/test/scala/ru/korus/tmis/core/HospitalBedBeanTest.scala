@@ -1,5 +1,7 @@
 package ru.korus.tmis.core
 
+import java.util
+
 import database.common._
 import entity.model._
 import exception.CoreException
@@ -11,15 +13,18 @@ import org.mockito.Mockito._
 import ru.korus.tmis.core.common.CommonDataProcessorBeanLocal
 import ru.korus.tmis.core.database._
 import ru.korus.tmis.core.patient.HospitalBedBean
-import org.slf4j.{LoggerFactory, Logger}
-import org.junit.{Assert, Test, Before}
-import data.{HospitalBedDataListFilter, HospitalBedData}
+import org.slf4j.{Logger, LoggerFactory}
+import org.junit.{Assert, Before, Test}
+import data.{HospitalBedData, HospitalBedDataListFilter}
 import ru.korus.tmis.test.data.{TestDataEntity, TestDataEntityImpl}
 import org.codehaus.jackson.map.ObjectMapper
+
 import scala.collection.JavaConversions._
 import java.util.Date
 import javax.persistence.EntityManager
+
 import ru.korus.tmis.scala.util.ConfigManager
+
 import scala.language.reflectiveCalls
 
 /**
@@ -50,7 +55,7 @@ class HospitalBedBeanTest {
   final val logger: Logger = LoggerFactory.getLogger(classOf[HospitalBedBeanTest])
 
   private class IndexOf[T] (seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
+    def unapply(pos: T): Option[Int] = seq find (pos == _) map (seq indexOf _)
   }
 
   private val list = List(ConfigManager.RbCAPIds("db.rbCAP.moving.id.movedFrom").toInt,
@@ -84,7 +89,7 @@ class HospitalBedBeanTest {
   final val TorgStructReceived = 3
   final val ThospOrgStruct = 4
 
-  final val codes_all = setAsJavaSet(Set[String](ConfigManager.Messages("db.apt.received.codes.orgStructDirection").toString,
+  final val codes_all: util.Set[String] = setAsJavaSet(Set[String](ConfigManager.Messages("db.apt.received.codes.orgStructDirection").toString,
                                               ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer").toString,
                                               ConfigManager.Messages("db.apt.moving.codes.timeArrival").toString,
                                               ConfigManager.Messages("db.apt.moving.codes.patronage").toString,
@@ -92,12 +97,12 @@ class HospitalBedBeanTest {
                                               ConfigManager.Messages("db.apt.moving.codes.orgStructReceived").toString,
                                               ConfigManager.Messages("db.apt.moving.codes.hospOrgStruct").toString))
 
-  val codes_move = setAsJavaSet(Set[String]( ConfigManager.Messages("db.apt.moving.codes.hospitalBed"),
+  val codes_move: util.Set[String] = setAsJavaSet(Set[String]( ConfigManager.Messages("db.apt.moving.codes.hospitalBed"),
                                           ConfigManager.Messages("db.apt.moving.codes.orgStructTransfer"),
                                           ConfigManager.Messages("db.apt.moving.codes.timeArrival"),
                                           ConfigManager.Messages("db.apt.moving.codes.timeLeaved")))
 
-  val codes_receive = setAsJavaSet(Set(ConfigManager.Messages("db.apt.received.codes.orgStructDirection")))
+  val codes_receive: util.Set[String] = setAsJavaSet(Set(ConfigManager.Messages("db.apt.received.codes.orgStructDirection")))
 
   @Before
   def init() {
@@ -133,9 +138,8 @@ class HospitalBedBeanTest {
       logger.warn("Successful end of verificationData test")
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.error("verificationData test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
-      }
     }
   }
 
@@ -183,11 +187,10 @@ class HospitalBedBeanTest {
       logger.info("The method has been successfully completed. Result is: {}", mapper.writeValueAsString(result))
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.info("verificationData test completed with named error: {}", ex.getMessage + " " + ex.getStackTrace)
         if(ex.getMessage.compareTo(error.getMessage)!=0)
           Assert.fail("Not under test error")
-      }
     }
   }
 
@@ -251,10 +254,9 @@ class HospitalBedBeanTest {
       logger.warn("Successful end of registryPatientToHospitalBed test")
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.error("registryPatientToHospitalBed test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
         Assert.fail()
-      }
     }
   }
 
@@ -304,10 +306,9 @@ class HospitalBedBeanTest {
       logger.warn("Successful end of getCaseHospitalBedsByDepartmentId test")
     }
     catch {
-      case ex: CoreException => {
+      case ex: CoreException =>
         logger.error("getCaseHospitalBedsByDepartmentId test failed with error: {}", ex.getMessage + " " + ex.getStackTrace)
         Assert.fail()
-      }
     }
   }
 

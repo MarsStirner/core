@@ -4,12 +4,13 @@ import java.util.{List => JList}
 
 import ru.korus.tmis.laboratory.altey.{ws => lab}
 
-
 import scala.collection.JavaConversions._
 import ru.korus.tmis.scala.util.Defaultible
 import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.laboratory.altey.ws.OrderInfo
 import ru.korus.tmis.scala.util.Defaultible
+
 import scala.language.implicitConversions
 
 sealed case class OrderInfo(

@@ -6,27 +6,27 @@ import java.io.{IOException, BufferedReader, InputStreamReader}
 
 class TestRESTClientImpl extends TestRESTClient{
 
-  def makeTestRESTData = {
+  def makeTestRESTData: String = {
 
     //TODO: Тестовая реализация
     try {
-      val url = new URL("http://localhost:8080/tmis-ws-medipad/rest/tms-registry/dir/departments");
+      val url = new URL("http://localhost:8080/tmis-ws-medipad/rest/tms-registry/dir/departments")
       val conn: HttpURLConnection = url.openConnection().asInstanceOf[HttpURLConnection]
       conn.setRequestMethod("GET")
       conn.setRequestProperty("Accept", "application/json")
 
-      if (conn.getResponseCode() != 200) {
-        throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode());
+      if (conn.getResponseCode != 200) {
+        throw new RuntimeException("Failed : HTTP error code : " + conn.getResponseCode)
       }
 
-      val br = new BufferedReader(new InputStreamReader((conn.getInputStream())))
+      val br = new BufferedReader(new InputStreamReader((conn.getInputStream)))
 
       var output: String = br.readLine()
       var line: String = ""
       /*while ((line = br.readLine()) != null) {
         output = output + line;
       } */
-      conn.disconnect();
+      conn.disconnect()
       output
     } catch {
       case e: MalformedURLException => {throw e}

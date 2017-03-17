@@ -53,34 +53,34 @@ object AppealWrapperInfo extends Configuration { awi =>
   val ApTypedMKBContainer = StringId("MKBContainer")
 
   // Typed internal Ids
-  def TypedId = (Id, Types.Integer, ApTypedInt)
-  def TypedNumber = (Number, Types.String, ApTypedString)
-  def TypedAmbulanceNumber = (AmbulanceNumber, Types.String, ApTypedString)
-  def TypedAppealType = (AppealTypeId, Types.Object, ApTypedIdNameContainer)
-  def TypedUrgent = (Urgent, Types.Boolean, ApTypedBoolean)
-  def TypedDate = (AppealDateTime, Types.Object, ApTypedDatePeriodContainer)
-  def TypedPatient = (Patient, Types.Object, ApTypedIdValueContainer)
-  def TypedExecutorLastName = (ExecutorLastName, Types.String, ApTypedString)
-  def TypedExecutorFirstName = (ExecutorFirstName, Types.String, ApTypedString)
-  def TypedExecutorMiddleName = (ExecutorMiddleName, Types.String, ApTypedString)
-  def TypedExecutorSpecs = (ExecutorSpecs, Types.String, ApTypedString)
+  def TypedId: (StringId, String, StringId) = (Id, Types.Integer, ApTypedInt)
+  def TypedNumber: (StringId, String, StringId) = (Number, Types.String, ApTypedString)
+  def TypedAmbulanceNumber: (StringId, String, StringId) = (AmbulanceNumber, Types.String, ApTypedString)
+  def TypedAppealType: (StringId, String, StringId) = (AppealTypeId, Types.Object, ApTypedIdNameContainer)
+  def TypedUrgent: (StringId, String, StringId) = (Urgent, Types.Boolean, ApTypedBoolean)
+  def TypedDate: (StringId, String, StringId) = (AppealDateTime, Types.Object, ApTypedDatePeriodContainer)
+  def TypedPatient: (StringId, String, StringId) = (Patient, Types.Object, ApTypedIdValueContainer)
+  def TypedExecutorLastName: (StringId, String, StringId) = (ExecutorLastName, Types.String, ApTypedString)
+  def TypedExecutorFirstName: (StringId, String, StringId) = (ExecutorFirstName, Types.String, ApTypedString)
+  def TypedExecutorMiddleName: (StringId, String, StringId) = (ExecutorMiddleName, Types.String, ApTypedString)
+  def TypedExecutorSpecs: (StringId, String, StringId) = (ExecutorSpecs, Types.String, ApTypedString)
 
-  def TypedAgreedType = (AgreedType, Types.Object, ApTypedIdNameContainer)
-  def TypedAssignment = (Assignment, Types.Object, ApTypedAppealAssignmentContainer)
-  def TypedHospitalizationType = (HospitalizationType, Types.Object, ApTypedIdNameContainer)
-  def TypedHospitalizationPointType = (HospitalizationPointType, Types.Object, ApTypedIdNameContainer)
-  def TypedHospitalizationChannelType = (HospitalizationChannelType, Types.Object, ApTypedIdNameContainer)
-  def TypedDeliveredType = (DeliveredType, Types.Object, ApTypedIdNameContainer)
-  def TypedDeliveredAfterType = (DeliveredAfterType, Types.Object, ApTypedIdNameContainer)
-  def TypedStateType = (StateType, Types.Object, ApTypedIdNameContainer)
-  def TypedDrugsType = (DrugsType, Types.Object, ApTypedIdNameContainer)
-  def TypedPhysicalParameters = (PhysicalParameters, Types.Object, ApTypedPhysicalParameterContainer)
-  def TypedBranchType = (BranchType, Types.Object, ApTypedIdNameContainer)
-  def TypedPlaceType = (PlaceType, Types.Object, ApTypedIdNameContainer)
-  def TypedDiagnoses = (Diagnoses, Types.Object, ApTypedDiagnosisContainer)
-  def TypedAgreedDoctor = (AgreedDoctor, Types.Object, ApTypedIdValueContainer)
-  def TypedRelations = (Relations, Types.Object, ApTypedRelationsEntryContainer)
-  def TypedMKB = (MKB, Types.Object, ApTypedMKBContainer)
+  def TypedAgreedType: (StringId, String, StringId) = (AgreedType, Types.Object, ApTypedIdNameContainer)
+  def TypedAssignment: (StringId, String, StringId) = (Assignment, Types.Object, ApTypedAppealAssignmentContainer)
+  def TypedHospitalizationType: (StringId, String, StringId) = (HospitalizationType, Types.Object, ApTypedIdNameContainer)
+  def TypedHospitalizationPointType: (StringId, String, StringId) = (HospitalizationPointType, Types.Object, ApTypedIdNameContainer)
+  def TypedHospitalizationChannelType: (StringId, String, StringId) = (HospitalizationChannelType, Types.Object, ApTypedIdNameContainer)
+  def TypedDeliveredType: (StringId, String, StringId) = (DeliveredType, Types.Object, ApTypedIdNameContainer)
+  def TypedDeliveredAfterType: (StringId, String, StringId) = (DeliveredAfterType, Types.Object, ApTypedIdNameContainer)
+  def TypedStateType: (StringId, String, StringId) = (StateType, Types.Object, ApTypedIdNameContainer)
+  def TypedDrugsType: (StringId, String, StringId) = (DrugsType, Types.Object, ApTypedIdNameContainer)
+  def TypedPhysicalParameters: (StringId, String, StringId) = (PhysicalParameters, Types.Object, ApTypedPhysicalParameterContainer)
+  def TypedBranchType: (StringId, String, StringId) = (BranchType, Types.Object, ApTypedIdNameContainer)
+  def TypedPlaceType: (StringId, String, StringId) = (PlaceType, Types.Object, ApTypedIdNameContainer)
+  def TypedDiagnoses: (StringId, String, StringId) = (Diagnoses, Types.Object, ApTypedDiagnosisContainer)
+  def TypedAgreedDoctor: (StringId, String, StringId) = (AgreedDoctor, Types.Object, ApTypedIdValueContainer)
+  def TypedRelations: (StringId, String, StringId) = (Relations, Types.Object, ApTypedRelationsEntryContainer)
+  def TypedMKB: (StringId, String, StringId) = (MKB, Types.Object, ApTypedMKBContainer)
   //////////////////////////////////////////////////////////////////////////////
 
   def map = Map(
@@ -153,15 +153,15 @@ object AppealWrapperInfo extends Configuration { awi =>
         ConfigManager.Messages("appeal.db.actionPropertyType.name.diagnosis.attendant.description"))
   )
 
-  def apply(key: StringId) = {
+  def apply(key: StringId): (StringId, String, StringId) = {
     map(key)
   }
 
-  def isSupported(key: String) = {
+  def isSupported(key: String): Boolean = {
     map.keySet(StringId(key))
   }
 
-  def apply_property(key: StringId) = {
+  def apply_property(key: StringId): Set[_ <: String] = {
     if (map_property.keySet(key)) {
       map_property(key)
     }
@@ -210,7 +210,7 @@ object AppealWrapperInfo extends Configuration { awi =>
     val ApTypedDiagnosisContainer = awi.ApTypedDiagnosisContainer
     val ApTypedRelationsEntryContainer = awi.ApTypedRelationsEntryContainer
 
-    def apply(key: StringId) = awi(key)
-    def apply_property(key: StringId) = awi(key)
+    def apply(key: StringId): (StringId, String, StringId) = awi(key)
+    def apply_property(key: StringId): (StringId, String, StringId) = awi(key)
   }
 }

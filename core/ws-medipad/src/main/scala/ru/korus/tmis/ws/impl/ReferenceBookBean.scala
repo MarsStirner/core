@@ -1,9 +1,11 @@
 package ru.korus.tmis.ws.impl
 
+import java.util
 import javax.ejb.{EJB, Stateless}
 
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.database.DbRbPolicyTypeBeanLocal
+import ru.korus.tmis.core.entity.model.RbPolicyType
 
 /**
  * Author: <a href="mailto:alexey.kislin@gmail.com">Alexey Kislin</a>
@@ -15,6 +17,6 @@ class ReferenceBookBean {
 
   @EJB private var DbRbPolicyTypeBean: DbRbPolicyTypeBeanLocal = _
 
-  def getPolicyTypes(auth: AuthData) = { DbRbPolicyTypeBean.getAllRbPolicyTypes }
+  def getPolicyTypes(auth: AuthData): util.List[RbPolicyType] = { DbRbPolicyTypeBean.getAllRbPolicyTypes }
 
 }

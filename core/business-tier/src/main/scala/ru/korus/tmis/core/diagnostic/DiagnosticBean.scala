@@ -1,17 +1,16 @@
 package ru.korus.tmis.core.diagnostic
 
+import javax.ejb.{EJB, Stateless}
+
+import grizzled.slf4j.Logging
 import ru.korus.tmis.core.auth.AuthData
 import ru.korus.tmis.core.common.{CommonDataProcessorBeanLocal, TypeFilterBeanLocal}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
-import common._
+import ru.korus.tmis.core.database.common._
 import ru.korus.tmis.core.entity.model._
-import ru.korus.tmis.scala.util.{I18nable, ConfigManager}
-import ConfigManager.APWI
-
-
-import javax.ejb.{EJB, Stateless}
-import javax.interceptor.Interceptors
+import ru.korus.tmis.scala.util.ConfigManager.APWI
+import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 
 import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
@@ -19,8 +18,8 @@ import scala.language.reflectiveCalls
 @Stateless
 class DiagnosticBean
   extends DiagnosticBeanLocal
-
-  with I18nable {
+    with Logging
+    with I18nable {
 
   type CA = CommonAttribute
 
@@ -53,8 +52,7 @@ class DiagnosticBean
   @EJB
   var typeFilter: TypeFilterBeanLocal = _
 
-  def getDiagnosticTypes(eventId: Int,
-                         userData: Staff) = {
+  def getDiagnosticTypes(eventId: Int, userData: Staff): CommonData = {
     var types = dbActionType.getDiagnosticTypes
 
     if (ConfigManager.Filter.isOn) {
@@ -69,13 +67,13 @@ class DiagnosticBean
       converter)
   }
 
-  def getAllDiagnosticTypes = {
+  def getAllDiagnosticTypes: CommonData = {
     commonDataProcessor.fromActionTypes(dbActionType.getDiagnosticTypes,
       "DiagnosticType",
       converter)
   }
 
-  def converter(apt: ActionPropertyType) = {
+  def converter(apt: ActionPropertyType): CA = {
     new CA(apt.getId,
       0,
       apt.getName,
@@ -86,7 +84,7 @@ class DiagnosticBean
         APWI.IsAssignable.toString -> apt.getIsAssignable.toString))
   }
 
-  def getAllDiagnosticsByEventId(eventId: Int) = {
+  def getAllDiagnosticsByEventId(eventId: Int): CommonData = {
     commonDataProcessor.fromActions(
       customQuery
         .getAllDiagnosticsByEventId(eventId)
@@ -95,14 +93,14 @@ class DiagnosticBean
       List(summary _, details _))
   }
 
-  def getDiagnosticById(diagnosticId: Int) = {
+  def getDiagnosticById(diagnosticId: Int): CommonData = {
     commonDataProcessor.fromActions(
       List(dbAction.getActionById(diagnosticId)),
       "Diagnostic",
       List(summary _, details _))
   }
 
-  def summary(diagnostic: Action) = {
+  def summary(diagnostic: Action): CommonGroup = {
     info("Getting Action summary: " + diagnostic.getId)
 
     val group = new CommonGroup(0, "Summary")
@@ -123,7 +121,7 @@ class DiagnosticBean
       attributes)
   }
 
-  def details(diagnostic: Action) = {
+  def details(diagnostic: Action): CommonGroup = {
     info("Getting Action details: " + diagnostic.getId)
 
     val propertiesMap =
@@ -151,7 +149,7 @@ class DiagnosticBean
   def createDiagnosticForEventId(eventId: Int,
                                  diagnostic: CommonData,
                                  userData: AuthData,
-                                 staff: Staff) = {
+                                 staff: Staff): CommonData = {
     val createdActions =
       commonDataProcessor.createActionForEventFromCommonData(
         eventId,
@@ -168,7 +166,7 @@ class DiagnosticBean
   def modifyDiagnosticById(diagnosticId: Int,
                            diagnostic: CommonData,
                            userData: AuthData,
-                           staff: Staff) = {
+                           staff: Staff): CommonData = {
     val modifiedActions = commonDataProcessor.modifyActionFromCommonData(
       diagnosticId,
       diagnostic,
@@ -183,7 +181,7 @@ class DiagnosticBean
 
   def updateDiagnosticStatusById(eventId: Int,
                                  diagnosticId: Int,
-                                 status: Short) = {
+                                 status: Short): Boolean = {
     commonDataProcessor.changeActionStatus(eventId,
       diagnosticId,
       status)

@@ -57,7 +57,7 @@ class DbRbPolicyTypeBean
     }
   }
 
-  def getCountOfRbPolicyTypeWithFilter(filter: Object) = {
+  def getCountOfRbPolicyTypeWithFilter(filter: Object): Long = {
     var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
       filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
     }

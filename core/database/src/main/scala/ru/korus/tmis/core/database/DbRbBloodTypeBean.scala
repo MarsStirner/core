@@ -48,7 +48,7 @@ class DbRbBloodTypeBean
 
 
   def getCountOfBloodTypesWithFilter(filter: Object,
-                                     tableName: String) = {
+                                     tableName: String): Long = {
     var queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter]) {
       filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
     }

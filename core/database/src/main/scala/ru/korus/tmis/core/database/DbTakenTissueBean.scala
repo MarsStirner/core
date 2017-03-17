@@ -55,7 +55,7 @@ class DbTakenTissueBean extends DbTakenTissueBeanLocal
   }
 
   @Nullable
-  def getActionTypeTissueTypeByMasterId(actionTypeId: Int) = {
+  def getActionTypeTissueTypeByMasterId(actionTypeId: Int): ActionTypeTissueType = {
     val result = em.createQuery(ActionTypeTissueTypeByMasterIdQuery, classOf[ActionTypeTissueType])
       .setParameter("actionTypeId", actionTypeId)
       .getResultList

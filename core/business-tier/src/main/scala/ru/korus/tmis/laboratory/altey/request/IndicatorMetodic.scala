@@ -1,10 +1,10 @@
 package ru.korus.tmis.laboratory.altey.request
 
 import ru.korus.tmis.laboratory.altey.{ws => lab}
-
-
 import ru.korus.tmis.scala.util.Defaultible
 import Defaultible._
+import ru.korus.tmis.laboratory.altey.ws.IndicatorMetodic
+
 import scala.language.implicitConversions
 
 

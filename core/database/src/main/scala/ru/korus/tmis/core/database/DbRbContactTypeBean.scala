@@ -74,7 +74,7 @@ class DbRbContactTypeBean
     }
   }
 
-  def getCountOfAllRbContactTypesWithFilter(filter: Object) = {
+  def getCountOfAllRbContactTypesWithFilter(filter: Object): Long = {
     val queryStr: QueryDataStructure = if (filter.isInstanceOf[DictionaryListRequestDataFilter])
       filter.asInstanceOf[DictionaryListRequestDataFilter].toQueryStructure()
     else new QueryDataStructure()

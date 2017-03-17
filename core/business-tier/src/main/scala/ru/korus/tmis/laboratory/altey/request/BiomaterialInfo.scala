@@ -1,19 +1,15 @@
 package ru.korus.tmis.laboratory.altey.request
 
-import javax.xml.datatype.XMLGregorianCalendar
-
-import ru.korus.tmis.laboratory.altey.{ws => lab}
-import java.util.Date
 import java.lang.{Integer => JInteger}
+import java.util.Date
 
-import DataConverter._
-
-import ru.korus.tmis.scala.util.{General, Defaultible}
-import General.nullity_implicits
-import java.util
-import ru.korus.tmis.scala.util.Defaultible
-import Defaultible._
 import ru.korus.tmis.core.exception.CoreException
+import ru.korus.tmis.laboratory.altey.request.DataConverter._
+import ru.korus.tmis.laboratory.altey.ws.BiomaterialInfo
+import ru.korus.tmis.laboratory.altey.{ws => lab}
+import ru.korus.tmis.scala.util.Defaultible
+import ru.korus.tmis.scala.util.Defaultible._
+
 import scala.language.implicitConversions
 
 sealed case class BiomaterialInfo(

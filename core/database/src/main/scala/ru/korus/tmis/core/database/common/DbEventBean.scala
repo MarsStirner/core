@@ -62,11 +62,11 @@ class DbEventBean
     em.flush()
   }
 
-  def getEventById(id: Int) = {
+  def getEventById(id: Int): Event = {
     em.find(classOf[Event], id)
   }
 
-  def getActionTypeFilter(eventId: Int) = {
+  def getActionTypeFilter(eventId: Int): util.HashSet[ActionType] = {
     val result = em.createQuery(ActionTypeFilterByEventIdQuery,
       classOf[ActionType])
       .setParameter("id", eventId)
@@ -82,7 +82,7 @@ class DbEventBean
     }
   }
 
-  def getOrgStructureForEvent(event: Event) = {
+  def getOrgStructureForEvent(event: Event): OrgStructure = {
     if(isStationaryEvent(event)) {
       // Если обращение стационарное - то ищем в движениях (если нет в движениях, то в поступлении)
       val result = em.createQuery(AllOrgStructuresForEventQuery, classOf[OrgStructure])
@@ -217,7 +217,7 @@ class DbEventBean
     et
   }
 
-  def getEventsForPatient(patientId: Int) = {
+  def getEventsForPatient(patientId: Int): util.List[Event] = {
     //Получаем пациента
     var patient = patientBean.getPatientById(patientId)
 
@@ -227,7 +227,7 @@ class DbEventBean
     result
   }
 
-  def getEventsForPatientWithExistsActionByType(patientId: Int, code: String) = {
+  def getEventsForPatientWithExistsActionByType(patientId: Int, code: String): util.List[Event] = {
 
     val patient = patientBean.getPatientById(patientId)
     val actionType = actionTypeBean.getActionTypeByCode(code)
@@ -239,13 +239,13 @@ class DbEventBean
     result
   }
 
-  def getEventTypeIdByFDRecordId(fdRecordId: Int) = {
+  def getEventTypeIdByFDRecordId(fdRecordId: Int): Int = {
 
     val result = em.createQuery(EventTypeIdByFDRecordIdQuery.format(fdRecordId), classOf[Int]).getSingleResult
     result
   }
 
-  def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean) = {
+  def getEventTypesByRequestTypeIdAndFinanceId(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object, records: (java.lang.Long) => java.lang.Boolean): util.List[EventType] = {
     val queryStr: QueryDataStructure = filter match {
       case filter1: EventTypesListRequestDataFilter => filter1.toQueryStructure()
       case _ => new QueryDataStructure()
@@ -269,7 +269,7 @@ class DbEventBean
     result
   }
 
-  def getCountOfAppealsForReceivedPatientByPeriod(filter: Object) = {
+  def getCountOfAppealsForReceivedPatientByPeriod(filter: Object): Long = {
 
     val queryStr: QueryDataStructure = filter match {
       case filter1: ReceivedRequestDataFilter =>
@@ -286,7 +286,7 @@ class DbEventBean
     typed.getSingleResult
   }
 
-  def getAllAppealsForReceivedPatientByPeriod(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object) = {
+  def getAllAppealsForReceivedPatientByPeriod(page: Int, limit: Int, sortingField: String, sortingMethod: String, filter: Object): util.List[Event] = {
 
     val queryStr: QueryDataStructure = filter match {
       case x: ReceivedRequestDataFilter =>
@@ -331,7 +331,7 @@ class DbEventBean
   }
 
 
-  val getLastOrgStructureForEventFromMovingsSQLQuery =
+  val getLastOrgStructureForEventFromMovingsSQLQuery: String =
     """
       |SELECT os.*
       |FROM Event e
@@ -509,7 +509,7 @@ class DbEventBean
   ORDER BY e.%s %s
     """
 
-  val AllOrgStructuresForEventQuery =
+  val AllOrgStructuresForEventQuery: String =
     """
       | SELECT org
       | FROM

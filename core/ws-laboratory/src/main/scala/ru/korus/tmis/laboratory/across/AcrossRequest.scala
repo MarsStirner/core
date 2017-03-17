@@ -1,9 +1,9 @@
 package ru.korus.tmis.laboratory.across
 
 import javax.jws.{HandlerChain, WebService}
-
 import javax.ejb.EJB
 
+import grizzled.slf4j.Logging
 import ru.korus.tmis.laboratory.across.business.AcrossBusinessBeanLocal
 import ru.korus.tmis.scala.util.I18nable
 
@@ -29,7 +29,7 @@ class AcrossRequest extends AcrossRequestService with Logging with I18nable {
     try {
       labBean.sendAnalysisRequestToAcross(actionId)
     } catch {
-      case e: Throwable => ()
+      case e: Throwable => error(e)
     }
   }
 }

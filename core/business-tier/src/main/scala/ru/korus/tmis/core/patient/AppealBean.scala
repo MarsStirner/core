@@ -1,13 +1,15 @@
 package ru.korus.tmis.core.patient
 
+import java.lang.Boolean
 import java.util
 import java.util.Date
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
 
+import grizzled.slf4j.Logging
 import org.apache.commons.lang.{ObjectUtils, StringUtils}
 import org.joda.time.{DateTime, Years}
-import org.slf4j.LoggerFactory
+import org.slf4j.{Logger, LoggerFactory}
 import ru.korus.tmis.core.auth.{AuthData, AuthStorageBeanLocal}
 import ru.korus.tmis.core.data._
 import ru.korus.tmis.core.database._
@@ -27,9 +29,9 @@ import scala.util.Try
 @Stateless
 class AppealBean extends AppealBeanLocal
 with I18nable
+with Logging
 with CAPids {
 
-  val logger = LoggerFactory.getLogger(classOf[AppealBean])
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -110,7 +112,7 @@ with CAPids {
   private var dbEventLocalContract: DbEventLocalContractLocal = _
 
   private class IndexOf[T](seq: Seq[T]) {
-    def unapply(pos: T) = seq find (pos == _) map (seq indexOf _)
+    def unapply(pos: T): Option[Int] = seq find (pos == _) map (seq indexOf _)
   }
 
   val list = List(iCapIds("db.rbCAP.hosp.primary.id.directed").toInt, //Кем направлен
@@ -152,7 +154,7 @@ with CAPids {
     iCapIds("db.rbCap.host.primary.id.reopening").toInt) //Переоткрытие ИБ
 
   //Insert or modify appeal
-  def insertAppealForPatient(appealData: AppealData, patientId: Int, userData: AuthData, staff: Staff) = {
+  def insertAppealForPatient(appealData: AppealData, patientId: Int, userData: AuthData, staff: Staff): Int = {
 
     //1. Event и проверка данных на валидность
     val newEvent = this.verificationData(patientId, staff, appealData, flgCreate = true)
@@ -162,14 +164,14 @@ with CAPids {
     res
   }
 
-  def updateAppeal(appealData: AppealData, eventId: Int, userData: AuthData, staff: Staff) = {
+  def updateAppeal(appealData: AppealData, eventId: Int, userData: AuthData, staff: Staff): Int = {
     val newEvent = this.verificationData(eventId, staff, appealData, flgCreate = false)
     val res = insertOrModifyAppeal(appealData, newEvent, flgCreate = false, userData, staff)
     updateTempInvalid(newEvent, appealData.data.tempInvalid, staff)
     res
   }
 
-  def insertOrModifyAppeal(appealData: AppealData, event: Event, flgCreate: Boolean, userData: AuthData, staff: Staff) = {
+  def insertOrModifyAppeal(appealData: AppealData, event: Event, flgCreate: Boolean, userData: AuthData, staff: Staff): Int = {
 
     var entities = Set.empty[AnyRef]
     val now = new Date()
@@ -248,7 +250,7 @@ with CAPids {
       var values = this.getValueByCase(ap.getType.getId.intValue(), data)
       if (values != null) {
         values.size match {
-          case 0 => {
+          case 0 =>
             if (flgCreate) {
               //В случае, если не приходит значение для ActionProperty, то записываем значение по умолчанию.
               val defValue = ap.getType.getDefaultValue
@@ -268,8 +270,7 @@ with CAPids {
                 }
               }
             }
-          }
-          case _ => {
+          case _ =>
             if (ap.getType.getIsVector) {
               //Если вектор, то сперва зачищаем старый список
               val apvs = actionPropertyBean.getActionPropertyValue(ap)
@@ -295,7 +296,6 @@ with CAPids {
                  entities = entities + apv.unwrap*/
               it = it + 1
             })
-          }
         }
       }
     })
@@ -509,7 +509,7 @@ with CAPids {
   }
   */
 
-  def getAppealById(id: Int) = {
+  def getAppealById(id: Int): util.HashMap[Event, util.Map[Action, util.Map[Object, util.List[Object]]]] = {
     //запрос  данных из Эвента
     val event = dbEventBean.getEventById(id)
     if (event == null) {
@@ -562,7 +562,7 @@ with CAPids {
   }
 
   def getAllAppealsByPatient(requestData: AppealSimplifiedRequestData,
-                             authData: AuthData) = {
+                             authData: AuthData): AppealSimplifiedDataList = {
 
     //TODO: подключить анализ авторизационных данных и доступных ролей
     //requestData.setRecordsCount(dbCustomQueryBean.getCountOfAppealsWithFilter(requestData.filter))
@@ -570,13 +570,13 @@ with CAPids {
     new AppealSimplifiedDataList(map, requestData)
   }
 
-  def checkAppealNumber(number: String) = {
+  def checkAppealNumber(number: String): Boolean = {
     val result = dbEventBean.getAllAppealsForReceivedPatientByPeriod(0, 1, "id", "desc", new ReceivedRequestDataFilter(number))
     result == null || result.isEmpty
   }
 
 
-  def revokeAppealById(event: Event, resultId: Int, staff: Staff) = {
+  def revokeAppealById(event: Event, resultId: Int, staff: Staff): Event = {
     if (event == null) {
       throw new CoreException("Не указано редактируемое обращение")
     }
@@ -589,15 +589,14 @@ with CAPids {
       event.setResult(dbRbResultBean.getRbResultById(resultId)) //какой-то айдишник =)
     }
     catch {
-      case e: Exception => {
+      case e: Exception =>
         error("revokeAppealById >> Ошибка при закрытии госпитализации: %s".format(e.getMessage))
         throw new CoreException("Ошибка при закрытии госпитализации (id = %s)".format(event.getId.toString))
-      }
     }
     event
   }
 
-  def getPatientsHospitalizedStatus(eventId: Int) = {
+  def getPatientsHospitalizedStatus(eventId: Int): String = {
     var status: String = ""
     val event = dbEventBean.getEventById(eventId)
     val execDate = event.getExecDate
@@ -771,7 +770,6 @@ with CAPids {
       event = dbEventBean.getEventById(id)
       if (event == null) {
         throw new CoreException("Обращение с id = %s не найдено в БД".format(appealData.data.id.toString))
-        return null
       }
 
       event.setModifyDatetime(now)
@@ -938,7 +936,7 @@ with CAPids {
   }
 
   //Диагнозы из первичного осмотра(при госпитализации)
-  def getDiagnosisListByAppealId(eventId: Int, filter: String) = {
+  def getDiagnosisListByAppealId(eventId: Int, filter: String): util.HashMap[String, util.List[Mkb]] = {
     val map = new java.util.HashMap[String, java.util.List[Mkb]]
     val constPartToName = "Диагноз направившего учреждения"
     val diagnosisPropertyList = Map("assignment" -> i18n("appeal.db.actionPropertyType.name.diagnosis.assigment.code").toString,
@@ -974,12 +972,10 @@ with CAPids {
       .setParameter("id", id)
       .getResultList
     diagType.size match {
-      case 0 => {
+      case 0 =>
         null
-      }
-      case size => {
+      case size =>
         diagType(0)
-      }
     }
   }
 
@@ -988,30 +984,28 @@ with CAPids {
       .setParameter("id", id)
       .getResultList
     rbResult.size match {
-      case 0 => {
+      case 0 =>
         null
-      }
-      case size => {
+      case size =>
         rbResult(0)
-      }
     }
   }
 
-  def getAppealTypeCodesWithFlatDirectoryId(id: Int) = {
+  def getAppealTypeCodesWithFlatDirectoryId(id: Int): util.List[String] = {
     val rbResult = em.createQuery(eventTypeCodesByFlatDirectoryIdQuery, classOf[String])
       .setParameter("id", id)
       .getResultList
     rbResult
   }
 
-  def getSupportedAppealTypeCodes = {
+  def getSupportedAppealTypeCodes: util.List[String] = {
     val rbResult = em.createQuery(eventSupportedTypeCodesQuery, classOf[String])
       .setParameter("supportedRequestTypes", asJavaCollection(i18n("webmis.supportedEventTypes").split(",")))
       .getResultList
     rbResult
   }
 
-  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData) = {
+  def getMonitoringInfo(eventId: Int, condition: Int, authData: AuthData): MonitoringInfoListData = {
     val codes = setAsJavaSet(condition match {
       case 0 => Set("TEMPERATURE", "BPRAS", "BPRAD", "PULS", "SPO2", "RR", "STATE", "WB", "GROWTH", "WEIGHT")
       case 1 => Set("K", "NA", "CA", "GLUCOSE", "TP", "UREA", "TB", "CB", "WBC", "GRAN", "NEUT", "HGB", "PLT")
@@ -1024,7 +1018,7 @@ with CAPids {
       new MonitoringInfoListData()
   }
 
-  def getInfectionMonitoring(patient: Patient) = {
+  def getInfectionMonitoring(patient: Patient): util.TreeSet[(String, Date, Date, util.List[Integer], Integer)] = {
     val IC = InfectionControl
     val infectIntervalCode = IC.allInfectPrefixes.foldLeft(new java.util.LinkedList[String]())((l, c) => {
       l add (c + IC.separator + IC.beginDatePostfix)
@@ -1118,7 +1112,7 @@ with CAPids {
   }
 
 
-  def getInfectionDrugMonitoring(patient: Patient) = {
+  def getInfectionDrugMonitoring(patient: Patient): util.TreeSet[(String, Date, Date, String, util.List[Integer], Integer)] = {
     val IC = InfectionControl
 
     val q =
@@ -1218,7 +1212,7 @@ with CAPids {
     result
   }
 
-  def getSurgicalOperations(eventId: Int, authData: AuthData) = {
+  def getSurgicalOperations(eventId: Int, authData: AuthData): SurgicalOperationsListData = {
     val codes = setAsJavaSet(Set("operationName", "complicationName", "methodAnesthesia"))
     val map = actionPropertyBean.getActionPropertiesByEventIdsAndActionPropertyTypeCodes(List(Integer.valueOf(eventId)), codes, Int.MaxValue, true)
     if (map != null && map.contains(Integer.valueOf(eventId)))
@@ -1227,7 +1221,7 @@ with CAPids {
       new SurgicalOperationsListData()
   }
 
-  def setExecPersonForAppeal(id: Int, personId: Int, staff: Staff, epst: ExecPersonSetType) = {
+  def setExecPersonForAppeal(id: Int, personId: Int, staff: Staff, epst: ExecPersonSetType): Boolean = {
 
     var eventPerson: EventPerson = null
     var execPerson: Staff = staff
