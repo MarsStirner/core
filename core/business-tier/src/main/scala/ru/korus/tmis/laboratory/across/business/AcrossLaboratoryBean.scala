@@ -570,7 +570,7 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     // Изменяем статус действия на "Закончено"
     if (finished && StringUtils.isEmpty(biomaterialDefects)) {
       a.setStatus(ActionStatus.FINISHED.getCode)
-    } else {
+    } else if(StringUtils.isNotEmpty(biomaterialDefects)) {
       // Сохраняем дефекты биоматериала в комментарий к действию
       a.setNote(biomaterialDefects)
       a.setStatus(ActionStatus.CANCELLED.getCode)
