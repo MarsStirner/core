@@ -1,6 +1,7 @@
 package ru.korus.tmis.core.entity.model;
 
 import javax.persistence.*;
+import java.util.Objects;
 
 /**
  * Author: Upatov Egor <br>
@@ -15,7 +16,14 @@ import javax.persistence.*;
         {
                 @NamedQuery(name = "RbAttendanceType.findAll", query = "SELECT r FROM RbAttendanceType r")
         })
-public class RbAttendanceType {
+public class RbAttendanceType implements Comparable<RbAttendanceType> {
+    @Transient
+    public static final String CITO_CODE = "CITO";
+    @Transient
+    public static final String EXTRA_CODE = "extra";
+    @Transient
+    public static final String NORMAL_CODE = "planned";
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false)
@@ -82,5 +90,20 @@ public class RbAttendanceType {
         sb.append(", name='").append(name).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    @Override
+    public int compareTo(RbAttendanceType o) {
+        if (Objects.equals(code, o.getCode())) {
+            return 0;
+        }
+        switch (code) {
+            case CITO_CODE:
+                return -1;
+            case EXTRA_CODE:
+                return 1;
+            default:
+                return 0;
+        }
     }
 }

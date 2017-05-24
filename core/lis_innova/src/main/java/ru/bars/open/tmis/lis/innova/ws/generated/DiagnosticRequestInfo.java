@@ -2,7 +2,12 @@
 package ru.bars.open.tmis.lis.innova.ws.generated;
 
 import javax.xml.bind.JAXBElement;
-import javax.xml.bind.annotation.*;
+import javax.xml.bind.annotation.XmlAccessType;
+import javax.xml.bind.annotation.XmlAccessorType;
+import javax.xml.bind.annotation.XmlElement;
+import javax.xml.bind.annotation.XmlElementRef;
+import javax.xml.bind.annotation.XmlSchemaType;
+import javax.xml.bind.annotation.XmlType;
 import javax.xml.datatype.XMLGregorianCalendar;
 
 
@@ -30,6 +35,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
  *         &lt;element name="orderDoctorName" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="orderDoctorPatronum" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
  *         &lt;element name="orderDoctorMisId" type="{http://www.w3.org/2001/XMLSchema}string" minOccurs="0"/&gt;
+ *         &lt;element name="ExtraFields" type="{http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS}ArrayOfExtraField"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -53,20 +59,17 @@ import javax.xml.datatype.XMLGregorianCalendar;
     "orderDoctorFamily",
     "orderDoctorName",
     "orderDoctorPatronum",
-    "orderDoctorMisId"
+    "orderDoctorMisId",
+    "extraFields"
 })
 public class DiagnosticRequestInfo {
 
-    @XmlElement(name = "orderMisId", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS")
     protected Integer orderMisId;
     @XmlElementRef(name = "orderCaseId", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
     protected JAXBElement<String> orderCaseId;
-    @XmlElement(name = "orderFinanceId", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS")
     protected Integer orderFinanceId;
-    @XmlElement(name = "orderMisDate", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS")
     @XmlSchemaType(name = "dateTime")
     protected XMLGregorianCalendar orderMisDate;
-    @XmlElement(name = "orderPregnat", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS")
     protected Integer orderPregnat;
     @XmlElementRef(name = "orderDiagCode", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
     protected JAXBElement<String> orderDiagCode;
@@ -86,6 +89,8 @@ public class DiagnosticRequestInfo {
     protected JAXBElement<String> orderDoctorPatronum;
     @XmlElementRef(name = "orderDoctorMisId", namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", type = JAXBElement.class, required = false)
     protected JAXBElement<String> orderDoctorMisId;
+    @XmlElement(name = "ExtraFields", required = true, nillable = true)
+    protected ArrayOfExtraField extraFields;
 
     /**
      * Gets the value of the orderMisId property.
@@ -423,24 +428,28 @@ public class DiagnosticRequestInfo {
         this.orderDoctorMisId = value;
     }
 
-    @Override
-    public String toString() {
-        final StringBuilder sb = new StringBuilder("DiagnosticRequestInfo{");
-        sb.append("orderMisId=").append(orderMisId);
-        sb.append(", orderCaseId=").append(orderCaseId);
-        sb.append(", orderFinanceId=").append(orderFinanceId);
-        sb.append(", orderMisDate=").append(orderMisDate);
-        sb.append(", orderPregnat=").append(orderPregnat);
-        sb.append(", orderDiagCode=").append(orderDiagCode);
-        sb.append(", orderDiagText=").append(orderDiagText);
-        sb.append(", orderComment=").append(orderComment);
-        sb.append(", orderDepartmentName=").append(orderDepartmentName);
-        sb.append(", orderDepartmentMisId=").append(orderDepartmentMisId);
-        sb.append(", orderDoctorFamily=").append(orderDoctorFamily);
-        sb.append(", orderDoctorName=").append(orderDoctorName);
-        sb.append(", orderDoctorPatronum=").append(orderDoctorPatronum);
-        sb.append(", orderDoctorMisId=").append(orderDoctorMisId);
-        sb.append('}');
-        return sb.toString();
+    /**
+     * Gets the value of the extraFields property.
+     * 
+     * @return
+     *     possible object is
+     *     {@link ArrayOfExtraField }
+     *     
+     */
+    public ArrayOfExtraField getExtraFields() {
+        return extraFields;
     }
+
+    /**
+     * Sets the value of the extraFields property.
+     * 
+     * @param value
+     *     allowed object is
+     *     {@link ArrayOfExtraField }
+     *     
+     */
+    public void setExtraFields(ArrayOfExtraField value) {
+        this.extraFields = value;
+    }
+
 }

@@ -1,22 +1,26 @@
 package ru.korus.tmis.core.database
 
 import java.lang.Iterable
+import java.util
 import java.util.Date
-import javax.ejb.Stateless
+import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
 
+import org.apache.commons.lang.StringUtils
 import ru.korus.tmis.core.data.AddressEntryContainer
 import ru.korus.tmis.core.entity.model._
 import ru.korus.tmis.core.exception.NoSuchClientAddressException
 import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 
-import scala.collection.JavaConversions._
 import scala.language.reflectiveCalls
 
 @Stateless
 class DbClientAddressBean
   extends DbClientAddressBeanLocal
-  with I18nable {
+    with I18nable {
+
+  @EJB
+  var kladrBean: DbSchemeKladrBeanLocal = _
 
   @PersistenceContext(unitName = "s11r64")
   var em: EntityManager = _
@@ -179,6 +183,38 @@ class DbClientAddressBean
         d2.setModifyPerson(sessionUser)
         d2.setModifyDatetime(now)
       }
+    }
+  }
+
+  override def getFullAddressString(clientAddress: ClientAddress): String = {
+    if (StringUtils.isNotEmpty(clientAddress.getFreeInput)) {
+      clientAddress.getFreeInput
+    } else {
+      val address = clientAddress.getAddress
+      val house = address.getHouse
+      val parts = new util.ArrayList[String]()
+      val city_part = kladrBean.getKladrByCode(house.getKLADRCode)
+      if(city_part != null) {
+        parts.add(city_part.toStringAddressPart)
+      }
+      if (StringUtils.isNotEmpty(house.getKLADRStreetCode)) {
+        val street_part = kladrBean.getStreetByCode(house.getKLADRStreetCode)
+        if(street_part != null) {
+          parts.add(street_part.toStringAddressPart)
+        }
+      } else if (StringUtils.isNotEmpty(house.getStreetFreeInput)) {
+        parts.add(house.getStreetFreeInput)
+      }
+      if (StringUtils.isNotEmpty(house.getNumber)) {
+        parts.add("д." + house.getNumber)
+      }
+      if (StringUtils.isNotEmpty(house.getCorpus)) {
+        parts.add("к." + house.getCorpus)
+      }
+      if (StringUtils.isNotEmpty(address.getFlat)) {
+        parts.add("кв." + address.getFlat)
+      }
+      StringUtils.join(parts, ", ")
     }
   }
 }

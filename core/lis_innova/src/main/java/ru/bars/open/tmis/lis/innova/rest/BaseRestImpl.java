@@ -2,6 +2,7 @@ package ru.bars.open.tmis.lis.innova.rest;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.MDC;
 import ru.bars.open.tmis.lis.innova.logic.DbTakenTissueJournalBeanLocal;
 import ru.bars.open.tmis.lis.innova.logic.LisInnovaBean;
 import ru.bars.open.tmis.lis.innova.rest.entities.json.in.SendActionsToLaboratoryRequest;
@@ -55,27 +56,29 @@ public class BaseRestImpl {
     public Response sendToLaboratory(
             @Context HttpServletRequest servRequest, final SendActionsToLaboratoryRequest request
     ) {
-        final long currentNumber = counter.incrementAndGet();
-        log.info("#{} Call PUT sendToLaboratory with payload=\'{}\'", currentNumber, request);
+        MDC.clear();
+        MDC.put("requestNumber", "#" + counter.incrementAndGet() + " ");
+        log.info("Call PUT sendToLaboratory with payload=\'{}\'", request);
         final SendActionsToLaboratoryResponse response = new SendActionsToLaboratoryResponse();
         if (request == null || request.getIds().isEmpty()) {
-            log.info("#{} End. Empty request - return empty response \'{}\'", currentNumber, response);
+            log.info("End. Empty request - return empty response \'{}\'", response);
+            MDC.clear();
             return Response.status(Response.Status.BAD_REQUEST).build();
         }
         final AuthData authData = authBean.getAuthDataFromRequest(servRequest);
-        if(authData == null){
-            log.error("#{} End with AuthException. Return empty result", currentNumber);
+        if (authData == null) {
+            log.error("End with AuthException. Return empty result");
             for (Integer actionId : request.getIds()) {
                 response.getData().put(actionId, "Not send: Authorization failed");
             }
-            log.error("#{} End with AuthException. Return \'{}\'", currentNumber, response);
+            log.error("End with AuthException. Return \'{}\'", response);
             return Response.status(Response.Status.UNAUTHORIZED).entity(response).build();
         }
         for (Integer ttjId : request.getIds()) {
             try {
                 final TakenTissue ttj = dbTTJ.get(ttjId);
-                if(ttj != null) {
-                    response.getData().put(ttjId, lis.sendTakenTissueJournal(ttj, currentNumber));
+                if (ttj != null) {
+                    response.getData().put(ttjId, lis.sendTakenTissueJournal(ttj));
                 } else {
                     response.getData().put(ttjId, "TakenTissueJournal not found");
                 }
@@ -83,7 +86,8 @@ public class BaseRestImpl {
                 response.getData().put(ttjId, "Not send: Exception = " + e.getMessage());
             }
         }
-        log.info("#{} End. Return \'{}\'", currentNumber, response);
+        log.info("End. Return \'{}\'", response);
+        MDC.clear();
         return Response.ok(response).build();
     }
 }

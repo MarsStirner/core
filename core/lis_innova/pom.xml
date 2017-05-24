@@ -67,6 +67,34 @@
                     </webResources>
                 </configuration>
             </plugin>
+            <plugin>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-codegen-plugin</artifactId>
+                <version>3.1.11</version>
+                <executions>
+                    <execution>
+                        <id>generate-sources</id>
+                        <phase>none</phase>
+                        <!--TODO change phase to "generate-sources" when you want to generate sources -->
+                        <configuration>
+                            <sourceRoot>${project.build.outputDirectory}/ru/bars/open/tmis/lis/innova/ws/generated</sourceRoot>
+                            <encoding>${project.build.sourceEncoding}</encoding>
+                            <useCompileClasspath>true</useCompileClasspath>
+                            <wsdlOptions>
+                                <wsdlOption>
+                                    <wsdl>${basedir}/src/main/resources/lis_innova_single_wsdl_v2_withExtraFields.wsdl</wsdl>
+                                    <extraargs>
+                                        <extraarg>-verbose</extraarg>
+                                    </extraargs>
+                                </wsdlOption>
+                            </wsdlOptions>
+                        </configuration>
+                        <goals>
+                            <goal>wsdl2java</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
 </project>

@@ -415,18 +415,6 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
         }
         ("", res)
     }
-
-    /*
-        val mkbs = apvals.filter(apv => apv.isInstanceOf[APValueMKB])
-        mkbs.size match {
-          case 0 => return null
-          case x: Int => {
-            val mkbValue = mkbs.get(0).asInstanceOf[APValueMKB]
-            val mkb = mkbValue.getMkb()
-            return (mkb.getDiagID, mkb.getDiagName)
-          }
-        }
-    */
   }
 
   def setAnalysisResults(a: Action, results: List[AnalysisResultAcross], finished: Boolean, biomaterialDefects: String): Int = {
@@ -569,11 +557,13 @@ class AcrossLaboratoryBean extends AcrossBusinessBeanLocal with Logging with I18
     }
     // Изменяем статус действия на "Закончено"
     if (finished && StringUtils.isEmpty(biomaterialDefects)) {
+      info("action #" + a.getId + " set status to FINISHED")
       a.setStatus(ActionStatus.FINISHED.getCode)
     } else if(StringUtils.isNotEmpty(biomaterialDefects)) {
       // Сохраняем дефекты биоматериала в комментарий к действию
       a.setNote(biomaterialDefects)
       a.setStatus(ActionStatus.CANCELLED.getCode)
+      info("action #" + a.getId + " set status to CANCELLED")
     }
     // Сохраняем изменившиеся сущности в БД
     dbManager.mergeAll(entities)

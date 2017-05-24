@@ -4,9 +4,10 @@ import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+
+import static ru.korus.tmis.core.entity.model.RbAttendanceType.NORMAL_CODE;
 
 /**
  * Author: Upatov Egor <br>
@@ -19,12 +20,12 @@ import java.util.List;
 @NamedQueries({
         @NamedQuery(name = "ScheduleTicket.findAll", query = "SELECT st FROM ScheduleTicket st"),
         @NamedQuery(name = "ScheduleTicket.findBySchedule",
-                query="SELECT st FROM ScheduleTicket st WHERE st.schedule = :schedule AND st.deleted = false")
+                query = "SELECT st FROM ScheduleTicket st WHERE st.schedule = :schedule AND st.deleted = false")
 })
 
-public class ScheduleTicket implements Comparable<ScheduleTicket>{
+public class ScheduleTicket implements Comparable<ScheduleTicket> {
 
-   private static final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
+    private static final SimpleDateFormat timeFormatter = new SimpleDateFormat("HH:mm:ss");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -82,7 +83,11 @@ public class ScheduleTicket implements Comparable<ScheduleTicket>{
     @Transient
     private boolean activeClientTicketListIsFormed = false;
 
-    public List<ScheduleClientTicket> getActiveClientTicketList(){
+    //No-arg constructor
+    public ScheduleTicket() {
+    }
+
+    public List<ScheduleClientTicket> getActiveClientTicketList() {
         if (!activeClientTicketListIsFormed) {
             for (ScheduleClientTicket current : clientTicketList) {
                 if (!current.isDeleted()) {
@@ -97,16 +102,12 @@ public class ScheduleTicket implements Comparable<ScheduleTicket>{
 
     /**
      * Возвращает признак свободности талона от записей пациентов (если нету ни одной неудаленной записи пациента то талон считается свободным)
+     *
      * @return true - свободен \ false - занят
      */
     public boolean isFree() {
         return getActiveClientTicketList().isEmpty();
     }
-
-    //No-arg constructor
-    public ScheduleTicket() {
-    }
-
 
     @Override
     public String toString() {
@@ -237,8 +238,11 @@ public class ScheduleTicket implements Comparable<ScheduleTicket>{
 
     @Override
     public int compareTo(@NotNull final ScheduleTicket o) {
-        return begTime.compareTo(o.getBegTime());
+        int result = attendanceType.compareTo(o.getAttendanceType());
+        if (result == 0 && NORMAL_CODE.equals(attendanceType.getCode())) {
+            return begTime == null ? -1 : begTime.compareTo(o.begTime);
+        } else {
+            return result;
+        }
     }
-
-
 }

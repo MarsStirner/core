@@ -27,5 +27,6 @@ public interface DbClientAddressBeanLocal {
                              Staff sessionUser)
             throws CoreException;
 
+    String getFullAddressString(ClientAddress clientAddress);
 }
 

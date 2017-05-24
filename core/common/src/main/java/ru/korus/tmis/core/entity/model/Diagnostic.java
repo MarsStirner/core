@@ -34,8 +34,6 @@ import javax.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "diagnostic")
 public class Diagnostic implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -142,6 +140,26 @@ public class Diagnostic implements Serializable {
     @ManyToOne
     @JoinColumn(name = "action_id")
     private Action action;
+
+    /**
+     * @since new_diagnosis
+     */
+    @ManyToOne
+    @JoinColumn(name = "MKB", referencedColumnName = "DiagID")
+    private Mkb mkb;
+
+    /**
+     * @since new_diagnosis
+     */
+    @Column(name = "MKBEx")
+    private String mkbExCode;
+
+    /**
+     * Описание диагноза
+     * @since new_diagnosis
+     */
+    @Column(name = "diagnosis_description")
+    private String diagnosis_description;
 
     public Diagnostic() {
     }
@@ -404,5 +422,29 @@ public class Diagnostic implements Serializable {
 
     public void setAction(Action action) {
         this.action = action;
+    }
+
+    public Mkb getMkb() {
+        return mkb;
+    }
+
+    public void setMkb(Mkb mkb) {
+        this.mkb = mkb;
+    }
+
+    public String getMkbExCode() {
+        return mkbExCode;
+    }
+
+    public void setMkbExCode(String mkbExCode) {
+        this.mkbExCode = mkbExCode;
+    }
+
+    public String getDiagnosis_description() {
+        return diagnosis_description;
+    }
+
+    public void setDiagnosis_description(String diagnosis_description) {
+        this.diagnosis_description = diagnosis_description;
     }
 }

@@ -1,14 +1,11 @@
 package ru.korus.tmis.core.entity.model;
 
-import java.io.Serializable;
-import java.util.LinkedList;
-import java.util.List;
-
 import javax.persistence.*;
 import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "MKB")
@@ -282,7 +279,7 @@ public class Mkb implements Serializable {
 
     @Override
     public String toString() {
-        return "ru.korus.tmis.core.entity.model.Mkb[ id=" + id + " ]";
+        return "MKB['" + diagID + "'=" + diagName + "]";
     }
 
     public boolean isDeleted() {

@@ -1,5 +1,6 @@
 package ru.korus.tmis.core.database
 
+import java.util
 import java.util.Date
 import javax.ejb.{EJB, Stateless}
 import javax.persistence.{EntityManager, PersistenceContext}
@@ -8,9 +9,11 @@ import ru.korus.tmis.core.auth.AuthStorageBeanLocal
 import ru.korus.tmis.core.data.TableCol
 import ru.korus.tmis.core.database.common.{DbEventPersonBeanLocal, DbPatientBeanLocal}
 import ru.korus.tmis.core.entity.model._
+import ru.korus.tmis.core.entity.model.new_diagnosis.EventDiagnosis
 import ru.korus.tmis.core.exception.CoreException
 import ru.korus.tmis.scala.util.{ConfigManager, I18nable}
 
+import scala.collection.JavaConverters._
 import scala.language.reflectiveCalls
 
 /**
@@ -135,5 +138,38 @@ with I18nable {
     diagnosis.setEndDate(date)
     em.persist(diagnosis)
     diagnosis
+  }
+
+  /**
+    *
+    * @param event
+    * @param date
+    * @return
+    * @since new_diagnosis
+    */
+  override def getEventDiagnosis(event: Event, date: Date): util.Set[EventDiagnosis] = {
+    val result = em.createQuery("""
+SELECT a FROM EventDiagnosis a
+WHERE a.event = :event
+AND a.diagnosis.setDate <= :date
+AND ( a.diagnosis.endDate >= :date OR a.diagnosis.endDate IS NULL )
+AND a.deleted = 0 """, classOf[EventDiagnosis])
+      .setParameter("event", event)
+      .setParameter("date", date)
+      .getResultList
+    new util.HashSet[EventDiagnosis](result)
+  }
+
+  def getActualDiagnostic(diagnosis: Diagnosis, checkDate: Date): Diagnostic = {
+    em.createQuery(
+      """SELECT a FROM Diagnostic a WHERE a.diagnosis = :diagnosis AND a.setDate <= :checkDate AND a.deleted = 0 ORDER BY a.setDate DESC""",
+      classOf[Diagnostic]).setMaxResults(1)
+      .setParameter("diagnosis", diagnosis)
+      .setParameter("checkDate", checkDate)
+      .getResultList.stream().findFirst().orElse(null)
+  }
+
+  override def getEventDiagnosisWithActualDiagnostic(event: Event, datetimeTaken: Date): util.Map[EventDiagnosis, Diagnostic] = {
+    getEventDiagnosis(event, datetimeTaken).asScala.view.map(x => x -> getActualDiagnostic(x.getDiagnosis, datetimeTaken)).toMap.asJava
   }
 }

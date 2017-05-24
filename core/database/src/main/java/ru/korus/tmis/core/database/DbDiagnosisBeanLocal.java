@@ -2,14 +2,15 @@ package ru.korus.tmis.core.database;
 
 import ru.korus.tmis.core.auth.AuthData;
 import ru.korus.tmis.core.data.TableCol;
-import ru.korus.tmis.core.entity.model.Action;
-import ru.korus.tmis.core.entity.model.ActionProperty;
-import ru.korus.tmis.core.entity.model.Diagnosis;
-import ru.korus.tmis.core.entity.model.Staff;
+import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.new_diagnosis.EventDiagnosis;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.Local;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Методы для работы с таблицей Diagnosis
@@ -43,4 +44,15 @@ public interface DbDiagnosisBeanLocal {
                                       Staff staff) throws CoreException;
 
     Diagnosis createDiagnosis(ActionProperty actionProperty, TableCol tableCol, Staff staff);
+
+    /**
+     *
+     * @param event
+     * @param date
+     * @return
+     * @since new_diagnosis
+     */
+    Set<EventDiagnosis> getEventDiagnosis(Event event, Date date);
+
+    Map<EventDiagnosis, Diagnostic> getEventDiagnosisWithActualDiagnostic(Event event, Date datetimeTaken);
 }

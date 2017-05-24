@@ -77,6 +77,10 @@ public class ActionProperty
     @Column(name = "version")
     private int version;
 
+    @Column(name = "note")
+    private String note;
+
+
     ////////////////////////////////////////////////////////////////////////////
     // Custom mappings
     ////////////////////////////////////////////////////////////////////////////
@@ -200,11 +204,11 @@ public class ActionProperty
         if (valueTypeMap.containsKey(propertyType)) {
             valueClass = valueTypeMap.get(propertyType);
         } else if (isRef || "ReferenceRb".equals(propertyType)) {
-            if(propertyType.equals("rbTrfuBloodComponentType")) {
+            if("rbTrfuBloodComponentType".equals(propertyType)) {
                 valueClass = APValueRbBloodComponentType.class;
-            } else if (propertyType.equals("Action")) {
+            } else if ("Action".equals(propertyType)) {
                 valueClass = APValueAction.class;
-            } else if (propertyType.equals("rbReasonOfAbsence")) {
+            } else if ("rbReasonOfAbsence".equals(propertyType)) {
                 valueClass = APValueRbReasonOfAbsence.class;
             } else {
                 valueClass = valueTypeMap.get("Integer");
@@ -335,6 +339,14 @@ public class ActionProperty
 
     public void setVersion(int version) {
         this.version = version;
+    }
+
+    public String getNote() {
+        return note;
+    }
+
+    public void setNote(String note) {
+        this.note = note;
     }
 
     @Override

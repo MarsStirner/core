@@ -1,17 +1,20 @@
 package ru.bars.open.tmis.lis.innova.logic;
 
 import com.sun.org.apache.xerces.internal.jaxp.datatype.XMLGregorianCalendarImpl;
+import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ru.bars.open.tmis.lis.innova.config.Constants;
 import ru.bars.open.tmis.lis.innova.config.LisInnovaSettings;
 import ru.bars.open.tmis.lis.innova.ws.generated.*;
-import ru.korus.tmis.core.database.DbDiagnosticBeanLocal;
-import ru.korus.tmis.core.database.DbJobTicketBeanLocal;
+import ru.korus.tmis.core.database.DbClientAddressBeanLocal;
+import ru.korus.tmis.core.database.DbDiagnosisBeanLocal;
 import ru.korus.tmis.core.database.common.DbActionBeanLocal;
+import ru.korus.tmis.core.database.common.DbActionPropertyBeanLocal;
 import ru.korus.tmis.core.database.common.DbCustomQueryLocal;
 import ru.korus.tmis.core.database.common.DbEventBeanLocal;
 import ru.korus.tmis.core.entity.model.*;
+import ru.korus.tmis.core.entity.model.new_diagnosis.EventDiagnosis;
+import ru.korus.tmis.core.entity.model.new_diagnosis.RbDiagnosisKind;
 import ru.korus.tmis.core.exception.CoreException;
 
 import javax.ejb.EJB;
@@ -19,6 +22,7 @@ import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.xml.datatype.XMLGregorianCalendar;
+import javax.xml.ws.BindingProvider;
 import java.text.SimpleDateFormat;
 import java.util.*;
 
@@ -37,13 +41,10 @@ public class LisInnovaBean {
     private DbActionBeanLocal actionBean;
 
     @EJB
-    private DbJobTicketBeanLocal jobTicketBean;
-
-    @EJB
     private DbTakenTissueJournalBeanLocal dbTTJBean;
 
     @EJB
-    private DbDiagnosticBeanLocal dbDiagnosticBean;
+    private DbDiagnosisBeanLocal diagnosisBean;
 
     @EJB
     private DbCustomQueryLocal dbCustomQuery;
@@ -51,44 +52,66 @@ public class LisInnovaBean {
     @EJB
     private DbEventBeanLocal eventBean;
 
+    @EJB
+    private DbActionPropertyBeanLocal actionPropertyBean;
+
+
+    @EJB
+    private DbClientAddressBeanLocal clientAddressBean;
+
 
     @PersistenceContext(unitName = "s11r64")
     private EntityManager em;
 
-    public String sendTakenTissueJournal(final TakenTissue ttj, final long logNumber) {
-        log.info("#{} Start process TTJ[{}]", logNumber, ttj.getId());
+    public String sendTakenTissueJournal(final TakenTissue ttj) {
+        log.info("Start process TTJ[{}]", ttj.getId());
         final String INNOVA_LAB_CODE = LisInnovaSettings.getLabCode();
         final List<Action> actionList = dbTTJBean.getActionsByTTJAndLaboratoryCode(ttj.getId(), INNOVA_LAB_CODE);
         if (actionList.isEmpty()) {
-            log.warn("#{} End process TTJ[{}]: No Action found for Laboratory[{}]", logNumber, ttj.getId(), INNOVA_LAB_CODE);
+            log.warn("End process TTJ[{}]: No Action found for Laboratory[{}]", ttj.getId(), INNOVA_LAB_CODE);
             return String.format("No Action found for Laboratory[%s]", INNOVA_LAB_CODE);
         }
-        log.info("#{} Found {} actions for Laboratory[{}]", logNumber, actionList.size(), INNOVA_LAB_CODE);
+        log.info("Found {} actions for Laboratory[{}]", actionList.size(), INNOVA_LAB_CODE);
         for (Action action : actionList) {
-            log.info("#{} Action[{}] - \'{}\'", logNumber, action.getId(), action.getActionType().getName());
+            log.info("Action[{}] - \'{}\'", action.getId(), action.getActionType().getName());
         }
-        final Event event = getEventByActionList(actionList, logNumber);
+        final Event event = getEventByActionList(actionList);
         final EventType eventType = event.getEventType();
         final Patient patient = event.getPatient();
         final Staff doctor = getDoctorForLis(event, actionList);
-        log.info(
-                "#{} Event[{}]-\'[{}] {}\', Doctor[{}]-\'{}\'",
-                logNumber,
+        log.info("Event[{}]-\'[{}] {}\', Doctor[{}]-\'{}\'",
                 event.getId(),
                 eventType.getId(),
                 eventType.getName(),
                 doctor.getId(),
                 doctor.getFullName()
         );
+        final Map<EventDiagnosis, Diagnostic> diagnosisMap = diagnosisBean.getEventDiagnosisWithActualDiagnostic(event, ttj.getDatetimeTaken());
+        if (diagnosisMap == null || diagnosisMap.isEmpty()) {
+            log.warn("No diagnosis found for Event[{}] on date[{}]", event.getId(), ttj.getDatetimeTaken());
+        } else {
+            for (Map.Entry<EventDiagnosis, Diagnostic> x : diagnosisMap.entrySet()) {
+                final EventDiagnosis eventDiagnosis = x.getKey();
+                final Diagnostic diagnostic = x.getValue();
+                log.debug("EventDiagnosis[{}]: {} {} Diagnosis[{}] Diagnostic[{}] {}",
+                        eventDiagnosis.getId(),
+                        eventDiagnosis.getDiagnosisType(),
+                        eventDiagnosis.getDiagnosisKind(),
+                        eventDiagnosis.getDiagnosis().getId(),
+                        diagnostic.getId(),
+                        diagnostic.getMkb()
+                );
+            }
+        }
+
         final PatientInfo patientInfo = getPatientInfo(patient);
-        final DiagnosticRequestInfo diagnosticRequestInfo = getDiagnosticRequestInfo(ttj, event, doctor, logNumber);
+        final DiagnosticRequestInfo diagnosticRequestInfo = getDiagnosticRequestInfo(ttj, event, doctor, diagnosisMap);
         final BiomaterialInfo biomaterialInfo = getBiomaterialInfo(ttj);
-        final ArrayOfOrderInfo arrayOfOrderInfo = getArrayOfOrderInfo(actionList, logNumber);
+        final ArrayOfOrderInfo arrayOfOrderInfo = getArrayOfOrderInfo(actionList);
+        final ArrayOfExtraField arrayOfExtraField = getExtraFields(patient, event, actionList, diagnosisMap, ttj.getDatetimeTaken());
+        diagnosticRequestInfo.setExtraFields(arrayOfExtraField);
         try {
-            final QueryAnalysisService queryAnalysisService = new QueryAnalysisService(LisInnovaSettings.getServiceURL());
-            queryAnalysisService.setHandlerResolver(new JaxWsHandlerResolver());
-            final IqueryAnalysis service = queryAnalysisService.getFTMISEndpoint();
-            final Integer result = service.queryAnalysis(patientInfo, diagnosticRequestInfo, biomaterialInfo, arrayOfOrderInfo);
+            final Integer result = getWebService().queryAnalysis(patientInfo, diagnosticRequestInfo, biomaterialInfo, arrayOfOrderInfo);
             if (result == 0) {
                 for (Action action : actionList) {
                     if (action.getStatus() == 0) {
@@ -103,7 +126,7 @@ public class LisInnovaBean {
             return "ERROR";
 
         } catch (Exception e) {
-            log.error("#{} End process TTJ[{}], Exception ", logNumber, ttj.getId(), e);
+            log.error("End process TTJ[{}], Exception ", ttj.getId(), e);
             ttj.setNote("Error: " + e.getMessage());
             ttj.setStatus(4);
             em.merge(ttj);
@@ -111,6 +134,146 @@ public class LisInnovaBean {
         }
 
     }
+
+    private IqueryAnalysis getWebService() {
+        final QueryAnalysisService queryAnalysisService = new QueryAnalysisService(getClass().getClassLoader().getResource("lis_innova_single_wsdl_v2_withExtraFields.wsdl"));
+        queryAnalysisService.setHandlerResolver(new JaxWsHandlerResolver());
+        final IqueryAnalysis result = queryAnalysisService.getFTMISEndpoint();
+        // Timeout in millis
+        int requestTimeout = 10000;
+        int connectTimeout = 1000;
+
+        final Map<String, Object> requestContext = ((BindingProvider) result).getRequestContext();
+        requestContext.put(BindingProvider.ENDPOINT_ADDRESS_PROPERTY, LisInnovaSettings.getServiceURL().toExternalForm());
+        //https://java.net/jira/browse/JAX_WS-1166
+        // Weblogic JAX-WS properties
+        requestContext.put("com.sun.xml.ws.connect.timeout", connectTimeout);
+        requestContext.put("com.sun.xml.ws.request.timeout", requestTimeout);
+        // JDK JAX-WS properties
+        requestContext.put("com.sun.xml.internal.ws.connect.timeout", connectTimeout);
+        requestContext.put("com.sun.xml.internal.ws.request.timeout", requestTimeout);
+        // JBOSS CXF JAX-WS properties, warning these might change in the future (CXF-5261)
+        requestContext.put("javax.xml.ws.client.connectionTimeout", connectTimeout);
+        requestContext.put("javax.xml.ws.client.receiveTimeout", requestTimeout);
+
+        log.info("WS initialized: {}", LisInnovaSettings.getServiceURL().toExternalForm());
+        return result;
+    }
+
+    /**
+     * @param patient
+     * @param event
+     * @param actionList
+     * @param eventDiagnosisSet
+     * @return
+     * @see <a href="https://jira.bars-open.ru/browse/TMIS-1492">Тикет на доп поля в протоколе</a>
+     */
+    private ArrayOfExtraField getExtraFields(Patient patient, Event event, List<Action> actionList, Map<EventDiagnosis, Diagnostic> eventDiagnosisSet, Date actualDate) {
+        final ObjectFactory of = new ObjectFactory();
+        final ArrayOfExtraField result = of.createArrayOfExtraField();
+        // diagnosisMIS	String	Диагноз(ы) пациента
+        if (eventDiagnosisSet != null && !eventDiagnosisSet.isEmpty()) {
+            // Тип диагноза: МКБ + Расшифровка из МКБ+ Description. Пример: Основной: С91.0 Острый лимфобластный лейкоз (Тра-та-та я дескрипшн);
+            // Разделять через ;
+            final ExtraField diagnosisMis = of.createExtraField();
+            diagnosisMis.setName("diagnosisMIS");
+            final StringBuilder sb = new StringBuilder();
+            for (Iterator<Map.Entry<EventDiagnosis, Diagnostic>> iterator = eventDiagnosisSet.entrySet().iterator(); iterator.hasNext(); ) {
+                final Map.Entry<EventDiagnosis, Diagnostic> entry = iterator.next();
+                final Mkb mkb = entry.getValue().getMkb();
+                sb.append(entry.getKey().getDiagnosisKind().getName()).append(": ").append(mkb.getDiagID()).append(" ").append(mkb.getDiagName());
+                if(StringUtils.isNotEmpty(entry.getValue().getDiagnosis_description())){
+                    sb.append('(').append(entry.getValue().getDiagnosis_description()).append(')');
+                }
+                if (iterator.hasNext()) {
+                    sb.append("; ");
+                }
+            }
+            diagnosisMis.setValue(sb.toString());
+            result.getExtraField().add(diagnosisMis);
+        }
+
+        // Экшен - исследование на вич
+        Action hivAction = null;
+        for (Action action : actionList) {
+            if (hivAction == null) {
+                for (ActionPropertyType apt : action.getActionType().getActionPropertyTypes()) {
+                    if ("hiv".equals(apt.getCode())) {
+                        log.info("HIV research found: Action[{}] - \'{}\'", action.getId(), action.getActionType().getName());
+                        hivAction = action;
+                        break;
+                    }
+                }
+            }
+        }
+
+        // registartionAddressMIS	String	Адрес регистрации пациента, при направлении его на исследование ВИЧ
+        if (hivAction != null) {
+            for (ClientAddress x : patient.getActiveClientAddresses()) {
+                if (x.getAddressType() == 0) {
+                    final ExtraField registartionAddressMis = of.createExtraField();
+                    registartionAddressMis.setName("registartionAddressMIS");
+                    registartionAddressMis.setValue(clientAddressBean.getFullAddressString(x));
+                    result.getExtraField().add(registartionAddressMis);
+                    break;
+                }
+            }
+        }
+        // contingentCodeMIS  String  Код контингента пациента, при направлении его на исследование ВИЧ
+        if (hivAction != null) {
+            for (ActionProperty ap : hivAction.getActionProperties()) {
+                if ("contingent".equals(ap.getType().getCode())) {
+                    try {
+                        List<APValue> values = actionPropertyBean.getActionPropertyValue(ap);
+                        if (values != null && !values.isEmpty() && StringUtils.isNotEmpty(values.get(0).getValueAsString())) {
+                            final ExtraField contingentCodeMIS = of.createExtraField();
+                            contingentCodeMIS.setName("contingentCodeMIS");
+                            contingentCodeMIS.setValue(values.get(0).getValueAsString());
+                            result.getExtraField().add(contingentCodeMIS);
+                        } else {
+                            log.debug("ExtraField[contingentCodeMIS]: empty AP value");
+                        }
+                    } catch (CoreException e) {
+                        log.error("Exception while computing ExtraField[contingentCodeMIS]", e);
+                    }
+                    break;
+                }
+            }
+        }
+
+        // observationCommentMIS  String  Комментарий к исследованию
+        // Это может быть и Action.note - если коммент ко всему исследование и ActionProperty.note если коммент к тесту.
+        {
+            final StringBuilder sb = new StringBuilder();
+            for (final Action action : actionList) {
+                if (StringUtils.isNotEmpty(action.getNote())) {
+                    sb.append('[').append(action.getNote()).append(']');
+                }
+                for (ActionProperty property : action.getActionProperties()) {
+                    // Проверка что свойство назначено в исследовании - экшене
+                    if (!property.getDeleted()
+                            && property.getIsAssigned()
+                            && StringUtils.isNotEmpty(property.getNote())
+                            && property.getType().getTest() != null) {
+                        sb.append('[').append(property.getNote()).append(']');
+                    }
+                }
+            }
+            if(StringUtils.isNotEmpty(sb.toString())) {
+                final ExtraField observationCommentMIS = of.createExtraField();
+                observationCommentMIS.setName("observationCommentMIS");
+                observationCommentMIS.setValue(sb.toString());
+                result.getExtraField().add(observationCommentMIS);
+            }
+        }
+
+
+        for (ExtraField x : result.getExtraField()) {
+            log.info("ExtraField[{}]='{}'", x.getName(), x.getValue());
+        }
+        return result;
+    }
+
 
     private Staff getDoctorForLis(final Event event, final List<Action> actionList) {
         //https://jira.bars-open.ru/browse/TMIS-1286
@@ -127,7 +290,7 @@ public class LisInnovaBean {
         return result != null ? result : event.getExecutor();
     }
 
-    private ArrayOfOrderInfo getArrayOfOrderInfo(final List<Action> actionList, final long logNumber) {
+    private ArrayOfOrderInfo getArrayOfOrderInfo(final List<Action> actionList) {
         final ObjectFactory of = new ObjectFactory();
         final ArrayOfOrderInfo result = of.createArrayOfOrderInfo();
         for (Action action : actionList) {
@@ -135,11 +298,11 @@ public class LisInnovaBean {
             if (item != null) {
                 result.getOrderInfo().add(item);
             } else {
-                log.warn("#{} Action[{}] not converted to OrderInfo!", logNumber, action.getId());
+                log.warn("Action[{}] not converted to OrderInfo!", action.getId());
             }
         }
         if (result.getOrderInfo().isEmpty()) {
-            log.error("#{} ArrayOfOrderInfo is empty.", logNumber);
+            log.error("ArrayOfOrderInfo is empty.");
         }
         return result;
     }
@@ -198,7 +361,7 @@ public class LisInnovaBean {
         return result;
     }
 
-    private DiagnosticRequestInfo getDiagnosticRequestInfo(final TakenTissue ttj, final Event e, final Staff doctor, final long logNumber) {
+    private DiagnosticRequestInfo getDiagnosticRequestInfo(final TakenTissue ttj, final Event e, final Staff doctor, final Map<EventDiagnosis, Diagnostic> diagnoisMap) {
         final ObjectFactory of = new ObjectFactory();
         final DiagnosticRequestInfo result = of.createDiagnosticRequestInfo();
         result.setOrderMisId(ttj.getId());
@@ -210,11 +373,18 @@ public class LisInnovaBean {
         result.setOrderMisDate(date2xmlGC(ttj.getDatetimeTaken()));
         // PregnancyDurationWeeks (int) -- срок беременности пациентки (в неделях)
         result.setOrderPregnat(e.getPregnancyWeek() * 7);
-        final Mkb diagnosis = getDiagnosisForEvent(e, logNumber);
-        if (diagnosis != null) {
-            result.setOrderDiagCode(of.createDiagnosticRequestInfoOrderDiagCode(diagnosis.getDiagID()));
-            result.setOrderDiagText(of.createDiagnosticRequestInfoOrderDiagText(diagnosis.getDiagName()));
+        // Основной диагноз
+        if (diagnoisMap != null && !diagnoisMap.isEmpty()) {
+            for (Map.Entry<EventDiagnosis, Diagnostic> x : diagnoisMap.entrySet()) {
+                if (RbDiagnosisKind.MAIN.equals(x.getKey().getDiagnosisKind().getCode())) {
+                    final Mkb mkb = x.getValue().getMkb();
+                    result.setOrderDiagCode(of.createDiagnosticRequestInfoOrderDiagCode(mkb.getDiagID()));
+                    result.setOrderDiagText(of.createDiagnosticRequestInfoOrderDiagText(mkb.getDiagName()));
+                    break;
+                }
+            }
         }
+
         // DepartmentName (string) -- название подразделения - отделение
         // DepartmentCode (string) -- уникальный код подразделения (отделения)
         final OrgStructure department = eventBean.getOrgStructureForEvent(e);
@@ -231,23 +401,6 @@ public class LisInnovaBean {
         return result;
     }
 
-    private Mkb getDiagnosisForEvent(final Event e, final long logNumber) {
-        try {
-            final List<Diagnostic> diagnostics = dbDiagnosticBean.getDiagnosticsByEventIdAndTypes(
-                    e.getId(), Constants.DIAGNOSIS_CODES_FOR_SEND
-            );
-            if (diagnostics.isEmpty()) {
-                log.warn("#{} No diagnosis found for Event[{}]", logNumber, e.getId());
-            } else {
-                final Diagnosis diag = diagnostics.iterator().next().getDiagnosis();
-                return diag.getMkb();
-            }
-        } catch (CoreException ex) {
-            log.error("#{} Handled Exception while getting diagnosis for Event[{}]: {}", logNumber, e.getId(), ex.getMessage());
-        }
-        return null;
-    }
-
 
     private String getDateAsString(final Date date) {
         return new SimpleDateFormat("dd.MM.yyyy").format(date);
@@ -260,13 +413,13 @@ public class LisInnovaBean {
     }
 
 
-    private Event getEventByActionList(final List<Action> actions, final long logNumber) {
+    private Event getEventByActionList(final List<Action> actions) {
         final Set<Event> set = new LinkedHashSet<>(actions.size());
         for (Action action : actions) {
             set.add(action.getEvent());
         }
         if (set.size() != 1) {
-            log.error("#{} Event is not unique in this Actions! Events = {}", logNumber, set);
+            log.error("Event is not unique in this Actions! Events = {}", set);
         }
         return set.iterator().next();
     }

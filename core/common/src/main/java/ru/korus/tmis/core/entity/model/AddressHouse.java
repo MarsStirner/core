@@ -16,8 +16,6 @@ import java.util.Date;
 @XmlRootElement(name = "addressHouse")
 public class AddressHouse implements Serializable {
 
-    private static final long serialVersionUID = 1L;
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
@@ -53,6 +51,9 @@ public class AddressHouse implements Serializable {
     @Basic(optional = false)
     @Column(name = "KLADRStreetCode")
     private String KLADRStreetCode;
+
+    @Column(name = "streetFreeInput")
+    private String streetFreeInput;
 
     @Basic(optional = false)
     @Column(name = "number")
@@ -144,6 +145,14 @@ public class AddressHouse implements Serializable {
 
     public void setCorpus(String corpus) {
         this.corpus = corpus;
+    }
+
+    public String getStreetFreeInput() {
+        return streetFreeInput;
+    }
+
+    public void setStreetFreeInput(String streetFreeInput) {
+        this.streetFreeInput = streetFreeInput;
     }
 
     /*

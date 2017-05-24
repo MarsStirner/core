@@ -50,6 +50,8 @@ public class ObjectFactory {
     private final static QName _Guid_QNAME = new QName("http://schemas.microsoft.com/2003/10/Serialization/", "guid");
     private final static QName _PatientInfo_QNAME = new QName("http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", "PatientInfo");
     private final static QName _DiagnosticRequestInfo_QNAME = new QName("http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", "DiagnosticRequestInfo");
+    private final static QName _ArrayOfExtraField_QNAME = new QName("http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", "ArrayOfExtraField");
+    private final static QName _ExtraField_QNAME = new QName("http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", "ExtraField");
     private final static QName _BiomaterialInfo_QNAME = new QName("http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", "BiomaterialInfo");
     private final static QName _ArrayOfOrderInfo_QNAME = new QName("http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", "ArrayOfOrderInfo");
     private final static QName _OrderInfo_QNAME = new QName("http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", "OrderInfo");
@@ -131,11 +133,19 @@ public class ObjectFactory {
     }
 
     /**
-     * Create an instance of {@link QueryAnalysisResponse }
+     * Create an instance of {@link ArrayOfExtraField }
      * 
      */
-    public QueryAnalysisResponse createQueryAnalysisResponse() {
-        return new QueryAnalysisResponse();
+    public ArrayOfExtraField createArrayOfExtraField() {
+        return new ArrayOfExtraField();
+    }
+
+    /**
+     * Create an instance of {@link ExtraField }
+     *
+     */
+    public ExtraField createExtraField() {
+        return new ExtraField();
     }
 
     /**
@@ -367,6 +377,24 @@ public class ObjectFactory {
     @XmlElementDecl(namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", name = "DiagnosticRequestInfo")
     public JAXBElement<DiagnosticRequestInfo> createDiagnosticRequestInfo(DiagnosticRequestInfo value) {
         return new JAXBElement<DiagnosticRequestInfo>(_DiagnosticRequestInfo_QNAME, DiagnosticRequestInfo.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ArrayOfExtraField }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", name = "ArrayOfExtraField")
+    public JAXBElement<ArrayOfExtraField> createArrayOfExtraField(ArrayOfExtraField value) {
+        return new JAXBElement<ArrayOfExtraField>(_ArrayOfExtraField_QNAME, ArrayOfExtraField.class, null, value);
+    }
+
+    /**
+     * Create an instance of {@link JAXBElement }{@code <}{@link ExtraField }{@code >}}
+     *
+     */
+    @XmlElementDecl(namespace = "http://schemas.datacontract.org/2004/07/ru.novolabs.MisExchange.ExchangeHelpers.FTMIS", name = "ExtraField")
+    public JAXBElement<ExtraField> createExtraField(ExtraField value) {
+        return new JAXBElement<ExtraField>(_ExtraField_QNAME, ExtraField.class, null, value);
     }
 
     /**

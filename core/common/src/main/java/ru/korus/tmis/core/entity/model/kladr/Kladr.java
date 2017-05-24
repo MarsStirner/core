@@ -1,12 +1,10 @@
 package ru.korus.tmis.core.entity.model.kladr;
 
 import org.codehaus.jackson.annotate.JsonIgnoreProperties;
-
 import org.codehaus.jackson.annotate.JsonProperty;
-import org.springframework.web.client.RestTemplate;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
-public class  Kladr {
+public class Kladr {
 
     private static final long serialVersionUID = 1L;
 
@@ -181,5 +179,9 @@ public class  Kladr {
         sb.append(", parent='").append(identparent).append('\'');
         sb.append('}');
         return sb.toString();
+    }
+
+    public String toStringAddressPart() {
+        return shorttype + ". " + name;
     }
 }

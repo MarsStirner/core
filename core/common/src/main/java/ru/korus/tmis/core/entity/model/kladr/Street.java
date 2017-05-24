@@ -164,4 +164,9 @@ public class Street
         sb.append('}');
         return sb.toString();
     }
+
+
+    public String toStringAddressPart() {
+        return shorttype + ". " + name;
+    }
 }
